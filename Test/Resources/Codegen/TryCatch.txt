@@ -1,0 +1,101 @@
+module test;
+using system::*;
+
+var log = "";
+
+func test1():void
+{
+	try
+	{
+		raise "test1::catch";
+	}
+	catch(ex)
+	{
+		log = log & "[" & ex.Message & "]";
+	}
+}
+
+func test2():void
+{
+	try
+	{
+		raise "test2::catch";
+	}
+	catch(ex)
+	{
+		log = log & "[" & ex.Message & "]";
+	}
+	finally
+	{
+		log = log & "[test2::finally]";
+	}
+}
+
+func throw(message : string):void
+{
+	raise message;
+}
+
+func test3():void
+{
+	try
+	{
+		try
+		{
+			throw("test3::catch");
+		}
+		catch(ex)
+		{
+			log = log & "[" & ex.Message & "1]";
+			raise;
+		}
+		finally
+		{
+			log = log & "[test3::finally1]";
+		}
+	}
+	catch(ex)
+	{
+		log = log & "[" & ex.Message & "2]";
+	}
+	finally
+	{
+		log = log & "[test3::finally2]";
+	}
+}
+
+func test4():void
+{
+	try
+	{
+		try
+		{
+		}
+		catch(ex)
+		{
+			log = log & "[" & ex.Message & "1]";
+			raise;
+		}
+		finally
+		{
+			log = log & "[test4::finally1]";
+		}
+	}
+	catch(ex)
+	{
+		log = log & "[" & ex.Message & "2]";
+	}
+	finally
+	{
+		log = log & "[test4::finally2]";
+	}
+}
+
+func main():string
+{
+	test1();
+	test2();
+	test3();
+	test4();
+	return log;
+}

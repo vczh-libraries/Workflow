@@ -1,0 +1,81 @@
+module test;
+using system::*;
+
+var sum = 0;
+
+func test1():void
+{
+	for(x in range[1, 5])
+	{
+		try
+		{
+			continue;
+		}
+		finally
+		{
+			sum = sum + 1;
+		}
+	}
+}
+
+func test2():void
+{
+	for(x in range[1, 5])
+	{
+		try
+		{
+			break;
+		}
+		finally
+		{
+			sum = sum + 10;
+		}
+	}
+}
+
+func test3():void
+{
+	try
+	{
+		return;
+	}
+	finally
+	{
+		sum = sum + 100;
+	}
+}
+
+func test4():void
+{
+	try
+	{
+		try
+		{
+			try
+			{
+				return;
+			}
+			finally
+			{
+				sum = sum + 1000;
+			}
+		}
+		finally
+		{
+			sum = sum + 1000;
+		}
+	}
+	finally
+	{
+		sum = sum + 1000;
+	}
+}
+
+func main():string
+{
+	test1();
+	test2();
+	test3();
+	test4();
+	return sum;
+}

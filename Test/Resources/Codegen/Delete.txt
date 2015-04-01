@@ -1,0 +1,29 @@
+module test;
+using test::*;
+using system::*;
+
+func Delete(value : ObservableValue*):bool
+{
+	try
+	{
+		delete value;
+		return true;
+	}
+	catch(ex)
+	{
+		return false;
+	}
+}
+
+func main():string
+{
+	var raw1 = ObservableValue::CreatePtr(0, "");
+	var raw2 = ObservableValue::CreatePtr(0, "");
+	var shared = cast ObservableValue^ raw1;
+	var a = raw1 is null;
+	var b = raw2 is null;
+	var c = shared is null;
+	var d = Delete(raw1);
+	var e = Delete(raw2);
+	return a & ", " & b & ", " & c & ", " & d & ", " & e;
+}

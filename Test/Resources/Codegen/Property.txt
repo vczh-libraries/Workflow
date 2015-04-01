@@ -1,0 +1,16 @@
+module test;
+using system::*;
+using test::*;
+
+func main():string
+{
+	var x = cast Point "x:10 y:20";
+	var y = new ObservableValue^(10);
+	var s1 = x.x & ", " & x.y & ", " & y.Value & ", " & y.Name & ", " & y.DisplayName;
+
+	y.Value = 20;
+	y.Name = "Workflow";
+	var s2 = y.Value & ", " & y.Name & ", " & y.DisplayName;
+
+	return s1 & ", " & s2;
+}

@@ -1,0 +1,17 @@
+module test;
+using system::*;
+using test::*;
+
+func Create2(value : int, name : string) : ObservableValue^
+{
+	return ObservableValue::Create(value, name);
+}
+
+func main():string
+{
+	var create1 = ObservableValue::Create;
+	var create2 = Create2;
+	var o1 = create1(1, "one");
+	var o2 = Create2(2, "two");
+	return o1.Value & ", " & o1.DisplayName & ", " & o2.Value & ", " & o2.DisplayName;
+}

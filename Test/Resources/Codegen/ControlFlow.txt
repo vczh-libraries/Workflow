@@ -1,0 +1,83 @@
+module test;
+using system::*;
+
+func Sum1(start : int, end : int) : int
+{
+	var result = 0;
+	for (x in range[start, end])
+	{
+		result = result + x;
+	}
+	return result;
+}
+
+func Sum2(start : int, end : int) : int
+{
+	var result = 0;
+	for (x in reversed range[start, end])
+	{
+		result = result + x;
+	}
+	return result;
+}
+
+func Sum3(start : int, end : int) : int
+{
+	var result = 0;
+	var current = start;
+	while (current <= end)
+	{
+		result = result + current;
+		current = current + 1;
+	}
+	return result;
+}
+
+func Sum4(start : int, end : int) : int
+{
+	var result = 0;
+	var current = start;
+	while (true)
+	{
+		if (current > end)
+		{
+			break;
+		}
+		result = result + current;
+		current = current + 1;
+	}
+	return result;
+}
+
+func Sum5(start : int, end : int) : int
+{
+	var result = 0;
+	var current = start;
+	var needToExit = false;
+	while (not needToExit)
+	{
+		switch (current)
+		{
+		case end + 1:
+			{
+				needToExit = true;
+			}
+		default:
+			{
+				result = result + current;
+			}
+		}
+		current = current + 1;
+	}
+	return result;
+}
+
+func main():string
+{
+	return
+		Sum1(1, 10) & ", " &
+		Sum2(1, 10) & ", " &
+		Sum3(1, 10) & ", " &
+		Sum4(1, 10) & ", " &
+		Sum5(1, 10);
+}

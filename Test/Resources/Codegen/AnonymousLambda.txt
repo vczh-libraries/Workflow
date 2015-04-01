@@ -1,0 +1,20 @@
+module test;
+using system::*;
+
+func Adder(x : int) : func(int):func():int
+{
+	return func(y : int):func():int
+	{
+		return func():int
+		{
+			return x + y;
+		};
+	};
+}
+
+func main():string
+{
+	var f = Adder(1);
+	var g = Adder(2);
+	return f(1)() & ", " & f(2)() & ", " & g(1)() & ", " & g(2)();
+}

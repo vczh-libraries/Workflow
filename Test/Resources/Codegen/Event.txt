@@ -1,0 +1,27 @@
+module test;
+using system::*;
+using test::*;
+
+var olds : int[] = {};
+var news : int[] = {};
+
+func EventHandler(oldValue : int, newValue : int) : void
+{
+	olds.Add(oldValue);
+	news.Add(newValue);
+}
+
+func main():string
+{
+	var o = new ObservableValue^(10);
+	var handler = attach(o.ValueChanged, EventHandler);
+	o.Value = 20;
+	o.Value = 30;
+	var b1 = detach(handler);
+	o.Value = 40;
+	var b2 = detach(handler);
+	return
+		olds.Count & ", " & olds[0] & ", " & olds[1] & ", " &
+		news.Count & ", " & news[0] & ", " & news[1] & ", " &
+		b1 & ", " & b2;
+}

@@ -1,0 +1,17 @@
+module HelloWorld;
+
+using test::*;
+
+var s = "zero";
+
+func Main() : void
+{
+	var t = s;
+	s = "one";
+	var o = new ObservableValue^(1);
+	var u = o.Value;
+	o.Value = 2;
+	var v = attach(o.ValueChanged, func(a : int, b : int):void{});
+	detach(v);
+	var w = o.GetDisplayName();
+}

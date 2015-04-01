@@ -1,0 +1,24 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+func Callback(value : object) : void
+{
+	s = $"$(s)[$(cast string value)]";
+}
+
+func main() : string
+{
+	var x = new ObservableValue^();
+	var subscription = bind($"The value has changed to $(x.Value)");
+	var listener = subscription.Subscribe(Callback);
+
+	x.Value = 10;
+	x.Value = 20;
+	x.Value = 30;
+
+	subscription.Close();
+	return s;
+}

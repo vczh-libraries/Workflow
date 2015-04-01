@@ -1,0 +1,855 @@
+include:"../WorkflowVlppReferences.h"
+namespace:vl.workflow
+reflection:workflow
+classPrefix:Wf
+guard:VCZH_WORKFLOW_EXPRESSION_WFEXPRESSIONPARSER
+parser:ParseType(WorkflowType)
+parser:ParseExpression(WorkflowExpression)
+parser:ParseStatement(WorkflowStatement)
+parser:ParseDeclaration(WorkflowDeclaration)
+parser:ParseModule(WorkflowModule)
+ambiguity:enabled
+serialization:enabled
+grammar:
+
+class Type
+{
+}
+
+enum PredefinedTypeName
+{
+	Void,
+	Object,
+	Interface,
+	Int,
+	UInt,
+	Float,
+	Double,
+	String,
+	Char,
+	Bool,
+}
+
+class PredefinedType : Type
+{
+	PredefinedTypeName		name;
+}
+
+class TopQualifiedType : Type
+{
+	token					name;
+}
+
+class ReferenceType : Type
+{
+	token					name;
+}
+
+class RawPointerType : Type
+{
+	Type					element;
+}
+
+class SharedPointerType : Type
+{
+	Type					element;
+}
+
+class NullableType : Type
+{
+	Type					element;
+}
+
+class EnumerableType : Type
+{
+	Type					element;
+}
+
+enum MapWritability
+{
+	Readonly,
+	Writable,
+}
+
+class MapType : Type
+{
+	MapWritability			writability;
+	Type					key;
+	Type					value;
+}
+
+class FunctionType : Type
+{
+	Type					result;
+	Type[]					arguments;
+}
+
+class ChildType : Type
+{
+	Type					parent;
+	token					name;
+}
+
+class Expression
+{
+}
+
+class TopQualifiedExpression : Expression
+{
+	token					name;
+}
+
+class ReferenceExpression : Expression
+{
+	token					name;
+}
+
+class OrderedNameExpression : Expression
+{
+	token					name;
+}
+
+class OrderedLambdaExpression : Expression
+{
+	Expression				body;
+}
+
+class MemberExpression : Expression
+{
+	Expression				parent;
+	token					name;
+}
+
+class ChildExpression : Expression
+{
+	Expression				parent;
+	token					name;
+}
+
+enum LiteralValue
+{
+	Null,
+	True,
+	False,
+}
+
+class LiteralExpression : Expression
+{
+	LiteralValue			value;
+}
+
+class FloatingExpression : Expression
+{
+	token					value;
+}
+
+class IntegerExpression : Expression
+{
+	token					value;
+}
+
+class StringExpression : Expression
+{
+	token					value(UnescapeString);
+}
+
+class FormatExpression : Expression
+{
+	token					value(UnescapeFormatString);
+	Expression				expandedExpression;
+}
+
+enum UnaryOperator
+{
+	Positive,
+	Negative,
+	Not,
+}
+
+class UnaryExpression : Expression
+{
+	UnaryOperator			op;
+	Expression				operand;
+}
+
+enum BinaryOperator
+{
+	Assign,
+	Index,
+	Concat,
+	FailedThen,
+	Exp,
+	Add,
+	Sub,
+	Mul,
+	Div,
+	Mod,
+	Shl,
+	Shr,
+	LT,
+	GT,
+	LE,
+	GE,
+	EQ,
+	NE,
+	Xor,
+	And,
+	Or,
+}
+
+class BinaryExpression : Expression
+{
+	BinaryOperator			op;
+	Expression				first;
+	Expression				second;
+}
+
+class LetVariable
+{
+	token					name;
+	Expression				value;
+}
+
+class LetExpression : Expression
+{
+	LetVariable[]			variables;
+	Expression				expression;
+}
+
+class IfExpression : Expression
+{
+	Expression				condition;
+	Expression				trueBranch;
+	Expression				falseBranch;
+}
+
+enum RangeBoundary
+{
+	Inclusive,
+	Exclusive,
+}
+
+class RangeExpression : Expression
+{
+	Expression				begin;
+	RangeBoundary			beginBoundary;
+	Expression				end;
+	RangeBoundary			endBoundary;
+}
+
+enum SetTesting
+{
+	In,
+	NotIn,
+}
+
+class SetTestingExpression : Expression
+{
+	SetTesting				test;
+	Expression				element;
+	Expression				collection;
+}
+
+class ConstructorArgument
+{
+	Expression				key;
+	Expression				value;
+}
+
+class ConstructorExpression : Expression
+{
+	ConstructorArgument[]	arguments;
+}
+
+class InferExpression : Expression
+{
+	Expression				expression;
+	Type					type;
+}
+
+enum TypeCastingStrategy
+{
+	Strong,
+	Weak,
+}
+
+class TypeCastingExpression : Expression
+{
+	TypeCastingStrategy		strategy;
+	Expression				expression;
+	Type					type;
+}
+
+enum TypeTesting
+{
+	IsType,
+	IsNotType,
+	IsNull,
+	IsNotNull,
+}
+
+class TypeTestingExpression : Expression
+{
+	TypeTesting				test;
+	Expression				expression;
+	Type					type;
+}
+
+class TypeOfTypeExpression : Expression
+{
+	Type					type;
+}
+
+class TypeOfExpressionExpression : Expression
+{
+	Expression				expression;
+}
+
+class AttachEventExpression : Expression
+{
+	Expression				event;
+	Expression				function;
+}
+
+class DetachEventExpression : Expression
+{
+	Expression				handler;
+}
+
+class BindExpression : Expression
+{
+	Expression				expression;
+	Expression				expandedExpression;
+}
+
+enum ObserveType
+{
+	SimpleObserve,
+	ExtendedObserve,
+}
+
+class ObserveExpression : Expression
+{
+	Expression				parent;
+	ObserveType				observeType;
+	token					name;
+	Expression				expression;
+	Expression[]			events;
+}
+
+class CallExpression : Expression
+{
+	Expression				function;
+	Expression[]			arguments;
+}
+
+class Statement
+{
+}
+
+class BreakStatement : Statement
+{
+}
+
+class ContinueStatement : Statement
+{
+}
+
+class ReturnStatement : Statement
+{
+	Expression				expression;
+}
+
+class DeleteStatement : Statement
+{
+	Expression				expression;
+}
+
+class RaiseExceptionStatement : Statement
+{
+	Expression				expression;
+}
+
+class IfStatement : Statement
+{
+	Type					type;
+	token					name;
+	Expression				expression;
+	Statement				trueBranch;
+	Statement				falseBranch;
+}
+
+class SwitchCase
+{
+	Expression				expression;
+	Statement				statement;
+}
+
+class SwitchStatement : Statement
+{
+	Expression				expression;
+	SwitchCase[]			caseBranches;
+	Statement				defaultBranch;
+}
+
+class WhileStatement : Statement
+{
+	Expression				condition;
+	Statement				statement;
+}
+
+enum ForEachDirection
+{
+	Normal,
+	Reversed,
+}
+
+class ForEachStatement : Statement
+{
+	token					name;
+	ForEachDirection		direction;
+	Expression				collection;
+	Statement				statement;
+}
+
+class TryStatement : Statement
+{
+	Statement				protectedStatement;
+	token					name;
+	Statement				catchStatement;
+	Statement				finallyStatement;
+}
+
+class BlockStatement : Statement
+{
+	Statement[]				statements;
+}
+
+class ExpressionStatement : Statement
+{
+	Expression				expression;
+}
+
+class Declaration
+{
+	token					name;
+}
+
+class NamespaceDeclaration : Declaration
+{
+	Declaration[]			declarations;
+}
+
+class FunctionArgument
+{
+	token					name;
+	Type					type;
+}
+
+enum FunctionAnonymity
+{
+	Named,
+	Anonymous,
+}
+
+class FunctionDeclaration : Declaration
+{
+	FunctionAnonymity		anonymity;
+	FunctionArgument[]		arguments;
+	Type					returnType;
+	Statement				statement;
+}
+
+class FunctionExpression : Expression
+{
+	FunctionDeclaration		function;
+}
+
+class VariableDeclaration : Declaration
+{
+	Type					type;
+	Expression				expression;
+}
+
+class VariableStatement : Statement
+{
+	VariableDeclaration		variable;
+}
+
+class NewTypeExpression : Expression
+{
+	Type					type;
+	Expression[]			arguments;
+	FunctionDeclaration[]	functions;
+}
+
+class ModuleUsingFragment
+{
+}
+
+class ModuleUsingNameFragment : ModuleUsingFragment
+{
+	token					name;
+}
+
+class ModuleUsingWildCardFragment : ModuleUsingFragment
+{
+}
+
+class ModuleUsingItem
+{
+	ModuleUsingFragment[]	fragments;
+}
+
+class ModuleUsingPath
+{
+	ModuleUsingItem[]		items;
+}
+
+enum ModuleType
+{
+	Module,
+	Unit,
+}
+
+class Module
+{
+	ModuleType				moduleType;
+	token					name;
+	ModuleUsingPath[]		paths;
+	Declaration[]			declarations;
+}
+
+token EXP = "/^";
+token ADD = "/+";
+token SUB = "-";
+token MUL = "/*";
+token DIV = "//";
+token MOD = "%";
+token CONCAT = "&";
+token LE = "/</=";
+token GE = "/>/=";
+token LT = "/<";
+token GT = "/>";
+token EQ = "/=/=";
+token NE = "/!/=";
+token ASSIGN = "/=";
+token FAILED_THEN = "/?/?";
+token QUESTION_MARK = "/?";
+token SCOPE_DELIMITER = "::";
+token COLON = ":";
+token SEMICOLON = ";";
+token COMMA = ",";
+token DOT = ".";
+token OPEN_ARRAY = "/[";
+token CLOSE_ARRAY = "/]";
+token OPEN_BRACE = "/{";
+token CLOSE_BRACE = "/}";
+token OPEN_BRACKET = "/(";
+token CLOSE_BRACKET = "/)";
+
+token TYPE_VOID = "void";
+token TYPE_OBJECT = "object";
+token TYPE_INTERFACE = "interface";
+token TYPE_INT = "int";
+token TYPE_UINT = "uint";
+token TYPE_FLOAT = "float";
+token TYPE_DOUBLE = "double";
+token TYPE_STRING = "string";
+token TYPE_CHAR = "char";
+token TYPE_BOOL = "bool";
+
+token KEYWORD_CONST = "const";
+token KEYWORD_SHL = "shl";
+token KEYWORD_SHR = "shr";
+token KEYWORD_XOR = "xor";
+token KEYWORD_AND = "and";
+token KEYWORD_OR = "or";
+token KEYWORD_NOT = "not";
+token KEYWORD_NULL= "null";
+token KEYWORD_TRUE= "true";
+token KEYWORD_FALSE = "false";
+token KEYWORD_LET = "let";
+token KEYWORD_IN = "in";
+token KEYWORD_RANGE = "range";
+token KEYWORD_NEW = "new";
+token KEYWORD_OF = "of";
+token KEYWORD_AS = "as";
+token KEYWORD_IS = "is";
+token KEYWORD_CAST = "cast";
+token KEYWORD_FUNC = "func";
+token KEYWORD_TYPEOF = "typeof";
+token KEYWORD_TYPE = "type";
+token KEYWORD_BIND = "bind";
+token KEYWORD_OBSERVE = "observe";
+token KEYWORD_ON = "on";
+token KEYWORD_ATTACH = "attach";
+token KEYWORD_DETACH = "detach";
+token KEYWORD_VAR = "var";
+token KEYWORD_BREAK = "break";
+token KEYWORD_CONTINUE = "continue";
+token KEYWORD_RETURN = "return";
+token KEYWORD_DELETE = "delete";
+token KEYWORD_RAISE = "raise";
+token KEYWORD_IF = "if";
+token KEYWORD_ELSE = "else";
+token KEYWORD_SWITCH = "switch";
+token KEYWORD_CASE = "case";
+token KEYWORD_DEFAULT = "default";
+token KEYWORD_WHILE = "while";
+token KEYWORD_FOR = "for";
+token KEYWORD_REVERSED = "reversed";
+token KEYWORD_TRY = "try";
+token KEYWORD_CATCH = "catch";
+token KEYWORD_FINALLY = "finally";
+token KEYWORD_USING = "using";
+token KEYWORD_NAMESPACE = "namespace";
+token KEYWORD_MODULE = "module";
+token KEYWORD_UNIT = "unit";
+
+token NAME = "[a-zA-Z_]/w*";
+token ORDERED_NAME = "/$[0-9]*";
+token FLOAT = "/d+./d+";
+token INTEGER = "/d+";
+token STRING = "'([^'\\]|\\\.)*'|""([^""\\]|\\\.)*""";
+token FORMATSTRING = "/$('([^'\\]|\\\.)*'|""([^""\\]|\\\.)*"")";
+
+discardtoken SPACE = "/s+";
+
+rule Type WorkflowType
+	= "void" as PredefinedType with {name="Void"}
+	= "object" as PredefinedType with {name="Object"}
+	= "interface" as PredefinedType with {name="Interface"}
+	= "int" as PredefinedType with {name="Int"}
+	= "uint" as PredefinedType with {name="UInt"}
+	= "float" as PredefinedType with {name="Float"}
+	= "double" as PredefinedType with {name="Double"}
+	= "string" as PredefinedType with {name="String"}
+	= "char" as PredefinedType with {name="Char"}
+	= "bool" as PredefinedType with {name="Bool"}
+	= NAME : name as ReferenceType
+	= "func" "(" [WorkflowType : arguments {"," WorkflowType : arguments}] ")" ":" WorkflowType : result as FunctionType
+	= WorkflowType : element "*" as RawPointerType
+	= WorkflowType : element "^" as SharedPointerType
+	= WorkflowType : element "?" as NullableType
+	= WorkflowType : element "{" "}" as EnumerableType
+	= WorkflowType : value "[" [WorkflowType : key] "]" as MapType with {writability="Writable"}
+	= "const" WorkflowType : value "[" [WorkflowType : key] "]" as MapType with {writability="Readonly"}
+	= WorkflowType : parent "::" NAME : name as ChildType
+	= "::" NAME : name as TopQualifiedType
+	= "(" !WorkflowType ")"
+	;
+
+rule LiteralExpression Literal
+	= "null" as LiteralExpression with {value = "Null"}
+	= "true" as LiteralExpression with {value = "True"}
+	= "false" as LiteralExpression with {value = "False"}
+	;
+rule IntegerExpression Integer
+	= INTEGER : value as IntegerExpression
+	;
+rule FloatingExpression FloatingPoint
+	= FLOAT : value as FloatingExpression
+	;
+rule StringExpression String
+	= STRING : value as StringExpression
+	;
+rule FormatExpression FormatString
+	= FORMATSTRING : value as FormatExpression
+	;
+
+rule ConstructorArgument CtorFragment
+	= WorkflowExpression : key [ ":" WorkflowExpression : value] as ConstructorArgument
+	;
+
+rule LetVariable LetVariableFragment
+	= NAME : name "=" WorkflowExpression : value as LetVariable
+	;
+
+rule Expression ExpPrimitive
+	= !Literal
+	= !Integer
+	= !FloatingPoint
+	= !String
+	= !FormatString
+	= NAME : name as ReferenceExpression
+	= ORDERED_NAME : name as OrderedNameExpression
+	= "(" !WorkflowExpression ")"
+	= "[" WorkflowExpression : body "]" as OrderedLambdaExpression
+	= Function : function as FunctionExpression
+	= "let" LetVariableFragment : variables {"," LetVariableFragment : variables} "in" "(" WorkflowExpression : expression ")" as LetExpression
+	= "range"
+		(("(" with {beginBoundary = "Exclusive"}) | ("[" with {beginBoundary = "Inclusive"}))
+		WorkflowExpression : begin "," WorkflowExpression : end
+		((")" with {endBoundary = "Exclusive"}) | ("]" with {endBoundary = "Inclusive"}))
+		as RangeExpression
+	= "{" {CtorFragment : arguments} "}" as ConstructorExpression
+	= "new" WorkflowType : type
+		(
+			"(" [WorkflowExpression : arguments {"," WorkflowExpression : arguments}] ")" 
+			| "{" {Function : functions} "}"
+		) as NewTypeExpression
+	= "bind" "(" WorkflowExpression : expression ")" as BindExpression
+	= ExpPrimitive : parent "." "observe" "(" WorkflowExpression : expression ["on" WorkflowExpression : events {"," WorkflowExpression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
+	= ExpPrimitive : parent "." "observe" "as" NAME : name "(" WorkflowExpression : expression ["on" WorkflowExpression : events {"," WorkflowExpression : events}]")" as ObserveExpression with {observeType = "ExtendedObserve"}
+	= ExpPrimitive : function "(" [WorkflowExpression : arguments {"," WorkflowExpression : arguments}] ")" as CallExpression
+	= ExpPrimitive : parent "." NAME : name as MemberExpression
+	= ExpPrimitive : parent "::" NAME : name as ChildExpression
+	= ExpPrimitive : first "[" WorkflowExpression : second "]" as BinaryExpression with {op = "Index"}
+	= ExpPrimitive : element
+		(("in" with {test="In"}) | ("not" "in" with {test="NotIn"}))
+		WorkflowExpression : collection as SetTestingExpression
+	= ExpPrimitive : expression "of" WorkflowType : type as InferExpression
+	= ExpPrimitive : expression
+		(
+			(
+				(
+					("is" with {test="IsType"})
+					| ("is" "not" with {test="IsNotType"})
+				) WorkflowType : type as TypeTestingExpression
+			)
+			| ("is" "null" as TypeTestingExpression with {test="IsNull"})
+			| ("is" "not" "null" as TypeTestingExpression with {test="IsNotNull"})
+		)
+	= ExpPrimitive : expression "as" WorkflowType : type as TypeCastingExpression with {strategy = "Weak"}
+	= "typeof" "(" WorkflowType : type ")" as TypeOfTypeExpression
+	= "type" "(" WorkflowExpression : expression ")" as TypeOfExpressionExpression
+	= "attach" "(" WorkflowExpression : event "," WorkflowExpression : function ")" as AttachEventExpression
+	= "detach" "(" WorkflowExpression : handler ")" as DetachEventExpression
+	= "::" NAME : name as TopQualifiedExpression
+	;
+
+rule Expression Exp0
+	= !ExpPrimitive
+	= "+" Exp0 : operand as UnaryExpression with {op = "Positive"}
+	= "-" Exp0 : operand as UnaryExpression with {op = "Negative"}
+	= "not" Exp0 : operand as UnaryExpression with {op = "Not"}
+	= "cast" WorkflowType : type Exp0 : expression as TypeCastingExpression with {strategy = "Strong"}
+	;
+
+rule Expression Exp1
+	= !Exp0
+	= Exp1 : first "^" Exp0 : second as BinaryExpression with {op = "Exp"}
+	;
+rule Expression Exp2
+	= !Exp1
+	= Exp2 : first "*" Exp1 : second as BinaryExpression with {op = "Mul"}
+	= Exp2 : first "/" Exp1 : second as BinaryExpression with {op = "Div"}
+	= Exp2 : first "%" Exp1 : second as BinaryExpression with {op = "Mod"}
+	;
+rule Expression Exp3
+	= !Exp2
+	= Exp3 : first "+" Exp2 : second as BinaryExpression with {op = "Add"}
+	= Exp3 : first "-" Exp2 : second as BinaryExpression with {op = "Sub"}
+	= Exp3 : first "&" Exp2 : second as BinaryExpression with {op = "Concat"}
+	;
+rule Expression Exp4
+	= !Exp3
+	= Exp4 : first "shl" Exp3 : second as BinaryExpression with {op = "Shl"}
+	= Exp4 : first "shr" Exp3 : second as BinaryExpression with {op = "Shr"}
+	;
+rule Expression Exp5
+	= !Exp4
+	= Exp5 : first "<" Exp4 : second as BinaryExpression with {op = "LT"}
+	= Exp5 : first ">" Exp4 : second as BinaryExpression with {op = "GT"}
+	= Exp5 : first "<=" Exp4 : second as BinaryExpression with {op = "LE"}
+	= Exp5 : first ">=" Exp4 : second as BinaryExpression with {op = "GE"}
+	= Exp5 : first "==" Exp4 : second as BinaryExpression with {op = "EQ"}
+	= Exp5 : first "!=" Exp4 : second as BinaryExpression with {op = "NE"}
+	;
+rule Expression Exp6
+	= !Exp5
+	= Exp6 : first "xor" Exp5 : second as BinaryExpression with {op = "Xor"}
+	;
+rule Expression Exp7
+	= !Exp6
+	= Exp7 : first "and" Exp6 : second as BinaryExpression with {op = "And"}
+	;
+rule Expression Exp8
+	= !Exp7
+	= Exp8 : first "or" Exp7 : second as BinaryExpression with {op = "Or"}
+	;
+rule Expression Exp9
+	= !Exp8
+	= Exp9 : first "??" Exp8 : second as BinaryExpression with {op = "FailedThen"}
+	;
+rule Expression Exp10
+	= !Exp9
+	= Exp9 : condition "?" Exp10 : trueBranch ":" Exp10 : falseBranch as IfExpression
+	;
+rule Expression Exp11
+	= !Exp10
+	= Exp10 : first "=" Exp11 : second as BinaryExpression with {op = "Assign"}
+	;
+
+rule Expression WorkflowExpression
+	= !Exp11
+	;
+
+rule SwitchCase SwitchCaseFragment
+	= "case" WorkflowExpression : expression ":" Block : statement as SwitchCase
+	;
+
+rule Statement Block
+	= "{" {WorkflowStatement : statements} "}" as BlockStatement
+	;
+
+rule Statement WorkflowStatement
+	= !Block
+	= Variable : variable as VariableStatement
+	= "break" ";" as BreakStatement
+	= "continue" ";" as ContinueStatement
+	= "return" [WorkflowExpression : expression] ";" as ReturnStatement
+	= "delete" WorkflowExpression : expression ";" as DeleteStatement
+	= "raise" [WorkflowExpression : expression] ";" as RaiseExceptionStatement
+	= "if" "(" ["var" NAME : name ":" WorkflowType : type "="] WorkflowExpression : expression ")" Block : trueBranch ["else" Block : falseBranch] as IfStatement
+	= "switch" "(" WorkflowExpression : expression ")" "{" {SwitchCaseFragment : caseBranches} ["default" ":" Block : defaultBranch] "}" as SwitchStatement
+	= "while" "(" WorkflowExpression : condition ")" Block : statement as WhileStatement
+	= "for" "(" NAME : name 
+		(("in" with {direction="Normal"}) | ("in" "reversed" with {direction="Reversed"}))
+		WorkflowExpression : collection ")" Block : statement as ForEachStatement
+	= "try" Block : protectedStatement ["catch" "(" NAME : name ")" Block : catchStatement] ["finally" Block : finallyStatement] as TryStatement
+	= WorkflowExpression : expression ";" as ExpressionStatement
+	;
+
+rule NamespaceDeclaration Namespace
+	= "namespace" NAME : name "{" {WorkflowDeclaration : declarations} "}" as NamespaceDeclaration
+	;
+
+rule FunctionArgument FunctionArgumentFragment
+	= NAME : name ":" WorkflowType : type as FunctionArgument
+	;
+rule FunctionDeclaration Function
+	= "func" 
+		(
+			(NAME : name "(" with {anonymity="Named"})
+			| ("(" with {anonymity="Anonymous"})
+		)
+		[FunctionArgumentFragment : arguments {"," FunctionArgumentFragment : arguments}] ")" ":" WorkflowType : returnType Block : statement as FunctionDeclaration
+	;
+rule VariableDeclaration Variable
+	= "var" NAME : name [":" WorkflowType : type] "=" WorkflowExpression : expression ";" as VariableDeclaration
+	;
+
+rule Declaration WorkflowDeclaration
+	= !Namespace
+	= !Function
+	= !Variable
+	;
+
+rule ModuleUsingFragment UsingFragment
+	= NAME : name as ModuleUsingNameFragment
+	= "*" as ModuleUsingWildCardFragment
+	;
+rule ModuleUsingItem UsingItem
+	= UsingFragment : fragments {UsingFragment : fragments} as ModuleUsingItem
+	;
+rule ModuleUsingPath UsingPath
+	= "using" UsingItem : items {"::" UsingItem : items} ";" as ModuleUsingPath
+	;
+rule Module WorkflowModule
+	= (
+		("module" with {moduleType="Module"})
+		| ("unit" with {moduleType="Unit"})
+		) NAME : name ";" {UsingPath : paths} {WorkflowDeclaration : declarations} as Module
+	;

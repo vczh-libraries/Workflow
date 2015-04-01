@@ -1,0 +1,13 @@
+module test;
+using test::*;
+using system::*;
+
+func GetValue(value : ObservableValue^, increase : int, defaultValue : int):int
+{
+	return value.Value + increase ?? defaultValue;
+}
+
+func main():string
+{
+	return $"$(GetValue(null, 10, -1)), $(GetValue(new ObservableValue^(100), 10, -1))";
+}

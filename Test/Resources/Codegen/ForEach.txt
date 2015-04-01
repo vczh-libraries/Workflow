@@ -1,0 +1,42 @@
+module test;
+using system::*;
+
+func Show1(xs : int[]) : string
+{
+	var s = "";
+	for(x in xs)
+	{
+		if(s == "")
+		{
+			s = s & x;
+		}
+		else
+		{
+			s = s & ", " & x;
+		}
+	}
+	return s;
+}
+
+func Show2(xs : int[]) : string
+{
+	var s = "";
+	for(x in reversed xs)
+	{
+		if(s == "")
+		{
+			s = s & x;
+		}
+		else
+		{
+			s = s & ", " & x;
+		}
+	}
+	return s;
+}
+
+func main():string
+{
+	var xs = {1 2 3 4 5};
+	return "[" & Show1(xs) & "][" & Show2(xs) & "]";
+}
