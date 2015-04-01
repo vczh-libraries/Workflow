@@ -1,1 +1,1 @@
-..\..\..\..\Common\Tools\ParserGen.exe WfExpressionParser.parser.txt
+..\..\..\Tools\Tools\ParserGen.exe WfExpressionParser.parser.txt
