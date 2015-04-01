@@ -100,7 +100,7 @@ WString GetTestOutputPath()
 
 void LoadSampleIndex(const WString& sampleName, List<WString>& itemNames)
 {
-	FileStream fileStream(GetTestOutputPath() + L"Index" + sampleName + L".txt", FileStream::ReadOnly);
+	FileStream fileStream(GetTestResourcePath() + L"Index" + sampleName + L".txt", FileStream::ReadOnly);
 	BomDecoder decoder;
 	DecoderStream decoderStream(fileStream, decoder);
 	StreamReader reader(decoderStream);
@@ -114,9 +114,9 @@ void LoadSampleIndex(const WString& sampleName, List<WString>& itemNames)
 WString LoadSample(const WString& sampleName, const WString& itemName)
 {
 #if defined VCZH_MSVC
-	FileStream fileStream(GetTestOutputPath() + sampleName + L"\\" + itemName + L".txt", FileStream::ReadOnly);
+	FileStream fileStream(GetTestResourcePath() + sampleName + L"\\" + itemName + L".txt", FileStream::ReadOnly);
 #elif defined VCZH_GCC
-	FileStream fileStream(GetTestOutputPath() + sampleName + L"/" + itemName + L".txt", FileStream::ReadOnly);
+	FileStream fileStream(GetTestResourcePath() + sampleName + L"/" + itemName + L".txt", FileStream::ReadOnly);
 #endif
 	BomDecoder decoder;
 	DecoderStream decoderStream(fileStream, decoder);
@@ -527,10 +527,12 @@ int main()
 #endif
 {
 #if defined VCZH_MSVC
-	Folder folder(GetTestOutputPath());
-	if (!folder.Exists())
 	{
-		TEST_ASSERT(folder.Create(false) == true);
+		Folder folder(GetTestOutputPath());
+		if (!folder.Exists())
+		{
+			TEST_ASSERT(folder.Create(false) == true);
+		}
 	}
 #endif
 	LoadTypes();
