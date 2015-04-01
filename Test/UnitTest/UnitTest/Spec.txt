@@ -1,0 +1,120 @@
+ReferenceType* means pointer
+ReferenceType^ means smart pointer
+int[] is ValueList^
+int[string] is ValueDictionary^
+int{} is ValueEnumerable^
+func(string, string):int is ValueFunction^
+int -> Int32/64
+uint -> UInt32/64
+system::XmlNode::IVisitor
+
+captured variable cannot be modified
+struct fields cannot be modified
+argument cannot be modified
+======================================================
++ - not x[y]
+^
+* /
++ - &(for string concatination)
+shl shr
+< > <= >= != ==
+xor
+and
+or
+?? (if a failed or null then b)
+----------------------------
+"String" // can be implicitly converted to all other serializable types
+$"1 + 2 = $(1 + 2)"
+' and " is exchangable, '' in 'string' means ''', "" in "string" means '"'
+true false null
+----------------------------
+let x = expression in expression
+condition ? true_branch : false_branch
+x [not] in range (a, b) | [a, b) | (a, b] | [a, b]
+x [not] in collection
+----------------------------
+// the meaning of the following patterns of expression dependes on the destination type
+{a b c d}
+{a:b c:d}
+"Spring"
+"Spring | Summer | Autumn | Winter"
+----------------------------
+{a b c d} of int[]
+{a:b c:d e:f} of int[string]
+{x:10 y:20} of Point
+----------------------------
+new int[]
+new int[string]
+new Type(arguments)
+new Fuckable
+{
+	func Fuck():void
+	{
+		raise "I am not ready yet.";
+	}
+}
+----------------------------
+x(y)
+x(x, y, z)
+x.y
+Type::StaticMethod
+[$+1]
+[$1+$2]
+func (a : Type, b : Type) : Type <statement>
+----------------------------
+shared_ptr(T*) -> T^
+expression of Type				// infer
+cast Type expression			// cast, exception if failed
+expression as Type				// cast, null if failed
+expression is [not] Type		// test
+expression is [not] null		// test
+----------------------------
+attach(event, function)
+detach(handler)
+typeof(type)
+type(expression)
+======================================================
+bind(expression)										// analyze "expression" and return an instance of ValueSuscription
+x.y.observe(z).u.v										// subscribe x.y.zChanged with the value of x.y.z.u.v
+x.y.observe(z on zUpdated).u.v							// subscribe x.y.zUpdated (if exists) or <current-scope>.zUpdated (if x.y.zUpdated not exists) additionally
+x.y.observe as source(source.z on source.zUpdated).u.v	// equivalent
+x.y.observe as source(source.z.u.v on source.zUpdated)	// equivalent
+
+code in lambda expression will not be analyzed and subscribe
+
+bind(x.y.z)
+	== bind(x.y.observe(z on zChanged))
+bind(a.b.c() ? d.e : f g)
+	== bind(a.observe(b on bChanged).c()?d.observe(e on eChanged):f.observe(g on gChanged))
+	== bind(a.observe as _a(_a.b.c()?d.observe as _d(_d.e on _d.eChanged):f.observe as _f(_f.g on _f.gChanged) on _a.bChanged))
+======================================================
+{ statement ... }
+
+var Name [: Type] = <expression>;
+<left-value> = <right-value>;
+break;
+continue;
+return [<expression>];
+delete [<expression>];
+raise <expression>;
+
+if ([var Name : Type = ] <expression>) <statement> [else <statement>]
+switch (<expression>)
+{
+	{case <expression> : <statement>}
+	[default : <statement>]
+}
+
+while (condition) <statement>
+for (x in (<collection> | [reversed] <range>)) <statement>
+
+try <statement> [catch(ex) <statement>] [finally <statement>]
+	
+======================================================
+func Name(a : Type, b : Type) : Type <statement>
+namespace Name { ... }
+======================================================
+module <module-name>
+using <type-path>; // can contain class
+
+...
