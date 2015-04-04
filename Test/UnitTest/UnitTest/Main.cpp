@@ -1,7 +1,4 @@
 #ifdef _MSC_VER
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
 #include <windows.h>
 #endif
 
@@ -540,7 +537,7 @@ int main()
 	UnloadTypes();
 	workflowTable = 0;
 	ThreadLocalStorage::DisposeStorages();
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
 	return 0;
