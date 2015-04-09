@@ -233,45 +233,68 @@ Instruction
 Assembly
 ***********************************************************************/
 
+			/// <summary>Representing a compiled function.</summary>
 			class WfAssemblyFunction : public Object
 			{
 			public:
+				/// <summary>Name of the function.</summary>
 				WString												name;
+				/// <summary>Argument names of the function. This index is for accessing [F:vl.workflow.runtime.WfRuntimeVariableContext.variables] in [F:vl.workflow.runtime.WfRuntimeCallStackInfo.arguments] when debugging.</summary>
 				collections::List<WString>							argumentNames;
+				/// <summary>Captured variable names of the function. This index is for accessing [F:vl.workflow.runtime.WfRuntimeVariableContext.variables] in [F:vl.workflow.runtime.WfRuntimeCallStackInfo.captured] when debugging.</summary>
 				collections::List<WString>							capturedVariableNames;
+				/// <summary>Local variable names of the function. This index is for accessing [F:vl.workflow.runtime.WfRuntimeVariableContext.variables] in [F:vl.workflow.runtime.WfRuntimeCallStackInfo.localVariableNames] when debugging.</summary>
 				collections::List<WString>							localVariableNames;
+				/// <summary>First instruction index of the function. This index is for accessing [F:vl.workflow.runtime.WfAssembly.instructions].</summary>
 				vint												firstInstruction = -1;
+				/// <summary>Last instruction index of the function. This index is for accessing [F:vl.workflow.runtime.WfAssembly.instructions].</summary>
 				vint												lastInstruction = -1;
 			};
 
+			/// <summary>Representing debug informations.</summary>
 			class WfInstructionDebugInfo : public Object
 			{
 			public:
 
+				/// <summary>Module codes.</summary>
 				collections::List<WString>							moduleCodes;				// codeIndex -> code
+				/// <summary>Mapping information from every instruction to code. Use[F:vl.parsing.ParsingTextRange.codeIndex] for accessing <see cref="moduleCodes"/>.</summary>
 				collections::List<parsing::ParsingTextRange>		instructionCodeMapping;		// instruction -> range
+				/// <summary>Mapping information from every row in codes to instructions. Value of the key is (codeIndex, row).</summary>
 				collections::Group<Tuple<vint, vint>, vint>			codeInstructionMapping;		// (codeIndex, row) -> instruction [generated]
 
 				void												Initialize();
 			};
 
+			/// <summary>Representing a Workflow assembly.</summary>
 			class WfAssembly : public Object, public reflection::Description<WfAssembly>
 			{
 			protected:
 				template<typename TIO>
 				void IO(TIO& io);
 			public:
+				/// <summary>Debug informations using the module code.</summary>
 				Ptr<WfInstructionDebugInfo>							insBeforeCodegen;
+				/// <summary>Debug informations using the module code from generated syntax trees from the final compiling pass.</summary>
 				Ptr<WfInstructionDebugInfo>							insAfterCodegen;
+				/// <summary>Global variable names. This index is for accessing [F:vl.workflow.runtime.WfRuntimeVariableContext.variables] in [F:vl.workflow.runtime.WfRuntimeCallStackInfo.global] when debugging.</summary>
 				collections::List<WString>							variableNames;
+				/// <summary>Mapping from function names to function indexes for accessing <see cref="functions"/>.</summary>
 				collections::Group<WString, vint>					functionByName;
+				/// <summary>Functions.</summary>
 				collections::List<Ptr<WfAssemblyFunction>>			functions;
+				/// <summary>Instructions.</summary>
 				collections::List<WfInstruction>					instructions;
 
+				/// <summary>Create an empty assembly.</summary>
 				WfAssembly();
+				/// <summary>Deserialize an assembly.</summary>
+				/// <param name="input">Serialized binary data.</param>
 				WfAssembly(stream::IStream& input);
 				
 				void												Initialize();
+				/// <summary>Serialize an assembly.</summary>
+				/// <param name="output">Serialized binary data.</param>
 				void												Serialize(stream::IStream& output);
 			};
 
@@ -287,12 +310,15 @@ RuntimeEnvironment
 				VariableArray					variables;
 			};
 
+			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "<initialize>" should be the first to execute.</summary>
 			class WfRuntimeGlobalContext : public Object
 			{
 			public:
 				Ptr<WfAssembly>					assembly;
 				Ptr<WfRuntimeVariableContext>	globalVariables;
-
+				
+				/// <summary>Create a global context for executing a Workflow program.</summary>
+				/// <param name="_assembly>The assembly.</param>
 				WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly);
 			};
 
@@ -317,6 +343,7 @@ RuntimeEnvironment
 RuntimeException
 ***********************************************************************/
 
+			/// <summary>Representing a call stack item.</summary>
 			class WfRuntimeCallStackInfo : public Object, public virtual reflection::description::IValueCallStack
 			{
 				using IValueReadonlyDictionary = reflection::description::IValueReadonlyDictionary;
@@ -332,25 +359,44 @@ RuntimeException
 				WfRuntimeCallStackInfo(WfRuntimeThreadContext* context, const WfRuntimeStackFrame& stackFrame);
 				~WfRuntimeCallStackInfo();
 
+				/// <summary>The executing assembly.</summary>
 				Ptr<WfAssembly>					assembly;
+				/// <summary>Global variable values.</summary>
 				Ptr<WfRuntimeVariableContext>	global;
+				/// <summary>Captured variable values.</summary>
 				Ptr<WfRuntimeVariableContext>	captured;
+				/// <summary>Argument values.</summary>
 				Ptr<WfRuntimeVariableContext>	arguments;
+				/// <summary>Local variable values.</summary>
 				Ptr<WfRuntimeVariableContext>	localVariables;
+				/// <summary>The executing function.</summary>
 				vint							functionIndex = -1;
+				/// <summary>The executing instruction.</summary>
 				vint							instruction = -1;
 
 				Ptr<IValueReadonlyDictionary>	GetLocalVariables()override;
 				Ptr<IValueReadonlyDictionary>	GetLocalArguments()override;
 				Ptr<IValueReadonlyDictionary>	GetCapturedVariables()override;
 				Ptr<IValueReadonlyDictionary>	GetGlobalVariables()override;
+
+				/// <summary>Get the name of the executing function.</summary>
+				/// <returns>The name of the execution function.</summary>
 				WString							GetFunctionName()override;
+				/// <summary>Get the source code of the executing module.</summary>
+				/// <returns>The source code.</returns>
 				WString							GetSourceCodeBeforeCodegen()override;
+				/// <summary>Get the source code of the executing module from generated syntax trees from the final compiling pass.</summary>
+				/// <returns>The source code.</returns>
 				WString							GetSourceCodeAfterCodegen()override;
+				/// <summary>Get the row number (starts at 0) of the source code of the executing module.</summary>
+				/// <returns>The row number.</returns>
 				vint							GetRowBeforeCodegen()override;
+				/// <summary>Get the row number (starts at 0) of the source code of the executing module from generated syntax trees from the final compiling pass.</summary>
+				/// <returns>The row number.</returns>
 				vint							GetRowAfterCodegen()override;
 			};
-
+			
+			/// <summary>Representing an raised exception.</summary>
 			class WfRuntimeExceptionInfo : public Object, public virtual reflection::description::IValueException
 			{
 				typedef collections::List<Ptr<WfRuntimeCallStackInfo>>		CallStackList;
@@ -359,8 +405,11 @@ RuntimeException
 				Ptr<IValueReadonlyList>			cachedCallStack;
 
 			public:
+				/// <summary>Exception message.</summary>
 				WString							message;
+				/// <summary>Fatal error flag.</summary>
 				bool							fatal = false;
+				/// <summary>All call stack items.</summary>
 				CallStackList					callStack;
 
 				WfRuntimeExceptionInfo(const WString& _message, bool _fatal);
@@ -375,7 +424,8 @@ RuntimeException
 				bool							GetFatal()override;
 				Ptr<IValueReadonlyList>			GetCallStack()override;
 			};
-
+			
+			/// <summary>Representing an raised exception object for upper level C++ code.</summary>
 			class WfRuntimeException : public reflection::description::TypeDescriptorException
 			{
 			protected:
@@ -395,11 +445,15 @@ RuntimeException
 				{
 				}
 
+				/// <summary>Get the detailed information.</summary>
+				/// <returns>The detailed information.</returns>
 				Ptr<WfRuntimeExceptionInfo> GetInfo()const
 				{
 					return info;
 				}
 
+				/// <summary>Get the fatal error flag.</summary>
+				/// <returns>Returns true if this exception is a fatal error, which normally means state corruption in a Workflow runtime.</returns>
 				bool IsFatal()const
 				{
 					return fatal;
@@ -486,13 +540,20 @@ RuntimeThreadContext
 Debugger
 ***********************************************************************/
 
+			/// <summary>Break point action.</summary>
 			class IWfBreakPointAction : public virtual Interface
 			{
 			public:
+				/// <summary>Called a break point is about to activate.</summary>
+				/// <returns>Returns false to skip this break point.</returns>
+				/// <param name="debugger">The current attached debugger.</param>
 				virtual bool					EvaluateCondition(WfDebugger* debugger) = 0;
+				/// <summary>Called when a break point is about to activate, even <see cref="EvaluateCondition"/> returns false.</summary>
+				/// <param name="debugger">The current attached debugger.</param>
 				virtual void					PostAction(WfDebugger* debugger) = 0;
 			};
 
+			/// <summary>Break point.</summary>
 			struct WfBreakPoint
 			{
 				enum Type
@@ -530,14 +591,56 @@ Debugger
 					reflection::description::ITypeDescriptor*	typeDescriptor;
 				};
 
+				/// <summary>Create an instruction break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="assembly">The assembly that contains the instruction.</summary>
+				/// <param name="instruction">The index of the instruction.</param>
 				static WfBreakPoint								Ins(WfAssembly* assembly, vint instruction);
+				
+				/// <summary>Create an global variable reading break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="assembly">The assembly that contains the instruction.</summary>
+				/// <param name="variable">The index of the global variable.</param>
 				static WfBreakPoint								Read(WfAssembly* assembly, vint variable);
+				
+				/// <summary>Create an global variable writing break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="variable">The index of the global variable.</param>
 				static WfBreakPoint								Write(WfAssembly* assembly, vint variable);
+				
+				/// <summary>Create an property reading break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
+				/// <param name="propertyInfo">The property.</param>
 				static WfBreakPoint								Get(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo);
+				
+				/// <summary>Create an property writing break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
+				/// <param name="propertyInfo">The property.</param>
 				static WfBreakPoint								Set(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo);
+				
+				/// <summary>Create an event attaching break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
+				/// <param name="eventInfo">The event.</param>
 				static WfBreakPoint								Attach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
+				
+				/// <summary>Create an event detaching break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
+				/// <param name="eventInfo">The event.</param>
 				static WfBreakPoint								Detach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
+				
+				/// <summary>Create an function invoking break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
+				/// <param name="methodInfo">The function.</param>
 				static WfBreakPoint								Invoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo);
+				
+				/// <summary>Create an object creating break point.</summary>
+				/// <returns>The created break point.</summary>
+				/// <param name="typeDescriptor">The target object type.</param>
 				static WfBreakPoint								Create(reflection::description::ITypeDescriptor* typeDescriptor);
 			};
 
@@ -559,6 +662,7 @@ Debugger
 				virtual bool					WaitForContinue() = 0;
 			};
 
+			/// <summary>Workflow debugger.</summary>
 			class WfDebugger : public Object, protected virtual IWfDebuggerCallback
 			{
 				friend IWfDebuggerCallback* GetDebuggerCallback(WfDebugger* debugger);
@@ -633,8 +737,11 @@ Debugger
 				MethodBreakPointMap						invokeMethodBreakPoints;
 				TypeBreakPointMap						createObjectBreakPoints;
 
+				/// <summary>Called for doing something when a break point is activated. This function will be called multiple times before some one let the debugger to continue.</summary>
 				virtual void							OnBlockExecution();
+				/// <summary>Called when a new Workflow program is about to run.</summary>
 				virtual void							OnStartExecution();
+				/// <summary>Called when a Workflow program is stopped by any reason.</summary>
 				virtual void							OnStopExecution();
 				
 				InstructionLocation						MakeCurrentInstructionLocation();
@@ -656,44 +763,109 @@ Debugger
 				bool									BreakException(Ptr<WfRuntimeExceptionInfo> info)override;
 				bool									WaitForContinue()override;
 			public:
+				/// <summary>Create a debugger.</summary>
 				WfDebugger();
 				~WfDebugger();
 
+				/// <summary>Add a new break point.</summary>
+				/// <returns>Returns the index of this break point. Returns -1 if failed.</returns>
+				/// <param name="breakPoint">The break point.</param>
 				vint									AddBreakPoint(const WfBreakPoint& breakPoint);
+				/// <summary>Add a new source code break point.</summary>
+				/// <returns>Returns the index of this break point. Returns -1 if failed.</returns>
+				/// <param name="assembly">The assembly.</param>
+				/// <param name="codeIndex">The code index of a module.</param>
+				/// <param name="row">The row number, starts from 0.</param>
+				/// <param name="beforeCodegen">Set to true to apply source code information to original source code.</param>
 				vint									AddCodeLineBreakPoint(WfAssembly* assembly, vint codeIndex, vint row, bool beforeCodegen = true);
+				/// <summary>Get the number of all break points.</summary>
+				/// <returns>The number of all break points.</returns>
 				vint									GetBreakPointCount();
+				/// <summary>Get a specified break point.</summary>
+				/// <returns>The break point.</returns>
+				/// <param name="index">The index of the break point.</param>
 				const WfBreakPoint&						GetBreakPoint(vint index);
+				/// <summary>Delete a specified break point.</summary>
+				/// <returns>Returns true if this operation is succeeded.</returns>
+				/// <param name="index">The index of the break point.</param>
 				bool									RemoveBreakPoint(vint index);
+				/// <summary>Enable or disable a specified break point.</summary>
+				/// <returns>Returns true if this operation is succeeded.</returns>
+				/// <param name="index">The index of the break point.</param>
+				/// <param name="enabled">Set to true to enable a break point.</param>
 				bool									EnableBreakPoint(vint index, bool enabled);
+				/// <summary>Test if the exception break point is enabled or not.</summary>
+				/// <returns>Returns true if the exception break point is enabled.</returns>
 				bool									GetBreakException();
+				/// <summary>Enable or disable the exception break point.</summary>
+				/// <param name="value">Set to true to enable the exception break point.</param>
 				void									SetBreakException(bool value);
 
+				/// <summary>Continue to run the Workflow program.</summary>
+				/// <returns>Returns true if this operation is succeeded.</returns>
 				bool									Run();
+				/// <summary>Pause the Workflow program.</summary>
+				/// <returns>Returns true if this operation is succeeded.</returns>
 				bool									Pause();
+				/// <summary>Stop the Workflow program.</summary>
+				/// <returns>Returns true if this operation is succeeded.</returns>
 				bool									Stop();
+				/// <summary>Run until reached the next row in the same function or outside of this function.</summary>
+				/// <returns>Returns true if this operation is succeeded.</returns>
+				/// <param name="beforeCodegen">Set to true to apply the source code information to original source code.</param>
 				bool									StepOver(bool beforeCodegen = true);
+				/// <summary>Run until reached the next row.</summary>
+				/// <returns>Returns true if this operation is succeeded.</returns>
+				/// <param name="beforeCodegen">Set to true to apply the source code information to original source code.</param>
 				bool									StepInto(bool beforeCodegen = true);
+				/// <summary>Get the current state of the debugger.</summary>
+				/// <returns>The state of the debugger.</returns>
 				State									GetState();
+				/// <summary>Get the running type of the debugger.</summary>
+				/// <returns>The running type of the debugger.</returns>
 				RunningType								GetRunningType();
+				/// <summary>Get the index of the last activated break point.</summary>
+				/// <returns>The index of the last activated break point.</returns>
 				vint									GetLastActivatedBreakPoint();
 
 				const ThreadContextList&				GetThreadContexts();
 				WfRuntimeThreadContext*					GetCurrentThreadContext();
+				/// <summary>Get the current position of the executing instruction in the source code.</summary>
+				/// <returns>The current position in the source code.</returns>
+				/// <param name="beforeCodegen">Set to true to apply the source code information to original source code.</param>
+				/// <param name="context">Specify a thread context. Set to null to use the top thread context.</param>
+				/// <param name="callStackIndex">Specify a call stack index. Set to null to use the top call stack item of the specified thread context.</param>
 				const parsing::ParsingTextRange&		GetCurrentPosition(bool beforeCodegen = true, WfRuntimeThreadContext* context = nullptr, vint callStackIndex = -1);
+				/// <summary>Get the variable value by name in the current scope.</summary>
+				/// <returns>The value.</returns>
+				/// <param name="name">The name.</param>
+				/// <param name="context">Specify a thread context. Set to null to use the top thread context.</param>
+				/// <param name="callStackIndex">Specify a call stack index. Set to null to use the top call stack item of the specified thread context.</param>
 				reflection::description::Value			GetValueByName(const WString& name, WfRuntimeThreadContext* context = nullptr, vint callStackIndex = -1);
 			};
 
 			extern IWfDebuggerCallback*					GetDebuggerCallback();
 			extern IWfDebuggerCallback*					GetDebuggerCallback(WfDebugger* debugger);
+			
+			/// <summary>Get the debugger for the current thread.</summary>
+			/// <returns>The debugger.</returns>
 			extern Ptr<WfDebugger>						GetDebuggerForCurrentThread();
+			/// <summary>Set the debugger for the current thread.</summary>
+			/// <param name="debugger">The debugger.</param>
 			extern void									SetDebugferForCurrentThread(Ptr<WfDebugger> debugger);
 
 /***********************************************************************
 Helper Functions
 ***********************************************************************/
-
+			
+			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "<initialize>" should be the first to execute.</summary>
+			/// <returns>The loaded function.</returns>
+			/// <param name="name">The function name.</param>
 			extern Ptr<reflection::description::IValueFunctionProxy>		LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name);
-
+			
+			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "<initialize>" should be the first to execute.</summary>
+			/// <returns>The loaded C++ friendly function.</returns>
+			/// <param name="name">The function name.</param>
 			template<typename TFunction>
 			Func<TFunction> LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name)
 			{

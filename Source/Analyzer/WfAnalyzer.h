@@ -114,6 +114,7 @@ Scope Manager
 				WString										GetFriendlyName()const;
 			};
 
+			/// <summary>Workflow compiler.</summary>
 			class WfLexicalScopeManager : public Object
 			{
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
@@ -154,16 +155,33 @@ Scope Manager
 				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbol in an lambda expression
 				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbol in an lambda expression
 
+				/// <summary>Create a Workflow compiler.</summary>
+				/// <param name="_parserTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
 				WfLexicalScopeManager(Ptr<parsing::tabling::ParsingTable> _parsingTable);
 				~WfLexicalScopeManager();
 				
+				/// <summary>Add a Workflow module. Syntax errors can be found at <see cref="errors"/>.</summary>
+				/// <param name="moduleCode">The source code of a workflow module.</param>
+				/// <returns>Returns the code index, which is a number representing a module in data structured used in Workflow compiler, runtime and debugger.</returns>
 				vint										AddModule(const WString& moduleCode);
+				/// <summary>Add a Workflow module.</summary>
+				/// <param name="module">The syntax tree of a workflow module.</param>
+				/// <returns>Returns the code index, which is a number representing a module in data structured used in Workflow compiler, runtime and debugger.</returns>
 				vint										AddModule(Ptr<WfModule> module);
+				/// <summary>Get all added modules.</summary>
+				/// <returns>All added modules.</returns>
 				ModuleList&									GetModules();
+				/// <summary>Get all module codes. If a module is added from a syntax tree, then the source code is empty.</summary>
+				/// <returns>All module codes.</returns>
 				ModuleCodeList&								GetModuleCodes();
 
+				/// <summary>Clean compiling results.</summary>
+				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types.</param>
+				/// <param name="deleteModules">Set to true to delete all added modules.</param>
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
 				bool										CheckScopes();
+				/// <summary>Compile.</summary>
+				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
 				void										Rebuild(bool keepTypeDescriptorNames);
 				void										ResolveSymbol(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalSymbol>>& symbols);
 				void										ResolveScopeName(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalScopeName>>& names);
@@ -380,8 +398,25 @@ Code Generation
 			extern void										GenerateTypeCastInstructions(WfCodegenContext& context, Ptr<reflection::description::ITypeInfo> expectedType, bool strongCast, WfExpression* node);
 			extern void										GenerateTypeTestingInstructions(WfCodegenContext& context, Ptr<reflection::description::ITypeInfo> expectedType, WfExpression* node);
 			extern runtime::WfInsType						GetInstructionTypeArgument(Ptr<reflection::description::ITypeInfo> expectedType);
+
+			/// <summary>Generate an assembly from a compiler. [M:vl.workflow.analyzer.WfLexicalScopeManager.Rebuild] should be called before using this function.</summary>
+			/// <returns>The generated assembly.</returns>
+			/// <param name="manager">The Workflow compiler.</param>
 			extern Ptr<runtime::WfAssembly>					GenerateAssembly(WfLexicalScopeManager* manager);
+
+			/// <summary>Compile a Workflow program.</summary>
+			/// <returns>The generated assembly.</returns>
+			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
+			/// <param name="manager">The workflow compiler to reuse the cache of C++ reflectable types.</param>
+			/// <param name="moduleCodes">All workflow module codes.</param>
+			/// <param name="errors">Container to get all compileing errors.</param>
 			extern Ptr<runtime::WfAssembly>					Compile(Ptr<parsing::tabling::ParsingTable> table, WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors);
+			
+			/// <summary>Compile a Workflow program.</summary>
+			/// <returns>The generated assembly.</returns>
+			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
+			/// <param name="moduleCodes">All workflow module codes.</param>
+			/// <param name="errors">Container to get all compileing errors.</param>
 			extern Ptr<runtime::WfAssembly>					Compile(Ptr<parsing::tabling::ParsingTable> table, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors);
 
 /***********************************************************************
