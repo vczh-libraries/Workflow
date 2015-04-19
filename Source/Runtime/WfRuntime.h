@@ -605,6 +605,7 @@ Debugger
 				
 				/// <summary>Create an global variable writing break point.</summary>
 				/// <returns>The created break point.</returns>
+				/// <param name="assembly">The assembly that contains the instruction.</param>
 				/// <param name="variable">The index of the global variable.</param>
 				static WfBreakPoint								Write(WfAssembly* assembly, vint variable);
 				
@@ -860,11 +861,14 @@ Helper Functions
 			
 			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
 			/// <returns>The loaded function.</returns>
+			/// <param name="context">The context to the evaluation environment.</param>
 			/// <param name="name">The function name.</param>
 			extern Ptr<reflection::description::IValueFunctionProxy>		LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name);
 			
 			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
+			/// <typeparam name="TFunction">Type of the function.</typeparam>
 			/// <returns>The loaded C++ friendly function.</returns>
+			/// <param name="context">The context to the evaluation environment.</param>
 			/// <param name="name">The function name.</param>
 			template<typename TFunction>
 			Func<TFunction> LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name)

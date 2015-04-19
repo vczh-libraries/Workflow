@@ -156,7 +156,7 @@ Scope Manager
 				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbol in an lambda expression
 
 				/// <summary>Create a Workflow compiler.</summary>
-				/// <param name="_parserTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
+				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
 				WfLexicalScopeManager(Ptr<parsing::tabling::ParsingTable> _parsingTable);
 				~WfLexicalScopeManager();
 				
