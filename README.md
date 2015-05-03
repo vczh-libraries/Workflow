@@ -18,20 +18,20 @@ The documentation for this library has not been done yet. Currently you can refe
 ### Getting Started
 Here is a simple tutorial to integrate this scripting system to your C++ project:
 
-* Call **vl::workflow::analyzer::Compile** to compile multiple script files in memory to a **Ptr<vl::workflow::runtime::WfAssembly>**.
+* Call **vl::workflow::analyzer::Compile** to compile multiple script files in memory to a **Ptr < vl::workflow::runtime::WfAssembly >**.
     * Call **WfAssembly::Serialize** to serialize the compiled assembly to a stream in binary format. If you provide a **vl::stream::FileStream** you can write the assembly to a file.
     * Call the constructor **WfAssembly::WfAssembly** to load a previous compiled assembly from a stream. If you provide a **vl::stream::FileStream** you can read the assembly from a file.
 * Create a **vl::workflow::runtime::WfRuntimeGlobalContext** from the assembly before running script functions. This context class act as the execution environment for the script to share the global variables. If you create multiple context instances, you will get multiple separated environments for global variables.
-* Use **vl::workflow::runtime::LoadFunction** to load a script function to a strong-typed functor or a weak-typed **Ptr<vl::reflection::description::IValueFunctionProxy>**. After that you can run functions in script.
-    * Use **LoadFunction<void()>(globalContext, L"<initialize>") to get the initialize function. This function should be called before using any other script function with the same global context.
-    * The type T in LoadFunction<T> is decided by the declaration of the script function. For example, if you write the script function like this:
+* Use **vl::workflow::runtime::LoadFunction** to load a script function to a strong-typed functor or a weak-typed **Ptr < vl::reflection::description::IValueFunctionProxy >**. After that you can run functions in script.
+    * Use **LoadFunction < void() > (globalContext, L"<initialize>") to get the initialize function. This function should be called before using any other script function with the same global context.
+    * The type T in LoadFunction < T > is decided by the declaration of the script function. For example, if you write the script function like this:
     ```
     func Main(input : int[]) : int
     {
         return input.Count;
     }
     ```
-    Then you can called **LoadFunction<int(vl::collections::List<int>&)>(globalContext, L"Main")** to load the function.
+    Then you can called **LoadFunction < int(vl::collections::List < int > &) > (globalContext, L"Main")** to load the function.
 
 ### Getting Started with Debuggable Scripts
 * Use **vl::workflow::runtime::SetDebuggerForCurrentThread** to set a debugger. This debugger will be automatically activated if there is a script function running in this thread, and only for this thread. You should set different debuggers for different threads if you really want multi-threading execution (normally you don't need to do that).
