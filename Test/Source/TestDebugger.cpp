@@ -188,12 +188,12 @@ using namespace debugger_helper;
 
 TEST_CASE(TestDebugger_NoBreakPoint)
 {
-	SetDebugferForCurrentThread(new WfDebugger);
+	SetDebuggerForCurrentThread(new WfDebugger);
 	auto context = CreateThreadContextFromSample(L"HelloWorld");
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<WString()>(context, L"Main")();
 	TEST_ASSERT(result == L"Hello, world!");
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 namespace debugger_helper
@@ -285,7 +285,7 @@ TEST_CASE(TestDebugger_CodeLineBreakPoint)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Assignment");
 	auto assembly = context->assembly.Obj();
@@ -296,7 +296,7 @@ TEST_CASE(TestDebugger_CodeLineBreakPoint)
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<WString()>(context, L"Main")();
 	TEST_ASSERT(result == L"three");
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_Stop)
@@ -313,7 +313,7 @@ TEST_CASE(TestDebugger_Stop)
 			TEST_ASSERT(debugger->GetState() == WfDebugger::RequiredToStop);
 			debugger->Continue();
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Assignment");
 	auto assembly = context->assembly.Obj();
@@ -329,7 +329,7 @@ TEST_CASE(TestDebugger_Stop)
 	{
 		TEST_ASSERT(ex.Message() == L"Internal error: Debugger stopped the program.");
 	}
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_StepOver1)
@@ -357,7 +357,7 @@ TEST_CASE(TestDebugger_StepOver1)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Assignment");
 	auto assembly = context->assembly.Obj();
@@ -365,7 +365,7 @@ TEST_CASE(TestDebugger_StepOver1)
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<WString()>(context, L"Main")();
 	TEST_ASSERT(result == L"three");
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_StepOver2)
@@ -393,7 +393,7 @@ TEST_CASE(TestDebugger_StepOver2)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Function");
 	auto assembly = context->assembly.Obj();
@@ -401,7 +401,7 @@ TEST_CASE(TestDebugger_StepOver2)
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<WString()>(context, L"Main")();
 	TEST_ASSERT(result == L"three");
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_StepOver3)
@@ -429,7 +429,7 @@ TEST_CASE(TestDebugger_StepOver3)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Event");
 	auto assembly = context->assembly.Obj();
@@ -437,7 +437,7 @@ TEST_CASE(TestDebugger_StepOver3)
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<vint()>(context, L"Main")();
 	TEST_ASSERT(result == 3);
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_StepInto1)
@@ -465,7 +465,7 @@ TEST_CASE(TestDebugger_StepInto1)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Assignment");
 	auto assembly = context->assembly.Obj();
@@ -473,7 +473,7 @@ TEST_CASE(TestDebugger_StepInto1)
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<WString()>(context, L"Main")();
 	TEST_ASSERT(result == L"three");
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_StepInto2)
@@ -501,7 +501,7 @@ TEST_CASE(TestDebugger_StepInto2)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Function");
 	auto assembly = context->assembly.Obj();
@@ -509,7 +509,7 @@ TEST_CASE(TestDebugger_StepInto2)
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<WString()>(context, L"Main")();
 	TEST_ASSERT(result == L"three");
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_StepInto3)
@@ -537,7 +537,7 @@ TEST_CASE(TestDebugger_StepInto3)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Event");
 	auto assembly = context->assembly.Obj();
@@ -545,7 +545,7 @@ TEST_CASE(TestDebugger_StepInto3)
 	LoadFunction<void()>(context, L"<initialize>")();
 	auto result = LoadFunction<vint()>(context, L"Main")();
 	TEST_ASSERT(result == 3);
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_OperationBreakPoint)
@@ -588,13 +588,13 @@ TEST_CASE(TestDebugger_OperationBreakPoint)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Operation");
 
 	LoadFunction<void()>(context, L"<initialize>")();
 	LoadFunction<void()>(context, L"Main")();
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_OperationBreakPoint2)
@@ -654,13 +654,13 @@ TEST_CASE(TestDebugger_OperationBreakPoint2)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"Operation");
 
 	LoadFunction<void()>(context, L"<initialize>")();
 	LoadFunction<void()>(context, L"Main")();
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 namespace debugger_internal
@@ -716,7 +716,7 @@ TEST_CASE(TestDebugger_Exception1)
 			debugger->BeginExecution(false);
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"RaiseException");
 
@@ -732,7 +732,7 @@ TEST_CASE(TestDebugger_Exception1)
 		TEST_ASSERT(ex.IsFatal() == false);
 		AssertException(ex.GetInfo(), true);
 	}
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_Exception2)
@@ -752,7 +752,7 @@ TEST_CASE(TestDebugger_Exception2)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"RaiseException");
 
@@ -768,7 +768,7 @@ TEST_CASE(TestDebugger_Exception2)
 		TEST_ASSERT(ex.IsFatal() == false);
 		AssertException(ex.GetInfo(), true);
 	}
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_Exception3)
@@ -788,7 +788,7 @@ TEST_CASE(TestDebugger_Exception3)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"RaiseException");
 
@@ -804,7 +804,7 @@ TEST_CASE(TestDebugger_Exception3)
 		TEST_ASSERT(ex.IsFatal() == false);
 		AssertException(ex.GetInfo(), true);
 	}
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
 
 TEST_CASE(TestDebugger_Exception4)
@@ -824,7 +824,7 @@ TEST_CASE(TestDebugger_Exception4)
 
 			TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
 		});
-	SetDebugferForCurrentThread(debugger);
+	SetDebuggerForCurrentThread(debugger);
 
 	auto context = CreateThreadContextFromSample(L"RaiseException");
 
@@ -838,5 +838,5 @@ TEST_CASE(TestDebugger_Exception4)
 	{
 		TEST_ASSERT(ex.Message() == L"Internal error: Debugger stopped the program.");
 	}
-	SetDebugferForCurrentThread(nullptr);
+	SetDebuggerForCurrentThread(nullptr);
 }
