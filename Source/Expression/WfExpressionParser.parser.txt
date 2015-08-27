@@ -620,6 +620,8 @@ token KEYWORD_REVERSED = "reversed";
 token KEYWORD_TRY = "try";
 token KEYWORD_CATCH = "catch";
 token KEYWORD_FINALLY = "finally";
+token KEYWORD_CLASS = "class";
+token KEYWORD_STATIC = "static";
 token KEYWORD_USING = "using";
 token KEYWORD_NAMESPACE = "namespace";
 token KEYWORD_MODULE = "module";
@@ -849,10 +851,20 @@ rule VariableDeclaration Variable
 	= "var" NAME : name [":" WorkflowType : type] "=" WorkflowExpression : expression ";" as VariableDeclaration
 	;
 
+rule ClassMember WorkflowClassMember
+	= "static" FunctionDeclaration : declaration as ClassMember with {kind = "Static"}
+	= WorkflowDeclaration : declaration as ClassMember with {kind = "Normal"}
+	;
+
+rule ClassDeclaration Class
+	= "class" NAME : name [":" WorkflowType : baseTypes {"," WorkflowType : baseTypes}] "{" {WorkflowClassMember : members} "}" as ClassDeclaration
+	;
+
 rule Declaration WorkflowDeclaration
 	= !Namespace
 	= !Function
 	= !Variable
+	= !Class
 	;
 
 rule ModuleUsingFragment UsingFragment
