@@ -48,6 +48,11 @@ ValidateSemantic(Declaration)
 					}
 				}
 
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
 				{
 					ValidateSemanticDeclarationVisitor visitor(manager);

@@ -428,6 +428,11 @@ WfLexicalScopeManager
 						AddError(node);
 					}
 				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
+				}
 			};
 
 			void WfLexicalScopeManager::ValidateScopeName(Ptr<WfLexicalScopeName> name)

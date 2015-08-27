@@ -86,6 +86,11 @@ GenerateGlobalDeclarationMetadata
 					auto symbol = scope->symbols[node->name.value][0];
 					context.globalVariables.Add(symbol.Obj(), index);
 				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
+				}
 			};
 
 			void GenerateGlobalDeclarationMetadata(WfCodegenContext& context, Ptr<WfDeclaration> declaration, const WString& namePrefix)
@@ -123,6 +128,11 @@ GenerateInstructions(Initialize)
 					vint variableIndex = context.globalVariables[symbol.Obj()];
 					GenerateExpressionInstructions(context, node->expression);
 					INSTRUCTION(Ins::StoreGlobalVar(variableIndex));
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
 				}
 			};
 
@@ -259,6 +269,11 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
 				}
 			};
 

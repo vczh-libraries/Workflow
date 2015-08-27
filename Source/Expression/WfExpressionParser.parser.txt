@@ -483,6 +483,24 @@ class NewTypeExpression : Expression
 	FunctionDeclaration[]	functions;
 }
 
+enum ClassMemberKind
+{
+	Static,
+	Normal,
+}
+
+class ClassMember
+{
+	ClassMemberKind			kind;
+	Declaration				declaration;
+}
+
+class ClassDeclaration : Declaration
+{
+	Type[]					baseTypes;
+	ClassMember[]			members;
+}
+
 class ModuleUsingFragment
 {
 }

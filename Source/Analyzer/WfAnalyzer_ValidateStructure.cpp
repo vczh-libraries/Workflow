@@ -264,6 +264,11 @@ ValidateStructure(Declaration)
 					ValidateExpressionStructure(manager, &context, node->expression);
 				}
 
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager, ParsingTreeCustomBase* source)
 				{
 					ValidateStructureDeclarationVisitor visitor(manager, source);

@@ -1046,6 +1046,50 @@ Print (Declaration)
 				writer.WriteString(L";");
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfClassDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"class ");
+				writer.WriteString(node->name.value);
+
+				FOREACH_INDEXER(Ptr<WfType>, type, index, node->baseTypes)
+				{
+					if (index == 0)
+					{
+						writer.WriteString(L" : ");
+					}
+					else
+					{
+						writer.WriteString(L", ");
+					}
+					WfPrint(type, indent, writer);
+				}
+
+				writer.WriteLine(L"");
+				writer.WriteLine(L"{");
+
+				FOREACH_INDEXER(Ptr<WfClassMember>, member, index, node->members)
+				{
+					if (index != 0)
+					{
+						writer.WriteLine(L"");
+					}
+
+					writer.WriteString(indent + L"    ");
+					switch (member->kind)
+					{
+					case WfClassMemberKind::Static:
+						writer.WriteString(L"static ");
+						break;
+					}
+					WfPrint(member->declaration, indent + L"    ", writer);
+					writer.WriteLine(L"");
+				}
+
+				writer.WriteString(L"}");
+				writer.AfterPrint(node);
+			}
 		};
 
 /***********************************************************************

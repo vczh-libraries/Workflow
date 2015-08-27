@@ -173,6 +173,8 @@ namespace vl
 		class WfVariableDeclaration;
 		class WfVariableStatement;
 		class WfNewTypeExpression;
+		class WfClassMember;
+		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
 		class WfModuleUsingWildCardFragment;
@@ -943,6 +945,7 @@ namespace vl
 				virtual void Visit(WfNamespaceDeclaration* node)=0;
 				virtual void Visit(WfFunctionDeclaration* node)=0;
 				virtual void Visit(WfVariableDeclaration* node)=0;
+				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
 			virtual void Accept(WfDeclaration::IVisitor* visitor)=0;
@@ -1029,6 +1032,32 @@ namespace vl
 			void Accept(WfExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfNewTypeExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		enum class WfClassMemberKind
+		{
+			Static,
+			Normal,
+		};
+
+		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
+		{
+		public:
+			WfClassMemberKind kind;
+			vl::Ptr<WfDeclaration> declaration;
+
+			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
+		{
+		public:
+			vl::collections::List<vl::Ptr<WfType>> baseTypes;
+			vl::collections::List<vl::Ptr<WfClassMember>> members;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfClassDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfModuleUsingFragment abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfModuleUsingFragment>
@@ -1210,6 +1239,9 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfVariableDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
 			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
+			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
+			DECL_TYPE_INFO(vl::workflow::WfClassMember)
+			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingWildCardFragment)
@@ -1559,6 +1591,11 @@ namespace vl
 					}
 
 					void Visit(vl::workflow::WfVariableDeclaration* node)override
+					{
+						INVOKE_INTERFACE_PROXY(Visit, node);
+					}
+
+					void Visit(vl::workflow::WfClassDeclaration* node)override
 					{
 						INVOKE_INTERFACE_PROXY(Visit, node);
 					}

@@ -96,6 +96,11 @@ BuildScopeForDeclaration
 					BuildScopeForExpression(manager, parentScope, node->expression);
 				}
 
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)
 				{
 					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source);

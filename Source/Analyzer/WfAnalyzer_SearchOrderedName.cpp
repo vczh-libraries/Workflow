@@ -42,6 +42,11 @@ SearchOrderedName(Declaration)
 					SearchOrderedName(scope, node->expression, names);
 				}
 
+				void Visit(WfClassDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				static void Execute(WfLexicalScope* scope, Ptr<WfDeclaration> declaration, SortedList<vint>& names)
 				{
 					SearchOrderedNameDeclarationVisitor visitor(scope, names);
