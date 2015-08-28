@@ -263,6 +263,12 @@ ValidateStructure(Declaration)
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
 					{
+						switch (classMember->kind)
+						{
+						case WfClassMemberKind::Static:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
+							break;
+						}
 						manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"variable class member"));
 					}
 
@@ -278,9 +284,11 @@ ValidateStructure(Declaration)
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
 					{
-						if (classMember->kind == WfClassMemberKind::Static)
+						switch (classMember->kind)
 						{
+						case WfClassMemberKind::Static:
 							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
+							break;
 						}
 					}
 
