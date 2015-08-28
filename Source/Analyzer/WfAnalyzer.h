@@ -509,6 +509,12 @@ Error Messages
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name);
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalSymbol>>& symbols, const WString& name);
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalScopeName>>& names, const WString& name);
+
+				// G: Class error
+				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name);
+				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassMember* node, const WString& name);
+				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStatic(WfClassMember* node);
+				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
 			};
 		}
 	}

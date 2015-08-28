@@ -415,6 +415,26 @@ WfErrors
 					}));
 				return TooManyTargets(node, results, name);
 			}
+
+			Ptr<parsing::ParsingError> WfErrors::ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name)
+			{
+				return new ParsingError(node, L"G0: Class feature not supported yet: " + name + L".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::ClassFeatureNotSupported(WfClassMember* node, const WString& name)
+			{
+				return new ParsingError(node, L"G0: Class field \"" + node->declaration->name.value + L"\" not supported yet: " + name + L".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStatic(WfClassMember* node)
+			{
+				return new ParsingError(node, L"G1: Class member \"" + node->declaration->name.value + L"\" cannot be static because it is not a function.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongClassMember(WfNamespaceDeclaration* node)
+			{
+				return new ParsingError(node, L"G2: Namespace \"" + node->name.value + L"\" cannot be a class member.");
+			}
 		}
 	}
 }

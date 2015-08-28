@@ -230,6 +230,11 @@ ValidateStructure(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						manager->errors.Add(WfErrors::WrongClassMember(node));
+					}
+
 					for (vint i = 0; i < node->declarations.Count(); i++)
 					{
 						ValidateDeclarationStructure(manager, node->declarations[i]);
@@ -256,6 +261,11 @@ ValidateStructure(Declaration)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"variable class member"));
+					}
+
 					if (node->type)
 					{
 						ValidateTypeStructure(manager, node->type);
@@ -266,7 +276,27 @@ ValidateStructure(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						if (classMember->kind == WfClassMemberKind::Static)
+						{
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
+						}
+					}
+
+					if (node->baseTypes.Count() > 0)
+					{
+						manager->errors.Add(WfErrors::ClassFeatureNotSupported(node, L"base type"));
+						FOREACH(Ptr<WfType>, type, node->baseTypes)
+						{
+							ValidateTypeStructure(manager, type);
+						}
+					}
+
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						ValidateDeclarationStructure(manager, member->declaration, member.Obj());
+					}
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager, ParsingTreeCustomBase* source)
