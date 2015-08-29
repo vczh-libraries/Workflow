@@ -132,7 +132,7 @@ InstructionLocation
 			}
 
 /***********************************************************************
-IWfDebuggerCallback
+WfDebugger
 ***********************************************************************/
 
 			void WfDebugger::OnBlockExecution()
