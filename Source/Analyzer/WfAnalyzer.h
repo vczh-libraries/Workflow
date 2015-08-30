@@ -135,10 +135,6 @@ Scope Manager
 				ModuleCodeList								moduleCodes;
 				vint										usedCodeIndex = 0;
 
-				void										BuildGlobalNameFromTypeDescriptors();
-				void										BuildGlobalNameFromModules();
-				void										BuildName(Ptr<WfLexicalScopeName> name, Ptr<WfDeclaration> declaration);
-				void										ValidateScopeName(Ptr<WfLexicalScopeName> name);
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
 				ParsingErrorList							errors;
@@ -179,7 +175,6 @@ Scope Manager
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types.</param>
 				/// <param name="deleteModules">Set to true to delete all added modules.</param>
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
-				bool										CheckScopes();
 				/// <summary>Compile.</summary>
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
 				void										Rebuild(bool keepTypeDescriptorNames);
@@ -260,6 +255,14 @@ Structure Analyzing
 			extern void										ValidateExpressionStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfExpression>& expression);
 
 /***********************************************************************
+Global Name
+***********************************************************************/
+
+			extern void										BuildGlobalNameFromTypeDescriptors(WfLexicalScopeManager* manager);
+			extern void										BuildGlobalNameFromModules(WfLexicalScopeManager* manager);
+			extern void										ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name);
+
+/***********************************************************************
 Scope Analyzing
 ***********************************************************************/
 
@@ -267,6 +270,7 @@ Scope Analyzing
 			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source = 0);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
+			extern bool										CheckScopes(WfLexicalScopeManager* manager);
 
 /***********************************************************************
 Semantic Analyzing

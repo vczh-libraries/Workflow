@@ -1299,7 +1299,7 @@ ValidateSemantic(Expression)
 						ExpandBindExpression(manager, node);
 						auto parentScope = manager->expressionScopes[node];
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-						if (manager->CheckScopes())
+						if (CheckScopes(manager))
 						{
 							GetExpressionType(manager, node->expandedExpression, 0);
 						}

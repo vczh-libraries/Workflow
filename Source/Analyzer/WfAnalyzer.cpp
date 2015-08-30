@@ -288,167 +288,6 @@ ResolveExpressionResult
 WfLexicalScopeManager
 ***********************************************************************/
 
-			void WfLexicalScopeManager::BuildGlobalNameFromTypeDescriptors()
-			{
-				for (vint i = 0; i < GetGlobalTypeManager()->GetTypeDescriptorCount(); i++)
-				{
-					ITypeDescriptor* typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(i);
-					WString name = typeDescriptor->GetTypeName();
-					const wchar_t* reading = name.Buffer();
-					Ptr<WfLexicalScopeName> currentName = globalName;
-
-					while (true)
-					{
-						WString fragment;
-						const wchar_t* delimiter = wcsstr(reading, L"::");
-						if (delimiter)
-						{
-							fragment = WString(reading, vint(delimiter - reading));
-							reading = delimiter + 2;
-						}
-						else
-						{
-							fragment = reading;
-							reading = 0;
-						}
-
-						currentName = currentName->AccessChild(fragment, true);
-						if (!reading)
-						{
-							currentName->typeDescriptor = typeDescriptor;
-							break;
-						}
-					}
-				}
-			}
-
-			void WfLexicalScopeManager::BuildGlobalNameFromModules()
-			{
-				FOREACH(Ptr<WfModule>, module, modules)
-				{
-					FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
-					{
-						BuildName(globalName, declaration);
-					}
-				}
-			}
-
-			void WfLexicalScopeManager::BuildName(Ptr<WfLexicalScopeName> name, Ptr<WfDeclaration> declaration)
-			{
-				name = name->AccessChild(declaration->name.value, false);
-				name->declarations.Add(declaration);
-				if (auto ns = declaration.Cast<WfNamespaceDeclaration>())
-				{
-					namespaceNames.Add(ns, name);
-					FOREACH(Ptr<WfDeclaration>, subDecl, ns->declarations)
-					{
-						BuildName(name, subDecl);
-					}
-				}
-			}
-
-			class ValidateScopeNameDeclarationVisitor : public Object, public WfDeclaration::IVisitor
-			{
-			public:
-				enum Category
-				{
-					None,
-					Type,
-					Variable,
-					Function,
-					Namespace,
-				};
-
-				WfLexicalScopeManager*				manager;
-				Ptr<WfLexicalScopeName>				name;
-				Category							category;
-
-				ValidateScopeNameDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _name)
-					:manager(_manager)
-					, name(_name)
-					, category(_name->typeDescriptor ? Type : None)
-				{
-				}
-
-				void AddError(WfDeclaration* node)
-				{
-					WString categoryName;
-					switch (category)
-					{
-					case Type:
-						categoryName = L"type";
-						break;
-					case Variable:
-						categoryName = L"variable";
-						break;
-					case Function:
-						categoryName = L"function";
-						break;
-					case Namespace:
-						categoryName = L"namespace";
-						break;
-					default:
-						CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::AddError(WfDeclaration*)#Internal error.");
-					}
-					manager->errors.Add(WfErrors::DuplicatedDeclaration(node, categoryName));
-				}
-
-				void Visit(WfNamespaceDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Namespace;
-					}
-					else if (category != Namespace)
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfFunctionDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Function;
-					}
-					else if (category != Function)
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfVariableDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Variable;
-					}
-					else
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfClassDeclaration* node)override
-				{
-					throw 0;
-				}
-			};
-
-			void WfLexicalScopeManager::ValidateScopeName(Ptr<WfLexicalScopeName> name)
-			{
-				ValidateScopeNameDeclarationVisitor visitor(this, name);
-				FOREACH(Ptr<WfDeclaration>, declaration, name->declarations)
-				{
-					declaration->Accept(&visitor);
-				}
-
-				FOREACH(Ptr<WfLexicalScopeName>, child, name->children.Values())
-				{
-					ValidateScopeName(child);
-				}
-			}
-
 			WfLexicalScopeManager::WfLexicalScopeManager(Ptr<parsing::tabling::ParsingTable> _parsingTable)
 				:parsingTable(_parsingTable)
 			{
@@ -520,77 +359,13 @@ WfLexicalScopeManager
 				orderedLambdaCaptures.Clear();
 			}
 
-			bool WfLexicalScopeManager::CheckScopes()
-			{
-				vint errorCount = errors.Count();
-				FOREACH(Ptr<WfLexicalScope>, scope,
-					From(moduleScopes.Values())
-						.Concat(declarationScopes.Values())
-						.Concat(statementScopes.Values())
-						.Concat(expressionScopes.Values()))
-				{
-					if (!analyzedScopes.Contains(scope.Obj()))
-					{
-						analyzedScopes.Add(scope);
-
-						for (vint i = 0; i < scope->symbols.Count(); i++)
-						{
-							const auto& symbols = scope->symbols.GetByIndex(i);
-							if (symbols.Count() > 1)
-							{
-								if (!scope->ownerModule && !scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
-								{
-									if (symbols.Count() > 1)
-									{
-										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
-										{
-											if (symbol->creatorDeclaration)
-											{
-												if (!symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
-												{
-													errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorDeclaration.Obj(), symbol));
-												}
-											}
-											else if (symbol->creatorArgument)
-											{
-												errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorArgument.Obj(), symbol));
-											}
-											else if (symbol->creatorStatement)
-											{
-												errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorStatement.Obj(), symbol));
-											}
-											else if (symbol->creatorExpression)
-											{
-												errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorExpression.Obj(), symbol));
-											}
-										}
-									}
-								}
-							}
-						}
-
-						for (vint i = 0; i < scope->symbols.Count(); i++)
-						{
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(i))
-							{
-								if (symbol->type)
-								{
-									symbol->typeInfo = CreateTypeInfoFromType(scope.Obj(), symbol->type);
-								}
-							}
-						}
-					}
-				}
-				return errors.Count() == errorCount;
-			}
-
 			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames)
 			{
 				Clear(keepTypeDescriptorNames, false);
 				if (!globalName)
 				{
 					globalName = new WfLexicalScopeName(true);
-					BuildGlobalNameFromTypeDescriptors();
+					BuildGlobalNameFromTypeDescriptors(this);
 				}
 
 				vint errorCount = errors.Count();
@@ -608,13 +383,13 @@ WfLexicalScopeManager
 				}
 				
 				EXIT_IF_ERRORS_EXIST;
-				BuildGlobalNameFromModules();
+				BuildGlobalNameFromModules(this);
 				FOREACH(Ptr<WfModule>, module, modules)
 				{
 					BuildScopeForModule(this, module);
 				}
-				ValidateScopeName(globalName);
-				CheckScopes();
+				ValidateScopeName(this, globalName);
+				CheckScopes(this);
 				
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)

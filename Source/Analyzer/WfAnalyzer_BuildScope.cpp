@@ -571,6 +571,74 @@ BuildScope
 			{
 				BuildScopeForExpressionVisitor::Execute(manager, parentScope, expression);
 			}
+
+/***********************************************************************
+CheckScopes
+***********************************************************************/
+
+			bool CheckScopes(WfLexicalScopeManager* manager)
+			{
+				vint errorCount = manager->errors.Count();
+				FOREACH(Ptr<WfLexicalScope>, scope,
+					From(manager->moduleScopes.Values())
+						.Concat(manager->declarationScopes.Values())
+						.Concat(manager->statementScopes.Values())
+						.Concat(manager->expressionScopes.Values()))
+				{
+					if (!manager->analyzedScopes.Contains(scope.Obj()))
+					{
+						manager->analyzedScopes.Add(scope);
+
+						for (vint i = 0; i < scope->symbols.Count(); i++)
+						{
+							const auto& symbols = scope->symbols.GetByIndex(i);
+							if (symbols.Count() > 1)
+							{
+								if (!scope->ownerModule && !scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+								{
+									if (symbols.Count() > 1)
+									{
+										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
+										{
+											if (symbol->creatorDeclaration)
+											{
+												if (!symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
+												{
+													manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorDeclaration.Obj(), symbol));
+												}
+											}
+											else if (symbol->creatorArgument)
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorArgument.Obj(), symbol));
+											}
+											else if (symbol->creatorStatement)
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorStatement.Obj(), symbol));
+											}
+											else if (symbol->creatorExpression)
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorExpression.Obj(), symbol));
+											}
+										}
+									}
+								}
+							}
+						}
+
+						for (vint i = 0; i < scope->symbols.Count(); i++)
+						{
+							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(i))
+							{
+								if (symbol->type)
+								{
+									symbol->typeInfo = CreateTypeInfoFromType(scope.Obj(), symbol->type);
+								}
+							}
+						}
+					}
+				}
+				return manager->errors.Count() == errorCount;
+			}
 		}
 	}
 }
