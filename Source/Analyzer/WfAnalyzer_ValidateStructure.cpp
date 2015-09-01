@@ -243,6 +243,14 @@ ValidateStructure(Declaration)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						if (classMember->kind != WfClassMemberKind::Static)
+						{
+							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"non-static class method"));
+						}
+					}
+
 					if (node->anonymity == WfFunctionAnonymity::Anonymous)
 					{
 						if (!source || !dynamic_cast<WfFunctionExpression*>(source))

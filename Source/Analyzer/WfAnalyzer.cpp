@@ -357,6 +357,7 @@ WfLexicalScopeManager
 				expressionResolvings.Clear();
 				functionLambdaCaptures.Clear();
 				orderedLambdaCaptures.Clear();
+				customTypes.Clear();
 			}
 
 			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames)

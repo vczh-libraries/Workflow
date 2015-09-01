@@ -129,6 +129,7 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Group<WfFunctionDeclaration*, Ptr<WfLexicalSymbol>>					FunctionLambdaCaptureGroup;
 				typedef collections::Group<WfOrderedLambdaExpression*, Ptr<WfLexicalSymbol>>				OrderedLambdaCaptureGroup;
+				typedef collections::List<Ptr<reflection::description::ITypeDescriptor>>					TypeDescriptorList;
 
 			protected:
 				ModuleList									modules;
@@ -148,8 +149,9 @@ Scope Manager
 				StatementScopeMap							statementScopes;			// the nearest scope for the statement
 				ExpressionScopeMap							expressionScopes;			// the nearest scope for the expression
 				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
-				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbol in an lambda expression
-				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbol in an lambda expression
+				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
+				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an lambda expression
+				TypeDescriptorList							customTypes;				// all types created in the code
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
