@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_WORKFLOW_RUNTIME_WFRUNTIMEASSEMBLY
 
 #include "WfRuntimeInstruction.h"
+#include "WfRuntimeTypeDescriptor.h"
 
 namespace vl
 {

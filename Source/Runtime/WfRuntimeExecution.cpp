@@ -385,7 +385,7 @@ WfRuntimeThreadContext (Lambda)
 WfRuntimeThreadContext (Lambda)
 ***********************************************************************/
 
-			class WfRuntimeInterface : public Object, public IValueInterfaceProxy
+			class WfRuntimeInterfaceInstance : public Object, public IValueInterfaceProxy
 			{
 				typedef collections::Dictionary<WString, Ptr<IValueFunctionProxy>>		FunctionMap;
 			public:
@@ -592,7 +592,7 @@ WfRuntimeThreadContext
 					}
 				case WfInsCode::CreateInterface:
 					{
-						auto proxy = MakePtr<WfRuntimeInterface>();
+						auto proxy = MakePtr<WfRuntimeInterfaceInstance>();
 						Value key, value;
 						for (vint i = 0; i < ins.countParameter; i+=2)
 						{
