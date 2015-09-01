@@ -117,6 +117,8 @@ Scope Manager
 			/// <summary>Workflow compiler.</summary>
 			class WfLexicalScopeManager : public Object
 			{
+				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
+
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
@@ -129,7 +131,9 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Group<WfFunctionDeclaration*, Ptr<WfLexicalSymbol>>					FunctionLambdaCaptureGroup;
 				typedef collections::Group<WfOrderedLambdaExpression*, Ptr<WfLexicalSymbol>>				OrderedLambdaCaptureGroup;
-				typedef collections::List<Ptr<reflection::description::ITypeDescriptor>>					TypeDescriptorList;
+
+				typedef collections::List<Ptr<ITypeDescriptor>>												TypeDescriptorList;
+				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 
 			protected:
 				ModuleList									modules;
@@ -151,7 +155,9 @@ Scope Manager
 				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
 				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
 				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an lambda expression
+
 				TypeDescriptorList							customTypes;				// all types created in the code
+				DeclarationTypeMap							declarationTypes;			// type descriptor for type declaration
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>

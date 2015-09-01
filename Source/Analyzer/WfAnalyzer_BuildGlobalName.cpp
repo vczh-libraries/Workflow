@@ -8,6 +8,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace reflection::description;
+			using namespace typeimpl;
 
 /***********************************************************************
 BuildGlobalNameFromTypeDescriptors
@@ -91,6 +92,22 @@ BuildGlobalNameFromModules
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					WString typeName = scopeName->name;
+					{
+						WfLexicalScopeName* name = scopeName->parent;
+						while (name && name != manager->globalName.Obj())
+						{
+							if (typeName == L"")
+							{
+								typeName = name->name + L"::" + typeName;
+							}
+						}
+					}
+
+					auto td = MakePtr<WfClass>(typeName);
+					manager->customTypes.Add(td);
+					manager->declarationTypes.Add(node, td);
+					scopeName->typeDescriptor = td.Obj();
 				}
 			};
 

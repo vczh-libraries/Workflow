@@ -25,6 +25,10 @@ WfStaticMethod
 WfClass
 ***********************************************************************/
 
+			void WfClass::LoadInternal()
+			{
+			}
+
 			WfClass::WfClass(const WString& typeName)
 				:TypeDescriptorImpl(typeName, L"")
 			{

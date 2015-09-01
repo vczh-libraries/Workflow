@@ -26,6 +26,9 @@ namespace vl
 
 			class WfClass : public reflection::description::TypeDescriptorImpl
 			{
+			protected:
+				void					LoadInternal()override;
+
 			public:
 				WfClass(const WString& typeName);
 				~WfClass();
