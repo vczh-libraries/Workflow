@@ -52,6 +52,78 @@ BuildGlobalNameFromTypeDescriptors
 BuildGlobalNameFromModules
 ***********************************************************************/
 
+			class BuildClassMemberDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			{
+			public:
+				WfLexicalScopeManager*			manager;
+				Ptr<WfLexicalScopeName>			scopeName;
+				Ptr<WfClass>					td;
+				Ptr<WfClassMember>				member;
+
+				BuildClassMemberDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName, Ptr<WfClass> _td, Ptr<WfClassMember> _member)
+					:manager(_manager)
+					, scopeName(_scopeName)
+					, td(_td)
+					, member(_member)
+				{
+				}
+
+				static void BuildClass(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, Ptr<WfClassDeclaration> declaration)
+				{
+					WString typeName = scopeName->name;
+					{
+						WfLexicalScopeName* name = scopeName->parent;
+						while (name && name != manager->globalName.Obj())
+						{
+							if (typeName == L"")
+							{
+								typeName = name->name + L"::" + typeName;
+							}
+						}
+					}
+
+					auto td = MakePtr<WfClass>(typeName);
+					manager->customTypes.Add(td);
+					manager->declarationTypes.Add(declaration, td);
+					scopeName->typeDescriptor = td.Obj();
+
+					FOREACH(Ptr<WfClassMember>, member, declaration->members)
+					{
+						BuildClassMemberDeclarationVisitor visitor(manager, scopeName, td, member);
+						member->declaration->Accept(&visitor);
+					}
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+					switch (member->kind)
+					{
+					case WfClassMemberKind::Static:
+						{
+							auto info = MakePtr<WfStaticMethod>();
+							td->AddMember(node->name.value, info);
+							manager->declarationMemberInfos.Add(node, info);
+						}
+						break;
+					}
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					auto newScopeName = scopeName->AccessChild(node->name.value, false);
+					newScopeName->declarations.Add(node);
+					BuildClass(manager, newScopeName, node);
+				}
+			};
+
 			class BuildNameDeclarationVisitor : public Object, public WfDeclaration::IVisitor
 			{
 			public:
@@ -92,22 +164,7 @@ BuildGlobalNameFromModules
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					WString typeName = scopeName->name;
-					{
-						WfLexicalScopeName* name = scopeName->parent;
-						while (name && name != manager->globalName.Obj())
-						{
-							if (typeName == L"")
-							{
-								typeName = name->name + L"::" + typeName;
-							}
-						}
-					}
-
-					auto td = MakePtr<WfClass>(typeName);
-					manager->customTypes.Add(td);
-					manager->declarationTypes.Add(node, td);
-					scopeName->typeDescriptor = td.Obj();
+					BuildClassMemberDeclarationVisitor::BuildClass(manager, scopeName, node);
 				}
 			};
 

@@ -360,6 +360,7 @@ WfLexicalScopeManager
 
 				customTypes.Clear();
 				declarationTypes.Clear();
+				declarationMemberInfos.Clear();
 			}
 
 			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames)

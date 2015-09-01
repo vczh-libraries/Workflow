@@ -118,6 +118,7 @@ Scope Manager
 			class WfLexicalScopeManager : public Object
 			{
 				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
+				typedef reflection::description::IMemberInfo												IMemberInfo;
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
@@ -134,6 +135,7 @@ Scope Manager
 
 				typedef collections::List<Ptr<ITypeDescriptor>>												TypeDescriptorList;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
+				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
 			protected:
 				ModuleList									modules;
@@ -158,6 +160,7 @@ Scope Manager
 
 				TypeDescriptorList							customTypes;				// all types created in the code
 				DeclarationTypeMap							declarationTypes;			// type descriptor for type declaration
+				DeclarationMemberInfoMap					declarationMemberInfos;		// member for type description
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>

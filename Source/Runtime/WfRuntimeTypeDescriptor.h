@@ -19,6 +19,12 @@ namespace vl
 		{
 			class WfStaticMethod : public reflection::description::MethodInfoImpl
 			{
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value					InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value					CreateFunctionProxyInternal(const Value& thisObject)override;
+
 			public:
 				WfStaticMethod();
 				~WfStaticMethod();
@@ -27,13 +33,14 @@ namespace vl
 			class WfClass : public reflection::description::TypeDescriptorImpl
 			{
 			protected:
+
 				void					LoadInternal()override;
 
 			public:
 				WfClass(const WString& typeName);
 				~WfClass();
 
-				void					AddMember(Ptr<WfStaticMethod> value);
+				void					AddMember(const WString& name, Ptr<WfStaticMethod> value);
 			};
 		}
 	}
