@@ -51,19 +51,48 @@ BuildGlobalNameFromTypeDescriptors
 BuildGlobalNameFromModules
 ***********************************************************************/
 
-			void BuildName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, Ptr<WfDeclaration> declaration)
+			class BuildNameDeclarationVisitor : public Object, public WfDeclaration::IVisitor
 			{
-				name = name->AccessChild(declaration->name.value, false);
-				name->declarations.Add(declaration);
-				if (auto ns = declaration.Cast<WfNamespaceDeclaration>())
+			public:
+				WfLexicalScopeManager*			manager;
+				Ptr<WfLexicalScopeName>			scopeName;
+
+				BuildNameDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName)
+					:manager(_manager)
+					, scopeName(_scopeName)
 				{
-					manager->namespaceNames.Add(ns, name);
-					FOREACH(Ptr<WfDeclaration>, subDecl, ns->declarations)
+				}
+
+				static void BuildName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, Ptr<WfDeclaration> declaration)
+				{
+					auto scopeName = name->AccessChild(declaration->name.value, false);
+					scopeName->declarations.Add(declaration);
+
+					BuildNameDeclarationVisitor visitor(manager, scopeName);
+					declaration->Accept(&visitor);
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+					manager->namespaceNames.Add(node, scopeName);
+					FOREACH(Ptr<WfDeclaration>, subDecl, node->declarations)
 					{
-						BuildName(manager, name, subDecl);
+						BuildName(manager, scopeName, subDecl);
 					}
 				}
-			}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+				}
+			};
 
 			void BuildGlobalNameFromModules(WfLexicalScopeManager* manager)
 			{
@@ -71,7 +100,7 @@ BuildGlobalNameFromModules
 				{
 					FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
 					{
-						BuildName(manager, manager->globalName, declaration);
+						BuildNameDeclarationVisitor::BuildName(manager, manager->globalName, declaration);
 					}
 				}
 			}
