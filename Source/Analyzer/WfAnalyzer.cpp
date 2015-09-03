@@ -397,6 +397,12 @@ WfLexicalScopeManager
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)
 				{
+					CompleteScopeForModule(this, module);
+				}
+				
+				EXIT_IF_ERRORS_EXIST;
+				FOREACH(Ptr<WfModule>, module, modules)
+				{
 					ValidateModuleSemantic(this, module);
 				}
 

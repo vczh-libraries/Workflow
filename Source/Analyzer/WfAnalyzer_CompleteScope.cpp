@@ -83,6 +83,11 @@ CompleteScopeForDeclaration
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					auto td = manager->declarationTypes[node].Cast<WfClass>();
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						CompleteScopeForClassMember(manager, td, member);
+					}
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
