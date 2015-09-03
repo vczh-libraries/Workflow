@@ -51,6 +51,7 @@ Scope
 			public:
 				WfLexicalScopeManager*						ownerManager;		// nullable and inheritable
 				Ptr<WfModule>								ownerModule;		// nullable and inheritable
+				Ptr<WfClassMember>							ownerClassMember;	// nullable and inheritable
 				Ptr<WfDeclaration>							ownerDeclaration;	// nullable and inheritable
 				Ptr<WfStatement>							ownerStatement;		// nullable
 				Ptr<WfExpression>							ownerExpression;	// nullable
@@ -274,6 +275,10 @@ Global Name
 /***********************************************************************
 Scope Analyzing
 ***********************************************************************/
+			
+			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfClassMember> member);
+			extern void										CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
+			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source = 0);
