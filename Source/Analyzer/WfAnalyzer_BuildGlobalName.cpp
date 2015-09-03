@@ -75,16 +75,14 @@ BuildGlobalNameFromModules
 						WfLexicalScopeName* name = scopeName->parent;
 						while (name && name != manager->globalName.Obj())
 						{
-							if (typeName == L"")
-							{
-								typeName = name->name + L"::" + typeName;
-							}
+							typeName = name->name + L"::" + typeName;
+							name = name->parent;
 						}
 					}
 
 					auto td = MakePtr<WfClass>(typeName);
 					manager->declarationTypes.Add(declaration, td);
-					if (scopeName->typeDescriptor)
+					if (!scopeName->typeDescriptor)
 					{
 						scopeName->typeDescriptor = td.Obj();
 					}
