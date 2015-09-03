@@ -31,6 +31,11 @@ WfStaticMethod
 			{
 			}
 
+			void WfStaticMethod::SetReturn(Ptr<ITypeInfo> type)
+			{
+				returnInfo = type;
+			}
+
 /***********************************************************************
 WfClass
 ***********************************************************************/

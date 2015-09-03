@@ -36,6 +36,22 @@ CompleteScopeForClassMember
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
+					auto scope = manager->declarationScopes[node];
+					auto info = manager->declarationMemberInfos[node].Cast<WfStaticMethod>();
+
+					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					{
+						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
+						{
+							auto paramInfo = MakePtr<ParameterInfoImpl>(info.Obj(), argument->name.value, typeInfo);
+							info->AddParameter(paramInfo);
+						}
+					}
+
+					if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), node->returnType))
+					{
+						info->SetReturn(typeInfo);
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override

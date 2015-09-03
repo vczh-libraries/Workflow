@@ -19,6 +19,7 @@ namespace vl
 		{
 			class WfStaticMethod : public reflection::description::MethodInfoImpl
 			{
+				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::Value						Value;
 			protected:
 
@@ -28,6 +29,8 @@ namespace vl
 			public:
 				WfStaticMethod();
 				~WfStaticMethod();
+
+				void					SetReturn(Ptr<ITypeInfo> type);
 			};
 
 			class WfClass : public reflection::description::TypeDescriptorImpl
