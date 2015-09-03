@@ -37,7 +37,6 @@ WfClass
 
 			void WfClass::LoadInternal()
 			{
-				throw 0;
 			}
 
 			WfClass::WfClass(const WString& typeName)

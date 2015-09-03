@@ -35,6 +35,7 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
+					ValidateDeclarationSemantic(manager, node);
 				}
 
 				void Visit(WfVariableDeclaration* node)override
