@@ -202,7 +202,7 @@ ValidateScopeName
 				ValidateScopeNameDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _name)
 					:manager(_manager)
 					, name(_name)
-					, category(_name->typeDescriptor ? Type : None)
+					, category(_name->createdByTypeDescriptor ? Type : None)
 				{
 				}
 
@@ -267,7 +267,14 @@ ValidateScopeName
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
+					if (category == None)
+					{
+						category = Type;
+					}
+					else
+					{
+						AddError(node);
+					}
 				}
 			};
 

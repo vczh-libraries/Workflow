@@ -98,7 +98,16 @@ BuildScopeForDeclaration
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
+					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					symbol->name = node->name.value;
+					symbol->creatorDeclaration = node;
+					parentScope->symbols.Add(symbol->name, symbol);
+
+					resultScope = new WfLexicalScope(parentScope);
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						BuildScopeForDeclaration(manager, resultScope, member->declaration);
+					}
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)
