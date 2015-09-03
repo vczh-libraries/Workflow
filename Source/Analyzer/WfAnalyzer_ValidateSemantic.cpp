@@ -9,6 +9,48 @@ namespace vl
 			using namespace collections;
 			using namespace reflection;
 			using namespace reflection::description;
+			using namespace typeimpl;
+
+/***********************************************************************
+ValidateSemantic(ClassMember)
+***********************************************************************/
+
+			class ValidateSemanticClassMemberVisitor : public Object, public WfDeclaration::IVisitor
+			{
+			public:
+				WfLexicalScopeManager*				manager;
+				Ptr<WfClass>						td;
+				Ptr<WfClassMember>					member;
+
+				ValidateSemanticClassMemberVisitor(Ptr<WfClass> _td, Ptr<WfClassMember> _member, WfLexicalScopeManager* _manager)
+					:td(_td)
+					, member(_member)
+					, manager(_manager)
+				{
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+				}
+
+				static void Execute(Ptr<WfClass> td, Ptr<WfClassMember> member, WfLexicalScopeManager* manager)
+				{
+					ValidateSemanticClassMemberVisitor visitor(td, member, manager);
+					member->declaration->Accept(&visitor);
+				}
+			};
 
 /***********************************************************************
 ValidateSemantic(Declaration)
@@ -50,7 +92,17 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
+					auto scope = manager->declarationScopes[node];
+					auto td = manager->declarationTypes[node].Cast<WfClass>();
+
+					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					{
+					}
+
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						ValidateClassMemberSemantic(manager, td, member);
+					}
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
@@ -1706,6 +1758,11 @@ ValidateSemantic
 				{
 					ValidateDeclarationSemantic(manager, declaration);
 				}
+			}
+
+			void ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member)
+			{
+				return ValidateSemanticClassMemberVisitor::Execute(td, member, manager);
 			}
 
 			void ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)

@@ -32,6 +32,8 @@ namespace vl
 
 			class WfClass : public reflection::description::TypeDescriptorImpl
 			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
 			protected:
 
 				void					LoadInternal()override;
@@ -40,6 +42,7 @@ namespace vl
 				WfClass(const WString& typeName);
 				~WfClass();
 
+				void					AddBaseType(ITypeDescriptor* type);
 				void					AddMember(const WString& name, Ptr<WfStaticMethod> value);
 			};
 		}

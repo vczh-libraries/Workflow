@@ -49,6 +49,11 @@ WfClass
 			{
 			}
 
+			void WfClass::AddBaseType(ITypeDescriptor* type)
+			{
+				TypeDescriptorImpl::AddBaseType(type);
+			}
+
 			void WfClass::AddMember(const WString& name, Ptr<WfStaticMethod> value)
 			{
 				AddMethod(name, value);

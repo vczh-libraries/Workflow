@@ -133,7 +133,6 @@ Scope Manager
 				typedef collections::Group<WfFunctionDeclaration*, Ptr<WfLexicalSymbol>>					FunctionLambdaCaptureGroup;
 				typedef collections::Group<WfOrderedLambdaExpression*, Ptr<WfLexicalSymbol>>				OrderedLambdaCaptureGroup;
 
-				typedef collections::List<Ptr<ITypeDescriptor>>												TypeDescriptorList;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
@@ -158,7 +157,6 @@ Scope Manager
 				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
 				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an lambda expression
 
-				TypeDescriptorList							customTypes;				// all types created in the code
 				DeclarationTypeMap							declarationTypes;			// type descriptor for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;		// member for type description
 
@@ -309,6 +307,7 @@ Semantic Analyzing
 			};
 
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										ValidateStatementSemantic(WfLexicalScopeManager* manager, Ptr<WfStatement> statement);
 			extern void										ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results);
