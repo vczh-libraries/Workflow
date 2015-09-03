@@ -84,7 +84,10 @@ BuildGlobalNameFromModules
 
 					auto td = MakePtr<WfClass>(typeName);
 					manager->declarationTypes.Add(declaration, td);
-					scopeName->typeDescriptor = td.Obj();
+					if (scopeName->typeDescriptor)
+					{
+						scopeName->typeDescriptor = td.Obj();
+					}
 
 					FOREACH(Ptr<WfClassMember>, member, declaration->members)
 					{
@@ -201,7 +204,7 @@ ValidateScopeName
 				ValidateScopeNameDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _name)
 					:manager(_manager)
 					, name(_name)
-					, category(_name->createdByTypeDescriptor ? Type : None)
+					, category(name->typeDescriptor && name->createdByTypeDescriptor ? Type : None)
 				{
 				}
 
