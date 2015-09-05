@@ -39,6 +39,41 @@ GenerateGlobalDeclarationMetadata
 				}
 			}
 
+			class GenerateGlobalClassMemberMetadataVisitor : public Object, public WfDeclaration::IVisitor
+			{
+			public:
+				WfCodegenContext&						context;
+				WString									namePrefix;
+				Ptr<WfClassMember>						member;
+
+				GenerateGlobalClassMemberMetadataVisitor(WfCodegenContext& _context, const WString& _namePrefix, Ptr<WfClassMember> _member)
+					:context(_context)
+					, namePrefix(_namePrefix)
+					, member(_member)
+				{
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+					if (member->kind == WfClassMemberKind::Static)
+					{
+						GenerateGlobalDeclarationMetadata(context, node, namePrefix);
+					}
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+				}
+			};
+
 			class GenerateGlobalDeclarationMetadataVisitor : public Object, public WfDeclaration::IVisitor
 			{
 			public:
@@ -89,7 +124,11 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value, member);
+						member->declaration->Accept(&visitor);
+					}
 				}
 			};
 
@@ -132,7 +171,6 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
 				}
 			};
 
@@ -240,6 +278,39 @@ GenerateInstructions(Declaration)
 				GenerateFunctionInstructions(context, scope, meta, returnType, recursiveLambdaSymbol, argumentSymbols, capturedSymbols, node->statement, node);
 			}
 
+			class GenerateClassMemberInstructionsVisitor : public Object, public WfDeclaration::IVisitor
+			{
+			public:
+				WfCodegenContext&						context;
+				Ptr<WfClassMember>						member;
+
+				GenerateClassMemberInstructionsVisitor(WfCodegenContext& _context, Ptr<WfClassMember> _member)
+					:context(_context)
+					, member(_member)
+				{
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+					if (member->kind == WfClassMemberKind::Static)
+					{
+						GenerateDeclarationInstructions(context, node);
+					}
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+				}
+			};
+
 			class GenerateDeclarationInstructionsVisitor : public Object, public WfDeclaration::IVisitor
 			{
 			public:
@@ -273,7 +344,11 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						GenerateClassMemberInstructionsVisitor visitor(context, member);
+						member->declaration->Accept(&visitor);
+					}
 				}
 			};
 

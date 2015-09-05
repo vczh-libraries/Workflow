@@ -44,7 +44,10 @@ SearchOrderedName(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					throw 0;
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						SearchOrderedName(scope, member->declaration, names);
+					}
 				}
 
 				static void Execute(WfLexicalScope* scope, Ptr<WfDeclaration> declaration, SortedList<vint>& names)
