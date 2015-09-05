@@ -1,0 +1,27 @@
+module test;
+using system::*;
+
+func main() : string
+{
+	return Calculator::Sum(1, 10);
+}
+
+class Calculator
+{
+	static func Sum(begin : int, end : int) : int
+	{
+		return Sum2(begin, end, 0);
+	}
+	
+	static func Sum2(begin : int, end : int, sum : int) : int
+	{
+		if (begin > end)
+		{
+			return sum;
+		}
+		else
+		{
+			return Sum2(begin + 1, end, sum + begin);
+		}
+	}
+}
