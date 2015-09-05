@@ -27,6 +27,8 @@ namespace vl
 				Value					CreateFunctionProxyInternal(const Value& thisObject)override;
 
 			public:
+				vint					functionIndex;
+
 				WfStaticMethod();
 				~WfStaticMethod();
 

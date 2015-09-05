@@ -35,7 +35,14 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					ValidateDeclarationSemantic(manager, node);
+					if (member->kind == WfClassMemberKind::Static)
+					{
+						ValidateDeclarationSemantic(manager, node);
+					}
+					else
+					{
+						throw 0;
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override

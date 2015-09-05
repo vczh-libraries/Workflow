@@ -12,10 +12,22 @@ namespace vl
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace runtime;
+			using namespace typeimpl;
 
 			typedef WfInstruction Ins;
 
 #define INSTRUCTION(X) context.AddInstruction(node, X)
+
+			Ptr<WfLexicalSymbol> GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node)
+			{
+				auto symbol = From(scope->parentScope->symbols[node->name.value])
+					.Where([=](Ptr<WfLexicalSymbol> symbol)
+					{
+						return symbol->creatorDeclaration == node;
+					})
+					.First();
+				return symbol;
+			}
 
 /***********************************************************************
 GenerateGlobalDeclarationMetadata
@@ -62,6 +74,11 @@ GenerateGlobalDeclarationMetadata
 					if (member->kind == WfClassMemberKind::Static)
 					{
 						GenerateGlobalDeclarationMetadata(context, node, namePrefix);
+						auto scope = context.manager->declarationScopes[node].Obj();
+						auto symbol = GetDeclarationSymbol(scope, node);
+						auto index = context.globalFunctions[symbol.Obj()];
+						auto info = context.manager->declarationMemberInfos[node].Cast<WfStaticMethod>();
+						info->functionIndex = index;
 					}
 					else
 					{
@@ -109,13 +126,8 @@ GenerateGlobalDeclarationMetadata
 					vint index = context.assembly->functions.Add(meta);
 					context.assembly->functionByName.Add(meta->name, index);
 
-					auto scope = context.manager->declarationScopes[node]->parentScope.Obj();
-					auto symbol = From(scope->symbols[node->name.value])
-						.Where([=](Ptr<WfLexicalSymbol> symbol)
-						{
-							return symbol->creatorDeclaration == node;
-						})
-						.First();
+					auto scope = context.manager->declarationScopes[node].Obj();
+					auto symbol = GetDeclarationSymbol(scope, node);
 					context.globalFunctions.Add(symbol.Obj(), index);
 				}
 
@@ -306,6 +318,10 @@ GenerateInstructions(Declaration)
 					{
 						GenerateDeclarationInstructions(context, node);
 					}
+					else
+					{
+						throw 0;
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
@@ -336,12 +352,7 @@ GenerateInstructions(Declaration)
 				void Visit(WfFunctionDeclaration* node)override
 				{
 					auto scope = context.manager->declarationScopes[node].Obj();
-					auto symbol = From(scope->parentScope->symbols[node->name.value])
-						.Where([=](Ptr<WfLexicalSymbol> symbol)
-						{
-							return symbol->creatorDeclaration == node;
-						})
-						.First();
+					auto symbol = GetDeclarationSymbol(scope, node);
 					auto meta = context.assembly->functions[context.globalFunctions[symbol.Obj()]];
 					GenerateFunctionDeclarationInstructions(context, node, scope, meta, 0);
 				}

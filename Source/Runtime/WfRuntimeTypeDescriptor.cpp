@@ -24,6 +24,7 @@ WfStaticMethod
 
 			WfStaticMethod::WfStaticMethod()
 				:MethodInfoImpl(nullptr, nullptr, true)
+				, functionIndex(-1)
 			{
 			}
 
