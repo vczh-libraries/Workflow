@@ -100,20 +100,21 @@ BuildGlobalNameFromModules
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					switch (member->kind)
+					if (member->kind == WfClassMemberKind::Static)
 					{
-					case WfClassMemberKind::Static:
-						{
-							auto info = MakePtr<WfStaticMethod>();
-							td->AddMember(node->name.value, info);
-							manager->declarationMemberInfos.Add(node, info);
-						}
-						break;
+						auto info = MakePtr<WfStaticMethod>();
+						td->AddMember(node->name.value, info);
+						manager->declarationMemberInfos.Add(node, info);
+					}
+					else
+					{
+						throw 0;
 					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override

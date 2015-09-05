@@ -56,10 +56,12 @@ CompleteScopeForClassMember
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					CompleteScopeForDeclaration(manager, node);
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfClass> td, Ptr<WfClassMember> member)

@@ -63,14 +63,20 @@ GenerateGlobalDeclarationMetadata
 					{
 						GenerateGlobalDeclarationMetadata(context, node, namePrefix);
 					}
+					else
+					{
+						throw 0;
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					GenerateGlobalDeclarationMetadata(context, node, namePrefix);
 				}
 			};
 
@@ -304,10 +310,12 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					GenerateDeclarationInstructions(context, node);
 				}
 			};
 

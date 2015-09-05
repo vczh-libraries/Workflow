@@ -40,10 +40,12 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					ValidateDeclarationSemantic(manager, node);
 				}
 
 				static void Execute(Ptr<WfClass> td, Ptr<WfClassMember> member, WfLexicalScopeManager* manager)
