@@ -126,7 +126,7 @@ GenerateGlobalDeclarationMetadata
 				{
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value, member);
+						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", member);
 						member->declaration->Accept(&visitor);
 					}
 				}
