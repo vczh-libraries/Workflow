@@ -341,11 +341,14 @@ ValidateSemantic(Expression)
 								}
 								if (auto node = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
 								{
-									captured = true;
-									vint index = manager->functionLambdaCaptures.Keys().IndexOf(node.Obj());
-									if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(symbol.Obj()))
+									if (!currentScope->ownerClassMember)
 									{
-										manager->functionLambdaCaptures.Add(node.Obj(), symbol);
+										captured = true;
+										vint index = manager->functionLambdaCaptures.Keys().IndexOf(node.Obj());
+										if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(symbol.Obj()))
+										{
+											manager->functionLambdaCaptures.Add(node.Obj(), symbol);
+										}
 									}
 								}
 								if (auto node = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())

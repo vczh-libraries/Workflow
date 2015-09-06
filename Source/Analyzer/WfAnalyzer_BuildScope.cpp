@@ -108,11 +108,11 @@ BuildScopeForDeclaration
 					resultScope = new WfLexicalScope(parentScope);
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						BuildScopeForDeclaration(manager, resultScope, member->declaration);
+						BuildScopeForClassMember(manager, resultScope, td, member);
 					}
 				}
 
-				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)
+				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration, Ptr<WfClassMember> member)
 				{
 					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source);
 					declaration->Accept(&visitor);
@@ -120,6 +120,7 @@ BuildScopeForDeclaration
 					{
 						manager->declarationScopes.Add(declaration, visitor.resultScope);
 						visitor.resultScope->ownerDeclaration = declaration;
+						visitor.resultScope->ownerClassMember = member;
 					}
 					else
 					{
@@ -568,9 +569,14 @@ BuildScope
 				}
 			}
 
+			void BuildScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member, parsing::ParsingTreeCustomBase* source)
+			{
+				BuildScopeForDeclarationVisitor::Execute(manager, parentScope, source, member->declaration, member);
+			}
+
 			void BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source)
 			{
-				BuildScopeForDeclarationVisitor::Execute(manager, parentScope, source, declaration);
+				BuildScopeForDeclarationVisitor::Execute(manager, parentScope, source, declaration, nullptr);
 			}
 
 			void BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
