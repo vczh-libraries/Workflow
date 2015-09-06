@@ -283,10 +283,70 @@ Serialization (TypeImpl)
 			struct Serialization<WfTypeImpl>
 			{
 
+				static void IO(Reader& reader, WfStaticMethod* info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				{
+				}
+					
+				static void IO(Writer& writer, WfStaticMethod* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				{
+				}
+
+				//----------------------------------------------------
+
+				static void IO(Reader& reader, WfClass* td, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				{
+					// methods
+					vint methodGroupCount = 0;
+					reader << methodGroupCount;
+					for (vint i = 0; i < methodGroupCount; i++)
+					{
+						vint methodCount = 0;
+						WString methodName;
+						reader << methodCount << methodName;
+						for (vint j = 0; j < methodCount; j++)
+						{
+							bool isStaticMethod = false;
+							reader << isStaticMethod;
+							if (isStaticMethod)
+							{
+								auto info = MakePtr<WfStaticMethod>();
+								td->AddMember(methodName, info);
+								IO(reader, info.Obj(), tdIndex);
+							}
+						}
+					}
+				}
+					
+				static void IO(Writer& writer, WfClass* td, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				{
+					// methods
+					vint methodGroupCount = td->GetMethodGroupCount();
+					writer << methodGroupCount;
+					for (vint i = 0; i < methodGroupCount; i++)
+					{
+						auto group = td->GetMethodGroup(i);
+						vint methodCount = group->GetMethodCount();
+						WString methodName = group->GetName();
+						writer << methodCount << methodName;
+						for (vint j = 0; j < methodCount; j++)
+						{
+							auto method = group->GetMethod(j);
+							bool isStaticMethod = false;
+							if (auto staticMethod = dynamic_cast<WfStaticMethod*>(method))
+							{
+								isStaticMethod = true;
+								writer << isStaticMethod;
+								IO(writer, staticMethod, tdIndex);
+							}
+						}
+					}
+				}
+
 				//----------------------------------------------------
 
 				static void IO(Reader& reader, WfTypeImpl& value)
 				{
+					// classes
 					vint classCount = 0;
 					reader << classCount;
 					for (vint i = 0; i < classCount; i++)
@@ -295,13 +355,14 @@ Serialization (TypeImpl)
 						reader << typeName;
 						value.classes.Add(MakePtr<WfClass>(typeName));
 					}
-					
+
 					Dictionary<vint, ITypeDescriptor*> tdIndex;
 					for (vint i = 0; i < classCount; i++)
 					{
 						tdIndex.Add(i, value.classes[i].Obj());
 					}
 					
+					// used type descriptors
 					vint tdCount = 0;
 					reader << tdCount;
 					for (vint i = 0; i < tdCount; i++)
@@ -310,10 +371,17 @@ Serialization (TypeImpl)
 						reader << typeName;
 						tdIndex.Add((i * -1) - 1, GetTypeDescriptor(typeName));
 					}
+
+					// fill classes
+					for (vint i = 0; i < classCount; i++)
+					{
+						IO(reader, value.classes[i].Obj(), tdIndex);
+					}
 				}
 					
 				static void IO(Writer& writer, WfTypeImpl& value)
 				{
+					// classes
 					vint classCount = value.classes.Count();
 					writer << classCount;
 					for (vint i = 0; i < classCount; i++)
@@ -328,6 +396,7 @@ Serialization (TypeImpl)
 						tdIndex.Add(value.classes[i].Obj(), i);
 					}
 
+					// used type descriptors
 					SortedList<ITypeDescriptor*> tds;
 					CollectTypeDescriptors(&value, tds);
 					for (vint i = tds.Count() - 1; i >= 0; i--)
@@ -345,6 +414,12 @@ Serialization (TypeImpl)
 						tdIndex.Add(tds[i], (i * -1) - 1);
 						WString typeName = tds[i]->GetTypeName();
 						writer << typeName;
+					}
+
+					// fill classes
+					for (vint i = 0; i < classCount; i++)
+					{
+						IO(writer, value.classes[i].Obj(), tdIndex);
 					}
 				}
 			};
@@ -436,13 +511,13 @@ WfAssembly
 			void WfAssembly::IO(TIO& io)
 			{
 				io
+					<< typeImpl
 					<< insBeforeCodegen
 					<< insAfterCodegen
 					<< variableNames
 					<< functionByName
 					<< functions
 					<< instructions
-					<< typeImpl
 					;
 			}
 
