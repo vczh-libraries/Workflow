@@ -23,16 +23,16 @@ namespace vl
 				typedef reflection::description::Value						Value;
 			protected:
 
-				Value					InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value					CreateFunctionProxyInternal(const Value& thisObject)override;
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 
 			public:
-				vint					functionIndex;
+				vint									functionIndex;
 
 				WfStaticMethod();
 				~WfStaticMethod();
 
-				void					SetReturn(Ptr<ITypeInfo> type);
+				void									SetReturn(Ptr<ITypeInfo> type);
 			};
 
 			class WfClass : public reflection::description::TypeDescriptorImpl
@@ -41,14 +41,20 @@ namespace vl
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 			protected:
 
-				void					LoadInternal()override;
+				void									LoadInternal()override;
 
 			public:
 				WfClass(const WString& typeName);
 				~WfClass();
 
-				void					AddBaseType(ITypeDescriptor* type);
-				void					AddMember(const WString& name, Ptr<WfStaticMethod> value);
+				void									AddBaseType(ITypeDescriptor* type);
+				void									AddMember(const WString& name, Ptr<WfStaticMethod> value);
+			};
+
+			class WfTypeImpl : public Object
+			{
+			public:
+				collections::List<Ptr<WfClass>>			classes;
 			};
 		}
 	}

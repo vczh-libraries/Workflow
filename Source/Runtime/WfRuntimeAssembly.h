@@ -75,6 +75,8 @@ Assembly
 				collections::List<Ptr<WfAssemblyFunction>>			functions;
 				/// <summary>Instructions.</summary>
 				collections::List<WfInstruction>					instructions;
+				/// <summary>Custom types.</summary>
+				Ptr<typeimpl::WfTypeImpl>							typeImpls;
 
 				/// <summary>Create an empty assembly.</summary>
 				WfAssembly();

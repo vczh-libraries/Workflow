@@ -12,6 +12,7 @@ namespace vl
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace runtime;
+			using namespace typeimpl;
 
 			typedef WfInstruction Ins;
 
@@ -123,6 +124,7 @@ GenerateAssembly
 				auto assembly = MakePtr<WfAssembly>();
 				assembly->insBeforeCodegen = new WfInstructionDebugInfo;
 				assembly->insAfterCodegen = new WfInstructionDebugInfo;
+				assembly->typeImpls = new WfTypeImpl;
 				
 				WfCodegenContext context(assembly, manager);
 				FOREACH_INDEXER(Ptr<WfModule>, module, index, manager->GetModules())
@@ -148,6 +150,14 @@ GenerateAssembly
 
 					assembly->insBeforeCodegen->moduleCodes.Add(codeBeforeCodegen);
 					assembly->insAfterCodegen->moduleCodes.Add(codeAfterCodegen);
+				}
+
+				FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
+				{
+					if (auto tdClass = td.Cast<WfClass>())
+					{
+						assembly->typeImpls->classes.Add(tdClass);
+					}
 				}
 
 				FOREACH(Ptr<WfModule>, module, manager->GetModules())
