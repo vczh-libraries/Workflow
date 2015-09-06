@@ -10,6 +10,7 @@ namespace vl
 			using namespace collections;
 			using namespace reflection;
 			using namespace reflection::description;
+			using namespace typeimpl;
 
 /***********************************************************************
 WfRuntimeThreadContext (Operators)
@@ -583,6 +584,15 @@ WfRuntimeThreadContext
 						Value thisValue;
 						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
 						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.methodParameter));
+
+						if (auto staticMethod = dynamic_cast<WfStaticMethod*>(ins.methodParameter))
+						{
+							if (staticMethod->GetGlobalContext() == globalContext.Obj())
+							{
+								CONTEXT_ACTION(PushStackFrame(staticMethod->functionIndex, ins.countParameter, nullptr), L"failed to invoke a function.");
+								return WfRuntimeExecutionAction::EnterStackFrame;
+							}
+						}
 
 						Array<Value> arguments(ins.countParameter);
 						for (vint i = 0; i < ins.countParameter; i++)

@@ -42,6 +42,7 @@ namespace vl
 				WfStaticMethod();
 				~WfStaticMethod();
 
+				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetReturn(Ptr<ITypeInfo> type);
 			};
 
@@ -58,7 +59,8 @@ namespace vl
 			public:
 				WfClass(const WString& typeName);
 				~WfClass();
-
+				
+				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									AddBaseType(ITypeDescriptor* type);
 				void									AddMember(const WString& name, Ptr<WfStaticMethod> value);
 			};
@@ -70,7 +72,8 @@ namespace vl
 
 			public:
 				collections::List<Ptr<WfClass>>			classes;
-
+				
+				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 				void									Load(reflection::description::ITypeManager* manager)override;
 				void									Unload(reflection::description::ITypeManager* manager)override;

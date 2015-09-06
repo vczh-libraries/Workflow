@@ -41,6 +41,11 @@ WfStaticMethod
 			WfStaticMethod::~WfStaticMethod()
 			{
 			}
+			
+			runtime::WfRuntimeGlobalContext* WfStaticMethod::GetGlobalContext()
+			{
+				return globalContext;
+			}
 
 			void WfStaticMethod::SetReturn(Ptr<ITypeInfo> type)
 			{
@@ -83,6 +88,11 @@ WfClass
 			WfClass::~WfClass()
 			{
 			}
+			
+			runtime::WfRuntimeGlobalContext* WfClass::GetGlobalContext()
+			{
+				return globalContext;
+			}
 
 			void WfClass::AddBaseType(ITypeDescriptor* type)
 			{
@@ -97,6 +107,11 @@ WfClass
 /***********************************************************************
 WfTypeImpl
 ***********************************************************************/
+			
+			runtime::WfRuntimeGlobalContext* WfTypeImpl::GetGlobalContext()
+			{
+				return globalContext;
+			}
 
 			void WfTypeImpl::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
 			{
