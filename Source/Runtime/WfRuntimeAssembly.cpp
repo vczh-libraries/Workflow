@@ -208,10 +208,25 @@ Serialization (TypeImpl)
 			{
 				static void IO(Reader& reader, WfTypeImpl& value)
 				{
+					vint classCount = 0;
+					reader << classCount;
+					for (vint i = 0; i < classCount; i++)
+					{
+						WString typeName;
+						reader << typeName;
+						value.classes.Add(MakePtr<WfClass>(typeName));
+					}
 				}
 					
 				static void IO(Writer& writer, WfTypeImpl& value)
 				{
+					vint classCount = value.classes.Count();
+					writer << classCount;
+					for (vint i = 0; i < classCount; i++)
+					{
+						WString typeName = value.classes[i]->GetTypeName();
+						writer << typeName;
+					}
 				}
 			};
 
