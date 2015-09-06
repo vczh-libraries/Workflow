@@ -4,6 +4,7 @@ namespace vl
 {
 	using namespace reflection::description;
 	using namespace workflow::runtime;
+	using namespace workflow::typeimpl;
 	using namespace collections;
 
 	namespace stream
@@ -27,6 +28,10 @@ namespace vl
 			SERIALIZE_ENUM(WfInsCode)
 			SERIALIZE_ENUM(WfInsType)
 			SERIALIZE_ENUM(Value::ValueType)
+
+/***********************************************************************
+Serizliation (Type)
+***********************************************************************/
 
 			template<>
 			struct Serialization<ITypeDescriptor*>
@@ -194,6 +199,26 @@ namespace vl
 				}
 			};
 
+/***********************************************************************
+Serialization (TypeImpl)
+***********************************************************************/
+
+			template<>
+			struct Serialization<WfTypeImpl>
+			{
+				static void IO(Reader& reader, WfTypeImpl& value)
+				{
+				}
+					
+				static void IO(Writer& writer, WfTypeImpl& value)
+				{
+				}
+			};
+
+/***********************************************************************
+Serialization (Instruction)
+***********************************************************************/
+
 			template<>
 			struct Serialization<WfInstruction>
 			{
@@ -283,6 +308,7 @@ WfAssembly
 					<< functionByName
 					<< functions
 					<< instructions
+					<< typeImpl
 					;
 			}
 
