@@ -282,12 +282,80 @@ Serialization (TypeImpl)
 			template<>
 			struct Serialization<WfTypeImpl>
 			{
-				static void IO(Reader& reader, Ptr<ITypeInfo>& info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IO(Reader& reader, Ptr<ITypeInfo>& typeInfo, Dictionary<vint, ITypeDescriptor*>& tdIndex)
 				{
+					vint decorator = 0;
+					reader << decorator;
+					auto typeInfoImpl = MakePtr<TypeInfoImpl>(static_cast<ITypeInfo::Decorator>(decorator));
+					typeInfo = typeInfoImpl;
+					
+					switch (typeInfoImpl->GetDecorator())
+					{
+					case ITypeInfo::RawPtr:
+					case ITypeInfo::SharedPtr:
+					case ITypeInfo::Nullable:
+						{
+							Ptr<ITypeInfo> elementType;
+							IO(reader, elementType, tdIndex);
+							typeInfoImpl->SetElementType(elementType);
+						}
+						break;
+					case ITypeInfo::Generic:
+						{
+							Ptr<ITypeInfo> elementType;
+							IO(reader, elementType, tdIndex);
+							typeInfoImpl->SetElementType(elementType);
+
+							vint count = 0;
+							reader << count;
+							for (vint i = 0; i < count; i++)
+							{
+								Ptr<ITypeInfo> argumentType;
+								IO(reader, argumentType, tdIndex);
+								typeInfoImpl->AddGenericArgument(argumentType);
+							}
+						}
+						break;
+					case ITypeInfo::TypeDescriptor:
+						{
+							vint index;
+							reader << index;
+							typeInfoImpl->SetTypeDescriptor(tdIndex[index]);
+						}
+						break;
+					}
 				}
 					
-				static void IO(Writer& writer, ITypeInfo* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IO(Writer& writer, ITypeInfo* typeInfo, Dictionary<ITypeDescriptor*, vint>& tdIndex)
 				{
+					vint decorator = static_cast<vint>(typeInfo->GetDecorator());
+					writer << decorator;
+
+					switch (typeInfo->GetDecorator())
+					{
+					case ITypeInfo::RawPtr:
+					case ITypeInfo::SharedPtr:
+					case ITypeInfo::Nullable:
+						IO(writer, typeInfo->GetElementType(), tdIndex);
+						break;
+					case ITypeInfo::Generic:
+						{
+							IO(writer, typeInfo->GetElementType(), tdIndex);
+							vint count = typeInfo->GetGenericArgumentCount();
+							writer << count;
+							for (vint i = 0; i < count; i++)
+							{
+								IO(writer, typeInfo->GetGenericArgument(i), tdIndex);
+							}
+						}
+						break;
+					case ITypeInfo::TypeDescriptor:
+						{
+							vint index = tdIndex[typeInfo->GetTypeDescriptor()];
+							writer << index;
+						}
+						break;
+					}
 				}
 
 				//----------------------------------------------------
