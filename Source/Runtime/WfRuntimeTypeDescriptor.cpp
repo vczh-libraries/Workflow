@@ -8,10 +8,16 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace reflection::description;
+			using namespace runtime;
 
 /***********************************************************************
 WfStaticMethod
 ***********************************************************************/
+
+			void WfStaticMethod::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			{
+				globalContext = _globalContext;
+			}
 
 			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
@@ -42,6 +48,26 @@ WfStaticMethod
 WfClass
 ***********************************************************************/
 
+			void WfClass::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			{
+				globalContext = _globalContext;
+
+				vint methodGroupCount = GetMethodGroupCount();
+				for (vint i = 0; i < methodGroupCount; i++)
+				{
+					auto group = GetMethodGroup(i);
+					vint methodCount = group->GetMethodCount();
+					for (vint j = 0; j < methodCount; j++)
+					{
+						auto method = group->GetMethod(j);
+						if (auto staticMethod = dynamic_cast<WfStaticMethod*>(method))
+						{
+							staticMethod->SetGlobalContext(globalContext);
+						}
+					}
+				}
+			}
+
 			void WfClass::LoadInternal()
 			{
 			}
@@ -68,6 +94,33 @@ WfClass
 /***********************************************************************
 WfTypeImpl
 ***********************************************************************/
+
+			void WfTypeImpl::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			{
+				if (globalContext)
+				{
+					CHECK_ERROR(!_globalContext, L"vl::workflow::typeimpl::WfTypeImpl::SetGlobalContext(WfRuntimeGlobalContext*)#Only one global context is allowed to create from an assembly at the same time.");
+				}
+				else
+				{
+					CHECK_ERROR(_globalContext, L"vl::workflow::typeimpl::WfTypeImpl::SetGlobalContext(WfRuntimeGlobalContext*)#Only one global context is allowed to create from an assembly at the same time.");
+				}
+
+				globalContext = _globalContext;
+				FOREACH(Ptr<WfClass>, td, classes)
+				{
+					td->SetGlobalContext(globalContext);
+				}
+
+				if (globalContext)
+				{
+					GetGlobalTypeManager()->AddTypeLoader(Ptr<WfTypeImpl>(this));
+				}
+				else
+				{
+					GetGlobalTypeManager()->RemoveTypeLoader(Ptr<WfTypeImpl>(this));
+				}
+			}
 
 			void WfTypeImpl::Load(reflection::description::ITypeManager* manager)
 			{

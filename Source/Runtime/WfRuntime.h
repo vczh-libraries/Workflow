@@ -32,7 +32,7 @@ RuntimeEnvironment
 			};
 
 			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "&lt;initialize&gt;" should be the first to execute.</summary>
-			class WfRuntimeGlobalContext : public Object
+			class WfRuntimeGlobalContext : public Object, public reflection::Description<WfRuntimeGlobalContext>
 			{
 			public:
 				Ptr<WfAssembly>					assembly;
@@ -41,6 +41,7 @@ RuntimeEnvironment
 				/// <summary>Create a global context for executing a Workflow program.</summary>
 				/// <param name="_assembly">The assembly.</param>
 				WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly);
+				~WfRuntimeGlobalContext();
 			};
 
 			struct WfRuntimeStackFrame

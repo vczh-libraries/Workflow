@@ -21,6 +21,12 @@ WfRuntimeGlobalContext
 			{
 				globalVariables = new WfRuntimeVariableContext;
 				globalVariables->variables.Resize(assembly->variableNames.Count());
+				assembly->typeImpl->SetGlobalContext(this);
+			}
+
+			WfRuntimeGlobalContext::~WfRuntimeGlobalContext()
+			{
+				assembly->typeImpl->SetGlobalContext(nullptr);
 			}
 
 /***********************************************************************
