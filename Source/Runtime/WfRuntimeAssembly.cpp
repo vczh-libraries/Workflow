@@ -282,13 +282,50 @@ Serialization (TypeImpl)
 			template<>
 			struct Serialization<WfTypeImpl>
 			{
+				static void IO(Reader& reader, Ptr<ITypeInfo>& info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				{
+				}
+					
+				static void IO(Writer& writer, ITypeInfo* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				{
+				}
+
+				//----------------------------------------------------
 
 				static void IO(Reader& reader, WfStaticMethod* info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
 				{
+					reader << info->functionIndex;
+
+					Ptr<ITypeInfo> type;
+					IO(reader, type, tdIndex);
+					info->SetReturn(type);
+
+					vint count = 0;
+					reader << count;
+					for (vint i = 0; i < count; i++)
+					{
+						WString name;
+						IO(reader, type, tdIndex);
+						reader << name;
+						info->AddParameter(new ParameterInfoImpl(info, name, type));
+					}
 				}
 					
 				static void IO(Writer& writer, WfStaticMethod* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
 				{
+					writer << info->functionIndex;
+					IO(writer, info->GetReturn(), tdIndex);
+
+					vint count = info->GetParameterCount();
+					writer << count;
+					for (vint i = 0; i < count; i++)
+					{
+						auto parameter = info->GetParameter(i);
+						IO(writer, parameter->GetType(), tdIndex);
+
+						WString name = parameter->GetName();
+						writer << name;
+					}
 				}
 
 				//----------------------------------------------------
