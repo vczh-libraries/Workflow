@@ -6,6 +6,7 @@ namespace vl
 	{
 		namespace typeimpl
 		{
+			using namespace collections;
 			using namespace reflection::description;
 
 /***********************************************************************
@@ -62,6 +63,26 @@ WfClass
 			void WfClass::AddMember(const WString& name, Ptr<WfStaticMethod> value)
 			{
 				AddMethod(name, value);
+			}
+
+/***********************************************************************
+WfTypeImpl
+***********************************************************************/
+
+			void WfTypeImpl::Load(reflection::description::ITypeManager* manager)
+			{
+				FOREACH(Ptr<WfClass>, td, classes)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
+			}
+
+			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
+			{
+				FOREACH(Ptr<WfClass>, td, classes)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
 			}
 		}
 	}

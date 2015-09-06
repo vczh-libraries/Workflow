@@ -615,15 +615,16 @@ WfAssembly
 			template<typename TIO>
 			void WfAssembly::IO(TIO& io)
 			{
-				io
-					<< typeImpl
-					<< insBeforeCodegen
+				io << typeImpl;
+				GetGlobalTypeManager()->AddTypeLoader(typeImpl);
+				io	<< insBeforeCodegen
 					<< insAfterCodegen
 					<< variableNames
 					<< functionByName
 					<< functions
 					<< instructions
 					;
+				GetGlobalTypeManager()->RemoveTypeLoader(typeImpl);
 			}
 
 			WfAssembly::WfAssembly()

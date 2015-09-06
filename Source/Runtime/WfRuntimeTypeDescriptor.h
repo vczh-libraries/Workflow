@@ -51,10 +51,13 @@ namespace vl
 				void									AddMember(const WString& name, Ptr<WfStaticMethod> value);
 			};
 
-			class WfTypeImpl : public Object
+			class WfTypeImpl : public Object, public reflection::description::ITypeLoader
 			{
 			public:
 				collections::List<Ptr<WfClass>>			classes;
+
+				void									Load(reflection::description::ITypeManager* manager)override;
+				void									Unload(reflection::description::ITypeManager* manager)override;
 			};
 		}
 	}
