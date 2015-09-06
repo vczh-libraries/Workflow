@@ -1,4 +1,4 @@
-#include "WfRuntimeTypeDescriptor.h"
+#include "WfRuntime.h"
 
 namespace vl
 {
@@ -21,12 +21,15 @@ WfStaticMethod
 
 			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
-				throw 0;
+				auto lambda = MakePtr<WfRuntimeLambda>(globalContext, nullptr, functionIndex);
+				auto argumentArray = IValueList::Create(arguments);
+				return lambda->Invoke(argumentArray);
 			}
 
 			Value WfStaticMethod::CreateFunctionProxyInternal(const Value& thisObject)
 			{
-				throw 0;
+				auto lambda = MakePtr<WfRuntimeLambda>(globalContext, nullptr, functionIndex);
+				return Value::From(lambda);
 			}
 
 			WfStaticMethod::WfStaticMethod()
