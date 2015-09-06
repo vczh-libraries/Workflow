@@ -210,54 +210,6 @@ WfRuntimeThreadContext (TypeConversion)
 /***********************************************************************
 WfRuntimeThreadContext (Range)
 ***********************************************************************/
-
-			template<typename T>
-			class WfRuntimeRange : public Object, public IValueEnumerable
-			{
-			protected:
-				T						begin;
-				T						end;
-
-				class Enumerator : public Object, public IValueEnumerator
-				{
-				protected:
-					T					begin;
-					T					end;
-					T					current;
-				public:
-					Enumerator(T _begin, T _end)
-						:begin(_begin), end(_end), current(_begin - 1)
-					{
-					}
-
-					Value GetCurrent()
-					{
-						return BoxValue<T>(current);
-					}
-
-					vint GetIndex()
-					{
-						return (vint)(current - begin);
-					}
-
-					bool Next()
-					{
-						if (current >= end) return false;
-						current++;
-						return true;
-					}
-				};
-			public:
-				WfRuntimeRange(T _begin, T _end)
-					:begin(_begin), end(_end)
-				{
-				}
-
-				Ptr<IValueEnumerator> CreateEnumerator()override
-				{
-					return MakePtr<Enumerator>(begin, end);
-				}
-			};
 			
 			template<typename T>
 			WfRuntimeExecutionAction OPERATOR_OpCreateRange(WfRuntimeThreadContext& context)
@@ -275,51 +227,6 @@ WfRuntimeThreadContext (Range)
 /***********************************************************************
 WfRuntimeThreadContext (ReverseEnumerable)
 ***********************************************************************/
-
-			class WfRuntimeReverseEnumerable : public Object, public IValueEnumerable
-			{
-			protected:
-				Ptr<IValueList>			list;
-
-				class Enumerator : public Object, public IValueEnumerator
-				{
-				protected:
-					Ptr<IValueList>			list;
-					vint					index;
-				public:
-					Enumerator(Ptr<IValueList> _list)
-						:list(_list), index(_list->GetCount())
-					{
-					}
-
-					Value GetCurrent()
-					{
-						return list->Get(index);
-					}
-
-					vint GetIndex()
-					{
-						return list->GetCount() - 1 - index;
-					}
-
-					bool Next()
-					{
-						if (index <= 0) return false;
-						index--;
-						return true;
-					}
-				};
-			public:
-				WfRuntimeReverseEnumerable(Ptr<IValueList> _list)
-					:list(_list)
-				{
-				}
-
-				Ptr<IValueEnumerator> CreateEnumerator()override
-				{
-					return MakePtr<Enumerator>(list);
-				}
-			};
 			
 			Value OPERATOR_OpReverseEnumerable(Value operand)
 			{
@@ -331,79 +238,6 @@ WfRuntimeThreadContext (ReverseEnumerable)
 				}
 				return Value::From(MakePtr<WfRuntimeReverseEnumerable>(list));
 			}
-			
-/***********************************************************************
-WfRuntimeThreadContext (Lambda)
-***********************************************************************/
-
-			class WfRuntimeLambda : public Object, public IValueFunctionProxy
-			{
-			public:
-				Ptr<WfRuntimeGlobalContext>			globalContext;
-				Ptr<WfRuntimeVariableContext>		capturedVariables;
-				vint								functionIndex;
-
-				WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex)
-					:globalContext(_globalContext)
-					, capturedVariables(_capturedVariables)
-					, functionIndex(_functionIndex)
-				{
-				}
-
-				Value Invoke(Ptr<IValueList> arguments)override
-				{
-					WfRuntimeThreadContext context(globalContext);
-					vint count = arguments->GetCount();
-					for (vint i = 0; i < count; i++)
-					{
-						context.PushValue(arguments->Get(i));
-					}
-					
-					WString message;
-					if (context.PushStackFrame(functionIndex, count, capturedVariables) != WfRuntimeThreadContextError::Success)
-					{
-						throw WfRuntimeException(L"Internal error: failed to invoke a function.", true);
-					}
-
-					context.ExecuteToEnd();
-					if (context.status != WfRuntimeExecutionStatus::Finished)
-					{
-						throw WfRuntimeException(context.exceptionInfo);
-					}
-
-					Value result;
-					if (context.PopValue(result) != WfRuntimeThreadContextError::Success)
-					{
-						throw WfRuntimeException(L"Internal error: failed to pop the function result.", true);
-					}
-					
-					return result;
-				}
-			};
-			
-/***********************************************************************
-WfRuntimeThreadContext (Lambda)
-***********************************************************************/
-
-			class WfRuntimeInterfaceInstance : public Object, public IValueInterfaceProxy
-			{
-				typedef collections::Dictionary<WString, Ptr<IValueFunctionProxy>>		FunctionMap;
-			public:
-				FunctionMap							functions;
-
-				Value Invoke(const WString& name, Ptr<IValueList> arguments)override
-				{
-					vint index = functions.Keys().IndexOf(name);
-					if (index == -1)
-					{
-						throw WfRuntimeException(L"Internal error: failed to invoke the interface method \"" + name + L"\"", true);
-					}
-					else
-					{
-						return functions.Values()[index]->Invoke(arguments);
-					}
-				}
-			};
 
 #undef INTERNAL_ERROR
 #undef CONTEXT_ACTION
