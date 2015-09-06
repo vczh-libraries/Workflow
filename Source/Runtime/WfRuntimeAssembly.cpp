@@ -203,9 +203,88 @@ Serizliation (Type)
 Serialization (TypeImpl)
 ***********************************************************************/
 
+			static void CollectTypeDescriptors(ITypeDescriptor* td, SortedList<ITypeDescriptor*>& tds)
+			{
+				if (!tds.Contains(td))
+				{
+					tds.Add(td);
+				}
+			}
+
+			static void CollectTypeDescriptors(ITypeInfo* typeInfo, SortedList<ITypeDescriptor*>& tds)
+			{
+				switch (typeInfo->GetDecorator())
+				{
+				case ITypeInfo::RawPtr:
+				case ITypeInfo::SharedPtr:
+				case ITypeInfo::Nullable:
+					CollectTypeDescriptors(typeInfo->GetElementType(), tds);
+					break;
+				case ITypeInfo::Generic:
+					{
+						CollectTypeDescriptors(typeInfo->GetElementType(), tds);
+						vint count = typeInfo->GetGenericArgumentCount();
+						for (vint i = 0; i < count; i++)
+						{
+							CollectTypeDescriptors(typeInfo->GetGenericArgument(i), tds);
+						}
+					}
+					break;
+				case ITypeInfo::TypeDescriptor:
+					CollectTypeDescriptors(typeInfo->GetTypeDescriptor(), tds);
+					break;
+				}
+			}
+
+			static void CollectTypeDescriptors(WfStaticMethod* info, SortedList<ITypeDescriptor*>& tds)
+			{
+				CollectTypeDescriptors(info->GetReturn(), tds);
+				vint count = info->GetParameterCount();
+				for (vint i = 0; i < count; i++)
+				{
+					CollectTypeDescriptors(info->GetParameter(i)->GetType(), tds);
+				}
+			}
+
+			static void CollectTypeDescriptors(WfClass* td, SortedList<ITypeDescriptor*>& tds)
+			{
+				vint baseCount = td->GetBaseTypeDescriptorCount();
+				for (vint i = 0; i < baseCount; i++)
+				{
+					auto baseType = td->GetBaseTypeDescriptor(i);
+					CollectTypeDescriptors(baseType, tds);
+				}
+
+				vint methodGroupCount = td->GetMethodGroupCount();
+				for (vint i = 0; i < methodGroupCount; i++)
+				{
+					auto group = td->GetMethodGroup(i);
+					vint methodCount = group->GetMethodCount();
+					for (vint j = 0; j < methodCount; j++)
+					{
+						auto method = group->GetMethod(j);
+						if (auto staticMethod = dynamic_cast<WfStaticMethod*>(method))
+						{
+							CollectTypeDescriptors(staticMethod, tds);
+						}
+					}
+				}
+			}
+
+			static void CollectTypeDescriptors(WfTypeImpl* typeImpl, SortedList<ITypeDescriptor*>& tds)
+			{
+				FOREACH(Ptr<WfClass>, td, typeImpl->classes)
+				{
+					CollectTypeDescriptors(td.Obj(), tds);
+				}
+			}
+
 			template<>
 			struct Serialization<WfTypeImpl>
 			{
+
+				//----------------------------------------------------
+
 				static void IO(Reader& reader, WfTypeImpl& value)
 				{
 					vint classCount = 0;
@@ -216,6 +295,21 @@ Serialization (TypeImpl)
 						reader << typeName;
 						value.classes.Add(MakePtr<WfClass>(typeName));
 					}
+					
+					Dictionary<vint, ITypeDescriptor*> tdIndex;
+					for (vint i = 0; i < classCount; i++)
+					{
+						tdIndex.Add(i, value.classes[i].Obj());
+					}
+					
+					vint tdCount = 0;
+					reader << tdCount;
+					for (vint i = 0; i < tdCount; i++)
+					{
+						WString typeName;
+						reader << typeName;
+						tdIndex.Add((i * -1) - 1, GetTypeDescriptor(typeName));
+					}
 				}
 					
 				static void IO(Writer& writer, WfTypeImpl& value)
@@ -225,6 +319,31 @@ Serialization (TypeImpl)
 					for (vint i = 0; i < classCount; i++)
 					{
 						WString typeName = value.classes[i]->GetTypeName();
+						writer << typeName;
+					}
+
+					Dictionary<ITypeDescriptor*, vint> tdIndex;
+					for (vint i = 0; i < classCount; i++)
+					{
+						tdIndex.Add(value.classes[i].Obj(), i);
+					}
+
+					SortedList<ITypeDescriptor*> tds;
+					CollectTypeDescriptors(&value, tds);
+					for (vint i = tds.Count() - 1; i >= 0; i--)
+					{
+						if (tdIndex.Keys().Contains(tds[i]))
+						{
+							tds.RemoveAt(i);
+						}
+					}
+
+					vint tdCount = tds.Count();
+					writer << tdCount;
+					for (vint i = 0; i < tdCount; i++)
+					{
+						tdIndex.Add(tds[i], (i * -1) - 1);
+						WString typeName = tds[i]->GetTypeName();
 						writer << typeName;
 					}
 				}
