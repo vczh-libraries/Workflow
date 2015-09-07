@@ -45,7 +45,7 @@ Range
 
 					reflection::description::Value GetCurrent()
 					{
-						return BoxValue<T>(current);
+						return reflection::description::BoxValue<T>(current);
 					}
 
 					vint GetIndex()
