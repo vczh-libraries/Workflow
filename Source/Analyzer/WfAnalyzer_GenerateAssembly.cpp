@@ -124,7 +124,6 @@ GenerateAssembly
 				auto assembly = MakePtr<WfAssembly>();
 				assembly->insBeforeCodegen = new WfInstructionDebugInfo;
 				assembly->insAfterCodegen = new WfInstructionDebugInfo;
-				assembly->typeImpl = new WfTypeImpl;
 				
 				WfCodegenContext context(assembly, manager);
 				FOREACH_INDEXER(Ptr<WfModule>, module, index, manager->GetModules())
@@ -152,11 +151,15 @@ GenerateAssembly
 					assembly->insAfterCodegen->moduleCodes.Add(codeAfterCodegen);
 				}
 
-				FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
+				if (manager->declarationTypes.Count() > 0)
 				{
-					if (auto tdClass = td.Cast<WfClass>())
+					assembly->typeImpl = new WfTypeImpl;
+					FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
 					{
-						assembly->typeImpl->classes.Add(tdClass);
+						if (auto tdClass = td.Cast<WfClass>())
+						{
+							assembly->typeImpl->classes.Add(tdClass);
+						}
 					}
 				}
 
