@@ -365,6 +365,13 @@ namespace test
 		int									y = 0;
 	};
 
+	class PointClass : public Object, public Description<PointClass>
+	{
+	public:
+		int									x = 0;
+		int									y = 0;
+	};
+
 	class ObservableValue : public Object, public Description<ObservableValue>
 	{
 	protected:
@@ -447,6 +454,7 @@ namespace vl
 #define _ ,
 #define UNITTEST_TYPELIST(F)\
 			F(test::Point)\
+			F(test::PointClass)\
 			F(test::ObservableValue)\
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
@@ -456,6 +464,12 @@ namespace vl
 				STRUCT_MEMBER(x)
 				STRUCT_MEMBER(y)
 			END_STRUCT_MEMBER(Point)
+
+			BEGIN_CLASS_MEMBER(PointClass)
+				CLASS_MEMBER_FIELD(x)
+				CLASS_MEMBER_FIELD(y)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<PointClass>(), NO_PARAMETER)
+			END_CLASS_MEMBER(PointClass)
 
 			BEGIN_CLASS_MEMBER(ObservableValue)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<ObservableValue>(), NO_PARAMETER)

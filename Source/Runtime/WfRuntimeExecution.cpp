@@ -546,6 +546,15 @@ WfRuntimeThreadContext
 						PushValue(result);
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::SetProperty:
+					{
+						Value operand, value;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
+						ins.propertyParameter->SetValue(operand, value);
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::InvokeProxy:
 					{
 						Value thisValue;

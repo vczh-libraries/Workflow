@@ -536,6 +536,10 @@ ValidateSemantic(Expression)
 									setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
 								}
 							}
+							else if (!typeDescriptor->GetValueSerializer() && info->IsWritable())
+							{
+								setterType = CopyTypeInfo(info->GetReturn());
+							}
 							ResolveExpressionResult result(info, getterType, setterType);
 							results.Add(result);
 						}
