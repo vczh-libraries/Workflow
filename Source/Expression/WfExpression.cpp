@@ -1047,10 +1047,54 @@ Print (Declaration)
 				writer.AfterPrint(node);
 			}
 
+			void Visit(WfEventDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"event ");
+				writer.WriteString(node->name.value);
+				writer.WriteString(L"(");
+				FOREACH_INDEXER(Ptr<WfType>, type, index, node->arguments)
+				{
+					if (index != 0)
+					{
+						writer.WriteString(L", ");
+					}
+					WfPrint(type, indent, writer);
+				}
+				writer.WriteString(L");");
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfPropertyDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"prop ");
+				writer.WriteString(node->name.value);
+				writer.WriteString(L" : ");
+				WfPrint(node->type, indent, writer);
+				writer.WriteString(L"{");
+				writer.WriteString(node->getter.value);
+				if (node->kind == WfPropertyKind::Writable)
+				{
+					writer.WriteString(L", ");
+					writer.WriteString(node->setter.value);
+				}
+				writer.WriteString(L"}");
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfClassDeclaration* node)override
 			{
 				writer.BeforePrint(node);
-				writer.WriteString(L"class ");
+				switch (node->kind)
+				{
+				case WfClassKind::Class:
+					writer.WriteString(L"class ");
+					break;
+				case WfClassKind::Interface:
+					writer.WriteString(L"interface ");
+					break;
+				}
 				writer.WriteString(node->name.value);
 
 				FOREACH_INDEXER(Ptr<WfType>, type, index, node->baseTypes)
