@@ -71,8 +71,11 @@ expression is [not] null		// test
 ----------------------------
 attach(event, function)
 detach(handler)
+execute(event, a, b, c)
 typeof(type)
 type(expression)
+----------------------------
+this
 ======================================================
 bind(expression)										// analyze "expression" and return an instance of ValueSuscription
 x.y.observe(z).u.v										// subscribe x.y.zChanged with the value of x.y.z.u.v
@@ -111,8 +114,13 @@ for (x in (<collection> | [reversed] <range>)) <statement>
 try <statement> [catch(ex) <statement>] [finally <statement>]
 	
 ======================================================
-func Name(a : Type, b : Type) : Type <statement>
+func Name(a : Type, b : Type) : Type (<statement> | ;)
 namespace Name { ... }
+======================================================
+event Name(Type1, Typeb);
+prop Readonly : int { GetValue }
+prop Writable : int { GetValue, SetValue }
+(class | interface) A : B, C, D { ... }
 ======================================================
 module <module-name>
 using <type-path>; // can contain class
