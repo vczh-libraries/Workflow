@@ -220,10 +220,12 @@ ValidateStructure(Declaration)
 			{
 			public:
 				WfLexicalScopeManager*					manager;
+				WfClassDeclaration*						classDecl;
 				ParsingTreeCustomBase*					source;
 
-				ValidateStructureDeclarationVisitor(WfLexicalScopeManager* _manager, ParsingTreeCustomBase* _source)
+				ValidateStructureDeclarationVisitor(WfLexicalScopeManager* _manager, WfClassDeclaration* _classDecl, ParsingTreeCustomBase* _source)
 					:manager(_manager)
+					, classDecl(_classDecl)
 					, source(_source)
 				{
 				}
@@ -249,6 +251,28 @@ ValidateStructure(Declaration)
 						{
 							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"non-static class method"));
 						}
+
+						if (node->statement)
+						{
+							if (classDecl->kind == WfClassKind::Interface && classMember->kind != WfClassMemberKind::Static)
+							{
+								manager->errors.Add(WfErrors::InterfaceMethodShouldNotHaveImplementation(node));
+							}
+						}
+						else
+						{
+							if (classDecl->kind == WfClassKind::Class)
+							{
+								manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
+							}
+						}
+					}
+					else
+					{
+						if (!node->statement)
+						{
+							manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
+						}
 					}
 
 					if (node->anonymity == WfFunctionAnonymity::Anonymous)
@@ -259,14 +283,6 @@ ValidateStructure(Declaration)
 						}
 					}
 
-					if (node->statement)
-					{
-						throw 0;
-					}
-					else
-					{
-						throw 0;
-					}
 
 					ValidateTypeStructure(manager, node->returnType, true);
 					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
@@ -343,13 +359,13 @@ ValidateStructure(Declaration)
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						ValidateDeclarationStructure(manager, member->declaration, member.Obj());
+						ValidateDeclarationStructure(manager, member->declaration, node, member.Obj());
 					}
 				}
 
-				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager, ParsingTreeCustomBase* source)
+				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager, WfClassDeclaration* classDecl, ParsingTreeCustomBase* source)
 				{
-					ValidateStructureDeclarationVisitor visitor(manager, source);
+					ValidateStructureDeclarationVisitor visitor(manager, classDecl, source);
 					declaration->Accept(&visitor);
 				}
 			};
@@ -493,7 +509,7 @@ ValidateStructure(Statement)
 
 				void Visit(WfVariableStatement* node)override
 				{
-					ValidateDeclarationStructure(manager, node->variable, node);
+					ValidateDeclarationStructure(manager, node->variable, nullptr, node);
 				}
 
 				static void Execute(Ptr<WfStatement>& statement, WfLexicalScopeManager* manager, ValidateStructureContext* context)
@@ -843,7 +859,7 @@ ValidateStructure(Expression)
 
 				void Visit(WfFunctionExpression* node)override
 				{
-					ValidateDeclarationStructure(manager, node->function, node);
+					ValidateDeclarationStructure(manager, node->function, nullptr, node);
 				}
 
 				void Visit(WfNewTypeExpression* node)override
@@ -931,9 +947,9 @@ ValidateStructure
 				}
 			}
 
-			void ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source)
+			void ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, WfClassDeclaration* classDecl, parsing::ParsingTreeCustomBase* source)
 			{
-				ValidateStructureDeclarationVisitor::Execute(declaration, manager, source);
+				ValidateStructureDeclarationVisitor::Execute(declaration, manager, classDecl, source);
 			}
 
 			void ValidateStatementStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfStatement>& statement)

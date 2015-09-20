@@ -302,6 +302,16 @@ WfErrors
 				return new ParsingError(node, L"D0: Function should have a name.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveImplementation(WfDeclaration* node)
+			{
+				return new ParsingError(node, L"D0: Function should be implemented.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::InterfaceMethodShouldNotHaveImplementation(WfDeclaration* node)
+			{
+				return new ParsingError(node, L"D0: Interface method should not be implemented.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedDeclaration(WfDeclaration* node, const WString& firstDeclarationCategory)
 			{
 				return new ParsingError(node, L"D1: Duplicated declaration \"" + node->name.value + L"\", it has already beed defined as a " + firstDeclarationCategory + L".");
