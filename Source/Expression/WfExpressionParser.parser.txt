@@ -873,7 +873,8 @@ rule FunctionDeclaration Function
 			(NAME : name "(" with {anonymity="Named"})
 			| ("(" with {anonymity="Anonymous"})
 		)
-		[FunctionArgumentFragment : arguments {"," FunctionArgumentFragment : arguments}] ")" ":" WorkflowType : returnType Block : statement as FunctionDeclaration
+		[FunctionArgumentFragment : arguments {"," FunctionArgumentFragment : arguments}] ")" ":" WorkflowType : returnType
+		(Block : statement | ";") as FunctionDeclaration
 	;
 rule VariableDeclaration Variable
 	= "var" NAME : name [":" WorkflowType : type] "=" WorkflowExpression : expression ";" as VariableDeclaration

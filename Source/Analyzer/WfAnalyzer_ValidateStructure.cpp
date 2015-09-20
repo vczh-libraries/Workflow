@@ -258,6 +258,16 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::FunctionShouldHaveName(node));
 						}
 					}
+
+					if (node->statement)
+					{
+						throw 0;
+					}
+					else
+					{
+						throw 0;
+					}
+
 					ValidateTypeStructure(manager, node->returnType, true);
 					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
 					{
