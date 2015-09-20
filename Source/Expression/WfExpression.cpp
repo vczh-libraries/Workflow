@@ -1024,10 +1024,17 @@ Print (Declaration)
 
 				writer.WriteString(L" : ");
 				WfPrint(node->returnType, indent, writer);
-				writer.WriteLine(L"");
+				if (node->statement)
+				{
+					writer.WriteLine(L"");
 
-				writer.WriteString(indent);
-				WfPrint(node->statement, indent, writer);
+					writer.WriteString(indent);
+					WfPrint(node->statement, indent, writer);
+				}
+				else
+				{
+					writer.WriteString(L";");
+				}
 				writer.AfterPrint(node);
 			}
 

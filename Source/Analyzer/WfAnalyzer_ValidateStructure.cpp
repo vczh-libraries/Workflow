@@ -247,11 +247,6 @@ ValidateStructure(Declaration)
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
 					{
-						if (classMember->kind != WfClassMemberKind::Static)
-						{
-							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"non-static class method"));
-						}
-
 						if (node->statement)
 						{
 							if (classDecl->kind == WfClassKind::Interface && classMember->kind != WfClassMemberKind::Static)
@@ -261,10 +256,15 @@ ValidateStructure(Declaration)
 						}
 						else
 						{
-							if (classDecl->kind == WfClassKind::Class)
+							if (classDecl->kind == WfClassKind::Class || classMember->kind == WfClassMemberKind::Static)
 							{
 								manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
 							}
+						}
+
+						if (classDecl->kind == WfClassKind::Class && classMember->kind != WfClassMemberKind::Static)
+						{
+							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"non-static class method"));
 						}
 					}
 					else
@@ -289,8 +289,12 @@ ValidateStructure(Declaration)
 					{
 						ValidateTypeStructure(manager, argument->type);
 					}
-					ValidateStructureContext context;
-					ValidateStatementStructure(manager, &context, node->statement);
+
+					if (node->statement)
+					{
+						ValidateStructureContext context;
+						ValidateStatementStructure(manager, &context, node->statement);
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
@@ -326,33 +330,29 @@ ValidateStructure(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						switch (classMember->kind)
+						{
+						case WfClassMemberKind::Static:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
+							break;
+						}
+					}
+
+					FOREACH(Ptr<WfType>, type, node->baseTypes)
+					{
+						ValidateTypeStructure(manager, type);
+					}
+
 					switch (node->kind)
 					{
 					case WfClassKind::Class:
 						{
-							if (auto classMember = dynamic_cast<WfClassMember*>(source))
-							{
-								switch (classMember->kind)
-								{
-								case WfClassMemberKind::Static:
-									manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
-									break;
-								}
-							}
-
 							if (node->baseTypes.Count() > 0)
 							{
 								manager->errors.Add(WfErrors::ClassFeatureNotSupported(node, L"base type"));
-								FOREACH(Ptr<WfType>, type, node->baseTypes)
-								{
-									ValidateTypeStructure(manager, type);
-								}
 							}
-						}
-						break;
-					case WfClassKind::Interface:
-						{
-							throw 0;
 						}
 						break;
 					}
