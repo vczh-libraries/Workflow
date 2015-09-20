@@ -97,18 +97,46 @@ BuildScopeForDeclaration
 					BuildScopeForExpression(manager, parentScope, node->expression);
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					symbol->name = node->name.value;
+					symbol->creatorDeclaration = node;
+					parentScope->symbols.Add(symbol->name, symbol);
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					symbol->name = node->name.value;
+					symbol->creatorDeclaration = node;
+					parentScope->symbols.Add(symbol->name, symbol);
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorDeclaration = node;
 					parentScope->symbols.Add(symbol->name, symbol);
-
-					auto td = manager->declarationTypes[node].Cast<WfClass>();
-					resultScope = new WfLexicalScope(parentScope);
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					
+					switch (node->kind)
 					{
-						BuildScopeForClassMember(manager, resultScope, td, member);
+					case WfClassKind::Class:
+						{
+							auto td = manager->declarationTypes[node].Cast<WfClass>();
+							resultScope = new WfLexicalScope(parentScope);
+							FOREACH(Ptr<WfClassMember>, member, node->members)
+							{
+								BuildScopeForClassMember(manager, resultScope, td, member);
+							}
+						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
 					}
 				}
 

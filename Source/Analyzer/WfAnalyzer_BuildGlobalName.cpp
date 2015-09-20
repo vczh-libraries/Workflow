@@ -117,11 +117,33 @@ BuildGlobalNameFromModules
 					throw 0;
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto newScopeName = scopeName->AccessChild(node->name.value, false);
 					newScopeName->declarations.Add(node);
-					BuildClass(manager, newScopeName, node);
+					switch (node->kind)
+					{
+					case WfClassKind::Class:
+						{
+							BuildClass(manager, newScopeName, node);
+						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
+					}
 				}
 			};
 
@@ -163,9 +185,29 @@ BuildGlobalNameFromModules
 				{
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
-					BuildClassMemberVisitor::BuildClass(manager, scopeName, node);
+					switch (node->kind)
+					{
+					case WfClassKind::Class:
+						{
+							BuildClassMemberVisitor::BuildClass(manager, scopeName, node);
+						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
+					}
 				}
 			};
 
@@ -193,6 +235,8 @@ ValidateScopeName
 					Type,
 					Variable,
 					Function,
+					Event,
+					Property,
 					Namespace,
 				};
 
@@ -220,6 +264,12 @@ ValidateScopeName
 						break;
 					case Function:
 						categoryName = L"function";
+						break;
+					case Event:
+						categoryName = L"event";
+						break;
+					case Property:
+						categoryName = L"property";
 						break;
 					case Namespace:
 						categoryName = L"namespace";
@@ -259,6 +309,30 @@ ValidateScopeName
 					if (category == None)
 					{
 						category = Variable;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfEventDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Event;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Property;
 					}
 					else
 					{

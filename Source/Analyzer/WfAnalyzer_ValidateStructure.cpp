@@ -288,25 +288,47 @@ ValidateStructure(Declaration)
 					ValidateExpressionStructure(manager, &context, node->expression);
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
-					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					switch (node->kind)
 					{
-						switch (classMember->kind)
+					case WfClassKind::Class:
 						{
-						case WfClassMemberKind::Static:
-							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
-							break;
-						}
-					}
+							if (auto classMember = dynamic_cast<WfClassMember*>(source))
+							{
+								switch (classMember->kind)
+								{
+								case WfClassMemberKind::Static:
+									manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
+									break;
+								}
+							}
 
-					if (node->baseTypes.Count() > 0)
-					{
-						manager->errors.Add(WfErrors::ClassFeatureNotSupported(node, L"base type"));
-						FOREACH(Ptr<WfType>, type, node->baseTypes)
-						{
-							ValidateTypeStructure(manager, type);
+							if (node->baseTypes.Count() > 0)
+							{
+								manager->errors.Add(WfErrors::ClassFeatureNotSupported(node, L"base type"));
+								FOREACH(Ptr<WfType>, type, node->baseTypes)
+								{
+									ValidateTypeStructure(manager, type);
+								}
+							}
 						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
 					}
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)

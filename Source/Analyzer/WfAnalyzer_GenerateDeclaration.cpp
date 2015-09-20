@@ -91,6 +91,16 @@ GenerateGlobalDeclarationMetadata
 					throw 0;
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					GenerateGlobalDeclarationMetadata(context, node, namePrefix);
@@ -140,12 +150,32 @@ GenerateGlobalDeclarationMetadata
 					context.globalVariables.Add(symbol.Obj(), index);
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					switch (node->kind)
 					{
-						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", member);
-						member->declaration->Accept(&visitor);
+					case WfClassKind::Class:
+						{
+							FOREACH(Ptr<WfClassMember>, member, node->members)
+							{
+								GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", member);
+								member->declaration->Accept(&visitor);
+							}
+						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
 					}
 				}
 			};
@@ -185,6 +215,14 @@ GenerateInstructions(Initialize)
 					vint variableIndex = context.globalVariables[symbol.Obj()];
 					GenerateExpressionInstructions(context, node->expression);
 					INSTRUCTION(Ins::StoreGlobalVar(variableIndex));
+				}
+
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -329,6 +367,16 @@ GenerateInstructions(Declaration)
 					throw 0;
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					GenerateDeclarationInstructions(context, node);
@@ -361,12 +409,32 @@ GenerateInstructions(Declaration)
 				{
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					switch (node->kind)
 					{
-						GenerateClassMemberInstructionsVisitor visitor(context, member);
-						member->declaration->Accept(&visitor);
+					case WfClassKind::Class:
+						{
+							FOREACH(Ptr<WfClassMember>, member, node->members)
+							{
+								GenerateClassMemberInstructionsVisitor visitor(context, member);
+								member->declaration->Accept(&visitor);
+							}
+						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
 					}
 				}
 			};

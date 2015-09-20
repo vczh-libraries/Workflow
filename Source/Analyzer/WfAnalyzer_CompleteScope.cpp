@@ -59,6 +59,16 @@ CompleteScopeForClassMember
 					throw 0;
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					CompleteScopeForDeclaration(manager, node);
@@ -99,12 +109,39 @@ CompleteScopeForDeclaration
 				{
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					switch (node->kind)
+					{
+					case WfPropertyKind::Readonly:
+						throw 0;
+					case WfPropertyKind::Writable:
+						throw 0;
+					}
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
-					auto td = manager->declarationTypes[node].Cast<WfClass>();
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					switch (node->kind)
 					{
-						CompleteScopeForClassMember(manager, td, member);
+					case WfClassKind::Class:
+						{
+							auto td = manager->declarationTypes[node].Cast<WfClass>();
+							FOREACH(Ptr<WfClassMember>, member, node->members)
+							{
+								CompleteScopeForClassMember(manager, td, member);
+							}
+						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
 					}
 				}
 

@@ -50,6 +50,16 @@ ValidateSemantic(ClassMember)
 					throw 0;
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					ValidateDeclarationSemantic(manager, node);
@@ -100,18 +110,38 @@ ValidateSemantic(Declaration)
 					}
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
-					auto td = manager->declarationTypes[node].Cast<WfClass>();
-
-					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					switch (node->kind)
 					{
-					}
+					case WfClassKind::Class:
+						{
+							auto scope = manager->declarationScopes[node];
+							auto td = manager->declarationTypes[node].Cast<WfClass>();
 
-					FOREACH(Ptr<WfClassMember>, member, node->members)
-					{
-						ValidateClassMemberSemantic(manager, td, member);
+							FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+							{
+							}
+
+							FOREACH(Ptr<WfClassMember>, member, node->members)
+							{
+								ValidateClassMemberSemantic(manager, td, member);
+							}
+						}
+						break;
+					case WfClassKind::Interface:
+						{
+							throw 0;
+						}
+						break;
 					}
 				}
 

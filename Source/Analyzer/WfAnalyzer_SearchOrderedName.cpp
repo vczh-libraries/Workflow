@@ -42,6 +42,14 @@ SearchOrderedName(Declaration)
 					SearchOrderedName(scope, node->expression, names);
 				}
 
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					FOREACH(Ptr<WfClassMember>, member, node->members)
