@@ -98,18 +98,20 @@ namespace vl
 			KEYWORD_CATCH = 78,
 			KEYWORD_FINALLY = 79,
 			KEYWORD_CLASS = 80,
-			KEYWORD_STATIC = 81,
-			KEYWORD_USING = 82,
-			KEYWORD_NAMESPACE = 83,
-			KEYWORD_MODULE = 84,
-			KEYWORD_UNIT = 85,
-			NAME = 86,
-			ORDERED_NAME = 87,
-			FLOAT = 88,
-			INTEGER = 89,
-			STRING = 90,
-			FORMATSTRING = 91,
-			SPACE = 92,
+			KEYWORD_PROP = 81,
+			KEYWORD_EVENT = 82,
+			KEYWORD_STATIC = 83,
+			KEYWORD_USING = 84,
+			KEYWORD_NAMESPACE = 85,
+			KEYWORD_MODULE = 86,
+			KEYWORD_UNIT = 87,
+			NAME = 88,
+			ORDERED_NAME = 89,
+			FLOAT = 90,
+			INTEGER = 91,
+			STRING = 92,
+			FORMATSTRING = 93,
+			SPACE = 94,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -176,6 +178,8 @@ namespace vl
 		class WfVariableStatement;
 		class WfNewTypeExpression;
 		class WfClassMember;
+		class WfEventDeclaration;
+		class WfPropertyDeclaration;
 		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
@@ -947,6 +951,8 @@ namespace vl
 				virtual void Visit(WfNamespaceDeclaration* node)=0;
 				virtual void Visit(WfFunctionDeclaration* node)=0;
 				virtual void Visit(WfVariableDeclaration* node)=0;
+				virtual void Visit(WfEventDeclaration* node)=0;
+				virtual void Visit(WfPropertyDeclaration* node)=0;
 				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
@@ -1042,6 +1048,12 @@ namespace vl
 			Normal,
 		};
 
+		enum class WfClassKind
+		{
+			Class,
+			Interface,
+		};
+
 		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
 		{
 		public:
@@ -1051,9 +1063,39 @@ namespace vl
 			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
+		class WfEventDeclaration : public WfDeclaration, vl::reflection::Description<WfEventDeclaration>
+		{
+		public:
+			vl::collections::List<vl::Ptr<WfType>> arguments;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfEventDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		enum class WfPropertyKind
+		{
+			Readonly,
+			Writable,
+		};
+
+		class WfPropertyDeclaration : public WfDeclaration, vl::reflection::Description<WfPropertyDeclaration>
+		{
+		public:
+			WfPropertyKind kind;
+			vl::Ptr<WfType> type;
+			vl::parsing::ParsingToken getter;
+			vl::parsing::ParsingToken setter;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
 		{
 		public:
+			WfClassKind kind;
 			vl::collections::List<vl::Ptr<WfType>> baseTypes;
 			vl::collections::List<vl::Ptr<WfClassMember>> members;
 
@@ -1242,7 +1284,11 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
 			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
 			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
+			DECL_TYPE_INFO(vl::workflow::WfClassKind)
 			DECL_TYPE_INFO(vl::workflow::WfClassMember)
+			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfPropertyKind)
+			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
@@ -1593,6 +1639,16 @@ namespace vl
 					}
 
 					void Visit(vl::workflow::WfVariableDeclaration* node)override
+					{
+						INVOKE_INTERFACE_PROXY(Visit, node);
+					}
+
+					void Visit(vl::workflow::WfEventDeclaration* node)override
+					{
+						INVOKE_INTERFACE_PROXY(Visit, node);
+					}
+
+					void Visit(vl::workflow::WfPropertyDeclaration* node)override
 					{
 						INVOKE_INTERFACE_PROXY(Visit, node);
 					}

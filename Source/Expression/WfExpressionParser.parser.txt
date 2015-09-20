@@ -489,14 +489,40 @@ enum ClassMemberKind
 	Normal,
 }
 
+enum ClassKind
+{
+	Class,
+	Interface,
+}
+
 class ClassMember
 {
 	ClassMemberKind			kind;
 	Declaration				declaration;
 }
 
+class EventDeclaration : Declaration
+{
+	Type[]					arguments;
+}
+
+enum PropertyKind
+{
+	Readonly,
+	Writable,
+}
+
+class PropertyDeclaration : Declaration
+{
+	PropertyKind			kind;
+	Type					type;
+	token					getter;
+	token					setter;
+}
+
 class ClassDeclaration : Declaration
 {
+	ClassKind				kind;
 	Type[]					baseTypes;
 	ClassMember[]			members;
 }
@@ -621,6 +647,8 @@ token KEYWORD_TRY = "try";
 token KEYWORD_CATCH = "catch";
 token KEYWORD_FINALLY = "finally";
 token KEYWORD_CLASS = "class";
+token KEYWORD_PROP = "prop";
+token KEYWORD_EVENT = "event";
 token KEYWORD_STATIC = "static";
 token KEYWORD_USING = "using";
 token KEYWORD_NAMESPACE = "namespace";
@@ -851,19 +879,36 @@ rule VariableDeclaration Variable
 	= "var" NAME : name [":" WorkflowType : type] "=" WorkflowExpression : expression ";" as VariableDeclaration
 	;
 
+rule EventDeclaration Event
+	= "event" NAME : name "(" [WorkflowType : arguments {"," WorkflowType : arguments}] ")" as EventDeclaration
+	;
+
+rule PropertyDeclaration Property
+	= "prop" NAME : name ":" WorkflowType : type "{"
+		(
+			(NAME : getter with {kind = "Readonly"})
+			| ((NAME : getter "," NAME : setter with {kind = "Writable"}))
+		) "}" as PropertyDeclaration
+	;
+
 rule ClassMember WorkflowClassMember
-	= "static" FunctionDeclaration : declaration as ClassMember with {kind = "Static"}
+	= "static" Function : declaration as ClassMember with {kind = "Static"}
 	= WorkflowDeclaration : declaration as ClassMember with {kind = "Normal"}
 	;
 
 rule ClassDeclaration Class
-	= "class" NAME : name [":" WorkflowType : baseTypes {"," WorkflowType : baseTypes}] "{" {WorkflowClassMember : members} "}" as ClassDeclaration
+	= (
+		("class" with {kind = "Class"})
+		| ("interface" with {kind = "Interface"})
+	  ) NAME : name [":" WorkflowType : baseTypes {"," WorkflowType : baseTypes}] "{" {WorkflowClassMember : members} "}" as ClassDeclaration
 	;
 
 rule Declaration WorkflowDeclaration
 	= !Namespace
 	= !Function
 	= !Variable
+	= !Event
+	= !Property
 	= !Class
 	;
 
