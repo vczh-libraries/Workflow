@@ -463,7 +463,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
 			{
-				return new ParsingError(node, L"G3: Cannot find the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should be a non-static method in the same type.");
+				return new ParsingError(node, L"G3: Cannot find the setter \"" + node->setter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should be a non-static method in the same type.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::PropertyEventNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G3: Cannot find the event \"" + node->valueChangedEvent.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should be an event in the same type.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
@@ -473,7 +478,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::TooManyPropertySetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
 			{
-				return new ParsingError(node, L"G4: Too many symbols found for the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
+				return new ParsingError(node, L"G4: Too many symbols found for the setter \"" + node->setter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::TooManyPropertyEvent(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G4: Too many symbols found for the event \"" + node->valueChangedEvent.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
 			}
 		}
 	}

@@ -115,13 +115,7 @@ CompleteScopeForDeclaration
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					switch (node->kind)
-					{
-					case WfPropertyKind::Readonly:
-						throw 0;
-					case WfPropertyKind::Writable:
-						throw 0;
-					}
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override

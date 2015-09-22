@@ -541,8 +541,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
 				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			PropertyEventNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			TooManyPropertySetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			TooManyPropertyEvent(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 			};
 		}
 	}

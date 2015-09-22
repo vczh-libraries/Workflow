@@ -350,9 +350,10 @@ ValidateStructure(Declaration)
 							break;
 						}
 
-						Ptr<WfClassMember> getter, setter;
+						Ptr<WfClassMember> getter, setter, valueChangedEvent;
 						bool duplicateGetter = false;
 						bool duplicateSetter = false;
+						bool duplicateEvent = false;
 						FOREACH(Ptr<WfClassMember>, member, classDecl->members)
 						{
 							if (!duplicateGetter && member->declaration->name.value == node->getter.value)
@@ -368,7 +369,7 @@ ValidateStructure(Declaration)
 								}
 							}
 
-							if (node->kind == WfPropertyKind::Writable && !duplicateSetter && member->declaration->name.value == node->setter.value)
+							if (!duplicateSetter && node->setter.value != L"" && member->declaration->name.value == node->setter.value)
 							{
 								if (setter)
 								{
@@ -381,9 +382,17 @@ ValidateStructure(Declaration)
 								}
 							}
 
-							if (duplicateGetter && duplicateSetter)
+							if (!duplicateEvent && node->valueChangedEvent.value != L"" && member->declaration->name.value == node->valueChangedEvent.value)
 							{
-								break;
+								if (valueChangedEvent)
+								{
+									duplicateEvent = true;
+									manager->errors.Add(WfErrors::TooManyPropertyEvent(node, classDecl));
+								}
+								else
+								{
+									valueChangedEvent = member;
+								}
 							}
 						}
 
@@ -392,9 +401,14 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::PropertyGetterNotFound(node, classDecl));
 						}
 
-						if (node->kind == WfPropertyKind::Writable && (!setter || setter->kind == WfClassMemberKind::Static || !setter->declaration.Cast<WfFunctionDeclaration>()))
+						if (node->setter.value != L"" && (!setter || setter->kind == WfClassMemberKind::Static || !setter->declaration.Cast<WfFunctionDeclaration>()))
 						{
 							manager->errors.Add(WfErrors::PropertySetterNotFound(node, classDecl));
+						}
+
+						if (node->valueChangedEvent.value != L"" && (!valueChangedEvent || valueChangedEvent->kind == WfClassMemberKind::Static || !valueChangedEvent->declaration.Cast<WfEventDeclaration>()))
+						{
+							manager->errors.Add(WfErrors::PropertyEventNotFound(node, classDecl));
 						}
 					}
 					else

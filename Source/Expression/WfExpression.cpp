@@ -1081,10 +1081,15 @@ Print (Declaration)
 				WfPrint(node->type, indent, writer);
 				writer.WriteString(L"{");
 				writer.WriteString(node->getter.value);
-				if (node->kind == WfPropertyKind::Writable)
+				if (node->setter.value != L"")
 				{
 					writer.WriteString(L", ");
 					writer.WriteString(node->setter.value);
+				}
+				if (node->valueChangedEvent.value != L"")
+				{
+					writer.WriteString(L" : ");
+					writer.WriteString(node->valueChangedEvent.value);
 				}
 				writer.WriteString(L"}");
 				writer.AfterPrint(node);
