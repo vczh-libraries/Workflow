@@ -125,8 +125,8 @@ Custom Type
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									AddBaseType(ITypeDescriptor* type);
 				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
-				void									AddMember(const WString& name, Ptr<WfProperty> value);
-				void									AddMember(const WString& name, Ptr<WfEvent> value);
+				void									AddMember(Ptr<WfProperty> value);
+				void									AddMember(Ptr<WfEvent> value);
 			};
 
 			class WfClass : public WfCustomType

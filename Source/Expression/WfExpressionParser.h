@@ -1073,19 +1073,13 @@ namespace vl
 			static vl::Ptr<WfEventDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		enum class WfPropertyKind
-		{
-			Readonly,
-			Writable,
-		};
-
 		class WfPropertyDeclaration : public WfDeclaration, vl::reflection::Description<WfPropertyDeclaration>
 		{
 		public:
-			WfPropertyKind kind;
 			vl::Ptr<WfType> type;
 			vl::parsing::ParsingToken getter;
 			vl::parsing::ParsingToken setter;
+			vl::parsing::ParsingToken valueChangedEvent;
 
 			void Accept(WfDeclaration::IVisitor* visitor)override;
 
@@ -1287,7 +1281,6 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfClassKind)
 			DECL_TYPE_INFO(vl::workflow::WfClassMember)
 			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
-			DECL_TYPE_INFO(vl::workflow::WfPropertyKind)
 			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)

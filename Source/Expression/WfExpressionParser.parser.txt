@@ -506,18 +506,12 @@ class EventDeclaration : Declaration
 	Type[]					arguments;
 }
 
-enum PropertyKind
-{
-	Readonly,
-	Writable,
-}
-
 class PropertyDeclaration : Declaration
 {
-	PropertyKind			kind;
 	Type					type;
 	token					getter;
 	token					setter;
+	token					valueChangedEvent;
 }
 
 class ClassDeclaration : Declaration
@@ -885,11 +879,7 @@ rule EventDeclaration Event
 	;
 
 rule PropertyDeclaration Property
-	= "prop" NAME : name ":" WorkflowType : type "{"
-		(
-			(NAME : getter with {kind = "Readonly"})
-			| ((NAME : getter "," NAME : setter with {kind = "Writable"}))
-		) "}" as PropertyDeclaration
+	= "prop" NAME : name ":" WorkflowType : type "{" NAME : getter ["," NAME : setter] [":" NAME : valueChangedEvent] "}" as PropertyDeclaration
 	;
 
 rule ClassMember WorkflowClassMember

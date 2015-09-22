@@ -57,12 +57,14 @@ BuildGlobalNameFromModules
 			public:
 				WfLexicalScopeManager*			manager;
 				Ptr<WfLexicalScopeName>			scopeName;
-				Ptr<WfClass>					td;
+				Ptr<WfClassDeclaration>			classDecl;
+				Ptr<WfCustomType>				td;
 				Ptr<WfClassMember>				member;
 
-				BuildClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName, Ptr<WfClass> _td, Ptr<WfClassMember> _member)
+				BuildClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName, Ptr<WfClassDeclaration> _classDecl, Ptr<WfCustomType> _td, Ptr<WfClassMember> _member)
 					:manager(_manager)
 					, scopeName(_scopeName)
+					, classDecl(_classDecl)
 					, td(_td)
 					, member(_member)
 				{
@@ -80,8 +82,18 @@ BuildGlobalNameFromModules
 						}
 					}
 
-					auto td = MakePtr<WfClass>(typeName);
+					Ptr<WfCustomType> td;
+					switch (declaration->kind)
+					{
+					case WfClassKind::Class:
+						td = MakePtr<WfClass>(typeName);
+						break;
+					case WfClassKind::Interface:
+						td = MakePtr<WfInterface>(typeName);
+						break;
+					}
 					manager->declarationTypes.Add(declaration, td);
+
 					if (!scopeName->typeDescriptor)
 					{
 						scopeName->typeDescriptor = td.Obj();
@@ -89,7 +101,7 @@ BuildGlobalNameFromModules
 
 					FOREACH(Ptr<WfClassMember>, member, declaration->members)
 					{
-						BuildClassMemberVisitor visitor(manager, scopeName, td, member);
+						BuildClassMemberVisitor visitor(manager, scopeName, declaration, td, member);
 						member->declaration->Accept(&visitor);
 					}
 				}
@@ -108,7 +120,18 @@ BuildGlobalNameFromModules
 					}
 					else
 					{
-						throw 0;
+						switch (classDecl->kind)
+						{
+						case WfClassKind::Class:
+							throw 0;
+						case WfClassKind::Interface:
+							{
+								auto info = MakePtr<WfInterfaceMethod>();
+								td->AddMember(node->name.value, info);
+								manager->declarationMemberInfos.Add(node, info);
+							}
+							break;
+						}
 					}
 				}
 
@@ -119,31 +142,23 @@ BuildGlobalNameFromModules
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					throw 0;
+					auto info = MakePtr<WfEvent>(td.Obj(), node->name.value);
+					td->AddMember(info);
+					manager->declarationMemberInfos.Add(node, info);
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					throw 0;
+					auto info = MakePtr<WfProperty>(td.Obj(), node->name.value);
+					td->AddMember(info);
+					manager->declarationMemberInfos.Add(node, info);
 				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto newScopeName = scopeName->AccessChild(node->name.value, false);
 					newScopeName->declarations.Add(node);
-					switch (node->kind)
-					{
-					case WfClassKind::Class:
-						{
-							BuildClass(manager, newScopeName, node);
-						}
-						break;
-					case WfClassKind::Interface:
-						{
-							throw 0;
-						}
-						break;
-					}
+					BuildClass(manager, newScopeName, node);
 				}
 			};
 

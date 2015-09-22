@@ -183,12 +183,12 @@ WfCustomType
 				AddMethod(name, value);
 			}
 
-			void WfCustomType::AddMember(const WString& name, Ptr<WfProperty> value)
+			void WfCustomType::AddMember(Ptr<WfProperty> value)
 			{
 				AddProperty(value);
 			}
 
-			void WfCustomType::AddMember(const WString& name, Ptr<WfEvent> value)
+			void WfCustomType::AddMember(Ptr<WfEvent> value)
 			{
 				AddEvent(value);
 			}
