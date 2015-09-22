@@ -281,7 +281,7 @@ Scope Analyzing
 			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										BuildScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member, parsing::ParsingTreeCustomBase* source = 0);
+			extern void										BuildScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, parsing::ParsingTreeCustomBase* source = 0);
 			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source = 0);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
