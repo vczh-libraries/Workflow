@@ -54,6 +54,27 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
+					auto scope = manager->declarationScopes[node];
+					if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), node->type))
+					{
+						if (node->getter.value != L"")
+						{
+							auto getter = td->GetMethodGroupByName(node->getter.value, false)->GetMethod(0);
+							if (!IsSameType(typeInfo.Obj(), getter->GetReturn()) || getter->GetParameterCount() != 0)
+							{
+								manager->errors.Add(WfErrors::PropertyGetterTypeMismatched(node, classDecl.Obj()));
+							}
+						}
+
+						if (node->setter.value != L"")
+						{
+							auto setter = td->GetMethodGroupByName(node->setter.value, false)->GetMethod(0);
+							if (setter->GetReturn()->GetTypeDescriptor() != description::GetTypeDescriptor<void>() || setter->GetParameterCount() != 1 || !IsSameType(typeInfo.Obj(), setter->GetParameter(0)->GetType()))
+							{
+								manager->errors.Add(WfErrors::PropertyGetterTypeMismatched(node, classDecl.Obj()));
+							}
+						}
+					}
 				}
 
 				void Visit(WfClassDeclaration* node)override
