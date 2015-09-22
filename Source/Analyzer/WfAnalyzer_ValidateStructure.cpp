@@ -320,12 +320,87 @@ ValidateStructure(Declaration)
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					throw 0;
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						switch (classDecl->kind)
+						{
+						case WfClassKind::Class:
+							{
+								manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"event"));
+							}
+							break;
+						}
+					}
+					else
+					{
+						manager->errors.Add(WfErrors::WrontDeclaration(node));
+					}
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					throw 0;
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						switch (classDecl->kind)
+						{
+						case WfClassKind::Class:
+							{
+								manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"property"));
+							}
+							break;
+						}
+
+						Ptr<WfDeclaration> getter, setter;
+						bool duplicateGetter = false;
+						bool duplicateSetter = false;
+						FOREACH(Ptr<WfClassMember>, member, classDecl->members)
+						{
+							if (!duplicateGetter && member->declaration->name.value == node->getter.value)
+							{
+								if (getter)
+								{
+									duplicateGetter = true;
+									manager->errors.Add(WfErrors::TooManyPropertyGetter(node, classDecl));
+								}
+								else
+								{
+									getter = member->declaration;
+								}
+							}
+
+							if (node->kind == WfPropertyKind::Writable && !duplicateSetter && member->declaration->name.value == node->setter.value)
+							{
+								if (setter)
+								{
+									duplicateSetter = true;
+									manager->errors.Add(WfErrors::TooManyPropertySetter(node, classDecl));
+								}
+								else
+								{
+									setter = member->declaration;
+								}
+							}
+
+							if (duplicateGetter && duplicateSetter)
+							{
+								break;
+							}
+						}
+
+						if (!getter)
+						{
+							manager->errors.Add(WfErrors::PropertyGetterNotFound(node, classDecl));
+						}
+
+						if (node->kind == WfPropertyKind::Writable && !setter)
+						{
+							manager->errors.Add(WfErrors::PropertySetterNotFound(node, classDecl));
+						}
+					}
+					else
+					{
+						manager->errors.Add(WfErrors::WrontDeclaration(node));
+					}
 				}
 
 				void Visit(WfClassDeclaration* node)override

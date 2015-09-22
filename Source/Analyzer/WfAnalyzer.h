@@ -519,6 +519,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			WrontDeclaration(WfEventDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrontDeclaration(WfPropertyDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);
@@ -537,6 +539,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassMember* node, const WString& name);
 				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStatic(WfClassMember* node);
 				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
+				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			TooManyPropertySetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 			};
 		}
 	}

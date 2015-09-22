@@ -364,6 +364,16 @@ WfErrors
 				return new ParsingError(node, L"D6: There are some other methods named \"" + node->name.value + L"\" whose types are also \"" + type->GetTypeFriendlyName() + L"\".");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrontDeclaration(WfEventDeclaration* node)
+			{
+				return new ParsingError(node, L"D7: Event \"" + node->name.value + L"\" cannot be used outside of classes.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrontDeclaration(WfPropertyDeclaration* node)
+			{
+				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be used outside of classes.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
 			{
 				return new ParsingError(node, L"E0: Wild card \"*\" should only appear in the last item of the using path and should appear once.");
@@ -444,6 +454,26 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::WrongClassMember(WfNamespaceDeclaration* node)
 			{
 				return new ParsingError(node, L"G2: Namespace \"" + node->name.value + L"\" cannot be a class member.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G3: Cannot find the getter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G3: Cannot find the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G4: Too many symbols found for the getter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::TooManyPropertySetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G4: Too many symbols found for the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
 			}
 		}
 	}
