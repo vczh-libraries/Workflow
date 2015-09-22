@@ -355,6 +355,8 @@ ValidateStructure(Declaration)
 							break;
 						}
 
+						ValidateTypeStructure(manager, node->type);
+
 						Ptr<WfClassMember> getter, setter, valueChangedEvent;
 						bool duplicateGetter = false;
 						bool duplicateSetter = false;
