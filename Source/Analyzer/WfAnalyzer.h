@@ -276,7 +276,7 @@ Global Name
 Scope Analyzing
 ***********************************************************************/
 			
-			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member);
+			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member);
 			extern void										CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 

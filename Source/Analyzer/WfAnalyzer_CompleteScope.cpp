@@ -20,10 +20,11 @@ CompleteScopeForClassMember
 			{
 			public:
 				WfLexicalScopeManager*					manager;
-				Ptr<WfClass>							td;
+				Ptr<WfCustomType>						td;
+				Ptr<WfClassDeclaration>					classDecl;
 				Ptr<WfClassMember>						member;
 
-				CompleteScopeForClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfClass> _td, Ptr<WfClassMember> _member)
+				CompleteScopeForClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member)
 					:manager(_manager)
 					, td(_td)
 					, member(_member)
@@ -37,7 +38,7 @@ CompleteScopeForClassMember
 				void Visit(WfFunctionDeclaration* node)override
 				{
 					auto scope = manager->declarationScopes[node];
-					auto info = manager->declarationMemberInfos[node].Cast<WfStaticMethod>();
+					auto info = manager->declarationMemberInfos[node].Cast<WfMethodBase>();
 
 					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
 					{
@@ -61,12 +62,27 @@ CompleteScopeForClassMember
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					throw 0;
+					auto scope = manager->declarationScopes[node];
+					auto info = manager->declarationMemberInfos[node].Cast<WfProperty>();
+
+					if (node->getter.value != L"")
+					{
+						info->SetGetter(dynamic_cast<MethodInfoImpl*>(td->GetMethodGroupByName(node->getter.value, false)->GetMethod(0)));
+					}
+
+					if (node->setter.value != L"")
+					{
+						info->SetSetter(dynamic_cast<MethodInfoImpl*>(td->GetMethodGroupByName(node->setter.value, false)->GetMethod(0)));
+					}
+
+					if (node->valueChangedEvent.value != L"")
+					{
+						info->SetValueChangedEvent(dynamic_cast<EventInfoImpl*>(td->GetEventByName(node->valueChangedEvent.value, false)));
+					}
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -74,9 +90,9 @@ CompleteScopeForClassMember
 					CompleteScopeForDeclaration(manager, node);
 				}
 
-				static void Execute(WfLexicalScopeManager* manager, Ptr<WfClass> td, Ptr<WfClassMember> member)
+				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member)
 				{
-					CompleteScopeForClassMemberVisitor visitor(manager, td, member);
+					CompleteScopeForClassMemberVisitor visitor(manager, td, classDecl, member);
 					member->declaration->Accept(&visitor);
 				}
 			};
@@ -120,22 +136,10 @@ CompleteScopeForDeclaration
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					switch (node->kind)
+					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-					case WfClassKind::Class:
-						{
-							auto td = manager->declarationTypes[node].Cast<WfClass>();
-							FOREACH(Ptr<WfClassMember>, member, node->members)
-							{
-								CompleteScopeForClassMember(manager, td, member);
-							}
-						}
-						break;
-					case WfClassKind::Interface:
-						{
-							throw 0;
-						}
-						break;
+						CompleteScopeForClassMember(manager, td, node, member);
 					}
 				}
 
@@ -150,9 +154,9 @@ CompleteScopeForDeclaration
 CompleteScope
 ***********************************************************************/
 
-			void CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfClass> td, Ptr<WfClassMember> member)
+			void CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member)
 			{
-				CompleteScopeForClassMemberVisitor::Execute(manager, td, member);
+				CompleteScopeForClassMemberVisitor::Execute(manager, td, classDecl, member);
 			}
 
 			void CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
