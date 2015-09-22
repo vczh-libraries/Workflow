@@ -11,13 +11,37 @@ namespace vl
 			using namespace runtime;
 
 /***********************************************************************
-WfStaticMethod
+WfMethodBase
 ***********************************************************************/
 
-			void WfStaticMethod::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			void WfMethodBase::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
 			{
 				globalContext = _globalContext;
 			}
+
+
+			WfMethodBase::WfMethodBase()
+				:MethodInfoImpl(nullptr, nullptr, true)
+			{
+			}
+
+			WfMethodBase::~WfMethodBase()
+			{
+			}
+			
+			runtime::WfRuntimeGlobalContext* WfMethodBase::GetGlobalContext()
+			{
+				return globalContext;
+			}
+
+			void WfMethodBase::SetReturn(Ptr<ITypeInfo> type)
+			{
+				returnInfo = type;
+			}
+
+/***********************************************************************
+WfStaticMethod
+***********************************************************************/
 
 			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
@@ -32,31 +56,86 @@ WfStaticMethod
 				return Value::From(lambda);
 			}
 
-			WfStaticMethod::WfStaticMethod()
-				:MethodInfoImpl(nullptr, nullptr, true)
-				, functionIndex(-1)
+/***********************************************************************
+WfInterfaceMethod
+***********************************************************************/
+
+			Value WfInterfaceMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+				throw 0;
 			}
 
-			WfStaticMethod::~WfStaticMethod()
+			Value WfInterfaceMethod::CreateFunctionProxyInternal(const Value& thisObject)
 			{
-			}
-			
-			runtime::WfRuntimeGlobalContext* WfStaticMethod::GetGlobalContext()
-			{
-				return globalContext;
-			}
-
-			void WfStaticMethod::SetReturn(Ptr<ITypeInfo> type)
-			{
-				returnInfo = type;
+				throw 0;
 			}
 
 /***********************************************************************
-WfClass
+WfEvent
 ***********************************************************************/
 
-			void WfClass::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
+			void WfEvent::AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
+			{
+				throw 0;
+			}
+
+			void WfEvent::DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
+			{
+				throw 0;
+			}
+
+			void WfEvent::InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)
+			{
+				throw 0;
+			}
+
+			Ptr<ITypeInfo> WfEvent::GetHandlerTypeInternal()
+			{
+				throw 0;
+			}
+
+			WfEvent::WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:EventInfoImpl(ownerTypeDescriptor, name)
+			{
+			}
+
+			WfEvent::~WfEvent()
+			{
+			}
+
+/***********************************************************************
+WfProperty
+***********************************************************************/
+
+			WfProperty::WfProperty(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:PropertyInfoImpl(ownerTypeDescriptor, name, nullptr, nullptr, nullptr)
+			{
+			}
+
+			WfProperty::~WfProperty()
+			{
+			}
+
+			void WfProperty::SetGetter(MethodInfoImpl* value)
+			{
+				getter = value;
+			}
+
+			void WfProperty::SetSetter(MethodInfoImpl* value)
+			{
+				setter = value;
+			}
+
+			void WfProperty::SetValueChangedEvent(EventInfoImpl* value)
+			{
+				valueChangedEvent = value;
+			}
+
+/***********************************************************************
+WfCustomType
+***********************************************************************/
+
+			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
 			{
 				globalContext = _globalContext;
 
@@ -68,40 +147,76 @@ WfClass
 					for (vint j = 0; j < methodCount; j++)
 					{
 						auto method = group->GetMethod(j);
-						if (auto staticMethod = dynamic_cast<WfStaticMethod*>(method))
+						if (auto methodInfo = dynamic_cast<WfMethodBase*>(method))
 						{
-							staticMethod->SetGlobalContext(globalContext);
+							methodInfo->SetGlobalContext(globalContext);
 						}
 					}
 				}
 			}
 
-			void WfClass::LoadInternal()
+			void WfCustomType::LoadInternal()
 			{
 			}
 
-			WfClass::WfClass(const WString& typeName)
+			WfCustomType::WfCustomType(const WString& typeName)
 				:TypeDescriptorImpl(typeName, L"")
+			{
+			}
+
+			WfCustomType::~WfCustomType()
+			{
+			}
+			
+			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()
+			{
+				return globalContext;
+			}
+
+			void WfCustomType::AddBaseType(ITypeDescriptor* type)
+			{
+				TypeDescriptorImpl::AddBaseType(type);
+			}
+
+			void WfCustomType::AddMember(const WString& name, Ptr<WfMethodBase> value)
+			{
+				AddMethod(name, value);
+			}
+
+			void WfCustomType::AddMember(const WString& name, Ptr<WfProperty> value)
+			{
+				AddProperty(value);
+			}
+
+			void WfCustomType::AddMember(const WString& name, Ptr<WfEvent> value)
+			{
+				AddEvent(value);
+			}
+
+/***********************************************************************
+WfClass
+***********************************************************************/
+
+			WfClass::WfClass(const WString& typeName)
+				:WfCustomType(typeName)
 			{
 			}
 
 			WfClass::~WfClass()
 			{
 			}
-			
-			runtime::WfRuntimeGlobalContext* WfClass::GetGlobalContext()
+
+/***********************************************************************
+WfInterface
+***********************************************************************/
+
+			WfInterface::WfInterface(const WString& typeName)
+				:WfCustomType(typeName)
 			{
-				return globalContext;
 			}
 
-			void WfClass::AddBaseType(ITypeDescriptor* type)
+			WfInterface::~WfInterface()
 			{
-				TypeDescriptorImpl::AddBaseType(type);
-			}
-
-			void WfClass::AddMember(const WString& name, Ptr<WfStaticMethod> value)
-			{
-				AddMethod(name, value);
 			}
 
 /***********************************************************************

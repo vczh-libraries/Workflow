@@ -22,33 +22,95 @@ namespace vl
 
 		namespace typeimpl
 		{
-			class WfClass;
+			class WfCustomType;
 			class WfTypeImpl;
 
-			class WfStaticMethod : public reflection::description::MethodInfoImpl
+/***********************************************************************
+Method
+***********************************************************************/
+
+			class WfMethodBase : public reflection::description::MethodInfoImpl
 			{
-				friend class WfClass;
+				friend class WfCustomType;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
-				typedef reflection::description::Value						Value;
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
 				
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
-				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
-				vint									functionIndex;
-
-				WfStaticMethod();
-				~WfStaticMethod();
+				WfMethodBase();
+				~WfMethodBase();
 
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetReturn(Ptr<ITypeInfo> type);
 			};
 
-			class WfClass : public reflection::description::TypeDescriptorImpl
+			class WfStaticMethod : public WfMethodBase
 			{
-				friend class WfTypeImpl;
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
+			public:
+				vint									functionIndex = -1;
+			};
+
+			class WfInterfaceMethod : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
+			public:
+			};
+
+/***********************************************************************
+Event
+***********************************************************************/
+
+			class WfEvent : public reflection::description::EventInfoImpl
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::IEventHandler				IEventHandler;
+				typedef reflection::description::Value						Value;
+			protected:
+
+				void									AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
+				void									DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
+				void									InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override;
+				Ptr<ITypeInfo>							GetHandlerTypeInternal()override;
+			public:
+				WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
+				~WfEvent();
+			};
+
+/***********************************************************************
+Property
+***********************************************************************/
+
+			class WfProperty : public reflection::description::PropertyInfoImpl
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::MethodInfoImpl				MethodInfoImpl;
+				typedef reflection::description::EventInfoImpl				EventInfoImpl;
+			public:
+				WfProperty(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
+				~WfProperty();
+
+				void									SetGetter(MethodInfoImpl* value);
+				void									SetSetter(MethodInfoImpl* value);
+				void									SetValueChangedEvent(EventInfoImpl* value);
+			};
+
+/***********************************************************************
+Custom Type
+***********************************************************************/
+
+			class WfCustomType : public reflection::description::TypeDescriptorImpl
+			{
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 			protected:
@@ -57,13 +119,35 @@ namespace vl
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 				void									LoadInternal()override;
 			public:
-				WfClass(const WString& typeName);
-				~WfClass();
+				WfCustomType(const WString& typeName);
+				~WfCustomType();
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									AddBaseType(ITypeDescriptor* type);
-				void									AddMember(const WString& name, Ptr<WfStaticMethod> value);
+				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
+				void									AddMember(const WString& name, Ptr<WfProperty> value);
+				void									AddMember(const WString& name, Ptr<WfEvent> value);
 			};
+
+			class WfClass : public WfCustomType
+			{
+				friend class WfTypeImpl;
+			public:
+				WfClass(const WString& typeName);
+				~WfClass();
+			};
+
+			class WfInterface : public WfCustomType
+			{
+				friend class WfTypeImpl;
+			public:
+				WfInterface(const WString& typeName);
+				~WfInterface();
+			};
+
+/***********************************************************************
+Plugin
+***********************************************************************/
 
 			class WfTypeImpl : public Object, public reflection::description::ITypeLoader, public reflection::Description<WfTypeImpl>
 			{

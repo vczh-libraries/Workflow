@@ -350,7 +350,7 @@ ValidateStructure(Declaration)
 							break;
 						}
 
-						Ptr<WfDeclaration> getter, setter;
+						Ptr<WfClassMember> getter, setter;
 						bool duplicateGetter = false;
 						bool duplicateSetter = false;
 						FOREACH(Ptr<WfClassMember>, member, classDecl->members)
@@ -364,7 +364,7 @@ ValidateStructure(Declaration)
 								}
 								else
 								{
-									getter = member->declaration;
+									getter = member;
 								}
 							}
 
@@ -377,7 +377,7 @@ ValidateStructure(Declaration)
 								}
 								else
 								{
-									setter = member->declaration;
+									setter = member;
 								}
 							}
 
@@ -387,12 +387,12 @@ ValidateStructure(Declaration)
 							}
 						}
 
-						if (!getter)
+						if (!getter || getter->kind == WfClassMemberKind::Static || !getter->declaration.Cast<WfFunctionDeclaration>())
 						{
 							manager->errors.Add(WfErrors::PropertyGetterNotFound(node, classDecl));
 						}
 
-						if (node->kind == WfPropertyKind::Writable && !setter)
+						if (node->kind == WfPropertyKind::Writable && (!setter || setter->kind == WfClassMemberKind::Static || !setter->declaration.Cast<WfFunctionDeclaration>()))
 						{
 							manager->errors.Add(WfErrors::PropertySetterNotFound(node, classDecl));
 						}

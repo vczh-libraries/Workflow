@@ -458,12 +458,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
 			{
-				return new ParsingError(node, L"G3: Cannot find the getter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
+				return new ParsingError(node, L"G3: Cannot find the getter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property getter should be a non-static method in the same type.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
 			{
-				return new ParsingError(node, L"G3: Cannot find the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
+				return new ParsingError(node, L"G3: Cannot find the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should be a non-static method in the same type.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
