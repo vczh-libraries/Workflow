@@ -210,19 +210,7 @@ BuildGlobalNameFromModules
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					switch (node->kind)
-					{
-					case WfClassKind::Class:
-						{
-							BuildClassMemberVisitor::BuildClass(manager, scopeName, node);
-						}
-						break;
-					case WfClassKind::Interface:
-						{
-							throw 0;
-						}
-						break;
-					}
+					BuildClassMemberVisitor::BuildClass(manager, scopeName, node);
 				}
 			};
 

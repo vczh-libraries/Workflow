@@ -19,11 +19,13 @@ ValidateSemantic(ClassMember)
 			{
 			public:
 				WfLexicalScopeManager*				manager;
-				Ptr<WfClass>						td;
+				Ptr<WfCustomType>					td;
+				Ptr<WfClassDeclaration>				classDecl;
 				Ptr<WfClassMember>					member;
 
-				ValidateSemanticClassMemberVisitor(Ptr<WfClass> _td, Ptr<WfClassMember> _member, WfLexicalScopeManager* _manager)
+				ValidateSemanticClassMemberVisitor(Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member, WfLexicalScopeManager* _manager)
 					:td(_td)
+					, classDecl(_classDecl)
 					, member(_member)
 					, manager(_manager)
 				{
@@ -65,9 +67,9 @@ ValidateSemantic(ClassMember)
 					ValidateDeclarationSemantic(manager, node);
 				}
 
-				static void Execute(Ptr<WfClass> td, Ptr<WfClassMember> member, WfLexicalScopeManager* manager)
+				static void Execute(Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, WfLexicalScopeManager* manager)
 				{
-					ValidateSemanticClassMemberVisitor visitor(td, member, manager);
+					ValidateSemanticClassMemberVisitor visitor(td, classDecl, member, manager);
 					member->declaration->Accept(&visitor);
 				}
 			};
@@ -120,28 +122,12 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					switch (node->kind)
+					auto scope = manager->declarationScopes[node];
+					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
+
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-					case WfClassKind::Class:
-						{
-							auto scope = manager->declarationScopes[node];
-							auto td = manager->declarationTypes[node].Cast<WfClass>();
-
-							FOREACH(Ptr<WfType>, baseType, node->baseTypes)
-							{
-							}
-
-							FOREACH(Ptr<WfClassMember>, member, node->members)
-							{
-								ValidateClassMemberSemantic(manager, td, member);
-							}
-						}
-						break;
-					case WfClassKind::Interface:
-						{
-							throw 0;
-						}
-						break;
+						ValidateClassMemberSemantic(manager, td, node, member);
 					}
 				}
 
@@ -1807,9 +1793,9 @@ ValidateSemantic
 				}
 			}
 
-			void ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member)
+			void ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member)
 			{
-				return ValidateSemanticClassMemberVisitor::Execute(td, member, manager);
+				return ValidateSemanticClassMemberVisitor::Execute(td, classDecl, member, manager);
 			}
 
 			void ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
