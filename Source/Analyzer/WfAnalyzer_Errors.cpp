@@ -485,6 +485,16 @@ WfErrors
 			{
 				return new ParsingError(node, L"G4: Too many symbols found for the event \"" + node->valueChangedEvent.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
 			}
+
+			Ptr<parsing::ParsingError> WfErrors::PropertyGetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G5: Cannot match the getter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property getter should have no argument, and its return type should be identical to the property type.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::PropertySetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G5: Cannot match the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should have no return value and have only one argument, and the argument type should be identical to the property type.");
+			}
 		}
 	}
 }
