@@ -91,7 +91,7 @@ WfEvent
 
 			Ptr<ITypeInfo> WfEvent::GetHandlerTypeInternal()
 			{
-				throw 0;
+				return handlerType;
 			}
 
 			WfEvent::WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
@@ -101,6 +101,11 @@ WfEvent
 
 			WfEvent::~WfEvent()
 			{
+			}
+
+			void WfEvent::SetHandlerType(Ptr<ITypeInfo> typeInfo)
+			{
+				handlerType = typeInfo;
 			}
 
 /***********************************************************************

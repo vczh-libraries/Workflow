@@ -85,6 +85,8 @@ Event
 			public:
 				WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
 				~WfEvent();
+
+				void									SetHandlerType(Ptr<ITypeInfo> typeInfo);
 			};
 
 /***********************************************************************

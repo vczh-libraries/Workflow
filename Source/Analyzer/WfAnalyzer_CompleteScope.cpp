@@ -62,6 +62,23 @@ CompleteScopeForClassMember
 
 				void Visit(WfEventDeclaration* node)override
 				{
+					auto scope = manager->declarationScopes[node];
+					auto type = MakePtr<WfFunctionType>();
+					{
+						auto voidType = MakePtr<WfPredefinedType>();
+						voidType->name = WfPredefinedTypeName::Void;
+						type->result = voidType;
+					}
+					FOREACH(Ptr<WfType>, argument, node->arguments)
+					{
+						type->arguments.Add(argument);
+					}
+
+					if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), type))
+					{
+						auto info = manager->declarationMemberInfos[node].Cast<WfEvent>();
+						info->SetHandlerType(typeInfo);
+					}
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
@@ -131,7 +148,6 @@ CompleteScopeForDeclaration
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override

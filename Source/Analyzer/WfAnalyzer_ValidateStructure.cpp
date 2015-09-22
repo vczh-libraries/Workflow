@@ -330,6 +330,11 @@ ValidateStructure(Declaration)
 							}
 							break;
 						}
+
+						FOREACH(Ptr<WfType>, argument, node->arguments)
+						{
+							ValidateTypeStructure(manager, argument);
+						}
 					}
 					else
 					{
