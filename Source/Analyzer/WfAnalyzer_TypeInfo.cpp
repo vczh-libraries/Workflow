@@ -536,10 +536,10 @@ CreateTypeInfoFromType
 				{
 					if (auto scopeName = GetScopeNameFromReferenceTypeVisitor::Execute(scope, node))
 					{
-						if (auto typeDescriptor = description::GetTypeDescriptor(scopeName->GetFriendlyName()))
+						if (scopeName->typeDescriptor)
 						{
 							Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-							typeInfo->SetTypeDescriptor(typeDescriptor);
+							typeInfo->SetTypeDescriptor(scopeName->typeDescriptor);
 							result = typeInfo;
 						}
 						else

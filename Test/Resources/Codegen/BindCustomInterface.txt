@@ -12,15 +12,15 @@ interface IAdder
 	prop Sum : int {GetSum : SumChanged}
 }
 
-func Callback(value : object) : void
-{
-	s = $"$(s)[$(cast int value)]";
-}
-
 func Execute(adder : IAdder^) : void
 {
 	var subscription = bind(adder.Sum);
-	var listener = subscription.Subscribe(callback);
+	var listener = subscription.Subscribe(
+		func (value : object) : void
+		{
+			s = $"$(s)[$(cast int value)]";
+		}
+	);
 
 	for(x in range [1, 5])
 	{
@@ -30,16 +30,5 @@ func Execute(adder : IAdder^) : void
 
 func main() : string
 {
-	var x = new ObservableValue^();
-	var y = new ObservableValue^();
-	var z = new ObservableValue^();
-	var subscription = bind(x.Value + y.Value + z.Value);
-	var listener = subscription.Subscribe(Callback);
-
-	x.Value = 10;
-	y.Value = 20;
-	z.Value = 30;
-	
-	subscription.Close();
 	return s;
 }
