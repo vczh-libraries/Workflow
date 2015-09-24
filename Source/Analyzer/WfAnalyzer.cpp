@@ -512,6 +512,17 @@ WfLexicalScopeManager
 				}
 			}
 
+			Ptr<WfLexicalSymbol> WfLexicalScopeManager::GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node)
+			{
+				auto symbol = From(scope->parentScope->symbols[node->name.value])
+					.Where([=](Ptr<WfLexicalSymbol> symbol)
+					{
+						return symbol->creatorDeclaration == node;
+					})
+					.First();
+				return symbol;
+			}
+
 /***********************************************************************
 WfCodegenFunctionContext
 ***********************************************************************/
