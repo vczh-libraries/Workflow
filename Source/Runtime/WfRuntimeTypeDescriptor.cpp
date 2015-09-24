@@ -249,6 +249,10 @@ WfTypeImpl
 				{
 					td->SetGlobalContext(globalContext);
 				}
+				FOREACH(Ptr<WfInterface>, td, interfaces)
+				{
+					td->SetGlobalContext(globalContext);
+				}
 
 				if (globalContext)
 				{
@@ -266,11 +270,19 @@ WfTypeImpl
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
+				FOREACH(Ptr<WfInterface>, td, interfaces)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
 			}
 
 			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
 			{
 				FOREACH(Ptr<WfClass>, td, classes)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfInterface>, td, interfaces)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}

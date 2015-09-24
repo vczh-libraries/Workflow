@@ -573,6 +573,7 @@ Serialization (TypeImpl)
 
 					// events
 					vint eventCount = td->GetEventCount();
+					writer << eventCount;
 					for (vint i = 0; i < eventCount; i++)
 					{
 						auto info = td->GetEvent(i);
@@ -583,6 +584,7 @@ Serialization (TypeImpl)
 
 					// properties
 					vint propertyCount = td->GetPropertyCount();
+					writer << propertyCount;
 					for (vint i = 0; i < propertyCount; i++)
 					{
 						auto propInfo = td->GetProperty(i);
@@ -646,7 +648,7 @@ Serialization (TypeImpl)
 
 					for (vint i = 0; i < typeCount; i++)
 					{
-						tdIndex.Add(i, types[i].Obj());
+						tdIndex.Add(tdIndex.Count(), types[i].Obj());
 					}
 				}
 
@@ -663,7 +665,7 @@ Serialization (TypeImpl)
 					
 					for (vint i = 0; i < typeCount; i++)
 					{
-						tdIndex.Add(types[i].Obj(), i);
+						tdIndex.Add(types[i].Obj(), tdIndex.Count());
 					}
 				}
 
