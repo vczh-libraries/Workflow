@@ -462,6 +462,7 @@ Serialization (TypeImpl)
 						{
 							bool isStaticMethod = false;
 							reader << isStaticMethod;
+
 							if (isStaticMethod)
 							{
 								auto info = MakePtr<WfStaticMethod>();
@@ -481,8 +482,6 @@ Serialization (TypeImpl)
 						}
 					}
 
-					// properties
-
 					// events
 					vint eventCount = 0;
 					reader << eventCount;
@@ -494,9 +493,46 @@ Serialization (TypeImpl)
 						Ptr<ITypeInfo> eventType;
 						IOType(reader, eventType, tdIndex);
 
-						auto info = MakePtr<WfEvent>(eventName);
+						auto info = MakePtr<WfEvent>(td, eventName);
 						info->SetHandlerType(eventType);
 						td->AddMember(info);
+					}
+
+					// properties
+					vint propertyCount = 0;
+					reader << propertyCount;
+					for (vint i = 0; i < propertyCount; i++)
+					{
+						bool isProperty = false;
+						WString propName;
+						reader << isProperty << propName;
+
+						if (isProperty)
+						{
+							auto info = MakePtr<WfProperty>(td, propName);
+
+							WString getterName, setterName, eventName;
+							reader << getterName << setterName << eventName;
+
+							if (getterName != L"")
+							{
+								info->SetGetter(dynamic_cast<MethodInfoImpl*>(td->GetMethodGroupByName(getterName, false)->GetMethod(0)));
+							}
+							if (setterName != L"")
+							{
+								info->SetSetter(dynamic_cast<MethodInfoImpl*>(td->GetMethodGroupByName(setterName, false)->GetMethod(0)));
+							}
+							if (eventName != L"")
+							{
+								info->SetValueChangedEvent(dynamic_cast<EventInfoImpl*>(td->GetEventByName(eventName, false)));
+							}
+
+							td->AddMember(info);
+						}
+						else
+						{
+							throw 0;
+						}
 					}
 				}
 					
@@ -515,6 +551,7 @@ Serialization (TypeImpl)
 						{
 							auto method = group->GetMethod(j);
 							bool isStaticMethod = false;
+
 							if (auto staticMethod = dynamic_cast<WfStaticMethod*>(method))
 							{
 								isStaticMethod = true;
@@ -534,8 +571,6 @@ Serialization (TypeImpl)
 						}
 					}
 
-					// properties
-
 					// events
 					vint eventCount = td->GetEventCount();
 					for (vint i = 0; i < eventCount; i++)
@@ -544,6 +579,30 @@ Serialization (TypeImpl)
 						WString eventName = info->GetName();
 						writer << eventName;
 						IOType(writer, info->GetHandlerType(), tdIndex);
+					}
+
+					// properties
+					vint propertyCount = td->GetPropertyCount();
+					for (vint i = 0; i < propertyCount; i++)
+					{
+						auto propInfo = td->GetProperty(i);
+						bool isProperty = false;
+
+						if (auto prop = dynamic_cast<WfProperty*>(propInfo))
+						{
+							isProperty = true;
+							WString propName = prop->GetName();
+							writer << isProperty << propName;
+
+							auto getterName = prop->GetGetter() ? prop->GetGetter()->GetName() : L"";
+							auto setterName = prop->GetSetter() ? prop->GetSetter()->GetName() : L"";
+							auto eventName = prop->GetValueChangedEvent() ? prop->GetValueChangedEvent()->GetName() : L"";
+							writer << getterName << setterName << eventName;
+						}
+						else
+						{
+							throw 0;
+						}
 					}
 				}
 
