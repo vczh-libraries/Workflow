@@ -39,11 +39,13 @@ GenerateGlobalDeclarationMetadata
 			public:
 				WfCodegenContext&						context;
 				WString									namePrefix;
+				Ptr<WfClassDeclaration>					classDecl;
 				Ptr<WfClassMember>						member;
 
-				GenerateGlobalClassMemberMetadataVisitor(WfCodegenContext& _context, const WString& _namePrefix, Ptr<WfClassMember> _member)
+				GenerateGlobalClassMemberMetadataVisitor(WfCodegenContext& _context, const WString& _namePrefix, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member)
 					:context(_context)
 					, namePrefix(_namePrefix)
+					, classDecl(_classDecl)
 					, member(_member)
 				{
 				}
@@ -63,7 +65,7 @@ GenerateGlobalDeclarationMetadata
 						auto info = context.manager->declarationMemberInfos[node].Cast<WfStaticMethod>();
 						info->functionIndex = index;
 					}
-					else
+					else if (classDecl->kind == WfClassKind::Class)
 					{
 						throw 0;
 					}
@@ -76,12 +78,10 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -143,22 +143,10 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					switch (node->kind)
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-					case WfClassKind::Class:
-						{
-							FOREACH(Ptr<WfClassMember>, member, node->members)
-							{
-								GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", member);
-								member->declaration->Accept(&visitor);
-							}
-						}
-						break;
-					case WfClassKind::Interface:
-						{
-							throw 0;
-						}
-						break;
+						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", node, member);
+						member->declaration->Accept(&visitor);
 					}
 				}
 			};

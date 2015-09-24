@@ -158,6 +158,7 @@ Plugin
 
 			public:
 				collections::List<Ptr<WfClass>>			classes;
+				collections::List<Ptr<WfInterface>>		interfaces;
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);

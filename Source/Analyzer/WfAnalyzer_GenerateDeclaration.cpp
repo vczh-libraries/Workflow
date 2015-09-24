@@ -169,10 +169,12 @@ GenerateInstructions(Declaration)
 			{
 			public:
 				WfCodegenContext&						context;
+				Ptr<WfClassDeclaration>					classDecl;
 				Ptr<WfClassMember>						member;
 
-				GenerateClassMemberInstructionsVisitor(WfCodegenContext& _context, Ptr<WfClassMember> _member)
+				GenerateClassMemberInstructionsVisitor(WfCodegenContext& _context, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member)
 					:context(_context)
+					, classDecl(_classDecl)
 					, member(_member)
 				{
 				}
@@ -187,7 +189,7 @@ GenerateInstructions(Declaration)
 					{
 						GenerateDeclarationInstructions(context, node);
 					}
-					else
+					else if (classDecl->kind == WfClassKind::Class)
 					{
 						throw 0;
 					}
@@ -200,12 +202,10 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -250,22 +250,10 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					switch (node->kind)
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-					case WfClassKind::Class:
-						{
-							FOREACH(Ptr<WfClassMember>, member, node->members)
-							{
-								GenerateClassMemberInstructionsVisitor visitor(context, member);
-								member->declaration->Accept(&visitor);
-							}
-						}
-						break;
-					case WfClassKind::Interface:
-						{
-							throw 0;
-						}
-						break;
+						GenerateClassMemberInstructionsVisitor visitor(context, node, member);
+						member->declaration->Accept(&visitor);
 					}
 				}
 			};

@@ -160,6 +160,10 @@ GenerateAssembly
 						{
 							assembly->typeImpl->classes.Add(tdClass);
 						}
+						else if (auto tdInterface = td.Cast<WfInterface>())
+						{
+							assembly->typeImpl->interfaces.Add(tdInterface);
+						}
 					}
 				}
 
