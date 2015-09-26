@@ -160,9 +160,12 @@ CompleteScopeForDeclaration
 					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 					{
-						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), baseType))
+						if (auto scopeName = GetScopeNameFromReferenceType(scope.Obj(), baseType))
 						{
-							td->AddBaseType(typeInfo->GetTypeDescriptor());
+							if (scopeName->typeDescriptor)
+							{
+								td->AddBaseType(scopeName->typeDescriptor);
+							}
 						}
 					}
 					FOREACH(Ptr<WfClassMember>, member, node->members)

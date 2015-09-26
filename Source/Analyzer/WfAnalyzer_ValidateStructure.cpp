@@ -436,11 +436,6 @@ ValidateStructure(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfType>, type, node->baseTypes)
-					{
-						ValidateTypeStructure(manager, type);
-					}
-
 					switch (node->kind)
 					{
 					case WfClassKind::Class:
@@ -451,6 +446,33 @@ ValidateStructure(Declaration)
 							}
 						}
 						break;
+					}
+
+					FOREACH(Ptr<WfType>, type, node->baseTypes)
+					{
+						ValidateTypeStructure(manager, type);
+
+						WfType* currentType = type.Obj();
+						while (currentType)
+						{
+							if (auto tqType = dynamic_cast<WfTopQualifiedType*>(currentType))
+							{
+								currentType = nullptr;
+							}
+							else if (auto refType = dynamic_cast<WfReferenceType*>(currentType))
+							{
+								currentType = nullptr;
+							}
+							else if (auto childType = dynamic_cast<WfChildType*>(currentType))
+							{
+								currentType = childType->parent.Obj();
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::WrongBaseType(node, type.Obj()));
+								break;
+							}
+						}
 					}
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)

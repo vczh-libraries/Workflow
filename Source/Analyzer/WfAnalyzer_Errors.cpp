@@ -495,6 +495,11 @@ WfErrors
 			{
 				return new ParsingError(node, L"G5: Cannot match the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should have no return value and have only one argument, and the argument type should be identical to the property type.");
 			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongBaseType(WfClassDeclaration* node, WfType* type)
+			{
+				return new ParsingError(node, L"G6: A base type of the type \"" + node->name.value + L"\" should be another custom type, it cannot be any predefined type, pointer type, shared pointer type, nullable type, collection type, or function type");
+			}
 		}
 	}
 }

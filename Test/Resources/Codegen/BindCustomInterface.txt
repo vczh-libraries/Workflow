@@ -4,24 +4,32 @@ using system::*;
 
 var s = "";
 
-interface IAdder
+interface ISummer
 {
-	func Add(value : int) : void;
 	func GetSum() : int;
 	event SumChanged();
 	prop Sum : int {GetSum : SumChanged}
 }
 
-func Execute(adder : IAdder^) : void
+interface IAdder : ISummer
 {
-	var subscription = bind(adder.Sum);
+	func Add(value : int) : void;
+}
+
+func Bind(summer : ISummer^) : void
+{
+	var subscription = bind(summer.Sum);
 	var listener = subscription.Subscribe(
 		func (value : object) : void
 		{
 			s = $"$(s)[$(cast int value)]";
 		}
 	);
+}
 
+func Execute(adder : IAdder^) : void
+{
+	Bind(adder);
 	for(x in range [1, 5])
 	{
 		adder.Add(x);
