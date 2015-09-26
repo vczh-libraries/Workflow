@@ -33,6 +33,10 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						GenerateInitializeInstructions(context, decl);
+					}
 				}
 
 				void Visit(WfFunctionDeclaration* node)override
@@ -226,6 +230,10 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						GenerateDeclarationInstructions(context, decl);
+					}
 				}
 
 				void Visit(WfFunctionDeclaration* node)override

@@ -132,6 +132,10 @@ CompleteScopeForDeclaration
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						CompleteScopeForDeclaration(manager, decl);
+					}
 				}
 
 				void Visit(WfFunctionDeclaration* node)override
