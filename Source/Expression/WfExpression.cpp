@@ -1135,6 +1135,8 @@ Print (Declaration)
 					writer.WriteString(indent + L"    ");
 					switch (member->kind)
 					{
+					case WfClassMemberKind::Normal:
+						break;
 					case WfClassMemberKind::Static:
 						writer.WriteString(L"static ");
 						break;

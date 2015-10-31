@@ -303,6 +303,8 @@ ValidateStructure(Declaration)
 					{
 						switch (classMember->kind)
 						{
+						case WfClassMemberKind::Normal:
+							break;
 						case WfClassMemberKind::Static:
 							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
 							break;
@@ -325,9 +327,9 @@ ValidateStructure(Declaration)
 						switch (classDecl->kind)
 						{
 						case WfClassKind::Class:
-							{
-								manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"event"));
-							}
+							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"event"));
+							break;	
+						case WfClassKind::Interface:
 							break;
 						}
 
@@ -349,9 +351,9 @@ ValidateStructure(Declaration)
 						switch (classDecl->kind)
 						{
 						case WfClassKind::Class:
-							{
-								manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"property"));
-							}
+							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"property"));
+							break;
+						case WfClassKind::Interface:
 							break;
 						}
 
@@ -430,6 +432,8 @@ ValidateStructure(Declaration)
 					{
 						switch (classMember->kind)
 						{
+						case WfClassMemberKind::Normal:
+							break;
 						case WfClassMemberKind::Static:
 							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
 							break;
@@ -445,6 +449,8 @@ ValidateStructure(Declaration)
 								manager->errors.Add(WfErrors::ClassFeatureNotSupported(node, L"base type"));
 							}
 						}
+						break;
+					case WfClassKind::Interface:
 						break;
 					}
 
