@@ -361,15 +361,15 @@ namespace test
 {
 	struct Point
 	{
-		int									x = 0;
-		int									y = 0;
+		vint								x = 0;
+		vint								y = 0;
 	};
 
 	class PointClass : public Object, public Description<PointClass>
 	{
 	public:
-		int									x = 0;
-		int									y = 0;
+		vint								x = 0;
+		vint								y = 0;
 	};
 
 	class ObservableValue : public Object, public Description<ObservableValue>
