@@ -38,7 +38,7 @@ Method
 				
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 			public:
-				WfMethodBase();
+				WfMethodBase(bool isStatic);
 				~WfMethodBase();
 
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
@@ -54,6 +54,8 @@ Method
 				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
 				vint									functionIndex = -1;
+
+				WfStaticMethod();
 			};
 
 			class WfInterfaceMethod : public WfMethodBase
@@ -64,6 +66,7 @@ Method
 				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
 				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
+				WfInterfaceMethod();
 			};
 
 /***********************************************************************
