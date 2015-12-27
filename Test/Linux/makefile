@@ -38,7 +38,7 @@ WORKFLOW_RUNTIME_o = $(patsubst $(WORKFLOW_RUNTIME_DIR)%.cpp, $(obj_TARGET)%.o, 
 # All
 ALL_o = $(VLPP_o) $(WORKFLOW_ANALYZER_o) $(WORKFLOW_EXPRESSION_o) $(WORKFLOW_RUNTIME_o) $(HOST_o) $(UNITTEST_o)
 all : $(ALL_o)
-	clang++ -std=c++11 -pthread -g -o $(bin_TARGET)UnitTest  $(ALL_o)
+	clang++ -std=c++14 -pthread -g -o $(bin_TARGET)UnitTest  $(ALL_o)
 
 # Dependencies
 # $(WORKFLOW_BASIC_h) : $(VLPP_h)
@@ -55,17 +55,17 @@ all : $(ALL_o)
 
 # Rules
 $(VLPP_o) : $(obj_TARGET)%.o : $(VLPP_DIR)%.cpp
-	clang++ -std=c++11 -g -o $@ -c $<
+	clang++ -std=c++14 -g -o $@ -c $<
 $(WORKFLOW_ANALYZER_o) : $(obj_TARGET)%.o : $(WORKFLOW_ANALYZER_DIR)%.cpp $(VLPP_h) $(WORKFLOW_ANALYZER_h) $(WORKFLOW_BASIC_h) $(WORKFLOW_EXPRESSION_h) $(WORKFLOW_RUNTIME_h)
-	clang++ -std=c++11 -g -o $@ -c $<
+	clang++ -std=c++14 -g -o $@ -c $<
 $(WORKFLOW_EXPRESSION_o) : $(obj_TARGET)%.o : $(WORKFLOW_EXPRESSION_DIR)%.cpp $(VLPP_h) $(WORKFLOW_BASIC_h) $(WORKFLOW_EXPRESSION_h)
-	clang++ -std=c++11 -g -o $@ -c $<
+	clang++ -std=c++14 -g -o $@ -c $<
 $(WORKFLOW_RUNTIME_o) : $(obj_TARGET)%.o : $(WORKFLOW_RUNTIME_DIR)%.cpp $(VLPP_h) $(WORKFLOW_BASIC_h) $(WORKFLOW_RUNTIME_h)
-	clang++ -std=c++11 -g -o $@ -c $<
+	clang++ -std=c++14 -g -o $@ -c $<
 $(HOST_o) : $(obj_TARGET)%.o : $(HOST_DIR)%.cpp
-	clang++ -std=c++11 -g -o $@ -c $<
+	clang++ -std=c++14 -g -o $@ -c $<
 $(UNITTEST_o) : $(obj_TARGET)%.o : $(UNITTEST_DIR)%.cpp
-	clang++ -std=c++11 -g -o $@ -c $<
+	clang++ -std=c++14 -g -o $@ -c $<
 
 # Clean
 clean:
