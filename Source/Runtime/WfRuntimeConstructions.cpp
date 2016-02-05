@@ -89,12 +89,17 @@ WfRuntimeLambda
 WfRuntimeInterfaceInstance
 ***********************************************************************/
 
-			reflection::description::Value WfRuntimeInterfaceInstance::Invoke(const WString& name, Ptr<reflection::description::IValueList> arguments)
+			reflection::description::Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)
 			{
-				vint index = functions.Keys().IndexOf(name);
+				vint index = functions.Keys().IndexOf(methodInfo);
 				if (index == -1)
 				{
-					throw WfRuntimeException(L"Internal error: failed to invoke the interface method \"" + name + L"\"", true);
+					throw WfRuntimeException(
+						L"Internal error: failed to invoke the interface method \"" +
+						methodInfo->GetName() +
+						L"\" of type \"" +
+						methodInfo->GetOwnerTypeDescriptor()->GetTypeName() +
+						L"\"", true);
 				}
 				else
 				{

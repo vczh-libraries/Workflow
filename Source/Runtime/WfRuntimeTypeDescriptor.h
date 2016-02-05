@@ -116,6 +116,7 @@ Custom Type
 
 			class WfCustomType : public reflection::description::TypeDescriptorImpl
 			{
+				typedef reflection::description::TypeDescriptorFlags		TypeDescriptorFlags;
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 			protected:
@@ -124,7 +125,7 @@ Custom Type
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 				void									LoadInternal()override;
 			public:
-				WfCustomType(const WString& typeName);
+				WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName);
 				~WfCustomType();
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();

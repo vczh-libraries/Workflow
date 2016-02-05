@@ -120,6 +120,7 @@ Scope Manager
 			{
 				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
 				typedef reflection::description::IMemberInfo												IMemberInfo;
+				typedef reflection::description::IMethodInfo												IMethodInfo;
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
@@ -133,7 +134,7 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Group<WfFunctionDeclaration*, Ptr<WfLexicalSymbol>>					FunctionLambdaCaptureGroup;
 				typedef collections::Group<WfOrderedLambdaExpression*, Ptr<WfLexicalSymbol>>				OrderedLambdaCaptureGroup;
-
+				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
@@ -157,9 +158,9 @@ Scope Manager
 				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
 				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
 				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an lambda expression
-
-				DeclarationTypeMap							declarationTypes;			// type descriptor for type declaration
-				DeclarationMemberInfoMap					declarationMemberInfos;		// member for type description
+				InterfaceMethodImplementationMap			interfaceMethodImpls;		// the IMethodInfo* that implemented by a function
+				DeclarationTypeMap							declarationTypes;			// ITypeDescriptor* for type declaration
+				DeclarationMemberInfoMap					declarationMemberInfos;		// IMemberInfo* for type description
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>

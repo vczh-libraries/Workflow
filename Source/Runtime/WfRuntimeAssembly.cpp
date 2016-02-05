@@ -762,12 +762,12 @@ Serialization (Instruction)
 					io << value.code;
 #define STREAMIO(NAME)						case WfInsCode::NAME: break;
 #define STREAMIO_VALUE(NAME)				case WfInsCode::NAME: io << value.valueParameter; break;
-#define STREAMIO_FUNCTION(NAME)				case WfInsCode::NAME: io << value.indexParameter; break;
 #define STREAMIO_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: io << value.indexParameter << value.countParameter; break;
 #define STREAMIO_VARIABLE(NAME)				case WfInsCode::NAME: io << value.indexParameter; break;
 #define STREAMIO_COUNT(NAME)				case WfInsCode::NAME: io << value.countParameter; break;
 #define STREAMIO_FLAG_TYPEDESCRIPTOR(NAME)	case WfInsCode::NAME: io << value.flagParameter << value.typeDescriptorParameter; break;
 #define STREAMIO_PROPERTY(NAME)				case WfInsCode::NAME: io << value.propertyParameter; break;
+#define STREAMIO_METHOD(NAME)				case WfInsCode::NAME: io << value.methodParameter; break;
 #define STREAMIO_METHOD_COUNT(NAME)			case WfInsCode::NAME: io << value.methodParameter << value.countParameter; break;
 #define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: io << value.eventParameter; break;
 #define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: io << value.indexParameter; break;
@@ -778,12 +778,12 @@ Serialization (Instruction)
 						INSTRUCTION_CASES(
 							STREAMIO,
 							STREAMIO_VALUE,
-							STREAMIO_FUNCTION,
 							STREAMIO_FUNCTION_COUNT,
 							STREAMIO_VARIABLE,
 							STREAMIO_COUNT,
 							STREAMIO_FLAG_TYPEDESCRIPTOR,
 							STREAMIO_PROPERTY,
+							STREAMIO_METHOD,
 							STREAMIO_METHOD_COUNT,
 							STREAMIO_EVENT,
 							STREAMIO_LABEL,
@@ -792,12 +792,12 @@ Serialization (Instruction)
 
 #undef STREAMIO
 #undef STREAMIO_VALUE
-#undef STREAMIO_FUNCTION
 #undef STREAMIO_FUNCTION_COUNT
 #undef STREAMIO_VARIABLE
 #undef STREAMIO_COUNT
 #undef STREAMIO_FLAG_TYPEDESCRIPTOR
 #undef STREAMIO_PROPERTY
+#undef STREAMIO_METHOD
 #undef STREAMIO_METHOD_COUNT
 #undef STREAMIO_EVENT
 #undef STREAMIO_LABEL

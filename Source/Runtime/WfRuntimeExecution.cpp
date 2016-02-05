@@ -359,6 +359,11 @@ WfRuntimeThreadContext
 						PushValue(operand);
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::LoadMethodInfo:
+					{
+						PushValue(Value::From(ins.methodParameter));
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::StoreLocalVar:
 					{
 						Value operand;
@@ -433,7 +438,7 @@ WfRuntimeThreadContext
 						{
 							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
 							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
-							auto name = UnboxValue<WString>(key);
+							auto name = UnboxValue<IMethodInfo*>(key);
 							auto func = UnboxValue<Ptr<IValueFunctionProxy>>(value);
 							proxy->functions.Add(name, func);
 						}

@@ -122,11 +122,14 @@ InterfaceInstance
 
 			class WfRuntimeInterfaceInstance : public Object, public reflection::description::IValueInterfaceProxy
 			{
-				typedef collections::Dictionary<WString, Ptr<reflection::description::IValueFunctionProxy>>		FunctionMap;
+				typedef reflection::description::IMethodInfo								IMethodInfo;
+				typedef reflection::description::IValueFunctionProxy						IValueFunctionProxy;
+				typedef reflection::description::IValueList									IValueList;
+				typedef collections::Dictionary<IMethodInfo*, Ptr<IValueFunctionProxy>>		FunctionMap;
 			public:
 				FunctionMap							functions;
 
-				reflection::description::Value		Invoke(const WString& name, Ptr<reflection::description::IValueList> arguments)override;
+				reflection::description::Value		Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)override;
 			};
 		}
 	}

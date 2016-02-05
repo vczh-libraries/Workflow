@@ -174,8 +174,8 @@ WfCustomType
 			{
 			}
 
-			WfCustomType::WfCustomType(const WString& typeName)
-				:TypeDescriptorImpl(typeName, L"")
+			WfCustomType::WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
+				:TypeDescriptorImpl(typeDescriptorFlags, typeName, L"")
 			{
 			}
 
@@ -213,7 +213,7 @@ WfClass
 ***********************************************************************/
 
 			WfClass::WfClass(const WString& typeName)
-				:WfCustomType(typeName)
+				:WfCustomType(TypeDescriptorFlags::Class, typeName)
 			{
 			}
 
@@ -226,7 +226,7 @@ WfInterface
 ***********************************************************************/
 
 			WfInterface::WfInterface(const WString& typeName)
-				:WfCustomType(typeName)
+				:WfCustomType(TypeDescriptorFlags::Interface, typeName)
 			{
 			}
 

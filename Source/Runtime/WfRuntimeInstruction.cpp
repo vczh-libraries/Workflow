@@ -36,15 +36,6 @@ WfInstruction
 			return ins; \
 			}\
 
-#define CTOR_FUNCTION(NAME)\
-	WfInstruction WfInstruction::NAME(vint function)\
-			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.indexParameter = function; \
-			return ins; \
-			}\
-
 #define CTOR_FUNCTION_COUNT(NAME)\
 	WfInstruction WfInstruction::NAME(vint function, vint count)\
 			{\
@@ -92,6 +83,15 @@ WfInstruction
 			return ins; \
 			}\
 
+#define CTOR_METHOD(NAME)\
+	WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo)\
+			{\
+			WfInstruction ins; \
+			ins.code = WfInsCode::NAME; \
+			ins.methodParameter = methodInfo; \
+			return ins; \
+			}\
+
 #define CTOR_METHOD_COUNT(NAME)\
 	WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo, vint count)\
 			{\
@@ -132,12 +132,12 @@ WfInstruction
 			INSTRUCTION_CASES(
 				CTOR,
 				CTOR_VALUE,
-				CTOR_FUNCTION,
 				CTOR_FUNCTION_COUNT,
 				CTOR_VARIABLE,
 				CTOR_COUNT,
 				CTOR_FLAG_TYPEDESCRIPTOR,
 				CTOR_PROPERTY,
+				CTOR_METHOD,
 				CTOR_METHOD_COUNT,
 				CTOR_EVENT,
 				CTOR_LABEL,
@@ -145,12 +145,12 @@ WfInstruction
 
 #undef CTOR
 #undef CTOR_VALUE
-#undef CTOR_FUNCTION
 #undef CTOR_FUNCTION_COUNT
 #undef CTOR_VARIABLE
 #undef CTOR_COUNT
 #undef CTOR_FLAG_TYPEDESCRIPTOR
 #undef CTOR_PROPERTY
+#undef CTOR_METHOD
 #undef CTOR_METHOD_COUNT
 #undef CTOR_EVENT
 #undef CTOR_LABEL

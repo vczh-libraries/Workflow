@@ -25,18 +25,19 @@ Instruction
 			enum class WfInsCode
 			{
 				// Instruction		// param				: <Stack-Pattern> -> <Stack-Pattern> in the order of <bottom ---- top>
-				Nop,				// 						: () -> ()										;
+				Nop,				//						: () -> ()										;
 				LoadValue,			// value				: () -> Value									;
 				LoadClosure,		// function, count		: Value-1, ..., Value-count -> Value			;
 				LoadException,		// 						: () -> Value									;
 				LoadLocalVar,		// variable				: () -> Value									;
 				LoadCapturedVar,	// variable				: () -> Value									;
 				LoadGlobalVar,		// variable				: () -> Value									;
+				LoadMethodInfo,		//						: () -> IMethodInfo*							;
 				StoreLocalVar,		// variable				: Value -> ()									;
 				StoreGlobalVar,		// variable				: Value -> ()									;
 				Duplicate,			// count				: () -> Value									; copy stack[stack.Count()-1-count]
 				Pop,				//						: Value -> ()									;
-				Return,				// 						: Value -> Value								; (exit function)
+				Return,				//						: Value -> Value								; (exit function)
 				CreateArray,		// count				: Value-count, ..., Value-1 -> <array>			; {1 2 3} -> <3 2 1>
 				CreateMap,			// count				: Value-count, ..., Value-1 -> <map>			; {1:2 3:4} -> <3 4 1 2>
 				CreateInterface,	// count				: Value-count, ..., Value-1 -> <map>			; {"Get":a "Set":b} -> InterfaceProxy^
@@ -87,7 +88,7 @@ Instruction
 				OpNE,				// 						: <int> -> <bool>								;
 			};
 
-#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_LABEL, APPLY_TYPE)\
+#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_LABEL, APPLY_TYPE)\
 			APPLY(Nop)\
 			APPLY_VALUE(LoadValue)\
 			APPLY_FUNCTION_COUNT(LoadClosure)\
@@ -95,6 +96,7 @@ Instruction
 			APPLY_VARIABLE(LoadLocalVar)\
 			APPLY_VARIABLE(LoadCapturedVar)\
 			APPLY_VARIABLE(LoadGlobalVar)\
+			APPLY_METHOD(LoadMethodInfo)\
 			APPLY_VARIABLE(StoreLocalVar)\
 			APPLY_VARIABLE(StoreGlobalVar)\
 			APPLY_COUNT(Duplicate)\
@@ -189,12 +191,12 @@ Instruction
 
 				#define CTOR(NAME)						static WfInstruction NAME();
 				#define CTOR_VALUE(NAME)				static WfInstruction NAME(const reflection::description::Value& value);
-				#define CTOR_FUNCTION(NAME)				static WfInstruction NAME(vint function);
 				#define CTOR_FUNCTION_COUNT(NAME)		static WfInstruction NAME(vint function, vint count);
 				#define CTOR_VARIABLE(NAME)				static WfInstruction NAME(vint variable);
 				#define CTOR_COUNT(NAME)				static WfInstruction NAME(vint count);
 				#define CTOR_FLAG_TYPEDESCRIPTOR(NAME)	static WfInstruction NAME(reflection::description::Value::ValueType flag, reflection::description::ITypeDescriptor* typeDescriptor);
 				#define CTOR_PROPERTY(NAME)				static WfInstruction NAME(reflection::description::IPropertyInfo* propertyInfo);
+				#define CTOR_METHOD(NAME)				static WfInstruction NAME(reflection::description::IMethodInfo* methodInfo);
 				#define CTOR_METHOD_COUNT(NAME)			static WfInstruction NAME(reflection::description::IMethodInfo* methodInfo, vint count);
 				#define CTOR_EVENT(NAME)				static WfInstruction NAME(reflection::description::IEventInfo* eventInfo);
 				#define CTOR_LABEL(NAME)				static WfInstruction NAME(vint label);
@@ -203,12 +205,12 @@ Instruction
 				INSTRUCTION_CASES(
 					CTOR,
 					CTOR_VALUE,
-					CTOR_FUNCTION,
 					CTOR_FUNCTION_COUNT,
 					CTOR_VARIABLE,
 					CTOR_COUNT,
 					CTOR_FLAG_TYPEDESCRIPTOR,
 					CTOR_PROPERTY,
+					CTOR_METHOD,
 					CTOR_METHOD_COUNT,
 					CTOR_EVENT,
 					CTOR_LABEL,
@@ -216,12 +218,12 @@ Instruction
 
 				#undef CTOR
 				#undef CTOR_VALUE
-				#undef CTOR_FUNCTION
 				#undef CTOR_FUNCTION_COUNT
 				#undef CTOR_VARIABLE
 				#undef CTOR_COUNT
 				#undef CTOR_FLAG_TYPEDESCRIPTOR
 				#undef CTOR_PROPERTY
+				#undef CTOR_METHOD
 				#undef CTOR_METHOD_COUNT
 				#undef CTOR_EVENT
 				#undef CTOR_LABEL

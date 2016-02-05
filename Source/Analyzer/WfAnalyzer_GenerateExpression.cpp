@@ -783,7 +783,8 @@ GenerateInstructions(Expression)
 				void Visit(WfNewTypeExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node];
-					if (node->functions.Count() == 0)
+					auto td = result.methodInfo->GetOwnerTypeDescriptor();
+					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined)
 					{
 						FOREACH(Ptr<WfExpression>, argument, node->arguments)
 						{
@@ -796,7 +797,8 @@ GenerateInstructions(Expression)
 					{
 						FOREACH(Ptr<WfFunctionDeclaration>, decl, node->functions)
 						{
-							INSTRUCTION(Ins::LoadValue(BoxValue(decl->name.value)));
+							auto methodInfo = context.manager->interfaceMethodImpls[decl.Obj()];
+							INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
 							WfCodegenLambdaContext lc;
 							lc.functionDeclaration = decl.Obj();
 							VisitFunction(decl.Obj(), lc, [=](vint index)

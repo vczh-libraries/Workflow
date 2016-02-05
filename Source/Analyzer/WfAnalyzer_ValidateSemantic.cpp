@@ -1638,22 +1638,29 @@ ValidateSemantic(Expression)
 						}
 						else
 						{
-							if (node->functions.Count() == 0)
+							if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined)
 							{
-								List<ResolveExpressionResult> functions;
-								for (vint i = 0; i < ctors->GetMethodCount(); i++)
+								if (node->functions.Count() == 0)
 								{
-									IMethodInfo* info = ctors->GetMethod(i);
-									functions.Add(ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info)));
-								}
+									List<ResolveExpressionResult> functions;
+									for (vint i = 0; i < ctors->GetMethodCount(); i++)
+									{
+										IMethodInfo* info = ctors->GetMethod(i);
+										functions.Add(ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info)));
+									}
 
-								selectedType = SelectFunction(node, 0, functions, node->arguments);
-								if (selectedType)
+									selectedType = SelectFunction(node, 0, functions, node->arguments);
+									if (selectedType)
+									{
+										selectedFunction = functions[0];
+									}
+								}
+								else
 								{
-									selectedFunction = functions[0];
+									manager->errors.Add(WfErrors::ConstructorMixClassAndInterface(node));
 								}
 							}
-							else
+							else if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
 							{
 								for (vint i = 0; i < ctors->GetMethodCount(); i++)
 								{
@@ -1774,8 +1781,17 @@ ValidateSemantic(Expression)
 													Ptr<ITypeInfo> methodType = GetFunctionDeclarationType(scope, decl);
 													manager->errors.Add(WfErrors::CannotPickOverloadedImplementMethods(decl.Obj(), methodType.Obj()));
 												}
+
+												if (interfaces.Count() == 1 && implements.Count() == 1)
+												{
+													manager->interfaceMethodImpls.Add(implements[0].Obj(), interfaces[0]);
+												}
 											});
 									});
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::ClassContainsNoConstructor(node, type.Obj()));
 							}
 						}
 						if (selectedType)
