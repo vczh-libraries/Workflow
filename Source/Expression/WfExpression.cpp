@@ -1149,7 +1149,7 @@ Print (Declaration)
 					writer.WriteLine(L"");
 				}
 
-				writer.WriteLine(indent + L"}");
+				writer.WriteString(indent + L"}");
 				writer.AfterPrint(node);
 			}
 		};
