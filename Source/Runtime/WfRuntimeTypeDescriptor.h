@@ -58,6 +58,18 @@ Method
 				WfStaticMethod();
 			};
 
+			class WfInterfaceConstructor : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
+			public:
+				WfInterfaceConstructor(Ptr<ITypeInfo> type);
+			};
+
 			class WfInterfaceMethod : public WfMethodBase
 			{
 				typedef reflection::description::Value						Value;
@@ -131,6 +143,7 @@ Custom Type
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									AddBaseType(ITypeDescriptor* type);
 				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
+				void									AddMember(Ptr<WfInterfaceConstructor> value);
 				void									AddMember(Ptr<WfProperty> value);
 				void									AddMember(Ptr<WfEvent> value);
 			};

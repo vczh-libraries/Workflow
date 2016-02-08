@@ -62,6 +62,29 @@ WfStaticMethod
 			}
 
 /***********************************************************************
+WfInterfaceConstructor
+***********************************************************************/
+
+			Value WfInterfaceConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				throw 0;
+			}
+
+			Value WfInterfaceConstructor::CreateFunctionProxyInternal(const Value& thisObject)
+			{
+				throw 0;
+			}
+
+			WfInterfaceConstructor::WfInterfaceConstructor(Ptr<ITypeInfo> type)
+				:WfMethodBase(true)
+			{
+				auto argumentType = TypeInfoRetriver<Ptr<IValueInterfaceProxy>>::CreateTypeInfo();
+				auto parameter = MakePtr<ParameterInfoImpl>(this, L"proxy", argumentType);
+				AddParameter(parameter);
+				SetReturn(type);
+			}
+
+/***********************************************************************
 WfInterfaceMethod
 ***********************************************************************/
 
@@ -196,6 +219,11 @@ WfCustomType
 			void WfCustomType::AddMember(const WString& name, Ptr<WfMethodBase> value)
 			{
 				AddMethod(name, value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfInterfaceConstructor> value)
+			{
+				AddConstructor(value);
 			}
 
 			void WfCustomType::AddMember(Ptr<WfProperty> value)

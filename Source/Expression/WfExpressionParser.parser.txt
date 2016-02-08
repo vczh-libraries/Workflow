@@ -495,7 +495,7 @@ enum ClassKind
 	Interface,
 }
 
-enum InterfaceConstructor
+enum InterfaceType
 {
 	Undefined,
 	SharedPtr,
@@ -524,7 +524,7 @@ class PropertyDeclaration : Declaration
 class ClassDeclaration : Declaration
 {
 	ClassKind				kind;
-	InterfaceConstructor	interfaceConstructor;
+	InterfaceType			interfaceType;
 	Type[]					baseTypes;
 	ClassMember[]			members;
 }
@@ -900,9 +900,9 @@ rule ClassDeclaration ClassBody
 	;
 
 rule ClassDeclaration Class
-	= "class" NAME : name !ClassBody with {kind = "Class"} with {interfaceConstructor = "Undefined"}
-	= "interface" NAME : name !ClassBody with {kind = "Interface"} with {interfaceConstructor = "SharedPtr"}
-	= "interface" NAME : name "*" !ClassBody with {kind = "Interface"} with {interfaceConstructor = "RawPtr"}
+	= "class" NAME : name !ClassBody with {kind = "Class"} with {interfaceType = "Undefined"}
+	= "interface" NAME : name !ClassBody with {kind = "Interface"} with {interfaceType = "SharedPtr"}
+	= "interface" NAME : name "*" !ClassBody with {kind = "Interface"} with {interfaceType = "RawPtr"}
 	;
 
 rule Declaration WorkflowDeclaration

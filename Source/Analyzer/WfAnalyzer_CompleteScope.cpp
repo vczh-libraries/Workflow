@@ -158,6 +158,7 @@ CompleteScopeForDeclaration
 				{
 					auto scope = manager->declarationScopes[node];
 					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
+
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 					{
 						if (auto scopeName = GetScopeNameFromReferenceType(scope.Obj(), baseType))
@@ -168,6 +169,39 @@ CompleteScopeForDeclaration
 							}
 						}
 					}
+
+					if (node->kind == WfClassKind::Interface)
+					{
+						switch (node->interfaceType)
+						{
+						case WfInterfaceType::SharedPtr:
+							{
+								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+								elementType->SetTypeDescriptor(td.Obj());
+
+								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
+								pointerType->SetElementType(elementType);
+
+								auto ctor = MakePtr<WfInterfaceConstructor>(pointerType);
+								td->AddMember(ctor);
+							}
+							break;
+						case WfInterfaceType::RawPtr:
+							{
+								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+								elementType->SetTypeDescriptor(td.Obj());
+
+								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
+								pointerType->SetElementType(elementType);
+
+								auto ctor = MakePtr<WfInterfaceConstructor>(pointerType);
+								td->AddMember(ctor);
+							}
+							break;
+						default:;
+						}
+					}
+
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						CompleteScopeForClassMember(manager, td, node, member);

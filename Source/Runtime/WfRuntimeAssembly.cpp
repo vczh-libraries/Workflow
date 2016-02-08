@@ -265,6 +265,16 @@ Serialization (CollectTypeDescriptors)
 					CollectTypeDescriptors(baseType, tds);
 				}
 
+				if(auto group = td->GetConstructorGroup())
+				{
+					vint methodCount = group->GetMethodCount();
+					for (vint j = 0; j < methodCount; j++)
+					{
+						auto method = group->GetMethod(j);
+						CollectTypeDescriptors(method, tds);
+					}
+				}
+
 				vint methodGroupCount = td->GetMethodGroupCount();
 				for (vint i = 0; i < methodGroupCount; i++)
 				{
@@ -436,6 +446,20 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
+				static void IOInterfaceConstructor(Reader& reader, Ptr<WfInterfaceConstructor>& info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				{
+					Ptr<ITypeInfo> type;
+					IOType(reader, type, tdIndex);
+					info = new WfInterfaceConstructor(type);
+				}
+
+				static void IOInterfaceConstructor(Writer& writer, WfInterfaceConstructor* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				{
+					IOType(writer, info->GetReturn(), tdIndex);
+				}
+
+				//----------------------------------------------------
+
 				static void IOInterfaceMethod(Reader& reader, WfInterfaceMethod* info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
 				{
 					IOMethodBase(reader, info, tdIndex);
@@ -450,6 +474,22 @@ Serialization (TypeImpl)
 
 				static void IOCustomType(Reader& reader, WfCustomType* td, Dictionary<vint, ITypeDescriptor*>& tdIndex, bool isClass)
 				{
+					if (isClass)
+					{
+					}
+					else
+					{
+						vint methodCount = 0;
+						reader << methodCount;
+
+						for (vint i = 0; i < methodCount; i++)
+						{
+							Ptr<WfInterfaceConstructor> ctor;
+							IOInterfaceConstructor(reader, ctor, tdIndex);
+							td->AddMember(ctor);
+						}
+					}
+
 					// methods
 					vint methodGroupCount = 0;
 					reader << methodGroupCount;
@@ -538,6 +578,30 @@ Serialization (TypeImpl)
 					
 				static void IOCustomType(Writer& writer, WfCustomType* td, Dictionary<ITypeDescriptor*, vint>& tdIndex, bool isClass)
 				{
+					// constructors
+					if (isClass)
+					{
+					}
+					else
+					{
+						vint methodCount = 0;
+						if (auto group = td->GetConstructorGroup())
+						{
+							vint methodCount = group->GetMethodCount();
+							writer << methodCount;
+
+							for (vint i = 0; i < methodCount; i++)
+							{
+								auto ctor = dynamic_cast<WfInterfaceConstructor*>(group->GetMethod(i));
+								IOInterfaceConstructor(writer, ctor, tdIndex);
+							}
+						}
+						else
+						{
+							writer << methodCount;
+						}
+					}
+
 					// methods
 					vint methodGroupCount = td->GetMethodGroupCount();
 					writer << methodGroupCount;

@@ -444,7 +444,7 @@ ValidateStructure(Declaration)
 					{
 					case WfClassKind::Class:
 						{
-							if (node->interfaceConstructor != WfInterfaceConstructor::Undefined)
+							if (node->interfaceType != WfInterfaceType::Undefined)
 							{
 								manager->errors.Add(WfErrors::ClassWithInterfaceConstructor(node));
 							}
