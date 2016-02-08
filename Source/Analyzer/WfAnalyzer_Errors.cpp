@@ -219,7 +219,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::ExpressionIsNotLeftValue(WfExpression* node, const ResolveExpressionResult& result)
 			{
-				return new ParsingError(node, L"A25: Expression " + result.GetFriendlyName() + L" is not assignable.");
+				return new ParsingError(node, L"A25: " + result.GetFriendlyName(true) + L" is not assignable.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
@@ -366,12 +366,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfEventDeclaration* node)
 			{
-				return new ParsingError(node, L"D7: Event \"" + node->name.value + L"\" cannot be used outside of classes.");
+				return new ParsingError(node, L"D7: Event \"" + node->name.value + L"\" cannot be defined outside of classes.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfPropertyDeclaration* node)
 			{
-				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be used outside of classes.");
+				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be defined outside of classes.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
@@ -443,7 +443,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::ClassFeatureNotSupported(WfClassMember* node, const WString& name)
 			{
-				return new ParsingError(node, L"G0: Class field \"" + node->declaration->name.value + L"\" not supported yet: " + name + L".");
+				return new ParsingError(node, L"G0: Class member \"" + node->declaration->name.value + L"\" not supported yet: " + name + L".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStatic(WfClassMember* node)
@@ -503,12 +503,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
 			{
-				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of class \"" + node->name.value + L"\" is not class or interface.");
+				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of class \"" + node->name.value + L"\" is not a class or an interface.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
 			{
-				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of interface \"" + node->name.value + L"\" is not interface.");
+				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of interface \"" + node->name.value + L"\" is not an interface.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)

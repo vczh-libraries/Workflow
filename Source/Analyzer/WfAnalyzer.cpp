@@ -97,7 +97,12 @@ WfLexicalScope
 				}
 				else if (ownerDeclaration)
 				{
-					return parentScope->GetFriendlyName() + L"::" + ownerDeclaration->name.value;
+					auto name = ownerDeclaration->name.value;
+					if (name == L"")
+					{
+						name = L"<anonymous>";
+					}
+					return parentScope->GetFriendlyName() + L"::" + name;
 				}
 				else if (!parentScope)
 				{
@@ -240,48 +245,55 @@ ResolveExpressionResult
 			{
 			}
 
-			WString ResolveExpressionResult::GetFriendlyName()const
+			WString ResolveExpressionResult::GetFriendlyName(bool upperCase)const
 			{
-				WString typeName;
+				WString typeName, result;
 				if (type)
 				{
 					typeName= + L" of type \"" + type->GetTypeFriendlyName() + L"\"";
 				}
+
 				if (scopeName)
 				{
-					return scopeName->GetFriendlyName();
+					result = scopeName->GetFriendlyName();
 				}
 				else if (symbol)
 				{
-					return symbol->GetFriendlyName() + typeName;
+					result = symbol->GetFriendlyName() + typeName;
 				}
 				else if (propertyInfo)
 				{
-					return L"property \"" + propertyInfo->GetName() + L"\" in \"" + propertyInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"" + typeName;
+					result = L"property \"" + propertyInfo->GetName() + L"\" in \"" + propertyInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"" + typeName;
 				}
 				else if (methodInfo)
 				{
 					if (methodInfo->GetName() == L"")
 					{
-						return L"constructor in " + methodInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"" + typeName;
+						result = L"constructor in \"" + methodInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"" + typeName;
 					}
 					else
 					{
-						return L"method \"" + methodInfo->GetName() + L"\" in \"" + methodInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"" + typeName;
+						result = L"method \"" + methodInfo->GetName() + L"\" in \"" + methodInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"" + typeName;
 					}
 				}
 				else if (eventInfo)
 				{
-					return L"event \"" + eventInfo->GetName() + L"\" in \"" + eventInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"";
+					result = L"event \"" + eventInfo->GetName() + L"\" in \"" + eventInfo->GetOwnerTypeDescriptor()->GetTypeName() + L"\"";
 				}
 				else if (type)
 				{
-					return L"expression" + typeName;
+					result = L"expression" + typeName;
 				}
 				else
 				{
-					return L"<unknown>";
+					result = L"<unknown>";
 				}
+
+				if (result.Length() > 0 && upperCase)
+				{
+					result = INVLOC.ToUpper(result.Left(1)) + result.Right(result.Length() - 1);
+				}
+				return result;
 			}
 
 /***********************************************************************

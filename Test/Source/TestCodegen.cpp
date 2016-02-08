@@ -47,7 +47,7 @@ TEST_CASE(TestCodegen)
 		{
 			stream.SeekFromBegin(0);
 			StreamReader reader(stream);
-			LogSampleParseResult(L"Codegen", itemName, reader.ReadToEnd(), node);
+			LogSampleParseResult(L"Codegen", itemName, reader.ReadToEnd(), node, &manager);
 		}
 		TEST_ASSERT(manager.errors.Count() == 0);
 		

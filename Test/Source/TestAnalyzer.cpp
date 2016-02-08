@@ -116,7 +116,7 @@ TEST_CASE(TestAnalyzerError)
 		{
 			stream.SeekFromBegin(0);
 			StreamReader reader(stream);
-			LogSampleParseResult(L"AnalyzerError", itemName, reader.ReadToEnd(), node);
+			LogSampleParseResult(L"AnalyzerError", itemName, reader.ReadToEnd(), node, &manager);
 		}
 
 		const wchar_t* reading = itemName.Buffer();

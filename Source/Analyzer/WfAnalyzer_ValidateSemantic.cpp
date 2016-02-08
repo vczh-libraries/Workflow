@@ -100,7 +100,7 @@ ValidateSemantic(ClassMember)
 							auto setter = td->GetMethodGroupByName(node->setter.value, false)->GetMethod(0);
 							if (setter->GetReturn()->GetTypeDescriptor() != description::GetTypeDescriptor<void>() || setter->GetParameterCount() != 1 || !IsSameType(typeInfo.Obj(), setter->GetParameter(0)->GetType()))
 							{
-								manager->errors.Add(WfErrors::PropertyGetterTypeMismatched(node, classDecl.Obj()));
+								manager->errors.Add(WfErrors::PropertySetterTypeMismatched(node, classDecl.Obj()));
 							}
 						}
 					}

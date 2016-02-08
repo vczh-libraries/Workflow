@@ -225,8 +225,9 @@ Print (Type)
 				}
 				writer.WriteString(L")");
 
-				writer.WriteString(L" : ");
+				writer.WriteString(L" : (");
 				WfPrint(node->result, indent, writer);
+				writer.WriteString(L")");
 				writer.AfterPrint(node);
 			}
 
@@ -856,7 +857,7 @@ Print (Statement)
 				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
 				{
 					writer.WriteString(indent);
-					writer.WriteString(L"case ");
+					writer.WriteString(L"    case ");
 					WfPrint(switchCase->expression, indent, writer);
 					writer.WriteLine(L":");
 					writer.WriteString(indent + L"    ");
@@ -866,7 +867,7 @@ Print (Statement)
 				if (node->defaultBranch)
 				{
 					writer.WriteString(indent);
-					writer.WriteLine(L"default:");
+					writer.WriteLine(L"    default:");
 					writer.WriteString(indent + L"    ");
 					WfPrint(node->defaultBranch, indent + L"    ", writer);
 					writer.WriteLine(L"");
@@ -988,12 +989,13 @@ Print (Declaration)
 				writer.WriteLine(L"{");
 				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
 				{
-					if (index > 0)
+					if (index != 0)
 					{
 						writer.WriteLine(L"");
-						writer.WriteLine(L"");
 					}
+					writer.WriteString(indent + L"    ");
 					WfPrint(decl, indent + L"    ", writer);
+					writer.WriteLine(L"");
 				}
 				writer.WriteString(indent);
 				writer.WriteString(L"}");
@@ -1022,8 +1024,9 @@ Print (Declaration)
 				}
 				writer.WriteString(L")");
 
-				writer.WriteString(L" : ");
+				writer.WriteString(L" : (");
 				WfPrint(node->returnType, indent, writer);
+				writer.WriteString(L")");
 				if (node->statement)
 				{
 					writer.WriteLine(L"");
@@ -1101,10 +1104,10 @@ Print (Declaration)
 				switch (node->kind)
 				{
 				case WfClassKind::Class:
-					writer.WriteString(indent + L"class ");
+					writer.WriteString(L"class ");
 					break;
 				case WfClassKind::Interface:
-					writer.WriteString(indent + L"interface ");
+					writer.WriteString(L"interface ");
 					break;
 				}
 				writer.WriteString(node->name.value);

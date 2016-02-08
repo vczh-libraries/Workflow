@@ -112,7 +112,7 @@ Scope Manager
 				ResolveExpressionResult(reflection::description::IMethodInfo* _methodInfo, Ptr<reflection::description::ITypeInfo> _type);
 				ResolveExpressionResult(reflection::description::IEventInfo* _eventInfo);
 
-				WString										GetFriendlyName()const;
+				WString										GetFriendlyName(bool upperCase = false)const;
 			};
 
 			/// <summary>Workflow compiler.</summary>
