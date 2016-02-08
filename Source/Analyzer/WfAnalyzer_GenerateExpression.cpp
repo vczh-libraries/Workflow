@@ -72,16 +72,8 @@ GenerateInstructions(Expression)
 					{
 						if (result.methodInfo && result.methodInfo->IsStatic())
 						{
-							auto meta = MakePtr<WfAssemblyFunction>();
-							meta->name = result.methodInfo->GetName() + L"<" + result.methodInfo->GetOwnerTypeDescriptor()->GetTypeName() + L">";
-							vint functionIndex = context.assembly->functions.Add(meta);
-							context.assembly->functionByName.Add(meta->name, functionIndex);
-						
-							WfCodegenLambdaContext lc;
-							lc.staticMethodReferenceExpression = node;
-							context.functionContext->closuresToCodegen.Add(functionIndex, lc);
-
-							INSTRUCTION(Ins::LoadClosure(functionIndex, 0));
+							INSTRUCTION(Ins::LoadValue(Value()));
+							INSTRUCTION(Ins::LoadMethodClosure(result.methodInfo));
 						}
 					}
 				}
@@ -145,17 +137,8 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						auto meta = MakePtr<WfAssemblyFunction>();
-						meta->name = result.methodInfo->GetName() + L"<" + result.methodInfo->GetOwnerTypeDescriptor()->GetTypeName() + L">";
-						vint functionIndex = context.assembly->functions.Add(meta);
-						context.assembly->functionByName.Add(meta->name, functionIndex);
-						
-						WfCodegenLambdaContext lc;
-						lc.methodReferenceExpression = node;
-						context.functionContext->closuresToCodegen.Add(functionIndex, lc);
-
 						GenerateExpressionInstructions(context, node->parent);
-						INSTRUCTION(Ins::LoadClosure(functionIndex, 1));
+						INSTRUCTION(Ins::LoadMethodClosure(result.methodInfo));
 					}
 				}
 

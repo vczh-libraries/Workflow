@@ -341,8 +341,6 @@ Code Generation
 				WfFunctionDeclaration*				functionDeclaration = 0;
 				WfFunctionExpression*				functionExpression = 0;
 				WfOrderedLambdaExpression*			orderedLambdaExpression = 0;
-				WfMemberExpression*					methodReferenceExpression = 0;
-				WfExpression*						staticMethodReferenceExpression = 0;
 			};
 
 			enum class WfCodegenScopeType

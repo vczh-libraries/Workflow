@@ -364,6 +364,14 @@ WfRuntimeThreadContext
 						PushValue(Value::From(ins.methodParameter));
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::LoadMethodClosure:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto closure = ins.methodParameter->CreateFunctionProxy(operand);
+						PushValue(closure);
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::StoreLocalVar:
 					{
 						Value operand;

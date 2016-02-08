@@ -32,7 +32,8 @@ Instruction
 				LoadLocalVar,		// variable				: () -> Value									;
 				LoadCapturedVar,	// variable				: () -> Value									;
 				LoadGlobalVar,		// variable				: () -> Value									;
-				LoadMethodInfo,		//						: () -> IMethodInfo*							;
+				LoadMethodInfo,		// IMethodInfo*			: () -> IMethodInfo*							;
+				LoadMethodClosure,	// IMethodInfo*			: Value-this -> <function>						;
 				StoreLocalVar,		// variable				: Value -> ()									;
 				StoreGlobalVar,		// variable				: Value -> ()									;
 				Duplicate,			// count				: () -> Value									; copy stack[stack.Count()-1-count]
@@ -97,6 +98,7 @@ Instruction
 			APPLY_VARIABLE(LoadCapturedVar)\
 			APPLY_VARIABLE(LoadGlobalVar)\
 			APPLY_METHOD(LoadMethodInfo)\
+			APPLY_METHOD(LoadMethodClosure)\
 			APPLY_VARIABLE(StoreLocalVar)\
 			APPLY_VARIABLE(StoreGlobalVar)\
 			APPLY_COUNT(Duplicate)\

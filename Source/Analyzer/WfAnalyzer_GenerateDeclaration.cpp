@@ -276,51 +276,6 @@ GenerateInstructions(Declaration)
 GenerateInstructions(Closure)
 ***********************************************************************/
 
-			void GenerateClosureInstructions_StaticMethod(WfCodegenContext& context, vint functionIndex, WfExpression* node)
-			{
-				auto result = context.manager->expressionResolvings[node];
-				auto methodInfo = result.methodInfo;
-				auto meta = context.assembly->functions[functionIndex];
-
-				for (vint j = 0; j < methodInfo->GetParameterCount(); j++)
-				{
-					meta->argumentNames.Add(methodInfo->GetParameter(j)->GetName());
-				}
-
-				meta->firstInstruction = context.assembly->instructions.Count();
-				for (vint j = 0; j < methodInfo->GetParameterCount(); j++)
-				{
-					INSTRUCTION(Ins::LoadLocalVar(j));
-				}
-				INSTRUCTION(Ins::LoadValue(Value()));
-				INSTRUCTION(Ins::InvokeMethod(methodInfo, methodInfo->GetParameterCount()));
-				INSTRUCTION(Ins::Return());
-				meta->lastInstruction = context.assembly->instructions.Count() - 1;
-			}
-
-			void GenerateClosureInstructions_Method(WfCodegenContext& context, vint functionIndex, WfMemberExpression* node)
-			{
-				auto result = context.manager->expressionResolvings[node];
-				auto methodInfo = result.methodInfo;
-				auto meta = context.assembly->functions[functionIndex];
-
-				for (vint j = 0; j < methodInfo->GetParameterCount(); j++)
-				{
-					meta->argumentNames.Add(methodInfo->GetParameter(j)->GetName());
-				}
-				meta->capturedVariableNames.Add(L"<this>");
-
-				meta->firstInstruction = context.assembly->instructions.Count();
-				for (vint j = 0; j < methodInfo->GetParameterCount(); j++)
-				{
-					INSTRUCTION(Ins::LoadLocalVar(j));
-				}
-				INSTRUCTION(Ins::LoadCapturedVar(0));
-				INSTRUCTION(Ins::InvokeMethod(methodInfo, methodInfo->GetParameterCount()));
-				INSTRUCTION(Ins::Return());
-				meta->lastInstruction = context.assembly->instructions.Count() - 1;
-			}
-
 			void GenerateClosureInstructions_Function(WfCodegenContext& context, vint functionIndex, WfFunctionDeclaration* node, bool createInterface)
 			{
 				auto scope = context.manager->declarationScopes[node].Obj();
@@ -379,15 +334,7 @@ GenerateInstructions(Closure)
 					vint functionIndex = functionContext->closuresToCodegen.Keys()[i];
 					auto closure = functionContext->closuresToCodegen.Values()[i];
 					
-					if (closure.staticMethodReferenceExpression)
-					{
-						GenerateClosureInstructions_StaticMethod(context, functionIndex, closure.staticMethodReferenceExpression);
-					}
-					else if (closure.methodReferenceExpression)
-					{
-						GenerateClosureInstructions_Method(context, functionIndex, closure.methodReferenceExpression);
-					}
-					else if (closure.functionExpression)
+					if (closure.functionExpression)
 					{
 						GenerateClosureInstructions_Function(context, functionIndex, closure.functionExpression->function.Obj(), false);
 					}
