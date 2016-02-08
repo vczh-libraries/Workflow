@@ -374,11 +374,6 @@ WfErrors
 				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be used outside of classes.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::ClassWithInterfaceConstructor(WfClassDeclaration* node)
-			{
-				return new ParsingError(node, L"D8: Cannot use interface constructor type on class \"" + node->name.value + L"\".");
-			}
-
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
 			{
 				return new ParsingError(node, L"E0: Wild card \"*\" should only appear in the last item of the using path and should appear once.");
@@ -504,6 +499,27 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseType(WfClassDeclaration* node, WfType* type)
 			{
 				return new ParsingError(node, L"G6: A base type of the type \"" + node->name.value + L"\" should be another custom type, it cannot be any predefined type, pointer type, shared pointer type, nullable type, collection type, or function type");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
+			{
+				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of class \"" + node->name.value + L"\" is not class or interface.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
+			{
+				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of interface \"" + node->name.value + L"\" is not interface.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
+			{
+				Ptr<ITypeInfo> proxy = TypeInfoRetriver<Ptr<IValueInterfaceProxy>>::CreateTypeInfo();
+				return new ParsingError(node, L"G6: Interface \"" + type->GetTypeName() + L"\" should contain a constructor receiving an \"" + proxy->GetTypeFriendlyName() + L"\" to be the base type of \"" + node->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::ClassWithInterfaceConstructor(WfClassDeclaration* node)
+			{
+				return new ParsingError(node, L"G7: Cannot use interface constructor type on class \"" + node->name.value + L"\".");
 			}
 		}
 	}

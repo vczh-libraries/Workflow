@@ -96,9 +96,13 @@ ValidateStructure(Type)
 			{
 			public:
 				WfLexicalScopeManager*					manager;
+				ValidateTypeStragety					strategy;
+				WfClassDeclaration*						classDecl;
 
-				ValidateStructureTypeVisitor(WfLexicalScopeManager* _manager)
+				ValidateStructureTypeVisitor(WfLexicalScopeManager* _manager, ValidateTypeStragety _strategy, WfClassDeclaration* _classDecl)
 					:manager(_manager)
+					, strategy(_strategy)
+					, classDecl(_classDecl)
 				{
 				}
 				
@@ -107,11 +111,25 @@ ValidateStructure(Type)
 					switch (node->name)
 					{
 					case WfPredefinedTypeName::Void:
-						manager->errors.Add(WfErrors::WrongVoidType(node));
+						switch (strategy)
+						{
+						case ValidateTypeStragety::Value:
+							manager->errors.Add(WfErrors::WrongVoidType(node));
+							break;
+						case ValidateTypeStragety::BaseType:
+							manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+						default:;
+						}
 						break;
 					case WfPredefinedTypeName::Interface:
-						manager->errors.Add(WfErrors::WrongInterfaceType(node));
-						break;
+						switch (strategy)
+						{
+						case ValidateTypeStragety::ReturnType:
+						case ValidateTypeStragety::Value:
+							manager->errors.Add(WfErrors::WrongInterfaceType(node));
+							break;
+						default:;
+						}
 					default:;
 					}
 				}
@@ -126,6 +144,11 @@ ValidateStructure(Type)
 
 				void Visit(WfRawPointerType* node)override
 				{
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+
 					if (!ValidateReferenceTypeVisitor::Execute(node->element, manager))
 					{
 						manager->errors.Add(WfErrors::RawPointerToNonReferenceType(node));
@@ -141,6 +164,11 @@ ValidateStructure(Type)
 
 				void Visit(WfSharedPointerType* node)override
 				{
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+
 					if (!ValidateReferenceTypeVisitor::Execute(node->element, manager))
 					{
 						manager->errors.Add(WfErrors::SharedPointerToNonReferenceType(node));
@@ -156,6 +184,11 @@ ValidateStructure(Type)
 
 				void Visit(WfNullableType* node)override
 				{
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+
 					if (!ValidateReferenceTypeVisitor::Execute(node->element, manager))
 					{
 						manager->errors.Add(WfErrors::NullableToNonReferenceType(node));
@@ -176,11 +209,21 @@ ValidateStructure(Type)
 
 				void Visit(WfEnumerableType* node)override
 				{
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+
 					ValidateTypeStructure(manager, node->element);
 				}
 
 				void Visit(WfMapType* node)override
 				{
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+
 					if (node->key)
 					{
 						ValidateTypeStructure(manager, node->key);
@@ -190,7 +233,12 @@ ValidateStructure(Type)
 
 				void Visit(WfFunctionType* node)override
 				{
-					ValidateTypeStructure(manager, node->result, true);
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+
+					ValidateTypeStructure(manager, node->result, ValidateTypeStragety::ReturnType);
 					FOREACH(Ptr<WfType>, argument, node->arguments)
 					{
 						ValidateTypeStructure(manager, argument);
@@ -205,9 +253,9 @@ ValidateStructure(Type)
 					}
 				}
 
-				static void Execute(Ptr<WfType> type, WfLexicalScopeManager* manager)
+				static void Execute(Ptr<WfType> type, WfLexicalScopeManager* manager, ValidateTypeStragety strategy, WfClassDeclaration* classDecl)
 				{
-					ValidateStructureTypeVisitor visitor(manager);
+					ValidateStructureTypeVisitor visitor(manager, strategy, classDecl);
 					type->Accept(&visitor);
 				}
 			};
@@ -284,7 +332,7 @@ ValidateStructure(Declaration)
 					}
 
 
-					ValidateTypeStructure(manager, node->returnType, true);
+					ValidateTypeStructure(manager, node->returnType, ValidateTypeStragety::ReturnType);
 					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
 					{
 						ValidateTypeStructure(manager, argument->type);
@@ -448,10 +496,6 @@ ValidateStructure(Declaration)
 							{
 								manager->errors.Add(WfErrors::ClassWithInterfaceConstructor(node));
 							}
-							if (node->baseTypes.Count() > 0)
-							{
-								manager->errors.Add(WfErrors::ClassFeatureNotSupported(node, L"base type"));
-							}
 						}
 						break;
 					case WfClassKind::Interface:
@@ -460,29 +504,7 @@ ValidateStructure(Declaration)
 
 					FOREACH(Ptr<WfType>, type, node->baseTypes)
 					{
-						ValidateTypeStructure(manager, type);
-
-						WfType* currentType = type.Obj();
-						while (currentType)
-						{
-							if (auto tqType = dynamic_cast<WfTopQualifiedType*>(currentType))
-							{
-								currentType = nullptr;
-							}
-							else if (auto refType = dynamic_cast<WfReferenceType*>(currentType))
-							{
-								currentType = nullptr;
-							}
-							else if (auto childType = dynamic_cast<WfChildType*>(currentType))
-							{
-								currentType = childType->parent.Obj();
-							}
-							else
-							{
-								manager->errors.Add(WfErrors::WrongBaseType(node, type.Obj()));
-								break;
-							}
-						}
+						ValidateTypeStructure(manager, type, ValidateTypeStragety::BaseType, node);
 					}
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)
@@ -1023,19 +1045,9 @@ ValidateStructure(Expression)
 ValidateStructure
 ***********************************************************************/
 
-			void ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, bool returnType)
+			void ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, ValidateTypeStragety strategy, WfClassDeclaration* classDecl)
 			{
-				if (returnType)
-				{
-					if (auto predefinedType = type.Cast<WfPredefinedType>())
-					{
-						if (predefinedType->name == WfPredefinedTypeName::Void)
-						{
-							return;
-						}
-					}
-				}
-				ValidateStructureTypeVisitor::Execute(type, manager);
+				ValidateStructureTypeVisitor::Execute(type, manager, strategy, classDecl);
 			}
 
 			void ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module)

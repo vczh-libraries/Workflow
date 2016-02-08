@@ -260,7 +260,14 @@ Structure Analyzing
 
 				ValidateStructureContext();
 			};
-			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, bool returnType = false);
+
+			enum class ValidateTypeStragety
+			{
+				Value,
+				ReturnType,
+				BaseType,
+			};
+			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, ValidateTypeStragety strategy = ValidateTypeStragety::Value, WfClassDeclaration* classDecl = nullptr);
 			extern void										ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, WfClassDeclaration* classDecl = 0 , parsing::ParsingTreeCustomBase* source = 0);
 			extern void										ValidateStatementStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfStatement>& statement);
@@ -522,7 +529,6 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
-				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);
@@ -550,6 +556,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			PropertyGetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			PropertySetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			WrongBaseType(WfClassDeclaration* node, WfType* type);
+				static Ptr<parsing::ParsingError>			WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
 			};
 		}
 	}

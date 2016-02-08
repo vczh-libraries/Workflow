@@ -12,6 +12,35 @@ namespace vl
 			using namespace typeimpl;
 
 /***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			IMethodInfo* FindInterfaceConstructor(ITypeDescriptor* type)
+			{
+				if (auto ctors = type->GetConstructorGroup())
+				{
+					auto proxyTd = description::GetTypeDescriptor<IValueInterfaceProxy>();
+					for (vint i = 0; i < ctors->GetMethodCount(); i++)
+					{
+						IMethodInfo* info = ctors->GetMethod(i);
+						if (info->GetParameterCount() == 1)
+						{
+							ITypeInfo* parameterType = info->GetParameter(0)->GetType();
+							if (parameterType->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								parameterType = parameterType->GetElementType();
+								if (parameterType->GetDecorator() == ITypeInfo::TypeDescriptor && parameterType->GetTypeDescriptor() == proxyTd)
+								{
+									return info;
+								}
+							}
+						}
+					}
+				}
+				return nullptr;
+			}
+
+/***********************************************************************
 ValidateSemantic(ClassMember)
 ***********************************************************************/
 
@@ -139,6 +168,47 @@ ValidateSemantic(Declaration)
 				{
 					auto scope = manager->declarationScopes[node];
 					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
+
+					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					{
+						if (auto scopeName = GetScopeNameFromReferenceType(scope.Obj(), baseType))
+						{
+							if (auto td = scopeName->typeDescriptor)
+							{
+								bool isClass = (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined;
+								bool isInterface = (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined;
+
+								switch (node->kind)
+								{
+								case WfClassKind::Class:
+									{
+										if (!isClass && !isInterface)
+										{
+											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, td));
+										}
+									}
+									break;
+								case WfClassKind::Interface:
+									{
+										if (!isInterface)
+										{
+											manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, td));
+										}
+									}
+									break;
+								}
+
+								if (isInterface)
+								{
+									auto ctor = FindInterfaceConstructor(td);
+									if (ctor == nullptr)
+									{
+										manager->errors.Add(WfErrors::WrongInterfaceBaseType(node, td));
+									}
+								}
+							}
+						}
+					}
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
@@ -1628,7 +1698,6 @@ ValidateSemantic(Expression)
 					if (type)
 					{
 						ITypeDescriptor* td = type->GetTypeDescriptor();
-						ITypeDescriptor* proxyTd = description::GetTypeDescriptor<IValueInterfaceProxy>();
 						IMethodGroupInfo* ctors = td->GetConstructorGroup();
 						Ptr<ITypeInfo> selectedType;
 						ResolveExpressionResult selectedFunction;
@@ -1662,25 +1731,12 @@ ValidateSemantic(Expression)
 							}
 							else if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
 							{
-								for (vint i = 0; i < ctors->GetMethodCount(); i++)
+								if (auto info = FindInterfaceConstructor(td))
 								{
-									IMethodInfo* info = ctors->GetMethod(i);
-									if (info->GetParameterCount() == 1)
-									{
-										ITypeInfo* parameterType = info->GetParameter(0)->GetType();
-										if (parameterType->GetDecorator() == ITypeInfo::SharedPtr)
-										{
-											parameterType = parameterType->GetElementType();
-											if (parameterType->GetDecorator() == ITypeInfo::TypeDescriptor && parameterType->GetTypeDescriptor() == proxyTd)
-											{
-												selectedType = CopyTypeInfo(info->GetReturn());
-												selectedFunction = ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info));
-												break;
-											}
-										}
-									}
+									selectedType = CopyTypeInfo(info->GetReturn());
+									selectedFunction = ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info));
 								}
-								if (!selectedType)
+								else
 								{
 									manager->errors.Add(WfErrors::InterfaceContainsNoConstructor(node, type.Obj()));
 								}
