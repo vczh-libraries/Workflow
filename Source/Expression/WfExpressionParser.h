@@ -1054,6 +1054,13 @@ namespace vl
 			Interface,
 		};
 
+		enum class WfInterfaceConstructor
+		{
+			Undefined,
+			SharedPtr,
+			RawPtr,
+		};
+
 		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
 		{
 		public:
@@ -1090,6 +1097,7 @@ namespace vl
 		{
 		public:
 			WfClassKind kind;
+			WfInterfaceConstructor interfaceConstructor;
 			vl::collections::List<vl::Ptr<WfType>> baseTypes;
 			vl::collections::List<vl::Ptr<WfClassMember>> members;
 
@@ -1279,6 +1287,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
 			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
 			DECL_TYPE_INFO(vl::workflow::WfClassKind)
+			DECL_TYPE_INFO(vl::workflow::WfInterfaceConstructor)
 			DECL_TYPE_INFO(vl::workflow::WfClassMember)
 			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)

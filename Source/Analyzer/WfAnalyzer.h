@@ -522,8 +522,9 @@ Error Messages
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			WrontDeclaration(WfEventDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrontDeclaration(WfPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

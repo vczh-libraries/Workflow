@@ -1,0 +1,21 @@
+namespace test
+{
+    interface IBase {}
+    interface IDerived : IBase {}
+    interface ISuper* : IBase, IDerived {}
+
+    interface Members
+    {
+
+		func GetData() : string;
+		func SetData(value : string) : void;
+		event DataChanged();
+		prop A : string { GetData }
+		prop B : string { GetData : DataChanged }
+		prop C : string { GetData, SetData }
+		prop D : string { GetData, SetData : DataChanged }
+
+        class NestedClass {}
+		interface NestedInterface {}
+    }
+}

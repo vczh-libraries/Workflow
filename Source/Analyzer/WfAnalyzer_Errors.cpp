@@ -364,14 +364,19 @@ WfErrors
 				return new ParsingError(node, L"D6: There are some other methods named \"" + node->name.value + L"\" whose types are also \"" + type->GetTypeFriendlyName() + L"\".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::WrontDeclaration(WfEventDeclaration* node)
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfEventDeclaration* node)
 			{
 				return new ParsingError(node, L"D7: Event \"" + node->name.value + L"\" cannot be used outside of classes.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::WrontDeclaration(WfPropertyDeclaration* node)
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfPropertyDeclaration* node)
 			{
 				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be used outside of classes.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::ClassWithInterfaceConstructor(WfClassDeclaration* node)
+			{
+				return new ParsingError(node, L"D8: Cannot use interface constructor type on class \"" + node->name.value + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)

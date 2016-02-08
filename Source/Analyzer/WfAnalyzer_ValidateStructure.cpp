@@ -340,7 +340,7 @@ ValidateStructure(Declaration)
 					}
 					else
 					{
-						manager->errors.Add(WfErrors::WrontDeclaration(node));
+						manager->errors.Add(WfErrors::WrongDeclaration(node));
 					}
 				}
 
@@ -422,7 +422,7 @@ ValidateStructure(Declaration)
 					}
 					else
 					{
-						manager->errors.Add(WfErrors::WrontDeclaration(node));
+						manager->errors.Add(WfErrors::WrongDeclaration(node));
 					}
 				}
 
@@ -444,6 +444,10 @@ ValidateStructure(Declaration)
 					{
 					case WfClassKind::Class:
 						{
+							if (node->interfaceConstructor != WfInterfaceConstructor::Undefined)
+							{
+								manager->errors.Add(WfErrors::ClassWithInterfaceConstructor(node));
+							}
 							if (node->baseTypes.Count() > 0)
 							{
 								manager->errors.Add(WfErrors::ClassFeatureNotSupported(node, L"base type"));

@@ -357,7 +357,7 @@ WfLexicalScopeManager
 				expressionResolvings.Clear();
 				functionLambdaCaptures.Clear();
 				orderedLambdaCaptures.Clear();
-
+				interfaceMethodImpls.Clear();
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();
 			}
