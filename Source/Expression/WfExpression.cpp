@@ -1108,6 +1108,10 @@ Print (Declaration)
 					break;
 				}
 				writer.WriteString(node->name.value);
+				if (node->interfaceType == WfInterfaceType::RawPtr)
+				{
+					writer.WriteString(L"*");
+				}
 
 				FOREACH_INDEXER(Ptr<WfType>, type, index, node->baseTypes)
 				{
