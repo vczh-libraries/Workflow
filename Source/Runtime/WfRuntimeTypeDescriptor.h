@@ -128,6 +128,7 @@ Custom Type
 
 			class WfCustomType : public reflection::description::TypeDescriptorImpl
 			{
+			protected:
 				typedef reflection::description::TypeDescriptorFlags		TypeDescriptorFlags;
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
