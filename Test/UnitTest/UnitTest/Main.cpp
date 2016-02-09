@@ -357,6 +357,20 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 #undef LOG_TYPE
 }
 
+void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly)
+{
+	auto path = GetTestOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".bin";
+	{
+		FileStream fileStream(path, FileStream::WriteOnly);
+		assembly->Serialize(fileStream);
+		UnitTest::PrintInfo(L"    serialized: " + i64tow(fileStream.Size()) + L" bytes");
+	}
+	{
+		FileStream fileStream(path, FileStream::ReadOnly);
+		assembly = new WfAssembly(fileStream);
+	}
+}
+
 namespace test
 {
 	struct Point
