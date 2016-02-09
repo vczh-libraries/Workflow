@@ -59,9 +59,6 @@ Assembly
 			/// <summary>Representing a Workflow assembly.</summary>
 			class WfAssembly : public Object, public reflection::Description<WfAssembly>
 			{
-			protected:
-				template<typename TIO>
-				void IO(TIO& io);
 			public:
 				/// <summary>Debug informations using the module code.</summary>
 				Ptr<WfInstructionDebugInfo>							insBeforeCodegen;

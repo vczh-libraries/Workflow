@@ -11,6 +11,241 @@ namespace vl
 	{
 		namespace internal
 		{
+			struct WfReaderContext
+			{
+				Dictionary<vint, ITypeDescriptor*>				tdIndex;
+				Dictionary<vint, IMethodInfo*>					miIndex;
+				Dictionary<vint, IPropertyInfo*>				piIndex;
+				Dictionary<vint, IEventInfo*>					eiIndex;
+			};
+
+			struct WfWriterContextPrepare
+			{
+				SortedList<ITypeDescriptor*>					tds;
+				SortedList<IMethodInfo*>						mis;
+				SortedList<IPropertyInfo*>						pis;
+				SortedList<IEventInfo*>							eis;
+			};
+
+			struct WfWriterContext
+			{
+				Dictionary<ITypeDescriptor*, vint>				tdIndex;
+				Dictionary<IMethodInfo*, vint>					miIndex;
+				Dictionary<IPropertyInfo*, vint>				piIndex;
+				Dictionary<IEventInfo*, vint>					eiIndex;
+
+				void Initialize(WfWriterContextPrepare& prepare)
+				{
+					FOREACH_INDEXER(ITypeDescriptor*, td, index, prepare.tds)
+					{
+						tdIndex.Add(td, index);
+					}
+					FOREACH_INDEXER(IMethodInfo*, mi, index, prepare.mis)
+					{
+						miIndex.Add(mi, index);
+					}
+					FOREACH_INDEXER(IPropertyInfo*, pi, index, prepare.pis)
+					{
+						piIndex.Add(pi, index);
+					}
+					FOREACH_INDEXER(IEventInfo*, ei, index, prepare.eis)
+					{
+						eiIndex.Add(ei, index);
+					}
+				}
+			};
+
+			using WfReader = Reader<Ptr<WfReaderContext>>;
+			using WfWriter = Writer<Ptr<WfWriterContext>>;
+
+/***********************************************************************
+Serialization (CollectMetadata)
+***********************************************************************/
+
+			static void CollectTd(ITypeDescriptor* td, WfWriterContextPrepare& prepare)
+			{
+				if (!prepare.tds.Contains(td))
+				{
+					prepare.tds.Add(td);
+				}
+			}
+
+			static void CollectTd(ITypeInfo* typeInfo, WfWriterContextPrepare& prepare)
+			{
+				switch (typeInfo->GetDecorator())
+				{
+				case ITypeInfo::RawPtr:
+				case ITypeInfo::SharedPtr:
+				case ITypeInfo::Nullable:
+					CollectTd(typeInfo->GetElementType(), prepare);
+					break;
+				case ITypeInfo::Generic:
+					{
+						CollectTd(typeInfo->GetElementType(), prepare);
+						vint count = typeInfo->GetGenericArgumentCount();
+						for (vint i = 0; i < count; i++)
+						{
+							CollectTd(typeInfo->GetGenericArgument(i), prepare);
+						}
+					}
+					break;
+				case ITypeInfo::TypeDescriptor:
+					CollectTd(typeInfo->GetTypeDescriptor(), prepare);
+					break;
+				}
+			}
+
+			static void CollectTd(IMethodInfo* info, WfWriterContextPrepare& prepare)
+			{
+				CollectTd(info->GetReturn(), prepare);
+				vint count = info->GetParameterCount();
+				for (vint i = 0; i < count; i++)
+				{
+					CollectTd(info->GetParameter(i)->GetType(), prepare);
+				}
+			}
+
+			static void CollectTd(IEventInfo* info, WfWriterContextPrepare& prepare)
+			{
+				CollectTd(info->GetHandlerType(), prepare);
+			}
+
+			static void CollectTd(IPropertyInfo* info, WfWriterContextPrepare& prepare)
+			{
+				CollectTd(info->GetReturn(), prepare);
+			}
+
+			static void CollectTd(WfCustomType* td, WfWriterContextPrepare& prepare)
+			{
+				vint baseCount = td->GetBaseTypeDescriptorCount();
+				for (vint i = 0; i < baseCount; i++)
+				{
+					auto baseType = td->GetBaseTypeDescriptor(i);
+					CollectTd(baseType, prepare);
+				}
+
+				if(auto group = td->GetConstructorGroup())
+				{
+					vint methodCount = group->GetMethodCount();
+					for (vint j = 0; j < methodCount; j++)
+					{
+						auto method = group->GetMethod(j);
+						CollectTd(method, prepare);
+					}
+				}
+
+				vint methodGroupCount = td->GetMethodGroupCount();
+				for (vint i = 0; i < methodGroupCount; i++)
+				{
+					auto group = td->GetMethodGroup(i);
+					vint methodCount = group->GetMethodCount();
+					for (vint j = 0; j < methodCount; j++)
+					{
+						auto method = group->GetMethod(j);
+						CollectTd(method, prepare);
+					}
+				}
+
+				vint propertyCount = td->GetPropertyCount();
+				for (vint i = 0; i < propertyCount; i++)
+				{
+					CollectTd(td->GetProperty(i), prepare);
+				}
+
+				vint eventCount = td->GetEventCount();
+				for (vint i = 0; i < eventCount; i++)
+				{
+					CollectTd(td->GetEvent(i), prepare);
+				}
+			}
+
+			static void CollectMetadata(WfTypeImpl* typeImpl, WfWriterContextPrepare& prepare)
+			{
+				FOREACH(Ptr<WfClass>, td, typeImpl->classes)
+				{
+					CollectTd(td.Obj(), prepare);
+				}
+				FOREACH(Ptr<WfInterface>, td, typeImpl->interfaces)
+				{
+					CollectTd(td.Obj(), prepare);
+				}
+			}
+
+			static void CollectMetadata(collections::List<WfInstruction>& instructions, WfWriterContextPrepare& prepare)
+			{
+#define TD(X)										do{ if (!prepare.tds.Contains(X)) prepare.tds.Add(X); }while(0)
+#define MI(X)										do{ if (!prepare.mis.Contains(X)) prepare.mis.Add(X); }while(0)
+#define PI(X)										do{ if (!prepare.pis.Contains(X)) prepare.pis.Add(X); }while(0)
+#define EI(X)										do{ if (!prepare.eis.Contains(X)) prepare.eis.Add(X); }while(0)
+#define COLLECTMETADATA(NAME)						case WfInsCode::NAME: break;
+#define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: break;
+#define COLLECTMETADATA_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: break;
+#define COLLECTMETADATA_VARIABLE(NAME)				case WfInsCode::NAME: break;
+#define COLLECTMETADATA_COUNT(NAME)					case WfInsCode::NAME: break;
+#define COLLECTMETADATA_FLAG_TYPEDESCRIPTOR(NAME)	case WfInsCode::NAME: TD(ins.typeDescriptorParameter); break;
+#define COLLECTMETADATA_PROPERTY(NAME)				case WfInsCode::NAME: PI(ins.propertyParameter); break;
+#define COLLECTMETADATA_METHOD(NAME)				case WfInsCode::NAME: MI(ins.methodParameter); break;
+#define COLLECTMETADATA_METHOD_COUNT(NAME)			case WfInsCode::NAME: MI(ins.methodParameter); break;
+#define COLLECTMETADATA_EVENT(NAME)					case WfInsCode::NAME: EI(ins.eventParameter); break;
+#define COLLECTMETADATA_LABEL(NAME)					case WfInsCode::NAME: break;
+#define COLLECTMETADATA_TYPE(NAME)					case WfInsCode::NAME: break;
+
+				for (vint i = 0; i < instructions.Count(); i++)
+				{
+					auto& ins = instructions[i];
+					switch (ins.code)
+					{
+						INSTRUCTION_CASES(
+							COLLECTMETADATA,
+							COLLECTMETADATA_VALUE,
+							COLLECTMETADATA_FUNCTION_COUNT,
+							COLLECTMETADATA_VARIABLE,
+							COLLECTMETADATA_COUNT,
+							COLLECTMETADATA_FLAG_TYPEDESCRIPTOR,
+							COLLECTMETADATA_PROPERTY,
+							COLLECTMETADATA_METHOD,
+							COLLECTMETADATA_METHOD_COUNT,
+							COLLECTMETADATA_EVENT,
+							COLLECTMETADATA_LABEL,
+							COLLECTMETADATA_TYPE)
+					}
+				}
+
+				FOREACH(IMethodInfo*, mi, prepare.mis)
+				{
+					CollectTd(mi, prepare);
+				}
+				FOREACH(IPropertyInfo*, pi, prepare.pis)
+				{
+					CollectTd(pi, prepare);
+				}
+				FOREACH(IEventInfo*, ei, prepare.eis)
+				{
+					CollectTd(ei, prepare);
+				}
+
+#undef COLLECTMETADATA
+#undef COLLECTMETADATA_VALUE
+#undef COLLECTMETADATA_FUNCTION_COUNT
+#undef COLLECTMETADATA_VARIABLE
+#undef COLLECTMETADATA_COUNT
+#undef COLLECTMETADATA_FLAG_TYPEDESCRIPTOR
+#undef COLLECTMETADATA_PROPERTY
+#undef COLLECTMETADATA_METHOD
+#undef COLLECTMETADATA_METHOD_COUNT
+#undef COLLECTMETADATA_EVENT
+#undef COLLECTMETADATA_LABEL
+#undef COLLECTMETADATA_TYPE
+#undef MI
+#undef TD
+#undef PI
+#undef EI
+			}
+
+/***********************************************************************
+Serizliation (Data Structures)
+***********************************************************************/
+
 			BEGIN_SERIALIZATION(WfInstructionDebugInfo)
 				SERIALIZE(moduleCodes)
 				SERIALIZE(instructionCodeMapping)
@@ -36,7 +271,7 @@ Serizliation (Metadata)
 			template<>
 			struct Serialization<ITypeDescriptor*>
 			{
-				static void IO(Reader& reader, ITypeDescriptor*& value)
+				static void IO(WfReader& reader, ITypeDescriptor*& value)
 				{
 					WString id;
 					reader << id;
@@ -44,7 +279,7 @@ Serizliation (Metadata)
 					CHECK_ERROR(value, L"Failed to load type.");
 				}
 					
-				static void IO(Writer& writer, ITypeDescriptor*& value)
+				static void IO(WfWriter& writer, ITypeDescriptor*& value)
 				{
 					WString id = value->GetTypeName();
 					writer << id;
@@ -54,7 +289,7 @@ Serizliation (Metadata)
 			template<>
 			struct Serialization<IMethodInfo*>
 			{
-				static void IO(Reader& reader, IMethodInfo*& value)
+				static void IO(WfReader& reader, IMethodInfo*& value)
 				{
 					ITypeDescriptor* type = 0;
 					WString name;
@@ -92,7 +327,7 @@ Serizliation (Metadata)
 					CHECK_ERROR(value, L"Failed to load method.");
 				}
 					
-				static void IO(Writer& writer, IMethodInfo*& value)
+				static void IO(WfWriter& writer, IMethodInfo*& value)
 				{
 					auto type = value->GetOwnerTypeDescriptor();
 					WString name =
@@ -113,7 +348,7 @@ Serizliation (Metadata)
 			template<>
 			struct Serialization<IPropertyInfo*>
 			{
-				static void IO(Reader& reader, IPropertyInfo*& value)
+				static void IO(WfReader& reader, IPropertyInfo*& value)
 				{
 					ITypeDescriptor* type = 0;
 					WString name;
@@ -122,7 +357,7 @@ Serizliation (Metadata)
 					CHECK_ERROR(value, L"Failed to load property.");
 				}
 					
-				static void IO(Writer& writer, IPropertyInfo*& value)
+				static void IO(WfWriter& writer, IPropertyInfo*& value)
 				{
 					auto type = value->GetOwnerTypeDescriptor();
 					WString name = value->GetName();
@@ -133,7 +368,7 @@ Serizliation (Metadata)
 			template<>
 			struct Serialization<IEventInfo*>
 			{
-				static void IO(Reader& reader, IEventInfo*& value)
+				static void IO(WfReader& reader, IEventInfo*& value)
 				{
 					ITypeDescriptor* type = 0;
 					WString name;
@@ -142,7 +377,7 @@ Serizliation (Metadata)
 					CHECK_ERROR(value, L"Failed to load event.");
 				}
 					
-				static void IO(Writer& writer, IEventInfo*& value)
+				static void IO(WfWriter& writer, IEventInfo*& value)
 				{
 					auto type = value->GetOwnerTypeDescriptor();
 					WString name = value->GetName();
@@ -153,7 +388,7 @@ Serizliation (Metadata)
 			template<>
 			struct Serialization<Value>
 			{
-				static void IO(Reader& reader, Value& value)
+				static void IO(WfReader& reader, Value& value)
 				{
 					WString id, text;
 					reader << id << text;
@@ -177,7 +412,7 @@ Serizliation (Metadata)
 					}
 				}
 					
-				static void IO(Writer& writer, Value& value)
+				static void IO(WfWriter& writer, Value& value)
 				{
 					WString id;
 					if (value.GetTypeDescriptor())
@@ -200,126 +435,13 @@ Serizliation (Metadata)
 			};
 
 /***********************************************************************
-Serialization (CollectTypeDescriptors)
-***********************************************************************/
-
-			static void CollectTypeDescriptors(ITypeDescriptor* td, SortedList<ITypeDescriptor*>& tds)
-			{
-				if (!tds.Contains(td))
-				{
-					tds.Add(td);
-				}
-			}
-
-			static void CollectTypeDescriptors(ITypeInfo* typeInfo, SortedList<ITypeDescriptor*>& tds)
-			{
-				switch (typeInfo->GetDecorator())
-				{
-				case ITypeInfo::RawPtr:
-				case ITypeInfo::SharedPtr:
-				case ITypeInfo::Nullable:
-					CollectTypeDescriptors(typeInfo->GetElementType(), tds);
-					break;
-				case ITypeInfo::Generic:
-					{
-						CollectTypeDescriptors(typeInfo->GetElementType(), tds);
-						vint count = typeInfo->GetGenericArgumentCount();
-						for (vint i = 0; i < count; i++)
-						{
-							CollectTypeDescriptors(typeInfo->GetGenericArgument(i), tds);
-						}
-					}
-					break;
-				case ITypeInfo::TypeDescriptor:
-					CollectTypeDescriptors(typeInfo->GetTypeDescriptor(), tds);
-					break;
-				}
-			}
-
-			static void CollectTypeDescriptors(IMethodInfo* info, SortedList<ITypeDescriptor*>& tds)
-			{
-				CollectTypeDescriptors(info->GetReturn(), tds);
-				vint count = info->GetParameterCount();
-				for (vint i = 0; i < count; i++)
-				{
-					CollectTypeDescriptors(info->GetParameter(i)->GetType(), tds);
-				}
-			}
-
-			static void CollectTypeDescriptors(IEventInfo* info, SortedList<ITypeDescriptor*>& tds)
-			{
-				CollectTypeDescriptors(info->GetHandlerType(), tds);
-			}
-
-			static void CollectTypeDescriptors(IPropertyInfo* info, SortedList<ITypeDescriptor*>& tds)
-			{
-				CollectTypeDescriptors(info->GetReturn(), tds);
-			}
-
-			static void CollectTypeDescriptors(WfCustomType* td, SortedList<ITypeDescriptor*>& tds)
-			{
-				vint baseCount = td->GetBaseTypeDescriptorCount();
-				for (vint i = 0; i < baseCount; i++)
-				{
-					auto baseType = td->GetBaseTypeDescriptor(i);
-					CollectTypeDescriptors(baseType, tds);
-				}
-
-				if(auto group = td->GetConstructorGroup())
-				{
-					vint methodCount = group->GetMethodCount();
-					for (vint j = 0; j < methodCount; j++)
-					{
-						auto method = group->GetMethod(j);
-						CollectTypeDescriptors(method, tds);
-					}
-				}
-
-				vint methodGroupCount = td->GetMethodGroupCount();
-				for (vint i = 0; i < methodGroupCount; i++)
-				{
-					auto group = td->GetMethodGroup(i);
-					vint methodCount = group->GetMethodCount();
-					for (vint j = 0; j < methodCount; j++)
-					{
-						auto method = group->GetMethod(j);
-						CollectTypeDescriptors(method, tds);
-					}
-				}
-
-				vint propertyCount = td->GetPropertyCount();
-				for (vint i = 0; i < propertyCount; i++)
-				{
-					CollectTypeDescriptors(td->GetProperty(i), tds);
-				}
-
-				vint eventCount = td->GetEventCount();
-				for (vint i = 0; i < eventCount; i++)
-				{
-					CollectTypeDescriptors(td->GetEvent(i), tds);
-				}
-			}
-
-			static void CollectTypeDescriptors(WfTypeImpl* typeImpl, SortedList<ITypeDescriptor*>& tds)
-			{
-				FOREACH(Ptr<WfClass>, td, typeImpl->classes)
-				{
-					CollectTypeDescriptors(td.Obj(), tds);
-				}
-				FOREACH(Ptr<WfInterface>, td, typeImpl->interfaces)
-				{
-					CollectTypeDescriptors(td.Obj(), tds);
-				}
-			}
-
-/***********************************************************************
 Serialization (TypeImpl)
 ***********************************************************************/
 
 			template<>
 			struct Serialization<WfTypeImpl>
 			{
-				static void IOType(Reader& reader, Ptr<ITypeInfo>& typeInfo, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IOType(WfReader& reader, Ptr<ITypeInfo>& typeInfo)
 				{
 					vint decorator = 0;
 					reader << decorator;
@@ -333,14 +455,14 @@ Serialization (TypeImpl)
 					case ITypeInfo::Nullable:
 						{
 							Ptr<ITypeInfo> elementType;
-							IOType(reader, elementType, tdIndex);
+							IOType(reader, elementType);
 							typeInfoImpl->SetElementType(elementType);
 						}
 						break;
 					case ITypeInfo::Generic:
 						{
 							Ptr<ITypeInfo> elementType;
-							IOType(reader, elementType, tdIndex);
+							IOType(reader, elementType);
 							typeInfoImpl->SetElementType(elementType);
 
 							vint count = 0;
@@ -348,7 +470,7 @@ Serialization (TypeImpl)
 							for (vint i = 0; i < count; i++)
 							{
 								Ptr<ITypeInfo> argumentType;
-								IOType(reader, argumentType, tdIndex);
+								IOType(reader, argumentType);
 								typeInfoImpl->AddGenericArgument(argumentType);
 							}
 						}
@@ -357,13 +479,13 @@ Serialization (TypeImpl)
 						{
 							vint index;
 							reader << index;
-							typeInfoImpl->SetTypeDescriptor(tdIndex[index]);
+							typeInfoImpl->SetTypeDescriptor(reader.context->tdIndex[index]);
 						}
 						break;
 					}
 				}
 					
-				static void IOType(Writer& writer, ITypeInfo* typeInfo, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IOType(WfWriter& writer, ITypeInfo* typeInfo)
 				{
 					vint decorator = static_cast<vint>(typeInfo->GetDecorator());
 					writer << decorator;
@@ -373,22 +495,22 @@ Serialization (TypeImpl)
 					case ITypeInfo::RawPtr:
 					case ITypeInfo::SharedPtr:
 					case ITypeInfo::Nullable:
-						IOType(writer, typeInfo->GetElementType(), tdIndex);
+						IOType(writer, typeInfo->GetElementType());
 						break;
 					case ITypeInfo::Generic:
 						{
-							IOType(writer, typeInfo->GetElementType(), tdIndex);
+							IOType(writer, typeInfo->GetElementType());
 							vint count = typeInfo->GetGenericArgumentCount();
 							writer << count;
 							for (vint i = 0; i < count; i++)
 							{
-								IOType(writer, typeInfo->GetGenericArgument(i), tdIndex);
+								IOType(writer, typeInfo->GetGenericArgument(i));
 							}
 						}
 						break;
 					case ITypeInfo::TypeDescriptor:
 						{
-							vint index = tdIndex[typeInfo->GetTypeDescriptor()];
+							vint index = writer.context->tdIndex[typeInfo->GetTypeDescriptor()];
 							writer << index;
 						}
 						break;
@@ -397,10 +519,10 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
-				static void IOMethodBase(Reader& reader, WfMethodBase* info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IOMethodBase(WfReader& reader, WfMethodBase* info)
 				{
 					Ptr<ITypeInfo> type;
-					IOType(reader, type, tdIndex);
+					IOType(reader, type);
 					info->SetReturn(type);
 
 					vint count = 0;
@@ -408,22 +530,22 @@ Serialization (TypeImpl)
 					for (vint i = 0; i < count; i++)
 					{
 						WString name;
-						IOType(reader, type, tdIndex);
+						IOType(reader, type);
 						reader << name;
 						info->AddParameter(new ParameterInfoImpl(info, name, type));
 					}
 				}
 					
-				static void IOMethodBase(Writer& writer, WfMethodBase* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IOMethodBase(WfWriter& writer, WfMethodBase* info)
 				{
-					IOType(writer, info->GetReturn(), tdIndex);
+					IOType(writer, info->GetReturn());
 
 					vint count = info->GetParameterCount();
 					writer << count;
 					for (vint i = 0; i < count; i++)
 					{
 						auto parameter = info->GetParameter(i);
-						IOType(writer, parameter->GetType(), tdIndex);
+						IOType(writer, parameter->GetType());
 
 						WString name = parameter->GetName();
 						writer << name;
@@ -432,47 +554,47 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
-				static void IOStaticMethod(Reader& reader, WfStaticMethod* info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IOStaticMethod(WfReader& reader, WfStaticMethod* info)
 				{
 					reader << info->functionIndex;
-					IOMethodBase(reader, info, tdIndex);
+					IOMethodBase(reader, info);
 				}
 
-				static void IOStaticMethod(Writer& writer, WfStaticMethod* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IOStaticMethod(WfWriter& writer, WfStaticMethod* info)
 				{
 					writer << info->functionIndex;
-					IOMethodBase(writer, info, tdIndex);
+					IOMethodBase(writer, info);
 				}
 
 				//----------------------------------------------------
 
-				static void IOInterfaceConstructor(Reader& reader, Ptr<WfInterfaceConstructor>& info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IOInterfaceConstructor(WfReader& reader, Ptr<WfInterfaceConstructor>& info)
 				{
 					Ptr<ITypeInfo> type;
-					IOType(reader, type, tdIndex);
+					IOType(reader, type);
 					info = new WfInterfaceConstructor(type);
 				}
 
-				static void IOInterfaceConstructor(Writer& writer, WfInterfaceConstructor* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IOInterfaceConstructor(WfWriter& writer, WfInterfaceConstructor* info)
 				{
-					IOType(writer, info->GetReturn(), tdIndex);
+					IOType(writer, info->GetReturn());
 				}
 
 				//----------------------------------------------------
 
-				static void IOInterfaceMethod(Reader& reader, WfInterfaceMethod* info, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IOInterfaceMethod(WfReader& reader, WfInterfaceMethod* info)
 				{
-					IOMethodBase(reader, info, tdIndex);
+					IOMethodBase(reader, info);
 				}
 
-				static void IOInterfaceMethod(Writer& writer, WfInterfaceMethod* info, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IOInterfaceMethod(WfWriter& writer, WfInterfaceMethod* info)
 				{
-					IOMethodBase(writer, info, tdIndex);
+					IOMethodBase(writer, info);
 				}
 
 				//----------------------------------------------------
 
-				static void IOCustomType(Reader& reader, WfCustomType* td, Dictionary<vint, ITypeDescriptor*>& tdIndex, bool isClass)
+				static void IOCustomType(WfReader& reader, WfCustomType* td, bool isClass)
 				{
 					if (isClass)
 					{
@@ -485,7 +607,7 @@ Serialization (TypeImpl)
 						for (vint i = 0; i < methodCount; i++)
 						{
 							Ptr<WfInterfaceConstructor> ctor;
-							IOInterfaceConstructor(reader, ctor, tdIndex);
+							IOInterfaceConstructor(reader, ctor);
 							td->AddMember(ctor);
 						}
 					}
@@ -507,7 +629,7 @@ Serialization (TypeImpl)
 							{
 								auto info = MakePtr<WfStaticMethod>();
 								td->AddMember(methodName, info);
-								IOStaticMethod(reader, info.Obj(), tdIndex);
+								IOStaticMethod(reader, info.Obj());
 							}
 							else if (isClass)
 							{
@@ -517,7 +639,7 @@ Serialization (TypeImpl)
 							{
 								auto info = MakePtr<WfInterfaceMethod>();
 								td->AddMember(methodName, info);
-								IOInterfaceMethod(reader, info.Obj(), tdIndex);
+								IOInterfaceMethod(reader, info.Obj());
 							}
 						}
 					}
@@ -531,7 +653,7 @@ Serialization (TypeImpl)
 						reader << eventName;
 
 						Ptr<ITypeInfo> eventType;
-						IOType(reader, eventType, tdIndex);
+						IOType(reader, eventType);
 
 						auto info = MakePtr<WfEvent>(td, eventName);
 						info->SetHandlerType(eventType);
@@ -576,7 +698,7 @@ Serialization (TypeImpl)
 					}
 				}
 					
-				static void IOCustomType(Writer& writer, WfCustomType* td, Dictionary<ITypeDescriptor*, vint>& tdIndex, bool isClass)
+				static void IOCustomType(WfWriter& writer, WfCustomType* td, bool isClass)
 				{
 					// constructors
 					if (isClass)
@@ -593,7 +715,7 @@ Serialization (TypeImpl)
 							for (vint i = 0; i < methodCount; i++)
 							{
 								auto ctor = dynamic_cast<WfInterfaceConstructor*>(group->GetMethod(i));
-								IOInterfaceConstructor(writer, ctor, tdIndex);
+								IOInterfaceConstructor(writer, ctor);
 							}
 						}
 						else
@@ -620,7 +742,7 @@ Serialization (TypeImpl)
 							{
 								isStaticMethod = true;
 								writer << isStaticMethod;
-								IOStaticMethod(writer, staticMethod, tdIndex);
+								IOStaticMethod(writer, staticMethod);
 							}
 							else if (isClass)
 							{
@@ -630,7 +752,7 @@ Serialization (TypeImpl)
 							{
 								auto interfaceMethod = dynamic_cast<WfInterfaceMethod*>(method);
 								writer << isStaticMethod;
-								IOInterfaceMethod(writer, interfaceMethod, tdIndex);
+								IOInterfaceMethod(writer, interfaceMethod);
 							}
 						}
 					}
@@ -643,7 +765,7 @@ Serialization (TypeImpl)
 						auto info = td->GetEvent(i);
 						WString eventName = info->GetName();
 						writer << eventName;
-						IOType(writer, info->GetHandlerType(), tdIndex);
+						IOType(writer, info->GetHandlerType());
 					}
 
 					// properties
@@ -674,141 +796,53 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
-				static void IOClass(Reader& reader, WfClass* td, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IOClass(WfReader& reader, WfClass* td)
 				{
-					IOCustomType(reader, td, tdIndex, true);
+					IOCustomType(reader, td, true);
 				}
 
-				static void IOClass(Writer& writer, WfClass* td, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IOClass(WfWriter& writer, WfClass* td)
 				{
-					IOCustomType(writer, td, tdIndex, true);
-				}
-
-				//----------------------------------------------------
-
-				static void IOInterface(Reader& reader, WfInterface* td, Dictionary<vint, ITypeDescriptor*>& tdIndex)
-				{
-					IOCustomType(reader, td, tdIndex, false);
-				}
-
-				static void IOInterface(Writer& writer, WfInterface* td, Dictionary<ITypeDescriptor*, vint>& tdIndex)
-				{
-					IOCustomType(writer, td, tdIndex, false);
+					IOCustomType(writer, td, true);
 				}
 
 				//----------------------------------------------------
 
-				template<typename TType>
-				static void IOCustomTypeList(Reader& reader, List<Ptr<TType>>& types, Dictionary<vint, ITypeDescriptor*>& tdIndex)
+				static void IOInterface(WfReader& reader, WfInterface* td)
 				{
-					vint typeCount = 0;
-					reader << typeCount;
-					for (vint i = 0; i < typeCount; i++)
-					{
-						WString typeName;
-						reader << typeName;
-						types.Add(MakePtr<TType>(typeName));
-					}
-
-					for (vint i = 0; i < typeCount; i++)
-					{
-						tdIndex.Add(tdIndex.Count(), types[i].Obj());
-					}
+					IOCustomType(reader, td, false);
 				}
 
-				template<typename TType>
-				static void IOCustomTypeList(Writer& writer, List<Ptr<TType>>& types, Dictionary<ITypeDescriptor*, vint>& tdIndex)
+				static void IOInterface(WfWriter& writer, WfInterface* td)
 				{
-					vint typeCount = types.Count();
-					writer << typeCount;
-					for (vint i = 0; i < typeCount; i++)
-					{
-						WString typeName = types[i]->GetTypeName();
-						writer << typeName;
-					}
-					
-					for (vint i = 0; i < typeCount; i++)
-					{
-						tdIndex.Add(types[i].Obj(), tdIndex.Count());
-					}
+					IOCustomType(writer, td, false);
 				}
 
 				//----------------------------------------------------
 
-				static void IO(Reader& reader, WfTypeImpl& value)
+				static void IO(WfReader& reader, WfTypeImpl& value)
 				{
-					bool hasTypeImpl = false;
-					reader << hasTypeImpl;
-					if (hasTypeImpl)
+					// fill types
+					FOREACH(Ptr<WfClass>, td, value.classes)
 					{
-						// types
-						Dictionary<vint, ITypeDescriptor*> tdIndex;
-						IOCustomTypeList(reader, value.classes, tdIndex);
-						IOCustomTypeList(reader, value.interfaces, tdIndex);
-					
-						// used type descriptors
-						vint tdCount = 0;
-						reader << tdCount;
-						for (vint i = 0; i < tdCount; i++)
-						{
-							WString typeName;
-							reader << typeName;
-							tdIndex.Add((i * -1) - 1, GetTypeDescriptor(typeName));
-						}
-
-						// fill types
-						FOREACH(Ptr<WfClass>, td, value.classes)
-						{
-							IOClass(reader, td.Obj(), tdIndex);
-						}
-						FOREACH(Ptr<WfInterface>, td, value.interfaces)
-						{
-							IOInterface(reader, td.Obj(), tdIndex);
-						}
+						IOClass(reader, td.Obj());
+					}
+					FOREACH(Ptr<WfInterface>, td, value.interfaces)
+					{
+						IOInterface(reader, td.Obj());
 					}
 				}
 					
-				static void IO(Writer& writer, WfTypeImpl& value)
+				static void IO(WfWriter& writer, WfTypeImpl& value)
 				{
-					auto pvalue = &value; // clang++: -Wtautological-undefined-compare
-					bool hasTypeImpl = pvalue != nullptr;
-					writer << hasTypeImpl;
-					if (hasTypeImpl)
+					// fill types
+					FOREACH(Ptr<WfClass>, td, value.classes)
 					{
-						// types
-						Dictionary<ITypeDescriptor*, vint> tdIndex;
-						IOCustomTypeList(writer, value.classes, tdIndex);
-						IOCustomTypeList(writer, value.interfaces, tdIndex);
-
-						// used type descriptors
-						SortedList<ITypeDescriptor*> tds;
-						CollectTypeDescriptors(&value, tds);
-						for (vint i = tds.Count() - 1; i >= 0; i--)
-						{
-							if (tdIndex.Keys().Contains(tds[i]))
-							{
-								tds.RemoveAt(i);
-							}
-						}
-
-						vint tdCount = tds.Count();
-						writer << tdCount;
-						for (vint i = 0; i < tdCount; i++)
-						{
-							tdIndex.Add(tds[i], (i * -1) - 1);
-							WString typeName = tds[i]->GetTypeName();
-							writer << typeName;
-						}
-
-						// fill types
-						FOREACH(Ptr<WfClass>, td, value.classes)
-						{
-							IOClass(writer, td.Obj(), tdIndex);
-						}
-						FOREACH(Ptr<WfInterface>, td, value.interfaces)
-						{
-							IOInterface(writer, td.Obj(), tdIndex);
-						}
+						IOClass(writer, td.Obj());
+					}
+					FOREACH(Ptr<WfInterface>, td, value.interfaces)
+					{
+						IOInterface(writer, td.Obj());
 					}
 				}
 			};
@@ -820,22 +854,26 @@ Serialization (Instruction)
 			template<>
 			struct Serialization<WfInstruction>
 			{
-				template<typename TIO>
-				static void IO(TIO& io, WfInstruction& value)
+				static void IO(WfReader& reader, WfInstruction& value)
 				{
-					io << value.code;
+					reader << value.code;
+#define IO(X)								do{ reader << (X); }while(0)
+#define TD(X)								do{ vint index = -1; reader << index; X = reader.context->tdIndex[index]; }while(0)
+#define MI(X)								do{ vint index = -1; reader << index; X = reader.context->miIndex[index]; }while(0)
+#define PI(X)								do{ vint index = -1; reader << index; X = reader.context->piIndex[index]; }while(0)
+#define EI(X)								do{ vint index = -1; reader << index; X = reader.context->eiIndex[index]; }while(0)
 #define STREAMIO(NAME)						case WfInsCode::NAME: break;
-#define STREAMIO_VALUE(NAME)				case WfInsCode::NAME: io << value.valueParameter; break;
-#define STREAMIO_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: io << value.indexParameter << value.countParameter; break;
-#define STREAMIO_VARIABLE(NAME)				case WfInsCode::NAME: io << value.indexParameter; break;
-#define STREAMIO_COUNT(NAME)				case WfInsCode::NAME: io << value.countParameter; break;
-#define STREAMIO_FLAG_TYPEDESCRIPTOR(NAME)	case WfInsCode::NAME: io << value.flagParameter << value.typeDescriptorParameter; break;
-#define STREAMIO_PROPERTY(NAME)				case WfInsCode::NAME: io << value.propertyParameter; break;
-#define STREAMIO_METHOD(NAME)				case WfInsCode::NAME: io << value.methodParameter; break;
-#define STREAMIO_METHOD_COUNT(NAME)			case WfInsCode::NAME: io << value.methodParameter << value.countParameter; break;
-#define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: io << value.eventParameter; break;
-#define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: io << value.indexParameter; break;
-#define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: io << value.typeParameter; break;
+#define STREAMIO_VALUE(NAME)				case WfInsCode::NAME: IO(value.valueParameter); break;
+#define STREAMIO_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: IO(value.indexParameter); IO(value.countParameter); break;
+#define STREAMIO_VARIABLE(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_COUNT(NAME)				case WfInsCode::NAME: IO(value.countParameter); break;
+#define STREAMIO_FLAG_TYPEDESCRIPTOR(NAME)	case WfInsCode::NAME: IO(value.flagParameter); TD(value.typeDescriptorParameter); break;
+#define STREAMIO_PROPERTY(NAME)				case WfInsCode::NAME: PI(value.propertyParameter); break;
+#define STREAMIO_METHOD(NAME)				case WfInsCode::NAME: MI(value.methodParameter); break;
+#define STREAMIO_METHOD_COUNT(NAME)			case WfInsCode::NAME: MI(value.methodParameter); IO(value.countParameter); break;
+#define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
+#define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
 
 					switch (value.code)
 					{
@@ -866,6 +904,236 @@ Serialization (Instruction)
 #undef STREAMIO_EVENT
 #undef STREAMIO_LABEL
 #undef STREAMIO_TYPE
+#undef MI
+#undef TD
+#undef PI
+#undef EI
+#undef IO
+				}
+
+				static void IO(WfWriter& writer, WfInstruction& value)
+				{
+					writer << value.code;
+#define IO(X)								do{ writer << (X); }while(0)
+#define TD(X)								do{ vint index = writer.context->tdIndex[X]; writer << index; }while(0)
+#define MI(X)								do{ vint index = writer.context->miIndex[X]; writer << index; }while(0)
+#define PI(X)								do{ vint index = writer.context->piIndex[X]; writer << index; }while(0)
+#define EI(X)								do{ vint index = writer.context->eiIndex[X]; writer << index; }while(0)
+#define STREAMIO(NAME)						case WfInsCode::NAME: break;
+#define STREAMIO_VALUE(NAME)				case WfInsCode::NAME: IO(value.valueParameter); break;
+#define STREAMIO_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: IO(value.indexParameter); IO(value.countParameter); break;
+#define STREAMIO_VARIABLE(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_COUNT(NAME)				case WfInsCode::NAME: IO(value.countParameter); break;
+#define STREAMIO_FLAG_TYPEDESCRIPTOR(NAME)	case WfInsCode::NAME: IO(value.flagParameter); TD(value.typeDescriptorParameter); break;
+#define STREAMIO_PROPERTY(NAME)				case WfInsCode::NAME: PI(value.propertyParameter); break;
+#define STREAMIO_METHOD(NAME)				case WfInsCode::NAME: MI(value.methodParameter); break;
+#define STREAMIO_METHOD_COUNT(NAME)			case WfInsCode::NAME: MI(value.methodParameter); IO(value.countParameter); break;
+#define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
+#define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
+
+					switch (value.code)
+					{
+						INSTRUCTION_CASES(
+							STREAMIO,
+							STREAMIO_VALUE,
+							STREAMIO_FUNCTION_COUNT,
+							STREAMIO_VARIABLE,
+							STREAMIO_COUNT,
+							STREAMIO_FLAG_TYPEDESCRIPTOR,
+							STREAMIO_PROPERTY,
+							STREAMIO_METHOD,
+							STREAMIO_METHOD_COUNT,
+							STREAMIO_EVENT,
+							STREAMIO_LABEL,
+							STREAMIO_TYPE)
+					}
+
+#undef STREAMIO
+#undef STREAMIO_VALUE
+#undef STREAMIO_FUNCTION_COUNT
+#undef STREAMIO_VARIABLE
+#undef STREAMIO_COUNT
+#undef STREAMIO_FLAG_TYPEDESCRIPTOR
+#undef STREAMIO_PROPERTY
+#undef STREAMIO_METHOD
+#undef STREAMIO_METHOD_COUNT
+#undef STREAMIO_EVENT
+#undef STREAMIO_LABEL
+#undef STREAMIO_TYPE
+#undef MI
+#undef TD
+#undef PI
+#undef EI
+#undef IO
+				}
+			};
+
+/***********************************************************************
+Serialization (Assembly)
+***********************************************************************/
+
+			template<>
+			struct Serialization<WfAssembly>
+			{
+				//----------------------------------------------------
+
+				template<typename TType>
+				static void IOCustomTypeList(WfReader& reader, List<Ptr<TType>>& types)
+				{
+					vint typeCount = 0;
+					reader << typeCount;
+					for (vint i = 0; i < typeCount; i++)
+					{
+						WString typeName;
+						reader << typeName;
+						types.Add(MakePtr<TType>(typeName));
+					}
+
+					for (vint i = 0; i < typeCount; i++)
+					{
+						vint index = -reader.context->tdIndex.Count() - 1;
+						reader.context->tdIndex.Add(index, types[i].Obj());
+					}
+				}
+
+				template<typename TType>
+				static void IOCustomTypeList(WfWriter& writer, List<Ptr<TType>>& types)
+				{
+					vint typeCount = types.Count();
+					writer << typeCount;
+					for (vint i = 0; i < typeCount; i++)
+					{
+						WString typeName = types[i]->GetTypeName();
+						writer << typeName;
+					}
+					
+					for (vint i = 0; i < typeCount; i++)
+					{
+						vint index = -writer.context->tdIndex.Count() - 1;
+						writer.context->tdIndex.Add(types[i].Obj(), index);
+					}
+				}
+
+				//----------------------------------------------------
+
+				static void IOPrepare(WfReader& reader, WfAssembly& value)
+				{
+					reader.context = new WfReaderContext;
+					bool hasTypeImpl = false;
+					reader << hasTypeImpl;
+					if (hasTypeImpl)
+					{
+						value.typeImpl = new WfTypeImpl;
+						IOCustomTypeList(reader, value.typeImpl->classes);
+						IOCustomTypeList(reader, value.typeImpl->interfaces);
+					}
+
+					vint tdCount = -1;
+					vint miCount = -1;
+					vint piCount = -1;
+					vint eiCount = -1;
+					reader << tdCount << miCount << piCount << eiCount;
+					for (vint i = 0; i < tdCount; i++)
+					{
+						ITypeDescriptor* td = nullptr;
+						reader << td;
+						reader.context->tdIndex.Add(i, td);
+					}
+					for (vint i = 0; i < miCount; i++)
+					{
+						IMethodInfo* mi = nullptr;
+						reader << mi;
+						reader.context->miIndex.Add(i, mi);
+					}
+					for (vint i = 0; i < piCount; i++)
+					{
+						IPropertyInfo* pi = nullptr;
+						reader << pi;
+						reader.context->piIndex.Add(i, pi);
+					}
+					for (vint i = 0; i < eiCount; i++)
+					{
+						IEventInfo* ei = nullptr;
+						reader << ei;
+						reader.context->eiIndex.Add(i, ei);
+					}
+				}
+
+				static void IOPrepare(WfWriter& writer, WfAssembly& value)
+				{
+					writer.context = new WfWriterContext;
+					bool hasTypeImpl = value.typeImpl != nullptr;
+					writer << hasTypeImpl;
+					if (hasTypeImpl)
+					{
+						IOCustomTypeList(writer, value.typeImpl->classes);
+						IOCustomTypeList(writer, value.typeImpl->interfaces);
+					}
+
+					WfWriterContextPrepare prepare;
+					if (hasTypeImpl)
+					{
+						CollectMetadata(value.typeImpl.Obj(), prepare);
+					}
+					CollectMetadata(value.instructions, prepare);
+					for (vint i = prepare.tds.Count() - 1; i >= 0; i--)
+					{
+						if (writer.context->tdIndex.Keys().Contains(prepare.tds[i]))
+						{
+							prepare.tds.RemoveAt(i);
+						}
+					}
+					writer.context->Initialize(prepare);
+
+					vint tdCount = prepare.tds.Count();
+					vint miCount = prepare.mis.Count();
+					vint piCount = prepare.pis.Count();
+					vint eiCount = prepare.eis.Count();
+					writer << tdCount << miCount << piCount << eiCount;
+					FOREACH(ITypeDescriptor*, td, prepare.tds)
+					{
+						writer << td;
+					}
+					FOREACH(IMethodInfo*, mi, prepare.mis)
+					{
+						writer << mi;
+					}
+					FOREACH(IPropertyInfo*, pi, prepare.pis)
+					{
+						writer << pi;
+					}
+					FOREACH(IEventInfo*, ei, prepare.eis)
+					{
+						writer << ei;
+					}
+				}
+
+				//----------------------------------------------------
+
+				template<typename TIO>
+				static void IO(TIO& io, WfAssembly& value)
+				{
+					IOPrepare(io, value);
+					if (value.typeImpl)
+					{
+						Serialization<WfTypeImpl>::IO(io, *value.typeImpl.Obj());
+					}
+					if (value.typeImpl)
+					{
+						GetGlobalTypeManager()->AddTypeLoader(value.typeImpl);
+					}
+					io	<< value.insBeforeCodegen
+						<< value.insAfterCodegen
+						<< value.variableNames
+						<< value.functionByName
+						<< value.functions
+						<< value.instructions
+						;
+					if (value.typeImpl)
+					{
+						GetGlobalTypeManager()->RemoveTypeLoader(value.typeImpl);
+					}
 				}
 			};
 		}
@@ -896,35 +1164,14 @@ WfInstructionDebugInfo
 WfAssembly
 ***********************************************************************/
 
-			template<typename TIO>
-			void WfAssembly::IO(TIO& io)
-			{
-				io << typeImpl;
-				if (typeImpl)
-				{
-					GetGlobalTypeManager()->AddTypeLoader(typeImpl);
-				}
-				io	<< insBeforeCodegen
-					<< insAfterCodegen
-					<< variableNames
-					<< functionByName
-					<< functions
-					<< instructions
-					;
-				if (typeImpl)
-				{
-					GetGlobalTypeManager()->RemoveTypeLoader(typeImpl);
-				}
-			}
-
 			WfAssembly::WfAssembly()
 			{
 			}
 
 			WfAssembly::WfAssembly(stream::IStream& input)
 			{
-				stream::internal::Reader reader(input);
-				IO(reader);
+				stream::internal::WfReader reader(input);
+				stream::internal::Serialization<WfAssembly>::IO(reader, *this);
 				Initialize();
 			}
 
@@ -936,8 +1183,8 @@ WfAssembly
 
 			void WfAssembly::Serialize(stream::IStream& output)
 			{
-				stream::internal::Writer writer(output);
-				IO(writer);
+				stream::internal::WfWriter writer(output);
+				stream::internal::Serialization<WfAssembly>::IO(writer, *this);
 			}
 		}
 	}
