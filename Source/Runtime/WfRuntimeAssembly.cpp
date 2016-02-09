@@ -97,6 +97,7 @@ Serialization (CollectMetadata)
 
 			static void CollectTd(IMethodInfo* info, WfWriterContextPrepare& prepare)
 			{
+				CollectTd(info->GetOwnerTypeDescriptor(), prepare);
 				CollectTd(info->GetReturn(), prepare);
 				vint count = info->GetParameterCount();
 				for (vint i = 0; i < count; i++)
@@ -107,11 +108,13 @@ Serialization (CollectMetadata)
 
 			static void CollectTd(IEventInfo* info, WfWriterContextPrepare& prepare)
 			{
+				CollectTd(info->GetOwnerTypeDescriptor(), prepare);
 				CollectTd(info->GetHandlerType(), prepare);
 			}
 
 			static void CollectTd(IPropertyInfo* info, WfWriterContextPrepare& prepare)
 			{
+				CollectTd(info->GetOwnerTypeDescriptor(), prepare);
 				CollectTd(info->GetReturn(), prepare);
 			}
 
@@ -178,7 +181,7 @@ Serialization (CollectMetadata)
 #define PI(X)										do{ if (!prepare.pis.Contains(X)) prepare.pis.Add(X); }while(0)
 #define EI(X)										do{ if (!prepare.eis.Contains(X)) prepare.eis.Add(X); }while(0)
 #define COLLECTMETADATA(NAME)						case WfInsCode::NAME: break;
-#define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: break;
+#define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: if (auto td = ins.valueParameter.GetTypeDescriptor()) TD(td); break;
 #define COLLECTMETADATA_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: break;
 #define COLLECTMETADATA_VARIABLE(NAME)				case WfInsCode::NAME: break;
 #define COLLECTMETADATA_COUNT(NAME)					case WfInsCode::NAME: break;
@@ -265,7 +268,7 @@ Serizliation (Data Structures)
 			SERIALIZE_ENUM(Value::ValueType)
 
 /***********************************************************************
-Serizliation (Metadata)
+Serizliation (ITypeDescriptor)
 ***********************************************************************/
 
 			template<>
@@ -286,160 +289,12 @@ Serizliation (Metadata)
 				}
 			};
 
-			template<>
-			struct Serialization<IMethodInfo*>
-			{
-				static void IO(WfReader& reader, IMethodInfo*& value)
-				{
-					ITypeDescriptor* type = 0;
-					WString name;
-					List<WString> parameters;
-					reader << type << name << parameters;
-					auto group =
-						name == L"#ctor" ? type->GetConstructorGroup() :
-						type->GetMethodGroupByName(name, false);
-					CHECK_ERROR(group, L"Failed to load method.");
-
-					value = 0;
-					vint count = group->GetMethodCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto method = group->GetMethod(i);
-						if (method->GetParameterCount() == parameters.Count())
-						{
-							bool found = true;
-							for (vint j = 0; j < parameters.Count(); j++)
-							{
-								if (method->GetParameter(j)->GetName() != parameters[j])
-								{
-									found = false;
-									break;
-								}
-							}
-
-							if (found)
-							{
-								CHECK_ERROR(!value, L"Failed to load method.");
-								value = method;
-							}
-						}
-					}
-					CHECK_ERROR(value, L"Failed to load method.");
-				}
-					
-				static void IO(WfWriter& writer, IMethodInfo*& value)
-				{
-					auto type = value->GetOwnerTypeDescriptor();
-					WString name =
-						value->GetOwnerMethodGroup() == type->GetConstructorGroup() ? L"#ctor" :
-						value->GetName();
-					writer << type << name;
-
-					List<WString> parameters;
-					vint count = value->GetParameterCount();
-					for (vint i = 0; i < count; i++)
-					{
-						parameters.Add(value->GetParameter(i)->GetName());
-					}
-					writer << parameters;
-				}
-			};
-
-			template<>
-			struct Serialization<IPropertyInfo*>
-			{
-				static void IO(WfReader& reader, IPropertyInfo*& value)
-				{
-					ITypeDescriptor* type = 0;
-					WString name;
-					reader << type << name;
-					value = type->GetPropertyByName(name, false);
-					CHECK_ERROR(value, L"Failed to load property.");
-				}
-					
-				static void IO(WfWriter& writer, IPropertyInfo*& value)
-				{
-					auto type = value->GetOwnerTypeDescriptor();
-					WString name = value->GetName();
-					writer << type << name;
-				}
-			};
-
-			template<>
-			struct Serialization<IEventInfo*>
-			{
-				static void IO(WfReader& reader, IEventInfo*& value)
-				{
-					ITypeDescriptor* type = 0;
-					WString name;
-					reader << type << name;
-					value = type->GetEventByName(name, false);
-					CHECK_ERROR(value, L"Failed to load event.");
-				}
-					
-				static void IO(WfWriter& writer, IEventInfo*& value)
-				{
-					auto type = value->GetOwnerTypeDescriptor();
-					WString name = value->GetName();
-					writer << type << name;
-				}
-			};
-
-			template<>
-			struct Serialization<Value>
-			{
-				static void IO(WfReader& reader, Value& value)
-				{
-					WString id, text;
-					reader << id << text;
-					if (id == L"")
-					{
-						value = Value();
-					}
-					else
-					{
-						auto type = GetTypeDescriptor(id);
-						if (type == GetTypeDescriptor<ITypeDescriptor>())
-						{
-							type = GetTypeDescriptor(text);
-							CHECK_ERROR(type, L"Failed to load type.");
-							value = Value::From(type);
-						}
-						else
-						{
-							type->GetValueSerializer()->Parse(text, value);
-						}
-					}
-				}
-					
-				static void IO(WfWriter& writer, Value& value)
-				{
-					WString id;
-					if (value.GetTypeDescriptor())
-					{
-						id = value.GetTypeDescriptor()->GetTypeName();
-					}
-					writer << id;
-
-					if (value.GetTypeDescriptor() == GetTypeDescriptor<ITypeDescriptor>())
-					{
-						WString text = UnboxValue<ITypeDescriptor*>(value)->GetTypeName();
-						writer << text;
-					}
-					else
-					{
-						WString text = value.GetText();
-						writer << text;
-					}
-				}
-			};
-
 /***********************************************************************
-Serialization (TypeImpl)
+Serizliation (ITypeInfo)
 ***********************************************************************/
 
 			template<>
-			struct Serialization<WfTypeImpl>
+			struct Serialization<ITypeInfo>
 			{
 				static void IOType(WfReader& reader, Ptr<ITypeInfo>& typeInfo)
 				{
@@ -515,6 +370,300 @@ Serialization (TypeImpl)
 						}
 						break;
 					}
+				}
+			};
+
+/***********************************************************************
+Serizliation (Metadata)
+***********************************************************************/
+
+			template<>
+			struct Serialization<IMethodInfo*>
+			{
+				static void IO(WfReader& reader, IMethodInfo*& value)
+				{
+					value = nullptr;
+					vint typeIndex = -1;
+					WString name;
+					reader << typeIndex << name;
+					auto type = reader.context->tdIndex[typeIndex];
+					auto group = name == L"#ctor"
+						? type->GetConstructorGroup()
+						: type->GetMethodGroupByName(name, false);
+
+					if (!group)
+					{
+						CHECK_ERROR(value, L"Failed to load method.");
+					}
+
+					vint methodFlag = -1;
+					reader << methodFlag;
+					CHECK_ERROR(0 <= methodFlag && methodFlag <= 3, L"Failed to load method.");
+
+					vint methodCount = group->GetMethodCount();
+					switch (methodFlag)
+					{
+					case 0:
+						{
+							CHECK_ERROR(methodCount == 1, L"Failed to load method.");
+							value = group->GetMethod(0);
+						}
+						break;
+					case 1:
+						{
+							vint count = -1;
+							reader << count;
+							for (vint i = 0; i < methodCount; i++)
+							{
+								auto method = group->GetMethod(i);
+								if (method->GetParameterCount() == count)
+								{
+									CHECK_ERROR(!value, L"Failed to load method.");
+									value = method;
+								}
+							}
+						}
+						break;
+					case 2:
+						{
+							Ptr<ITypeInfo> returnType;
+							Serialization<ITypeInfo>::IOType(reader, returnType);
+							auto signature = returnType->GetTypeFriendlyName();
+							for (vint i = 0; i < methodCount; i++)
+							{
+								auto method = group->GetMethod(i);
+								if (method->GetReturn()->GetTypeFriendlyName() == signature)
+								{
+									CHECK_ERROR(!value, L"Failed to load method.");
+									value = method;
+								}
+							}
+						}
+						break;
+					case 3:
+						{
+							vint count = -1;
+							reader << count;
+							List<WString> signatures;
+							for (vint i = 0; i < count; i++)
+							{
+								Ptr<ITypeInfo> type;
+								Serialization<ITypeInfo>::IOType(reader, type);
+								signatures.Add(type->GetTypeFriendlyName());
+							}
+
+							for (vint i = 0; i < methodCount; i++)
+							{
+								auto method = group->GetMethod(i);
+								if (method->GetParameterCount() == count)
+								{
+									bool found = true;
+									for (vint j = 0; j < count; j++)
+									{
+										if (method->GetParameter(j)->GetType()->GetTypeFriendlyName() != signatures[j])
+										{
+											found = false;
+											break;
+										}
+									}
+
+									if (found)
+									{
+										CHECK_ERROR(!value, L"Failed to load method.");
+										value = method;
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+					
+				static void IO(WfWriter& writer, IMethodInfo*& value)
+				{
+					auto type = value->GetOwnerTypeDescriptor();
+					vint typeIndex = writer.context->tdIndex[type];
+					auto group = value->GetOwnerMethodGroup();
+					WString name = group == type->GetConstructorGroup()
+						? L"#ctor"
+						: value->GetName();
+					writer << typeIndex << name;
+
+					vint methodFlag = 0;
+					if (group->GetMethodCount() == 1)
+					{
+						writer << methodFlag;
+						return;
+					}
+
+					vint count = value->GetParameterCount();
+					{
+						vint satisfied = 0;
+						for (vint i = 0; i < group->GetMethodCount(); i++)
+						{
+							if (group->GetMethod(i)->GetParameterCount() == count)
+							{
+								satisfied++;
+							}
+						}
+
+						if (satisfied == 1)
+						{
+							methodFlag = 1;
+							writer << methodFlag << count;
+							return;
+						}
+					}
+
+					auto returnType = value->GetReturn();
+					{
+						auto signature = returnType->GetTypeFriendlyName();
+						vint satisfied = 0;
+						for (vint i = 0; i < group->GetMethodCount(); i++)
+						{
+							if (group->GetMethod(i)->GetReturn()->GetTypeFriendlyName() == signature)
+							{
+								satisfied++;
+							}
+						}
+
+						if (satisfied == 1)
+						{
+							methodFlag = 2;
+							writer << methodFlag;
+							Serialization<ITypeInfo>::IOType(writer, returnType);
+							return;
+						}
+					}
+
+					methodFlag = 3;
+					writer << methodFlag << count;
+					for (vint i = 0; i < count; i++)
+					{
+						Serialization<ITypeInfo>::IOType(writer, value->GetParameter(i)->GetType());
+					}
+				}
+			};
+
+			template<>
+			struct Serialization<IPropertyInfo*>
+			{
+				static void IO(WfReader& reader, IPropertyInfo*& value)
+				{
+					vint typeIndex = -1;
+					WString name;
+					reader << typeIndex << name;
+					auto type = reader.context->tdIndex[typeIndex];
+					value = type->GetPropertyByName(name, false);
+					CHECK_ERROR(value, L"Failed to load property.");
+				}
+					
+				static void IO(WfWriter& writer, IPropertyInfo*& value)
+				{
+					auto type = value->GetOwnerTypeDescriptor();
+					vint typeIndex = writer.context->tdIndex[type];
+					WString name = value->GetName();
+					writer << typeIndex << name;
+				}
+			};
+
+			template<>
+			struct Serialization<IEventInfo*>
+			{
+				static void IO(WfReader& reader, IEventInfo*& value)
+				{
+					vint typeIndex = -1;
+					WString name;
+					reader << typeIndex << name;
+					auto type = reader.context->tdIndex[typeIndex];
+					value = type->GetEventByName(name, false);
+					CHECK_ERROR(value, L"Failed to load event.");
+				}
+					
+				static void IO(WfWriter& writer, IEventInfo*& value)
+				{
+					auto type = value->GetOwnerTypeDescriptor();
+					vint typeIndex = writer.context->tdIndex[type];
+					WString name = value->GetName();
+					writer << typeIndex << name;
+				}
+			};
+
+			template<>
+			struct Serialization<Value>
+			{
+				static void IO(WfReader& reader, Value& value)
+				{
+					vint typeFlag = -1;
+					reader << typeFlag;
+					CHECK_ERROR(0 <= typeFlag && typeFlag <= 2, L"Failed to load value.");
+					if (typeFlag == 0)
+					{
+						value = Value();
+						return;
+					}
+
+					vint typeIndex = -1;
+					reader << typeIndex;
+					auto type = reader.context->tdIndex[typeIndex];
+
+					if (typeFlag == 1)
+					{
+						value = Value::From(type);
+						return;
+					}
+
+					WString text;
+					reader << text;
+					type->GetValueSerializer()->Parse(text, value);
+				}
+					
+				static void IO(WfWriter& writer, Value& value)
+				{
+					vint typeFlag = 0;
+					if (value.IsNull())
+					{
+						writer << typeFlag;
+					}
+					else
+					{
+						auto type = value.GetTypeDescriptor();
+						if (type == GetTypeDescriptor<ITypeDescriptor>())
+						{
+							typeFlag = 1;
+							type = UnboxValue<ITypeDescriptor*>(value);
+						}
+						else
+						{
+							typeFlag = 2;
+						}
+						vint typeIndex = writer.context->tdIndex[type];
+						writer << typeFlag << typeIndex;
+
+						if (typeFlag == 2)
+						{
+							auto text = value.GetText();
+							writer << text;
+						}
+					}
+				}
+			};
+
+/***********************************************************************
+Serialization (TypeImpl)
+***********************************************************************/
+
+			template<>
+			struct Serialization<WfTypeImpl>
+			{
+				static void IOType(WfReader& reader, Ptr<ITypeInfo>& typeInfo)
+				{
+					Serialization<ITypeInfo>::IOType(reader, typeInfo);
+				}
+					
+				static void IOType(WfWriter& writer, ITypeInfo* typeInfo)
+				{
+					Serialization<ITypeInfo>::IOType(writer, typeInfo);
 				}
 
 				//----------------------------------------------------
@@ -1040,6 +1189,13 @@ Serialization (Assembly)
 						reader << td;
 						reader.context->tdIndex.Add(i, td);
 					}
+
+					if (hasTypeImpl)
+					{
+						Serialization<WfTypeImpl>::IO(reader, *value.typeImpl.Obj());
+						GetGlobalTypeManager()->AddTypeLoader(value.typeImpl);
+					}
+
 					for (vint i = 0; i < miCount; i++)
 					{
 						IMethodInfo* mi = nullptr;
@@ -1095,6 +1251,13 @@ Serialization (Assembly)
 					{
 						writer << td;
 					}
+
+					if (hasTypeImpl)
+					{
+						Serialization<WfTypeImpl>::IO(writer, *value.typeImpl.Obj());
+						GetGlobalTypeManager()->AddTypeLoader(value.typeImpl);
+					}
+
 					FOREACH(IMethodInfo*, mi, prepare.mis)
 					{
 						writer << mi;
@@ -1115,14 +1278,6 @@ Serialization (Assembly)
 				static void IO(TIO& io, WfAssembly& value)
 				{
 					IOPrepare(io, value);
-					if (value.typeImpl)
-					{
-						Serialization<WfTypeImpl>::IO(io, *value.typeImpl.Obj());
-					}
-					if (value.typeImpl)
-					{
-						GetGlobalTypeManager()->AddTypeLoader(value.typeImpl);
-					}
 					io	<< value.insBeforeCodegen
 						<< value.insAfterCodegen
 						<< value.variableNames
