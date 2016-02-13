@@ -38,5 +38,19 @@ func Execute(adder : IAdder^) : void
 
 func main() : string
 {
+	var sum : {0};
+	Execute(new IAdder^
+	{
+		func GetSum() : int
+		{
+			return sum[0];
+		}
+
+		func Add(value : int) : void
+		{
+			sum[0] = sum[0] + value;
+			SumChanged();
+		}
+	});
 	return s;
 }

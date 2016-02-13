@@ -1,0 +1,50 @@
+module test;
+using system::*;
+using test::*;
+
+interface IMyInterface : Enumerable^
+{
+	func Get100() : int
+	{
+		return 100;
+	}
+}
+
+func main():string
+{
+	var begin = 1;
+	var end = 5;
+	var xs = cast int{} new IMyInterface^
+	{
+		func CreateEnumerator() : Enumerator^
+		{
+			var index = {-1};
+			return new Enumerator^
+			{
+				func GetCurrent() : object
+				{
+					return begin + index[0];
+				}
+
+				func GetIndex() : int
+				{
+					return index[0];
+				}
+
+				func Next() : bool
+				{
+					if(index[0] == end - begin)
+					{
+						return false;
+					}
+					else
+					{
+						index[0] = index[0] + 1;
+						return true;
+					}
+				}
+			};
+		}
+	};
+	return $"[$(xs.Get100)][$(CustomInterfaceProcessor::Sum(xs))]";
+}

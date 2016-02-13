@@ -232,7 +232,7 @@ WfRuntimeThreadContext (ReverseEnumerable)
 			Value OPERATOR_OpReverseEnumerable(Value operand)
 			{
 				auto enumerable = UnboxValue<Ptr<IValueEnumerable>>(operand);
-				auto list = enumerable.Cast<IValueList>();
+				auto list = enumerable.Cast<IValueReadonlyList>();
 				if (!list)
 				{
 					list = IValueList::Create(GetLazyList<Value>(enumerable));

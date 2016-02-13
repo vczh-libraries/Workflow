@@ -455,6 +455,21 @@ namespace test
 			return L"This is " + name;
 		}
 	};
+
+	class CustomInterfaceProcessor : public Object, public Description<CustomInterfaceProcessor>
+	{
+	public:
+		static vint Sum(Ptr<IValueEnumerable> values)
+		{
+			vint sum = 0;
+			auto it = values->CreateEnumerator();
+			while (!it->Next())
+			{
+				sum += UnboxValue<vint>(it->GetCurrent());
+			}
+			return sum;
+		}
+	};
 }
 
 namespace vl
@@ -470,6 +485,7 @@ namespace vl
 			F(test::Point)\
 			F(test::PointClass)\
 			F(test::ObservableValue)\
+			F(test::CustomInterfaceProcessor)\
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
 			UNITTEST_TYPELIST(IMPL_CPP_TYPE_INFO)
@@ -498,6 +514,10 @@ namespace vl
 				CLASS_MEMBER_PROPERTY_FAST(Name)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DisplayName);
 			END_CLASS_MEMBER(ObservableValue)
+
+			BEGIN_CLASS_MEMBER(CustomInterfaceProcessor)
+				CLASS_MEMBER_STATIC_METHOD(Sum, { L"values" })
+			END_CLASS_MEMBER(CustomInterfaceProcessor)
 
 			class UnitTestTypeLoader : public Object, public ITypeLoader
 			{

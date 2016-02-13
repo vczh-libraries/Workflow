@@ -494,6 +494,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			InterfaceContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ConstructorReturnTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotLeftValue(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			CannotCallMemberOutsideOfClass(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);

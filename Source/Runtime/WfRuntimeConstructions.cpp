@@ -12,7 +12,7 @@ namespace vl
 WfRuntimeReverseEnumerable
 ***********************************************************************/
 
-			WfRuntimeReverseEnumerable::Enumerator::Enumerator(Ptr<reflection::description::IValueList> _list)
+			WfRuntimeReverseEnumerable::Enumerator::Enumerator(Ptr<IValueReadonlyList> _list)
 				:list(_list), index(_list->GetCount())
 			{
 			}
@@ -34,7 +34,7 @@ WfRuntimeReverseEnumerable
 				return true;
 			}
 
-			WfRuntimeReverseEnumerable::WfRuntimeReverseEnumerable(Ptr<reflection::description::IValueList> _list)
+			WfRuntimeReverseEnumerable::WfRuntimeReverseEnumerable(Ptr<IValueReadonlyList> _list)
 				:list(_list)
 			{
 			}

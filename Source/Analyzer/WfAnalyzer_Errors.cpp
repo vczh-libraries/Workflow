@@ -222,6 +222,16 @@ WfErrors
 				return new ParsingError(node, L"A25: " + result.GetFriendlyName(true) + L" is not assignable.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::CannotCallMemberOutsideOfClass(WfExpression* node, const ResolveExpressionResult& result)
+			{
+				return new ParsingError(node, L"A26: " + result.GetFriendlyName(true) + L" cannot be called as a static member.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result)
+			{
+				return new ParsingError(node, L"A27: " + result.GetFriendlyName(true) + L" cannot be called in static functions of its class or interface.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
 			{
 				return new ParsingError(node, L"B0: Void is not a type for a value.");
