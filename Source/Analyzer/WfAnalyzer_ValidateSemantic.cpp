@@ -677,29 +677,62 @@ ValidateSemantic(Expression)
 							results.Add(ResolveExpressionResult(scopeName->children.Values()[index]));
 							return;
 						}
-
+						
+						bool found = false;
+						bool foundStaticMethod = false;
 						if (scopeName->typeDescriptor)
 						{
 							if (auto group = scopeName->typeDescriptor->GetMethodGroupByName(node->name.value, true))
 							{
-								bool found = false;
 								for (vint i = 0; i < group->GetMethodCount(); i++)
 								{
 									auto info = group->GetMethod(i);
 									if (info->IsStatic())
 									{
 										found = true;
-										results.Add(ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info)));
+										foundStaticMethod = true;
+										auto result = ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info));
+										results.Add(result);
 									}
 								}
 
-								if (found)
+								if (foundStaticMethod)
 								{
 									return;
 								}
+
+								for (vint i = 0; i < group->GetMethodCount(); i++)
+								{
+									auto info = group->GetMethod(i);
+									if (!info->IsStatic())
+									{
+										found = true;
+										auto result = ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info));
+										results.Add(result);
+										manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
+									}
+								}
+							}
+							if (auto info = scopeName->typeDescriptor->GetPropertyByName(node->name.value, true))
+							{
+								found = true;
+								auto result = ResolveExpressionResult(info, CopyTypeInfo(info->GetReturn()), (info->IsWritable() ? CopyTypeInfo(info->GetReturn()) : nullptr));
+								results.Add(result);
+								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
+							}
+							if (auto info = scopeName->typeDescriptor->GetEventByName(node->name.value, true))
+							{
+								found = true;
+								auto result = ResolveExpressionResult(info);
+								results.Add(result);
+								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
 							}
 						}
-						manager->errors.Add(WfErrors::ChildSymbolNotExists(node, scopeName, node->name.value));
+
+						if (!found)
+						{
+							manager->errors.Add(WfErrors::ChildSymbolNotExists(node, scopeName, node->name.value));
+						}
 					}
 				}
 
