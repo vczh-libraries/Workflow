@@ -20,113 +20,118 @@ WfInstruction
 			}
 
 #define CTOR(NAME)\
-	WfInstruction WfInstruction::NAME()\
+			WfInstruction WfInstruction::NAME()\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			return ins; \
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				return ins; \
 			}\
 
 #define CTOR_VALUE(NAME)\
-	WfInstruction WfInstruction::NAME(const reflection::description::Value& value)\
+			WfInstruction WfInstruction::NAME(const reflection::description::Value& value)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.valueParameter = value; \
-			return ins; \
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.valueParameter = value; \
+				return ins; \
 			}\
 
 #define CTOR_FUNCTION_COUNT(NAME)\
-	WfInstruction WfInstruction::NAME(vint function, vint count)\
+			WfInstruction WfInstruction::NAME(vint function, vint count)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.indexParameter = function; \
-			ins.countParameter = count; \
-			return ins; \
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = function; \
+				ins.countParameter = count; \
+				return ins; \
 			}\
 
 #define CTOR_VARIABLE(NAME)\
-	WfInstruction WfInstruction::NAME(vint variable)\
+			WfInstruction WfInstruction::NAME(vint variable)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.indexParameter = variable; \
-			return ins; \
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = variable; \
+				return ins; \
 			}\
 
 #define CTOR_COUNT(NAME)\
-	WfInstruction WfInstruction::NAME(vint count)\
+			WfInstruction WfInstruction::NAME(vint count)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.countParameter = count; \
-			return ins; \
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.countParameter = count; \
+				return ins; \
 			}\
 
 #define CTOR_FLAG_TYPEDESCRIPTOR(NAME)\
-	WfInstruction WfInstruction::NAME(reflection::description::Value::ValueType flag, reflection::description::ITypeDescriptor* typeDescriptor)\
+			WfInstruction WfInstruction::NAME(reflection::description::Value::ValueType flag, reflection::description::ITypeDescriptor* typeDescriptor)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.flagParameter = flag; \
-			ins.typeDescriptorParameter = typeDescriptor; \
-			return ins; \
+				CHECK_ERROR(typeDescriptor != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(Value::ValueType, ITypeDescriptor*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.flagParameter = flag; \
+				ins.typeDescriptorParameter = typeDescriptor; \
+				return ins; \
 			}\
 
 #define CTOR_PROPERTY(NAME)\
-	WfInstruction WfInstruction::NAME(reflection::description::IPropertyInfo* propertyInfo)\
+			WfInstruction WfInstruction::NAME(reflection::description::IPropertyInfo* propertyInfo)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.propertyParameter = propertyInfo; \
-			return ins; \
+				CHECK_ERROR(propertyInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(propertyInfo*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.propertyParameter = propertyInfo; \
+				return ins; \
 			}\
 
 #define CTOR_METHOD(NAME)\
-	WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo)\
+			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.methodParameter = methodInfo; \
-			return ins; \
+				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(methodInfo*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.methodParameter = methodInfo; \
+				return ins; \
 			}\
 
 #define CTOR_METHOD_COUNT(NAME)\
-	WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo, vint count)\
+			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo, vint count)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.methodParameter = methodInfo; \
-			ins.countParameter = count; \
-			return ins; \
+				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(methodInfo*, vint)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.methodParameter = methodInfo; \
+				ins.countParameter = count; \
+				return ins; \
 			}\
 
 #define CTOR_EVENT(NAME)\
-	WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo)\
+			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.eventParameter = eventInfo; \
-			return ins; \
+				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(IEventInfo*, vint)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.eventParameter = eventInfo; \
+				return ins; \
 			}\
 
 #define CTOR_LABEL(NAME)\
-	WfInstruction WfInstruction::NAME(vint label)\
+			WfInstruction WfInstruction::NAME(vint label)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.indexParameter = label; \
-			return ins; \
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = label; \
+				return ins; \
 			}\
 
 #define CTOR_TYPE(NAME)\
-	WfInstruction WfInstruction::NAME(WfInsType type)\
+			WfInstruction WfInstruction::NAME(WfInsType type)\
 			{\
-			WfInstruction ins; \
-			ins.code = WfInsCode::NAME; \
-			ins.typeParameter = type; \
-			return ins; \
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.typeParameter = type; \
+				return ins; \
 			}\
 
 			INSTRUCTION_CASES(

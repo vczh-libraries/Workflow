@@ -252,7 +252,7 @@ ValidateScopeName
 				ValidateScopeNameDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _name)
 					:manager(_manager)
 					, name(_name)
-					, category(name->typeDescriptor && name->createdByTypeDescriptor ? Type : None)
+					, category(name->typeDescriptor && name->imported ? Type : None)
 				{
 				}
 

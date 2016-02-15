@@ -433,53 +433,64 @@ ValidateSemantic(Expression)
 					
 					for (vint i = 0; i < nameResults.Count(); i++)
 					{
-						auto& result = results[i];
+						auto& result = nameResults[i];
 						if (result.symbol)
 						{
-							bool captured = false;
-							if (!result.symbol->ownerScope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+							if (result.type)
 							{
-								auto currentScope = scope;
-								while (currentScope)
+								bool captured = false;
+								if (!result.symbol->ownerScope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
 								{
-									vint index = currentScope->symbols.Keys().IndexOf(result.symbol->name);
-									if (index != -1 && currentScope->symbols.GetByIndex(index).Contains(result.symbol.Obj()))
+									auto currentScope = scope;
+									while (currentScope)
 									{
-										break;
-									}
-									if (auto node = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
-									{
-										if (!currentScope->ownerClassMember)
+										vint index = currentScope->symbols.Keys().IndexOf(result.symbol->name);
+										if (index != -1 && currentScope->symbols.GetByIndex(index).Contains(result.symbol.Obj()))
 										{
-											captured = true;
-											vint index = manager->functionLambdaCaptures.Keys().IndexOf(node.Obj());
-											if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+											break;
+										}
+										if (auto node = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+										{
+											if (!currentScope->ownerClassMember)
 											{
-												manager->functionLambdaCaptures.Add(node.Obj(), result.symbol);
+												captured = true;
+												vint index = manager->functionLambdaCaptures.Keys().IndexOf(node.Obj());
+												if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+												{
+													manager->functionLambdaCaptures.Add(node.Obj(), result.symbol);
+												}
 											}
 										}
-									}
-									if (auto node = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
-									{
-										captured = true;
-										vint index = manager->orderedLambdaCaptures.Keys().IndexOf(node.Obj());
-										if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+										if (auto node = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
 										{
-											manager->orderedLambdaCaptures.Add(node.Obj(), result.symbol);
+											captured = true;
+											vint index = manager->orderedLambdaCaptures.Keys().IndexOf(node.Obj());
+											if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+											{
+												manager->orderedLambdaCaptures.Add(node.Obj(), result.symbol);
+											}
 										}
+										currentScope = currentScope->parentScope.Obj();
 									}
-									currentScope = currentScope->parentScope.Obj();
 								}
-							}
 
-							if (captured)
-							{
-								results.Add(ResolveExpressionResult::CapturedSymbol(result.symbol));
+								if (captured)
+								{
+									results.Add(ResolveExpressionResult::CapturedSymbol(result.symbol));
+								}
+								else
+								{
+									results.Add(ResolveExpressionResult::Symbol(result.symbol));
+								}
 							}
 							else
 							{
-								results.Add(ResolveExpressionResult::Symbol(result.symbol));
+								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, result.symbol));
 							}
+						}
+						else
+						{
+							results.Add(result);
 						}
 					}
 
@@ -487,9 +498,9 @@ ValidateSemantic(Expression)
 					{
 						if (nameResults.Count() > 0)
 						{
-							for (vint i = 0; i < nameResults.Count(); i++)
+							FOREACH(ResolveExpressionResult, result, nameResults)
 							{
-								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, nameResults[i]));
+								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, result.symbol));
 							}
 						}
 						else
@@ -502,6 +513,52 @@ ValidateSemantic(Expression)
 				void Visit(WfReferenceExpression* node)override
 				{
 					ResolveName(node, node->name.value);
+
+					Ptr<WfClassMember> ownerClassMember;
+					ITypeDescriptor* ownerClass = nullptr;
+					auto scope = manager->expressionScopes[node].Obj();
+					while (scope)
+					{
+						if (scope->ownerClassMember)
+						{
+							ownerClassMember = scope->ownerClassMember;
+							ownerClass = manager->declarationTypes[scope->parentScope->ownerDeclaration.Obj()].Obj();
+							break;
+						}
+						scope = scope->parentScope.Obj();
+					}
+
+					if (ownerClassMember)
+					{
+						bool inStaticFunction = ownerClassMember->kind == WfClassMemberKind::Static;
+						FOREACH(ResolveExpressionResult, result, results)
+						{
+							if (result.methodInfo)
+							{
+								if (!result.methodInfo->IsStatic())
+								{
+									if (inStaticFunction || !ownerClass->CanConvertTo(result.methodInfo->GetOwnerTypeDescriptor()))
+									{
+										manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
+									}
+								}
+							}
+							else if (result.propertyInfo)
+							{
+								if (inStaticFunction || !ownerClass->CanConvertTo(result.propertyInfo->GetOwnerTypeDescriptor()))
+								{
+									manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
+								}
+							}
+							else if (result.eventInfo)
+							{
+								if (inStaticFunction || !ownerClass->CanConvertTo(result.eventInfo->GetOwnerTypeDescriptor()))
+								{
+									manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
+								}
+							}
+						}
+					}
 				}
 
 				void Visit(WfOrderedNameExpression* node)override

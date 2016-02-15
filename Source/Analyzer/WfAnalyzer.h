@@ -78,18 +78,18 @@ Scope Manager
 				typedef collections::Dictionary<WString, Ptr<WfLexicalScopeName>>		NameMap;
 				typedef collections::List<Ptr<WfDeclaration>>							DeclarationList;
 			public:
-				WfLexicalScopeName*							parent;
-				bool										createdByTypeDescriptor;
+				WfLexicalScopeName*							parent = nullptr;
+				bool										imported = true;
 				NameMap										children;
 				WString										name;
-				reflection::description::ITypeDescriptor*	typeDescriptor;		// type that form this name
-				DeclarationList								declarations;		// declarations that form this name
+				reflection::description::ITypeDescriptor*	typeDescriptor = nullptr;	// type that form this name
+				DeclarationList								declarations;				// declarations that form this name
 
-				WfLexicalScopeName(bool _createdByTypeDescriptor);
+				WfLexicalScopeName(bool _imported);
 				~WfLexicalScopeName();
 
-				Ptr<WfLexicalScopeName>						AccessChild(const WString& name, bool createdByTypeDescriptor);
-				void										RemoveNonTypeDescriptorNames();
+				Ptr<WfLexicalScopeName>						AccessChild(const WString& name, bool imported);
+				void										RemoveNonTypeDescriptorNames(WfLexicalScopeManager* manager);
 				WString										GetFriendlyName();
 			};
 
@@ -475,7 +475,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			EventIsNotExpression(WfExpression* node, reflection::description::IEventInfo* eventInfo);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotScopeName(WfExpression* node);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotEvent(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ExpressionCannotResolveType(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			ExpressionCannotResolveType(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			NullCannotResolveType(WfExpression* node);
 				static Ptr<parsing::ParsingError>			ConstructorCannotResolveType(WfExpression* node);
 				static Ptr<parsing::ParsingError>			OrderedLambdaCannotResolveType(WfExpression* node);

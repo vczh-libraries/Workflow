@@ -774,7 +774,7 @@ GenerateInstructions(Expression)
 							GenerateExpressionInstructions(context, argument);
 						}
 						INSTRUCTION(Ins::LoadValue(Value()));
-						INSTRUCTION(Ins::InvokeMethod(result.methodInfo, node->arguments.Count()));
+						INSTRUCTION(Ins::InvokeMethod(result.constructorInfo, node->arguments.Count()));
 					}
 					else
 					{
@@ -791,7 +791,7 @@ GenerateInstructions(Expression)
 						}
 						INSTRUCTION(Ins::CreateInterface(node->functions.Count() * 2));
 						INSTRUCTION(Ins::LoadValue(Value()));
-						INSTRUCTION(Ins::InvokeMethod(result.methodInfo, 1));
+						INSTRUCTION(Ins::InvokeMethod(result.constructorInfo, 1));
 					}
 				}
 			};

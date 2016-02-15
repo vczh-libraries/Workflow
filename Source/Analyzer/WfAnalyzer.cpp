@@ -118,10 +118,8 @@ WfLexicalScope
 WfLexicalScopeName
 ***********************************************************************/
 
-			WfLexicalScopeName::WfLexicalScopeName(bool _createdByTypeDescriptor)
-				:parent(0)
-				, createdByTypeDescriptor(_createdByTypeDescriptor)
-				, typeDescriptor(0)
+			WfLexicalScopeName::WfLexicalScopeName(bool _imported)
+				:imported(_imported)
 			{
 			}
 
@@ -129,12 +127,12 @@ WfLexicalScopeName
 			{
 			}
 
-			Ptr<WfLexicalScopeName> WfLexicalScopeName::AccessChild(const WString& name, bool createdByTypeDescriptor)
+			Ptr<WfLexicalScopeName> WfLexicalScopeName::AccessChild(const WString& name, bool imported)
 			{
 				vint index = children.Keys().IndexOf(name);
 				if (index == -1)
 				{
-					Ptr<WfLexicalScopeName> newName = new WfLexicalScopeName(createdByTypeDescriptor);
+					Ptr<WfLexicalScopeName> newName = new WfLexicalScopeName(imported);
 					newName->name = name;
 					newName->parent = this;
 					children.Add(name, newName);
@@ -146,21 +144,27 @@ WfLexicalScopeName
 				}
 			}
 
-			void WfLexicalScopeName::RemoveNonTypeDescriptorNames()
+			void WfLexicalScopeName::RemoveNonTypeDescriptorNames(WfLexicalScopeManager* manager)
 			{
+				FOREACH(Ptr<WfLexicalScopeName>, name, children.Values())
+				{
+					name->RemoveNonTypeDescriptorNames(manager);
+				}
+
 				for (vint i = children.Count() - 1; i >= 0; i--)
 				{
-					if (!children.Values()[i]->createdByTypeDescriptor)
+					auto subScopeName = children.Values()[i];
+					if (!subScopeName->imported)
 					{
 						children.Remove(children.Keys()[i]);
+						if (subScopeName->typeDescriptor)
+						{
+							manager->typeNames.Remove(subScopeName->typeDescriptor);
+						}
 					}
 				}
 				
 				declarations.Clear();
-				FOREACH(Ptr<WfLexicalScopeName>, name, children.Values())
-				{
-					name->RemoveNonTypeDescriptorNames();
-				}
 			}
 
 			WString WfLexicalScopeName::GetFriendlyName()
@@ -374,11 +378,12 @@ WfLexicalScopeManager
 				{
 					if (keepTypeDescriptorNames)
 					{
-						globalName->RemoveNonTypeDescriptorNames();
+						globalName->RemoveNonTypeDescriptorNames(this);
 					}
 					else
 					{
 						globalName = 0;
+						typeNames.Clear();
 					}
 				}
 				
@@ -391,7 +396,6 @@ WfLexicalScopeManager
 
 				errors.Clear();
 				namespaceNames.Clear();
-				typeNames.Clear();
 				analyzedScopes.Clear();
 
 				moduleScopes.Clear();
@@ -557,6 +561,7 @@ WfLexicalScopeManager
 
 			bool WfLexicalScopeManager::ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results)
 			{
+				bool found = false;
 				Ptr<WfClassMember> ownerClassMember;
 				while (scope)
 				{
@@ -576,11 +581,11 @@ WfLexicalScopeManager
 					vint index = scope->symbols.Keys().IndexOf(name);
 					if (index != -1)
 					{
+						found = true;
 						FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 						{
 							results.Add(ResolveExpressionResult::Symbol(symbol));
 						}
-						return true;
 					}
 					ownerClassMember = scope->ownerClassMember;
 					scope = scope->parentScope.Obj();
@@ -590,13 +595,12 @@ WfLexicalScopeManager
 				{
 					if (auto classDecl = scope->ownerDeclaration.Cast<WfClassDeclaration>())
 					{
-						scope = scope->parentScope.Obj();
 						auto td = declarationTypes[classDecl.Obj()];
 						bool preferStatic = ownerClassMember ? ownerClassMember->kind == WfClassMemberKind::Static : true;
 						ownerClassMember = nullptr;
 						if (ResolveMember(td.Obj(), name, preferStatic, results))
 						{
-							return true;
+							found = true;
 						}
 						scope = scope->parentScope.Obj();
 					}
@@ -605,8 +609,7 @@ WfLexicalScopeManager
 						break;
 					}
 				}
-
-				bool found = false;
+				
 				while (scope)
 				{
 					if (auto nsDecl = scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
@@ -625,11 +628,6 @@ WfLexicalScopeManager
 					{
 						break;
 					}
-				}
-
-				if (found)
-				{
-					return true;
 				}
 				
 				vint index = globalName->children.Keys().IndexOf(name);
@@ -650,7 +648,7 @@ WfLexicalScopeManager
 						{
 							fragmentName += UsingPathToNameVisitor::Execute(fragment, name);
 						}
-						vint index = scopeName->children.Keys().IndexOf(name);
+						vint index = scopeName->children.Keys().IndexOf(fragmentName);
 						if (index == -1) goto USING_PATH_MATCHING_FAILED;
 						scopeName = scopeName->children.Values()[index];
 					}
