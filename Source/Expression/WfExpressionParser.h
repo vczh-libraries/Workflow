@@ -1035,7 +1035,7 @@ namespace vl
 		public:
 			vl::Ptr<WfType> type;
 			vl::collections::List<vl::Ptr<WfExpression>> arguments;
-			vl::collections::List<vl::Ptr<WfFunctionDeclaration>> functions;
+			vl::collections::List<vl::Ptr<WfDeclaration>> declarations;
 
 			void Accept(WfExpression::IVisitor* visitor)override;
 

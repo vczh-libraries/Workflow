@@ -480,7 +480,7 @@ class NewTypeExpression : Expression
 {
 	Type					type;
 	Expression[]			arguments;
-	FunctionDeclaration[]	functions;
+	Declaration[]			declarations;
 }
 
 enum ClassMemberKind
@@ -737,7 +737,7 @@ rule Expression ExpPrimitive
 	= "new" WorkflowType : type
 		(
 			"(" [WorkflowExpression : arguments {"," WorkflowExpression : arguments}] ")" 
-			| "{" {Function : functions} "}"
+			| "{" {WorkflowDeclaration : declarations} "}"
 		) as NewTypeExpression
 	= "bind" "(" WorkflowExpression : expression ")" as BindExpression
 	= ExpPrimitive : parent "." "observe" "(" WorkflowExpression : expression ["on" WorkflowExpression : events {"," WorkflowExpression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}

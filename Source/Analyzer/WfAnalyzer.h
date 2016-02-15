@@ -336,6 +336,7 @@ Semantic Analyzing
 			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
+			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration);
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 
 			extern Ptr<WfLexicalScopeName>					GetExpressionScopeName(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
@@ -537,6 +538,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

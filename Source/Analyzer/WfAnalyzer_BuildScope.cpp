@@ -556,9 +556,9 @@ BuildScopeForExpression
 					}
 
 					resultScope = new WfLexicalScope(parentScope);
-					FOREACH(Ptr<WfFunctionDeclaration>, function, node->functions)
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
 					{
-						BuildScopeForDeclaration(manager, resultScope, function);
+						BuildScopeForDeclaration(manager, resultScope, decl);
 					}
 				}
 

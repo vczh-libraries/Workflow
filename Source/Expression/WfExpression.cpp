@@ -711,37 +711,34 @@ Print (Expression)
 				writer.WriteString(L"new (");
 				WfPrint(node->type, indent, writer);
 				writer.WriteString(L")");
-				if (node->functions.Count() == 0)
+
+				writer.WriteString(L"(");
+				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
 				{
-					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+					if (index > 0)
 					{
-						if (index > 0)
-						{
-							writer.WriteString(L", ");
-						}
-						WfPrint(argument, indent, writer);
+						writer.WriteString(L", ");
 					}
-					writer.WriteString(L")");
+					WfPrint(argument, indent, writer);
 				}
-				else
+				writer.WriteString(L")");
+
+				writer.WriteLine(L"");
+				writer.WriteString(indent);
+				writer.WriteLine(L"{");
+				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
 				{
-					writer.WriteLine(L"");
-					writer.WriteString(indent);
-					writer.WriteLine(L"{");
-					FOREACH_INDEXER(Ptr<WfFunctionDeclaration>, function, index, node->functions)
+					if (index > 0)
 					{
-						if (index > 0)
-						{
-							writer.WriteLine(L"");
-						}
-						writer.WriteString(indent + L"    ");
-						WfPrint(Ptr<WfDeclaration>(function), indent + L"    ", writer);
 						writer.WriteLine(L"");
 					}
-					writer.WriteString(indent);
-					writer.WriteString(L"}");
+					writer.WriteString(indent + L"    ");
+					WfPrint(decl, indent + L"    ", writer);
+					writer.WriteLine(L"");
 				}
+				writer.WriteString(indent);
+				writer.WriteString(L"}");
+
 				writer.AfterPrint(node);
 			}
 		};

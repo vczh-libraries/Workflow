@@ -634,27 +634,10 @@ ExpandObserveExpression
 					result = expr;
 				}
 
-				Ptr<WfFunctionDeclaration> CopyFunction(Ptr<WfFunctionDeclaration> decl)
-				{
-					auto func = MakePtr<WfFunctionDeclaration>();
-					func->name.value = decl->name.value;
-					func->anonymity = decl->anonymity;
-					func->returnType = CopyType(decl->returnType);
-					FOREACH(Ptr<WfFunctionArgument>, arg, decl->arguments)
-					{
-						auto newArg = MakePtr<WfFunctionArgument>();
-						newArg->type = CopyType(arg->type);
-						newArg->name.value = arg->name.value;
-						func->arguments.Add(newArg);
-					}
-					func->statement = CopyStatement(decl->statement);
-					return func;
-				}
-
 				void Visit(WfFunctionExpression* node)override
 				{
 					auto expr = MakePtr<WfFunctionExpression>();
-					expr->function = CopyFunction(node->function);
+					expr->function = CopyDeclaration(node->function).Cast<WfFunctionDeclaration>();
 					result = expr;
 				}
 
@@ -666,9 +649,9 @@ ExpandObserveExpression
 					{
 						expr->arguments.Add(Expand(arg));
 					}
-					FOREACH(Ptr<WfFunctionDeclaration>, decl, node->functions)
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
 					{
-						expr->functions.Add(CopyFunction(decl));
+						expr->declarations.Add(CopyDeclaration(decl));
 					}
 					result = expr;
 				}
@@ -699,6 +682,11 @@ ExpandObserveExpression
 
 			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression)
 			{
+				if (!expression)
+				{
+					return nullptr;
+				}
+
 				Dictionary<WfExpression*, WString> cacheNames;
 				Dictionary<WString, WString> referenceReplacement;
 				return ExpandObserveExpression(expression.Obj(), cacheNames, referenceReplacement);
@@ -815,13 +803,8 @@ CopyStatement
 
 				void Visit(WfVariableStatement* node)override
 				{
-					auto var = MakePtr<WfVariableDeclaration>();
-					var->name.value = node->variable->name.value;
-					var->type = CopyType(node->variable->type);
-					var->expression = CopyExpression(node->variable->expression);
-
 					auto stat = MakePtr<WfVariableStatement>();
-					stat->variable = var;
+					stat->variable = CopyDeclaration(node->variable).Cast<WfVariableDeclaration>();
 					result = stat;
 				}
 
@@ -829,8 +812,110 @@ CopyStatement
 
 			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement)
 			{
+				if (!statement)
+				{
+					return nullptr;
+				}
+
 				CopyStatementVisitor visitor;
 				statement->Accept(&visitor);
+				return visitor.result;
+			}
+
+/***********************************************************************
+CopyDeclaration
+***********************************************************************/
+
+			class CopyDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			{
+			public:
+				Ptr<WfDeclaration>			result;
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+					auto ns = MakePtr<WfNamespaceDeclaration>();
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						ns->declarations.Add(CopyDeclaration(decl));
+					}
+					result = ns;
+				}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+					auto func = MakePtr<WfFunctionDeclaration>();
+					func->name.value = node->name.value;
+					func->anonymity = node->anonymity;
+					func->returnType = CopyType(node->returnType);
+					FOREACH(Ptr<WfFunctionArgument>, arg, node->arguments)
+					{
+						auto newArg = MakePtr<WfFunctionArgument>();
+						newArg->type = CopyType(arg->type);
+						newArg->name.value = arg->name.value;
+						func->arguments.Add(newArg);
+					}
+					func->statement = CopyStatement(node->statement);
+					result = func;
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+					auto var = MakePtr<WfVariableDeclaration>();
+					var->name.value = node->name.value;
+					var->type = CopyType(node->type);
+					var->expression = CopyExpression(node->expression);
+					result = var;
+				}
+
+				void Visit(WfEventDeclaration* node)override
+				{
+					auto ev = MakePtr<WfEventDeclaration>();
+					FOREACH(Ptr<WfType>, type, node->arguments)
+					{
+						ev->arguments.Add(CopyType(type));
+					}
+					result = ev;
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					auto prop = MakePtr<WfPropertyDeclaration>();
+					prop->type = CopyType(node->type);
+					prop->getter.value = node->getter.value;
+					prop->setter.value = node->setter.value;
+					prop->valueChangedEvent.value = node->valueChangedEvent.value;
+					result = prop;
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					auto classDecl = MakePtr<WfClassDeclaration>();
+					classDecl->kind = node->kind;
+					classDecl->interfaceType = node->interfaceType;
+					FOREACH(Ptr<WfType>, type, node->baseTypes)
+					{
+						classDecl->baseTypes.Add(CopyType(type));
+					}
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						auto classMember = MakePtr<WfClassMember>();
+						classMember->kind = member->kind;
+						classMember->declaration = CopyDeclaration(member->declaration);
+						classDecl->members.Add(classMember);
+					}
+					result = classDecl;
+				}
+			};
+
+			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration)
+			{
+				if (!declaration)
+				{
+					return nullptr;
+				}
+
+				CopyDeclarationVisitor visitor;
+				declaration->Accept(&visitor);
 				return visitor.result;
 			}
 
@@ -1087,9 +1172,9 @@ IValueSubscription::Subscribe
 						auto typeInfo = TypeInfoRetriver<Ptr<IValueListener>>::CreateTypeInfo();
 						newListener->type = GetTypeFromTypeInfo(typeInfo.Obj());
 					}
-					newListener->functions.Add(CreateListenerGetSubscriptionFunction());
-					newListener->functions.Add(CreateListenerGetStoppedFunction());
-					newListener->functions.Add(CreateListenerStopListeningFunction());
+					newListener->declarations.Add(CreateListenerGetSubscriptionFunction());
+					newListener->declarations.Add(CreateListenerGetStoppedFunction());
+					newListener->declarations.Add(CreateListenerStopListeningFunction());
 
 					auto variable = MakePtr<WfVariableDeclaration>();
 					variable->name.value = L"<listener-shared>";
@@ -1683,9 +1768,9 @@ ExpandBindExpression
 					auto typeInfo = TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo();
 					newSubscription->type = GetTypeFromTypeInfo(typeInfo.Obj());
 				}
-				newSubscription->functions.Add(CreateBindSubscribeFunction());
-				newSubscription->functions.Add(CreateBindUpdateFunction(variableTypes, handlerNames));
-				newSubscription->functions.Add(CreateBindCloseFunction(variableTypes, handlerNames));
+				newSubscription->declarations.Add(CreateBindSubscribeFunction());
+				newSubscription->declarations.Add(CreateBindUpdateFunction(variableTypes, handlerNames));
+				newSubscription->declarations.Add(CreateBindCloseFunction(variableTypes, handlerNames));
 
 				{
 					auto variable = MakePtr<WfVariableDeclaration>();

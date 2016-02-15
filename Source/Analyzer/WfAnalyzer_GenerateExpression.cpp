@@ -778,7 +778,7 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						FOREACH(Ptr<WfFunctionDeclaration>, decl, node->functions)
+						FOREACH(Ptr<WfFunctionDeclaration>, decl, From(node->declarations).Cast<WfFunctionDeclaration>())
 						{
 							auto methodInfo = context.manager->interfaceMethodImpls[decl.Obj()];
 							INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
@@ -789,7 +789,7 @@ GenerateInstructions(Expression)
 								return L"<method:" + decl->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
 							});
 						}
-						INSTRUCTION(Ins::CreateInterface(node->functions.Count() * 2));
+						INSTRUCTION(Ins::CreateInterface(node->declarations.Count() * 2));
 						INSTRUCTION(Ins::LoadValue(Value()));
 						INSTRUCTION(Ins::InvokeMethod(result.constructorInfo, 1));
 					}

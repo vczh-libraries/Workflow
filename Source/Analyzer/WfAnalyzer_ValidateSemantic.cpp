@@ -1717,7 +1717,7 @@ ValidateSemantic(Expression)
 						{
 							if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined)
 							{
-								if (node->functions.Count() == 0)
+								if (node->declarations.Count() == 0)
 								{
 									List<ResolveExpressionResult> functions;
 									for (vint i = 0; i < ctors->GetMethodCount(); i++)
@@ -1752,10 +1752,13 @@ ValidateSemantic(Expression)
 								Group<WString, IMethodInfo*> interfaceMethods;
 								Group<WString, Ptr<WfFunctionDeclaration>> implementMethods;
 
-								FOREACH(Ptr<WfFunctionDeclaration>, function, node->functions)
+								FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
 								{
-									ValidateDeclarationSemantic(manager, function);
-									implementMethods.Add(function->name.value, function);
+									ValidateDeclarationSemantic(manager, decl);
+									if (auto function = decl.Cast<WfFunctionDeclaration>())
+									{
+										implementMethods.Add(function->name.value, function);
+									}
 								}
 
 								{

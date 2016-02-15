@@ -67,7 +67,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::ConstructorMixClassAndInterface(WfExpression* node)
 			{
-				return new ParsingError(node, L"A6: Functions are not allowed in class constructor expression.");
+				return new ParsingError(node, L"A6: Members are not allowed in class constructor expression.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::ScopeNameIsNotExpression(WfExpression* node, Ptr<WfLexicalScopeName> scopeName)
@@ -382,6 +382,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfPropertyDeclaration* node)
 			{
 				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be defined outside of classes.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
+			{
+				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an anonymous interface constructor expression, only functions and variables are allowed.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)

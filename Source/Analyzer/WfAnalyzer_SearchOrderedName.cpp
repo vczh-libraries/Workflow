@@ -387,9 +387,9 @@ SearchOrderedName(Expression)
 						argument->Accept(this);
 					}
 
-					FOREACH(Ptr<WfFunctionDeclaration>, function, node->functions)
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
 					{
-						SearchOrderedName(scope, function.Cast<WfDeclaration>(), names);
+						SearchOrderedName(scope, decl, names);
 					}
 				}
 

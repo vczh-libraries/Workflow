@@ -284,6 +284,10 @@ ValidateStructure(Declaration)
 					{
 						manager->errors.Add(WfErrors::WrongClassMember(node));
 					}
+					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					{
+						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
+					}
 
 					for (vint i = 0; i < node->declarations.Count(); i++)
 					{
@@ -386,6 +390,10 @@ ValidateStructure(Declaration)
 							ValidateTypeStructure(manager, argument);
 						}
 					}
+					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					{
+						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
+					}
 					else
 					{
 						manager->errors.Add(WfErrors::WrongDeclaration(node));
@@ -468,6 +476,10 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::PropertyEventNotFound(node, classDecl));
 						}
 					}
+					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					{
+						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
+					}
 					else
 					{
 						manager->errors.Add(WfErrors::WrongDeclaration(node));
@@ -486,6 +498,10 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
 							break;
 						}
+					}
+					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					{
+						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
 
 					switch (node->kind)
@@ -1019,12 +1035,12 @@ ValidateStructure(Expression)
 					{
 						ValidateExpressionStructure(manager, context, node->arguments[i]);
 					}
-					FOREACH(Ptr<WfFunctionDeclaration>, function, node->functions)
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
 					{
-						ValidateDeclarationStructure(manager, function);
+						ValidateDeclarationStructure(manager, decl, nullptr, node);
 					}
 
-					if (node->arguments.Count()*node->functions.Count() != 0)
+					if (node->arguments.Count() * node->declarations.Count() != 0)
 					{
 						manager->errors.Add(WfErrors::ConstructorMixClassAndInterface(node));
 					}
