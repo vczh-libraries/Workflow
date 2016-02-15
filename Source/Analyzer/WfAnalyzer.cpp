@@ -391,6 +391,7 @@ WfLexicalScopeManager
 
 				errors.Clear();
 				namespaceNames.Clear();
+				typeNames.Clear();
 				analyzedScopes.Clear();
 
 				moduleScopes.Clear();
@@ -455,7 +456,19 @@ WfLexicalScopeManager
 			bool WfLexicalScopeManager::ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results)
 			{
 				bool found = false;
-				bool foundStaticMethod = false;
+				bool foundStaticMember = false;
+
+				{
+					auto scopeName = typeNames[typeDescriptor];
+					vint index = scopeName->children.Keys().IndexOf(name);
+					if (index != -1)
+					{
+						auto subScopeName = scopeName->children.Values()[index];
+						found = true;
+						foundStaticMember = true;
+						results.Add(ResolveExpressionResult::ScopeName(subScopeName));
+					}
+				}
 
 				if (auto group = typeDescriptor->GetMethodGroupByName(name, false))
 				{
@@ -465,13 +478,13 @@ WfLexicalScopeManager
 						if (info->IsStatic())
 						{
 							found = true;
-							foundStaticMethod = true;
+							foundStaticMember = true;
 							results.Add(ResolveExpressionResult::Method(info));
 						}
 					}
 				}
 
-				if (foundStaticMethod && preferStatic)
+				if (foundStaticMember && preferStatic)
 				{
 					return true;
 				}

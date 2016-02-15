@@ -129,6 +129,7 @@ Scope Manager
 				typedef collections::List<WString>															ModuleCodeList;
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
+				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 				typedef collections::SortedList<Ptr<WfLexicalScope>>										ScopeSortedList;
 				typedef collections::Dictionary<Ptr<WfModule>, Ptr<WfLexicalScope>>							ModuleScopeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<WfLexicalScope>>					DeclarationScopeMap;
@@ -152,6 +153,7 @@ Scope Manager
 
 				Ptr<WfLexicalScopeName>						globalName;
 				NamespaceNameMap							namespaceNames;
+				TypeNameMap									typeNames;
 				ScopeSortedList								analyzedScopes;
 
 				ModuleScopeMap								moduleScopes;				// the nearest scope for the module

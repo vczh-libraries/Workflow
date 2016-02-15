@@ -42,6 +42,7 @@ BuildGlobalNameFromTypeDescriptors
 						if (!reading)
 						{
 							currentName->typeDescriptor = typeDescriptor;
+							manager->typeNames.Add(typeDescriptor, currentName);
 							break;
 						}
 					}
@@ -97,6 +98,7 @@ BuildGlobalNameFromModules
 					if (!scopeName->typeDescriptor)
 					{
 						scopeName->typeDescriptor = td.Obj();
+						manager->typeNames.Add(td.Obj(), scopeName);
 					}
 
 					FOREACH(Ptr<WfClassMember>, member, declaration->members)
