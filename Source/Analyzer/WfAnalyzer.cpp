@@ -451,6 +451,60 @@ WfLexicalScopeManager
 
 #undef EXIT_IF_ERRORS_EXIST
 			}
+
+			void WfLexicalScopeManager::ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results)
+			{
+				bool found = false;
+				if (auto group = typeDescriptor->GetMethodGroupByName(name, false))
+				{
+					bool foundStaticMethod = false;
+					for (vint i = 0; i < group->GetMethodCount(); i++)
+					{
+						auto info = group->GetMethod(i);
+						if (info->IsStatic())
+						{
+							found = true;
+							foundStaticMethod = true;
+							results.Add(ResolveExpressionResult::Method(info));
+						}
+					}
+
+					if (foundStaticMethod && preferStatic)
+					{
+						return;
+					}
+
+					for (vint i = 0; i < group->GetMethodCount(); i++)
+					{
+						auto info = group->GetMethod(i);
+						if (!info->IsStatic())
+						{
+							found = true;
+							auto result = ResolveExpressionResult::Method(info);
+							results.Add(ResolveExpressionResult::Method(info));
+						}
+					}
+				}
+				if (auto info = typeDescriptor->GetPropertyByName(name, false))
+				{
+					found = true;
+					results.Add(ResolveExpressionResult::Property(info));
+				}
+				if (auto info = typeDescriptor->GetEventByName(name, false))
+				{
+					found = true;
+					results.Add(ResolveExpressionResult::Event(info));
+				}
+
+				if (!found)
+				{
+					vint count = typeDescriptor->GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < count; i++)
+					{
+						ResolveMember(typeDescriptor->GetBaseTypeDescriptor(i), name, preferStatic, results);
+					}
+				}
+			}
 			
 			void WfLexicalScopeManager::ResolveSymbol(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalSymbol>>& symbols)
 			{

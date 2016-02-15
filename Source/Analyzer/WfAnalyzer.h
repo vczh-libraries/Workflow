@@ -192,6 +192,8 @@ Scope Manager
 				/// <summary>Compile.</summary>
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
 				void										Rebuild(bool keepTypeDescriptorNames);
+
+				void										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results);
 				void										ResolveSymbol(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalSymbol>>& symbols);
 				void										ResolveScopeName(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalScopeName>>& names);
 				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);

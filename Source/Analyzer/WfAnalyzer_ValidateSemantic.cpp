@@ -618,28 +618,11 @@ ValidateSemantic(Expression)
 					Ptr<ITypeInfo> type = GetExpressionType(manager, node->parent, 0);
 					if (type)
 					{
-						ITypeDescriptor* typeDescriptor = type->GetTypeDescriptor();
-						if (IPropertyInfo* info = typeDescriptor->GetPropertyByName(node->name.value, true))
-						{
-							results.Add(ResolveExpressionResult::Property(info));
-						}
-						if (IEventInfo* info = typeDescriptor->GetEventByName(node->name.value, true))
-						{
-							results.Add(ResolveExpressionResult::Event(info));
-						}
-						if (IMethodGroupInfo* groupInfo = typeDescriptor->GetMethodGroupByName(node->name.value, true))
-						{
-							vint count = groupInfo->GetMethodCount();
-							for (vint i = 0; i < count; i++)
-							{
-								IMethodInfo* info = groupInfo->GetMethod(i);
-								results.Add(ResolveExpressionResult::Method(info));
-							}
-						}
+						manager->ResolveMember(type->GetTypeDescriptor(), node->name.value, false, results);
 
 						if (results.Count() == 0)
 						{
-							manager->errors.Add(WfErrors::MemberNotExists(node, typeDescriptor, node->name.value));
+							manager->errors.Add(WfErrors::MemberNotExists(node, type->GetTypeDescriptor(), node->name.value));
 						}
 					}
 				}
@@ -655,60 +638,35 @@ ValidateSemantic(Expression)
 							return;
 						}
 						
-						bool found = false;
-						bool foundStaticMethod = false;
 						if (scopeName->typeDescriptor)
 						{
-							if (auto group = scopeName->typeDescriptor->GetMethodGroupByName(node->name.value, true))
+							manager->ResolveMember(scopeName->typeDescriptor, node->name.value, true, results);
+
+							if (results.Count() > 0)
 							{
-								for (vint i = 0; i < group->GetMethodCount(); i++)
+								FOREACH(ResolveExpressionResult, result, results)
 								{
-									auto info = group->GetMethod(i);
-									if (info->IsStatic())
+									if (result.methodInfo)
 									{
-										found = true;
-										foundStaticMethod = true;
-										results.Add(ResolveExpressionResult::Method(info));
+										if (!result.methodInfo->IsStatic())
+										{
+											manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
+										}
 									}
-								}
-
-								if (foundStaticMethod)
-								{
-									return;
-								}
-
-								for (vint i = 0; i < group->GetMethodCount(); i++)
-								{
-									auto info = group->GetMethod(i);
-									if (!info->IsStatic())
+									else if (result.propertyInfo)
 									{
-										found = true;
-										auto result = ResolveExpressionResult::Method(info);
-										results.Add(result);
+										manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
+									}
+									else if (result.eventInfo)
+									{
 										manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
 									}
 								}
-							}
-							if (auto info = scopeName->typeDescriptor->GetPropertyByName(node->name.value, true))
-							{
-								found = true;
-								auto result = ResolveExpressionResult::Property(info);
-								results.Add(result);
-								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
-							}
-							if (auto info = scopeName->typeDescriptor->GetEventByName(node->name.value, true))
-							{
-								found = true;
-								auto result = ResolveExpressionResult::Event(info);
-								results.Add(result);
-								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
+								return;
 							}
 						}
 
-						if (!found)
-						{
-							manager->errors.Add(WfErrors::ChildSymbolNotExists(node, scopeName, node->name.value));
-						}
+						manager->errors.Add(WfErrors::ChildSymbolNotExists(node, scopeName, node->name.value));
 					}
 				}
 
