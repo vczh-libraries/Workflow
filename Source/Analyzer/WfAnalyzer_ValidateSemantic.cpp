@@ -418,7 +418,7 @@ ValidateSemantic(Expression)
 						vint index = manager->globalName->children.Keys().IndexOf(node->name.value);
 						if (index != -1)
 						{
-							results.Add(ResolveExpressionResult(manager->globalName->children.Values()[index]));
+							results.Add(ResolveExpressionResult::ScopeName(manager->globalName->children.Values()[index]));
 							return;
 						}
 					}
@@ -473,11 +473,11 @@ ValidateSemantic(Expression)
 
 						if (writable)
 						{
-							results.Add(ResolveExpressionResult(symbol, symbol->typeInfo, symbol->typeInfo));
+							results.Add(ResolveExpressionResult::WritableSymbol(symbol, symbol->typeInfo));
 						}
 						else
 						{
-							results.Add(ResolveExpressionResult(symbol, symbol->typeInfo));
+							results.Add(ResolveExpressionResult::ReadonlySymbol(symbol, symbol->typeInfo));
 						}
 					}
 				}
@@ -511,7 +511,7 @@ ValidateSemantic(Expression)
 					{
 						FOREACH(Ptr<WfLexicalScopeName>, scopeName, scopeNames)
 						{
-							results.Add(ResolveExpressionResult(scopeName));
+							results.Add(ResolveExpressionResult::ScopeName(scopeName));
 						}
 					}
 					else
@@ -615,7 +615,7 @@ ValidateSemantic(Expression)
 				ORDERED_FINISHED:
 					if (resultType)
 					{
-						results.Add(ResolveExpressionResult(resultType));
+						results.Add(ResolveExpressionResult::ReadonlyType(resultType));
 					}
 				}
 
@@ -627,27 +627,11 @@ ValidateSemantic(Expression)
 						ITypeDescriptor* typeDescriptor = type->GetTypeDescriptor();
 						if (IPropertyInfo* info = typeDescriptor->GetPropertyByName(node->name.value, true))
 						{
-							Ptr<ITypeInfo> getterType = CopyTypeInfo(info->GetReturn());
-							Ptr<ITypeInfo> setterType;
-							if (IMethodInfo* setter = info->GetSetter())
-							{
-								setterType = getterType;
-								if (setter->GetParameterCount() == 1 && !IsSameType(getterType.Obj(), setter->GetParameter(0)->GetType()))
-								{
-									setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
-								}
-							}
-							else if (!typeDescriptor->GetValueSerializer() && info->IsWritable())
-							{
-								setterType = CopyTypeInfo(info->GetReturn());
-							}
-							ResolveExpressionResult result(info, getterType, setterType);
-							results.Add(result);
+							results.Add(ResolveExpressionResult::Property(info));
 						}
 						if (IEventInfo* info = typeDescriptor->GetEventByName(node->name.value, true))
 						{
-							ResolveExpressionResult result(info);
-							results.Add(result);
+							results.Add(ResolveExpressionResult::Event(info));
 						}
 						if (IMethodGroupInfo* groupInfo = typeDescriptor->GetMethodGroupByName(node->name.value, true))
 						{
@@ -655,8 +639,7 @@ ValidateSemantic(Expression)
 							for (vint i = 0; i < count; i++)
 							{
 								IMethodInfo* info = groupInfo->GetMethod(i);
-								ResolveExpressionResult result(info, CreateTypeInfoFromMethodInfo(info));
-								results.Add(result);
+								results.Add(ResolveExpressionResult::Method(info));
 							}
 						}
 
@@ -674,7 +657,7 @@ ValidateSemantic(Expression)
 						vint index = scopeName->children.Keys().IndexOf(node->name.value);
 						if (index != -1)
 						{
-							results.Add(ResolveExpressionResult(scopeName->children.Values()[index]));
+							results.Add(ResolveExpressionResult::ScopeName(scopeName->children.Values()[index]));
 							return;
 						}
 						
@@ -691,8 +674,7 @@ ValidateSemantic(Expression)
 									{
 										found = true;
 										foundStaticMethod = true;
-										auto result = ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info));
-										results.Add(result);
+										results.Add(ResolveExpressionResult::Method(info));
 									}
 								}
 
@@ -707,7 +689,7 @@ ValidateSemantic(Expression)
 									if (!info->IsStatic())
 									{
 										found = true;
-										auto result = ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info));
+										auto result = ResolveExpressionResult::Method(info);
 										results.Add(result);
 										manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
 									}
@@ -716,14 +698,14 @@ ValidateSemantic(Expression)
 							if (auto info = scopeName->typeDescriptor->GetPropertyByName(node->name.value, true))
 							{
 								found = true;
-								auto result = ResolveExpressionResult(info, CopyTypeInfo(info->GetReturn()), (info->IsWritable() ? CopyTypeInfo(info->GetReturn()) : nullptr));
+								auto result = ResolveExpressionResult::Property(info);
 								results.Add(result);
 								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
 							}
 							if (auto info = scopeName->typeDescriptor->GetEventByName(node->name.value, true))
 							{
 								found = true;
-								auto result = ResolveExpressionResult(info);
+								auto result = ResolveExpressionResult::Event(info);
 								results.Add(result);
 								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
 							}
@@ -749,17 +731,17 @@ ValidateSemantic(Expression)
 							manager->errors.Add(WfErrors::NullCannotImplicitlyConvertToType(node, expectedType.Obj()));
 						}
 
-						results.Add(ResolveExpressionResult(expectedType));
+						results.Add(ResolveExpressionResult::ReadonlyType(expectedType));
 					}
 					else
 					{
-						results.Add(ResolveExpressionResult(TypeInfoRetriver<bool>::CreateTypeInfo()));
+						results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
 					}
 				}
 
 				void Visit(WfFloatingExpression* node)override
 				{
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<double>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<double>::CreateTypeInfo()));
 				}
 
 				void Visit(WfIntegerExpression* node)override
@@ -795,18 +777,18 @@ ValidateSemantic(Expression)
 				TYPE_FINISHED:
 					Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
 					typeInfo->SetTypeDescriptor(typeDescriptor);
-					results.Add(ResolveExpressionResult((Ptr<ITypeInfo>)typeInfo));
+					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
 				}
 
 				void Visit(WfStringExpression* node)override
 				{
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<WString>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<WString>::CreateTypeInfo()));
 				}
 
 				void Visit(WfFormatExpression* node)override
 				{
 					Ptr<ITypeInfo> typeInfo = TypeInfoRetriver<WString>::CreateTypeInfo();
-					results.Add(ResolveExpressionResult(typeInfo));
+					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
 					GetExpressionType(manager, node->expandedExpression, typeInfo);
 				}
 
@@ -858,7 +840,7 @@ ValidateSemantic(Expression)
 							break;
 						}
 
-						results.Add(ResolveExpressionResult(typeInfo));
+						results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
 					}
 				}
 
@@ -871,7 +853,7 @@ ValidateSemantic(Expression)
 						GetExpressionType(manager, node->second, variableType);
 						if (variableType)
 						{
-							results.Add(ResolveExpressionResult(variableType));
+							results.Add(ResolveExpressionResult::ReadonlyType(variableType));
 						}
 					}
 					else if (node->op == WfBinaryOperator::Index)
@@ -951,11 +933,11 @@ ValidateSemantic(Expression)
 								{
 									if (leftValue)
 									{
-										results.Add(ResolveExpressionResult(resultType, resultType));
+										results.Add(ResolveExpressionResult::WritableType(resultType));
 									}
 									else
 									{
-										results.Add(ResolveExpressionResult(resultType));
+										results.Add(ResolveExpressionResult::ReadonlyType(resultType));
 									}
 								}
 							}
@@ -970,7 +952,7 @@ ValidateSemantic(Expression)
 						Ptr<ITypeInfo> stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
 						GetExpressionType(manager, node->first, stringType);
 						GetExpressionType(manager, node->second, stringType);
-						results.Add(ResolveExpressionResult(stringType));
+						results.Add(ResolveExpressionResult::ReadonlyType(stringType));
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{
@@ -981,7 +963,7 @@ ValidateSemantic(Expression)
 						if (firstType && secondType)
 						{
 							auto mergedType = GetMergedType(firstType, secondType);
-							results.Add(ResolveExpressionResult(mergedType ? mergedType : firstType));
+							results.Add(ResolveExpressionResult::ReadonlyType(mergedType ? mergedType : firstType));
 						}
 					}
 					else
@@ -1094,7 +1076,7 @@ ValidateSemantic(Expression)
 							case WfBinaryOperator::EQ:
 							case WfBinaryOperator::NE:
 								{
-									results.Add(ResolveExpressionResult(TypeInfoRetriver<bool>::CreateTypeInfo()));
+									results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
 									return;
 								}
 								break;
@@ -1130,7 +1112,7 @@ ValidateSemantic(Expression)
 							}
 							else
 							{
-								results.Add(ResolveExpressionResult(CreateTypeInfoFromTypeFlag(resultFlag)));
+								results.Add(ResolveExpressionResult::ReadonlyType(CreateTypeInfoFromTypeFlag(resultFlag)));
 							}
 						}
 					}
@@ -1152,7 +1134,7 @@ ValidateSemantic(Expression)
 					Ptr<ITypeInfo> type = GetExpressionType(manager, node->expression, expectedType);
 					if (type)
 					{
-						results.Add(ResolveExpressionResult(type));
+						results.Add(ResolveExpressionResult::ReadonlyType(type));
 					}
 				}
 
@@ -1192,17 +1174,17 @@ ValidateSemantic(Expression)
 					
 					if (firstType && !secondType)
 					{
-						results.Add(ResolveExpressionResult(firstType));
+						results.Add(ResolveExpressionResult::ReadonlyType(firstType));
 					}
 					else if (!firstType && secondType)
 					{
-						results.Add(ResolveExpressionResult(secondType));
+						results.Add(ResolveExpressionResult::ReadonlyType(secondType));
 					}
 					else if (firstType && secondType)
 					{
 						if (auto mergedType = GetMergedType(firstType, secondType))
 						{
-							results.Add(ResolveExpressionResult(mergedType));
+							results.Add(ResolveExpressionResult::ReadonlyType(mergedType));
 						}
 						else
 						{
@@ -1260,7 +1242,7 @@ ValidateSemantic(Expression)
 
 						Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::SharedPtr);
 						pointerType->SetElementType(genericType);
-						results.Add(ResolveExpressionResult((Ptr<ITypeInfo>)pointerType));
+						results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 					}
 				}
 
@@ -1300,7 +1282,7 @@ ValidateSemantic(Expression)
 						}
 					}
 
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<bool>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
 				}
 
 				void Visit(WfConstructorExpression* node)override
@@ -1314,7 +1296,7 @@ ValidateSemantic(Expression)
 							{
 								manager->errors.Add(WfErrors::ConstructorCannotImplicitlyConvertToType(node, expectedType.Obj()));
 							}
-							results.Add(ResolveExpressionResult(expectedType));
+							results.Add(ResolveExpressionResult::ReadonlyType(expectedType));
 						}
 						else
 						{
@@ -1376,7 +1358,7 @@ ValidateSemantic(Expression)
 									genericType->AddGenericArgument(keyType);
 									genericType->AddGenericArgument(valueType);
 								}
-								results.Add(ResolveExpressionResult((Ptr<ITypeInfo>)pointerType));
+								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 							}
 						}
 						else
@@ -1394,7 +1376,7 @@ ValidateSemantic(Expression)
 									}
 									genericType->AddGenericArgument(keyType);
 								}
-								results.Add(ResolveExpressionResult((Ptr<ITypeInfo>)pointerType));
+								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 							}
 						}
 					}
@@ -1407,7 +1389,7 @@ ValidateSemantic(Expression)
 					Ptr<ITypeInfo> expressionType = GetExpressionType(manager, node->expression, type);
 					if (expressionType)
 					{
-						results.Add(ResolveExpressionResult(type));
+						results.Add(ResolveExpressionResult::ReadonlyType(type));
 					}
 				}
 
@@ -1437,7 +1419,7 @@ ValidateSemantic(Expression)
 								manager->errors.Add(WfErrors::CannotWeakCastToType(node->expression.Obj(), type.Obj()));
 							}
 						}
-						results.Add(ResolveExpressionResult(type));
+						results.Add(ResolveExpressionResult::ReadonlyType(type));
 					}
 				}
 
@@ -1458,18 +1440,18 @@ ValidateSemantic(Expression)
 						default:;
 						}
 					}
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<bool>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
 				}
 
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo()));
 				}
 
 				void Visit(WfTypeOfExpressionExpression* node)override
 				{
 					GetExpressionType(manager, node->expression, 0);
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo()));
 				}
 
 				void Visit(WfAttachEventExpression* node)override
@@ -1481,21 +1463,21 @@ ValidateSemantic(Expression)
 						functionType = CopyTypeInfo(eventInfo->GetHandlerType());
 					}
 					GetExpressionType(manager, node->function, functionType);
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<Ptr<IEventHandler>>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<Ptr<IEventHandler>>::CreateTypeInfo()));
 				}
 
 				void Visit(WfDetachEventExpression* node)override
 				{
 					Ptr<ITypeInfo> pointerType = TypeInfoRetriver<Ptr<IEventHandler>>::CreateTypeInfo();
 					GetExpressionType(manager, node->handler, pointerType);
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<bool>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
 				}
 
 				void Visit(WfBindExpression* node)override
 				{
 					vint errorCount = manager->errors.Count();
 					GetExpressionType(manager, node->expression, 0);
-					results.Add(ResolveExpressionResult(TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo()));
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo()));
 
 					if (manager->errors.Count() == errorCount)
 					{
@@ -1577,7 +1559,7 @@ ValidateSemantic(Expression)
 
 					if (observeeType)
 					{
-						results.Add(ResolveExpressionResult(observeeType));
+						results.Add(ResolveExpressionResult::ReadonlyType(observeeType));
 					}
 				}
 
@@ -1685,7 +1667,7 @@ ValidateSemantic(Expression)
 					if (resultType)
 					{
 						manager->expressionResolvings.Add(node->function, functions[0]);
-						results.Add(ResolveExpressionResult(resultType));
+						results.Add(ResolveExpressionResult::ReadonlyType(resultType));
 					}
 				}
 
@@ -1710,7 +1692,7 @@ ValidateSemantic(Expression)
 							genericType->AddGenericArgument(scope->symbols[argument->name.value][0]->typeInfo);
 						}
 					}
-					results.Add(ResolveExpressionResult((Ptr<ITypeInfo>)functionType));
+					results.Add(ResolveExpressionResult::ReadonlyType(functionType));
 				}
 
 				Ptr<ITypeInfo> GetFunctionDeclarationType(WfLexicalScope* scope,Ptr<WfFunctionDeclaration> decl)
@@ -1733,7 +1715,8 @@ ValidateSemantic(Expression)
 						ITypeDescriptor* td = type->GetTypeDescriptor();
 						IMethodGroupInfo* ctors = td->GetConstructorGroup();
 						Ptr<ITypeInfo> selectedType;
-						ResolveExpressionResult selectedFunction;
+						IMethodInfo* selectedConstructor = nullptr;
+
 						if (!ctors || ctors->GetMethodCount() == 0)
 						{
 							manager->errors.Add(WfErrors::ClassContainsNoConstructor(node, type.Obj()));
@@ -1748,13 +1731,13 @@ ValidateSemantic(Expression)
 									for (vint i = 0; i < ctors->GetMethodCount(); i++)
 									{
 										IMethodInfo* info = ctors->GetMethod(i);
-										functions.Add(ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info)));
+										functions.Add(ResolveExpressionResult::Method(info));
 									}
 
 									selectedType = SelectFunction(node, 0, functions, node->arguments);
 									if (selectedType)
 									{
-										selectedFunction = functions[0];
+										selectedConstructor = functions[0].methodInfo;
 									}
 								}
 								else
@@ -1767,7 +1750,7 @@ ValidateSemantic(Expression)
 								if (auto info = FindInterfaceConstructor(td))
 								{
 									selectedType = CopyTypeInfo(info->GetReturn());
-									selectedFunction = ResolveExpressionResult(info, CreateTypeInfoFromMethodInfo(info));
+									selectedConstructor = info;
 								}
 								else
 								{
@@ -1860,7 +1843,7 @@ ValidateSemantic(Expression)
 													List<ResolveExpressionResult> functions;
 													FOREACH(IMethodInfo*, method, interfaces)
 													{
-														functions.Add(ResolveExpressionResult(method, CreateTypeInfoFromMethodInfo(method)));
+														functions.Add(ResolveExpressionResult::Constructor(method));
 														manager->errors.Add(WfErrors::CannotPickOverloadedInterfaceMethods(node, functions));
 													}
 												}
@@ -1883,14 +1866,16 @@ ValidateSemantic(Expression)
 								manager->errors.Add(WfErrors::ClassContainsNoConstructor(node, type.Obj()));
 							}
 						}
+
 						if (selectedType)
 						{
-							if (!CanConvertToType(selectedType.Obj(), type.Obj(), false))
+							auto result = ResolveExpressionResult::Constructor(selectedConstructor);
+							if (!IsSameType(selectedType.Obj(), type.Obj()))
 							{
-								manager->errors.Add(WfErrors::ConstructorReturnTypeMismatched(node, selectedFunction, selectedType.Obj(), type.Obj()));
+								manager->errors.Add(WfErrors::ConstructorReturnTypeMismatched(node, result, selectedType.Obj(), type.Obj()));
 							}
+							results.Add(result);
 						}
-						results.Add(ResolveExpressionResult(selectedFunction.methodInfo, type));
 					}
 				}
 
@@ -1956,11 +1941,11 @@ ValidateSemantic
 								{
 									if (isVariable)
 									{
-										replaces.Add(ResolveExpressionResult(symbol, symbol->typeInfo, symbol->typeInfo));
+										replaces.Add(ResolveExpressionResult::WritableSymbol(symbol, symbol->typeInfo));
 									}
 									else
 									{
-										replaces.Add(ResolveExpressionResult(symbol, symbol->typeInfo));
+										replaces.Add(ResolveExpressionResult::ReadonlySymbol(symbol, symbol->typeInfo));
 									}
 								}
 							}
@@ -2112,7 +2097,7 @@ GetExpressionTypes/GetExpressionType/GetLeftValueExpressionType
 			{
 				List<ResolveExpressionResult> results;
 				GetExpressionTypes(manager, expression, expectedType, results);
-
+				
 				if (results.Count() > 1)
 				{
 					manager->errors.Add(WfErrors::TooManyTargets(expression.Obj(), results, GetExpressionName(expression)));
@@ -2142,11 +2127,11 @@ GetExpressionTypes/GetExpressionType/GetLeftValueExpressionType
 				}
 				else if (results.Count() == 1)
 				{
-					if (results[0].leftValueType)
+					if (results[0].writableType)
 					{
 						auto result = results[0];
 						manager->expressionResolvings.Add(expression, result);
-						return result.leftValueType;
+						return result.writableType;
 					}
 					else
 					{

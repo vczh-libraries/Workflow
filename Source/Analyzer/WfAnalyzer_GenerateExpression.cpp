@@ -766,7 +766,7 @@ GenerateInstructions(Expression)
 				void Visit(WfNewTypeExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node];
-					auto td = result.methodInfo->GetOwnerTypeDescriptor();
+					auto td = result.constructorInfo->GetOwnerTypeDescriptor();
 					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined)
 					{
 						FOREACH(Ptr<WfExpression>, argument, node->arguments)

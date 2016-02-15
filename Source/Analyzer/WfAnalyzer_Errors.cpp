@@ -349,7 +349,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::InterfaceMethodNotImplemented(WfNewTypeExpression* node, reflection::description::IMethodInfo* method)
 			{
-				ResolveExpressionResult result(method, CreateTypeInfoFromMethodInfo(method));
+				auto result = ResolveExpressionResult::Method(method);
 				return new ParsingError(node, L"D3: Interface method not implemented: " + result.GetFriendlyName() + L".");
 			}
 
@@ -428,7 +428,7 @@ WfErrors
 					From(symbols)
 					.Select([](Ptr<WfLexicalSymbol> symbol)
 					{
-						return ResolveExpressionResult(symbol, 0);
+						return ResolveExpressionResult::ReadonlySymbol(symbol, nullptr);
 					}));
 				return TooManyTargets(node, results, name);
 			}
@@ -441,7 +441,7 @@ WfErrors
 					From(names)
 					.Select([](Ptr<WfLexicalScopeName> name)
 					{
-						return ResolveExpressionResult(name);
+						return ResolveExpressionResult::ScopeName(name);
 					}));
 				return TooManyTargets(node, results, name);
 			}

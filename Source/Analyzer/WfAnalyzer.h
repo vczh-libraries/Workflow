@@ -97,22 +97,25 @@ Scope Manager
 			{
 				Ptr<WfLexicalScopeName>						scopeName;
 				Ptr<WfLexicalSymbol>						symbol;
-				reflection::description::IPropertyInfo*		propertyInfo;
-				reflection::description::IMethodInfo*		methodInfo;
-				reflection::description::IEventInfo*		eventInfo;
+				reflection::description::IPropertyInfo*		propertyInfo = nullptr;
+				reflection::description::IMethodInfo*		methodInfo = nullptr;
+				reflection::description::IMethodInfo*		constructorInfo = nullptr;
+				reflection::description::IEventInfo*		eventInfo = nullptr;
 				Ptr<reflection::description::ITypeInfo>		type;
-				Ptr<reflection::description::ITypeInfo>		leftValueType;
+				Ptr<reflection::description::ITypeInfo>		writableType;
 				Ptr<reflection::description::ITypeInfo>		expectedType;
 
-				ResolveExpressionResult();
-				ResolveExpressionResult(Ptr<WfLexicalScopeName> _scopeName);
-				ResolveExpressionResult(Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType = 0);
-				ResolveExpressionResult(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType = 0);
-				ResolveExpressionResult(reflection::description::IPropertyInfo* _propertyInfo, Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType = 0);
-				ResolveExpressionResult(reflection::description::IMethodInfo* _methodInfo, Ptr<reflection::description::ITypeInfo> _type);
-				ResolveExpressionResult(reflection::description::IEventInfo* _eventInfo);
-
 				WString										GetFriendlyName(bool upperCase = false)const;
+
+				static ResolveExpressionResult				ScopeName(Ptr<WfLexicalScopeName> _scopeName);
+				static ResolveExpressionResult				ReadonlyType(Ptr<reflection::description::ITypeInfo> _type);
+				static ResolveExpressionResult				WritableType(Ptr<reflection::description::ITypeInfo> _type);
+				static ResolveExpressionResult				ReadonlySymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type);
+				static ResolveExpressionResult				WritableSymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type);
+				static ResolveExpressionResult				Property(reflection::description::IPropertyInfo* _propertyInfo);
+				static ResolveExpressionResult				Method(reflection::description::IMethodInfo* _methodInfo);
+				static ResolveExpressionResult				Constructor(reflection::description::IMethodInfo* _constructorInfo);
+				static ResolveExpressionResult				Event(reflection::description::IEventInfo* _eventInfo);
 			};
 
 			/// <summary>Workflow compiler.</summary>

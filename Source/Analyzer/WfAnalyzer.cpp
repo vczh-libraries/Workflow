@@ -187,64 +187,6 @@ WfLexicalScopeName
 ResolveExpressionResult
 ***********************************************************************/
 
-			ResolveExpressionResult::ResolveExpressionResult()
-				:propertyInfo(0)
-				, methodInfo(0)
-				, eventInfo(0)
-			{
-			}
-
-			ResolveExpressionResult::ResolveExpressionResult(Ptr<WfLexicalScopeName> _scopeName)
-				:scopeName(_scopeName)
-				, propertyInfo(0)
-				, methodInfo(0)
-				, eventInfo(0)
-			{
-			}
-
-			ResolveExpressionResult::ResolveExpressionResult(Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType)
-				:type(_type)
-				, leftValueType(_leftValueType)
-				, propertyInfo(0)
-				, methodInfo(0)
-				, eventInfo(0)
-			{
-			}
-
-			ResolveExpressionResult::ResolveExpressionResult(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType)
-				:symbol(_symbol)
-				, type(_type)
-				, leftValueType(_leftValueType)
-				, propertyInfo(0)
-				, methodInfo(0)
-				, eventInfo(0)
-			{
-			}
-
-			ResolveExpressionResult::ResolveExpressionResult(reflection::description::IPropertyInfo* _propertyInfo, Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType)
-				:propertyInfo(_propertyInfo)
-				, methodInfo(0)
-				, eventInfo(0)
-				, type(_type)
-				, leftValueType(_leftValueType)
-			{
-			}
-
-			ResolveExpressionResult::ResolveExpressionResult(reflection::description::IMethodInfo* _methodInfo, Ptr<reflection::description::ITypeInfo> _type)
-				:propertyInfo(0)
-				, methodInfo(_methodInfo)
-				, eventInfo(0)
-				, type(_type)
-			{
-			}
-
-			ResolveExpressionResult::ResolveExpressionResult(reflection::description::IEventInfo* _eventInfo)
-				:propertyInfo(0)
-				, methodInfo(0)
-				, eventInfo(_eventInfo)
-			{
-			}
-
 			WString ResolveExpressionResult::GetFriendlyName(bool upperCase)const
 			{
 				WString typeName, result;
@@ -293,6 +235,92 @@ ResolveExpressionResult
 				{
 					result = INVLOC.ToUpper(result.Left(1)) + result.Right(result.Length() - 1);
 				}
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::ScopeName(Ptr<WfLexicalScopeName> _scopeName)
+			{
+				ResolveExpressionResult result;
+				result.scopeName = _scopeName;
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::ReadonlyType(Ptr<reflection::description::ITypeInfo> _type)
+			{
+				ResolveExpressionResult result;
+				result.type = _type;
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::WritableType(Ptr<reflection::description::ITypeInfo> _type)
+			{
+				ResolveExpressionResult result;
+				result.type = _type;
+				result.writableType = _type;
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::ReadonlySymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type)
+			{
+				ResolveExpressionResult result;
+				result.symbol = _symbol;
+				result.type = _type;
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::WritableSymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type)
+			{
+				ResolveExpressionResult result;
+				result.symbol = _symbol;
+				result.type = _type;
+				result.writableType = _type;
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::Property(reflection::description::IPropertyInfo* _propertyInfo)
+			{
+				Ptr<ITypeInfo> getterType = CopyTypeInfo(_propertyInfo->GetReturn());
+				Ptr<ITypeInfo> setterType;
+				if (IMethodInfo* setter = _propertyInfo->GetSetter())
+				{
+					setterType = getterType;
+					if (setter->GetParameterCount() == 1 && !IsSameType(getterType.Obj(), setter->GetParameter(0)->GetType()))
+					{
+						setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
+					}
+				}
+				else if (!_propertyInfo->GetOwnerTypeDescriptor()->GetValueSerializer() && _propertyInfo->IsWritable())
+				{
+					setterType = CopyTypeInfo(_propertyInfo->GetReturn());
+				}
+
+				ResolveExpressionResult result;
+				result.propertyInfo = _propertyInfo;
+				result.type = getterType;
+				result.writableType = setterType;
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::Method(reflection::description::IMethodInfo* _methodInfo)
+			{
+				ResolveExpressionResult result;
+				result.methodInfo = _methodInfo;
+				result.type = CreateTypeInfoFromMethodInfo(_methodInfo);
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::Constructor(reflection::description::IMethodInfo* _constructorInfo)
+			{
+				ResolveExpressionResult result;
+				result.constructorInfo = _constructorInfo;
+				result.type = CopyTypeInfo(_constructorInfo->GetReturn());
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::Event(reflection::description::IEventInfo* _eventInfo)
+			{
+				ResolveExpressionResult result;
+				result.eventInfo = _eventInfo;
 				return result;
 			}
 
