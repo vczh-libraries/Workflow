@@ -465,19 +465,13 @@ ValidateSemantic(Expression)
 							}
 						}
 
-						bool writable = false;
-						if (symbol->creatorDeclaration.Cast<WfVariableDeclaration>())
+						if (captured)
 						{
-							writable = !captured;
-						}
-
-						if (writable)
-						{
-							results.Add(ResolveExpressionResult::WritableSymbol(symbol, symbol->typeInfo));
+							results.Add(ResolveExpressionResult::CapturedSymbol(symbol));
 						}
 						else
 						{
-							results.Add(ResolveExpressionResult::ReadonlySymbol(symbol, symbol->typeInfo));
+							results.Add(ResolveExpressionResult::Symbol(symbol));
 						}
 					}
 				}
@@ -1939,14 +1933,7 @@ ValidateSemantic
 							{
 								if (symbol->creatorDeclaration == decl && symbol->typeInfo)
 								{
-									if (isVariable)
-									{
-										replaces.Add(ResolveExpressionResult::WritableSymbol(symbol, symbol->typeInfo));
-									}
-									else
-									{
-										replaces.Add(ResolveExpressionResult::ReadonlySymbol(symbol, symbol->typeInfo));
-									}
+									replaces.Add(ResolveExpressionResult::Symbol(symbol));
 								}
 							}
 						}

@@ -245,6 +245,26 @@ ResolveExpressionResult
 				return result;
 			}
 
+			ResolveExpressionResult ResolveExpressionResult::Symbol(Ptr<WfLexicalSymbol> _symbol)
+			{
+				ResolveExpressionResult result;
+				result.symbol = _symbol;
+				result.type = _symbol->typeInfo;
+				if (_symbol->creatorDeclaration.Cast<WfVariableDeclaration>())
+				{
+					result.writableType = _symbol->typeInfo;
+				}
+				return result;
+			}
+
+			ResolveExpressionResult ResolveExpressionResult::CapturedSymbol(Ptr<WfLexicalSymbol> _symbol)
+			{
+				ResolveExpressionResult result;
+				result.symbol = _symbol;
+				result.type = _symbol->typeInfo;
+				return result;
+			}
+
 			ResolveExpressionResult ResolveExpressionResult::ReadonlyType(Ptr<reflection::description::ITypeInfo> _type)
 			{
 				ResolveExpressionResult result;
@@ -255,23 +275,6 @@ ResolveExpressionResult
 			ResolveExpressionResult ResolveExpressionResult::WritableType(Ptr<reflection::description::ITypeInfo> _type)
 			{
 				ResolveExpressionResult result;
-				result.type = _type;
-				result.writableType = _type;
-				return result;
-			}
-
-			ResolveExpressionResult ResolveExpressionResult::ReadonlySymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type)
-			{
-				ResolveExpressionResult result;
-				result.symbol = _symbol;
-				result.type = _type;
-				return result;
-			}
-
-			ResolveExpressionResult ResolveExpressionResult::WritableSymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type)
-			{
-				ResolveExpressionResult result;
-				result.symbol = _symbol;
 				result.type = _type;
 				result.writableType = _type;
 				return result;

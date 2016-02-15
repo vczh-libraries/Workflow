@@ -428,7 +428,7 @@ WfErrors
 					From(symbols)
 					.Select([](Ptr<WfLexicalSymbol> symbol)
 					{
-						return ResolveExpressionResult::ReadonlySymbol(symbol, nullptr);
+						return ResolveExpressionResult::Symbol(symbol);
 					}));
 				return TooManyTargets(node, results, name);
 			}

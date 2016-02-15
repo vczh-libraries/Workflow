@@ -108,10 +108,10 @@ Scope Manager
 				WString										GetFriendlyName(bool upperCase = false)const;
 
 				static ResolveExpressionResult				ScopeName(Ptr<WfLexicalScopeName> _scopeName);
+				static ResolveExpressionResult				Symbol(Ptr<WfLexicalSymbol> _symbol);
+				static ResolveExpressionResult				CapturedSymbol(Ptr<WfLexicalSymbol> _symbol);
 				static ResolveExpressionResult				ReadonlyType(Ptr<reflection::description::ITypeInfo> _type);
 				static ResolveExpressionResult				WritableType(Ptr<reflection::description::ITypeInfo> _type);
-				static ResolveExpressionResult				ReadonlySymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type);
-				static ResolveExpressionResult				WritableSymbol(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type);
 				static ResolveExpressionResult				Property(reflection::description::IPropertyInfo* _propertyInfo);
 				static ResolveExpressionResult				Method(reflection::description::IMethodInfo* _methodInfo);
 				static ResolveExpressionResult				Constructor(reflection::description::IMethodInfo* _constructorInfo);
