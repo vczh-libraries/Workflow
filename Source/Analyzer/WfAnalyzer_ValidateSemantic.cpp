@@ -425,105 +425,88 @@ ValidateSemantic(Expression)
 					manager->errors.Add(WfErrors::TopQualifiedSymbolNotExists(node, node->name.value));
 				}
 
-				void VisitSymbol(WfLexicalScope* scope, Ptr<WfLexicalSymbol> symbol)
+				void ResolveName(WfExpression* node, const WString& name)
 				{
-					if (symbol->typeInfo)
+					auto scope = manager->expressionScopes[node].Obj();
+					List<ResolveExpressionResult> nameResults;
+					manager->ResolveName(scope, name, nameResults);
+					
+					for (vint i = 0; i < nameResults.Count(); i++)
 					{
-						bool captured = false;
-						if (!symbol->ownerScope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+						auto& result = results[i];
+						if (result.symbol)
 						{
-							auto currentScope = scope;
-							while (currentScope)
+							bool captured = false;
+							if (!result.symbol->ownerScope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
 							{
-								vint index = currentScope->symbols.Keys().IndexOf(symbol->name);
-								if (index != -1 && currentScope->symbols.GetByIndex(index).Contains(symbol.Obj()))
+								auto currentScope = scope;
+								while (currentScope)
 								{
-									break;
-								}
-								if (auto node = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
-								{
-									if (!currentScope->ownerClassMember)
+									vint index = currentScope->symbols.Keys().IndexOf(result.symbol->name);
+									if (index != -1 && currentScope->symbols.GetByIndex(index).Contains(result.symbol.Obj()))
 									{
-										captured = true;
-										vint index = manager->functionLambdaCaptures.Keys().IndexOf(node.Obj());
-										if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(symbol.Obj()))
+										break;
+									}
+									if (auto node = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+									{
+										if (!currentScope->ownerClassMember)
 										{
-											manager->functionLambdaCaptures.Add(node.Obj(), symbol);
+											captured = true;
+											vint index = manager->functionLambdaCaptures.Keys().IndexOf(node.Obj());
+											if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+											{
+												manager->functionLambdaCaptures.Add(node.Obj(), result.symbol);
+											}
 										}
 									}
-								}
-								if (auto node = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
-								{
-									captured = true;
-									vint index = manager->orderedLambdaCaptures.Keys().IndexOf(node.Obj());
-									if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(symbol.Obj()))
+									if (auto node = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
 									{
-										manager->orderedLambdaCaptures.Add(node.Obj(), symbol);
+										captured = true;
+										vint index = manager->orderedLambdaCaptures.Keys().IndexOf(node.Obj());
+										if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+										{
+											manager->orderedLambdaCaptures.Add(node.Obj(), result.symbol);
+										}
 									}
+									currentScope = currentScope->parentScope.Obj();
 								}
-								currentScope = currentScope->parentScope.Obj();
+							}
+
+							if (captured)
+							{
+								results.Add(ResolveExpressionResult::CapturedSymbol(result.symbol));
+							}
+							else
+							{
+								results.Add(ResolveExpressionResult::Symbol(result.symbol));
 							}
 						}
+					}
 
-						if (captured)
+					if (results.Count() == 0)
+					{
+						if (nameResults.Count() > 0)
 						{
-							results.Add(ResolveExpressionResult::CapturedSymbol(symbol));
+							for (vint i = 0; i < nameResults.Count(); i++)
+							{
+								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, nameResults[i]));
+							}
 						}
 						else
 						{
-							results.Add(ResolveExpressionResult::Symbol(symbol));
+							manager->errors.Add(WfErrors::ReferenceNotExists(node, name));
 						}
 					}
 				}
 
 				void Visit(WfReferenceExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
-
-					List<Ptr<WfLexicalSymbol>> symbols;
-					manager->ResolveSymbol(scope, node->name.value, symbols);
-					if (symbols.Count() >= 1)
-					{
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
-						{
-							VisitSymbol(scope, symbol);
-						}
-
-						if (results.Count() == 0)
-						{
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
-							{
-								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, symbol));
-							}
-						}
-						return;
-					}
-
-					List<Ptr<WfLexicalScopeName>> scopeNames;
-					manager->ResolveScopeName(scope, node->name.value, scopeNames);
-					if (scopeNames.Count() >= 1)
-					{
-						FOREACH(Ptr<WfLexicalScopeName>, scopeName, scopeNames)
-						{
-							results.Add(ResolveExpressionResult::ScopeName(scopeName));
-						}
-					}
-					else
-					{
-						manager->errors.Add(WfErrors::ReferenceNotExists(node, node->name.value));
-					}
+					ResolveName(node, node->name.value);
 				}
 
 				void Visit(WfOrderedNameExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
-
-					List<Ptr<WfLexicalSymbol>> symbols;
-					manager->ResolveSymbol(scope, node->name.value, symbols);
-					FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
-					{
-						VisitSymbol(scope, symbol);
-					}
+					ResolveName(node, node->name.value);
 				}
 
 				void Visit(WfOrderedLambdaExpression* node)override

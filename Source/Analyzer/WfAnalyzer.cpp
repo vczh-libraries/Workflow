@@ -452,12 +452,13 @@ WfLexicalScopeManager
 #undef EXIT_IF_ERRORS_EXIST
 			}
 
-			void WfLexicalScopeManager::ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results)
+			bool WfLexicalScopeManager::ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results)
 			{
 				bool found = false;
+				bool foundStaticMethod = false;
+
 				if (auto group = typeDescriptor->GetMethodGroupByName(name, false))
 				{
-					bool foundStaticMethod = false;
 					for (vint i = 0; i < group->GetMethodCount(); i++)
 					{
 						auto info = group->GetMethod(i);
@@ -468,19 +469,21 @@ WfLexicalScopeManager
 							results.Add(ResolveExpressionResult::Method(info));
 						}
 					}
+				}
 
-					if (foundStaticMethod && preferStatic)
-					{
-						return;
-					}
+				if (foundStaticMethod && preferStatic)
+				{
+					return true;
+				}
 
+				if (auto group = typeDescriptor->GetMethodGroupByName(name, false))
+				{
 					for (vint i = 0; i < group->GetMethodCount(); i++)
 					{
 						auto info = group->GetMethod(i);
 						if (!info->IsStatic())
 						{
 							found = true;
-							auto result = ResolveExpressionResult::Method(info);
 							results.Add(ResolveExpressionResult::Method(info));
 						}
 					}
@@ -501,22 +504,13 @@ WfLexicalScopeManager
 					vint count = typeDescriptor->GetBaseTypeDescriptorCount();
 					for (vint i = 0; i < count; i++)
 					{
-						ResolveMember(typeDescriptor->GetBaseTypeDescriptor(i), name, preferStatic, results);
+						if (ResolveMember(typeDescriptor->GetBaseTypeDescriptor(i), name, preferStatic, results))
+						{
+							found = true;
+						}
 					}
 				}
-			}
-			
-			void WfLexicalScopeManager::ResolveSymbol(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalSymbol>>& symbols)
-			{
-				while (scope && !scope->ownerModule && !scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
-				{
-					vint index = scope->symbols.Keys().IndexOf(symbolName);
-					if (index != -1)
-					{
-						CopyFrom(symbols, scope->symbols.GetByIndex(index), true);
-					}
-					scope = scope->parentScope.Obj();
-				}
+				return found;
 			}
 
 			class UsingPathToNameVisitor :public Object, public WfModuleUsingFragment::IVisitor
@@ -548,65 +542,112 @@ WfLexicalScopeManager
 				}
 			};
 
-			void WfLexicalScopeManager::ResolveScopeName(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalScopeName>>& names)
+			bool WfLexicalScopeManager::ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results)
 			{
+				Ptr<WfClassMember> ownerClassMember;
 				while (scope)
 				{
-					if (scope->ownerModule || scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+					if (scope->ownerModule)
 					{
 						break;
 					}
-					scope = scope->parentScope.Obj();
-				}
-
-				List<WString> namespacePath;
-				Ptr<WfModule> module;
-				while (scope)
-				{
-					if (auto ns = scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+					if (scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
 					{
-						namespacePath.Add(ns->name.value);
+						break;
 					}
-					if (!module)
+					if (scope->ownerDeclaration.Cast<WfClassDeclaration>())
 					{
-						module = scope->ownerModule;
+						break;
 					}
-					scope = scope->parentScope.Obj();
-				}
-
-				Ptr<WfLexicalScopeName> scopeName = globalName;
-				vint nsIndex = namespacePath.Count();
-				while (scopeName)
-				{
-					vint index = scopeName->children.Keys().IndexOf(symbolName);
+					
+					vint index = scope->symbols.Keys().IndexOf(name);
 					if (index != -1)
 					{
-						names.Add(scopeName->children.Values()[index]);
+						FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+						{
+							results.Add(ResolveExpressionResult::Symbol(symbol));
+						}
+						return true;
 					}
-
-					if (--nsIndex < 0) break;
-					index = scopeName->children.Keys().IndexOf(namespacePath[nsIndex]);
-					if (index == -1) break;
-					scopeName = scopeName->children.Values()[index];
+					ownerClassMember = scope->ownerClassMember;
+					scope = scope->parentScope.Obj();
 				}
 
-				FOREACH(Ptr<WfModuleUsingPath>, path, module->paths)
+				while (scope)
 				{
-					scopeName = globalName;
+					if (auto classDecl = scope->ownerDeclaration.Cast<WfClassDeclaration>())
+					{
+						scope = scope->parentScope.Obj();
+						auto td = declarationTypes[classDecl.Obj()];
+						bool preferStatic = ownerClassMember ? ownerClassMember->kind == WfClassMemberKind::Static : true;
+						ownerClassMember = nullptr;
+						if (ResolveMember(td.Obj(), name, preferStatic, results))
+						{
+							return true;
+						}
+						scope = scope->parentScope.Obj();
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				bool found = false;
+				while (scope)
+				{
+					if (auto nsDecl = scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+					{
+						auto scopeName = namespaceNames[nsDecl.Obj()];
+						vint index = scopeName->children.Keys().IndexOf(name);
+						if (index != -1)
+						{
+							found = true;
+							auto subScopeName = scopeName->children.Values()[index];
+							results.Add(ResolveExpressionResult::ScopeName(subScopeName));
+						}
+						scope = scope->parentScope.Obj();
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				if (found)
+				{
+					return true;
+				}
+				
+				vint index = globalName->children.Keys().IndexOf(name);
+				if (index != -1)
+				{
+					found = true;
+					auto subScopeName = globalName->children.Values()[index];
+					results.Add(ResolveExpressionResult::ScopeName(subScopeName));
+				}
+
+				FOREACH(Ptr<WfModuleUsingPath>, path, scope->ownerModule->paths)
+				{
+					auto scopeName = globalName;
 					FOREACH(Ptr<WfModuleUsingItem>, item, path->items)
 					{
-						WString name;
+						WString fragmentName;
 						FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
 						{
-							name += UsingPathToNameVisitor::Execute(fragment, symbolName);
+							fragmentName += UsingPathToNameVisitor::Execute(fragment, name);
 						}
 						vint index = scopeName->children.Keys().IndexOf(name);
 						if (index == -1) goto USING_PATH_MATCHING_FAILED;
 						scopeName = scopeName->children.Values()[index];
 					}
-					names.Add(scopeName);
+
+					found = true;
+					results.Add(ResolveExpressionResult::ScopeName(scopeName));
 				USING_PATH_MATCHING_FAILED:;
 				}
+
+				return found;
 			}
 
 			Ptr<WfLexicalSymbol> WfLexicalScopeManager::GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node)

@@ -352,29 +352,23 @@ GetScopeNameFromReferenceType
 				void Visit(WfReferenceType* node)override
 				{
 					auto manager = scope->FindManager();
+					List<ResolveExpressionResult> results;
+					manager->ResolveName(scope, node->name.value, results);
 
-					List<Ptr<WfLexicalSymbol>> symbols;
-					manager->ResolveSymbol(scope, node->name.value, symbols);
-					if (symbols.Count() > 1)
+					if (results.Count() > 1)
 					{
-						manager->errors.Add(WfErrors::TooManyTargets(node, symbols, node->name.value));
-						return;
+						manager->errors.Add(WfErrors::TooManyTargets(node, results, node->name.value));
 					}
-					else if (symbols.Count() == 1)
+					else if (results.Count() == 1)
 					{
-						manager->errors.Add(WfErrors::TypeNotExists(node, symbols[0]));
-						return;
-					}
-
-					List<Ptr<WfLexicalScopeName>> scopeNames;
-					manager->ResolveScopeName(scope, node->name.value, scopeNames);
-					if (scopeNames.Count() > 1)
-					{
-						manager->errors.Add(WfErrors::TooManyTargets(node, scopeNames, node->name.value));
-					}
-					else if (scopeNames.Count() == 1)
-					{
-						result = scopeNames[0];
+						if (auto scopeName = results[0].scopeName)
+						{
+							result = scopeName;
+						}
+						else
+						{
+							manager->errors.Add(WfErrors::TypeNotExists(node, results[0].symbol));
+						}
 					}
 					else
 					{

@@ -90,9 +90,9 @@ WfErrors
 				return new ParsingError(node, L"A8: Expression does not reference to an event.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::ExpressionCannotResolveType(WfExpression* node, Ptr<WfLexicalSymbol> symbol)
+			Ptr<parsing::ParsingError> WfErrors::ExpressionCannotResolveType(WfExpression* node, const ResolveExpressionResult& result)
 			{
-				return new ParsingError(node, L"A9: Expression referencing to symbol \"" + symbol->name + L"\" failed to resolve its type.");
+				return new ParsingError(node, L"A9: Expression referencing to symbol \"" + result.GetFriendlyName() + L"\" failed to resolve its type.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::NullCannotResolveType(WfExpression* node)
@@ -418,32 +418,6 @@ WfErrors
 					description += result.GetFriendlyName();
 				}
 				return new ParsingError(node, L"F3: Symbol \"" + name + L"\" references to too many targets: " + description + L".");
-			}
-
-			Ptr<parsing::ParsingError> WfErrors::TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalSymbol>>& symbols, const WString& name)
-			{
-				List<ResolveExpressionResult> results;
-				CopyFrom(
-					results,
-					From(symbols)
-					.Select([](Ptr<WfLexicalSymbol> symbol)
-					{
-						return ResolveExpressionResult::Symbol(symbol);
-					}));
-				return TooManyTargets(node, results, name);
-			}
-
-			Ptr<parsing::ParsingError> WfErrors::TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalScopeName>>& names, const WString& name)
-			{
-				List<ResolveExpressionResult> results;
-				CopyFrom(
-					results,
-					From(names)
-					.Select([](Ptr<WfLexicalScopeName> name)
-					{
-						return ResolveExpressionResult::ScopeName(name);
-					}));
-				return TooManyTargets(node, results, name);
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name)

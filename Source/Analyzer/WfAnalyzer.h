@@ -193,9 +193,8 @@ Scope Manager
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
 				void										Rebuild(bool keepTypeDescriptorNames);
 
-				void										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results);
-				void										ResolveSymbol(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalSymbol>>& symbols);
-				void										ResolveScopeName(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalScopeName>>& names);
+				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results);
+				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
 				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);
 			};
 
@@ -474,7 +473,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			EventIsNotExpression(WfExpression* node, reflection::description::IEventInfo* eventInfo);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotScopeName(WfExpression* node);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotEvent(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ExpressionCannotResolveType(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			ExpressionCannotResolveType(WfExpression* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			NullCannotResolveType(WfExpression* node);
 				static Ptr<parsing::ParsingError>			ConstructorCannotResolveType(WfExpression* node);
 				static Ptr<parsing::ParsingError>			OrderedLambdaCannotResolveType(WfExpression* node);
@@ -546,8 +545,6 @@ Error Messages
 				static Ptr<parsing::ParsingError>			MemberNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
 				static Ptr<parsing::ParsingError>			ReferenceNotExists(parsing::ParsingTreeCustomBase* node, const WString& name);
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name);
-				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalSymbol>>& symbols, const WString& name);
-				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalScopeName>>& names, const WString& name);
 
 				// G: Class error
 				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name);
