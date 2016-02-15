@@ -11,7 +11,7 @@ func main():string
 {
 	var begin = 1;
 	var end = 5;
-	var xs = cast int{} new IMyInterface^
+	var xs = new IMyInterface^
 	{
 		func CreateEnumerator() : Enumerator^
 		{
@@ -48,5 +48,5 @@ func main():string
 			return 100;
 		}
 	};
-	return $"[$(xs.Get100)][$(CustomInterfaceProcessor::Sum(xs))]";
+	return $"[$(xs.Get100())][$(CustomInterfaceProcessor::Sum(xs))]";
 }
