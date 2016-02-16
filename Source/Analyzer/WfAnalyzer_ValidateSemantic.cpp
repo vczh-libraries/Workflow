@@ -449,7 +449,7 @@ ValidateSemantic(Expression)
 									{
 										if (auto funcDecl = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
 										{
-											if (!currentScope->ownerClassMember)
+											if (result.symbol->ownerScope != currentScope && !currentScope->ownerClassMember)
 											{
 												readonlyCaptured = true;
 												lastFuncDecl = funcDecl;
@@ -479,11 +479,14 @@ ValidateSemantic(Expression)
 
 										if (auto ordered = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
 										{
-											readonlyCaptured = true;
-											vint index = manager->orderedLambdaCaptures.Keys().IndexOf(ordered.Obj());
-											if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+											if (result.symbol->ownerScope != currentScope)
 											{
-												manager->orderedLambdaCaptures.Add(ordered.Obj(), result.symbol);
+												readonlyCaptured = true;
+												vint index = manager->orderedLambdaCaptures.Keys().IndexOf(ordered.Obj());
+												if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+												{
+													manager->orderedLambdaCaptures.Add(ordered.Obj(), result.symbol);
+												}
 											}
 										}
 
@@ -498,8 +501,7 @@ ValidateSemantic(Expression)
 											}
 										}
 
-										vint index = currentScope->symbols.Keys().IndexOf(result.symbol->name);
-										if (index != -1 && currentScope->symbols.GetByIndex(index).Contains(result.symbol.Obj()))
+										if (result.symbol->ownerScope == currentScope)
 										{
 											break;
 										}
