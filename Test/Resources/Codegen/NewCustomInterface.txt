@@ -4,6 +4,11 @@ using test::*;
 
 interface IMyInterface : Enumerable
 {
+	static func Get50() : int
+	{
+		return 50;
+	}
+
 	func Get100() : int;
 }
 
@@ -16,6 +21,7 @@ func main():string
 		func CreateEnumerator() : Enumerator^
 		{
 			var index = {-1};
+
 			return new Enumerator^
 			{
 				func GetCurrent() : object
@@ -45,7 +51,7 @@ func main():string
 
 		func Get100() : int
 		{
-			return 100;
+			return Get50() * 2;
 		}
 	};
 	return $"[$(xs.Get100())][$(CustomInterfaceProcessor::Sum(xs))]";
