@@ -27,7 +27,8 @@ Instruction
 				// Instruction		// param				: <Stack-Pattern> -> <Stack-Pattern> in the order of <bottom ---- top>
 				Nop,				//						: () -> ()										;
 				LoadValue,			// value				: () -> Value									;
-				LoadClosure,		// function, count		: Value-1, ..., Value-count -> Value			;
+				LoadClosureVars,	// count				: Value-1, ..., Value-count -> Value			;
+				LoadClosure,		// function				: Value-closure-vars -> Value					;
 				LoadException,		// 						: () -> Value									;
 				LoadLocalVar,		// variable				: () -> Value									;
 				LoadCapturedVar,	// variable				: () -> Value									;
@@ -92,6 +93,7 @@ Instruction
 #define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_LABEL, APPLY_TYPE)\
 			APPLY(Nop)\
 			APPLY_VALUE(LoadValue)\
+			APPLY_COUNT(LoadClosureVars)\
 			APPLY_FUNCTION_COUNT(LoadClosure)\
 			APPLY(LoadException)\
 			APPLY_VARIABLE(LoadLocalVar)\

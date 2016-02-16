@@ -24,7 +24,7 @@ namespace vl
 RuntimeEnvironment
 ***********************************************************************/
 
-			class WfRuntimeVariableContext : public Object
+			class WfRuntimeVariableContext : public Object, public reflection::Description<WfRuntimeVariableContext>
 			{
 				typedef collections::Array<reflection::description::Value>		VariableArray;
 
