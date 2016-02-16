@@ -232,6 +232,11 @@ WfErrors
 				return new ParsingError(node, L"A27: " + result.GetFriendlyName(true) + L" cannot be called in static functions of its class or interface.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result)
+			{
+				return new ParsingError(node, L"A28: " + result.GetFriendlyName(true) + L" cannot be used to initialize other fields in the same type or anonymous interface constructor expression.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
 			{
 				return new ParsingError(node, L"B0: Void is not a type for a value.");

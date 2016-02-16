@@ -438,45 +438,78 @@ ValidateSemantic(Expression)
 						{
 							if (result.type)
 							{
-								bool captured = false;
+								bool readonlyCaptured = false;
 								if (!result.symbol->ownerScope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
 								{
 									auto currentScope = scope;
+									bool testedReadonlyCaptured = false;
+									Ptr<WfFunctionDeclaration> lastFuncDecl;
+
 									while (currentScope)
 									{
+										if (auto funcDecl = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+										{
+											if (!currentScope->ownerClassMember)
+											{
+												readonlyCaptured = true;
+												lastFuncDecl = funcDecl;
+
+												vint index = manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
+												if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+												{
+													manager->functionLambdaCaptures.Add(funcDecl.Obj(), result.symbol);
+												}
+
+												if (auto parentScope = currentScope->parentScope.Obj())
+												{
+													if (parentScope->ownerExpression.Cast<WfNewTypeExpression>())
+													{
+														if (!testedReadonlyCaptured)
+														{
+															testedReadonlyCaptured = true;
+															if (result.symbol->ownerScope == parentScope)
+															{
+																readonlyCaptured = false;
+															}
+														}
+													}
+												}
+											}
+										}
+
+										if (auto ordered = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+										{
+											readonlyCaptured = true;
+											vint index = manager->orderedLambdaCaptures.Keys().IndexOf(ordered.Obj());
+											if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+											{
+												manager->orderedLambdaCaptures.Add(ordered.Obj(), result.symbol);
+											}
+										}
+
+										if (auto newType = currentScope->ownerExpression.Cast<WfNewTypeExpression>())
+										{
+											if (!lastFuncDecl || !newType->declarations.Contains(lastFuncDecl.Obj()))
+											{
+												if (result.symbol->ownerScope == currentScope)
+												{
+													manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
+												}
+											}
+										}
+
 										vint index = currentScope->symbols.Keys().IndexOf(result.symbol->name);
 										if (index != -1 && currentScope->symbols.GetByIndex(index).Contains(result.symbol.Obj()))
 										{
 											break;
 										}
-										if (auto node = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
-										{
-											if (!currentScope->ownerClassMember)
-											{
-												captured = true;
-												vint index = manager->functionLambdaCaptures.Keys().IndexOf(node.Obj());
-												if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
-												{
-													manager->functionLambdaCaptures.Add(node.Obj(), result.symbol);
-												}
-											}
-										}
-										if (auto node = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
-										{
-											captured = true;
-											vint index = manager->orderedLambdaCaptures.Keys().IndexOf(node.Obj());
-											if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
-											{
-												manager->orderedLambdaCaptures.Add(node.Obj(), result.symbol);
-											}
-										}
 										currentScope = currentScope->parentScope.Obj();
 									}
 								}
 
-								if (captured)
+								if (readonlyCaptured)
 								{
-									results.Add(ResolveExpressionResult::CapturedSymbol(result.symbol));
+									results.Add(ResolveExpressionResult::ReadonlySymbol(result.symbol));
 								}
 								else
 								{

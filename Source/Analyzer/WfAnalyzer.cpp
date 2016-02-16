@@ -249,6 +249,14 @@ ResolveExpressionResult
 				return result;
 			}
 
+			ResolveExpressionResult ResolveExpressionResult::ReadonlySymbol(Ptr<WfLexicalSymbol> _symbol)
+			{
+				ResolveExpressionResult result;
+				result.symbol = _symbol;
+				result.type = _symbol->typeInfo;
+				return result;
+			}
+
 			ResolveExpressionResult ResolveExpressionResult::Symbol(Ptr<WfLexicalSymbol> _symbol)
 			{
 				ResolveExpressionResult result;
@@ -258,14 +266,6 @@ ResolveExpressionResult
 				{
 					result.writableType = _symbol->typeInfo;
 				}
-				return result;
-			}
-
-			ResolveExpressionResult ResolveExpressionResult::CapturedSymbol(Ptr<WfLexicalSymbol> _symbol)
-			{
-				ResolveExpressionResult result;
-				result.symbol = _symbol;
-				result.type = _symbol->typeInfo;
 				return result;
 			}
 

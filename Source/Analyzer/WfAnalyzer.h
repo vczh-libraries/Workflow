@@ -108,8 +108,8 @@ Scope Manager
 				WString										GetFriendlyName(bool upperCase = false)const;
 
 				static ResolveExpressionResult				ScopeName(Ptr<WfLexicalScopeName> _scopeName);
+				static ResolveExpressionResult				ReadonlySymbol(Ptr<WfLexicalSymbol> _symbol);
 				static ResolveExpressionResult				Symbol(Ptr<WfLexicalSymbol> _symbol);
-				static ResolveExpressionResult				CapturedSymbol(Ptr<WfLexicalSymbol> _symbol);
 				static ResolveExpressionResult				ReadonlyType(Ptr<reflection::description::ITypeInfo> _type);
 				static ResolveExpressionResult				WritableType(Ptr<reflection::description::ITypeInfo> _type);
 				static ResolveExpressionResult				Property(reflection::description::IPropertyInfo* _propertyInfo);
@@ -162,7 +162,7 @@ Scope Manager
 				ExpressionScopeMap							expressionScopes;			// the nearest scope for the expression
 				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
 				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
-				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an lambda expression
+				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an ordered lambda expression
 				InterfaceMethodImplementationMap			interfaceMethodImpls;		// the IMethodInfo* that implemented by a function
 				DeclarationTypeMap							declarationTypes;			// ITypeDescriptor* for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;		// IMemberInfo* for type description
@@ -503,6 +503,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			ExpressionIsNotLeftValue(WfExpression* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			CannotCallMemberOutsideOfClass(WfExpression* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);
