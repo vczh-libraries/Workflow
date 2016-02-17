@@ -157,7 +157,7 @@ CompleteScopeForDeclaration
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto scope = manager->declarationScopes[node];
-					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
+					auto td = manager->declarationTypes[node];
 
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 					{

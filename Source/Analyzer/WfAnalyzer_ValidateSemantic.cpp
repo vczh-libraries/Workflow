@@ -167,7 +167,7 @@ ValidateSemantic(Declaration)
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto scope = manager->declarationScopes[node];
-					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
+					auto td = manager->declarationTypes[node];
 
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 					{
@@ -1897,7 +1897,11 @@ ValidateSemantic(Expression)
 											vint methodCount = group->GetMethodCount();
 											for (vint j = 0; j < methodCount; j++)
 											{
-												interfaceMethods.Add(group->GetName(), group->GetMethod(j));
+												auto method = group->GetMethod(j);
+												if (!method->IsStatic())
+												{
+													interfaceMethods.Add(group->GetName(), method);
+												}
 											}
 										}
 									}

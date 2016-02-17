@@ -732,8 +732,6 @@ CreateTypeInfoFromType
 			{
 				return CreateTypeInfoFromTypeVisitor::Execute(scope, type.Obj());
 			}
-			
-
 
 /***********************************************************************
 CopyType
