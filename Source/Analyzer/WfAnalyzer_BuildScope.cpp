@@ -125,6 +125,7 @@ BuildScopeForDeclaration
 					
 					auto td = manager->declarationTypes[node];
 					resultScope = new WfLexicalScope(parentScope);
+					resultScope->typeDescriptor = td.Obj();
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						BuildScopeForDeclaration(manager, resultScope, member->declaration, member.Obj());

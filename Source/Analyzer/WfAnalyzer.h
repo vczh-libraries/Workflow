@@ -49,12 +49,13 @@ Scope
 			{
 				typedef collections::Group<WString, Ptr<WfLexicalSymbol>>		TypeGroup;
 			public:
-				WfLexicalScopeManager*						ownerManager;		// nullable and inheritable
-				Ptr<WfModule>								ownerModule;		// nullable and inheritable
-				Ptr<WfClassMember>							ownerClassMember;	// nullable and inheritable
-				Ptr<WfDeclaration>							ownerDeclaration;	// nullable and inheritable
-				Ptr<WfStatement>							ownerStatement;		// nullable
-				Ptr<WfExpression>							ownerExpression;	// nullable
+				WfLexicalScopeManager*						ownerManager;				// nullable and inheritable
+				Ptr<WfModule>								ownerModule;				// nullable and inheritable
+				Ptr<WfClassMember>							ownerClassMember;			// nullable and inheritable
+				Ptr<WfDeclaration>							ownerDeclaration;			// nullable and inheritable
+				Ptr<WfStatement>							ownerStatement;				// nullable
+				Ptr<WfExpression>							ownerExpression;			// nullable
+				reflection::description::ITypeDescriptor*	typeDescriptor = nullptr;	// visible members to this scope
 
 				Ptr<WfLexicalScope>							parentScope;		// null means that this is the root scope
 				TypeGroup									symbols;			// all symbols in this scope

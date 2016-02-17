@@ -563,6 +563,7 @@ WfLexicalScopeManager
 			{
 				bool found = false;
 				Ptr<WfClassMember> ownerClassMember;
+				Ptr<WfFunctionDeclaration> ownerFunction;
 				while (scope)
 				{
 					if (scope->ownerModule)
@@ -577,17 +578,30 @@ WfLexicalScopeManager
 					{
 						break;
 					}
-					
+
+					auto newTypeExpr = scope->ownerExpression.Cast<WfNewTypeExpression>();
 					vint index = scope->symbols.Keys().IndexOf(name);
 					if (index != -1)
 					{
 						found = true;
 						FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 						{
-							results.Add(ResolveExpressionResult::Symbol(symbol));
+							if (!newTypeExpr || !symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
+							{
+								results.Add(ResolveExpressionResult::Symbol(symbol));
+							}
+						}
+					}
+
+					if (newTypeExpr)
+					{
+						if (ownerFunction)
+						{
+							ResolveMember(scope->typeDescriptor, name, false, results);
 						}
 					}
 					ownerClassMember = scope->ownerClassMember;
+					ownerFunction = scope->ownerDeclaration.Cast<WfFunctionDeclaration>();
 					scope = scope->parentScope.Obj();
 				}
 

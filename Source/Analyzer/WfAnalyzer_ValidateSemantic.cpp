@@ -1799,6 +1799,8 @@ ValidateSemantic(Expression)
 						Ptr<ITypeInfo> selectedType;
 						IMethodInfo* selectedConstructor = nullptr;
 
+						scope->typeDescriptor = td;
+
 						if (!ctors || ctors->GetMethodCount() == 0)
 						{
 							manager->errors.Add(WfErrors::ClassContainsNoConstructor(node, type.Obj()));
