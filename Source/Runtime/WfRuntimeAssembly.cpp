@@ -764,6 +764,17 @@ Serialization (TypeImpl)
 						}
 					}
 
+					// base types
+					vint baseCount = 0;
+					reader << baseCount;
+					for (vint i = 0; i < baseCount; i++)
+					{
+						vint index = 0;
+						reader << index;
+						auto baseTd = reader.context->tdIndex[index];
+						td->AddBaseType(baseTd);
+					}
+
 					// methods
 					vint methodGroupCount = 0;
 					reader << methodGroupCount;
@@ -874,6 +885,16 @@ Serialization (TypeImpl)
 						{
 							writer << methodCount;
 						}
+					}
+
+					// base types
+					vint baseCount = td->GetBaseTypeDescriptorCount();
+					writer << baseCount;
+					for (vint i = 0; i < baseCount; i++)
+					{
+						auto baseTd = td->GetBaseTypeDescriptor(i);
+						vint index = writer.context->tdIndex[baseTd];
+						writer << index;
 					}
 
 					// methods

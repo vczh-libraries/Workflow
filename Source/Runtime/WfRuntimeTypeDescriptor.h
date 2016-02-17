@@ -15,6 +15,31 @@ namespace vl
 {
 	namespace workflow
 	{
+		namespace typeimpl
+		{
+			class WfInterfaceInstance;
+		}
+	}
+
+	namespace reflection
+	{
+		template<>
+		class Description<workflow::typeimpl::WfInterfaceInstance> : public virtual DescriptableObject
+		{
+		private:
+			description::ITypeDescriptor*				associatedTypeDescriptor;
+
+		public:
+			Description(description::ITypeDescriptor* _associatedTypeDescriptor)
+				:associatedTypeDescriptor(_associatedTypeDescriptor)
+			{
+				typeDescriptor = &associatedTypeDescriptor;
+			}
+		};
+	}
+
+	namespace workflow
+	{
 		namespace runtime
 		{
 			class WfRuntimeGlobalContext;
@@ -29,13 +54,31 @@ namespace vl
 Method
 ***********************************************************************/
 
+			class WfMethodProxy : public Object, public virtual reflection::description::IValueFunctionProxy
+			{
+				typedef reflection::description::IMethodInfo				IMethodInfo;
+				typedef reflection::description::IValueList					IValueList;
+				typedef reflection::description::Value						Value;
+			protected:
+				Value									thisObject;
+				IMethodInfo*							methodInfo;
+
+			public:
+				WfMethodProxy(const Value& _thisObject, IMethodInfo* _methodInfo);
+				~WfMethodProxy();
+				
+				Value									Invoke(Ptr<IValueList> arguments)override;
+			};
+
 			class WfMethodBase : public reflection::description::MethodInfoImpl
 			{
 				friend class WfCustomType;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 			protected:
+				typedef reflection::description::Value						Value;
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
 				
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 			public:
 				WfMethodBase(bool isStatic);
@@ -51,7 +94,6 @@ Method
 			protected:
 
 				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
 				vint									functionIndex = -1;
 
@@ -65,7 +107,6 @@ Method
 			protected:
 
 				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
 				WfInterfaceConstructor(Ptr<ITypeInfo> type);
 			};
@@ -76,7 +117,6 @@ Method
 			protected:
 
 				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
 				WfInterfaceMethod();
 			};
@@ -163,6 +203,25 @@ Custom Type
 			public:
 				WfInterface(const WString& typeName);
 				~WfInterface();
+			};
+
+/***********************************************************************
+Instance
+***********************************************************************/
+
+			class WfInterfaceInstance : public Object, public reflection::Description<WfInterfaceInstance>
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::IMethodInfo				IMethodInfo;
+				typedef reflection::description::IValueInterfaceProxy		IValueInterfaceProxy;
+			protected:
+				Ptr<IValueInterfaceProxy>				proxy;
+
+			public:
+				WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors);
+				~WfInterfaceInstance();
+
+				Ptr<IValueInterfaceProxy>				GetProxy();
 			};
 
 /***********************************************************************

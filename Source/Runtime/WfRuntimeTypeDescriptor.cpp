@@ -6,19 +6,46 @@ namespace vl
 	{
 		namespace typeimpl
 		{
-			using namespace collections;
+			using namespace reflection;
 			using namespace reflection::description;
+			using namespace collections;
 			using namespace runtime;
+
+/***********************************************************************
+WfMethodProxy
+***********************************************************************/
+
+			WfMethodProxy::WfMethodProxy(const Value& _thisObject, IMethodInfo* _methodInfo)
+				:thisObject(_thisObject)
+				, methodInfo(_methodInfo)
+			{
+
+			}
+
+			WfMethodProxy::~WfMethodProxy()
+			{
+			}
+				
+			Value WfMethodProxy::Invoke(Ptr<IValueList> arguments)
+			{
+				Array<Value> values;
+				UnboxParameter(Value::From(arguments), values);
+				return methodInfo->Invoke(thisObject, values);
+			}
 
 /***********************************************************************
 WfMethodBase
 ***********************************************************************/
 
+			Value WfMethodBase::CreateFunctionProxyInternal(const Value& thisObject)
+			{
+				return Value::From(MakePtr<WfMethodProxy>(thisObject, this));
+			}
+
 			void WfMethodBase::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
 			{
 				globalContext = _globalContext;
 			}
-
 
 			WfMethodBase::WfMethodBase(bool isStatic)
 				:MethodInfoImpl(nullptr, nullptr, isStatic)
@@ -50,12 +77,6 @@ WfStaticMethod
 				return lambda->Invoke(argumentArray);
 			}
 
-			Value WfStaticMethod::CreateFunctionProxyInternal(const Value& thisObject)
-			{
-				auto lambda = MakePtr<WfRuntimeLambda>(globalContext, nullptr, functionIndex);
-				return Value::From(lambda);
-			}
-
 			WfStaticMethod::WfStaticMethod()
 				:WfMethodBase(true)
 			{
@@ -67,12 +88,73 @@ WfInterfaceConstructor
 
 			Value WfInterfaceConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
-				throw 0;
-			}
+				if (arguments.Count() != 1)
+				{
+					throw ArgumentCountMismtatchException(GetOwnerMethodGroup());
+				}
+				auto proxy = UnboxValue<Ptr<IValueInterfaceProxy>>(arguments[0]);
 
-			Value WfInterfaceConstructor::CreateFunctionProxyInternal(const Value& thisObject)
-			{
-				throw 0;
+				List<IMethodInfo*> baseCtors;
+				{
+					List<ITypeDescriptor*> baseTypes;
+					baseTypes.Add(GetOwnerTypeDescriptor());
+
+					for (vint i = 0; i < baseTypes.Count(); i++)
+					{
+						auto td = baseTypes[i];
+						if (dynamic_cast<WfCustomType*>(td))
+						{
+							vint count = td->GetBaseTypeDescriptorCount();
+							for (vint j = 0; j < count; j++)
+							{
+								baseTypes.Add(td->GetBaseTypeDescriptor(j));
+							}
+						}
+						else if (auto group = td->GetConstructorGroup())
+						{
+							vint count = group->GetMethodCount();
+							IMethodInfo* selectedCtor = nullptr;
+
+							for (vint j = 0; j < count; j++)
+							{
+								auto ctor = group->GetMethod(j);
+								if (ctor->GetParameterCount() == 1)
+								{
+									auto type = ctor->GetParameter(0)->GetType();
+									if (type->GetDecorator() == ITypeInfo::SharedPtr && type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueInterfaceProxy>())
+									{
+										selectedCtor = ctor;
+										break;
+									}
+								}
+							}
+
+							if (selectedCtor)
+							{
+								baseCtors.Add(selectedCtor);
+							}
+							else
+							{
+								throw ArgumentCountMismtatchException(group);
+							}
+						}
+						else
+						{
+							throw ConstructorNotExistsException(td);
+						}
+					}
+				}
+
+				auto instance = new WfInterfaceInstance(GetOwnerTypeDescriptor(), proxy, baseCtors);
+
+				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					return Value::From(Ptr<WfInterfaceInstance>(instance));
+				}
+				else
+				{
+					return Value::From(instance);
+				}
 			}
 
 			WfInterfaceConstructor::WfInterfaceConstructor(Ptr<ITypeInfo> type)
@@ -90,12 +172,8 @@ WfInterfaceMethod
 
 			Value WfInterfaceMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
-				throw 0;
-			}
-
-			Value WfInterfaceMethod::CreateFunctionProxyInternal(const Value& thisObject)
-			{
-				throw 0;
+				auto instance = thisObject.GetRawPtr()->SafeAggregationCast<WfInterfaceInstance>();
+				return instance->GetProxy()->Invoke(this, IValueList::Create(From(arguments)));
 			}
 
 			WfInterfaceMethod::WfInterfaceMethod()
@@ -260,6 +338,42 @@ WfInterface
 
 			WfInterface::~WfInterface()
 			{
+			}
+
+/***********************************************************************
+WfTypeImpl
+***********************************************************************/
+
+			WfInterfaceInstance::WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors)
+				:Description<WfInterfaceInstance>(_typeDescriptor)
+				, proxy(_proxy)
+			{
+				Array<Value> arguments(1);
+				arguments[0] = Value::From(_proxy);
+
+				InitializeAggregation(baseCtors.Count());
+				FOREACH_INDEXER(IMethodInfo*, ctor, index, baseCtors)
+				{
+					Ptr<DescriptableObject> ptr;
+					{
+						auto value = ctor->Invoke(Value(), arguments);
+						if (!(ptr = value.GetSharedPtr()))
+						{
+							ptr = value.GetRawPtr();
+						}
+					}
+
+					SetAggregationParent(index, ptr);
+				}
+			}
+
+			WfInterfaceInstance::~WfInterfaceInstance()
+			{
+			}
+
+			Ptr<IValueInterfaceProxy> WfInterfaceInstance::GetProxy()
+			{
+				return proxy;
 			}
 
 /***********************************************************************

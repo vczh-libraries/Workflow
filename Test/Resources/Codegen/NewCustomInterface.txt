@@ -20,29 +20,29 @@ func main():string
 	{
 		func CreateEnumerator() : Enumerator^
 		{
-			var index = {-1};
-
 			return new Enumerator^
 			{
+				var index = -1;
+
 				func GetCurrent() : object
 				{
-					return begin + index[0];
+					return begin + index;
 				}
 
 				func GetIndex() : int
 				{
-					return index[0];
+					return index;
 				}
 
 				func Next() : bool
 				{
-					if(index[0] == end - begin)
+					if(index == end - begin)
 					{
 						return false;
 					}
 					else
 					{
-						index[0] = index[0] + 1;
+						index = index + 1;
 						return true;
 					}
 				}
