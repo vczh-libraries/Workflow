@@ -466,7 +466,7 @@ namespace test
 		{
 			vint sum = 0;
 			auto it = values->CreateEnumerator();
-			while (!it->Next())
+			while (it->Next())
 			{
 				sum += UnboxValue<vint>(it->GetCurrent());
 			}
