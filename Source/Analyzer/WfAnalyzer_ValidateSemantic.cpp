@@ -1733,6 +1733,61 @@ ValidateSemantic(Expression)
 					return symbol->typeInfo;
 				}
 
+				class NewTypeExpressionVisitor : public Object, public WfDeclaration::IVisitor
+				{
+				public:
+					WfLexicalScopeManager*							manager;
+					List<Ptr<WfFunctionDeclaration>>				functions;
+					List<Ptr<WfLexicalSymbol>>						variableSymbols;
+
+					NewTypeExpressionVisitor(WfLexicalScopeManager* _manager)
+						:manager(_manager)
+					{
+					}
+
+					void Visit(WfNamespaceDeclaration* node)override
+					{
+					}
+
+					void Visit(WfFunctionDeclaration* node)override
+					{
+						functions.Add(node);
+					}
+
+					void Visit(WfVariableDeclaration* node)override
+					{
+						variableSymbols.Add(
+							From(manager->declarationScopes[node]->symbols[node->name.value])
+								.Where([=](Ptr<WfLexicalSymbol> symbol)
+								{
+									return symbol->creatorDeclaration == node;
+								})
+								.First()
+							);
+					}
+
+					void Visit(WfEventDeclaration* node)override
+					{
+					}
+
+					void Visit(WfPropertyDeclaration* node)override
+					{
+					}
+
+					void Visit(WfClassDeclaration* node)override
+					{
+					}
+
+					void Execute(WfNewTypeExpression* node)
+					{
+						FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+						{
+							ValidateDeclarationSemantic(manager, decl);
+							decl->Accept(this);
+						}
+					}
+				};
+
 				void Visit(WfNewTypeExpression* node)override
 				{
 					auto scope = manager->expressionScopes[node].Obj();
@@ -1783,19 +1838,44 @@ ValidateSemantic(Expression)
 								{
 									manager->errors.Add(WfErrors::InterfaceContainsNoConstructor(node, type.Obj()));
 								}
-								
+
 								Group<WString, IMethodInfo*> interfaceMethods;
 								Group<WString, Ptr<WfFunctionDeclaration>> implementMethods;
-
-								FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+								
 								{
-									ValidateDeclarationSemantic(manager, decl);
-									if (auto function = decl.Cast<WfFunctionDeclaration>())
+									NewTypeExpressionVisitor declVisitor(manager);
+									declVisitor.Execute(node);
+
+									List<Ptr<WfLexicalSymbol>> captures;
+									CopyFrom(captures, declVisitor.variableSymbols);
+
+									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.functions)
 									{
-										implementMethods.Add(function->name.value, function);
+										implementMethods.Add(func->name.value, func);
+
+										vint index = manager->functionLambdaCaptures.Keys().IndexOf(func.Obj());
+										if (index != -1)
+										{
+											auto& values = manager->functionLambdaCaptures.GetByIndex(index);
+											FOREACH(Ptr<WfLexicalSymbol>, symbol, values)
+											{
+												if (!captures.Contains(symbol.Obj()))
+												{
+													captures.Add(symbol);
+												}
+											}
+										}
+									}
+
+									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.functions)
+									{
+										manager->functionLambdaCaptures.Remove(func.Obj());
+										FOREACH(Ptr<WfLexicalSymbol>, symbol, captures)
+										{
+											manager->functionLambdaCaptures.Add(func.Obj(), symbol);
+										}
 									}
 								}
-
 								{
 									List<ITypeDescriptor*> types;
 									types.Add(td);

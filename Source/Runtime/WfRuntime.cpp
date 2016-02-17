@@ -494,6 +494,19 @@ WfRuntimeThreadContext
 				return WfRuntimeThreadContextError::Success;
 			}
 
+			WfRuntimeThreadContextError WfRuntimeThreadContext::StoreCapturedVariable(vint variableIndex, const reflection::description::Value& value)
+			{
+				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;
+				auto frame = GetCurrentStackFrame();
+				if (variableIndex < 0 || variableIndex >= frame.capturedVariables->variables.Count())
+				{
+					return WfRuntimeThreadContextError::WrongVariableIndex;
+				}
+
+				frame.capturedVariables->variables[variableIndex] = value;
+				return WfRuntimeThreadContextError::Success;
+			}
+
 			WfRuntimeThreadContextError WfRuntimeThreadContext::LoadLocalVariable(vint variableIndex, reflection::description::Value& value)
 			{
 				if (stackFrames.Count() == 0) return WfRuntimeThreadContextError::EmptyStackFrame;

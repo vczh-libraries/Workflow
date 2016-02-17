@@ -388,6 +388,13 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(StoreLocalVariable(ins.indexParameter, operand), L"illegal local variable index.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::StoreCapturedVar:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(StoreCapturedVariable(ins.indexParameter, operand), L"illegal global variable index.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::StoreGlobalVar:
 					{
 						CALL_DEBUGGER(callback->BreakWrite(globalContext->assembly.Obj(), ins.indexParameter));
@@ -459,6 +466,7 @@ WfRuntimeThreadContext
 							auto func = UnboxValue<Ptr<IValueFunctionProxy>>(value);
 							proxy->functions.Add(name, func);
 						}
+						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
 						PushValue(Value::From(proxy));
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}

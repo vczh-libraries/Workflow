@@ -31,7 +31,7 @@ GenerateInstructions(Expression)
 				{
 				}
 
-				void GenerateLoadSymbolInstructions(WfLexicalSymbol* symbol, parsing::ParsingTreeCustomBase* node)
+				static void GenerateLoadSymbolInstructions(WfCodegenContext& context, WfLexicalSymbol* symbol, parsing::ParsingTreeCustomBase* node)
 				{
 					vint index = -1;
 					if ((index = context.globalFunctions.Keys().IndexOf(symbol)) != -1)
@@ -67,7 +67,7 @@ GenerateInstructions(Expression)
 					auto result = context.manager->expressionResolvings[node];
 					if (result.symbol)
 					{
-						GenerateLoadSymbolInstructions(result.symbol.Obj(), node);
+						GenerateLoadSymbolInstructions(context, result.symbol.Obj(), node);
 					}
 					else
 					{
@@ -111,7 +111,7 @@ GenerateInstructions(Expression)
 						const auto& symbols = context.manager->orderedLambdaCaptures.GetByIndex(index);
 						FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
 						{
-							GenerateLoadSymbolInstructions(symbol.Obj(), node);
+							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 						}
 						INSTRUCTION(Ins::LoadClosureVars(symbols.Count()));
 						INSTRUCTION(Ins::LoadClosure(functionIndex));
@@ -266,6 +266,15 @@ GenerateInstructions(Expression)
 							{
 								vint variableIndex = context.functionContext->localVariables.Values()[index];
 								INSTRUCTION(Ins::StoreLocalVar(variableIndex));
+							}
+							else if ((index = context.functionContext->capturedVariables.Keys().IndexOf(result.symbol.Obj())) != -1)
+							{
+								vint variableIndex = context.functionContext->capturedVariables.Values()[index];
+								INSTRUCTION(Ins::StoreCapturedVar(variableIndex));
+							}
+							else
+							{
+								CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfBinaryExpression*)#Internal error, cannot find record of this assignable symbol.");
 							}
 						}
 					}
@@ -731,30 +740,37 @@ GenerateInstructions(Expression)
 					INSTRUCTION(Ins::InvokeProxy(node->arguments.Count()));
 				}
 
-				void VisitFunction(WfFunctionDeclaration* node, WfCodegenLambdaContext lc, const Func<WString(vint)>& getName)
+				static void VisitFunction(WfCodegenContext& context, WfFunctionDeclaration* node, WfCodegenLambdaContext lc, vint newTypeFunctionIndex, const Func<WString(vint)>& getName)
 				{
 					auto meta = MakePtr<WfAssemblyFunction>();
 					vint functionIndex = context.assembly->functions.Add(meta);
 					meta->name = getName(functionIndex);
 					context.assembly->functionByName.Add(meta->name, functionIndex);
-
 					context.functionContext->closuresToCodegen.Add(functionIndex, lc);
 
-					vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(node);
-					if (index != -1)
+					if (newTypeFunctionIndex >= 0)
 					{
-						const auto& symbols = context.manager->functionLambdaCaptures.GetByIndex(index);
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
-						{
-							GenerateLoadSymbolInstructions(symbol.Obj(), node);
-						}
-						INSTRUCTION(Ins::LoadClosureVars(symbols.Count()));
+						INSTRUCTION(Ins::Duplicate(1 + newTypeFunctionIndex * 2));
 						INSTRUCTION(Ins::LoadClosure(functionIndex));
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadClosureVars(0));
-						INSTRUCTION(Ins::LoadClosure(functionIndex));
+						vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(node);
+						if (index != -1)
+						{
+							const auto& symbols = context.manager->functionLambdaCaptures.GetByIndex(index);
+							FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
+							{
+								GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
+							}
+							INSTRUCTION(Ins::LoadClosureVars(symbols.Count()));
+							INSTRUCTION(Ins::LoadClosure(functionIndex));
+						}
+						else
+						{
+							INSTRUCTION(Ins::LoadClosureVars(0));
+							INSTRUCTION(Ins::LoadClosure(functionIndex));
+						}
 					}
 				}
 
@@ -762,11 +778,65 @@ GenerateInstructions(Expression)
 				{
 					WfCodegenLambdaContext lc;
 					lc.functionExpression = node;
-					VisitFunction(node->function.Obj(), lc, [=](vint index)
+					VisitFunction(context, node->function.Obj(), lc, -1, [=](vint index)
 					{
 						return L"<lambda:" + node->function->name.value + L"(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
 				}
+
+				class NewTypeExpressionVisitor : public Object, public WfDeclaration::IVisitor
+				{
+				public:
+					WfCodegenContext&						context;
+					vint									variableCount = 0;
+					List<Ptr<WfLexicalSymbol>>				variableSymbols;
+					List<Ptr<WfFunctionDeclaration>>		functions;
+
+					NewTypeExpressionVisitor(WfCodegenContext& _context)
+						:context(_context)
+					{
+					}
+
+					void Visit(WfNamespaceDeclaration* node)override
+					{
+					}
+
+					void Visit(WfFunctionDeclaration* node)override
+					{
+						functions.Add(node);
+					}
+
+					void Visit(WfVariableDeclaration* node)override
+					{
+						variableCount++;
+					}
+
+					void Visit(WfEventDeclaration* node)override
+					{
+					}
+
+					void Visit(WfPropertyDeclaration* node)override
+					{
+					}
+
+					void Visit(WfClassDeclaration* node)override
+					{
+					}
+
+					void Execute(WfNewTypeExpression* node)
+					{
+						FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+						{
+							decl->Accept(this);
+						}
+
+						if (functions.Count() > 0 && variableCount > 0)
+						{
+							auto& values = context.manager->functionLambdaCaptures[functions[0].Obj()];
+							CopyFrom(variableSymbols, From(values).Take(variableCount));
+						}
+					}
+				};
 
 				void Visit(WfNewTypeExpression* node)override
 				{
@@ -783,18 +853,38 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						FOREACH(Ptr<WfFunctionDeclaration>, decl, From(node->declarations).Cast<WfFunctionDeclaration>())
+						NewTypeExpressionVisitor declVisitor(context);
+						declVisitor.Execute(node);
+
+						if (declVisitor.functions.Count() > 0)
 						{
-							auto methodInfo = context.manager->interfaceMethodImpls[decl.Obj()];
-							INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
-							WfCodegenLambdaContext lc;
-							lc.functionDeclaration = decl.Obj();
-							VisitFunction(decl.Obj(), lc, [=](vint index)
+							for (vint i = 0; i < declVisitor.variableCount; i++)
 							{
-								return L"<method:" + decl->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
-							});
+								auto var = declVisitor.variableSymbols[i]->creatorDeclaration.Cast<WfVariableDeclaration>();
+								GenerateExpressionInstructions(context, var->expression);
+							}
+
+							auto& values = context.manager->functionLambdaCaptures[declVisitor.functions[0].Obj()];
+							for (vint i = declVisitor.variableCount; i < values.Count(); i++)
+							{
+								GenerateLoadSymbolInstructions(context, values[i].Obj(), node);
+							}
+							INSTRUCTION(Ins::LoadClosureVars(values.Count()));
+
+							FOREACH_INDEXER(Ptr<WfFunctionDeclaration>, func, index, declVisitor.functions)
+							{
+								auto methodInfo = context.manager->interfaceMethodImpls[func.Obj()];
+								INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
+								WfCodegenLambdaContext lc;
+								lc.functionDeclaration = func.Obj();
+								VisitFunction(context, func.Obj(), lc, index, [=](vint index)
+								{
+									return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
+								});
+							}
 						}
-						INSTRUCTION(Ins::CreateInterface(node->declarations.Count() * 2));
+
+						INSTRUCTION(Ins::CreateInterface(declVisitor.functions.Count() * 2));
 						INSTRUCTION(Ins::LoadValue(Value()));
 						INSTRUCTION(Ins::InvokeMethod(result.constructorInfo, 1));
 					}
