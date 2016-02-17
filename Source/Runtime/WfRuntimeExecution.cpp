@@ -333,24 +333,10 @@ WfRuntimeThreadContext
 					}
 				case WfInsCode::LoadClosure:
 					{
-						Ptr<WfRuntimeVariableContext> capturedVariables;
-						if (ins.countParameter == -1)
-						{
-							Value operand;
-							CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-							capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
-						}
-						else if (ins.countParameter > 0)
-						{
-							capturedVariables = new WfRuntimeVariableContext;
-							capturedVariables->variables.Resize(ins.countParameter);
-							Value operand;
-							for (vint i = 0; i < ins.countParameter; i++)
-							{
-								CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-								capturedVariables->variables[ins.countParameter - 1 - i] = operand;
-							}
-						}
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
+
 						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, ins.indexParameter);
 						PushValue(Value::From(lambda));
 						return WfRuntimeExecutionAction::ExecuteInstruction;

@@ -90,11 +90,11 @@ Instruction
 				OpNE,				// 						: <int> -> <bool>								;
 			};
 
-#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_LABEL, APPLY_TYPE)\
+#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_LABEL, APPLY_TYPE)\
 			APPLY(Nop)\
 			APPLY_VALUE(LoadValue)\
 			APPLY_COUNT(LoadClosureVars)\
-			APPLY_FUNCTION_COUNT(LoadClosure)\
+			APPLY_FUNCTION(LoadClosure)\
 			APPLY(LoadException)\
 			APPLY_VARIABLE(LoadLocalVar)\
 			APPLY_VARIABLE(LoadCapturedVar)\
@@ -195,6 +195,7 @@ Instruction
 
 				#define CTOR(NAME)						static WfInstruction NAME();
 				#define CTOR_VALUE(NAME)				static WfInstruction NAME(const reflection::description::Value& value);
+				#define CTOR_FUNCTION(NAME)				static WfInstruction NAME(vint function);
 				#define CTOR_FUNCTION_COUNT(NAME)		static WfInstruction NAME(vint function, vint count);
 				#define CTOR_VARIABLE(NAME)				static WfInstruction NAME(vint variable);
 				#define CTOR_COUNT(NAME)				static WfInstruction NAME(vint count);
@@ -209,6 +210,7 @@ Instruction
 				INSTRUCTION_CASES(
 					CTOR,
 					CTOR_VALUE,
+					CTOR_FUNCTION,
 					CTOR_FUNCTION_COUNT,
 					CTOR_VARIABLE,
 					CTOR_COUNT,
@@ -222,6 +224,7 @@ Instruction
 
 				#undef CTOR
 				#undef CTOR_VALUE
+				#undef CTOR_FUNCTION
 				#undef CTOR_FUNCTION_COUNT
 				#undef CTOR_VARIABLE
 				#undef CTOR_COUNT

@@ -36,6 +36,15 @@ WfInstruction
 				return ins; \
 			}\
 
+#define CTOR_FUNCTION(NAME)\
+			WfInstruction WfInstruction::NAME(vint function)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.indexParameter = function; \
+				return ins; \
+			}\
+
 #define CTOR_FUNCTION_COUNT(NAME)\
 			WfInstruction WfInstruction::NAME(vint function, vint count)\
 			{\
@@ -137,6 +146,7 @@ WfInstruction
 			INSTRUCTION_CASES(
 				CTOR,
 				CTOR_VALUE,
+				CTOR_FUNCTION,
 				CTOR_FUNCTION_COUNT,
 				CTOR_VARIABLE,
 				CTOR_COUNT,
@@ -150,6 +160,7 @@ WfInstruction
 
 #undef CTOR
 #undef CTOR_VALUE
+#undef CTOR_FUNCTION
 #undef CTOR_FUNCTION_COUNT
 #undef CTOR_VARIABLE
 #undef CTOR_COUNT

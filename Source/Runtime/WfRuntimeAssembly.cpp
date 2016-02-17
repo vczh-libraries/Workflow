@@ -182,6 +182,7 @@ Serialization (CollectMetadata)
 #define EI(X)										do{ if (!prepare.eis.Contains(X)) prepare.eis.Add(X); }while(0)
 #define COLLECTMETADATA(NAME)						case WfInsCode::NAME: break;
 #define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: if (auto td = ins.valueParameter.GetTypeDescriptor()) TD(td); break;
+#define COLLECTMETADATA_FUNCTION(NAME)				case WfInsCode::NAME: break;
 #define COLLECTMETADATA_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: break;
 #define COLLECTMETADATA_VARIABLE(NAME)				case WfInsCode::NAME: break;
 #define COLLECTMETADATA_COUNT(NAME)					case WfInsCode::NAME: break;
@@ -201,6 +202,7 @@ Serialization (CollectMetadata)
 						INSTRUCTION_CASES(
 							COLLECTMETADATA,
 							COLLECTMETADATA_VALUE,
+							COLLECTMETADATA_FUNCTION,
 							COLLECTMETADATA_FUNCTION_COUNT,
 							COLLECTMETADATA_VARIABLE,
 							COLLECTMETADATA_COUNT,
@@ -229,6 +231,7 @@ Serialization (CollectMetadata)
 
 #undef COLLECTMETADATA
 #undef COLLECTMETADATA_VALUE
+#undef COLLECTMETADATA_FUNCTION
 #undef COLLECTMETADATA_FUNCTION_COUNT
 #undef COLLECTMETADATA_VARIABLE
 #undef COLLECTMETADATA_COUNT
@@ -1013,6 +1016,7 @@ Serialization (Instruction)
 #define EI(X)								do{ vint index = -1; reader << index; X = reader.context->eiIndex[index]; }while(0)
 #define STREAMIO(NAME)						case WfInsCode::NAME: break;
 #define STREAMIO_VALUE(NAME)				case WfInsCode::NAME: IO(value.valueParameter); break;
+#define STREAMIO_FUNCTION(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
 #define STREAMIO_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: IO(value.indexParameter); IO(value.countParameter); break;
 #define STREAMIO_VARIABLE(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
 #define STREAMIO_COUNT(NAME)				case WfInsCode::NAME: IO(value.countParameter); break;
@@ -1029,6 +1033,7 @@ Serialization (Instruction)
 						INSTRUCTION_CASES(
 							STREAMIO,
 							STREAMIO_VALUE,
+							STREAMIO_FUNCTION,
 							STREAMIO_FUNCTION_COUNT,
 							STREAMIO_VARIABLE,
 							STREAMIO_COUNT,
@@ -1043,6 +1048,7 @@ Serialization (Instruction)
 
 #undef STREAMIO
 #undef STREAMIO_VALUE
+#undef STREAMIO_FUNCTION
 #undef STREAMIO_FUNCTION_COUNT
 #undef STREAMIO_VARIABLE
 #undef STREAMIO_COUNT
@@ -1070,6 +1076,7 @@ Serialization (Instruction)
 #define EI(X)								do{ vint index = writer.context->eiIndex[X]; writer << index; }while(0)
 #define STREAMIO(NAME)						case WfInsCode::NAME: break;
 #define STREAMIO_VALUE(NAME)				case WfInsCode::NAME: IO(value.valueParameter); break;
+#define STREAMIO_FUNCTION(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
 #define STREAMIO_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: IO(value.indexParameter); IO(value.countParameter); break;
 #define STREAMIO_VARIABLE(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
 #define STREAMIO_COUNT(NAME)				case WfInsCode::NAME: IO(value.countParameter); break;
@@ -1086,6 +1093,7 @@ Serialization (Instruction)
 						INSTRUCTION_CASES(
 							STREAMIO,
 							STREAMIO_VALUE,
+							STREAMIO_FUNCTION,
 							STREAMIO_FUNCTION_COUNT,
 							STREAMIO_VARIABLE,
 							STREAMIO_COUNT,
@@ -1100,6 +1108,7 @@ Serialization (Instruction)
 
 #undef STREAMIO
 #undef STREAMIO_VALUE
+#undef STREAMIO_FUNCTION
 #undef STREAMIO_FUNCTION_COUNT
 #undef STREAMIO_VARIABLE
 #undef STREAMIO_COUNT

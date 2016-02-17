@@ -37,7 +37,8 @@ GenerateInstructions(Expression)
 					if ((index = context.globalFunctions.Keys().IndexOf(symbol)) != -1)
 					{
 						vint functionIndex = context.globalFunctions.Values()[index];
-						INSTRUCTION(Ins::LoadClosure(functionIndex, 0));
+						INSTRUCTION(Ins::LoadClosureVars(0));
+						INSTRUCTION(Ins::LoadClosure(functionIndex));
 					}
 					else if ((index = context.globalVariables.Keys().IndexOf(symbol)) != -1)
 					{
@@ -112,11 +113,13 @@ GenerateInstructions(Expression)
 						{
 							GenerateLoadSymbolInstructions(symbol.Obj(), node);
 						}
-						INSTRUCTION(Ins::LoadClosure(functionIndex, symbols.Count()));
+						INSTRUCTION(Ins::LoadClosureVars(symbols.Count()));
+						INSTRUCTION(Ins::LoadClosure(functionIndex));
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadClosure(functionIndex, 0));
+						INSTRUCTION(Ins::LoadClosureVars(0));
+						INSTRUCTION(Ins::LoadClosure(functionIndex));
 					}
 				}
 
@@ -745,11 +748,13 @@ GenerateInstructions(Expression)
 						{
 							GenerateLoadSymbolInstructions(symbol.Obj(), node);
 						}
-						INSTRUCTION(Ins::LoadClosure(functionIndex, symbols.Count()));
+						INSTRUCTION(Ins::LoadClosureVars(symbols.Count()));
+						INSTRUCTION(Ins::LoadClosure(functionIndex));
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadClosure(functionIndex, 0));
+						INSTRUCTION(Ins::LoadClosureVars(0));
+						INSTRUCTION(Ins::LoadClosure(functionIndex));
 					}
 				}
 
