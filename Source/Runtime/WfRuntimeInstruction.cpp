@@ -76,7 +76,7 @@ WfInstruction
 #define CTOR_FLAG_TYPEDESCRIPTOR(NAME)\
 			WfInstruction WfInstruction::NAME(reflection::description::Value::ValueType flag, reflection::description::ITypeDescriptor* typeDescriptor)\
 			{\
-				CHECK_ERROR(typeDescriptor != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(Value::ValueType, ITypeDescriptor*)#Internal error, argument null.");\
+				CHECK_ERROR(typeDescriptor != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(Value::ValueType, ITypeDescriptor*)#Internal error, argument null.");\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
 				ins.flagParameter = flag; \
@@ -87,7 +87,7 @@ WfInstruction
 #define CTOR_PROPERTY(NAME)\
 			WfInstruction WfInstruction::NAME(reflection::description::IPropertyInfo* propertyInfo)\
 			{\
-				CHECK_ERROR(propertyInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(propertyInfo*)#Internal error, argument null.");\
+				CHECK_ERROR(propertyInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(propertyInfo*)#Internal error, argument null.");\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
 				ins.propertyParameter = propertyInfo; \
@@ -97,7 +97,7 @@ WfInstruction
 #define CTOR_METHOD(NAME)\
 			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo)\
 			{\
-				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(methodInfo*)#Internal error, argument null.");\
+				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(methodInfo*)#Internal error, argument null.");\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
 				ins.methodParameter = methodInfo; \
@@ -107,7 +107,7 @@ WfInstruction
 #define CTOR_METHOD_COUNT(NAME)\
 			WfInstruction WfInstruction::NAME(reflection::description::IMethodInfo* methodInfo, vint count)\
 			{\
-				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(methodInfo*, vint)#Internal error, argument null.");\
+				CHECK_ERROR(methodInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(methodInfo*, vint)#Internal error, argument null.");\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
 				ins.methodParameter = methodInfo; \
@@ -118,7 +118,7 @@ WfInstruction
 #define CTOR_EVENT(NAME)\
 			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo)\
 			{\
-				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(IEventInfo*)#Internal error, argument null.");\
+				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(IEventInfo*)#Internal error, argument null.");\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
 				ins.eventParameter = eventInfo; \
@@ -128,7 +128,7 @@ WfInstruction
 #define CTOR_EVENT_COUNT(NAME)\
 			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo, vint count)\
 			{\
-				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(IEventInfo*, vint)#Internal error, argument null.");\
+				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" L ## #NAME L"(IEventInfo*, vint)#Internal error, argument null.");\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
 				ins.eventParameter = eventInfo; \
