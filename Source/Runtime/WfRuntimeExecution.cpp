@@ -469,9 +469,13 @@ WfRuntimeThreadContext
 
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						auto capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
-						capturedVariables->variables[capturedVariables->variables.Count() - 1] = Value();
 
-						PushValue(Value::From(proxy));
+						Array<Value> arguments(1);
+						arguments[0] = Value::From(proxy);
+						auto obj = ins.methodParameter->Invoke(Value(), arguments);
+						capturedVariables->variables[capturedVariables->variables.Count() - 1] = Value::From(obj.GetRawPtr());
+
+						PushValue(obj);
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateRange:

@@ -752,6 +752,7 @@ GenerateInstructions(Expression)
 											vint count = context.manager->functionLambdaCaptures.GetByIndex(index).Count();
 											INSTRUCTION(Ins::LoadCapturedVar(count));
 											INSTRUCTION(Ins::InvokeEvent(result.eventInfo, node->arguments.Count()));
+											return;
 										}
 									}
 								}
@@ -781,10 +782,6 @@ GenerateInstructions(Expression)
 							INSTRUCTION(Ins::Invoke(functionIndex, node->arguments.Count()));
 							return;
 						}
-					}
-					else
-					{
-						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfCallExpression*)#Internal error, cannot find record of this expression.");
 					}
 
 					GenerateExpressionInstructions(context, node->function);
@@ -936,9 +933,7 @@ GenerateInstructions(Expression)
 							}
 						}
 
-						INSTRUCTION(Ins::CreateInterface(declVisitor.functions.Count() * 2));
-						INSTRUCTION(Ins::LoadValue(Value()));
-						INSTRUCTION(Ins::InvokeMethod(result.constructorInfo, 1));
+						INSTRUCTION(Ins::CreateInterface(result.constructorInfo, declVisitor.functions.Count() * 2));
 					}
 				}
 			};

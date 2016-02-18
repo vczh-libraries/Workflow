@@ -43,7 +43,7 @@ Instruction
 				Return,				//						: Value -> Value													; (exit function)
 				CreateArray,		// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
 				CreateMap,			// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
-				CreateInterface,	// count				: Value-closure-vars, Value-count, ..., Value-1 -> <map>			; {"Get":a "Set":b} -> InterfaceProxy^
+				CreateInterface,	// IMethodInfo*, count	: Value-closure-vars, Value-count, ..., Value-1 -> <map>			; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
 				CreateRange,		// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
 				ReverseEnumerable,	//						: Value -> Value													;
 				DeleteRawPtr,		//						: Value -> ()														;
@@ -111,7 +111,7 @@ Instruction
 			APPLY(Return)\
 			APPLY_COUNT(CreateArray)\
 			APPLY_COUNT(CreateMap)\
-			APPLY_COUNT(CreateInterface)\
+			APPLY_METHOD_COUNT(CreateInterface)\
 			APPLY_TYPE(CreateRange)\
 			APPLY(ReverseEnumerable)\
 			APPLY(DeleteRawPtr)\
