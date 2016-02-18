@@ -1590,6 +1590,22 @@ ValidateSemantic(Expression)
 					}
 				}
 
+				ITypeInfo* GetFunctionType(const ResolveExpressionResult& result)
+				{
+					if (result.eventInfo)
+					{
+						return result.eventInfo->GetHandlerType();
+					}
+					else if (result.type)
+					{
+						return result.type.Obj();
+					}
+					else
+					{
+						return nullptr;
+					}
+				}
+
 				Ptr<ITypeInfo> SelectFunction(WfExpression* node, Ptr<WfExpression> functionExpression, List<ResolveExpressionResult>& functions, List<Ptr<WfExpression>>& arguments)
 				{
 					List<bool> resolvables;
@@ -1614,9 +1630,11 @@ ValidateSemantic(Expression)
 					{
 						bool failed = false;
 						auto result = functions[i];
-						if (result.type->GetDecorator() == ITypeInfo::SharedPtr)
+						ITypeInfo* expressionType = GetFunctionType(result);
+
+						if (expressionType->GetDecorator() == ITypeInfo::SharedPtr)
 						{
-							ITypeInfo* genericType = result.type->GetElementType();
+							ITypeInfo* genericType = expressionType->GetElementType();
 							if (genericType->GetDecorator() != ITypeInfo::Generic) goto FUNCTION_TYPE_FAILED;
 							ITypeInfo* functionType = genericType->GetElementType();
 							if (functionType->GetDecorator() != ITypeInfo::TypeDescriptor || functionType->GetTypeDescriptor() != functionFd) goto FUNCTION_TYPE_FAILED;
@@ -1665,8 +1683,7 @@ ValidateSemantic(Expression)
 
 					if (functions.Count() == 1)
 					{
-						Ptr<ITypeInfo> functionType = functions[0].type;
-						ITypeInfo* genericType = functionType->GetElementType();
+						ITypeInfo* genericType = GetFunctionType(functions[0])->GetElementType();
 						for (vint i = 0; i < types.Count(); i++)
 						{
 							if (!resolvables[i])
@@ -1688,7 +1705,7 @@ ValidateSemantic(Expression)
 				void Visit(WfCallExpression* node)override
 				{
 					List<ResolveExpressionResult> functions;
-					GetExpressionTypes(manager, node->function, 0, functions);
+					GetExpressionTypes(manager, node->function, nullptr, true, functions);
 
 					Ptr<ITypeInfo> resultType = SelectFunction(node, node->function, functions, node->arguments);
 					if (resultType)
@@ -2144,7 +2161,7 @@ GetExpressionEventInfo
 GetExpressionTypes/GetExpressionType/GetLeftValueExpressionType
 ***********************************************************************/
 
-			void GetExpressionTypes(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results)
+			void GetExpressionTypes(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, bool allowEvent, collections::List<ResolveExpressionResult>& results)
 			{
 				ValidateExpressionSemantic(manager, expression, expectedType, results);
 				if (results.Count() == 0) return;
@@ -2162,7 +2179,7 @@ GetExpressionTypes/GetExpressionType/GetLeftValueExpressionType
 					{
 						eventInfo = result.eventInfo;
 					}
-					if (!result.type)
+					if (!result.type && !(allowEvent && eventInfo))
 					{
 						results.RemoveAt(i);
 					}
@@ -2205,7 +2222,7 @@ GetExpressionTypes/GetExpressionType/GetLeftValueExpressionType
 			Ptr<reflection::description::ITypeInfo> GetExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
 			{
 				List<ResolveExpressionResult> results;
-				GetExpressionTypes(manager, expression, expectedType, results);
+				GetExpressionTypes(manager, expression, expectedType, false, results);
 				
 				if (results.Count() > 1)
 				{
@@ -2228,7 +2245,7 @@ GetExpressionTypes/GetExpressionType/GetLeftValueExpressionType
 			Ptr<reflection::description::ITypeInfo>	GetLeftValueExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
 			{
 				List<ResolveExpressionResult> results;
-				GetExpressionTypes(manager, expression, 0, results);
+				GetExpressionTypes(manager, expression, nullptr, false, results);
 
 				if (results.Count() > 1)
 				{

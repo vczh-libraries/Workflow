@@ -58,6 +58,7 @@ Instruction
 				SetProperty,		// IPropertyInfo*		: Value, Value-this -> ()											;
 				InvokeProxy,		// count				: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeMethod,		// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeEvent,		// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
 				AttachEvent,		// IEventInfo*			: Value-this, <function> -> <Listener>								;
 				DetachEvent,		// 						: <Listener> -> bool												;
 				InstallTry,			// label				: () -> ()															;
@@ -91,7 +92,7 @@ Instruction
 				OpNE,				// 						: <int> -> <bool>													;
 			};
 
-#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_LABEL, APPLY_TYPE)\
+#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_EVENT_COUNT, APPLY_LABEL, APPLY_TYPE)\
 			APPLY(Nop)\
 			APPLY_VALUE(LoadValue)\
 			APPLY_COUNT(LoadClosureVars)\
@@ -125,6 +126,7 @@ Instruction
 			APPLY_PROPERTY(SetProperty)\
 			APPLY_COUNT(InvokeProxy)\
 			APPLY_METHOD_COUNT(InvokeMethod)\
+			APPLY_EVENT_COUNT(InvokeEvent)\
 			APPLY_EVENT(AttachEvent)\
 			APPLY(DetachEvent)\
 			APPLY_LABEL(InstallTry)\
@@ -206,6 +208,7 @@ Instruction
 				#define CTOR_METHOD(NAME)				static WfInstruction NAME(reflection::description::IMethodInfo* methodInfo);
 				#define CTOR_METHOD_COUNT(NAME)			static WfInstruction NAME(reflection::description::IMethodInfo* methodInfo, vint count);
 				#define CTOR_EVENT(NAME)				static WfInstruction NAME(reflection::description::IEventInfo* eventInfo);
+				#define CTOR_EVENT_COUNT(NAME)			static WfInstruction NAME(reflection::description::IEventInfo* eventInfo, vint count);
 				#define CTOR_LABEL(NAME)				static WfInstruction NAME(vint label);
 				#define CTOR_TYPE(NAME)					static WfInstruction NAME(WfInsType type);
 
@@ -221,6 +224,7 @@ Instruction
 					CTOR_METHOD,
 					CTOR_METHOD_COUNT,
 					CTOR_EVENT,
+					CTOR_EVENT_COUNT,
 					CTOR_LABEL,
 					CTOR_TYPE)
 
@@ -235,6 +239,7 @@ Instruction
 				#undef CTOR_METHOD
 				#undef CTOR_METHOD_COUNT
 				#undef CTOR_EVENT
+				#undef CTOR_EVENT_COUNT
 				#undef CTOR_LABEL
 				#undef CTOR_TYPE
 			};

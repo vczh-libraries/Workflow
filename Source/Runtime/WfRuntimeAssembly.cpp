@@ -191,6 +191,7 @@ Serialization (CollectMetadata)
 #define COLLECTMETADATA_METHOD(NAME)				case WfInsCode::NAME: MI(ins.methodParameter); break;
 #define COLLECTMETADATA_METHOD_COUNT(NAME)			case WfInsCode::NAME: MI(ins.methodParameter); break;
 #define COLLECTMETADATA_EVENT(NAME)					case WfInsCode::NAME: EI(ins.eventParameter); break;
+#define COLLECTMETADATA_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(ins.eventParameter); break;
 #define COLLECTMETADATA_LABEL(NAME)					case WfInsCode::NAME: break;
 #define COLLECTMETADATA_TYPE(NAME)					case WfInsCode::NAME: break;
 
@@ -211,6 +212,7 @@ Serialization (CollectMetadata)
 							COLLECTMETADATA_METHOD,
 							COLLECTMETADATA_METHOD_COUNT,
 							COLLECTMETADATA_EVENT,
+							COLLECTMETADATA_EVENT_COUNT,
 							COLLECTMETADATA_LABEL,
 							COLLECTMETADATA_TYPE)
 					}
@@ -240,6 +242,7 @@ Serialization (CollectMetadata)
 #undef COLLECTMETADATA_METHOD
 #undef COLLECTMETADATA_METHOD_COUNT
 #undef COLLECTMETADATA_EVENT
+#undef COLLECTMETADATA_EVENT_COUNT
 #undef COLLECTMETADATA_LABEL
 #undef COLLECTMETADATA_TYPE
 #undef MI
@@ -1046,6 +1049,7 @@ Serialization (Instruction)
 #define STREAMIO_METHOD(NAME)				case WfInsCode::NAME: MI(value.methodParameter); break;
 #define STREAMIO_METHOD_COUNT(NAME)			case WfInsCode::NAME: MI(value.methodParameter); IO(value.countParameter); break;
 #define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
+#define STREAMIO_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(value.eventParameter); IO(value.countParameter); break;
 #define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
 #define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
 
@@ -1063,6 +1067,7 @@ Serialization (Instruction)
 							STREAMIO_METHOD,
 							STREAMIO_METHOD_COUNT,
 							STREAMIO_EVENT,
+							STREAMIO_EVENT_COUNT,
 							STREAMIO_LABEL,
 							STREAMIO_TYPE)
 					}
@@ -1078,6 +1083,7 @@ Serialization (Instruction)
 #undef STREAMIO_METHOD
 #undef STREAMIO_METHOD_COUNT
 #undef STREAMIO_EVENT
+#undef STREAMIO_EVENT_COUNT
 #undef STREAMIO_LABEL
 #undef STREAMIO_TYPE
 #undef MI
@@ -1106,6 +1112,7 @@ Serialization (Instruction)
 #define STREAMIO_METHOD(NAME)				case WfInsCode::NAME: MI(value.methodParameter); break;
 #define STREAMIO_METHOD_COUNT(NAME)			case WfInsCode::NAME: MI(value.methodParameter); IO(value.countParameter); break;
 #define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
+#define STREAMIO_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(value.eventParameter); IO(value.countParameter); break;
 #define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
 #define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
 
@@ -1123,6 +1130,7 @@ Serialization (Instruction)
 							STREAMIO_METHOD,
 							STREAMIO_METHOD_COUNT,
 							STREAMIO_EVENT,
+							STREAMIO_EVENT_COUNT,
 							STREAMIO_LABEL,
 							STREAMIO_TYPE)
 					}
@@ -1138,6 +1146,7 @@ Serialization (Instruction)
 #undef STREAMIO_METHOD
 #undef STREAMIO_METHOD_COUNT
 #undef STREAMIO_EVENT
+#undef STREAMIO_EVENT_COUNT
 #undef STREAMIO_LABEL
 #undef STREAMIO_TYPE
 #undef MI

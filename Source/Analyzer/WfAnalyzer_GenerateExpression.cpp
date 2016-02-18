@@ -60,6 +60,10 @@ GenerateInstructions(Expression)
 						vint variableIndex = context.functionContext->arguments.Values()[index];
 						INSTRUCTION(Ins::LoadLocalVar(variableIndex));
 					}
+					else
+					{
+						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::GenerateLoadSymbolInstructions(WfCodegenContext&, WfLexicalSymbol*, ParsingTreeCustomBase*)#Internal error, cannot find record of this symbol.");
+					}
 				}
 
 				void VisitReferenceExpression(WfExpression* node)
@@ -69,13 +73,14 @@ GenerateInstructions(Expression)
 					{
 						GenerateLoadSymbolInstructions(context, result.symbol.Obj(), node);
 					}
+					else if (result.methodInfo && result.methodInfo->IsStatic())
+					{
+						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadMethodClosure(result.methodInfo));
+					}
 					else
 					{
-						if (result.methodInfo && result.methodInfo->IsStatic())
-						{
-							INSTRUCTION(Ins::LoadValue(Value()));
-							INSTRUCTION(Ins::LoadMethodClosure(result.methodInfo));
-						}
+						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitReferenceExpression(WfExpression*)#Internal error, cannot find record of this expression.");
 					}
 				}
 
@@ -186,6 +191,10 @@ GenerateInstructions(Expression)
 					else if (td == description::GetTypeDescriptor<vuint64_t>())
 					{
 						INSTRUCTION(Ins::LoadValue(BoxValue((vuint64_t)wtou64(node->value.value))));
+					}
+					else
+					{
+						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfIntegerExpression*)#Internal error, unknown integer type.");
 					}
 				}
 
@@ -725,6 +734,44 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::InvokeMethod(result.methodInfo, node->arguments.Count()));
 						return;
 					}
+					else if (result.eventInfo)
+					{
+						auto scope = context.manager->expressionScopes[node].Obj();
+						bool processed = false;
+						while (scope)
+						{
+							if (auto funcDecl = scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+							{
+								if (scope->parentScope.Obj())
+								{
+									if (auto newType = scope->parentScope->ownerExpression.Cast<WfNewTypeExpression>())
+									{
+										vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
+										if (index != -1)
+										{
+											vint count = context.manager->functionLambdaCaptures.GetByIndex(index).Count();
+											INSTRUCTION(Ins::LoadCapturedVar(count));
+											INSTRUCTION(Ins::InvokeEvent(result.eventInfo, node->arguments.Count()));
+										}
+									}
+								}
+								break;
+							}
+							else if (auto ordered = scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+							{
+								break;
+							}
+							else
+							{
+								scope = scope->parentScope.Obj();
+							}
+						}
+
+						if (processed)
+						{
+							CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfCallExpression*)#Internal error, cannot find record of this expression.");
+						}
+					}
 					else if (result.symbol)
 					{
 						vint index = context.globalFunctions.Keys().IndexOf(result.symbol.Obj());
@@ -734,6 +781,10 @@ GenerateInstructions(Expression)
 							INSTRUCTION(Ins::Invoke(functionIndex, node->arguments.Count()));
 							return;
 						}
+					}
+					else
+					{
+						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfCallExpression*)#Internal error, cannot find record of this expression.");
 					}
 
 					GenerateExpressionInstructions(context, node->function);
@@ -869,7 +920,8 @@ GenerateInstructions(Expression)
 							{
 								GenerateLoadSymbolInstructions(context, values[i].Obj(), node);
 							}
-							INSTRUCTION(Ins::LoadClosureVars(values.Count()));
+							INSTRUCTION(Ins::LoadValue(Value()));
+							INSTRUCTION(Ins::LoadClosureVars(values.Count() + 1));
 
 							FOREACH_INDEXER(Ptr<WfFunctionDeclaration>, func, index, declVisitor.functions)
 							{

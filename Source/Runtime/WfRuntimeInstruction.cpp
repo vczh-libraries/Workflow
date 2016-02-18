@@ -118,10 +118,21 @@ WfInstruction
 #define CTOR_EVENT(NAME)\
 			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo)\
 			{\
+				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(IEventInfo*)#Internal error, argument null.");\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.eventParameter = eventInfo; \
+				return ins; \
+			}\
+
+#define CTOR_EVENT_COUNT(NAME)\
+			WfInstruction WfInstruction::NAME(reflection::description::IEventInfo* eventInfo, vint count)\
+			{\
 				CHECK_ERROR(eventInfo != nullptr, L"vl::workflow::runtime::WfInstruction::" ## L ## #NAME L"(IEventInfo*, vint)#Internal error, argument null.");\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \
 				ins.eventParameter = eventInfo; \
+				ins.countParameter = count; \
 				return ins; \
 			}\
 
@@ -155,6 +166,7 @@ WfInstruction
 				CTOR_METHOD,
 				CTOR_METHOD_COUNT,
 				CTOR_EVENT,
+				CTOR_EVENT_COUNT,
 				CTOR_LABEL,
 				CTOR_TYPE)
 
@@ -169,6 +181,7 @@ WfInstruction
 #undef CTOR_METHOD
 #undef CTOR_METHOD_COUNT
 #undef CTOR_EVENT
+#undef CTOR_EVENT_COUNT
 #undef CTOR_LABEL
 #undef CTOR_TYPE
 		}
