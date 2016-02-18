@@ -51,6 +51,7 @@ Debugger
 					SetProperty,	// [thisObject], propertyInfo
 					AttachEvent,	// [thisObject], eventInfo
 					DetachEvent,	// [thisObject], eventInfo
+					InvokeEvent,	// [thisObject], eventInfo
 					InvokeMethod,	// [thisObject], methodInfo
 					CreateObject,	// typeDescriptor
 				};
@@ -119,6 +120,12 @@ Debugger
 				/// <param name="eventInfo">The event.</param>
 				static WfBreakPoint								Detach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
 				
+				/// <summary>Create an event invoking break point.</summary>
+				/// <returns>The created break point.</returns>
+				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
+				/// <param name="eventInfo">The event.</param>
+				static WfBreakPoint								Invoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
+				
 				/// <summary>Create an function invoking break point.</summary>
 				/// <returns>The created break point.</returns>
 				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
@@ -143,6 +150,7 @@ Debugger
 				virtual bool					BreakSet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo) = 0;
 				virtual bool					BreakAttach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo) = 0;
 				virtual bool					BreakDetach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo) = 0;
+				virtual bool					BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo) = 0;
 				virtual bool					BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo) = 0;
 				virtual bool					BreakCreate(reflection::description::ITypeDescriptor* typeDescriptor) = 0;
 				virtual bool					BreakException(Ptr<WfRuntimeExceptionInfo> info) = 0;
@@ -221,6 +229,7 @@ Debugger
 				PropertyBreakPointMap					setPropertyBreakPoints;
 				EventBreakPointMap						attachEventBreakPoints;
 				EventBreakPointMap						detachEventBreakPoints;
+				EventBreakPointMap						invokeEventBreakPoints;
 				MethodBreakPointMap						invokeMethodBreakPoints;
 				TypeBreakPointMap						createObjectBreakPoints;
 
@@ -245,6 +254,7 @@ Debugger
 				bool									BreakSet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)override;
 				bool									BreakAttach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)override;
 				bool									BreakDetach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)override;
+				bool									BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)override;
 				bool									BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)override;
 				bool									BreakCreate(reflection::description::ITypeDescriptor* typeDescriptor)override;
 				bool									BreakException(Ptr<WfRuntimeExceptionInfo> info)override;

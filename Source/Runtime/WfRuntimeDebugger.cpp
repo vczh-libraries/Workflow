@@ -78,6 +78,15 @@ IWfDebuggerCallback
 				return breakPoint;
 			}
 
+			WfBreakPoint WfBreakPoint::Invoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
+			{
+				WfBreakPoint breakPoint;
+				breakPoint.type = InvokeEvent;
+				breakPoint.thisObject = thisObject;
+				breakPoint.eventInfo = eventInfo;
+				return breakPoint;
+			}
+
 			WfBreakPoint WfBreakPoint::Invoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)
 			{
 				WfBreakPoint breakPoint;
@@ -300,6 +309,13 @@ WfDebugger
 				return HandleBreakPoint(key1, detachEventBreakPoints) || HandleBreakPoint(key2, detachEventBreakPoints);
 			}
 
+			bool WfDebugger::BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)
+			{
+				EventKey key1(thisObject, eventInfo);
+				EventKey key2(nullptr, eventInfo);
+				return HandleBreakPoint(key1, invokeEventBreakPoints) || HandleBreakPoint(key2, invokeEventBreakPoints);
+			}
+
 			bool WfDebugger::BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)
 			{
 				MethodKey key1(thisObject, methodInfo);
@@ -410,6 +426,13 @@ WfDebugger
 						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
 						TEST(true, key, detachEventBreakPoints);
 						SET(key, detachEventBreakPoints);
+					}
+					break;
+				case WfBreakPoint::InvokeEvent:
+					{
+						EventKey key(breakPoint.thisObject, breakPoint.eventInfo);
+						TEST(true, key, invokeEventBreakPoints);
+						SET(key, invokeEventBreakPoints);
 					}
 					break;
 				case WfBreakPoint::InvokeMethod:
