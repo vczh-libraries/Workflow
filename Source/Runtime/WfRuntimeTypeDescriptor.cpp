@@ -185,19 +185,51 @@ WfInterfaceMethod
 WfEvent
 ***********************************************************************/
 
+			const wchar_t* WfEvent::EventRecordInternalPropertyName = L"WfEvent::EventRecord";
+
+			Ptr<WfEvent::EventRecord> WfEvent::GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist)
+			{
+				if (!thisObject)
+				{
+					throw ArgumentNullException(L"thisObject", this);
+				}
+				WString key = EventRecordInternalPropertyName;
+				auto value = thisObject->GetInternalProperty(key).Cast<EventRecord>();
+				if(!value && createIfNotExist)
+				{
+					value = new EventRecord;
+					thisObject->SetInternalProperty(key, value);
+				}
+				return value;
+			}
+
 			void WfEvent::AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
 			{
-				throw 0;
+				auto record = GetEventRecord(thisObject, true);
+				record->handlers.Add(this, eventHandler);
 			}
 
 			void WfEvent::DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
 			{
-				throw 0;
+				auto record = GetEventRecord(thisObject, true);
+				record->handlers.Remove(this, eventHandler);
 			}
 
 			void WfEvent::InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)
 			{
-				throw 0;
+				auto record = GetEventRecord(thisObject, false);
+				if (record)
+				{
+					vint index = record->handlers.Keys().IndexOf(this);
+					if (index != -1)
+					{
+						auto& values = record->handlers.GetByIndex(index);
+						FOREACH(IEventHandler*, handler, values)
+						{
+							handler->Invoke(Value::From(thisObject), arguments);
+						}
+					}
+				}
 			}
 
 			Ptr<ITypeInfo> WfEvent::GetHandlerTypeInternal()

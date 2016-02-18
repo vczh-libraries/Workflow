@@ -131,8 +131,18 @@ Event
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::IEventHandler				IEventHandler;
 				typedef reflection::description::Value						Value;
+				typedef collections::Group<WfEvent*, IEventHandler*>		EventHandlerGroup;
+
+				class EventRecord : public Object
+				{
+				public:
+					EventHandlerGroup					handlers;
+				};
+
+				static const wchar_t*					EventRecordInternalPropertyName;
 			protected:
 
+				Ptr<EventRecord>						GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist);
 				void									AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
 				void									DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
 				void									InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override;
