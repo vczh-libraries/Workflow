@@ -31,6 +31,12 @@ GenerateGlobalDeclarationMetadata
 							meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
 						}
 					}
+
+					auto scope = context.manager->declarationScopes[node];
+					if (scope->parentScope && scope->parentScope->ownerExpression.Cast<WfNewTypeExpression>())
+					{
+						meta->capturedVariableNames.Add(L"<captured-this>");
+					}
 				}
 			}
 
