@@ -16,24 +16,26 @@ interface IAdder : ISummer
 	func Add(value : int) : void;
 }
 
-func Bind(summer : ISummer^) : void
+func Bind(summer : ISummer^) : Subscription^
 {
 	var subscription = bind(summer.Sum);
-	var listener = subscription.Subscribe(
+	subscription.Subscribe(
 		func (value : object) : void
 		{
 			s = $"$(s)[$(cast int value)]";
 		}
 	);
+	return subscription;
 }
 
 func Execute(adder : IAdder^) : void
 {
-	Bind(adder);
+	var subscription = Bind(adder);
 	for(x in range [1, 5])
 	{
 		adder.Add(x);
 	}
+	subscription.Close();
 }
 
 func main() : string
