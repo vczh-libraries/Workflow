@@ -814,8 +814,14 @@ GenerateInstructions(Expression)
 										vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
 										if (index != -1)
 										{
-											vint count = context.manager->functionLambdaCaptures.GetByIndex(index).Count();
-											INSTRUCTION(Ins::LoadCapturedVar(count));
+											if(auto member = node->function.Cast<WfMemberExpression>())
+											{
+												GenerateExpressionInstructions(context, member->parent);
+											}
+											else
+											{
+												VisitThisExpression(node);
+											}
 											INSTRUCTION(Ins::InvokeEvent(result.eventInfo, node->arguments.Count()));
 											return;
 										}

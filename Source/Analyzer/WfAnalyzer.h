@@ -33,6 +33,7 @@ Scope
 				WString										name;				// name of this symbol
 				Ptr<WfType>									type;				// type of this symbol
 				Ptr<reflection::description::ITypeInfo>		typeInfo;			// reflection type info of this symbol, nullable
+				Ptr<WfClassMember>							creatorClassMember;	// nullable
 				Ptr<WfDeclaration>							creatorDeclaration;	// nullable
 				Ptr<WfStatement>							creatorStatement;	// nullable
 				Ptr<WfExpression>							creatorExpression;	// nullable

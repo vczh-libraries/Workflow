@@ -564,6 +564,7 @@ WfLexicalScopeManager
 				bool found = false;
 				Ptr<WfClassMember> ownerClassMember;
 				Ptr<WfFunctionDeclaration> ownerFunction;
+				bool inLambda = false;
 				while (scope)
 				{
 					if (scope->ownerModule)
@@ -580,25 +581,47 @@ WfLexicalScopeManager
 					}
 
 					auto newTypeExpr = scope->ownerExpression.Cast<WfNewTypeExpression>();
+
 					vint index = scope->symbols.Keys().IndexOf(name);
 					if (index != -1)
 					{
 						found = true;
 						FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 						{
-							if (!newTypeExpr || !symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
+							if (newTypeExpr && symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
+							{
+								if (!inLambda)
+								{
+									auto scope = declarationScopes[symbol->creatorDeclaration.Obj()].Obj();
+									if (scope->ownerClassMember->kind == WfClassMemberKind::Normal)
+									{
+										results.Add(ResolveExpressionResult::Symbol(symbol));
+									}
+								}
+							}
+							else
 							{
 								results.Add(ResolveExpressionResult::Symbol(symbol));
 							}
 						}
 					}
-
-					if (newTypeExpr)
+					
+					if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
 					{
-						if (ownerFunction)
-						{
-							ResolveMember(scope->typeDescriptor, name, false, results);
-						}
+						inLambda = true;
+					}
+					else if (scope->ownerExpression.Cast<WfFunctionExpression>())
+					{
+						inLambda = true;
+					}
+					else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
+					{
+						inLambda = true;
+					}
+
+					if (newTypeExpr && ownerFunction && scope->typeDescriptor)
+					{
+						ResolveMember(scope->typeDescriptor, name, false, results);
 					}
 					ownerClassMember = scope->ownerClassMember;
 					ownerFunction = scope->ownerDeclaration.Cast<WfFunctionDeclaration>();

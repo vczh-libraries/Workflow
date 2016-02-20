@@ -61,6 +61,7 @@ BuildScopeForDeclaration
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(functionNameScope.Obj());
 						symbol->name = node->name.value;
 						symbol->creatorDeclaration = node;
+						symbol->creatorClassMember = dynamic_cast<WfClassMember*>(source);
 						{
 							Ptr<WfFunctionType> type = new WfFunctionType;
 							type->result = node->returnType;
@@ -93,6 +94,7 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorDeclaration = node;
+					symbol->creatorClassMember = dynamic_cast<WfClassMember*>(source);
 					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
 
@@ -104,6 +106,7 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorDeclaration = node;
+					symbol->creatorClassMember = dynamic_cast<WfClassMember*>(source);
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
 
@@ -112,6 +115,7 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorDeclaration = node;
+					symbol->creatorClassMember = dynamic_cast<WfClassMember*>(source);
 					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
@@ -121,6 +125,7 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorDeclaration = node;
+					symbol->creatorClassMember = dynamic_cast<WfClassMember*>(source);
 					parentScope->symbols.Add(symbol->name, symbol);
 					
 					auto td = manager->declarationTypes[node];

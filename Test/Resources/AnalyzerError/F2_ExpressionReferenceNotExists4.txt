@@ -1,0 +1,21 @@
+module test;
+
+interface IMyInterface
+{
+	func Do() : void;
+}
+
+func main() : void
+{
+	new IMyInterface^
+	{
+		func Something() : void
+		{
+		}
+
+		override func Do() : void
+		{
+			[Something()];
+		}
+	};
+}

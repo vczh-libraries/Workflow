@@ -501,7 +501,11 @@ ValidateSemantic(Expression)
 						auto& result = nameResults[i];
 						if (result.symbol)
 						{
-							if (result.type)
+							if (!result.type)
+							{
+								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, result.symbol));
+							}
+							else if (!result.symbol->creatorDeclaration || result.symbol->creatorDeclaration.Cast<WfVariableDeclaration>())
 							{
 								bool readonlyCaptured = false;
 								if (!result.symbol->ownerScope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
@@ -520,12 +524,6 @@ ValidateSemantic(Expression)
 												readonlyCaptured = true;
 												lastFuncDeclClassMember = currentScope->ownerClassMember;
 
-												vint index = manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
-												if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
-												{
-													manager->functionLambdaCaptures.Add(funcDecl.Obj(), result.symbol);
-												}
-
 												if (auto parentScope = currentScope->parentScope.Obj())
 												{
 													if (parentScope->ownerExpression.Cast<WfNewTypeExpression>())
@@ -539,6 +537,12 @@ ValidateSemantic(Expression)
 															}
 														}
 													}
+												}
+
+												vint index = manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
+												if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+												{
+													manager->functionLambdaCaptures.Add(funcDecl.Obj(), result.symbol);
 												}
 											}
 										}
@@ -586,7 +590,7 @@ ValidateSemantic(Expression)
 							}
 							else
 							{
-								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, result.symbol));
+								results.Add(result);
 							}
 						}
 						else
@@ -620,11 +624,37 @@ ValidateSemantic(Expression)
 					auto scope = manager->expressionScopes[node].Obj();
 					while (scope)
 					{
-						if (scope->ownerClassMember && scope->parentScope && scope->parentScope->ownerDeclaration)
+						if (scope->ownerExpression.Cast<WfFunctionExpression>())
 						{
-							ownerClassMember = scope->ownerClassMember;
-							ownerClass = manager->declarationTypes[scope->parentScope->ownerDeclaration.Obj()].Obj();
 							break;
+						}
+						else if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+						{
+							break;
+						}
+						else if (scope->ownerExpression.Cast<WfNewTypeExpression>())
+						{
+							break;
+						}
+						else if (scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+						{
+							if (scope->ownerClassMember && scope->parentScope)
+							{
+								ownerClassMember = scope->ownerClassMember;
+								if (scope->parentScope->ownerDeclaration)
+								{
+									ownerClass = manager->declarationTypes[scope->parentScope->ownerDeclaration.Obj()].Obj();
+								}
+								else
+								{
+									ownerClass = scope->parentScope->typeDescriptor;
+								}
+								break;
+							}
+							else
+							{
+								break;
+							}
 						}
 						scope = scope->parentScope.Obj();
 					}
@@ -657,6 +687,16 @@ ValidateSemantic(Expression)
 								{
 									manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
 								}
+							}
+						}
+					}
+					else
+					{
+						FOREACH(ResolveExpressionResult, result, results)
+						{
+							if ((result.methodInfo && !result.methodInfo->IsStatic()) || result.propertyInfo || result.eventInfo)
+							{
+								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
 							}
 						}
 					}
