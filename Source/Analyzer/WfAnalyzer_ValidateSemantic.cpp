@@ -1861,6 +1861,7 @@ ValidateSemantic(Expression)
 				public:
 					WfLexicalScopeManager*							manager;
 					Ptr<WfClassMember>								currentMember;
+					List<Ptr<WfFunctionDeclaration>>				closureFunctions;
 					List<Ptr<WfFunctionDeclaration>>				overrideFunctions;
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
 
@@ -1875,7 +1876,11 @@ ValidateSemantic(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
-						if (currentMember->kind == WfClassMemberKind::Override)
+						if (currentMember->kind == WfClassMemberKind::Normal)
+						{
+							closureFunctions.Add(node);
+						}
+						else
 						{
 							overrideFunctions.Add(node);
 						}
@@ -1983,7 +1988,10 @@ ValidateSemantic(Expression)
 									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
 									{
 										implementMethods.Add(func->name.value, func);
+									}
 
+									FOREACH(Ptr<WfFunctionDeclaration>, func, From(declVisitor.overrideFunctions).Concat(declVisitor.closureFunctions))
+									{
 										vint index = manager->functionLambdaCaptures.Keys().IndexOf(func.Obj());
 										if (index != -1)
 										{
@@ -1998,7 +2006,7 @@ ValidateSemantic(Expression)
 										}
 									}
 
-									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
+									FOREACH(Ptr<WfFunctionDeclaration>, func, From(declVisitor.overrideFunctions).Concat(declVisitor.closureFunctions))
 									{
 										manager->functionLambdaCaptures.Remove(func.Obj());
 										FOREACH(Ptr<WfLexicalSymbol>, symbol, captures)

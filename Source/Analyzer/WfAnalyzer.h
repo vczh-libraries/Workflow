@@ -413,6 +413,7 @@ Code Generation
 				WfLexicalScopeManager*				manager;
 				VariableIndexMap					globalVariables;
 				FunctionIndexMap					globalFunctions;
+				FunctionIndexMap					closureFunctions;
 				Ptr<WfCodegenFunctionContext>		functionContext;
 				NodePositionMap						nodePositionsBeforeCodegen;
 				NodePositionMap						nodePositionsAfterCodegen;

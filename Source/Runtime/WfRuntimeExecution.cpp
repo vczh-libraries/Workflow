@@ -585,6 +585,11 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PushStackFrame(ins.indexParameter, ins.countParameter), L"failed to invoke a function.");
 						return WfRuntimeExecutionAction::EnterStackFrame;
 					}
+				case WfInsCode::InvokeWithContext:
+					{
+						CONTEXT_ACTION(PushStackFrame(ins.indexParameter, ins.countParameter, GetCurrentStackFrame().capturedVariables), L"failed to invoke a function.");
+						return WfRuntimeExecutionAction::EnterStackFrame;
+					}
 				case WfInsCode::GetProperty:
 					{
 						Value operand;
