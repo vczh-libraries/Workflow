@@ -85,6 +85,68 @@ GenerateInstructions(Expression)
 					}
 				}
 
+				void VisitThisExpression(WfExpression* node)
+				{
+					auto scope = context.manager->expressionScopes[node].Obj();
+					Ptr<WfFunctionDeclaration> funcDecl;
+					while (scope)
+					{
+						if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+						{
+							break;
+						}
+						else if (scope->ownerExpression.Cast<WfFunctionExpression>())
+						{
+							break;
+						}
+						else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
+						{
+							if (funcDecl)
+							{
+								if (auto td = context.manager->expressionScopes[newType.Obj()]->typeDescriptor)
+								{
+									vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
+									if (index != -1)
+									{
+										vint count = context.manager->functionLambdaCaptures.GetByIndex(index).Count();
+										INSTRUCTION(Ins::LoadCapturedVar(count));
+										return;
+									}
+								}
+							}
+							else
+							{
+								break;
+							}
+						}
+						else if (auto classDecl = scope->ownerDeclaration.Cast<WfClassDeclaration>())
+						{
+							if (funcDecl)
+							{
+								CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfThisExpression*)#Internal error, this expression is illegal here.");
+							}
+							else
+							{
+								break;
+							}
+						}
+						else if (funcDecl = scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+						{
+							if (!scope->ownerClassMember || scope->ownerClassMember->kind == WfClassMemberKind::Static)
+							{
+								break;
+							}
+						}
+						scope = scope->parentScope.Obj();
+					}
+					CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfThisExpression*)#Internal error, this expression is illegal here.");
+				}
+
+				void Visit(WfThisExpression* node)override
+				{
+					VisitThisExpression(node);
+				}
+
 				void Visit(WfTopQualifiedExpression* node)override
 				{
 					VisitReferenceExpression(node);
@@ -877,9 +939,9 @@ GenerateInstructions(Expression)
 
 					void Execute(WfNewTypeExpression* node)
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+						FOREACH(Ptr<WfClassMember>, member, node->members)
 						{
-							decl->Accept(this);
+							member->declaration->Accept(this);
 						}
 
 						if (functions.Count() > 0 && variableCount > 0)

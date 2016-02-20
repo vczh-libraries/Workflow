@@ -411,6 +411,71 @@ ValidateSemantic(Expression)
 				{
 				}
 
+				void Visit(WfThisExpression* node)override
+				{
+					auto scope = manager->expressionScopes[node].Obj();
+					Ptr<WfFunctionDeclaration> funcDecl;
+					while (scope)
+					{
+						if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+						{
+							break;
+						}
+						else if (scope->ownerExpression.Cast<WfFunctionExpression>())
+						{
+							break;
+						}
+						else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
+						{
+							if (funcDecl)
+							{
+								if (auto td = manager->expressionScopes[newType.Obj()]->typeDescriptor)
+								{
+									auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+									elementType->SetTypeDescriptor(td);
+
+									auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
+									pointerType->SetElementType(elementType);
+
+									results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
+									return;
+								}
+							}
+							else
+							{
+								break;
+							}
+						}
+						else if (auto classDecl = scope->ownerDeclaration.Cast<WfClassDeclaration>())
+						{
+							if (funcDecl)
+							{
+								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+								elementType->SetTypeDescriptor(manager->declarationTypes[classDecl.Obj()].Obj());
+
+								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
+								pointerType->SetElementType(elementType);
+
+								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
+								return;
+							}
+							else
+							{
+								break;
+							}
+						}
+						else if (funcDecl = scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+						{
+							if (!scope->ownerClassMember || scope->ownerClassMember->kind == WfClassMemberKind::Static)
+							{
+								break;
+							}
+						}
+						scope = scope->parentScope.Obj();
+					}
+					manager->errors.Add(WfErrors::WrongThisExpression(node));
+				}
+
 				void Visit(WfTopQualifiedExpression* node)override
 				{
 					if (manager->globalName)
@@ -443,16 +508,17 @@ ValidateSemantic(Expression)
 								{
 									auto currentScope = scope;
 									bool testedReadonlyCaptured = false;
-									Ptr<WfFunctionDeclaration> lastFuncDecl;
+									Ptr<WfClassMember> lastFuncDeclClassMember;
 
 									while (currentScope)
 									{
 										if (auto funcDecl = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
 										{
-											if (result.symbol->ownerScope != currentScope && !currentScope->ownerClassMember)
+											bool inClassMember = currentScope->ownerClassMember && currentScope->parentScope && currentScope->parentScope->ownerDeclaration;
+											if (result.symbol->ownerScope != currentScope && !inClassMember)
 											{
 												readonlyCaptured = true;
-												lastFuncDecl = funcDecl;
+												lastFuncDeclClassMember = currentScope->ownerClassMember;
 
 												vint index = manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
 												if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
@@ -492,7 +558,7 @@ ValidateSemantic(Expression)
 
 										if (auto newType = currentScope->ownerExpression.Cast<WfNewTypeExpression>())
 										{
-											if (!lastFuncDecl || !newType->declarations.Contains(lastFuncDecl.Obj()))
+											if (!lastFuncDeclClassMember || !newType->members.Contains(lastFuncDeclClassMember.Obj()))
 											{
 												if (result.symbol->ownerScope == currentScope)
 												{
@@ -554,7 +620,7 @@ ValidateSemantic(Expression)
 					auto scope = manager->expressionScopes[node].Obj();
 					while (scope)
 					{
-						if (scope->ownerClassMember)
+						if (scope->ownerClassMember && scope->parentScope && scope->parentScope->ownerDeclaration)
 						{
 							ownerClassMember = scope->ownerClassMember;
 							ownerClass = manager->declarationTypes[scope->parentScope->ownerDeclaration.Obj()].Obj();
@@ -1754,7 +1820,8 @@ ValidateSemantic(Expression)
 				{
 				public:
 					WfLexicalScopeManager*							manager;
-					List<Ptr<WfFunctionDeclaration>>				functions;
+					Ptr<WfClassMember>								currentMember;
+					List<Ptr<WfFunctionDeclaration>>				overrideFunctions;
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
 
 					NewTypeExpressionVisitor(WfLexicalScopeManager* _manager)
@@ -1768,7 +1835,10 @@ ValidateSemantic(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
-						functions.Add(node);
+						if (currentMember->kind == WfClassMemberKind::Override)
+						{
+							overrideFunctions.Add(node);
+						}
 					}
 
 					void Visit(WfVariableDeclaration* node)override
@@ -1797,10 +1867,12 @@ ValidateSemantic(Expression)
 
 					void Execute(WfNewTypeExpression* node)
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+						FOREACH(Ptr<WfClassMember>, member, node->members)
 						{
-							ValidateDeclarationSemantic(manager, decl);
-							decl->Accept(this);
+							ValidateDeclarationSemantic(manager, member->declaration);
+
+							currentMember = member;
+							member->declaration->Accept(this);
 						}
 					}
 				};
@@ -1826,7 +1898,7 @@ ValidateSemantic(Expression)
 						{
 							if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined)
 							{
-								if (node->declarations.Count() == 0)
+								if (node->members.Count() == 0)
 								{
 									List<ResolveExpressionResult> functions;
 									for (vint i = 0; i < ctors->GetMethodCount(); i++)
@@ -1868,7 +1940,7 @@ ValidateSemantic(Expression)
 									List<Ptr<WfLexicalSymbol>> captures;
 									CopyFrom(captures, declVisitor.variableSymbols);
 
-									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.functions)
+									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
 									{
 										implementMethods.Add(func->name.value, func);
 
@@ -1886,7 +1958,7 @@ ValidateSemantic(Expression)
 										}
 									}
 
-									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.functions)
+									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
 									{
 										manager->functionLambdaCaptures.Remove(func.Obj());
 										FOREACH(Ptr<WfLexicalSymbol>, symbol, captures)

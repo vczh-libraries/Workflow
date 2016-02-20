@@ -200,6 +200,10 @@ SearchOrderedName(Expression)
 				{
 				}
 
+				void Visit(WfThisExpression* node)override
+				{
+				}
+
 				void Visit(WfTopQualifiedExpression* node)override
 				{
 				}
@@ -387,9 +391,9 @@ SearchOrderedName(Expression)
 						argument->Accept(this);
 					}
 
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						SearchOrderedName(scope, decl, names);
+						SearchOrderedName(scope, member->declaration, names);
 					}
 				}
 

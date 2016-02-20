@@ -299,19 +299,45 @@ ValidateStructure(Declaration)
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
 					{
-						if (node->statement)
+						switch (classDecl->kind)
 						{
-							if (classDecl->kind == WfClassKind::Interface && classMember->kind != WfClassMemberKind::Static)
+						case WfClassKind::Class:
 							{
-								manager->errors.Add(WfErrors::InterfaceMethodShouldNotHaveImplementation(node));
+								switch (classMember->kind)
+								{
+								case WfClassMemberKind::Normal:
+								case WfClassMemberKind::Static:
+								case WfClassMemberKind::Override:
+									if (!node->statement)
+									{
+										manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
+									}
+									break;
+								}
 							}
-						}
-						else
-						{
-							if (classDecl->kind == WfClassKind::Class || classMember->kind == WfClassMemberKind::Static)
+							break;
+						case WfClassKind::Interface:
 							{
-								manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
+								switch (classMember->kind)
+								{
+								case WfClassMemberKind::Normal:
+									if (node->statement)
+									{
+										manager->errors.Add(WfErrors::InterfaceMethodShouldNotHaveImplementation(node));
+									}
+									break;
+								case WfClassMemberKind::Static:
+									if (!node->statement)
+									{
+										manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
+									}
+									break;
+								case WfClassMemberKind::Override:
+									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
+									break;
+								}
 							}
+							break;
 						}
 
 						if (classDecl->kind == WfClassKind::Class && classMember->kind != WfClassMemberKind::Static)
@@ -358,7 +384,8 @@ ValidateStructure(Declaration)
 						case WfClassMemberKind::Normal:
 							break;
 						case WfClassMemberKind::Static:
-							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
+						case WfClassMemberKind::Override:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
 							break;
 						}
 						manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"variable class member"));
@@ -376,6 +403,16 @@ ValidateStructure(Declaration)
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
 					{
+						switch (classMember->kind)
+						{
+						case WfClassMemberKind::Normal:
+							break;
+						case WfClassMemberKind::Static:
+						case WfClassMemberKind::Override:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
+							break;
+						}
+
 						switch (classDecl->kind)
 						{
 						case WfClassKind::Class:
@@ -404,6 +441,16 @@ ValidateStructure(Declaration)
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
 					{
+						switch (classMember->kind)
+						{
+						case WfClassMemberKind::Normal:
+							break;
+						case WfClassMemberKind::Static:
+						case WfClassMemberKind::Override:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
+							break;
+						}
+
 						switch (classDecl->kind)
 						{
 						case WfClassKind::Class:
@@ -495,7 +542,8 @@ ValidateStructure(Declaration)
 						case WfClassMemberKind::Normal:
 							break;
 						case WfClassMemberKind::Static:
-							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStatic(classMember));
+						case WfClassMemberKind::Override:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
 							break;
 						}
 					}
@@ -703,6 +751,10 @@ ValidateStructure(Expression)
 				ValidateStructureExpressionVisitor(WfLexicalScopeManager* _manager, ValidateStructureContext* _context)
 					:manager(_manager)
 					, context(_context)
+				{
+				}
+
+				void Visit(WfThisExpression* node)override
 				{
 				}
 
@@ -1035,12 +1087,36 @@ ValidateStructure(Expression)
 					{
 						ValidateExpressionStructure(manager, context, node->arguments[i]);
 					}
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						ValidateDeclarationStructure(manager, decl, nullptr, node);
+						if (member->declaration.Cast<WfFunctionDeclaration>())
+						{
+							switch (member->kind)
+							{
+							case WfClassMemberKind::Normal:
+							case WfClassMemberKind::Override:
+								break;
+							case WfClassMemberKind::Static:
+								manager->errors.Add(WfErrors::FunctionInNewTypeExpressionCannotBeStatic(member.Obj()));
+								break;
+							}
+						}
+						else
+						{
+							switch (member->kind)
+							{
+							case WfClassMemberKind::Normal:
+								break;
+							case WfClassMemberKind::Static:
+							case WfClassMemberKind::Override:
+								manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(member.Obj()));
+								break;
+							}
+						}
+						ValidateDeclarationStructure(manager, member->declaration, nullptr, node);
 					}
 
-					if (node->arguments.Count() * node->declarations.Count() != 0)
+					if (node->arguments.Count() * node->members.Count() != 0)
 					{
 						manager->errors.Add(WfErrors::ConstructorMixClassAndInterface(node));
 					}

@@ -94,6 +94,10 @@ class Expression
 {
 }
 
+class ThisExpression : Expression
+{
+}
+
 class TopQualifiedExpression : Expression
 {
 	token					name;
@@ -476,17 +480,37 @@ class VariableStatement : Statement
 	VariableDeclaration		variable;
 }
 
-class NewTypeExpression : Expression
+class EventDeclaration : Declaration
+{
+	Type[]					arguments;
+}
+
+class PropertyDeclaration : Declaration
 {
 	Type					type;
-	Expression[]			arguments;
-	Declaration[]			declarations;
+	token					getter;
+	token					setter;
+	token					valueChangedEvent;
 }
 
 enum ClassMemberKind
 {
 	Static,
+	Override,
 	Normal,
+}
+
+class ClassMember
+{
+	ClassMemberKind			kind;
+	Declaration				declaration;
+}
+
+class NewTypeExpression : Expression
+{
+	Type					type;
+	Expression[]			arguments;
+	ClassMember[]			members;
 }
 
 enum ClassKind
@@ -500,25 +524,6 @@ enum InterfaceType
 	Undefined,
 	SharedPtr,
 	RawPtr,
-}
-
-class ClassMember
-{
-	ClassMemberKind			kind;
-	Declaration				declaration;
-}
-
-class EventDeclaration : Declaration
-{
-	Type[]					arguments;
-}
-
-class PropertyDeclaration : Declaration
-{
-	Type					type;
-	token					getter;
-	token					setter;
-	token					valueChangedEvent;
 }
 
 class ClassDeclaration : Declaration
@@ -613,6 +618,7 @@ token KEYWORD_AND = "and";
 token KEYWORD_OR = "or";
 token KEYWORD_NOT = "not";
 token KEYWORD_NULL= "null";
+token KEYWORD_THIS= "this";
 token KEYWORD_TRUE= "true";
 token KEYWORD_FALSE = "false";
 token KEYWORD_LET = "let";
@@ -652,6 +658,7 @@ token KEYWORD_CLASS = "class";
 token KEYWORD_PROP = "prop";
 token KEYWORD_EVENT = "event";
 token KEYWORD_STATIC = "static";
+token KEYWORD_OVERRIDE = "override";
 token KEYWORD_USING = "using";
 token KEYWORD_NAMESPACE = "namespace";
 token KEYWORD_MODULE = "module";
@@ -722,6 +729,7 @@ rule Expression ExpPrimitive
 	= !FloatingPoint
 	= !String
 	= !FormatString
+	= "this" as ThisExpression
 	= NAME : name as ReferenceExpression
 	= ORDERED_NAME : name as OrderedNameExpression
 	= "(" !WorkflowExpression ")"
@@ -737,7 +745,7 @@ rule Expression ExpPrimitive
 	= "new" WorkflowType : type
 		(
 			"(" [WorkflowExpression : arguments {"," WorkflowExpression : arguments}] ")" 
-			| "{" {WorkflowDeclaration : declarations} "}"
+			| "{" {WorkflowClassMember : members} "}"
 		) as NewTypeExpression
 	= "bind" "(" WorkflowExpression : expression ")" as BindExpression
 	= ExpPrimitive : parent "." "observe" "(" WorkflowExpression : expression ["on" WorkflowExpression : events {"," WorkflowExpression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
@@ -891,7 +899,11 @@ rule PropertyDeclaration Property
 	;
 
 rule ClassMember WorkflowClassMember
-	= "static" Function : declaration as ClassMember with {kind = "Static"}
+	=	(
+			("static" with {kind = "Static"})
+			| ("override" with {kind = "Override"})
+		)
+		Function : declaration as ClassMember
 	= WorkflowDeclaration : declaration as ClassMember with {kind = "Normal"}
 	;
 

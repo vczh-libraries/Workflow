@@ -445,9 +445,14 @@ WfErrors
 				return new ParsingError(node, L"G0: Class member \"" + node->declaration->name.value + L"\" not supported yet: " + name + L".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStatic(WfClassMember* node)
+			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node)
 			{
-				return new ParsingError(node, L"G1: Class member \"" + node->declaration->name.value + L"\" cannot be static because it is not a function.");
+				return new ParsingError(node, L"G1: Class member \"" + node->declaration->name.value + L"\" cannot be static or override because it is not a function.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::FunctionInNewTypeExpressionCannotBeStatic(WfClassMember* node)
+			{
+				return new ParsingError(node, L"G1: Class member \"" + node->declaration->name.value + L"\" cannot be static because it is in a new interface expression.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongClassMember(WfNamespaceDeclaration* node)

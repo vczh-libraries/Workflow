@@ -33,6 +33,10 @@ IsExpressionDependOnExpectedType(Expression)
 					return result;
 				}
 
+				void Visit(WfThisExpression* node)override
+				{
+				}
+
 				void Visit(WfTopQualifiedExpression* node)override
 				{
 				}
@@ -177,6 +181,10 @@ GetExpressionName(Expression)
 			{
 			public:
 				WString								result;
+
+				void Visit(WfThisExpression* node)override
+				{
+				}
 
 				void Visit(WfTopQualifiedExpression* node)override
 				{

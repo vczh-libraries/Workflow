@@ -336,6 +336,10 @@ BuildScopeForExpression
 				{
 				}
 
+				void Visit(WfThisExpression* node)override
+				{
+				}
+
 				void Visit(WfTopQualifiedExpression* node)override
 				{
 				}
@@ -550,9 +554,9 @@ BuildScopeForExpression
 					}
 
 					resultScope = new WfLexicalScope(parentScope);
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						BuildScopeForDeclaration(manager, resultScope, decl, node);
+						BuildScopeForDeclaration(manager, resultScope, member->declaration, member.Obj());
 					}
 				}
 

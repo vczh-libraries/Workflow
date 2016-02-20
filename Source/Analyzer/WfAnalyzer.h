@@ -260,10 +260,10 @@ Structure Analyzing
 			
 			struct ValidateStructureContext
 			{
-				WfBindExpression*							currentBindExpression;
-				WfObserveExpression*						currentObserveExpression;
-				WfStatement*								currentLoopStatement;
-				WfStatement*								currentCatchStatement;
+				WfBindExpression*							currentBindExpression = nullptr;
+				WfObserveExpression*						currentObserveExpression = nullptr;
+				WfStatement*								currentLoopStatement = nullptr;
+				WfStatement*								currentCatchStatement = nullptr;
 
 				ValidateStructureContext();
 			};
@@ -555,7 +555,8 @@ Error Messages
 				// G: Class error
 				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name);
 				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassMember* node, const WString& name);
-				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStatic(WfClassMember* node);
+				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node);
+				static Ptr<parsing::ParsingError>			FunctionInNewTypeExpressionCannotBeStatic(WfClassMember* node);
 				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
 				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);

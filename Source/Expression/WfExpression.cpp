@@ -256,6 +256,13 @@ Print (Expression)
 			{
 			}
 
+			void Visit(WfThisExpression* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"this");
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfTopQualifiedExpression* node)override
 			{
 				writer.BeforePrint(node);
@@ -726,14 +733,27 @@ Print (Expression)
 				writer.WriteLine(L"");
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
+				FOREACH_INDEXER(Ptr<WfClassMember>, member, index, node->members)
 				{
 					if (index > 0)
 					{
 						writer.WriteLine(L"");
 					}
+
 					writer.WriteString(indent + L"    ");
-					WfPrint(decl, indent + L"    ", writer);
+					switch (member->kind)
+					{
+					case WfClassMemberKind::Normal:
+						break;
+					case WfClassMemberKind::Static:
+						writer.WriteString(L"static ");
+						break;
+					case WfClassMemberKind::Override:
+						writer.WriteString(L"override ");
+						break;
+					}
+
+					WfPrint(member->declaration, indent + L"    ", writer);
 					writer.WriteLine(L"");
 				}
 				writer.WriteString(indent);
@@ -1144,7 +1164,11 @@ Print (Declaration)
 					case WfClassMemberKind::Static:
 						writer.WriteString(L"static ");
 						break;
+					case WfClassMemberKind::Override:
+						writer.WriteString(L"override ");
+						break;
 					}
+
 					WfPrint(member->declaration, indent + L"    ", writer);
 					writer.WriteLine(L"");
 				}

@@ -62,56 +62,58 @@ namespace vl
 			KEYWORD_OR = 42,
 			KEYWORD_NOT = 43,
 			KEYWORD_NULL = 44,
-			KEYWORD_TRUE = 45,
-			KEYWORD_FALSE = 46,
-			KEYWORD_LET = 47,
-			KEYWORD_IN = 48,
-			KEYWORD_RANGE = 49,
-			KEYWORD_NEW = 50,
-			KEYWORD_OF = 51,
-			KEYWORD_AS = 52,
-			KEYWORD_IS = 53,
-			KEYWORD_CAST = 54,
-			KEYWORD_FUNC = 55,
-			KEYWORD_TYPEOF = 56,
-			KEYWORD_TYPE = 57,
-			KEYWORD_BIND = 58,
-			KEYWORD_OBSERVE = 59,
-			KEYWORD_ON = 60,
-			KEYWORD_ATTACH = 61,
-			KEYWORD_DETACH = 62,
-			KEYWORD_VAR = 63,
-			KEYWORD_BREAK = 64,
-			KEYWORD_CONTINUE = 65,
-			KEYWORD_RETURN = 66,
-			KEYWORD_DELETE = 67,
-			KEYWORD_RAISE = 68,
-			KEYWORD_IF = 69,
-			KEYWORD_ELSE = 70,
-			KEYWORD_SWITCH = 71,
-			KEYWORD_CASE = 72,
-			KEYWORD_DEFAULT = 73,
-			KEYWORD_WHILE = 74,
-			KEYWORD_FOR = 75,
-			KEYWORD_REVERSED = 76,
-			KEYWORD_TRY = 77,
-			KEYWORD_CATCH = 78,
-			KEYWORD_FINALLY = 79,
-			KEYWORD_CLASS = 80,
-			KEYWORD_PROP = 81,
-			KEYWORD_EVENT = 82,
-			KEYWORD_STATIC = 83,
-			KEYWORD_USING = 84,
-			KEYWORD_NAMESPACE = 85,
-			KEYWORD_MODULE = 86,
-			KEYWORD_UNIT = 87,
-			NAME = 88,
-			ORDERED_NAME = 89,
-			FLOAT = 90,
-			INTEGER = 91,
-			STRING = 92,
-			FORMATSTRING = 93,
-			SPACE = 94,
+			KEYWORD_THIS = 45,
+			KEYWORD_TRUE = 46,
+			KEYWORD_FALSE = 47,
+			KEYWORD_LET = 48,
+			KEYWORD_IN = 49,
+			KEYWORD_RANGE = 50,
+			KEYWORD_NEW = 51,
+			KEYWORD_OF = 52,
+			KEYWORD_AS = 53,
+			KEYWORD_IS = 54,
+			KEYWORD_CAST = 55,
+			KEYWORD_FUNC = 56,
+			KEYWORD_TYPEOF = 57,
+			KEYWORD_TYPE = 58,
+			KEYWORD_BIND = 59,
+			KEYWORD_OBSERVE = 60,
+			KEYWORD_ON = 61,
+			KEYWORD_ATTACH = 62,
+			KEYWORD_DETACH = 63,
+			KEYWORD_VAR = 64,
+			KEYWORD_BREAK = 65,
+			KEYWORD_CONTINUE = 66,
+			KEYWORD_RETURN = 67,
+			KEYWORD_DELETE = 68,
+			KEYWORD_RAISE = 69,
+			KEYWORD_IF = 70,
+			KEYWORD_ELSE = 71,
+			KEYWORD_SWITCH = 72,
+			KEYWORD_CASE = 73,
+			KEYWORD_DEFAULT = 74,
+			KEYWORD_WHILE = 75,
+			KEYWORD_FOR = 76,
+			KEYWORD_REVERSED = 77,
+			KEYWORD_TRY = 78,
+			KEYWORD_CATCH = 79,
+			KEYWORD_FINALLY = 80,
+			KEYWORD_CLASS = 81,
+			KEYWORD_PROP = 82,
+			KEYWORD_EVENT = 83,
+			KEYWORD_STATIC = 84,
+			KEYWORD_OVERRIDE = 85,
+			KEYWORD_USING = 86,
+			KEYWORD_NAMESPACE = 87,
+			KEYWORD_MODULE = 88,
+			KEYWORD_UNIT = 89,
+			NAME = 90,
+			ORDERED_NAME = 91,
+			FLOAT = 92,
+			INTEGER = 93,
+			STRING = 94,
+			FORMATSTRING = 95,
+			SPACE = 96,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -125,6 +127,7 @@ namespace vl
 		class WfFunctionType;
 		class WfChildType;
 		class WfExpression;
+		class WfThisExpression;
 		class WfTopQualifiedExpression;
 		class WfReferenceExpression;
 		class WfOrderedNameExpression;
@@ -176,10 +179,10 @@ namespace vl
 		class WfFunctionExpression;
 		class WfVariableDeclaration;
 		class WfVariableStatement;
-		class WfNewTypeExpression;
-		class WfClassMember;
 		class WfEventDeclaration;
 		class WfPropertyDeclaration;
+		class WfClassMember;
+		class WfNewTypeExpression;
 		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
@@ -340,6 +343,7 @@ namespace vl
 			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 			{
 			public:
+				virtual void Visit(WfThisExpression* node)=0;
 				virtual void Visit(WfTopQualifiedExpression* node)=0;
 				virtual void Visit(WfReferenceExpression* node)=0;
 				virtual void Visit(WfOrderedNameExpression* node)=0;
@@ -374,6 +378,15 @@ namespace vl
 
 			virtual void Accept(WfExpression::IVisitor* visitor)=0;
 
+		};
+
+		class WfThisExpression : public WfExpression, vl::reflection::Description<WfThisExpression>
+		{
+		public:
+
+			void Accept(WfExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfThisExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfTopQualifiedExpression : public WfExpression, vl::reflection::Description<WfTopQualifiedExpression>
@@ -1030,46 +1043,6 @@ namespace vl
 			static vl::Ptr<WfVariableStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfNewTypeExpression : public WfExpression, vl::reflection::Description<WfNewTypeExpression>
-		{
-		public:
-			vl::Ptr<WfType> type;
-			vl::collections::List<vl::Ptr<WfExpression>> arguments;
-			vl::collections::List<vl::Ptr<WfDeclaration>> declarations;
-
-			void Accept(WfExpression::IVisitor* visitor)override;
-
-			static vl::Ptr<WfNewTypeExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
-		enum class WfClassMemberKind
-		{
-			Static,
-			Normal,
-		};
-
-		enum class WfClassKind
-		{
-			Class,
-			Interface,
-		};
-
-		enum class WfInterfaceType
-		{
-			Undefined,
-			SharedPtr,
-			RawPtr,
-		};
-
-		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
-		{
-		public:
-			WfClassMemberKind kind;
-			vl::Ptr<WfDeclaration> declaration;
-
-			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
 		class WfEventDeclaration : public WfDeclaration, vl::reflection::Description<WfEventDeclaration>
 		{
 		public:
@@ -1091,6 +1064,47 @@ namespace vl
 			void Accept(WfDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		enum class WfClassMemberKind
+		{
+			Static,
+			Override,
+			Normal,
+		};
+
+		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
+		{
+		public:
+			WfClassMemberKind kind;
+			vl::Ptr<WfDeclaration> declaration;
+
+			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfNewTypeExpression : public WfExpression, vl::reflection::Description<WfNewTypeExpression>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			vl::collections::List<vl::Ptr<WfExpression>> arguments;
+			vl::collections::List<vl::Ptr<WfClassMember>> members;
+
+			void Accept(WfExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfNewTypeExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		enum class WfClassKind
+		{
+			Class,
+			Interface,
+		};
+
+		enum class WfInterfaceType
+		{
+			Undefined,
+			SharedPtr,
+			RawPtr,
 		};
 
 		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
@@ -1223,6 +1237,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfFunctionType)
 			DECL_TYPE_INFO(vl::workflow::WfChildType)
 			DECL_TYPE_INFO(vl::workflow::WfExpression)
+			DECL_TYPE_INFO(vl::workflow::WfThisExpression)
 			DECL_TYPE_INFO(vl::workflow::WfTopQualifiedExpression)
 			DECL_TYPE_INFO(vl::workflow::WfReferenceExpression)
 			DECL_TYPE_INFO(vl::workflow::WfOrderedNameExpression)
@@ -1284,13 +1299,13 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfFunctionExpression)
 			DECL_TYPE_INFO(vl::workflow::WfVariableDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
-			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
-			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
-			DECL_TYPE_INFO(vl::workflow::WfClassKind)
-			DECL_TYPE_INFO(vl::workflow::WfInterfaceType)
-			DECL_TYPE_INFO(vl::workflow::WfClassMember)
 			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
+			DECL_TYPE_INFO(vl::workflow::WfClassMember)
+			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
+			DECL_TYPE_INFO(vl::workflow::WfClassKind)
+			DECL_TYPE_INFO(vl::workflow::WfInterfaceType)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
@@ -1359,6 +1374,11 @@ namespace vl
 			END_INTERFACE_PROXY(vl::workflow::WfType::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfExpression::IVisitor)
+				void Visit(vl::workflow::WfThisExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
 				void Visit(vl::workflow::WfTopQualifiedExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);

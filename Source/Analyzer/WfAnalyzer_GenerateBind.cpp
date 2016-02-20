@@ -119,6 +119,10 @@ GetObservingDependency
 				{
 				}
 
+				void Visit(WfThisExpression* node)override
+				{
+				}
+
 				void Visit(WfTopQualifiedExpression* node)override
 				{
 				}
@@ -351,6 +355,13 @@ ExpandObserveExpression
 				Ptr<WfExpression> Expand(Ptr<WfExpression> expr)
 				{
 					return ExpandObserveExpression(expr.Obj(), cacheNames, referenceReplacement);
+				}
+
+				void Visit(WfThisExpression* node)override
+				{
+					// TODO: this is wrong, need to capture the "this" value outside and use a reference here
+					auto expr = MakePtr<WfThisExpression>();
+					result = expr;
 				}
 
 				void Visit(WfTopQualifiedExpression* node)override
@@ -649,9 +660,12 @@ ExpandObserveExpression
 					{
 						expr->arguments.Add(Expand(arg));
 					}
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						expr->declarations.Add(CopyDeclaration(decl));
+						auto classMember = MakePtr<WfClassMember>();
+						classMember->kind = member->kind;
+						classMember->declaration = CopyDeclaration(member->declaration);
+						expr->members.Add(classMember);
 					}
 					result = expr;
 				}
@@ -1146,6 +1160,14 @@ IValueListener::StopListening
 IValueSubscription::Subscribe
 ***********************************************************************/
 
+			Ptr<WfClassMember> CreateOverrideMember(Ptr<WfDeclaration> decl)
+			{
+				auto member = MakePtr<WfClassMember>();
+				member->kind = WfClassMemberKind::Override;
+				member->declaration = decl;
+				return member;
+			}
+
 			Ptr<WfFunctionDeclaration> CreateBindSubscribeFunction()
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
@@ -1172,9 +1194,9 @@ IValueSubscription::Subscribe
 						auto typeInfo = TypeInfoRetriver<Ptr<IValueListener>>::CreateTypeInfo();
 						newListener->type = GetTypeFromTypeInfo(typeInfo.Obj());
 					}
-					newListener->declarations.Add(CreateListenerGetSubscriptionFunction());
-					newListener->declarations.Add(CreateListenerGetStoppedFunction());
-					newListener->declarations.Add(CreateListenerStopListeningFunction());
+					newListener->members.Add(CreateOverrideMember(CreateListenerGetSubscriptionFunction()));
+					newListener->members.Add(CreateOverrideMember(CreateListenerGetStoppedFunction()));
+					newListener->members.Add(CreateOverrideMember(CreateListenerStopListeningFunction()));
 
 					auto variable = MakePtr<WfVariableDeclaration>();
 					variable->name.value = L"<listener-shared>";
@@ -1768,9 +1790,9 @@ ExpandBindExpression
 					auto typeInfo = TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo();
 					newSubscription->type = GetTypeFromTypeInfo(typeInfo.Obj());
 				}
-				newSubscription->declarations.Add(CreateBindSubscribeFunction());
-				newSubscription->declarations.Add(CreateBindUpdateFunction(variableTypes, handlerNames));
-				newSubscription->declarations.Add(CreateBindCloseFunction(variableTypes, handlerNames));
+				newSubscription->members.Add(CreateOverrideMember(CreateBindSubscribeFunction()));
+				newSubscription->members.Add(CreateOverrideMember(CreateBindUpdateFunction(variableTypes, handlerNames)));
+				newSubscription->members.Add(CreateOverrideMember(CreateBindCloseFunction(variableTypes, handlerNames)));
 
 				{
 					auto variable = MakePtr<WfVariableDeclaration>();
