@@ -4,11 +4,6 @@ using test::*;
 
 interface IMyInterface : Enumerable
 {
-	static func Get50() : int
-	{
-		return 50;
-	}
-
 	func Get100() : int;
 }
 
@@ -49,9 +44,14 @@ func main():string
 			};
 		}
 
+		func Get50() : int
+		{
+			return 50;
+		}
+
 		override func Get100() : int
 		{
-			return Get50() * 2;
+			return Get50() + this->Get50();
 		}
 	};
 	return $"[$(xs.Get100())][$(CustomInterfaceProcessor::Sum(xs))][$(CustomInterfaceProcessor::Sum(xs))]";

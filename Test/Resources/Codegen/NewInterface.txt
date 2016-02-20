@@ -41,23 +41,23 @@ func main():string
 	var end = 5;
 	var xs = cast int{} new Enumerable^
 	{
-		func CreateEnumerator() : Enumerator^
+		override func CreateEnumerator() : Enumerator^
 		{
 			return new Enumerator^
 			{
 				var index = -1;
 
-				func GetCurrent() : object
+				override func GetCurrent() : object
 				{
 					return begin + index;
 				}
 
-				func GetIndex() : int
+				override func GetIndex() : int
 				{
 					return index;
 				}
 
-				func Next() : bool
+				override func Next() : bool
 				{
 					if(index == end - begin)
 					{

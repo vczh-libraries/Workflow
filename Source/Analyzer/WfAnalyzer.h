@@ -504,6 +504,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CannotCallMemberOutsideOfClass(WfExpression* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			WrongThisExpression(WfExpression* node);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);
@@ -569,6 +570,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
+				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
 			};
 		}
 	}

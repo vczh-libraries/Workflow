@@ -234,7 +234,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result)
 			{
-				return new ParsingError(node, L"A28: " + result.GetFriendlyName(true) + L" cannot be used to initialize other fields in the same type or anonymous interface constructor expression.");
+				return new ParsingError(node, L"A28: " + result.GetFriendlyName(true) + L" cannot be used to initialize other fields in the same type or new interface expression.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongThisExpression(WfExpression* node)
+			{
+				return new ParsingError(node, L"A29: The \"this\" expression can only be used in class methods and functions in new interface expressions");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
@@ -391,7 +396,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
 			{
-				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an anonymous interface constructor expression, only functions and variables are allowed.");
+				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions and variables are allowed.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
@@ -514,6 +519,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::ClassWithInterfaceConstructor(WfClassDeclaration* node)
 			{
 				return new ParsingError(node, L"G7: Cannot use interface constructor type on class \"" + node->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node)
+			{
+				return new ParsingError(node, L"G8: Function \"" + node->name.value + L"\" cannot be override because it doesn't implement any interface methods.");
 			}
 		}
 	}
