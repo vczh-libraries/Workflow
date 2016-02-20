@@ -107,6 +107,7 @@ Lambda
 
 			class WfRuntimeLambda : public Object, public reflection::description::IValueFunctionProxy
 			{
+				typedef reflection::description::Value										Value;
 			public:
 				Ptr<WfRuntimeGlobalContext>			globalContext;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
@@ -114,7 +115,8 @@ Lambda
 
 				WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex);
 
-				reflection::description::Value		Invoke(Ptr<reflection::description::IValueList> arguments)override;
+				Value								Invoke(Ptr<reflection::description::IValueList> arguments)override;
+				static Value						Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueList> arguments);
 			};
 			
 /***********************************************************************
@@ -123,14 +125,17 @@ InterfaceInstance
 
 			class WfRuntimeInterfaceInstance : public Object, public reflection::description::IValueInterfaceProxy
 			{
+				typedef reflection::description::Value										Value;
 				typedef reflection::description::IMethodInfo								IMethodInfo;
 				typedef reflection::description::IValueFunctionProxy						IValueFunctionProxy;
 				typedef reflection::description::IValueList									IValueList;
-				typedef collections::Dictionary<IMethodInfo*, Ptr<IValueFunctionProxy>>		FunctionMap;
+				typedef collections::Dictionary<IMethodInfo*, vint>							FunctionMap;
 			public:
+				Ptr<WfRuntimeGlobalContext>			globalContext;
+				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				FunctionMap							functions;
 
-				reflection::description::Value		Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)override;
+				Value								Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)override;
 			};
 		}
 	}

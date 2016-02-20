@@ -313,32 +313,9 @@ WfRuntimeThreadContext
 				case WfInsCode::LoadValue:
 					PushValue(ins.valueParameter);
 					return WfRuntimeExecutionAction::ExecuteInstruction;
-				case WfInsCode::LoadClosureVars:
+				case WfInsCode::LoadFunction:
 					{
-						Ptr<WfRuntimeVariableContext> capturedVariables;
-						if (ins.countParameter > 0)
-						{
-							capturedVariables = new WfRuntimeVariableContext;
-							capturedVariables->variables.Resize(ins.countParameter);
-							Value operand;
-							for (vint i = 0; i < ins.countParameter; i++)
-							{
-								CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-								capturedVariables->variables[ins.countParameter - 1 - i] = operand;
-							}
-						}
-
-						PushValue(Value::From(capturedVariables));
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::LoadClosure:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						auto capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
-
-						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, ins.indexParameter);
-						PushValue(Value::From(lambda));
+						PushValue(BoxValue(ins.indexParameter));
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadException:
@@ -454,6 +431,36 @@ WfRuntimeThreadContext
 						PushValue(Value::From(map));
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::CreateClosuerContext:
+					{
+						Ptr<WfRuntimeVariableContext> capturedVariables;
+						if (ins.countParameter > 0)
+						{
+							capturedVariables = new WfRuntimeVariableContext;
+							capturedVariables->variables.Resize(ins.countParameter);
+							Value operand;
+							for (vint i = 0; i < ins.countParameter; i++)
+							{
+								CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+								capturedVariables->variables[ins.countParameter - 1 - i] = operand;
+							}
+						}
+
+						PushValue(Value::From(capturedVariables));
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::CreateClosure:
+					{
+						Value context, function;
+						CONTEXT_ACTION(PopValue(function), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(context), L"failed to pop a value from the stack.");
+						auto capturedVariables = context.GetSharedPtr().Cast<WfRuntimeVariableContext>();
+						auto functionIndex = UnboxValue<vint>(function);
+
+						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, functionIndex);
+						PushValue(Value::From(lambda));
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::CreateInterface:
 					{
 						auto proxy = MakePtr<WfRuntimeInterfaceInstance>();
@@ -463,12 +470,14 @@ WfRuntimeThreadContext
 							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
 							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
 							auto name = UnboxValue<IMethodInfo*>(key);
-							auto func = UnboxValue<Ptr<IValueFunctionProxy>>(value);
+							auto func = UnboxValue<vint>(value);
 							proxy->functions.Add(name, func);
 						}
 
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						auto capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
+						proxy->capturedVariables = capturedVariables;
+						proxy->globalContext = globalContext;
 
 						Array<Value> arguments(1);
 						arguments[0] = Value::From(proxy);

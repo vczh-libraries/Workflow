@@ -103,8 +103,9 @@ GenerateInstructions(Declaration)
 					{
 						INSTRUCTION(Ins::LoadCapturedVar(i));
 					}
-					INSTRUCTION(Ins::LoadClosureVars(functionContext->capturedVariables.Count()));
-					INSTRUCTION(Ins::LoadClosure(context.assembly->functions.IndexOf(meta.Obj())));
+					INSTRUCTION(Ins::CreateClosuerContext(functionContext->capturedVariables.Count()));
+					INSTRUCTION(Ins::LoadFunction(context.assembly->functions.IndexOf(meta.Obj())));
+					INSTRUCTION(Ins::CreateClosure());
 					INSTRUCTION(Ins::StoreLocalVar(functionContext->localVariables[recursiveLambdaSymbol.Obj()]));
 				}
 				return functionContext;

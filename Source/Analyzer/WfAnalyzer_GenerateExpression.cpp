@@ -37,8 +37,9 @@ GenerateInstructions(Expression)
 					if ((index = context.globalFunctions.Keys().IndexOf(symbol)) != -1)
 					{
 						vint functionIndex = context.globalFunctions.Values()[index];
-						INSTRUCTION(Ins::LoadClosureVars(0));
-						INSTRUCTION(Ins::LoadClosure(functionIndex));
+						INSTRUCTION(Ins::CreateClosuerContext(0));
+						INSTRUCTION(Ins::LoadFunction(functionIndex));
+						INSTRUCTION(Ins::CreateClosure());
 					}
 					else if ((index = context.globalVariables.Keys().IndexOf(symbol)) != -1)
 					{
@@ -118,13 +119,15 @@ GenerateInstructions(Expression)
 						{
 							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 						}
-						INSTRUCTION(Ins::LoadClosureVars(symbols.Count()));
-						INSTRUCTION(Ins::LoadClosure(functionIndex));
+						INSTRUCTION(Ins::CreateClosuerContext(symbols.Count()));
+						INSTRUCTION(Ins::LoadFunction(functionIndex));
+						INSTRUCTION(Ins::CreateClosure());
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadClosureVars(0));
-						INSTRUCTION(Ins::LoadClosure(functionIndex));
+						INSTRUCTION(Ins::CreateClosuerContext(0));
+						INSTRUCTION(Ins::LoadFunction(functionIndex));
+						INSTRUCTION(Ins::CreateClosure());
 					}
 				}
 
@@ -788,7 +791,7 @@ GenerateInstructions(Expression)
 					INSTRUCTION(Ins::InvokeProxy(node->arguments.Count()));
 				}
 
-				static void VisitFunction(WfCodegenContext& context, WfFunctionDeclaration* node, WfCodegenLambdaContext lc, vint newTypeFunctionIndex, const Func<WString(vint)>& getName)
+				static void VisitFunction(WfCodegenContext& context, WfFunctionDeclaration* node, WfCodegenLambdaContext lc, bool newTypeFunctionIndex, const Func<WString(vint)>& getName)
 				{
 					auto meta = MakePtr<WfAssemblyFunction>();
 					vint functionIndex = context.assembly->functions.Add(meta);
@@ -796,10 +799,9 @@ GenerateInstructions(Expression)
 					context.assembly->functionByName.Add(meta->name, functionIndex);
 					context.functionContext->closuresToCodegen.Add(functionIndex, lc);
 
-					if (newTypeFunctionIndex >= 0)
+					if (newTypeFunctionIndex)
 					{
-						INSTRUCTION(Ins::Duplicate(1 + newTypeFunctionIndex * 2));
-						INSTRUCTION(Ins::LoadClosure(functionIndex));
+						INSTRUCTION(Ins::LoadFunction(functionIndex));
 					}
 					else
 					{
@@ -811,13 +813,15 @@ GenerateInstructions(Expression)
 							{
 								GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 							}
-							INSTRUCTION(Ins::LoadClosureVars(symbols.Count()));
-							INSTRUCTION(Ins::LoadClosure(functionIndex));
+							INSTRUCTION(Ins::CreateClosuerContext(symbols.Count()));
+							INSTRUCTION(Ins::LoadFunction(functionIndex));
+							INSTRUCTION(Ins::CreateClosure());
 						}
 						else
 						{
-							INSTRUCTION(Ins::LoadClosureVars(0));
-							INSTRUCTION(Ins::LoadClosure(functionIndex));
+							INSTRUCTION(Ins::CreateClosuerContext(0));
+							INSTRUCTION(Ins::LoadFunction(functionIndex));
+							INSTRUCTION(Ins::CreateClosure());
 						}
 					}
 				}
@@ -826,7 +830,7 @@ GenerateInstructions(Expression)
 				{
 					WfCodegenLambdaContext lc;
 					lc.functionExpression = node;
-					VisitFunction(context, node->function.Obj(), lc, -1, [=](vint index)
+					VisitFunction(context, node->function.Obj(), lc, false, [=](vint index)
 					{
 						return L"<lambda:" + node->function->name.value + L"(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
@@ -918,15 +922,15 @@ GenerateInstructions(Expression)
 								GenerateLoadSymbolInstructions(context, values[i].Obj(), node);
 							}
 							INSTRUCTION(Ins::LoadValue(Value()));
-							INSTRUCTION(Ins::LoadClosureVars(values.Count() + 1));
+							INSTRUCTION(Ins::CreateClosuerContext(values.Count() + 1));
 
-							FOREACH_INDEXER(Ptr<WfFunctionDeclaration>, func, index, declVisitor.functions)
+							FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.functions)
 							{
 								auto methodInfo = context.manager->interfaceMethodImpls[func.Obj()];
 								INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
 								WfCodegenLambdaContext lc;
 								lc.functionDeclaration = func.Obj();
-								VisitFunction(context, func.Obj(), lc, index, [=](vint index)
+								VisitFunction(context, func.Obj(), lc, true, [=](vint index)
 								{
 									return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
 								});

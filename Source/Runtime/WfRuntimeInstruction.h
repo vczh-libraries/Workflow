@@ -24,79 +24,79 @@ Instruction
 
 			enum class WfInsCode
 			{
-				// Instruction		// param				: <Stack-Pattern> -> <Stack-Pattern> in the order of <bottom ---- top>
-				Nop,				//						: () -> ()															;
-				LoadValue,			// value				: () -> Value														;
-				LoadClosureVars,	// count				: Value-1, ..., Value-count -> Value								;
-				LoadClosure,		// function				: Value-closure-vars -> Value										;
-				LoadException,		// 						: () -> Value														;
-				LoadLocalVar,		// variable				: () -> Value														;
-				LoadCapturedVar,	// variable				: () -> Value														;
-				LoadGlobalVar,		// variable				: () -> Value														;
-				LoadMethodInfo,		// IMethodInfo*			: () -> IMethodInfo*												;
-				LoadMethodClosure,	// IMethodInfo*			: Value-this -> <function>											;
-				StoreLocalVar,		// variable				: Value -> ()														;
-				StoreCapturedVar,	// variable				: Value -> ()														;
-				StoreGlobalVar,		// variable				: Value -> ()														;
-				Duplicate,			// count				: () -> Value														; copy stack[stack.Count()-1-count]
-				Pop,				//						: Value -> ()														;
-				Return,				//						: Value -> Value													; (exit function)
-				CreateArray,		// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
-				CreateMap,			// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
-				CreateInterface,	// IMethodInfo*, count	: Value-closure-vars, Value-count, ..., Value-1 -> <map>			; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
-				CreateRange,		// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
-				ReverseEnumerable,	//						: Value -> Value													;
-				DeleteRawPtr,		//						: Value -> ()														;
-				ConvertToType,		// flag, typeDescriptor	: Value -> Value													;
-				TryConvertToType,	// flag, typeDescriptor	: Value -> Value													;
-				TestType,			// flag, typeDescriptor	: Value -> <bool>													;
-				GetType,			//						: Value -> <ITypeDescriptor*>										;
-				Jump,				// label				: () -> ()															;
-				JumpIf,				// label				: () -> ()															;
-				Invoke,				// function, count		: Value-1, ..., Value-n -> Value									;
-				GetProperty,		// IPropertyInfo*		: Value-this -> Value												;
-				SetProperty,		// IPropertyInfo*		: Value, Value-this -> ()											;
-				InvokeProxy,		// count				: Value-1, ..., Value-n, Value-this -> Value						;
-				InvokeMethod,		// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
-				InvokeEvent,		// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
-				AttachEvent,		// IEventInfo*			: Value-this, <function> -> <Listener>								;
-				DetachEvent,		// 						: <Listener> -> bool												;
-				InstallTry,			// label				: () -> ()															;
-				UninstallTry,		// count				: () -> ()															;
-				RaiseException,		// 						: Value -> ()														; (trap)
-				TestElementInSet,	//						: Value-element, Value-set -> bool									;
-				CompareLiteral,		// I48/U48/F48/S		: Value, Value -> <int>												;
-				CompareStruct,		// 						: Value, Value -> <bool>											;
-				CompareReference,	// 						: Value, Value -> <bool>											;
-				CompareValue,		// 						: Value, Value -> <bool>											;
-				OpNot,				// B/I1248/U1248		: Value -> Value													;
-				OpPositive,			// I1248/U1248			: Value -> Value													;
-				OpNegative,			// I1248				: Value -> Value													;
-				OpConcat,			// 						: <string>, <string> -> <string>									;
-				OpExp,				// I48/U48/F48			: Value, Value -> Value												;
-				OpAdd,				// I48/U48/F48			: Value, Value -> Value												;
-				OpSub,				// I48/U48/F48			: Value, Value -> Value												;
-				OpMul,				// I48/U48/F48			: Value, Value -> Value												;
-				OpDiv,				// I48/U48/F48			: Value, Value -> Value												;
-				OpMod,				// I48/U48				: Value, Value -> Value												;
-				OpShl,				// I48/U48				: Value, Value -> Value												;
-				OpShr,				// I48/U48				: Value, Value -> Value												;
-				OpXor,				// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
-				OpAnd,				// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
-				OpOr,				// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
-				OpLT,				// 						: <int> -> <bool>													;
-				OpGT,				// 						: <int> -> <bool>													;
-				OpLE,				// 						: <int> -> <bool>													;
-				OpGE,				// 						: <int> -> <bool>													;
-				OpEQ,				// 						: <int> -> <bool>													;
-				OpNE,				// 						: <int> -> <bool>													;
+				// Instruction			// param				: <Stack-Pattern> -> <Stack-Pattern> in the order of <bottom ---- top>
+				Nop,					//						: () -> ()															;
+				LoadValue,				// value				: () -> Value														;
+				LoadFunction,			// function				: () -> Value														; push the function index
+				LoadException,			// 						: () -> Value														;
+				LoadLocalVar,			// variable				: () -> Value														;
+				LoadCapturedVar,		// variable				: () -> Value														;
+				LoadGlobalVar,			// variable				: () -> Value														;
+				LoadMethodInfo,			// IMethodInfo*			: () -> IMethodInfo*												;
+				LoadMethodClosure,		// IMethodInfo*			: Value-this -> <function>											;
+				StoreLocalVar,			// variable				: Value -> ()														;
+				StoreCapturedVar,		// variable				: Value -> ()														;
+				StoreGlobalVar,			// variable				: Value -> ()														;
+				Duplicate,				// count				: () -> Value														; copy stack[stack.Count()-1-count]
+				Pop,					//						: Value -> ()														;
+				Return,					//						: Value -> Value													; (exit function)
+				CreateArray,			// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
+				CreateMap,				// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
+				CreateClosuerContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
+				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
+				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
+				CreateRange,			// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
+				ReverseEnumerable,		//						: Value -> Value													;
+				DeleteRawPtr,			//						: Value -> ()														;
+				ConvertToType,			// flag, typeDescriptor	: Value -> Value													;
+				TryConvertToType,		// flag, typeDescriptor	: Value -> Value													;
+				TestType,				// flag, typeDescriptor	: Value -> <bool>													;
+				GetType,				//						: Value -> <ITypeDescriptor*>										;
+				Jump,					// label				: () -> ()															;
+				JumpIf,					// label				: () -> ()															;
+				Invoke,					// function, count		: Value-1, ..., Value-n -> Value									;
+				GetProperty,			// IPropertyInfo*		: Value-this -> Value												;
+				SetProperty,			// IPropertyInfo*		: Value, Value-this -> ()											;
+				InvokeProxy,			// count				: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeMethod,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				AttachEvent,			// IEventInfo*			: Value-this, <function> -> <Listener>								;
+				DetachEvent,			// 						: <Listener> -> bool												;
+				InstallTry,				// label				: () -> ()															;
+				UninstallTry,			// count				: () -> ()															;
+				RaiseException,			// 						: Value -> ()														; (trap)
+				TestElementInSet,		//						: Value-element, Value-set -> bool									;
+				CompareLiteral,			// I48/U48/F48/S		: Value, Value -> <int>												;
+				CompareStruct,			// 						: Value, Value -> <bool>											;
+				CompareReference,		// 						: Value, Value -> <bool>											;
+				CompareValue,			// 						: Value, Value -> <bool>											;
+				OpNot,					// B/I1248/U1248		: Value -> Value													;
+				OpPositive,				// I1248/U1248			: Value -> Value													;
+				OpNegative,				// I1248				: Value -> Value													;
+				OpConcat,				// 						: <string>, <string> -> <string>									;
+				OpExp,					// I48/U48/F48			: Value, Value -> Value												;
+				OpAdd,					// I48/U48/F48			: Value, Value -> Value												;
+				OpSub,					// I48/U48/F48			: Value, Value -> Value												;
+				OpMul,					// I48/U48/F48			: Value, Value -> Value												;
+				OpDiv,					// I48/U48/F48			: Value, Value -> Value												;
+				OpMod,					// I48/U48				: Value, Value -> Value												;
+				OpShl,					// I48/U48				: Value, Value -> Value												;
+				OpShr,					// I48/U48				: Value, Value -> Value												;
+				OpXor,					// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
+				OpAnd,					// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
+				OpOr,					// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
+				OpLT,					// 						: <int> -> <bool>													;
+				OpGT,					// 						: <int> -> <bool>													;
+				OpLE,					// 						: <int> -> <bool>													;
+				OpGE,					// 						: <int> -> <bool>													;
+				OpEQ,					// 						: <int> -> <bool>													;
+				OpNE,					// 						: <int> -> <bool>													;
 			};
 
 #define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_EVENT_COUNT, APPLY_LABEL, APPLY_TYPE)\
 			APPLY(Nop)\
 			APPLY_VALUE(LoadValue)\
-			APPLY_COUNT(LoadClosureVars)\
-			APPLY_FUNCTION(LoadClosure)\
+			APPLY_FUNCTION(LoadFunction)\
 			APPLY(LoadException)\
 			APPLY_VARIABLE(LoadLocalVar)\
 			APPLY_VARIABLE(LoadCapturedVar)\
@@ -111,6 +111,8 @@ Instruction
 			APPLY(Return)\
 			APPLY_COUNT(CreateArray)\
 			APPLY_COUNT(CreateMap)\
+			APPLY_COUNT(CreateClosuerContext)\
+			APPLY(CreateClosure)\
 			APPLY_METHOD_COUNT(CreateInterface)\
 			APPLY_TYPE(CreateRange)\
 			APPLY(ReverseEnumerable)\

@@ -55,7 +55,12 @@ WfRuntimeLambda
 			{
 			}
 
-			reflection::description::Value WfRuntimeLambda::Invoke(Ptr<reflection::description::IValueList> arguments)
+			Value WfRuntimeLambda::Invoke(Ptr<reflection::description::IValueList> arguments)
+			{
+				return Invoke(globalContext, capturedVariables, functionIndex, arguments);
+			}
+
+			Value WfRuntimeLambda::Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueList> arguments)
 			{
 				WfRuntimeThreadContext context(globalContext);
 				vint count = arguments->GetCount();
@@ -89,7 +94,7 @@ WfRuntimeLambda
 WfRuntimeInterfaceInstance
 ***********************************************************************/
 
-			reflection::description::Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)
+			Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)
 			{
 				vint index = functions.Keys().IndexOf(methodInfo);
 				if (index == -1)
@@ -103,7 +108,8 @@ WfRuntimeInterfaceInstance
 				}
 				else
 				{
-					return functions.Values()[index]->Invoke(arguments);
+					vint functionIndex = functions.Values()[index];
+					return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, arguments);
 				}
 			}
 		}
