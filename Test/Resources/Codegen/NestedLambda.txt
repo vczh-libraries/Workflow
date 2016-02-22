@@ -1,0 +1,80 @@
+module test;
+
+interface IA
+{
+	func GetA() : int;
+	func SetA(value : int) : void;
+	event AChanged();
+	prop A : int {GetA, SetA : AChanged}
+
+	func Calculate() : string;
+}
+
+interface IB
+{
+	func GetB() : int;
+	func SetB(value : int) : void;
+	event BChanged();
+	prop B : int {GetB, SetB : BChanged}
+
+	func Calculate() : string;
+}
+
+func main() : string
+{
+	return new IA^
+	{
+		var a = 0;
+		override func GetA() : int { return a; }
+		override func SetA(value : int) : void { a = value; AChanged(); }
+
+		func H() : string
+		{
+			return [new IB^
+			{
+				var b = 0;
+				override func GetB() : int { return b; }
+				override func SetB(value : int) : void { b = value; BChanged(); }
+
+				func H() : string
+				{
+					return $"[$(A), $(B)]";
+				}
+
+				override func Calculate() : string
+				{
+					var f = [(func () : int { return A; })() + B];
+					var g = func () : int { return [A]() + B; };
+					var h = H;
+
+					var s = "";
+
+					b = 1;
+					s = s & $"[$(f())]";
+					B = 2;
+					s = s & $"[$(g())]";
+					B = B + 1;
+					s = s & $"[$(h())]";
+					return s;
+				}
+			}.Calculate()]();
+		}
+
+		override func Calculate() : string
+		{
+			var f = [(func () : int { return A; })()];
+			var g = func () : int { return [A](); };
+			var h = H;
+
+			var s = "";
+
+			a = 1;
+			s = s & $"[$(f())]";
+			A = 2;
+			s = s & $"[$(g())]";
+			A = A + 1;
+			s = s & $"[$(h())]";
+			return s;
+		}
+	}.Calculate();
+}
