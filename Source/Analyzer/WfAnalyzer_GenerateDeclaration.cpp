@@ -157,10 +157,11 @@ GenerateInstructions(Declaration)
 						argumentSymbols.Add(symbol);
 					}
 
-					vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(node);
+					vint index = context.manager->lambdaCaptures.Keys().IndexOf(node);
 					if (index != -1)
 					{
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, context.manager->functionLambdaCaptures.GetByIndex(index))
+						auto capture = context.manager->lambdaCaptures.Values()[index];
+						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
 						{
 							capturedSymbols.Add(symbol);
 						}
@@ -313,14 +314,11 @@ GenerateInstructions(Closure)
 					meta->argumentNames.Add(symbol->name);
 				}
 				{
-					vint index = context.manager->orderedLambdaCaptures.Keys().IndexOf(node);
-					if (index != -1)
+					auto capture = context.manager->lambdaCaptures.Get(node);
+					FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
 					{
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, context.manager->orderedLambdaCaptures.GetByIndex(index))
-						{
-							meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
-							capturedSymbols.Add(symbol);
-						}
+						meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
+						capturedSymbols.Add(symbol);
 					}
 				}
 

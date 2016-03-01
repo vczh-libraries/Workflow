@@ -539,10 +539,10 @@ ValidateSemantic(Expression)
 													}
 												}
 
-												vint index = manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
-												if (index == -1 || !manager->functionLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+												auto capture = manager->lambdaCaptures.Get(funcDecl.Obj());
+												if (!capture->symbols.Contains(result.symbol.Obj()))
 												{
-													manager->functionLambdaCaptures.Add(funcDecl.Obj(), result.symbol);
+													capture->symbols.Add(result.symbol);
 												}
 											}
 										}
@@ -552,10 +552,10 @@ ValidateSemantic(Expression)
 											if (result.symbol->ownerScope != currentScope)
 											{
 												readonlyCaptured = true;
-												vint index = manager->orderedLambdaCaptures.Keys().IndexOf(ordered.Obj());
-												if (index == -1 || !manager->orderedLambdaCaptures.GetByIndex(index).Contains(result.symbol.Obj()))
+												auto capture = manager->lambdaCaptures.Get(ordered.Obj());
+												if (!capture->symbols.Contains(result.symbol.Obj()))
 												{
-													manager->orderedLambdaCaptures.Add(ordered.Obj(), result.symbol);
+													capture->symbols.Add(result.symbol);
 												}
 											}
 										}
@@ -709,6 +709,8 @@ ValidateSemantic(Expression)
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
+					manager->lambdaCaptures.Add(node, MakePtr<WfLexicalCapture>());
+
 					auto scope = manager->expressionScopes[node].Obj();
 					List<Ptr<WfLexicalSymbol>> parameterSymbols;
 					CopyFrom(
@@ -1823,6 +1825,8 @@ ValidateSemantic(Expression)
 
 				void Visit(WfFunctionExpression* node)override
 				{
+					manager->lambdaCaptures.Add(node->function.Obj(), MakePtr<WfLexicalCapture>());
+
 					ValidateDeclarationSemantic(manager, node->function);
 					auto scope = manager->declarationScopes[node->function.Obj()].Obj();
 
@@ -1876,6 +1880,7 @@ ValidateSemantic(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
+						manager->lambdaCaptures.Add(node, MakePtr<WfLexicalCapture>());
 						if (currentMember->kind == WfClassMemberKind::Normal)
 						{
 							closureFunctions.Add(node);
@@ -1914,10 +1919,9 @@ ValidateSemantic(Expression)
 					{
 						FOREACH(Ptr<WfClassMember>, member, node->members)
 						{
-							ValidateDeclarationSemantic(manager, member->declaration);
-
 							currentMember = member;
 							member->declaration->Accept(this);
+							ValidateDeclarationSemantic(manager, member->declaration);
 						}
 					}
 				};
@@ -1992,27 +1996,20 @@ ValidateSemantic(Expression)
 
 									FOREACH(Ptr<WfFunctionDeclaration>, func, From(declVisitor.overrideFunctions).Concat(declVisitor.closureFunctions))
 									{
-										vint index = manager->functionLambdaCaptures.Keys().IndexOf(func.Obj());
-										if (index != -1)
+										auto capture = manager->lambdaCaptures.Get(func.Obj());
+										FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
 										{
-											auto& values = manager->functionLambdaCaptures.GetByIndex(index);
-											FOREACH(Ptr<WfLexicalSymbol>, symbol, values)
+											if (!captures.Contains(symbol.Obj()))
 											{
-												if (!captures.Contains(symbol.Obj()))
-												{
-													captures.Add(symbol);
-												}
+												captures.Add(symbol);
 											}
 										}
 									}
 
 									FOREACH(Ptr<WfFunctionDeclaration>, func, From(declVisitor.overrideFunctions).Concat(declVisitor.closureFunctions))
 									{
-										manager->functionLambdaCaptures.Remove(func.Obj());
-										FOREACH(Ptr<WfLexicalSymbol>, symbol, captures)
-										{
-											manager->functionLambdaCaptures.Add(func.Obj(), symbol);
-										}
+										auto capture = manager->lambdaCaptures.Get(func.Obj());
+										CopyFrom(capture->symbols, captures);
 									}
 								}
 								{

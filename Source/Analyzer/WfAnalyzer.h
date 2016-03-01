@@ -120,6 +120,11 @@ Scope Manager
 				static ResolveExpressionResult				Event(reflection::description::IEventInfo* _eventInfo);
 			};
 
+			struct WfLexicalCapture
+			{
+				collections::List<Ptr<WfLexicalSymbol>>		symbols;
+			};
+
 			/// <summary>Workflow compiler.</summary>
 			class WfLexicalScopeManager : public Object
 			{
@@ -138,8 +143,7 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfStatement>, Ptr<WfLexicalScope>>						StatementScopeMap;
 				typedef collections::Dictionary<Ptr<WfExpression>, Ptr<WfLexicalScope>>						ExpressionScopeMap;
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
-				typedef collections::Group<WfFunctionDeclaration*, Ptr<WfLexicalSymbol>>					FunctionLambdaCaptureGroup;
-				typedef collections::Group<WfOrderedLambdaExpression*, Ptr<WfLexicalSymbol>>				OrderedLambdaCaptureGroup;
+				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<typeimpl::WfCustomType>>			DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
@@ -163,8 +167,7 @@ Scope Manager
 				StatementScopeMap							statementScopes;			// the nearest scope for the statement
 				ExpressionScopeMap							expressionScopes;			// the nearest scope for the expression
 				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
-				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
-				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an ordered lambda expression
+				LambdaCaptureMap							lambdaCaptures;				// all captured symbols in an lambda expression
 				InterfaceMethodImplementationMap			interfaceMethodImpls;		// the IMethodInfo* that implemented by a function
 				DeclarationTypeMap							declarationTypes;			// ITypeDescriptor* for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;		// IMemberInfo* for type description

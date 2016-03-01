@@ -403,8 +403,7 @@ WfLexicalScopeManager
 				statementScopes.Clear();
 				expressionScopes.Clear();
 				expressionResolvings.Clear();
-				functionLambdaCaptures.Clear();
-				orderedLambdaCaptures.Clear();
+				lambdaCaptures.Clear();
 				interfaceMethodImpls.Clear();
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();

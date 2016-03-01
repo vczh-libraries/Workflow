@@ -115,13 +115,9 @@ GenerateInstructions(Expression)
 							{
 								if (auto td = context.manager->expressionScopes[newType.Obj()]->typeDescriptor)
 								{
-									vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
-									if (index != -1)
-									{
-										vint count = context.manager->functionLambdaCaptures.GetByIndex(index).Count();
-										INSTRUCTION(Ins::LoadCapturedVar(count));
-										return;
-									}
+									auto capture = context.manager->lambdaCaptures.Get(funcDecl.Obj());
+									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count()));
+									return;
 								}
 							}
 							else
@@ -181,24 +177,14 @@ GenerateInstructions(Expression)
 						return L"<lambda:(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
 
-					vint index = context.manager->orderedLambdaCaptures.Keys().IndexOf(node);
-					if (index != -1)
+					auto capture = context.manager->lambdaCaptures.Get(node);
+					FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
 					{
-						const auto& symbols = context.manager->orderedLambdaCaptures.GetByIndex(index);
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
-						{
-							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
-						}
-						INSTRUCTION(Ins::CreateClosuerContext(symbols.Count()));
-						INSTRUCTION(Ins::LoadFunction(functionIndex));
-						INSTRUCTION(Ins::CreateClosure());
+						GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 					}
-					else
-					{
-						INSTRUCTION(Ins::CreateClosuerContext(0));
-						INSTRUCTION(Ins::LoadFunction(functionIndex));
-						INSTRUCTION(Ins::CreateClosure());
-					}
+					INSTRUCTION(Ins::CreateClosuerContext(capture->symbols.Count()));
+					INSTRUCTION(Ins::LoadFunction(functionIndex));
+					INSTRUCTION(Ins::CreateClosure());
 				}
 
 				void Visit(WfMemberExpression* node)override
@@ -820,22 +806,18 @@ GenerateInstructions(Expression)
 							{
 								if (scope->parentScope.Obj())
 								{
-									if (auto newType = scope->parentScope->ownerExpression.Cast<WfNewTypeExpression>())
+									if (scope->parentScope->ownerExpression.Cast<WfNewTypeExpression>())
 									{
-										vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(funcDecl.Obj());
-										if (index != -1)
+										if(auto member = node->function.Cast<WfMemberExpression>())
 										{
-											if(auto member = node->function.Cast<WfMemberExpression>())
-											{
-												GenerateExpressionInstructions(context, member->parent);
-											}
-											else
-											{
-												VisitThisExpression(node);
-											}
-											INSTRUCTION(Ins::InvokeEvent(result.eventInfo, node->arguments.Count()));
-											return;
+											GenerateExpressionInstructions(context, member->parent);
 										}
+										else
+										{
+											VisitThisExpression(node);
+										}
+										INSTRUCTION(Ins::InvokeEvent(result.eventInfo, node->arguments.Count()));
+										return;
 									}
 								}
 								break;
@@ -889,24 +871,14 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(node);
-						if (index != -1)
+						auto capture = context.manager->lambdaCaptures.Get(node);
+						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
 						{
-							const auto& symbols = context.manager->functionLambdaCaptures.GetByIndex(index);
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, symbols)
-							{
-								GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
-							}
-							INSTRUCTION(Ins::CreateClosuerContext(symbols.Count()));
-							INSTRUCTION(Ins::LoadFunction(functionIndex));
-							INSTRUCTION(Ins::CreateClosure());
+							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 						}
-						else
-						{
-							INSTRUCTION(Ins::CreateClosuerContext(0));
-							INSTRUCTION(Ins::LoadFunction(functionIndex));
-							INSTRUCTION(Ins::CreateClosure());
-						}
+						INSTRUCTION(Ins::CreateClosuerContext(capture->symbols.Count()));
+						INSTRUCTION(Ins::LoadFunction(functionIndex));
+						INSTRUCTION(Ins::CreateClosure());
 					}
 				}
 
@@ -984,8 +956,8 @@ GenerateInstructions(Expression)
 
 						if (firstFunction != nullptr && variableCount > 0)
 						{
-							auto& values = context.manager->functionLambdaCaptures[firstFunction];
-							CopyFrom(variableSymbols, From(values).Take(variableCount));
+							auto capture = context.manager->lambdaCaptures.Get(firstFunction);
+							CopyFrom(variableSymbols, From(capture->symbols).Take(variableCount));
 						}
 					}
 				};
@@ -1016,13 +988,13 @@ GenerateInstructions(Expression)
 								GenerateExpressionInstructions(context, var->expression);
 							}
 
-							auto& values = context.manager->functionLambdaCaptures[declVisitor.firstFunction];
-							for (vint i = declVisitor.variableCount; i < values.Count(); i++)
+							auto capture = context.manager->lambdaCaptures.Get(declVisitor.firstFunction);
+							for (vint i = declVisitor.variableCount; i < capture->symbols.Count(); i++)
 							{
-								GenerateLoadSymbolInstructions(context, values[i].Obj(), node);
+								GenerateLoadSymbolInstructions(context, capture->symbols[i].Obj(), node);
 							}
 							INSTRUCTION(Ins::LoadValue(Value()));
-							INSTRUCTION(Ins::CreateClosuerContext(values.Count() + 1));
+							INSTRUCTION(Ins::CreateClosuerContext(capture->symbols.Count() + 1));
 
 							FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.closureFunctions)
 							{

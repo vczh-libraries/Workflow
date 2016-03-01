@@ -23,10 +23,11 @@ GenerateGlobalDeclarationMetadata
 					meta->argumentNames.Add(argument->name.value);
 				}
 				{
-					vint index = context.manager->functionLambdaCaptures.Keys().IndexOf(node);
+					vint index = context.manager->lambdaCaptures.Keys().IndexOf(node);
 					if (index != -1)
 					{
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, context.manager->functionLambdaCaptures.GetByIndex(index))
+						auto capture = context.manager->lambdaCaptures.Values()[index];
+						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
 						{
 							meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
 						}
