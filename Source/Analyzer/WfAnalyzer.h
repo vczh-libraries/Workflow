@@ -138,10 +138,7 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 				typedef collections::SortedList<Ptr<WfLexicalScope>>										ScopeSortedList;
-				typedef collections::Dictionary<Ptr<WfModule>, Ptr<WfLexicalScope>>							ModuleScopeMap;
-				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<WfLexicalScope>>					DeclarationScopeMap;
-				typedef collections::Dictionary<Ptr<WfStatement>, Ptr<WfLexicalScope>>						StatementScopeMap;
-				typedef collections::Dictionary<Ptr<WfExpression>, Ptr<WfLexicalScope>>						ExpressionScopeMap;
+				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
@@ -162,12 +159,9 @@ Scope Manager
 				TypeNameMap									typeNames;
 				ScopeSortedList								analyzedScopes;
 
-				ModuleScopeMap								moduleScopes;				// the nearest scope for the module
-				DeclarationScopeMap							declarationScopes;			// the nearest scope for the declaration
-				StatementScopeMap							statementScopes;			// the nearest scope for the statement
-				ExpressionScopeMap							expressionScopes;			// the nearest scope for the expression
+				NodeScopeMap								nodeScopes;					// the nearest scope for a AST
 				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
-				LambdaCaptureMap							lambdaCaptures;				// all captured symbols in an lambda expression
+				LambdaCaptureMap							lambdaCaptures;				// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;		// the IMethodInfo* that implemented by a function
 				DeclarationTypeMap							declarationTypes;			// ITypeDescriptor* for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;		// IMemberInfo* for type description

@@ -398,10 +398,7 @@ WfLexicalScopeManager
 				namespaceNames.Clear();
 				analyzedScopes.Clear();
 
-				moduleScopes.Clear();
-				declarationScopes.Clear();
-				statementScopes.Clear();
-				expressionScopes.Clear();
+				nodeScopes.Clear();
 				expressionResolvings.Clear();
 				lambdaCaptures.Clear();
 				interfaceMethodImpls.Clear();
@@ -591,7 +588,7 @@ WfLexicalScopeManager
 							{
 								if (!inLambda)
 								{
-									auto scope = declarationScopes[symbol->creatorDeclaration.Obj()].Obj();
+									auto scope = nodeScopes[symbol->creatorDeclaration.Obj()].Obj();
 									if (scope->ownerClassMember->kind == WfClassMemberKind::Normal)
 									{
 										results.Add(ResolveExpressionResult::Symbol(symbol));

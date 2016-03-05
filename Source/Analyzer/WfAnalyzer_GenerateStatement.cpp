@@ -100,7 +100,7 @@ GenerateInstructions(Statement)
 					}
 					else
 					{
-						auto scope = context.manager->statementScopes[node];
+						auto scope = context.manager->nodeScopes[node];
 						while (scope)
 						{
 							if (auto tryCatch = scope->ownerStatement.Cast<WfTryStatement>())
@@ -127,7 +127,7 @@ GenerateInstructions(Statement)
 					GenerateExpressionInstructions(context, node->expression);
 					if (node->name.value != L"")
 					{
-						auto scope = context.manager->statementScopes[node];
+						auto scope = context.manager->nodeScopes[node];
 						auto symbol = scope->symbols[node->name.value][0];
 						auto function = context.functionContext->function;
 						variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<if>" + node->name.value);
@@ -261,7 +261,7 @@ GenerateInstructions(Statement)
 					vint loopLabelIndex = -1;
 					auto loopContext = context.functionContext->PushScopeContext(WfCodegenScopeType::Loop);
 
-					auto scope = context.manager->statementScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					auto symbol = scope->symbols[node->name.value][0];
 					auto function = context.functionContext->function;
 					vint elementIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<for>" + node->name.value);
@@ -416,7 +416,7 @@ GenerateInstructions(Statement)
 						context.functionContext->PopScopeContext();
 						
 						context.assembly->instructions[trapInstruction].indexParameter = context.assembly->instructions.Count();
-						auto scope = context.manager->statementScopes[node].Obj();
+						auto scope = context.manager->nodeScopes[node].Obj();
 						auto symbol = scope->symbols[node->name.value][0].Obj();
 						auto function = context.functionContext->function;
 						vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<catch>" + node->name.value);
@@ -490,7 +490,7 @@ GenerateInstructions(Statement)
 				void Visit(WfVariableStatement* node)override
 				{
 					auto manager = context.manager;
-					auto scope = manager->declarationScopes[node->variable.Obj()];
+					auto scope = manager->nodeScopes[node->variable.Obj()];
 					auto symbol = scope->symbols[node->variable->name.value][0].Obj();
 					auto function = context.functionContext->function;
 					vint index = function->argumentNames.Count() + function->localVariableNames.Add(node->variable->name.value);

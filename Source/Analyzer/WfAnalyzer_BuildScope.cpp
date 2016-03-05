@@ -143,13 +143,13 @@ BuildScopeForDeclaration
 					declaration->Accept(&visitor);
 					if (visitor.resultScope)
 					{
-						manager->declarationScopes.Add(declaration, visitor.resultScope);
+						manager->nodeScopes.Add(declaration.Obj(), visitor.resultScope);
 						visitor.resultScope->ownerDeclaration = declaration;
 						visitor.resultScope->ownerClassMember = dynamic_cast<WfClassMember*>(source);
 					}
 					else
 					{
-						manager->declarationScopes.Add(declaration, parentScope);
+						manager->nodeScopes.Add(declaration.Obj(), parentScope);
 					}
 					return visitor.resultScope;
 				}
@@ -313,12 +313,12 @@ BuildScopeForStatement
 					statement->Accept(&visitor);
 					if (visitor.resultScope)
 					{
-						manager->statementScopes.Add(statement, visitor.resultScope);
+						manager->nodeScopes.Add(statement.Obj(), visitor.resultScope);
 						visitor.resultScope->ownerStatement = statement;
 					}
 					else
 					{
-						manager->statementScopes.Add(statement, parentScope);
+						manager->nodeScopes.Add(statement.Obj(), parentScope);
 					}
 					return visitor.resultScope;
 				}
@@ -571,12 +571,12 @@ BuildScopeForExpression
 					expression->Accept(&visitor);
 					if (visitor.resultScope)
 					{
-						manager->expressionScopes.Add(expression, visitor.resultScope);
+						manager->nodeScopes.Add(expression.Obj(), visitor.resultScope);
 						visitor.resultScope->ownerExpression = expression;
 					}
 					else
 					{
-						manager->expressionScopes.Add(expression, parentScope);
+						manager->nodeScopes.Add(expression.Obj(), parentScope);
 					}
 					return visitor.resultScope;
 				}
@@ -590,7 +590,7 @@ BuildScope
 			{
 				Ptr<WfLexicalScope> scope = new WfLexicalScope(manager);
 				scope->ownerModule = module;
-				manager->moduleScopes.Add(module, scope);
+				manager->nodeScopes.Add(module.Obj(), scope);
 
 				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
 				{
@@ -620,11 +620,7 @@ CheckScopes
 			bool CheckScopes(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				FOREACH(Ptr<WfLexicalScope>, scope,
-					From(manager->moduleScopes.Values())
-						.Concat(manager->declarationScopes.Values())
-						.Concat(manager->statementScopes.Values())
-						.Concat(manager->expressionScopes.Values()))
+				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
 				{
 					if (!manager->analyzedScopes.Contains(scope.Obj()))
 					{

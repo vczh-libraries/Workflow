@@ -97,7 +97,7 @@ GenerateInstructions(Expression)
 
 				void VisitThisExpression(WfExpression* node)
 				{
-					auto scope = context.manager->expressionScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					Ptr<WfFunctionDeclaration> funcDecl;
 					while (scope)
 					{
@@ -113,7 +113,7 @@ GenerateInstructions(Expression)
 						{
 							if (funcDecl)
 							{
-								if (auto td = context.manager->expressionScopes[newType.Obj()]->typeDescriptor)
+								if (auto td = context.manager->nodeScopes[newType.Obj()]->typeDescriptor)
 								{
 									auto capture = context.manager->lambdaCaptures.Get(funcDecl.Obj());
 									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count()));
@@ -517,7 +517,7 @@ GenerateInstructions(Expression)
 
 				void Visit(WfLetExpression* node)override
 				{
-					auto scope = context.manager->expressionScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					Array<vint> variableIndices(node->variables.Count());
 					auto function = context.functionContext->function;
 					FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
@@ -690,7 +690,7 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						auto scope = context.manager->expressionScopes[node].Obj();
+						auto scope = context.manager->nodeScopes[node].Obj();
 						auto type = CreateTypeInfoFromType(scope, node->type);
 						GenerateExpressionInstructions(context, node->expression);
 						GenerateTypeCastInstructions(context, type, false, node);
@@ -714,7 +714,7 @@ GenerateInstructions(Expression)
 						break;
 					case WfTypeTesting::IsType:
 						{
-							auto scope = context.manager->expressionScopes[node].Obj();
+							auto scope = context.manager->nodeScopes[node].Obj();
 							auto type = CreateTypeInfoFromType(scope, node->type);
 							GenerateExpressionInstructions(context, node->expression);
 							GenerateTypeTestingInstructions(context, type, node);
@@ -722,7 +722,7 @@ GenerateInstructions(Expression)
 						break;
 					case WfTypeTesting::IsNotType:
 						{
-							auto scope = context.manager->expressionScopes[node].Obj();
+							auto scope = context.manager->nodeScopes[node].Obj();
 							auto type = CreateTypeInfoFromType(scope, node->type);
 							GenerateExpressionInstructions(context, node->expression);
 							GenerateTypeTestingInstructions(context, type, node);
@@ -734,7 +734,7 @@ GenerateInstructions(Expression)
 
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
-					auto scope = context.manager->expressionScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					auto type = CreateTypeInfoFromType(scope, node->type);
 					auto value = Value::From(type->GetTypeDescriptor());
 					INSTRUCTION(Ins::LoadValue(value));
@@ -798,7 +798,7 @@ GenerateInstructions(Expression)
 					}
 					else if (result.eventInfo)
 					{
-						auto scope = context.manager->expressionScopes[node].Obj();
+						auto scope = context.manager->nodeScopes[node].Obj();
 						bool processed = false;
 						while (scope)
 						{
@@ -1005,7 +1005,7 @@ GenerateInstructions(Expression)
 									return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
 								});
 
-								auto scope = context.manager->declarationScopes[func.Obj()].Obj();
+								auto scope = context.manager->nodeScopes[func.Obj()].Obj();
 								auto symbol = context.manager->GetDeclarationSymbol(scope, func.Obj());
 								context.closureFunctions.Add(symbol.Obj(), functionIndex);
 							}

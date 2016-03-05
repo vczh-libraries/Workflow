@@ -45,7 +45,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					auto scope = context.manager->declarationScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					auto symbol = scope->symbols[node->name.value][0];
 					vint variableIndex = context.globalVariables[symbol.Obj()];
 					GenerateExpressionInstructions(context, node->expression);
@@ -241,7 +241,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					auto scope = context.manager->declarationScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					auto symbol = context.manager->GetDeclarationSymbol(scope, node);
 					auto meta = context.assembly->functions[context.globalFunctions[symbol.Obj()]];
 					GenerateFunctionDeclarationInstructions(context, node, scope, meta, 0);
@@ -281,7 +281,7 @@ GenerateInstructions(Closure)
 
 			void GenerateClosureInstructions_Function(WfCodegenContext& context, vint functionIndex, WfFunctionDeclaration* node, bool createInterface)
 			{
-				auto scope = context.manager->declarationScopes[node].Obj();
+				auto scope = context.manager->nodeScopes[node].Obj();
 				auto meta = context.assembly->functions[functionIndex];
 				GenerateFunctionDeclarationMetadata(context, node, meta);
 				Ptr<WfLexicalSymbol> recursiveLambdaSymbol;
@@ -294,7 +294,7 @@ GenerateInstructions(Closure)
 
 			void GenerateClosureInstructions_Ordered(WfCodegenContext& context, vint functionIndex, WfOrderedLambdaExpression* node)
 			{
-				auto scope = context.manager->expressionScopes[node].Obj();
+				auto scope = context.manager->nodeScopes[node].Obj();
 				List<Ptr<WfLexicalSymbol>> argumentSymbols, capturedSymbols;
 				CopyFrom(
 					argumentSymbols,

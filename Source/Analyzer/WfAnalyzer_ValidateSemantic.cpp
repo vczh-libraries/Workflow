@@ -83,7 +83,7 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
+					auto scope = manager->nodeScopes[node];
 					if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), node->type))
 					{
 						if (node->getter.value != L"")
@@ -147,7 +147,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
+					auto scope = manager->nodeScopes[node];
 					auto symbol = scope->symbols[node->name.value][0];
 					symbol->typeInfo = GetExpressionType(manager, node->expression, symbol->typeInfo);
 					if (symbol->typeInfo && !symbol->type)
@@ -166,7 +166,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
+					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node];
 
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
@@ -247,7 +247,7 @@ ValidateSemantic(Statement)
 
 				void Visit(WfReturnStatement* node)override
 				{
-					auto scope = manager->statementScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					auto decl = scope->FindDeclaration().Cast<WfFunctionDeclaration>();
 					auto returnType = CreateTypeInfoFromType(scope, decl->returnType);
 					if (node->expression)
@@ -285,7 +285,7 @@ ValidateSemantic(Statement)
 				{
 					if (node->type)
 					{
-						auto scope = manager->statementScopes[node].Obj();
+						auto scope = manager->nodeScopes[node].Obj();
 						auto symbol = scope->symbols[node->name.value][0];
 						if (!IsNullAcceptableType(symbol->typeInfo.Obj()))
 						{
@@ -347,7 +347,7 @@ ValidateSemantic(Statement)
 					Ptr<ITypeInfo> elementType = GetEnumerableExpressionItemType(manager, node->collection, 0);
 					if (elementType)
 					{
-						auto scope = manager->statementScopes[node].Obj();
+						auto scope = manager->nodeScopes[node].Obj();
 						auto symbol = scope->symbols[node->name.value][0];
 						symbol->typeInfo = elementType;
 						symbol->type = GetTypeFromTypeInfo(elementType.Obj());
@@ -413,7 +413,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfThisExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					Ptr<WfFunctionDeclaration> funcDecl;
 					while (scope)
 					{
@@ -429,7 +429,7 @@ ValidateSemantic(Expression)
 						{
 							if (funcDecl)
 							{
-								if (auto td = manager->expressionScopes[newType.Obj()]->typeDescriptor)
+								if (auto td = manager->nodeScopes[newType.Obj()]->typeDescriptor)
 								{
 									auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
 									elementType->SetTypeDescriptor(td);
@@ -492,7 +492,7 @@ ValidateSemantic(Expression)
 
 				void ResolveName(WfExpression* node, const WString& name)
 				{
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					List<ResolveExpressionResult> nameResults;
 					manager->ResolveName(scope, name, nameResults);
 					
@@ -621,7 +621,7 @@ ValidateSemantic(Expression)
 
 					Ptr<WfClassMember> ownerClassMember;
 					ITypeDescriptor* ownerClass = nullptr;
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					while (scope)
 					{
 						if (scope->ownerExpression.Cast<WfFunctionExpression>())
@@ -711,7 +711,7 @@ ValidateSemantic(Expression)
 				{
 					manager->lambdaCaptures.Add(node, MakePtr<WfLexicalCapture>());
 
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					List<Ptr<WfLexicalSymbol>> parameterSymbols;
 					CopyFrom(
 						parameterSymbols,
@@ -1255,7 +1255,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfLetExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 
 					FOREACH(Ptr<WfLetVariable>, variable, node->variables)
 					{
@@ -1519,7 +1519,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfInferExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					Ptr<ITypeInfo> type = CreateTypeInfoFromType(scope, node->type);
 					Ptr<ITypeInfo> expressionType = GetExpressionType(manager, node->expression, type);
 					if (expressionType)
@@ -1530,7 +1530,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfTypeCastingExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					Ptr<ITypeInfo> type = CreateTypeInfoFromType(scope, node->type);
 					Ptr<ITypeInfo> expressionType = GetExpressionType(manager, node->expression, 0);
 					if (type)
@@ -1617,7 +1617,7 @@ ValidateSemantic(Expression)
 					if (manager->errors.Count() == errorCount)
 					{
 						ExpandBindExpression(manager, node);
-						auto parentScope = manager->expressionScopes[node];
+						auto parentScope = manager->nodeScopes[node];
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
 						if (CheckScopes(manager))
 						{
@@ -1679,7 +1679,7 @@ ValidateSemantic(Expression)
 						}
 						else
 						{
-							auto scope = manager->expressionScopes[node].Obj();
+							auto scope = manager->nodeScopes[node].Obj();
 							auto symbol = scope->symbols[node->name.value][0];
 							symbol->typeInfo = parentType;
 							symbol->type = GetTypeFromTypeInfo(parentType.Obj());
@@ -1828,7 +1828,7 @@ ValidateSemantic(Expression)
 					manager->lambdaCaptures.Add(node->function.Obj(), MakePtr<WfLexicalCapture>());
 
 					ValidateDeclarationSemantic(manager, node->function);
-					auto scope = manager->declarationScopes[node->function.Obj()].Obj();
+					auto scope = manager->nodeScopes[node->function.Obj()].Obj();
 
 					Ptr<TypeInfoImpl> functionType = new TypeInfoImpl(ITypeInfo::SharedPtr);
 					{
@@ -1851,7 +1851,7 @@ ValidateSemantic(Expression)
 
 				Ptr<ITypeInfo> GetFunctionDeclarationType(WfLexicalScope* scope,Ptr<WfFunctionDeclaration> decl)
 				{
-					Ptr<WfLexicalSymbol> symbol = From(manager->declarationScopes[decl.Obj()]->parentScope->symbols[decl->name.value])
+					Ptr<WfLexicalSymbol> symbol = From(manager->nodeScopes[decl.Obj()]->parentScope->symbols[decl->name.value])
 						.Where([decl](Ptr<WfLexicalSymbol> symbol)
 						{
 							return symbol->creatorDeclaration == decl;
@@ -1894,7 +1894,7 @@ ValidateSemantic(Expression)
 					void Visit(WfVariableDeclaration* node)override
 					{
 						variableSymbols.Add(
-							From(manager->declarationScopes[node]->symbols[node->name.value])
+							From(manager->nodeScopes[node]->symbols[node->name.value])
 								.Where([=](Ptr<WfLexicalSymbol> symbol)
 								{
 									return symbol->creatorDeclaration == node;
@@ -1928,7 +1928,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfNewTypeExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					Ptr<ITypeInfo> type = CreateTypeInfoFromType(scope, node->type);
 					if (type)
 					{
@@ -2174,9 +2174,9 @@ ValidateSemantic
 						List<ResolveExpressionResult> replaces;
 						FOREACH(Ptr<WfDeclaration>, decl, result.scopeName->declarations)
 						{
-							vint index = manager->declarationScopes.Keys().IndexOf(decl);
+							vint index = manager->nodeScopes.Keys().IndexOf(decl.Obj());
 							if (index == -1) continue;
-							auto scope = manager->declarationScopes.Values()[index];
+							auto scope = manager->nodeScopes.Values()[index];
 							bool isVariable = decl.Cast<WfVariableDeclaration>();
 							if (!isVariable)
 							{

@@ -51,7 +51,7 @@ IsExpressionDependOnExpectedType(Expression)
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					auto scope = manager->expressionScopes[node].Obj();
+					auto scope = manager->nodeScopes[node].Obj();
 					result = scope->symbols.Count() > 0;
 				}
 

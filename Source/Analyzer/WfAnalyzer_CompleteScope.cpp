@@ -37,7 +37,7 @@ CompleteScopeForClassMember
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
+					auto scope = manager->nodeScopes[node];
 					auto info = manager->declarationMemberInfos[node].Cast<WfMethodBase>();
 
 					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
@@ -62,7 +62,7 @@ CompleteScopeForClassMember
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
+					auto scope = manager->nodeScopes[node];
 					auto type = MakePtr<WfFunctionType>();
 					{
 						auto voidType = MakePtr<WfPredefinedType>();
@@ -83,7 +83,7 @@ CompleteScopeForClassMember
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
+					auto scope = manager->nodeScopes[node];
 					auto info = manager->declarationMemberInfos[node].Cast<WfProperty>();
 
 					if (node->getter.value != L"")
@@ -156,7 +156,7 @@ CompleteScopeForDeclaration
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					auto scope = manager->declarationScopes[node];
+					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node];
 
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)

@@ -33,7 +33,7 @@ GenerateGlobalDeclarationMetadata
 						}
 					}
 
-					auto scope = context.manager->declarationScopes[node];
+					auto scope = context.manager->nodeScopes[node];
 					if (scope->parentScope && scope->parentScope->ownerExpression.Cast<WfNewTypeExpression>())
 					{
 						meta->capturedVariableNames.Add(L"<captured-this>");
@@ -66,7 +66,7 @@ GenerateGlobalDeclarationMetadata
 					if (member->kind == WfClassMemberKind::Static)
 					{
 						GenerateGlobalDeclarationMetadata(context, node, namePrefix);
-						auto scope = context.manager->declarationScopes[node].Obj();
+						auto scope = context.manager->nodeScopes[node].Obj();
 						auto symbol = context.manager->GetDeclarationSymbol(scope, node);
 						auto index = context.globalFunctions[symbol.Obj()];
 						auto info = context.manager->declarationMemberInfos[node].Cast<WfStaticMethod>();
@@ -126,7 +126,7 @@ GenerateGlobalDeclarationMetadata
 					vint index = context.assembly->functions.Add(meta);
 					context.assembly->functionByName.Add(meta->name, index);
 
-					auto scope = context.manager->declarationScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					auto symbol = context.manager->GetDeclarationSymbol(scope, node);
 					context.globalFunctions.Add(symbol.Obj(), index);
 				}
@@ -135,7 +135,7 @@ GenerateGlobalDeclarationMetadata
 				{
 					vint index = context.assembly->variableNames.Add(namePrefix + node->name.value);
 
-					auto scope = context.manager->declarationScopes[node].Obj();
+					auto scope = context.manager->nodeScopes[node].Obj();
 					auto symbol = scope->symbols[node->name.value][0];
 					context.globalVariables.Add(symbol.Obj(), index);
 				}
