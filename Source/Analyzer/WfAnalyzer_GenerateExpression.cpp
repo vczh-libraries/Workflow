@@ -105,10 +105,6 @@ GenerateInstructions(Expression)
 						{
 							break;
 						}
-						else if (scope->ownerExpression.Cast<WfFunctionExpression>())
-						{
-							break;
-						}
 						else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
 						{
 							if (funcDecl)

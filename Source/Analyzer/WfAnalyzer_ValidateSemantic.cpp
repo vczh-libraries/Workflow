@@ -421,10 +421,6 @@ ValidateSemantic(Expression)
 						{
 							break;
 						}
-						else if (scope->ownerExpression.Cast<WfFunctionExpression>())
-						{
-							break;
-						}
 						else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
 						{
 							if (funcDecl)
@@ -624,11 +620,7 @@ ValidateSemantic(Expression)
 					auto scope = manager->nodeScopes[node].Obj();
 					while (scope)
 					{
-						if (scope->ownerExpression.Cast<WfFunctionExpression>())
-						{
-							break;
-						}
-						else if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+						if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
 						{
 							break;
 						}

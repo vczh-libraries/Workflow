@@ -606,10 +606,6 @@ WfLexicalScopeManager
 					{
 						inLambda = true;
 					}
-					else if (scope->ownerExpression.Cast<WfFunctionExpression>())
-					{
-						inLambda = true;
-					}
 					else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
 					{
 						inLambda = true;
