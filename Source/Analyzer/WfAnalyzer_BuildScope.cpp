@@ -359,6 +359,8 @@ BuildScopeForExpression
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
+					manager->CreateLambdaCapture(node);
+
 					SortedList<vint> names;
 					SearchOrderedName(parentScope.Obj(), node->body, names);
 
@@ -548,6 +550,7 @@ BuildScopeForExpression
 
 				void Visit(WfFunctionExpression* node)override
 				{
+					manager->CreateLambdaCapture(node->function.Obj());
 					BuildScopeForDeclaration(manager, parentScope, node->function, node);
 				}
 
@@ -559,8 +562,13 @@ BuildScopeForExpression
 					}
 
 					resultScope = new WfLexicalScope(parentScope);
+					auto capture = MakePtr<WfLexicalCapture>();
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
+						if (member->declaration.Cast<WfFunctionDeclaration>())
+						{
+							manager->CreateLambdaCapture(member->declaration.Obj(), capture);
+						}
 						BuildScopeForDeclaration(manager, resultScope, member->declaration, member.Obj());
 					}
 				}

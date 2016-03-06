@@ -709,8 +709,6 @@ ValidateSemantic(Expression)
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					manager->lambdaCaptures.Add(node, MakePtr<WfLexicalCapture>());
-
 					auto scope = manager->nodeScopes[node].Obj();
 					List<Ptr<WfLexicalSymbol>> parameterSymbols;
 					CopyFrom(
@@ -1825,8 +1823,6 @@ ValidateSemantic(Expression)
 
 				void Visit(WfFunctionExpression* node)override
 				{
-					manager->lambdaCaptures.Add(node->function.Obj(), MakePtr<WfLexicalCapture>());
-
 					ValidateDeclarationSemantic(manager, node->function);
 					auto scope = manager->nodeScopes[node->function.Obj()].Obj();
 
@@ -1865,9 +1861,9 @@ ValidateSemantic(Expression)
 				public:
 					WfLexicalScopeManager*							manager;
 					Ptr<WfClassMember>								currentMember;
-					List<Ptr<WfFunctionDeclaration>>				closureFunctions;
 					List<Ptr<WfFunctionDeclaration>>				overrideFunctions;
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
+					WfFunctionDeclaration*							lastFunction = nullptr;
 
 					NewTypeExpressionVisitor(WfLexicalScopeManager* _manager)
 						:manager(_manager)
@@ -1880,12 +1876,8 @@ ValidateSemantic(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
-						manager->lambdaCaptures.Add(node, MakePtr<WfLexicalCapture>());
-						if (currentMember->kind == WfClassMemberKind::Normal)
-						{
-							closureFunctions.Add(node);
-						}
-						else
+						lastFunction = node;
+						if (currentMember->kind == WfClassMemberKind::Override)
 						{
 							overrideFunctions.Add(node);
 						}
@@ -1986,30 +1978,18 @@ ValidateSemantic(Expression)
 									NewTypeExpressionVisitor declVisitor(manager);
 									declVisitor.Execute(node);
 
-									List<Ptr<WfLexicalSymbol>> captures;
-									CopyFrom(captures, declVisitor.variableSymbols);
-
-									FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
+									if (declVisitor.lastFunction)
 									{
-										implementMethods.Add(func->name.value, func);
-									}
-
-									FOREACH(Ptr<WfFunctionDeclaration>, func, From(declVisitor.overrideFunctions).Concat(declVisitor.closureFunctions))
-									{
-										auto capture = manager->lambdaCaptures.Get(func.Obj());
-										FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+										FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
 										{
-											if (!captures.Contains(symbol.Obj()))
-											{
-												captures.Add(symbol);
-											}
+											implementMethods.Add(func->name.value, func);
 										}
-									}
 
-									FOREACH(Ptr<WfFunctionDeclaration>, func, From(declVisitor.overrideFunctions).Concat(declVisitor.closureFunctions))
-									{
-										auto capture = manager->lambdaCaptures.Get(func.Obj());
-										CopyFrom(capture->symbols, captures);
+										auto capture = manager->lambdaCaptures[declVisitor.lastFunction];
+										List<Ptr<WfLexicalSymbol>> readonlySymbols;
+										CopyFrom(readonlySymbols, From(capture->symbols).Except(declVisitor.variableSymbols));
+										CopyFrom(capture->symbols, declVisitor.variableSymbols);
+										CopyFrom(capture->symbols, readonlySymbols, true);
 									}
 								}
 								{

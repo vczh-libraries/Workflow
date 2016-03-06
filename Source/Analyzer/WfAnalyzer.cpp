@@ -705,6 +705,15 @@ WfLexicalScopeManager
 				return symbol;
 			}
 
+			void WfLexicalScopeManager::CreateLambdaCapture(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalCapture> capture)
+			{
+				if (!capture)
+				{
+					capture = MakePtr<WfLexicalCapture>();
+				}
+				lambdaCaptures.Add(node, capture);
+			}
+
 /***********************************************************************
 WfCodegenFunctionContext
 ***********************************************************************/
