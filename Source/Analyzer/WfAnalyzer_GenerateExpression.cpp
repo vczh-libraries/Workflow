@@ -109,7 +109,7 @@ GenerateInstructions(Expression)
 						{
 							if (funcDecl)
 							{
-								if (auto td = context.manager->nodeScopes[newType.Obj()]->typeDescriptor)
+								if (auto td = context.manager->nodeScopes[newType.Obj()]->typeOfThisExpr)
 								{
 									auto capture = context.manager->lambdaCaptures.Get(funcDecl.Obj());
 									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count()));

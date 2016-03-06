@@ -425,7 +425,7 @@ ValidateSemantic(Expression)
 						{
 							if (funcDecl)
 							{
-								if (auto td = manager->nodeScopes[newType.Obj()]->typeDescriptor)
+								if (auto td = manager->nodeScopes[newType.Obj()]->typeOfThisExpr)
 								{
 									auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
 									elementType->SetTypeDescriptor(td);
@@ -639,7 +639,7 @@ ValidateSemantic(Expression)
 								}
 								else
 								{
-									ownerClass = scope->parentScope->typeDescriptor;
+									ownerClass = scope->parentScope->typeOfThisExpr;
 								}
 								break;
 							}
@@ -1921,7 +1921,7 @@ ValidateSemantic(Expression)
 						Ptr<ITypeInfo> selectedType;
 						IMethodInfo* selectedConstructor = nullptr;
 
-						scope->typeDescriptor = td;
+						scope->typeOfThisExpr = td;
 
 						if (!ctors || ctors->GetMethodCount() == 0)
 						{

@@ -611,9 +611,9 @@ WfLexicalScopeManager
 						inLambda = true;
 					}
 
-					if (newTypeExpr && ownerFunction && scope->typeDescriptor)
+					if (newTypeExpr && ownerFunction && scope->typeOfThisExpr)
 					{
-						ResolveMember(scope->typeDescriptor, name, false, results);
+						ResolveMember(scope->typeOfThisExpr, name, false, results);
 					}
 					ownerClassMember = scope->ownerClassMember;
 					ownerFunction = scope->ownerDeclaration.Cast<WfFunctionDeclaration>();

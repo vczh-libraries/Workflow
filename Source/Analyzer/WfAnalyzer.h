@@ -46,6 +46,14 @@ Scope
 				WString										GetFriendlyName();
 			};
 
+			class WfLexicalFunctionConfig : public Object
+			{
+			public:
+				bool										lambda = false;
+				bool										thisAccessable = false;
+				bool										parentThisAccessable = false;
+			};
+
 			class WfLexicalScope : public Object
 			{
 				typedef collections::Group<WString, Ptr<WfLexicalSymbol>>		TypeGroup;
@@ -56,10 +64,12 @@ Scope
 				Ptr<WfDeclaration>							ownerDeclaration;			// nullable and inheritable
 				Ptr<WfStatement>							ownerStatement;				// nullable
 				Ptr<WfExpression>							ownerExpression;			// nullable
-				reflection::description::ITypeDescriptor*	typeDescriptor = nullptr;	// visible members to this scope
 
-				Ptr<WfLexicalScope>							parentScope;		// null means that this is the root scope
-				TypeGroup									symbols;			// all symbols in this scope
+				Ptr<WfLexicalFunctionConfig>				functionConfig;
+				reflection::description::ITypeDescriptor*	typeOfThisExpr = nullptr;	// visible members to this scope
+
+				Ptr<WfLexicalScope>							parentScope;				// null means that this is the root scope
+				TypeGroup									symbols;					// all symbols in this scope
 
 				WfLexicalScope(WfLexicalScopeManager* _ownerManager);
 				WfLexicalScope(Ptr<WfLexicalScope> _parentScope);
@@ -296,7 +306,7 @@ Scope Analyzing
 			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source);
+			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source, Ptr<WfClassMember> member);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
 			extern bool										CheckScopes(WfLexicalScopeManager* manager);
