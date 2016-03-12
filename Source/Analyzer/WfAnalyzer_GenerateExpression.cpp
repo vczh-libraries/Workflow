@@ -980,7 +980,7 @@ GenerateInstructions(Expression)
 						{
 							for (vint i = 0; i < declVisitor.variableCount; i++)
 							{
-								auto var = declVisitor.variableSymbols[i]->creatorDeclaration.Cast<WfVariableDeclaration>();
+								auto var = declVisitor.variableSymbols[i]->creatorNode.Cast<WfVariableDeclaration>();
 								GenerateExpressionInstructions(context, var->expression);
 							}
 

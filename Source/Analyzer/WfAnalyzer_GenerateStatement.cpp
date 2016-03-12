@@ -103,7 +103,7 @@ GenerateInstructions(Statement)
 						auto scope = context.manager->nodeScopes[node];
 						while (scope)
 						{
-							if (auto tryCatch = scope->ownerStatement.Cast<WfTryStatement>())
+							if (auto tryCatch = scope->ownerNode.Cast<WfTryStatement>())
 							{
 								if (tryCatch->name.value != L"")
 								{

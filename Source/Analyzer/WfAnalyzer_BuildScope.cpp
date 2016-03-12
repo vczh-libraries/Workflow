@@ -38,7 +38,7 @@ BuildScopeForDeclaration
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
-					symbol->creatorDeclaration = node;
+					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
 
 					resultScope = new WfLexicalScope(parentScope);
@@ -86,7 +86,7 @@ BuildScopeForDeclaration
 
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(functionNameScope.Obj());
 						symbol->name = node->name.value;
-						symbol->creatorDeclaration = node;
+						symbol->creatorNode = node;
 						symbol->creatorClassMember = member;
 						{
 							Ptr<WfFunctionType> type = new WfFunctionType;
@@ -107,7 +107,7 @@ BuildScopeForDeclaration
 							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
 							argumentSymbol->name = argument->name.value;
 							argumentSymbol->type = argument->type;
-							argumentSymbol->creatorArgument = argument;
+							argumentSymbol->creatorNode = argument;
 							resultScope->symbols.Add(argumentSymbol->name, argumentSymbol);
 						}
 
@@ -119,7 +119,7 @@ BuildScopeForDeclaration
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
-					symbol->creatorDeclaration = node;
+					symbol->creatorNode = node;
 					symbol->creatorClassMember = member;
 					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
@@ -131,7 +131,7 @@ BuildScopeForDeclaration
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
-					symbol->creatorDeclaration = node;
+					symbol->creatorNode = node;
 					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
@@ -140,7 +140,7 @@ BuildScopeForDeclaration
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
-					symbol->creatorDeclaration = node;
+					symbol->creatorNode = node;
 					symbol->creatorClassMember = member;
 					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
@@ -150,7 +150,7 @@ BuildScopeForDeclaration
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
-					symbol->creatorDeclaration = node;
+					symbol->creatorNode = node;
 					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
 					
@@ -170,7 +170,7 @@ BuildScopeForDeclaration
 					if (visitor.resultScope)
 					{
 						manager->nodeScopes.Add(declaration.Obj(), visitor.resultScope);
-						visitor.resultScope->ownerDeclaration = declaration;
+						visitor.resultScope->ownerNode = declaration;
 						visitor.resultScope->ownerClassMember = member;
 					}
 					else
@@ -235,7 +235,7 @@ BuildScopeForStatement
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = node->name.value;
 						symbol->type = node->type;
-						symbol->creatorStatement = node;
+						symbol->creatorNode = node;
 						resultScope->symbols.Add(symbol->name, symbol);
 					}
 
@@ -273,7 +273,7 @@ BuildScopeForStatement
 
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 					symbol->name = node->name.value;
-					symbol->creatorStatement = node;
+					symbol->creatorNode = node;
 					resultScope->symbols.Add(symbol->name, symbol);
 
 					BuildScopeForExpression(manager, parentScope, node->collection);
@@ -289,7 +289,7 @@ BuildScopeForStatement
 
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = node->name.value;
-						symbol->creatorStatement = node;
+						symbol->creatorNode = node;
 						{
 							auto system = MakePtr<WfTopQualifiedType>();
 							system->name.value = L"system";
@@ -340,7 +340,7 @@ BuildScopeForStatement
 					if (visitor.resultScope)
 					{
 						manager->nodeScopes.Add(statement.Obj(), visitor.resultScope);
-						visitor.resultScope->ownerStatement = statement;
+						visitor.resultScope->ownerNode = statement;
 					}
 					else
 					{
@@ -402,7 +402,7 @@ BuildScopeForExpression
 					{
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = L"$" + itow(name);
-						symbol->creatorExpression = node;
+						symbol->creatorNode = node;
 						resultScope->symbols.Add(symbol->name, symbol);
 					}
 
@@ -461,7 +461,7 @@ BuildScopeForExpression
 					{
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = variable->name.value;
-						symbol->creatorExpression = node;
+						symbol->creatorNode = node;
 						resultScope->symbols.Add(symbol->name, symbol);
 						BuildScopeForExpression(manager, resultScope, variable->value);
 					}
@@ -560,7 +560,7 @@ BuildScopeForExpression
 						{
 							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 							symbol->name = node->name.value;
-							symbol->creatorExpression = node;
+							symbol->creatorNode = node;
 							resultScope->symbols.Add(symbol->name, symbol);
 						}
 
@@ -613,7 +613,7 @@ BuildScopeForExpression
 					if (visitor.resultScope)
 					{
 						manager->nodeScopes.Add(expression.Obj(), visitor.resultScope);
-						visitor.resultScope->ownerExpression = expression;
+						visitor.resultScope->ownerNode = expression;
 					}
 					else
 					{
@@ -630,7 +630,7 @@ BuildScope
 			void BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
 				Ptr<WfLexicalScope> scope = new WfLexicalScope(manager);
-				scope->ownerModule = module;
+				scope->ownerNode = module;
 				manager->nodeScopes.Add(module.Obj(), scope);
 
 				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
@@ -672,30 +672,27 @@ CheckScopes
 							const auto& symbols = scope->symbols.GetByIndex(i);
 							if (symbols.Count() > 1)
 							{
-								if (!scope->ownerModule && !scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+								if (!scope->ownerNode.Cast<WfModule>() && !scope->ownerNode.Cast<WfNamespaceDeclaration>())
 								{
 									if (symbols.Count() > 1)
 									{
 										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
 										{
-											if (symbol->creatorDeclaration)
+											if (auto decl = symbol->creatorNode.Cast<WfFunctionDeclaration>())
 											{
-												if (!symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
-												{
-													manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorDeclaration.Obj(), symbol));
-												}
+												manager->errors.Add(WfErrors::DuplicatedSymbol(decl.Obj(), symbol));
 											}
-											else if (symbol->creatorArgument)
+											else if (auto arg = symbol->creatorNode.Cast<WfFunctionArgument>())
 											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorArgument.Obj(), symbol));
+												manager->errors.Add(WfErrors::DuplicatedSymbol(arg.Obj(), symbol));
 											}
-											else if (symbol->creatorStatement)
+											else if (auto stat = symbol->creatorNode.Cast<WfStatement>())
 											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorStatement.Obj(), symbol));
+												manager->errors.Add(WfErrors::DuplicatedSymbol(stat.Obj(), symbol));
 											}
-											else if (symbol->creatorExpression)
+											else if (auto expr = symbol->creatorNode.Cast<WfExpression>())
 											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(symbol->creatorExpression.Obj(), symbol));
+												manager->errors.Add(WfErrors::DuplicatedSymbol(expr.Obj(), symbol));
 											}
 										}
 									}

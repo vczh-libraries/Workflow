@@ -66,9 +66,9 @@ WfLexicalScope
 				WfLexicalScope* scope = this;
 				while (scope)
 				{
-					if (scope->ownerModule)
+					if (auto module = scope->ownerNode.Cast<WfModule>())
 					{
-						return scope->ownerModule;
+						return module;
 					}
 					scope = scope->parentScope.Obj();
 				}
@@ -80,9 +80,9 @@ WfLexicalScope
 				WfLexicalScope* scope = this;
 				while (scope)
 				{
-					if (scope->ownerDeclaration)
+					if (auto decl = scope->ownerNode.Cast<WfDeclaration>())
 					{
-						return scope->ownerDeclaration;
+						return decl;
 					}
 					scope = scope->parentScope.Obj();
 				}
@@ -91,13 +91,13 @@ WfLexicalScope
 
 			WString WfLexicalScope::GetFriendlyName()
 			{
-				if (ownerModule)
+				if (auto module = ownerNode.Cast<WfModule>())
 				{
-					return L"<" + ownerModule->name.value + L">";
+					return L"<" + module->name.value + L">";
 				}
-				else if (ownerDeclaration)
+				else if (auto decl = ownerNode.Cast<WfDeclaration>())
 				{
-					auto name = ownerDeclaration->name.value;
+					auto name = decl->name.value;
 					if (name == L"")
 					{
 						name = L"<anonymous>";
@@ -262,7 +262,7 @@ ResolveExpressionResult
 				ResolveExpressionResult result;
 				result.symbol = _symbol;
 				result.type = _symbol->typeInfo;
-				if (_symbol->creatorDeclaration.Cast<WfVariableDeclaration>())
+				if (_symbol->creatorNode.Cast<WfVariableDeclaration>())
 				{
 					result.writableType = _symbol->typeInfo;
 				}

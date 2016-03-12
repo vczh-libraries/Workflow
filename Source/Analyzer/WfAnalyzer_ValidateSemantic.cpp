@@ -1837,12 +1837,12 @@ ValidateSemantic(Expression)
 					results.Add(ResolveExpressionResult::ReadonlyType(functionType));
 				}
 
-				Ptr<ITypeInfo> GetFunctionDeclarationType(WfLexicalScope* scope,Ptr<WfFunctionDeclaration> decl)
+				Ptr<ITypeInfo> GetFunctionDeclarationType(WfLexicalScope* scope, Ptr<WfFunctionDeclaration> decl)
 				{
 					Ptr<WfLexicalSymbol> symbol = From(manager->nodeScopes[decl.Obj()]->parentScope->symbols[decl->name.value])
 						.Where([decl](Ptr<WfLexicalSymbol> symbol)
 						{
-							return symbol->creatorDeclaration == decl;
+							return symbol->creatorNode == decl;
 						})
 						.First();
 					return symbol->typeInfo;
@@ -1881,7 +1881,7 @@ ValidateSemantic(Expression)
 							From(manager->nodeScopes[node]->symbols[node->name.value])
 								.Where([=](Ptr<WfLexicalSymbol> symbol)
 								{
-									return symbol->creatorDeclaration == node;
+									return symbol->creatorNode == node;
 								})
 								.First()
 							);
@@ -2159,7 +2159,7 @@ ValidateSemantic
 							if (index == -1) continue;
 							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 							{
-								if (symbol->creatorDeclaration == decl && symbol->typeInfo)
+								if (symbol->creatorNode == decl && symbol->typeInfo)
 								{
 									replaces.Add(ResolveExpressionResult::Symbol(symbol));
 								}

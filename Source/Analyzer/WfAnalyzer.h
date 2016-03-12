@@ -34,10 +34,7 @@ Scope
 				Ptr<WfType>									type;				// type of this symbol
 				Ptr<reflection::description::ITypeInfo>		typeInfo;			// reflection type info of this symbol, nullable
 				Ptr<WfClassMember>							creatorClassMember;	// nullable
-				Ptr<WfDeclaration>							creatorDeclaration;	// nullable
-				Ptr<WfStatement>							creatorStatement;	// nullable
-				Ptr<WfExpression>							creatorExpression;	// nullable
-				Ptr<WfFunctionArgument>						creatorArgument;	// nullable
+				Ptr<parsing::ParsingTreeCustomBase>			creatorNode;		// nullable
 				WfLexicalScope*								ownerScope;			// scope that contains this symbol
 
 				WfLexicalSymbol(WfLexicalScope* _ownerScope);
@@ -58,12 +55,9 @@ Scope
 			{
 				typedef collections::Group<WString, Ptr<WfLexicalSymbol>>		TypeGroup;
 			public:
-				WfLexicalScopeManager*						ownerManager;				// nullable and inheritable
-				Ptr<WfModule>								ownerModule;				// nullable and inheritable
-				Ptr<WfClassMember>							ownerClassMember;			// nullable and inheritable
-				Ptr<WfDeclaration>							ownerDeclaration;			// nullable and inheritable
-				Ptr<WfStatement>							ownerStatement;				// nullable
-				Ptr<WfExpression>							ownerExpression;			// nullable
+				WfLexicalScopeManager*						ownerManager;				// nullable
+				Ptr<WfClassMember>							ownerClassMember;			// nullable
+				Ptr<parsing::ParsingTreeCustomBase>			ownerNode;					// nullable
 
 				Ptr<WfLexicalFunctionConfig>				functionConfig;
 				reflection::description::ITypeDescriptor*	typeOfThisExpr = nullptr;	// visible members to this scope
