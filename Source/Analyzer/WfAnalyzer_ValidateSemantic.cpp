@@ -414,40 +414,20 @@ ValidateSemantic(Expression)
 				void Visit(WfThisExpression* node)override
 				{
 					auto scope = manager->nodeScopes[node].Obj();
-					Ptr<WfFunctionDeclaration> funcDecl;
+					Ptr<WfLexicalFunctionConfig> lastConfig;
 					while (scope)
 					{
-						if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+						if (auto config = scope->functionConfig)
 						{
-							break;
+							lastConfig = config;
 						}
-						else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
-						{
-							if (funcDecl)
-							{
-								if (auto td = manager->nodeScopes[newType.Obj()]->typeOfThisExpr)
-								{
-									auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-									elementType->SetTypeDescriptor(td);
 
-									auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
-									pointerType->SetElementType(elementType);
-
-									results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
-									return;
-								}
-							}
-							else
-							{
-								break;
-							}
-						}
-						else if (auto classDecl = scope->ownerDeclaration.Cast<WfClassDeclaration>())
+						if (scope->typeOfThisExpr)
 						{
-							if (funcDecl)
+							if (lastConfig->thisAccessable)
 							{
 								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-								elementType->SetTypeDescriptor(manager->declarationTypes[classDecl.Obj()].Obj());
+								elementType->SetTypeDescriptor(scope->typeOfThisExpr);
 
 								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
 								pointerType->SetElementType(elementType);
@@ -455,14 +435,7 @@ ValidateSemantic(Expression)
 								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 								return;
 							}
-							else
-							{
-								break;
-							}
-						}
-						else if (funcDecl = scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
-						{
-							if (!scope->ownerClassMember || scope->ownerClassMember->kind == WfClassMemberKind::Static)
+							if (!lastConfig->parentThisAccessable)
 							{
 								break;
 							}

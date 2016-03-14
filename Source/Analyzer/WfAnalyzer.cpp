@@ -557,97 +557,57 @@ WfLexicalScopeManager
 
 			bool WfLexicalScopeManager::ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results)
 			{
-				bool found = false;
-				Ptr<WfClassMember> ownerClassMember;
-				Ptr<WfFunctionDeclaration> ownerFunction;
-				bool inLambda = false;
+				vint oldResultCount = results.Count();
+				bool visibleToNonStatic = true;
 				while (scope)
 				{
-					if (scope->ownerModule)
+					if (scope->ownerNode.Cast<WfModule>() || scope->ownerNode.Cast<WfNamespaceDeclaration>())
 					{
 						break;
 					}
-					if (scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
-					{
-						break;
-					}
-					if (scope->ownerDeclaration.Cast<WfClassDeclaration>())
-					{
-						break;
-					}
-
-					auto newTypeExpr = scope->ownerExpression.Cast<WfNewTypeExpression>();
-
+					
 					vint index = scope->symbols.Keys().IndexOf(name);
 					if (index != -1)
 					{
-						found = true;
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+						if (scope->functionConfig)
 						{
-							if (newTypeExpr && symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
+							visibleToNonStatic = scope->functionConfig->parentThisAccessable;
+						}
+
+						if (scope->typeOfThisExpr)
+						{
+							if (scope->ownerNode.Cast<WfNewTypeExpression>())
 							{
-								if (!inLambda)
+								FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 								{
-									auto scope = nodeScopes[symbol->creatorDeclaration.Obj()].Obj();
-									if (scope->ownerClassMember->kind == WfClassMemberKind::Normal)
+									if (symbol->creatorNode.Cast<WfVariableDeclaration>())
 									{
 										results.Add(ResolveExpressionResult::Symbol(symbol));
 									}
 								}
 							}
-							else
+							ResolveMember(scope->typeOfThisExpr, name, !visibleToNonStatic, results);
+						}
+						else
+						{
+							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 							{
 								results.Add(ResolveExpressionResult::Symbol(symbol));
 							}
 						}
 					}
-					
-					if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
-					{
-						inLambda = true;
-					}
-					else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
-					{
-						inLambda = true;
-					}
 
-					if (newTypeExpr && ownerFunction && scope->typeOfThisExpr)
-					{
-						ResolveMember(scope->typeOfThisExpr, name, false, results);
-					}
-					ownerClassMember = scope->ownerClassMember;
-					ownerFunction = scope->ownerDeclaration.Cast<WfFunctionDeclaration>();
 					scope = scope->parentScope.Obj();
-				}
-
-				while (scope)
-				{
-					if (auto classDecl = scope->ownerDeclaration.Cast<WfClassDeclaration>())
-					{
-						auto td = declarationTypes[classDecl.Obj()];
-						bool preferStatic = ownerClassMember ? ownerClassMember->kind == WfClassMemberKind::Static : true;
-						ownerClassMember = nullptr;
-						if (ResolveMember(td.Obj(), name, preferStatic, results))
-						{
-							found = true;
-						}
-						scope = scope->parentScope.Obj();
-					}
-					else
-					{
-						break;
-					}
 				}
 				
 				while (scope)
 				{
-					if (auto nsDecl = scope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+					if (auto nsDecl = scope->ownerNode.Cast<WfNamespaceDeclaration>())
 					{
 						auto scopeName = namespaceNames[nsDecl.Obj()];
 						vint index = scopeName->children.Keys().IndexOf(name);
 						if (index != -1)
 						{
-							found = true;
 							auto subScopeName = scopeName->children.Values()[index];
 							results.Add(ResolveExpressionResult::ScopeName(subScopeName));
 						}
@@ -662,32 +622,33 @@ WfLexicalScopeManager
 				vint index = globalName->children.Keys().IndexOf(name);
 				if (index != -1)
 				{
-					found = true;
 					auto subScopeName = globalName->children.Values()[index];
 					results.Add(ResolveExpressionResult::ScopeName(subScopeName));
 				}
 
-				FOREACH(Ptr<WfModuleUsingPath>, path, scope->ownerModule->paths)
+				if (auto module = scope->ownerNode.Cast<WfModule>())
 				{
-					auto scopeName = globalName;
-					FOREACH(Ptr<WfModuleUsingItem>, item, path->items)
+					FOREACH(Ptr<WfModuleUsingPath>, path, module->paths)
 					{
-						WString fragmentName;
-						FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+						auto scopeName = globalName;
+						FOREACH(Ptr<WfModuleUsingItem>, item, path->items)
 						{
-							fragmentName += UsingPathToNameVisitor::Execute(fragment, name);
+							WString fragmentName;
+							FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+							{
+								fragmentName += UsingPathToNameVisitor::Execute(fragment, name);
+							}
+							vint index = scopeName->children.Keys().IndexOf(fragmentName);
+							if (index == -1) goto USING_PATH_MATCHING_FAILED;
+							scopeName = scopeName->children.Values()[index];
 						}
-						vint index = scopeName->children.Keys().IndexOf(fragmentName);
-						if (index == -1) goto USING_PATH_MATCHING_FAILED;
-						scopeName = scopeName->children.Values()[index];
-					}
 
-					found = true;
-					results.Add(ResolveExpressionResult::ScopeName(scopeName));
-				USING_PATH_MATCHING_FAILED:;
+						results.Add(ResolveExpressionResult::ScopeName(scopeName));
+					USING_PATH_MATCHING_FAILED:;
+					}
 				}
 
-				return found;
+				return results.Count() > oldResultCount;
 			}
 
 			Ptr<WfLexicalSymbol> WfLexicalScopeManager::GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node)
@@ -695,7 +656,7 @@ WfLexicalScopeManager
 				auto symbol = From(scope->parentScope->symbols[node->name.value])
 					.Where([=](Ptr<WfLexicalSymbol> symbol)
 					{
-						return symbol->creatorDeclaration == node;
+						return symbol->creatorNode == node;
 					})
 					.First();
 				return symbol;
