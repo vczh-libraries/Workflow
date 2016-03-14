@@ -474,74 +474,50 @@ ValidateSemantic(Expression)
 							{
 								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, result.symbol));
 							}
-							else if (!result.symbol->creatorDeclaration || result.symbol->creatorDeclaration.Cast<WfVariableDeclaration>())
+							else if (!result.symbol->creatorNode.Cast<WfDeclaration>() || result.symbol->creatorNode.Cast<WfVariableDeclaration>())
 							{
 								bool readonlyCaptured = false;
-								if (!result.symbol->ownerScope->ownerDeclaration.Cast<WfNamespaceDeclaration>())
+								if (!result.symbol->ownerScope->ownerNode.Cast<WfModule>() && !result.symbol->ownerScope->ownerNode.Cast<WfNamespaceDeclaration>())
 								{
 									auto currentScope = scope;
-									bool testedReadonlyCaptured = false;
-									Ptr<WfClassMember> lastFuncDeclClassMember;
-
+									Ptr<WfLexicalFunctionConfig> firstConfig, lastConfig;
 									while (currentScope)
 									{
-										if (auto funcDecl = currentScope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+										if (currentScope->functionConfig)
 										{
-											bool inClassMember = currentScope->ownerClassMember && currentScope->parentScope && currentScope->parentScope->ownerDeclaration;
-											if (result.symbol->ownerScope != currentScope && !inClassMember)
+											if (!firstConfig) firstConfig = currentScope->functionConfig;
+											lastConfig = currentScope->functionConfig;
+
+											if (currentScope->functionConfig->lambda)
 											{
-												readonlyCaptured = true;
-												lastFuncDeclClassMember = currentScope->ownerClassMember;
-
-												if (auto parentScope = currentScope->parentScope.Obj())
-												{
-													if (parentScope->ownerExpression.Cast<WfNewTypeExpression>())
-													{
-														if (!testedReadonlyCaptured)
-														{
-															testedReadonlyCaptured = true;
-															if (result.symbol->ownerScope == parentScope)
-															{
-																readonlyCaptured = false;
-															}
-														}
-													}
-												}
-
-												auto capture = manager->lambdaCaptures.Get(funcDecl.Obj());
+												auto capture = manager->lambdaCaptures.Get(currentScope->ownerNode.Obj());
 												if (!capture->symbols.Contains(result.symbol.Obj()))
 												{
 													capture->symbols.Add(result.symbol);
-												}
-											}
-										}
-
-										if (auto ordered = currentScope->ownerExpression.Cast<WfOrderedLambdaExpression>())
-										{
-											if (result.symbol->ownerScope != currentScope)
-											{
-												readonlyCaptured = true;
-												auto capture = manager->lambdaCaptures.Get(ordered.Obj());
-												if (!capture->symbols.Contains(result.symbol.Obj()))
-												{
-													capture->symbols.Add(result.symbol);
-												}
-											}
-										}
-
-										if (auto newType = currentScope->ownerExpression.Cast<WfNewTypeExpression>())
-										{
-											if (!lastFuncDeclClassMember || !newType->members.Contains(lastFuncDeclClassMember.Obj()))
-											{
-												if (result.symbol->ownerScope == currentScope)
-												{
-													manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 												}
 											}
 										}
 
 										if (result.symbol->ownerScope == currentScope)
 										{
+											if (currentScope->typeOfThisExpr)
+											{
+												if (currentScope->ownerNode.Cast<WfNewTypeExpression>())
+												{
+													if (firstConfig)
+													{
+														readonlyCaptured = firstConfig != lastConfig;
+													}
+													else
+													{
+														manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
+													}
+												}
+												else
+												{
+													readonlyCaptured = true;
+												}
+											}
 											break;
 										}
 										currentScope = currentScope->parentScope.Obj();
@@ -587,81 +563,56 @@ ValidateSemantic(Expression)
 				void Visit(WfReferenceExpression* node)override
 				{
 					ResolveName(node, node->name.value);
-
-					Ptr<WfClassMember> ownerClassMember;
-					ITypeDescriptor* ownerClass = nullptr;
-					auto scope = manager->nodeScopes[node].Obj();
-					while (scope)
+					FOREACH(ResolveExpressionResult, result, results)
 					{
-						if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+						ITypeDescriptor* td = nullptr;
+						if (result.methodInfo)
 						{
-							break;
+							td = result.methodInfo->GetOwnerTypeDescriptor();
 						}
-						else if (scope->ownerExpression.Cast<WfNewTypeExpression>())
+						else if (result.propertyInfo)
 						{
-							break;
+							td = result.propertyInfo->GetOwnerTypeDescriptor();
 						}
-						else if (scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
+						else if (result.eventInfo)
 						{
-							if (scope->ownerClassMember && scope->parentScope)
-							{
-								ownerClassMember = scope->ownerClassMember;
-								if (scope->parentScope->ownerDeclaration)
-								{
-									ownerClass = manager->declarationTypes[scope->parentScope->ownerDeclaration.Obj()].Obj();
-								}
-								else
-								{
-									ownerClass = scope->parentScope->typeOfThisExpr;
-								}
-								break;
-							}
-							else
-							{
-								break;
-							}
+							td = result.eventInfo->GetOwnerTypeDescriptor();
 						}
-						scope = scope->parentScope.Obj();
-					}
 
-					if (ownerClassMember)
-					{
-						bool inStaticFunction = ownerClassMember->kind == WfClassMemberKind::Static;
-						FOREACH(ResolveExpressionResult, result, results)
+						if (td)
 						{
-							if (result.methodInfo)
+							auto scope = manager->nodeScopes[node].Obj();
+							bool visibleToNonStatic = true;
+							while (scope)
 							{
-								if (!result.methodInfo->IsStatic())
+								if (scope->functionConfig)
 								{
-									if (inStaticFunction || !ownerClass->CanConvertTo(result.methodInfo->GetOwnerTypeDescriptor()))
+									visibleToNonStatic = scope->functionConfig->thisAccessable || scope->functionConfig->parentThisAccessable;
+								}
+
+								if (scope->typeOfThisExpr)
+								{
+									if (scope->typeOfThisExpr->CanConvertTo(td))
 									{
-										manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
+										if (result.methodInfo)
+										{
+											if (result.methodInfo->IsStatic())
+											{
+												manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
+											}
+										}
+										else if (result.propertyInfo)
+										{
+											manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
+										}
+										else if (result.eventInfo)
+										{
+											manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
+										}
+										break;
 									}
 								}
-							}
-							else if (result.propertyInfo)
-							{
-								if (inStaticFunction || !ownerClass->CanConvertTo(result.propertyInfo->GetOwnerTypeDescriptor()))
-								{
-									manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
-								}
-							}
-							else if (result.eventInfo)
-							{
-								if (inStaticFunction || !ownerClass->CanConvertTo(result.eventInfo->GetOwnerTypeDescriptor()))
-								{
-									manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
-								}
-							}
-						}
-					}
-					else
-					{
-						FOREACH(ResolveExpressionResult, result, results)
-						{
-							if ((result.methodInfo && !result.methodInfo->IsStatic()) || result.propertyInfo || result.eventInfo)
-							{
-								manager->errors.Add(WfErrors::CannotCallMemberOutsideOfClass(node, result));
+								scope = scope->parentScope.Obj();
 							}
 						}
 					}

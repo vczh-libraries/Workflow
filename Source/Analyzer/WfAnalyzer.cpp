@@ -571,7 +571,7 @@ WfLexicalScopeManager
 					{
 						if (scope->functionConfig)
 						{
-							visibleToNonStatic = scope->functionConfig->parentThisAccessable;
+							visibleToNonStatic = scope->functionConfig->thisAccessable || scope->functionConfig->parentThisAccessable;
 						}
 
 						if (scope->typeOfThisExpr)
