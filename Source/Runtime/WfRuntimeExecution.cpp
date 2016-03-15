@@ -358,6 +358,12 @@ WfRuntimeThreadContext
 						PushValue(closure);
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::LoadClosureContext:
+					{
+						auto capturedVariables = GetCurrentStackFrame().capturedVariables;
+						PushValue(Value::From(capturedVariables));
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::StoreLocalVar:
 					{
 						Value operand;
@@ -431,7 +437,7 @@ WfRuntimeThreadContext
 						PushValue(Value::From(map));
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-				case WfInsCode::CreateClosuerContext:
+				case WfInsCode::CreateClosureContext:
 					{
 						Ptr<WfRuntimeVariableContext> capturedVariables;
 						if (ins.countParameter > 0)

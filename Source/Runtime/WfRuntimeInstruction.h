@@ -34,6 +34,7 @@ Instruction
 				LoadGlobalVar,			// variable				: () -> Value														;
 				LoadMethodInfo,			// IMethodInfo*			: () -> IMethodInfo*												;
 				LoadMethodClosure,		// IMethodInfo*			: Value-this -> <function>											;
+				LoadClosureContext,		//						: () -> <closure-context>											; load the current closure context
 				StoreLocalVar,			// variable				: Value -> ()														;
 				StoreCapturedVar,		// variable				: Value -> ()														;
 				StoreGlobalVar,			// variable				: Value -> ()														;
@@ -42,7 +43,7 @@ Instruction
 				Return,					//						: Value -> Value													; (exit function)
 				CreateArray,			// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
 				CreateMap,				// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
-				CreateClosuerContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
+				CreateClosureContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
 				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
 				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
 				CreateRange,			// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
@@ -104,6 +105,7 @@ Instruction
 			APPLY_VARIABLE(LoadGlobalVar)\
 			APPLY_METHOD(LoadMethodInfo)\
 			APPLY_METHOD(LoadMethodClosure)\
+			APPLY(LoadClosureContext)\
 			APPLY_VARIABLE(StoreLocalVar)\
 			APPLY_VARIABLE(StoreCapturedVar)\
 			APPLY_VARIABLE(StoreGlobalVar)\
@@ -112,7 +114,7 @@ Instruction
 			APPLY(Return)\
 			APPLY_COUNT(CreateArray)\
 			APPLY_COUNT(CreateMap)\
-			APPLY_COUNT(CreateClosuerContext)\
+			APPLY_COUNT(CreateClosureContext)\
 			APPLY(CreateClosure)\
 			APPLY_METHOD_COUNT(CreateInterface)\
 			APPLY_TYPE(CreateRange)\

@@ -99,11 +99,7 @@ GenerateInstructions(Declaration)
 				meta->firstInstruction = context.assembly->instructions.Count();
 				if (recursiveLambdaSymbol)
 				{
-					for (vint i = 0; i < functionContext->capturedVariables.Count(); i++)
-					{
-						INSTRUCTION(Ins::LoadCapturedVar(i));
-					}
-					INSTRUCTION(Ins::CreateClosuerContext(functionContext->capturedVariables.Count()));
+					INSTRUCTION(Ins::LoadClosureContext());
 					INSTRUCTION(Ins::LoadFunction(context.assembly->functions.IndexOf(meta.Obj())));
 					INSTRUCTION(Ins::CreateClosure());
 					INSTRUCTION(Ins::StoreLocalVar(functionContext->localVariables[recursiveLambdaSymbol.Obj()]));

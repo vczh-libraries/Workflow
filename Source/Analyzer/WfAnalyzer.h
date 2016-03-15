@@ -410,6 +410,7 @@ Code Generation
 				typedef collections::Dictionary<WfLexicalSymbol*, vint>											VariableIndexMap;
 				typedef collections::Dictionary<WfLexicalSymbol*, vint>											FunctionIndexMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, parsing::ParsingTextRange>		NodePositionMap;
+				typedef collections::Dictionary<Ptr<WfLexicalFunctionConfig>, vint>								ThisStackCountMap;
 			public:
 				Ptr<runtime::WfAssembly>			assembly;
 				WfLexicalScopeManager*				manager;
@@ -419,12 +420,14 @@ Code Generation
 				Ptr<WfCodegenFunctionContext>		functionContext;
 				NodePositionMap						nodePositionsBeforeCodegen;
 				NodePositionMap						nodePositionsAfterCodegen;
+				ThisStackCountMap					thisStackCounts;
 
 				WfCodegenContext(Ptr<runtime::WfAssembly> _assembly, WfLexicalScopeManager* _manager);
 
 				vint								AddInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins);
 				void								AddExitInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins);
 				void								ApplyExitInstructions(Ptr<WfCodegenScopeContext> scopeContext);
+				vint								GetThisStackCount(WfLexicalScope* scope);
 			};
 
 			extern void										GenerateFunctionDeclarationMetadata(WfCodegenContext& context, WfFunctionDeclaration* node, Ptr<runtime::WfAssemblyFunction> meta);

@@ -755,6 +755,46 @@ WfCodegenContext
 					CopyFrom(assembly->insAfterCodegen->instructionCodeMapping, scopeContext->instructionCodeMappingAfterCodegen, true);
 				}
 			}
+
+			vint WfCodegenContext::GetThisStackCount(WfLexicalScope* scope)
+			{
+				vint count = 0;
+				Ptr<WfLexicalFunctionConfig> config;
+				while (scope)
+				{
+					if (scope->functionConfig)
+					{
+						if (!config)
+						{
+							vint index = thisStackCounts.Keys().IndexOf(scope->functionConfig.Obj());
+							if (index == -1)
+							{
+								config = scope->functionConfig;
+							}
+							else
+							{
+								return thisStackCounts.Values()[index];
+							}
+						}
+
+						if (scope->functionConfig->thisAccessable)
+						{
+							count++;
+						}
+						if (!scope->functionConfig->parentThisAccessable)
+						{
+							break;
+						}
+					}
+					scope = scope->parentScope.Obj();
+				}
+
+				if (config)
+				{
+					thisStackCounts.Add(config, count);
+				}
+				return count;
+			}
 		}
 	}
 }

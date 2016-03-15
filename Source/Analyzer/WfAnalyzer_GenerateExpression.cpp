@@ -37,7 +37,7 @@ GenerateInstructions(Expression)
 					if ((index = context.globalFunctions.Keys().IndexOf(symbol)) != -1)
 					{
 						vint functionIndex = context.globalFunctions.Values()[index];
-						INSTRUCTION(Ins::CreateClosuerContext(0));
+						INSTRUCTION(Ins::CreateClosureContext(0));
 						INSTRUCTION(Ins::LoadFunction(functionIndex));
 						INSTRUCTION(Ins::CreateClosure());
 					}
@@ -98,46 +98,20 @@ GenerateInstructions(Expression)
 				void VisitThisExpression(WfExpression* node)
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
-					Ptr<WfFunctionDeclaration> funcDecl;
 					while (scope)
 					{
-						if (scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
+						if (scope->functionConfig)
 						{
-							break;
-						}
-						else if (auto newType = scope->ownerExpression.Cast<WfNewTypeExpression>())
-						{
-							if (funcDecl)
+							if (scope->functionConfig->thisAccessable)
 							{
-								if (auto td = context.manager->nodeScopes[newType.Obj()]->typeOfThisExpr)
+								if (scope->functionConfig->lambda)
 								{
-									auto capture = context.manager->lambdaCaptures.Get(funcDecl.Obj());
+									auto capture = context.manager->lambdaCaptures[scope->ownerNode.Obj()];
+									auto count = context.GetThisStackCount(scope);
 									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count()));
-									return;
 								}
 							}
-							else
-							{
-								break;
-							}
-						}
-						else if (auto classDecl = scope->ownerDeclaration.Cast<WfClassDeclaration>())
-						{
-							if (funcDecl)
-							{
-								CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfThisExpression*)#Internal error, this expression is illegal here.");
-							}
-							else
-							{
-								break;
-							}
-						}
-						else if (funcDecl = scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
-						{
-							if (!scope->ownerClassMember || scope->ownerClassMember->kind == WfClassMemberKind::Static)
-							{
-								break;
-							}
+							CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfThisExpression*)#Internal error, this expression is illegal here.");
 						}
 						scope = scope->parentScope.Obj();
 					}
@@ -166,6 +140,9 @@ GenerateInstructions(Expression)
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
+					auto scope = context.manager->nodeScopes[node].Obj();
+					CHECK_ERROR(context.GetThisStackCount(scope) == 0, L"TODO: Load this stack symbols");
+
 					WfCodegenLambdaContext lc;
 					lc.orderedLambdaExpression = node;
 					auto functionIndex = AddClosure(context, lc, [=](vint index)
@@ -178,7 +155,7 @@ GenerateInstructions(Expression)
 					{
 						GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 					}
-					INSTRUCTION(Ins::CreateClosuerContext(capture->symbols.Count()));
+					INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count()));
 					INSTRUCTION(Ins::LoadFunction(functionIndex));
 					INSTRUCTION(Ins::CreateClosure());
 				}
@@ -859,6 +836,8 @@ GenerateInstructions(Expression)
 
 				static void VisitFunction(WfCodegenContext& context, WfFunctionDeclaration* node, WfCodegenLambdaContext lc, bool newTypeFunctionIndex, const Func<WString(vint)>& getName)
 				{
+					auto scope = context.manager->nodeScopes[node].Obj();
+					CHECK_ERROR(context.GetThisStackCount(scope) == (newTypeFunctionIndex ? 1 : 0), L"TODO: Load this stack symbols");
 					auto functionIndex = AddClosure(context, lc, getName);
 
 					if (newTypeFunctionIndex)
@@ -872,7 +851,7 @@ GenerateInstructions(Expression)
 						{
 							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 						}
-						INSTRUCTION(Ins::CreateClosuerContext(capture->symbols.Count()));
+						INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count()));
 						INSTRUCTION(Ins::LoadFunction(functionIndex));
 						INSTRUCTION(Ins::CreateClosure());
 					}
@@ -990,7 +969,7 @@ GenerateInstructions(Expression)
 								GenerateLoadSymbolInstructions(context, capture->symbols[i].Obj(), node);
 							}
 							INSTRUCTION(Ins::LoadValue(Value()));
-							INSTRUCTION(Ins::CreateClosuerContext(capture->symbols.Count() + 1));
+							INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + 1));
 
 							FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.closureFunctions)
 							{
