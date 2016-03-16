@@ -678,9 +678,12 @@ CheckScopes
 									{
 										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
 										{
-											if (auto decl = symbol->creatorNode.Cast<WfFunctionDeclaration>())
+											if (auto decl = symbol->creatorNode.Cast<WfDeclaration>())
 											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(decl.Obj(), symbol));
+												if (!decl.Cast<WfFunctionDeclaration>())
+												{
+													manager->errors.Add(WfErrors::DuplicatedSymbol(decl.Obj(), symbol));
+												}
 											}
 											else if (auto arg = symbol->creatorNode.Cast<WfFunctionArgument>())
 											{
