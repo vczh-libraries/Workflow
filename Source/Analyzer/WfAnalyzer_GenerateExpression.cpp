@@ -84,10 +84,30 @@ GenerateInstructions(Expression)
 					{
 						GenerateLoadSymbolInstructions(context, result.symbol.Obj(), node);
 					}
-					else if (result.methodInfo && result.methodInfo->IsStatic())
+					else if (result.methodInfo)
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						if (result.methodInfo->IsStatic())
+						{
+							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
+						}
+						else
+						{
+							INSTRUCTION(Ins::LoadValue(Value()));
+						}
 						INSTRUCTION(Ins::LoadMethodClosure(result.methodInfo));
+					}
+					else if (result.propertyInfo)
+					{
+						if (auto getter = result.propertyInfo->GetGetter())
+						{
+							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
+							INSTRUCTION(Ins::InvokeMethod(getter, 0));
+						}
+						else
+						{
+							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
+							INSTRUCTION(Ins::GetProperty(result.propertyInfo));
+						}
 					}
 					else
 					{
@@ -95,7 +115,11 @@ GenerateInstructions(Expression)
 					}
 				}
 
-				void VisitThisExpression(WfExpression* node)
+				void VisitThisExpression(WfExpression* node, ITypeDescriptor* td)
+				{
+				}
+
+				void Visit(WfThisExpression* node)override
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
 					while (scope)
@@ -116,11 +140,6 @@ GenerateInstructions(Expression)
 						scope = scope->parentScope.Obj();
 					}
 					CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfThisExpression*)#Internal error, this expression is illegal here.");
-				}
-
-				void Visit(WfThisExpression* node)override
-				{
-					VisitThisExpression(node);
 				}
 
 				void Visit(WfTopQualifiedExpression* node)override
@@ -763,7 +782,7 @@ GenerateInstructions(Expression)
 						}
 						else
 						{
-							VisitThisExpression(node);
+							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
 						}
 
 						INSTRUCTION(Ins::InvokeMethod(result.methodInfo, node->arguments.Count()));
@@ -771,61 +790,36 @@ GenerateInstructions(Expression)
 					}
 					else if (result.eventInfo)
 					{
-						auto scope = context.manager->nodeScopes[node].Obj();
-						bool processed = false;
-						while (scope)
+						if(auto member = node->function.Cast<WfMemberExpression>())
 						{
-							if (auto funcDecl = scope->ownerDeclaration.Cast<WfFunctionDeclaration>())
-							{
-								if (scope->parentScope.Obj())
-								{
-									if (scope->parentScope->ownerExpression.Cast<WfNewTypeExpression>())
-									{
-										if(auto member = node->function.Cast<WfMemberExpression>())
-										{
-											GenerateExpressionInstructions(context, member->parent);
-										}
-										else
-										{
-											VisitThisExpression(node);
-										}
-										INSTRUCTION(Ins::InvokeEvent(result.eventInfo, node->arguments.Count()));
-										return;
-									}
-								}
-								break;
-							}
-							else if (auto ordered = scope->ownerExpression.Cast<WfOrderedLambdaExpression>())
-							{
-								break;
-							}
-							else
-							{
-								scope = scope->parentScope.Obj();
-							}
-						}
-
-						if (processed)
-						{
-							CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfCallExpression*)#Internal error, cannot find record of this expression.");
-						}
-					}
-					else if (result.symbol && result.symbol->creatorDeclaration.Cast<WfFunctionDeclaration>())
-					{
-						if (result.symbol->ownerScope->ownerExpression.Cast<WfNewTypeExpression>())
-						{
-							vint functionIndex = context.closureFunctions[result.symbol.Obj()];
-							INSTRUCTION(Ins::InvokeWithContext(functionIndex, node->arguments.Count()));
-							return;
+							GenerateExpressionInstructions(context, member->parent);
 						}
 						else
 						{
-							vint index = context.globalFunctions.Keys().IndexOf(result.symbol.Obj());
-							if (index != -1)
+							VisitThisExpression(node, result.eventInfo->GetOwnerTypeDescriptor());
+						}
+						INSTRUCTION(Ins::InvokeEvent(result.eventInfo, node->arguments.Count()));
+						return;
+					}
+					else if (result.symbol)
+					{
+						if (result.symbol->creatorNode.Cast<WfFunctionDeclaration>())
+						{
+							if (result.symbol->ownerScope->ownerNode.Cast<WfNewTypeExpression>())
 							{
-								vint functionIndex = context.globalFunctions.Values()[index];
-								INSTRUCTION(Ins::Invoke(functionIndex, node->arguments.Count()));
+								vint functionIndex = context.closureFunctions[result.symbol.Obj()];
+								INSTRUCTION(Ins::InvokeWithContext(functionIndex, node->arguments.Count()));
 								return;
+							}
+							else
+							{
+								vint index = context.globalFunctions.Keys().IndexOf(result.symbol.Obj());
+								if (index != -1)
+								{
+									vint functionIndex = context.globalFunctions.Values()[index];
+									INSTRUCTION(Ins::Invoke(functionIndex, node->arguments.Count()));
+									return;
+								}
 							}
 						}
 					}

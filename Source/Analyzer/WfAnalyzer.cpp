@@ -565,14 +565,15 @@ WfLexicalScopeManager
 					{
 						break;
 					}
+
+					if (scope->functionConfig)
+					{
+						visibleToNonStatic = scope->functionConfig->thisAccessable || scope->functionConfig->parentThisAccessable;
+					}
 					
 					vint index = scope->symbols.Keys().IndexOf(name);
 					if (index != -1)
 					{
-						if (scope->functionConfig)
-						{
-							visibleToNonStatic = scope->functionConfig->thisAccessable || scope->functionConfig->parentThisAccessable;
-						}
 
 						if (scope->typeOfThisExpr)
 						{
@@ -586,7 +587,6 @@ WfLexicalScopeManager
 									}
 								}
 							}
-							ResolveMember(scope->typeOfThisExpr, name, !visibleToNonStatic, results);
 						}
 						else
 						{
@@ -595,6 +595,11 @@ WfLexicalScopeManager
 								results.Add(ResolveExpressionResult::Symbol(symbol));
 							}
 						}
+					}
+
+					if (scope->typeOfThisExpr)
+					{
+						ResolveMember(scope->typeOfThisExpr, name, !visibleToNonStatic, results);
 					}
 
 					scope = scope->parentScope.Obj();

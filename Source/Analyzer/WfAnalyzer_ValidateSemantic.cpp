@@ -420,10 +420,19 @@ ValidateSemantic(Expression)
 						if (auto config = scope->functionConfig)
 						{
 							lastConfig = config;
+							if (!lastConfig->thisAccessable)
+							{
+								break;
+							}
 						}
 
 						if (scope->typeOfThisExpr)
 						{
+							if (!lastConfig)
+							{
+								break;
+							}
+
 							if (lastConfig->thisAccessable)
 							{
 								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
@@ -434,10 +443,6 @@ ValidateSemantic(Expression)
 
 								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 								return;
-							}
-							if (!lastConfig->parentThisAccessable)
-							{
-								break;
 							}
 						}
 						scope = scope->parentScope.Obj();
@@ -480,13 +485,14 @@ ValidateSemantic(Expression)
 								if (!result.symbol->ownerScope->ownerNode.Cast<WfModule>() && !result.symbol->ownerScope->ownerNode.Cast<WfNamespaceDeclaration>())
 								{
 									auto currentScope = scope;
-									Ptr<WfLexicalFunctionConfig> firstConfig, lastConfig;
+									WfLexicalScope* firstConfigScope = nullptr;
+									WfLexicalScope* lastConfigScope = nullptr;
 									while (currentScope)
 									{
 										if (currentScope->functionConfig)
 										{
-											if (!firstConfig) firstConfig = currentScope->functionConfig;
-											lastConfig = currentScope->functionConfig;
+											if (!firstConfigScope) firstConfigScope = currentScope;
+											lastConfigScope = currentScope;
 
 											if (currentScope->functionConfig->lambda)
 											{
@@ -500,24 +506,27 @@ ValidateSemantic(Expression)
 
 										if (result.symbol->ownerScope == currentScope)
 										{
-											if (currentScope->typeOfThisExpr)
+											if (firstConfigScope && firstConfigScope->functionConfig->lambda)
 											{
-												if (currentScope->ownerNode.Cast<WfNewTypeExpression>())
+												readonlyCaptured = true;
+											}
+
+											if (currentScope->ownerNode.Cast<WfNewTypeExpression>())
+											{
+												if (firstConfigScope)
 												{
-													if (firstConfig)
-													{
-														readonlyCaptured = firstConfig != lastConfig;
-													}
-													else
+													readonlyCaptured = firstConfigScope != lastConfigScope;
+													if (!lastConfigScope->ownerClassMember)
 													{
 														manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 													}
 												}
 												else
 												{
-													readonlyCaptured = true;
+													manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 												}
 											}
+
 											break;
 										}
 										currentScope = currentScope->parentScope.Obj();
@@ -590,13 +599,13 @@ ValidateSemantic(Expression)
 									visibleToNonStatic = scope->functionConfig->thisAccessable || scope->functionConfig->parentThisAccessable;
 								}
 
-								if (scope->typeOfThisExpr)
+								if (scope->typeOfThisExpr && scope->typeOfThisExpr->CanConvertTo(td))
 								{
-									if (scope->typeOfThisExpr->CanConvertTo(td))
+									if (!visibleToNonStatic)
 									{
 										if (result.methodInfo)
 										{
-											if (result.methodInfo->IsStatic())
+											if (!result.methodInfo->IsStatic())
 											{
 												manager->errors.Add(WfErrors::CannotCallMemberInStaticFunction(node, result));
 											}

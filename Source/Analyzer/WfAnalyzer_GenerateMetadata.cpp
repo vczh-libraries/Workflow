@@ -34,9 +34,10 @@ GenerateGlobalDeclarationMetadata
 					}
 
 					auto scope = context.manager->nodeScopes[node];
-					if (scope->parentScope && scope->parentScope->ownerExpression.Cast<WfNewTypeExpression>())
+					vint count = context.GetThisStackCount(scope.Obj());
+					for (vint i = 0; i < count; i++)
 					{
-						meta->capturedVariableNames.Add(L"<captured-this>");
+						meta->capturedVariableNames.Add(L"<captured-this>" + itow(i));
 					}
 				}
 			}
