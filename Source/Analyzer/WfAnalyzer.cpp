@@ -559,6 +559,7 @@ WfLexicalScopeManager
 			{
 				vint oldResultCount = results.Count();
 				bool visibleToNonStatic = true;
+				WfLexicalScope* firstConfigScope = nullptr;
 				while (scope)
 				{
 					if (scope->ownerNode.Cast<WfModule>() || scope->ownerNode.Cast<WfNamespaceDeclaration>())
@@ -569,12 +570,15 @@ WfLexicalScopeManager
 					if (scope->functionConfig)
 					{
 						visibleToNonStatic = scope->functionConfig->thisAccessable || scope->functionConfig->parentThisAccessable;
+						if (!firstConfigScope)
+						{
+							firstConfigScope = scope;
+						}
 					}
 					
 					vint index = scope->symbols.Keys().IndexOf(name);
 					if (index != -1)
 					{
-
 						if (scope->typeOfThisExpr)
 						{
 							if (scope->ownerNode.Cast<WfNewTypeExpression>())
@@ -584,6 +588,13 @@ WfLexicalScopeManager
 									if (symbol->creatorNode.Cast<WfVariableDeclaration>())
 									{
 										results.Add(ResolveExpressionResult::Symbol(symbol));
+									}
+									else if (symbol->creatorClassMember->kind == WfClassMemberKind::Normal)
+									{
+										if (firstConfigScope->parentScope == scope)
+										{
+											results.Add(ResolveExpressionResult::Symbol(symbol));
+										}
 									}
 								}
 							}

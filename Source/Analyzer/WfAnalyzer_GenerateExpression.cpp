@@ -63,8 +63,33 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::GenerateLoadSymbolInstructions(WfCodegenContext&, WfLexicalSymbol*, ParsingTreeCustomBase*)#Internal error, cannot find record of this symbol.");
+						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::GenerateLoadSymbolInstructions(WfCodegenContext&, WfLexicalSymbol*, ParsingTreeCustomBase*)#Internal error, cannot find any record of this symbol.");
 					}
+				}
+
+				static vint PushCapturedThisValues(WfCodegenContext& context, WfLexicalScope* lambdaScopeParent, ParsingTreeCustomBase* node)
+				{
+					auto scope = lambdaScopeParent;
+					while (scope)
+					{
+						if (scope->functionConfig)
+						{
+							if (scope->functionConfig->lambda)
+							{
+								vint parentThisCount = context.GetThisStackCount(scope);
+								auto capture = context.manager->lambdaCaptures[scope->ownerNode.Obj()];
+								vint captureCount = capture->symbols.Count();
+								for (vint i = 0; i < parentThisCount; i++)
+								{
+									INSTRUCTION(Ins::LoadCapturedVar(captureCount + i));
+								}
+								return parentThisCount;
+							}
+							break;
+						}
+						scope = scope->parentScope.Obj();
+					}
+					return 0;
 				}
 
 				static vint AddClosure(WfCodegenContext& context, WfCodegenLambdaContext lc, const Func<WString(vint)>& getName)
@@ -88,11 +113,11 @@ GenerateInstructions(Expression)
 					{
 						if (result.methodInfo->IsStatic())
 						{
-							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
+							INSTRUCTION(Ins::LoadValue(Value()));
 						}
 						else
 						{
-							INSTRUCTION(Ins::LoadValue(Value()));
+							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
 						}
 						INSTRUCTION(Ins::LoadMethodClosure(result.methodInfo));
 					}
@@ -100,23 +125,57 @@ GenerateInstructions(Expression)
 					{
 						if (auto getter = result.propertyInfo->GetGetter())
 						{
-							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
+							VisitThisExpression(node, getter->GetOwnerTypeDescriptor());
 							INSTRUCTION(Ins::InvokeMethod(getter, 0));
 						}
 						else
 						{
-							VisitThisExpression(node, result.methodInfo->GetOwnerTypeDescriptor());
+							VisitThisExpression(node, getter->GetOwnerTypeDescriptor());
 							INSTRUCTION(Ins::GetProperty(result.propertyInfo));
 						}
 					}
 					else
 					{
-						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitReferenceExpression(WfExpression*)#Internal error, cannot find record of this expression.");
+						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitReferenceExpression(WfExpression*)#Internal error, cannot find any record of this expression.");
 					}
 				}
 
 				void VisitThisExpression(WfExpression* node, ITypeDescriptor* td)
 				{
+					auto scope = context.manager->nodeScopes[node].Obj();
+					vint count = context.GetThisStackCount(scope);
+					vint offset = 0;
+
+					Ptr<WfLexicalCapture> capture = nullptr;
+					while (scope)
+					{
+						if (scope->typeOfThisExpr && scope->typeOfThisExpr->CanConvertTo(td))
+						{
+							CHECK_ERROR(capture, L"TODO: Load the this argument in class method.");
+							INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count() + count - offset - 1));
+							return;
+						}
+
+						if (scope->functionConfig)
+						{
+							if (!capture)
+							{
+								vint index = context.manager->lambdaCaptures.Keys().IndexOf(scope->ownerNode.Obj());
+								if (index != -1)
+								{
+									capture = context.manager->lambdaCaptures.Values()[index];
+								}
+							}
+
+							if (!scope->functionConfig->parentThisAccessable)
+							{
+								break;
+							}
+						}
+
+						scope = scope->parentScope.Obj();
+					}
+					CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitReferenceExpression(WfExpression*)#Internal error, cannot find any record of the this value.");
 				}
 
 				void Visit(WfThisExpression* node)override
@@ -160,7 +219,6 @@ GenerateInstructions(Expression)
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
-					CHECK_ERROR(context.GetThisStackCount(scope) == 0, L"TODO: Load this stack symbols");
 
 					WfCodegenLambdaContext lc;
 					lc.orderedLambdaExpression = node;
@@ -174,7 +232,8 @@ GenerateInstructions(Expression)
 					{
 						GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 					}
-					INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count()));
+					vint thisCount = PushCapturedThisValues(context, scope->parentScope.Obj(), node);
+					INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + thisCount));
 					INSTRUCTION(Ins::LoadFunction(functionIndex));
 					INSTRUCTION(Ins::CreateClosure());
 				}
@@ -334,7 +393,7 @@ GenerateInstructions(Expression)
 							}
 							else
 							{
-								CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfBinaryExpression*)#Internal error, cannot find record of this assignable symbol.");
+								CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfBinaryExpression*)#Internal error, cannot find any record of this assignable symbol.");
 							}
 						}
 					}
@@ -828,13 +887,13 @@ GenerateInstructions(Expression)
 					INSTRUCTION(Ins::InvokeProxy(node->arguments.Count()));
 				}
 
-				static void VisitFunction(WfCodegenContext& context, WfFunctionDeclaration* node, WfCodegenLambdaContext lc, bool newTypeFunctionIndex, const Func<WString(vint)>& getName)
+				static void VisitFunction(WfCodegenContext& context, WfFunctionDeclaration* node, WfCodegenLambdaContext lc, const Func<WString(vint)>& getName)
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
-					CHECK_ERROR(context.GetThisStackCount(scope) == (newTypeFunctionIndex ? 1 : 0), L"TODO: Load this stack symbols");
+					bool inNewTypeExpr = scope->parentScope&&scope->parentScope->ownerNode.Cast<WfNewTypeExpression>();
 					auto functionIndex = AddClosure(context, lc, getName);
 
-					if (newTypeFunctionIndex)
+					if (inNewTypeExpr)
 					{
 						INSTRUCTION(Ins::LoadFunction(functionIndex));
 					}
@@ -855,7 +914,7 @@ GenerateInstructions(Expression)
 				{
 					WfCodegenLambdaContext lc;
 					lc.functionExpression = node;
-					VisitFunction(context, node->function.Obj(), lc, false, [=](vint index)
+					VisitFunction(context, node->function.Obj(), lc, [=](vint index)
 					{
 						return L"<lambda:" + node->function->name.value + L"(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
@@ -962,8 +1021,10 @@ GenerateInstructions(Expression)
 							{
 								GenerateLoadSymbolInstructions(context, capture->symbols[i].Obj(), node);
 							}
+							auto scope = context.manager->nodeScopes[node].Obj();
+							vint thisCount = PushCapturedThisValues(context, scope, node);
 							INSTRUCTION(Ins::LoadValue(Value()));
-							INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + 1));
+							INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + thisCount + 1));
 
 							FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.closureFunctions)
 							{
@@ -985,7 +1046,7 @@ GenerateInstructions(Expression)
 								INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
 								WfCodegenLambdaContext lc;
 								lc.functionDeclaration = func.Obj();
-								VisitFunction(context, func.Obj(), lc, true, [=, &declVisitor](vint index)
+								VisitFunction(context, func.Obj(), lc, [=, &declVisitor](vint index)
 								{
 									return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index + declVisitor.closureFunctions.Count()) + L")> in " + context.functionContext->function->name;
 								});

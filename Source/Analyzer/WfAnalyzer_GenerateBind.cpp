@@ -359,7 +359,6 @@ ExpandObserveExpression
 
 				void Visit(WfThisExpression* node)override
 				{
-					// TODO: this is wrong, need to capture the "this" value outside and use a reference here
 					auto expr = MakePtr<WfThisExpression>();
 					result = expr;
 				}

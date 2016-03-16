@@ -756,6 +756,10 @@ ValidateStructure(Expression)
 
 				void Visit(WfThisExpression* node)override
 				{
+					if (context->currentBindExpression)
+					{
+						manager->errors.Add(WfErrors::WrongThisExpression(node));
+					}
 				}
 
 				void Visit(WfTopQualifiedExpression* node)override

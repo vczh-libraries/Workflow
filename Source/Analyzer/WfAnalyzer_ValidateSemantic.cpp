@@ -491,17 +491,11 @@ ValidateSemantic(Expression)
 									{
 										if (currentScope->functionConfig)
 										{
-											if (!firstConfigScope) firstConfigScope = currentScope;
-											lastConfigScope = currentScope;
-
-											if (currentScope->functionConfig->lambda)
+											if (!firstConfigScope)
 											{
-												auto capture = manager->lambdaCaptures.Get(currentScope->ownerNode.Obj());
-												if (!capture->symbols.Contains(result.symbol.Obj()))
-												{
-													capture->symbols.Add(result.symbol);
-												}
+												firstConfigScope = currentScope;
 											}
+											lastConfigScope = currentScope;
 										}
 
 										if (result.symbol->ownerScope == currentScope)
@@ -528,6 +522,18 @@ ValidateSemantic(Expression)
 											}
 
 											break;
+										}
+
+										if (currentScope->functionConfig)
+										{
+											if (currentScope->functionConfig->lambda)
+											{
+												auto capture = manager->lambdaCaptures.Get(currentScope->ownerNode.Obj());
+												if (!capture->symbols.Contains(result.symbol.Obj()))
+												{
+													capture->symbols.Add(result.symbol);
+												}
+											}
 										}
 										currentScope = currentScope->parentScope.Obj();
 									}
