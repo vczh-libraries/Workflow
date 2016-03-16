@@ -61,6 +61,13 @@ GenerateInstructions(Expression)
 						vint variableIndex = context.functionContext->arguments.Values()[index];
 						INSTRUCTION(Ins::LoadLocalVar(variableIndex));
 					}
+					else if ((index = context.closureFunctions.Keys().IndexOf(symbol)) != -1)
+					{
+						vint functionIndex = context.closureFunctions.Values()[index];
+						INSTRUCTION(Ins::LoadClosureContext());
+						INSTRUCTION(Ins::LoadFunction(functionIndex));
+						INSTRUCTION(Ins::CreateClosure());
+					}
 					else
 					{
 						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::GenerateLoadSymbolInstructions(WfCodegenContext&, WfLexicalSymbol*, ParsingTreeCustomBase*)#Internal error, cannot find any record of this symbol.");
@@ -149,11 +156,18 @@ GenerateInstructions(Expression)
 					Ptr<WfLexicalCapture> capture = nullptr;
 					while (scope)
 					{
-						if (scope->typeOfThisExpr && scope->typeOfThisExpr->CanConvertTo(td))
+						if (scope->typeOfThisExpr)
 						{
-							CHECK_ERROR(capture, L"TODO: Load the this argument in class method.");
-							INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count() + count - offset - 1));
-							return;
+							if (scope->typeOfThisExpr->CanConvertTo(td))
+							{
+								CHECK_ERROR(capture, L"TODO: Load the this argument in class method.");
+								INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count() + count - offset - 1));
+								return;
+							}
+							else
+							{
+								offset++;
+							}
 						}
 
 						if (scope->functionConfig)
@@ -390,6 +404,20 @@ GenerateInstructions(Expression)
 							{
 								vint variableIndex = context.functionContext->capturedVariables.Values()[index];
 								INSTRUCTION(Ins::StoreCapturedVar(variableIndex));
+							}
+							else if (result.propertyInfo)
+							{
+								if (auto setter = result.propertyInfo->GetSetter())
+								{
+									VisitThisExpression(node, setter->GetOwnerTypeDescriptor());
+									INSTRUCTION(Ins::InvokeMethod(setter, 1));
+									INSTRUCTION(Ins::Pop());
+								}
+								else
+								{
+									VisitThisExpression(node, result.propertyInfo->GetOwnerTypeDescriptor());
+									INSTRUCTION(Ins::SetProperty(result.propertyInfo));
+								}
 							}
 							else
 							{
@@ -890,7 +918,7 @@ GenerateInstructions(Expression)
 				static void VisitFunction(WfCodegenContext& context, WfFunctionDeclaration* node, WfCodegenLambdaContext lc, const Func<WString(vint)>& getName)
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
-					bool inNewTypeExpr = scope->parentScope&&scope->parentScope->ownerNode.Cast<WfNewTypeExpression>();
+					bool inNewTypeExpr = scope->parentScope && scope->parentScope->ownerNode.Cast<WfNewTypeExpression>();
 					auto functionIndex = AddClosure(context, lc, getName);
 
 					if (inNewTypeExpr)
@@ -904,7 +932,8 @@ GenerateInstructions(Expression)
 						{
 							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 						}
-						INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count()));
+						vint thisCount = PushCapturedThisValues(context, scope->parentScope.Obj(), node);
+						INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + thisCount));
 						INSTRUCTION(Ins::LoadFunction(functionIndex));
 						INSTRUCTION(Ins::CreateClosure());
 					}

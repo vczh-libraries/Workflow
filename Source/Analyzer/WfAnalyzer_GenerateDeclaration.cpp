@@ -316,6 +316,12 @@ GenerateInstructions(Closure)
 						meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
 						capturedSymbols.Add(symbol);
 					}
+
+					vint count = context.GetThisStackCount(scope);
+					for (vint i = 0; i < count; i++)
+					{
+						meta->capturedVariableNames.Add(L"<captured-this>" + itow(i));
+					}
 				}
 
 				auto result = context.manager->expressionResolvings[node];
