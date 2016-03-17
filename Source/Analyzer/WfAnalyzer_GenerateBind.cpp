@@ -1585,7 +1585,7 @@ ExpandBindExpression
 					newSubscription->members.Add(CreateNormalMember(CreateWritableVariable(L"<bind-opened>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
 					newSubscription->members.Add(CreateNormalMember(CreateWritableVariable(L"<bind-closed>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
 					{
-						auto typeInfo = TypeInfoRetriver<Dictionary<IValueListener*, Func<void(Value)>>>::CreateTypeInfo();
+						auto typeInfo = TypeInfoRetriver<Dictionary<Ptr<IValueListener>, Func<void(Value)>>>::CreateTypeInfo();
 						auto decl = MakePtr<WfVariableDeclaration>();
 						decl->name.value = L"<bind-listeners>";
 						decl->type = GetTypeFromTypeInfo(typeInfo.Obj());
