@@ -205,7 +205,8 @@ GenerateInstructions(Expression)
 								{
 									auto capture = context.manager->lambdaCaptures[scope->ownerNode.Obj()];
 									auto count = context.GetThisStackCount(scope);
-									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count()));
+									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count() + count - 1));
+									return;
 								}
 							}
 							CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfThisExpression*)#Internal error, this expression is illegal here.");
