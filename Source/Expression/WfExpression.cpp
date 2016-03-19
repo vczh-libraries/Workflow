@@ -712,7 +712,7 @@ Print (Expression)
 				writer.AfterPrint(node);
 			}
 
-			void Visit(WfNewTypeExpression* node)override
+			void Visit(WfNewClassExpression* node)override
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"new (");
@@ -728,6 +728,16 @@ Print (Expression)
 					}
 					WfPrint(argument, indent, writer);
 				}
+				writer.WriteString(L")");
+
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfNewInterfaceExpression* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"new (");
+				WfPrint(node->type, indent, writer);
 				writer.WriteString(L")");
 
 				writer.WriteLine(L"");

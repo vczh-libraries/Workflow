@@ -300,12 +300,16 @@ GetObservingDependency
 				{
 				}
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
 				{
 					FOREACH(Ptr<WfExpression>, argument, node->arguments)
 					{
 						GetObservingDependency(manager, argument, dependency);
 					}
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
+				{
 				}
 			};
 
@@ -640,14 +644,21 @@ ExpandObserveExpression
 					result = expr;
 				}
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
 				{
-					auto expr = MakePtr<WfNewTypeExpression>();
+					auto expr = MakePtr<WfNewClassExpression>();
 					expr->type = CopyType(node->type);
 					FOREACH(Ptr<WfExpression>, arg, node->arguments)
 					{
 						expr->arguments.Add(Expand(arg));
 					}
+					result = expr;
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
+				{
+					auto expr = MakePtr<WfNewInterfaceExpression>();
+					expr->type = CopyType(node->type);
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						auto classMember = MakePtr<WfClassMember>();
@@ -1218,7 +1229,7 @@ IValueSubscription::Subscribe
 					block->statements.Add(CreateWritableVariableStatement(L"<subscription>", TypeInfoRetriver<IValueSubscription*>::CreateTypeInfo().Obj(), thisExpr));
 				}
 				{
-					auto newListener = MakePtr<WfNewTypeExpression>();
+					auto newListener = MakePtr<WfNewInterfaceExpression>();
 					{
 						auto typeInfo = TypeInfoRetriver<Ptr<IValueListener>>::CreateTypeInfo();
 						newListener->type = GetTypeFromTypeInfo(typeInfo.Obj());
@@ -1542,7 +1553,7 @@ ExpandBindExpression
 				Group<WfExpression*, WString> handlerNames, callbackNames;
 				Dictionary<WString, Ptr<ITypeInfo>> variableTypes;
 						
-				auto newSubscription = MakePtr<WfNewTypeExpression>();
+				auto newSubscription = MakePtr<WfNewInterfaceExpression>();
 				{
 					auto typeInfo = TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo();
 					newSubscription->type = GetTypeFromTypeInfo(typeInfo.Obj());

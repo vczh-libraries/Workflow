@@ -505,7 +505,7 @@ ValidateSemantic(Expression)
 												readonlyCaptured = true;
 											}
 
-											if (currentScope->ownerNode.Cast<WfNewTypeExpression>())
+											if (currentScope->ownerNode.Cast<WfNewInterfaceExpression>())
 											{
 												if (firstConfigScope)
 												{
@@ -1787,7 +1787,7 @@ ValidateSemantic(Expression)
 					return symbol->typeInfo;
 				}
 
-				class NewTypeExpressionVisitor : public Object, public WfDeclaration::IVisitor
+				class NewInterfaceExpressionVisitor : public Object, public WfDeclaration::IVisitor
 				{
 				public:
 					WfLexicalScopeManager*							manager;
@@ -1796,7 +1796,7 @@ ValidateSemantic(Expression)
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
 					WfFunctionDeclaration*							lastFunction = nullptr;
 
-					NewTypeExpressionVisitor(WfLexicalScopeManager* _manager)
+					NewInterfaceExpressionVisitor(WfLexicalScopeManager* _manager)
 						:manager(_manager)
 					{
 					}
@@ -1838,7 +1838,7 @@ ValidateSemantic(Expression)
 					{
 					}
 
-					void Execute(WfNewTypeExpression* node)
+					void Execute(WfNewInterfaceExpression* node)
 					{
 						FOREACH(Ptr<WfClassMember>, member, node->members)
 						{
@@ -1849,7 +1849,61 @@ ValidateSemantic(Expression)
 					}
 				};
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
+				{
+					auto scope = manager->nodeScopes[node].Obj();
+					Ptr<ITypeInfo> type = CreateTypeInfoFromType(scope, node->type);
+					if (type)
+					{
+						ITypeDescriptor* td = type->GetTypeDescriptor();
+						IMethodGroupInfo* ctors = td->GetConstructorGroup();
+						Ptr<ITypeInfo> selectedType;
+						IMethodInfo* selectedConstructor = nullptr;
+
+						if (!ctors || ctors->GetMethodCount() == 0)
+						{
+							manager->errors.Add(WfErrors::ClassContainsNoConstructor(node, type.Obj()));
+						}
+						else
+						{
+							if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined)
+							{
+								List<ResolveExpressionResult> functions;
+								for (vint i = 0; i < ctors->GetMethodCount(); i++)
+								{
+									IMethodInfo* info = ctors->GetMethod(i);
+									functions.Add(ResolveExpressionResult::Method(info));
+								}
+
+								selectedType = SelectFunction(node, 0, functions, node->arguments);
+								if (selectedType)
+								{
+									selectedConstructor = functions[0].methodInfo;
+								}
+							}
+							else if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
+							{
+								manager->errors.Add(WfErrors::ConstructorMixClassAndInterface(node));
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::ClassContainsNoConstructor(node, type.Obj()));
+							}
+						}
+
+						if (selectedType)
+						{
+							auto result = ResolveExpressionResult::Constructor(selectedConstructor);
+							if (!IsSameType(selectedType.Obj(), type.Obj()))
+							{
+								manager->errors.Add(WfErrors::ConstructorReturnTypeMismatched(node, result, selectedType.Obj(), type.Obj()));
+							}
+							results.Add(result);
+						}
+					}
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
 				{
 					auto scope = manager->nodeScopes[node].Obj();
 					Ptr<ITypeInfo> type = CreateTypeInfoFromType(scope, node->type);
@@ -1870,25 +1924,7 @@ ValidateSemantic(Expression)
 						{
 							if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined)
 							{
-								if (node->members.Count() == 0)
-								{
-									List<ResolveExpressionResult> functions;
-									for (vint i = 0; i < ctors->GetMethodCount(); i++)
-									{
-										IMethodInfo* info = ctors->GetMethod(i);
-										functions.Add(ResolveExpressionResult::Method(info));
-									}
-
-									selectedType = SelectFunction(node, 0, functions, node->arguments);
-									if (selectedType)
-									{
-										selectedConstructor = functions[0].methodInfo;
-									}
-								}
-								else
-								{
-									manager->errors.Add(WfErrors::ConstructorMixClassAndInterface(node));
-								}
+								manager->errors.Add(WfErrors::ConstructorMixClassAndInterface(node));
 							}
 							else if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
 							{
@@ -1906,7 +1942,7 @@ ValidateSemantic(Expression)
 								Group<WString, Ptr<WfFunctionDeclaration>> implementMethods;
 								
 								{
-									NewTypeExpressionVisitor declVisitor(manager);
+									NewInterfaceExpressionVisitor declVisitor(manager);
 									declVisitor.Execute(node);
 
 									if (declVisitor.lastFunction)

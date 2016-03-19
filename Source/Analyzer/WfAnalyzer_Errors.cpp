@@ -65,9 +65,14 @@ WfErrors
 				return new ParsingError(node, L"A5: Key-value pairs are not allowed in list constructor expression.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::ConstructorMixClassAndInterface(WfExpression* node)
+			Ptr<parsing::ParsingError> WfErrors::ConstructorMixClassAndInterface(WfNewClassExpression* node)
 			{
-				return new ParsingError(node, L"A6: Members are not allowed in class constructor expression.");
+				return new ParsingError(node, L"A6: Arguments are not allowed in new interface expression.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::ConstructorMixClassAndInterface(WfNewInterfaceExpression* node)
+			{
+				return new ParsingError(node, L"A6: Members are not allowed in new class expression.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::ScopeNameIsNotExpression(WfExpression* node, Ptr<WfLexicalScopeName> scopeName)
@@ -357,7 +362,7 @@ WfErrors
 				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::InterfaceMethodNotImplemented(WfNewTypeExpression* node, reflection::description::IMethodInfo* method)
+			Ptr<parsing::ParsingError> WfErrors::InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method)
 			{
 				auto result = ResolveExpressionResult::Method(method);
 				return new ParsingError(node, L"D3: Interface method not implemented: " + result.GetFriendlyName() + L".");

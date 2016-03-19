@@ -478,7 +478,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			AttachInBind(WfExpression* node);
 				static Ptr<parsing::ParsingError>			DetachInBind(WfExpression* node);
 				static Ptr<parsing::ParsingError>			ConstructorMixMapAndList(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfExpression* node);
+				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewClassExpression* node);
+				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewInterfaceExpression* node);
 				static Ptr<parsing::ParsingError>			ScopeNameIsNotExpression(WfExpression* node, Ptr<WfLexicalScopeName> scopeName);
 				static Ptr<parsing::ParsingError>			EventIsNotExpression(WfExpression* node, reflection::description::IEventInfo* eventInfo);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotScopeName(WfExpression* node);
@@ -541,7 +542,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStatement* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewTypeExpression* node, reflection::description::IMethodInfo* method);
+				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);

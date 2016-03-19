@@ -581,7 +581,7 @@ WfLexicalScopeManager
 					{
 						if (scope->typeOfThisExpr)
 						{
-							if (scope->ownerNode.Cast<WfNewTypeExpression>())
+							if (scope->ownerNode.Cast<WfNewInterfaceExpression>())
 							{
 								FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 								{

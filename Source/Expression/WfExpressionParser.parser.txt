@@ -506,10 +506,15 @@ class ClassMember
 	Declaration				declaration;
 }
 
-class NewTypeExpression : Expression
+class NewClassExpression : Expression
 {
 	Type					type;
 	Expression[]			arguments;
+}
+
+class NewInterfaceExpression : Expression
+{
+	Type					type;
 	ClassMember[]			members;
 }
 
@@ -742,11 +747,8 @@ rule Expression ExpPrimitive
 		((")" with {endBoundary = "Exclusive"}) | ("]" with {endBoundary = "Inclusive"}))
 		as RangeExpression
 	= "{" {CtorFragment : arguments} "}" as ConstructorExpression
-	= "new" WorkflowType : type
-		(
-			"(" [WorkflowExpression : arguments {"," WorkflowExpression : arguments}] ")" 
-			| "{" {WorkflowClassMember : members} "}"
-		) as NewTypeExpression
+	= "new" WorkflowType : type "(" [WorkflowExpression : arguments {"," WorkflowExpression : arguments}] ")" as NewClassExpression
+	= "new" WorkflowType : type "{" {WorkflowClassMember : members} "}" as NewInterfaceExpression
 	= "bind" "(" WorkflowExpression : expression ")" as BindExpression
 	= ExpPrimitive : parent "." "observe" "(" WorkflowExpression : expression ["on" WorkflowExpression : events {"," WorkflowExpression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
 	= ExpPrimitive : parent "." "observe" "as" NAME : name "(" WorkflowExpression : expression ["on" WorkflowExpression : events {"," WorkflowExpression : events}]")" as ObserveExpression with {observeType = "ExtendedObserve"}

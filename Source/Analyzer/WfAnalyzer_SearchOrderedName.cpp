@@ -384,13 +384,16 @@ SearchOrderedName(Expression)
 					SearchOrderedName(scope, node->function.Cast<WfDeclaration>(), names);
 				}
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
 				{
 					FOREACH(Ptr<WfExpression>, argument, node->arguments)
 					{
 						argument->Accept(this);
 					}
+				}
 
+				void Visit(WfNewInterfaceExpression* node)override
+				{
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						SearchOrderedName(scope, member->declaration, names);

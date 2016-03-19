@@ -284,7 +284,7 @@ ValidateStructure(Declaration)
 					{
 						manager->errors.Add(WfErrors::WrongClassMember(node));
 					}
-					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					else if (dynamic_cast<WfNewInterfaceExpression*>(source))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
@@ -427,7 +427,7 @@ ValidateStructure(Declaration)
 							ValidateTypeStructure(manager, argument);
 						}
 					}
-					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					else if (dynamic_cast<WfNewInterfaceExpression*>(source))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
@@ -523,7 +523,7 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::PropertyEventNotFound(node, classDecl));
 						}
 					}
-					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					else if (dynamic_cast<WfNewInterfaceExpression*>(source))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
@@ -547,7 +547,7 @@ ValidateStructure(Declaration)
 							break;
 						}
 					}
-					else if (dynamic_cast<WfNewTypeExpression*>(source))
+					else if (dynamic_cast<WfNewInterfaceExpression*>(source))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
@@ -1084,13 +1084,18 @@ ValidateStructure(Expression)
 					ValidateDeclarationStructure(manager, node->function, nullptr, node);
 				}
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
 				{
 					ValidateTypeStructure(manager, node->type);
 					for (vint i = 0; i < node->arguments.Count(); i++)
 					{
 						ValidateExpressionStructure(manager, context, node->arguments[i]);
 					}
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
+				{
+					ValidateTypeStructure(manager, node->type);
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						if (member->declaration.Cast<WfFunctionDeclaration>())
@@ -1118,11 +1123,6 @@ ValidateStructure(Expression)
 							}
 						}
 						ValidateDeclarationStructure(manager, member->declaration, nullptr, node);
-					}
-
-					if (node->arguments.Count() * node->members.Count() != 0)
-					{
-						manager->errors.Add(WfErrors::ConstructorMixClassAndInterface(node));
 					}
 				}
 

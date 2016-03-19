@@ -161,7 +161,11 @@ IsExpressionDependOnExpectedType(Expression)
 				{
 				}
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
+				{
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
 				{
 				}
 			};
@@ -307,7 +311,11 @@ GetExpressionName(Expression)
 				{
 				}
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
+				{
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
 				{
 				}
 			};

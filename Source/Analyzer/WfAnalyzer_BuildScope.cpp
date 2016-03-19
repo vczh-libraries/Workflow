@@ -62,7 +62,7 @@ BuildScopeForDeclaration
 							config->thisAccessable = false;
 							config->parentThisAccessable = true;
 						}
-						else if (dynamic_cast<WfNewTypeExpression*>(source))
+						else if (dynamic_cast<WfNewInterfaceExpression*>(source))
 						{
 							config->lambda = true;
 							config->thisAccessable = true;
@@ -587,13 +587,16 @@ BuildScopeForExpression
 					BuildScopeForDeclaration(manager, parentScope, node->function, node, nullptr);
 				}
 
-				void Visit(WfNewTypeExpression* node)override
+				void Visit(WfNewClassExpression* node)override
 				{
 					FOREACH(Ptr<WfExpression>, argument, node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
+				}
 
+				void Visit(WfNewInterfaceExpression* node)override
+				{
 					resultScope = new WfLexicalScope(parentScope);
 					auto capture = MakePtr<WfLexicalCapture>();
 					FOREACH(Ptr<WfClassMember>, member, node->members)
