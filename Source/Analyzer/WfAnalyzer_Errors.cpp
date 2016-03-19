@@ -530,6 +530,11 @@ WfErrors
 			{
 				return new ParsingError(node, L"G9: Type of field \"" + node->name.value + L"\" is missing.");
 			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
+			{
+				return new ParsingError(node, L"G10: Class \"" + node->name.value + L"\" inherits from another class \"" + type->GetTypeName() + L"\" for multiple times.");
+			}
 		}
 	}
 }

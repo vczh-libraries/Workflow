@@ -579,6 +579,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
 				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
 				static Ptr<parsing::ParsingError>			MissingFieldType(WfVariableDeclaration* node);
+				static Ptr<parsing::ParsingError>			DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 			};
 		}
 	}

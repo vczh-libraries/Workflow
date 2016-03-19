@@ -175,8 +175,8 @@ ValidateSemantic(Declaration)
 						{
 							if (auto td = scopeName->typeDescriptor)
 							{
-								bool isClass = (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined;
-								bool isInterface = (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined;
+								bool isClass = td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
+								bool isInterface = td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
 
 								switch (node->kind)
 								{
@@ -204,6 +204,38 @@ ValidateSemantic(Declaration)
 									if (ctor == nullptr)
 									{
 										manager->errors.Add(WfErrors::WrongInterfaceBaseType(node, td));
+									}
+								}
+							}
+						}
+					}
+
+					if (node->kind == WfClassKind::Class)
+					{
+						List<ITypeDescriptor*> baseTypes;
+						SortedList<ITypeDescriptor*> duplicatedTypes;
+						baseTypes.Add(td.Obj());
+
+						for (vint i = 0; i < baseTypes.Count(); i++)
+						{
+							auto currentTd = baseTypes[i];
+							vint count = currentTd->GetBaseTypeDescriptorCount();
+							for (vint j = 0; j < count; j++)
+							{
+								auto baseTd = currentTd->GetBaseTypeDescriptor(j);
+								if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
+								{
+									if (baseTypes.Contains(baseTd))
+									{
+										if (!duplicatedTypes.Contains(baseTd))
+										{
+											duplicatedTypes.Add(baseTd);
+											manager->errors.Add(WfErrors::DuplicatedBaseClass(node, baseTd));
+										}
+									}
+									else
+									{
+										baseTypes.Add(baseTd);
 									}
 								}
 							}
