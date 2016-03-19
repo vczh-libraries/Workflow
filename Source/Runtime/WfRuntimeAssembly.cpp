@@ -878,7 +878,8 @@ Serialization (TypeImpl)
 							Ptr<ITypeInfo> fieldType;
 							IOType(reader, fieldType);
 
-							auto info = MakePtr<WfField>(td, propName, fieldType);
+							auto info = MakePtr<WfField>(td, propName);
+							info->SetReturn(fieldType);
 							td->AddMember(info);
 						}
 					}

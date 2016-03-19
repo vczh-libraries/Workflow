@@ -125,7 +125,12 @@ BuildGlobalNameFromModules
 						switch (classDecl->kind)
 						{
 						case WfClassKind::Class:
-							throw 0;
+							{
+								auto info = MakePtr<WfClassMethod>();
+								td->AddMember(node->name.value, info);
+								manager->declarationMemberInfos.Add(node, info);
+							}
+							break;
 						case WfClassKind::Interface:
 							{
 								auto info = MakePtr<WfInterfaceMethod>();
@@ -139,7 +144,9 @@ BuildGlobalNameFromModules
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					throw 0;
+					auto info = MakePtr<WfField>(td.Obj(), node->name.value);
+					td->AddMember(info);
+					manager->declarationMemberInfos.Add(node, info);
 				}
 
 				void Visit(WfEventDeclaration* node)override

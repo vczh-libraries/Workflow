@@ -190,8 +190,10 @@ Field
 				Value									GetValueInternal(const Value& thisObject)override;
 				void									SetValueInternal(Value& thisObject, const Value& newValue)override;
 			public:
-				WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name, Ptr<ITypeInfo> returnInfo);
+				WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
 				~WfField();
+
+				void									SetReturn(Ptr<ITypeInfo> typeInfo);
 			};
 
 /***********************************************************************

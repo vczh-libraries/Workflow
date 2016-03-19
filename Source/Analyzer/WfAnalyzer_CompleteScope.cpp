@@ -57,7 +57,12 @@ CompleteScopeForClassMember
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					throw 0;
+					auto scope = manager->nodeScopes[node];
+					if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), node->type))
+					{
+						auto info = manager->declarationMemberInfos[node].Cast<WfField>();
+						info->SetReturn(typeInfo);
+					}
 				}
 
 				void Visit(WfEventDeclaration* node)override

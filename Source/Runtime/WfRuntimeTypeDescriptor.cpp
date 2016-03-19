@@ -302,13 +302,18 @@ WfField
 				record->values.Set(this, newValue);
 			}
 
-			WfField::WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name, Ptr<ITypeInfo> returnInfo)
-				:FieldInfoImpl(ownerTypeDescriptor, name, returnInfo)
+			WfField::WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:FieldInfoImpl(ownerTypeDescriptor, name, nullptr)
 			{
 			}
 
 			WfField::~WfField()
 			{
+			}
+
+			void WfField::SetReturn(Ptr<ITypeInfo> typeInfo)
+			{
+				returnInfo = typeInfo;
 			}
 
 /***********************************************************************

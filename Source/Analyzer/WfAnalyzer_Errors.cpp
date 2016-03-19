@@ -440,16 +440,6 @@ WfErrors
 				return new ParsingError(node, L"F3: Symbol \"" + name + L"\" references to too many targets: " + description + L".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name)
-			{
-				return new ParsingError(node, L"G0: Class feature not supported yet: " + name + L".");
-			}
-
-			Ptr<parsing::ParsingError> WfErrors::ClassFeatureNotSupported(WfClassMember* node, const WString& name)
-			{
-				return new ParsingError(node, L"G0: Class member \"" + node->declaration->name.value + L"\" not supported yet: " + name + L".");
-			}
-
 			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node)
 			{
 				return new ParsingError(node, L"G1: Class member \"" + node->declaration->name.value + L"\" cannot be static or override because it is not a function.");
@@ -512,7 +502,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
 			{
-				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of class \"" + node->name.value + L"\" is not a class or an interface.");
+				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of class \"" + node->name.value + L"\" is not a class.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
@@ -534,6 +524,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node)
 			{
 				return new ParsingError(node, L"G8: Function \"" + node->name.value + L"\" cannot be override because it doesn't implement any interface methods.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::MissingFieldType(WfVariableDeclaration* node)
+			{
+				return new ParsingError(node, L"G9: Type of field \"" + node->name.value + L"\" is missing.");
 			}
 		}
 	}

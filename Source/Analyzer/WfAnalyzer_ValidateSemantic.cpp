@@ -175,14 +175,14 @@ ValidateSemantic(Declaration)
 						{
 							if (auto td = scopeName->typeDescriptor)
 							{
-								bool isClass = (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined;
+								bool isClass = (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ClassType) != TypeDescriptorFlags::Undefined;
 								bool isInterface = (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined;
 
 								switch (node->kind)
 								{
 								case WfClassKind::Class:
 									{
-										if (!isClass && !isInterface)
+										if (!isClass)
 										{
 											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, td));
 										}

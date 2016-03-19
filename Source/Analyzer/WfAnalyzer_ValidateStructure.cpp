@@ -307,11 +307,13 @@ ValidateStructure(Declaration)
 								{
 								case WfClassMemberKind::Normal:
 								case WfClassMemberKind::Static:
-								case WfClassMemberKind::Override:
 									if (!node->statement)
 									{
 										manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
 									}
+									break;
+								case WfClassMemberKind::Override:
+									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 									break;
 								}
 							}
@@ -338,11 +340,6 @@ ValidateStructure(Declaration)
 								}
 							}
 							break;
-						}
-
-						if (classDecl->kind == WfClassKind::Class && classMember->kind != WfClassMemberKind::Static)
-						{
-							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"non-static class method"));
 						}
 					}
 					else
@@ -388,12 +385,15 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
 							break;
 						}
-						manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"variable class member"));
 					}
 
 					if (node->type)
 					{
 						ValidateTypeStructure(manager, node->type);
+					}
+					else if (classDecl)
+					{
+						manager->errors.Add(WfErrors::MissingFieldType(node));
 					}
 					ValidateStructureContext context;
 					ValidateExpressionStructure(manager, &context, node->expression);
@@ -410,15 +410,6 @@ ValidateStructure(Declaration)
 						case WfClassMemberKind::Static:
 						case WfClassMemberKind::Override:
 							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
-							break;
-						}
-
-						switch (classDecl->kind)
-						{
-						case WfClassKind::Class:
-							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"event"));
-							break;	
-						case WfClassKind::Interface:
 							break;
 						}
 
@@ -448,15 +439,6 @@ ValidateStructure(Declaration)
 						case WfClassMemberKind::Static:
 						case WfClassMemberKind::Override:
 							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
-							break;
-						}
-
-						switch (classDecl->kind)
-						{
-						case WfClassKind::Class:
-							manager->errors.Add(WfErrors::ClassFeatureNotSupported(classMember, L"property"));
-							break;
-						case WfClassKind::Interface:
 							break;
 						}
 
