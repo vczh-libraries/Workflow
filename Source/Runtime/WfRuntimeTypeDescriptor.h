@@ -182,8 +182,11 @@ Custom Type
 				typedef reflection::description::TypeDescriptorFlags		TypeDescriptorFlags;
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef collections::List<ITypeDescriptor*>					TypeDescriptorList;
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
+				bool									baseTypeExpanded = false;
+				TypeDescriptorList						expandedBaseTypes;
 				
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 				void									LoadInternal()override;
@@ -192,6 +195,8 @@ Custom Type
 				~WfCustomType();
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
+				const TypeDescriptorList&				GetExpandedBaseTypes();
+
 				void									AddBaseType(ITypeDescriptor* type);
 				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
 				void									AddMember(Ptr<WfInterfaceConstructor> value);

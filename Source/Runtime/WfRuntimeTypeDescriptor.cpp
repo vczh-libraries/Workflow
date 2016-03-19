@@ -96,21 +96,12 @@ WfInterfaceConstructor
 
 				List<IMethodInfo*> baseCtors;
 				{
-					List<ITypeDescriptor*> baseTypes;
-					baseTypes.Add(GetOwnerTypeDescriptor());
+					const auto& baseTypes = dynamic_cast<WfCustomType*>(GetOwnerTypeDescriptor())->GetExpandedBaseTypes();
 
 					for (vint i = 0; i < baseTypes.Count(); i++)
 					{
 						auto td = baseTypes[i];
-						if (dynamic_cast<WfCustomType*>(td))
-						{
-							vint count = td->GetBaseTypeDescriptorCount();
-							for (vint j = 0; j < count; j++)
-							{
-								baseTypes.Add(td->GetBaseTypeDescriptor(j));
-							}
-						}
-						else if (auto group = td->GetConstructorGroup())
+						if (auto group = td->GetConstructorGroup())
 						{
 							vint count = group->GetMethodCount();
 							IMethodInfo* selectedCtor = nullptr;
@@ -145,15 +136,15 @@ WfInterfaceConstructor
 					}
 				}
 
-				auto instance = new WfInterfaceInstance(GetOwnerTypeDescriptor(), proxy, baseCtors);
+				Ptr<WfInterfaceInstance> instance = new WfInterfaceInstance(GetOwnerTypeDescriptor(), proxy, baseCtors);
 
 				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
 				{
-					return Value::From(Ptr<WfInterfaceInstance>(instance));
+					return Value::From(instance);
 				}
 				else
 				{
-					return Value::From(instance);
+					return Value::From(instance.Detach());
 				}
 			}
 
@@ -319,6 +310,35 @@ WfCustomType
 			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()
 			{
 				return globalContext;
+			}
+
+			const WfCustomType::TypeDescriptorList& WfCustomType::GetExpandedBaseTypes()
+			{
+				if (!baseTypeExpanded)
+				{
+					baseTypeExpanded = true;
+					TypeDescriptorList customTypes;
+					customTypes.Add(this);
+
+					for (vint i = 0; i < customTypes.Count(); i++)
+					{
+						auto td = customTypes[i];
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint j = 0; j < count; j++)
+						{
+							auto baseTd = td->GetBaseTypeDescriptor(j);
+							if (dynamic_cast<WfCustomType*>(baseTd))
+							{
+								customTypes.Add(baseTd);
+							}
+							else
+							{
+								expandedBaseTypes.Add(baseTd);
+							}
+						}
+					}
+				}
+				return expandedBaseTypes;
 			}
 
 			void WfCustomType::AddBaseType(ITypeDescriptor* type)
