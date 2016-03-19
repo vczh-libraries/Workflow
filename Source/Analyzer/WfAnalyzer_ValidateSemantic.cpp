@@ -74,7 +74,7 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					throw 0;
+					ValidateDeclarationSemantic(manager, node);
 				}
 
 				void Visit(WfEventDeclaration* node)override
@@ -520,7 +520,6 @@ ValidateSemantic(Expression)
 													manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 												}
 											}
-
 											break;
 										}
 
@@ -555,6 +554,39 @@ ValidateSemantic(Expression)
 						}
 						else
 						{
+							if (result.propertyInfo && dynamic_cast<WfReferenceExpression*>(node))
+							{
+								auto currentScope = scope;
+								WfLexicalScope* firstConfigScope = nullptr;
+								WfLexicalScope* lastConfigScope = nullptr;
+								while (currentScope)
+								{
+									if (currentScope->functionConfig)
+									{
+										if (!firstConfigScope)
+										{
+											firstConfigScope = currentScope;
+										}
+										lastConfigScope = currentScope;
+									}
+
+									if (currentScope->ownerNode.Cast<WfClassDeclaration>() && currentScope->typeOfThisExpr == result.propertyInfo->GetOwnerTypeDescriptor())
+									{
+										if (firstConfigScope)
+										{
+											if (!lastConfigScope->ownerClassMember)
+											{
+												manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
+											}
+										}
+										else
+										{
+											manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
+										}
+									}
+									currentScope = currentScope->parentScope.Obj();
+								}
+							}
 							results.Add(result);
 						}
 					}

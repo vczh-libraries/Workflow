@@ -244,7 +244,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongThisExpression(WfExpression* node)
 			{
-				return new ParsingError(node, L"A29: The \"this\" expression can only be used in class methods and functions in new interface expressions");
+				return new ParsingError(node, L"A29: The \"this\" expression can only be used in class methods or functions in new interface expressions");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
