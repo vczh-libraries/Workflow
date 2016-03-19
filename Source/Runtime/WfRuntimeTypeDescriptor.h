@@ -100,6 +100,18 @@ Method
 				WfStaticMethod();
 			};
 
+			class WfClassMethod : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+			public:
+				vint									functionIndex = -1;
+
+				WfClassMethod();
+			};
+
 			class WfInterfaceConstructor : public WfMethodBase
 			{
 				typedef reflection::description::Value						Value;
@@ -155,6 +167,34 @@ Event
 			};
 
 /***********************************************************************
+Field
+***********************************************************************/
+
+			class WfField : public reflection::description::FieldInfoImpl
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::Value						Value;
+				typedef collections::Dictionary<WfField*, Value>			FieldValueMap;
+
+				class FieldRecord : public Object
+				{
+				public:
+					FieldValueMap						values;
+				};
+
+				static const wchar_t*					FieldRecordInternalPropertyName;
+			protected:
+				
+				Ptr<FieldRecord>						GetFieldRecord(DescriptableObject* thisObject, bool createIfNotExist);
+				Value									GetValueInternal(const Value& thisObject)override;
+				void									SetValueInternal(Value& thisObject, const Value& newValue)override;
+			public:
+				WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name, Ptr<ITypeInfo> returnInfo);
+				~WfField();
+			};
+
+/***********************************************************************
 Property
 ***********************************************************************/
 
@@ -200,6 +240,7 @@ Custom Type
 				void									AddBaseType(ITypeDescriptor* type);
 				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
 				void									AddMember(Ptr<WfInterfaceConstructor> value);
+				void									AddMember(Ptr<WfField> value);
 				void									AddMember(Ptr<WfProperty> value);
 				void									AddMember(Ptr<WfEvent> value);
 			};

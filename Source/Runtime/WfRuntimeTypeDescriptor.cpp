@@ -83,6 +83,26 @@ WfStaticMethod
 			}
 
 /***********************************************************************
+WfClassMethod
+***********************************************************************/
+
+			Value WfClassMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				auto context = MakePtr<WfRuntimeVariableContext>();
+				context->variables.Resize(1);
+				context->variables[0] = thisObject;
+
+				auto lambda = MakePtr<WfRuntimeLambda>(globalContext, nullptr, functionIndex);
+				auto argumentArray = IValueList::Create(arguments);
+				return lambda->Invoke(argumentArray);
+			}
+
+			WfClassMethod::WfClassMethod()
+				:WfMethodBase(false)
+			{
+			}
+
+/***********************************************************************
 WfInterfaceConstructor
 ***********************************************************************/
 
@@ -173,6 +193,34 @@ WfInterfaceMethod
 			}
 
 /***********************************************************************
+GetInfoRecord
+***********************************************************************/
+
+			template<typename TRecord, typename TInfo>
+			Ptr<TRecord> GetInfoRecord(TInfo* target, DescriptableObject* thisObject, const WString& key, bool createIfNotExist)
+			{
+				if (!thisObject)
+				{
+					throw ArgumentNullException(L"thisObject", target);
+				}
+				auto untypedValue = thisObject->GetInternalProperty(key);
+				auto typedValue = untypedValue.Cast<TRecord>();
+				if (untypedValue)
+				{
+					if (!typedValue)
+					{
+						throw ArgumentException(L"Key mismatches with the record type.", L"vl::workflow::typeimpl::GetFieldRecord", L"key");
+					}
+				}
+				else if(createIfNotExist)
+				{
+					typedValue = new TRecord;
+					thisObject->SetInternalProperty(key, typedValue);
+				}
+				return typedValue;
+			}
+
+/***********************************************************************
 WfEvent
 ***********************************************************************/
 
@@ -180,18 +228,7 @@ WfEvent
 
 			Ptr<WfEvent::EventRecord> WfEvent::GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist)
 			{
-				if (!thisObject)
-				{
-					throw ArgumentNullException(L"thisObject", this);
-				}
-				WString key = EventRecordInternalPropertyName;
-				auto value = thisObject->GetInternalProperty(key).Cast<EventRecord>();
-				if(!value && createIfNotExist)
-				{
-					value = new EventRecord;
-					thisObject->SetInternalProperty(key, value);
-				}
-				return value;
+				return GetInfoRecord<EventRecord>(this, thisObject, EventRecordInternalPropertyName, createIfNotExist);
 			}
 
 			void WfEvent::AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
@@ -240,6 +277,38 @@ WfEvent
 			void WfEvent::SetHandlerType(Ptr<ITypeInfo> typeInfo)
 			{
 				handlerType = typeInfo;
+			}
+
+/***********************************************************************
+WfField
+***********************************************************************/
+
+			const wchar_t* WfField::FieldRecordInternalPropertyName = L"WfField::FieldRecord";
+
+			Ptr<WfField::FieldRecord> WfField::GetFieldRecord(DescriptableObject* thisObject, bool createIfNotExist)
+			{
+				return GetInfoRecord<FieldRecord>(this, thisObject, FieldRecordInternalPropertyName, createIfNotExist);
+			}
+
+			Value WfField::GetValueInternal(const Value& thisObject)
+			{
+				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
+				return record->values.Get(this);
+			}
+
+			void WfField::SetValueInternal(Value& thisObject, const Value& newValue)
+			{
+				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
+				record->values.Set(this, newValue);
+			}
+
+			WfField::WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name, Ptr<ITypeInfo> returnInfo)
+				:FieldInfoImpl(ownerTypeDescriptor, name, returnInfo)
+			{
+			}
+
+			WfField::~WfField()
+			{
 			}
 
 /***********************************************************************
@@ -354,6 +423,11 @@ WfCustomType
 			void WfCustomType::AddMember(Ptr<WfInterfaceConstructor> value)
 			{
 				AddConstructor(value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfField> value)
+			{
+				AddProperty(value);
 			}
 
 			void WfCustomType::AddMember(Ptr<WfProperty> value)

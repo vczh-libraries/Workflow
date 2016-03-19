@@ -723,6 +723,20 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
+				static void IOClassMethod(WfReader& reader, WfClassMethod* info)
+				{
+					reader << info->functionIndex;
+					IOMethodBase(reader, info);
+				}
+
+				static void IOClassMethod(WfWriter& writer, WfClassMethod* info)
+				{
+					writer << info->functionIndex;
+					IOMethodBase(writer, info);
+				}
+
+				//----------------------------------------------------
+
 				static void IOInterfaceConstructor(WfReader& reader, Ptr<WfInterfaceConstructor>& info)
 				{
 					Ptr<ITypeInfo> type;
@@ -799,7 +813,9 @@ Serialization (TypeImpl)
 							}
 							else if (isClass)
 							{
-								throw 0;
+								auto info = MakePtr<WfClassMethod>();
+								td->AddMember(methodName, info);
+								IOClassMethod(reader, info.Obj());
 							}
 							else
 							{
@@ -859,7 +875,11 @@ Serialization (TypeImpl)
 						}
 						else
 						{
-							throw 0;
+							Ptr<ITypeInfo> fieldType;
+							IOType(reader, fieldType);
+
+							auto info = MakePtr<WfField>(td, propName, fieldType);
+							td->AddMember(info);
 						}
 					}
 				}
@@ -922,7 +942,8 @@ Serialization (TypeImpl)
 							}
 							else if (isClass)
 							{
-								throw 0;
+								writer << isStaticMethod;
+								IOClassMethod(writer, dynamic_cast<WfClassMethod*>(method));
 							}
 							else
 							{
@@ -965,7 +986,10 @@ Serialization (TypeImpl)
 						}
 						else
 						{
-							throw 0;
+							isProperty = false;
+							WString propName = prop->GetName();
+							writer << isProperty << propName;
+							IOType(writer, prop->GetReturn());
 						}
 					}
 				}
