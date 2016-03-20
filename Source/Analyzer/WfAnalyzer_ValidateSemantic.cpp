@@ -180,7 +180,7 @@ ValidateSemantic(Declaration)
 
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 					{
-						if (auto scopeName = GetScopeNameFromReferenceType(scope.Obj(), baseType))
+						if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
 						{
 							if (auto td = scopeName->typeDescriptor)
 							{

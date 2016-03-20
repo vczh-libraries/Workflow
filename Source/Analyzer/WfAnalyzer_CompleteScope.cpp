@@ -175,7 +175,7 @@ CompleteScopeForDeclaration
 
 					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 					{
-						if (auto scopeName = GetScopeNameFromReferenceType(scope.Obj(), baseType))
+						if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
 						{
 							if (scopeName->typeDescriptor)
 							{
