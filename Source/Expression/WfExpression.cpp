@@ -1125,6 +1125,61 @@ Print (Declaration)
 				writer.AfterPrint(node);
 			}
 
+			void Visit(WfConstructorDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				if (node->constructorType == WfConstructorType::RawPtr)
+				{
+					writer.WriteString(L"new* ");
+				}
+				else
+				{
+					writer.WriteString(L"new ");
+				}
+				
+				writer.WriteString(L"(");
+				FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+				{
+					if (index > 0)
+					{
+						writer.WriteString(L", ");
+					}
+					writer.WriteString(argument->name.value);
+					writer.WriteString(L" : ");
+					WfPrint(argument->type, indent, writer);
+				}
+				writer.WriteString(L")");
+				FOREACH_INDEXER(Ptr<WfBaseConstructorCall>, call, callIndex, node->baseConstructorCalls)
+				{
+					writer.WriteLine(L"");
+					writer.WriteString(indent + L"    ");
+					if (callIndex == 0)
+					{
+						writer.WriteString(L":");
+					}
+					else
+					{
+						writer.WriteString(L",");
+					}
+					WfPrint(call->type, indent + L"    ", writer);
+					writer.WriteString(L"(");
+					FOREACH_INDEXER(Ptr<WfExpression>, argument, argumentIndex, call->arguments)
+					{
+						if (argumentIndex != 0)
+						{
+							writer.WriteString(L", ");
+						}
+						WfPrint(argument, indent + L"    ", writer);
+					}
+					writer.WriteString(L")");
+				}
+
+				writer.WriteLine(L"");
+				writer.WriteString(indent);
+				WfPrint(node->statement, indent, writer);
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfClassDeclaration* node)override
 			{
 				writer.BeforePrint(node);
@@ -1138,7 +1193,7 @@ Print (Declaration)
 					break;
 				}
 				writer.WriteString(node->name.value);
-				if (node->interfaceType == WfInterfaceType::RawPtr)
+				if (node->constructorType == WfConstructorType::RawPtr)
 				{
 					writer.WriteString(L"*");
 				}

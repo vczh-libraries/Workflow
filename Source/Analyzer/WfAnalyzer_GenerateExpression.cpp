@@ -1004,6 +1004,10 @@ GenerateInstructions(Expression)
 					{
 					}
 
+					void Visit(WfConstructorDeclaration* node)override
+					{
+					}
+
 					void Execute(WfNewInterfaceExpression* node)
 					{
 						FOREACH(Ptr<WfClassMember>, member, node->members)

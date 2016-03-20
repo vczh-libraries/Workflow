@@ -548,6 +548,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 
 				// E: Module error

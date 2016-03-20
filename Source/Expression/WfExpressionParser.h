@@ -184,6 +184,8 @@ namespace vl
 		class WfClassMember;
 		class WfNewClassExpression;
 		class WfNewInterfaceExpression;
+		class WfBaseConstructorCall;
+		class WfConstructorDeclaration;
 		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
@@ -968,6 +970,7 @@ namespace vl
 				virtual void Visit(WfVariableDeclaration* node)=0;
 				virtual void Visit(WfEventDeclaration* node)=0;
 				virtual void Visit(WfPropertyDeclaration* node)=0;
+				virtual void Visit(WfConstructorDeclaration* node)=0;
 				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
@@ -1112,18 +1115,40 @@ namespace vl
 			Interface,
 		};
 
-		enum class WfInterfaceType
+		enum class WfConstructorType
 		{
 			Undefined,
 			SharedPtr,
 			RawPtr,
 		};
 
+		class WfBaseConstructorCall : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfBaseConstructorCall>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			vl::collections::List<vl::Ptr<WfExpression>> arguments;
+
+			static vl::Ptr<WfBaseConstructorCall> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfConstructorDeclaration : public WfDeclaration, vl::reflection::Description<WfConstructorDeclaration>
+		{
+		public:
+			WfConstructorType constructorType;
+			vl::collections::List<vl::Ptr<WfBaseConstructorCall>> baseConstructorCalls;
+			vl::collections::List<vl::Ptr<WfFunctionArgument>> arguments;
+			vl::Ptr<WfStatement> statement;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfConstructorDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
 		{
 		public:
 			WfClassKind kind;
-			WfInterfaceType interfaceType;
+			WfConstructorType constructorType;
 			vl::collections::List<vl::Ptr<WfType>> baseTypes;
 			vl::collections::List<vl::Ptr<WfClassMember>> members;
 
@@ -1318,7 +1343,9 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfNewClassExpression)
 			DECL_TYPE_INFO(vl::workflow::WfNewInterfaceExpression)
 			DECL_TYPE_INFO(vl::workflow::WfClassKind)
-			DECL_TYPE_INFO(vl::workflow::WfInterfaceType)
+			DECL_TYPE_INFO(vl::workflow::WfConstructorType)
+			DECL_TYPE_INFO(vl::workflow::WfBaseConstructorCall)
+			DECL_TYPE_INFO(vl::workflow::WfConstructorDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
@@ -1639,6 +1666,11 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfPropertyDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfConstructorDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}

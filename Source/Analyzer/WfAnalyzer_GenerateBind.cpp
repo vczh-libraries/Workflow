@@ -900,11 +900,35 @@ CopyDeclaration
 					result = prop;
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					auto ctor = MakePtr<WfConstructorDeclaration>();
+					ctor->constructorType = node->constructorType;
+					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					{
+						auto newCall = MakePtr<WfBaseConstructorCall>();
+						newCall->type = CopyType(newCall->type);
+						FOREACH(Ptr<WfExpression>, argument, call->arguments)
+						{
+							newCall->arguments.Add(CopyExpression(argument));
+						}
+						ctor->baseConstructorCalls.Add(newCall);
+					}
+					FOREACH(Ptr<WfFunctionArgument>, arg, node->arguments)
+					{
+						auto newArg = MakePtr<WfFunctionArgument>();
+						newArg->type = CopyType(arg->type);
+						newArg->name.value = arg->name.value;
+						ctor->arguments.Add(newArg);
+					}
+					ctor->statement = CopyStatement(node->statement);
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto classDecl = MakePtr<WfClassDeclaration>();
 					classDecl->kind = node->kind;
-					classDecl->interfaceType = node->interfaceType;
+					classDecl->constructorType = node->constructorType;
 					FOREACH(Ptr<WfType>, type, node->baseTypes)
 					{
 						classDecl->baseTypes.Add(CopyType(type));

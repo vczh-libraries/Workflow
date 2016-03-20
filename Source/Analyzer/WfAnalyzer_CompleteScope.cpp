@@ -107,6 +107,11 @@ CompleteScopeForClassMember
 					}
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					CompleteScopeForDeclaration(manager, node);
@@ -159,6 +164,10 @@ CompleteScopeForDeclaration
 				{
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
@@ -177,9 +186,9 @@ CompleteScopeForDeclaration
 
 					if (node->kind == WfClassKind::Interface)
 					{
-						switch (node->interfaceType)
+						switch (node->constructorType)
 						{
-						case WfInterfaceType::SharedPtr:
+						case WfConstructorType::SharedPtr:
 							{
 								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
 								elementType->SetTypeDescriptor(td.Obj());
@@ -191,7 +200,7 @@ CompleteScopeForDeclaration
 								td->AddMember(ctor);
 							}
 							break;
-						case WfInterfaceType::RawPtr:
+						case WfConstructorType::RawPtr:
 							{
 								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
 								elementType->SetTypeDescriptor(td.Obj());

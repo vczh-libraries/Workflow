@@ -60,6 +60,10 @@ GenerateInstructions(Initialize)
 				{
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 				}
@@ -211,6 +215,11 @@ GenerateInstructions(Declaration)
 				{
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					GenerateDeclarationInstructions(context, node);
@@ -253,6 +262,11 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
+				}
+
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override

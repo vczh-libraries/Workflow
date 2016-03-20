@@ -515,6 +515,45 @@ ValidateStructure(Declaration)
 					}
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						switch (classMember->kind)
+						{
+						case WfClassMemberKind::Normal:
+							break;
+						case WfClassMemberKind::Static:
+						case WfClassMemberKind::Override:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
+							break;
+						}
+
+						if (classDecl->kind != WfClassKind::Class)
+						{
+							manager->errors.Add(WfErrors::WrongDeclaration(node));
+						}
+
+						FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+						{
+							ValidateTypeStructure(manager, call->type, ValidateTypeStragety::BaseType);
+							FOREACH(Ptr<WfExpression>, argument, call->arguments)
+							{
+								ValidateStructureContext context;
+								ValidateExpressionStructure(manager, &context, argument);
+							}
+						}
+						{
+							ValidateStructureContext context;
+							ValidateStatementStructure(manager, &context, node->statement);
+						}
+					}
+					else
+					{
+						manager->errors.Add(WfErrors::WrongDeclaration(node));
+					}
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
@@ -538,7 +577,7 @@ ValidateStructure(Declaration)
 					{
 					case WfClassKind::Class:
 						{
-							if (node->interfaceType != WfInterfaceType::Undefined)
+							if (node->constructorType != WfConstructorType::Undefined)
 							{
 								manager->errors.Add(WfErrors::ClassWithInterfaceConstructor(node));
 							}

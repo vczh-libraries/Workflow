@@ -106,6 +106,11 @@ ValidateSemantic(ClassMember)
 					}
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					ValidateDeclarationSemantic(manager, node);
@@ -161,6 +166,10 @@ ValidateSemantic(Declaration)
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfConstructorDeclaration* node)override
 				{
 				}
 
@@ -1899,6 +1908,10 @@ ValidateSemantic(Expression)
 					}
 
 					void Visit(WfClassDeclaration* node)override
+					{
+					}
+
+					void Visit(WfConstructorDeclaration* node)override
 					{
 					}
 

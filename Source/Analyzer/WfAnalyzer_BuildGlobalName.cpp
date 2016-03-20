@@ -163,6 +163,11 @@ BuildGlobalNameFromModules
 					manager->declarationMemberInfos.Add(node, info);
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto newScopeName = scopeName->AccessChild(node->name.value, false);
@@ -214,6 +219,10 @@ BuildGlobalNameFromModules
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfConstructorDeclaration* node)override
 				{
 				}
 
@@ -350,6 +359,10 @@ ValidateScopeName
 					{
 						AddError(node);
 					}
+				}
+
+				void Visit(WfConstructorDeclaration* node)override
+				{
 				}
 
 				void Visit(WfClassDeclaration* node)override

@@ -50,6 +50,18 @@ SearchOrderedName(Declaration)
 				{
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					{
+						FOREACH(Ptr<WfExpression>, argument, call->arguments)
+						{
+							SearchOrderedName(scope, argument, names);
+						}
+					}
+					SearchOrderedName(scope, node->statement, names);
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					FOREACH(Ptr<WfClassMember>, member, node->members)

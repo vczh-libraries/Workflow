@@ -92,6 +92,11 @@ GenerateGlobalDeclarationMetadata
 				{
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					GenerateGlobalDeclarationMetadata(context, node, namePrefix);
@@ -147,6 +152,11 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
+				}
+
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override

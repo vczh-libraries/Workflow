@@ -524,17 +524,31 @@ enum ClassKind
 	Interface,
 }
 
-enum InterfaceType
+enum ConstructorType
 {
 	Undefined,
 	SharedPtr,
 	RawPtr,
 }
 
+class BaseConstructorCall
+{
+	Type					type;
+	Expression[]			arguments;
+}
+
+class ConstructorDeclaration : Declaration
+{
+	ConstructorType			constructorType;
+	BaseConstructorCall[]	baseConstructorCalls;
+	FunctionArgument[]		arguments;
+	Statement				statement;
+}
+
 class ClassDeclaration : Declaration
 {
 	ClassKind				kind;
-	InterfaceType			interfaceType;
+	ConstructorType			constructorType;
 	Type[]					baseTypes;
 	ClassMember[]			members;
 }
@@ -909,14 +923,27 @@ rule ClassMember WorkflowClassMember
 	= WorkflowDeclaration : declaration as ClassMember with {kind = "Normal"}
 	;
 
+rule BaseConstructorCall WorkflowBaseConstructorCall
+	= WorkflowType : type "(" [WorkflowExpression : arguments {"," WorkflowExpression : arguments}] ")" as BaseConstructorCall
+	;
+rule ConstructorDeclaration Constructor
+	=	(
+			("new" with {constructorType = "SharedPtr"})
+			| ("new" "*" with {constructorType = "RawPtr"})
+		)
+		"(" [FunctionArgumentFragment : arguments {"," FunctionArgumentFragment : arguments}] ")"
+		[":" WorkflowBaseConstructorCall : baseConstructorCalls {"," WorkflowBaseConstructorCall : baseConstructorCalls}]
+		Block : statement as ConstructorDeclaration
+	;
+
 rule ClassDeclaration ClassBody
 	= [":" WorkflowType : baseTypes {"," WorkflowType : baseTypes}] "{" {WorkflowClassMember : members} "}" as ClassDeclaration
 	;
 
 rule ClassDeclaration Class
-	= "class" NAME : name !ClassBody with {kind = "Class"} with {interfaceType = "Undefined"}
-	= "interface" NAME : name !ClassBody with {kind = "Interface"} with {interfaceType = "SharedPtr"}
-	= "interface" NAME : name "*" !ClassBody with {kind = "Interface"} with {interfaceType = "RawPtr"}
+	= "class" NAME : name !ClassBody with {kind = "Class"} with {constructorType = "Undefined"}
+	= "interface" NAME : name !ClassBody with {kind = "Interface"} with {constructorType = "SharedPtr"}
+	= "interface" NAME : name "*" !ClassBody with {kind = "Interface"} with {constructorType = "RawPtr"}
 	;
 
 rule Declaration WorkflowDeclaration
@@ -925,6 +952,7 @@ rule Declaration WorkflowDeclaration
 	= !Variable
 	= !Event
 	= !Property
+	= !Constructor
 	= !Class
 	;
 

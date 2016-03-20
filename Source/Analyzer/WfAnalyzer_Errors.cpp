@@ -391,12 +391,17 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfEventDeclaration* node)
 			{
-				return new ParsingError(node, L"D7: Event \"" + node->name.value + L"\" cannot be defined outside of classes.");
+				return new ParsingError(node, L"D7: Event \"" + node->name.value + L"\" cannot be defined outside of classes or interfaces.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfPropertyDeclaration* node)
 			{
-				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be defined outside of classes.");
+				return new ParsingError(node, L"D7: Property \"" + node->name.value + L"\" cannot be defined outside of classes or interfaces.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfConstructorDeclaration* node)
+			{
+				return new ParsingError(node, L"D7: Constructor cannot be defined outside of classes.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)

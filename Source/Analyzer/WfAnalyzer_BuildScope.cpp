@@ -146,6 +146,11 @@ BuildScopeForDeclaration
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
 
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
