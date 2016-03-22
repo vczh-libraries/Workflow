@@ -83,6 +83,21 @@ WfStaticMethod
 			}
 
 /***********************************************************************
+WfInterfaceConstructor
+***********************************************************************/
+
+			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				throw 0;
+			}
+
+			WfClassConstructor::WfClassConstructor(Ptr<ITypeInfo> type)
+				:WfMethodBase(true)
+			{
+				SetReturn(type);
+			}
+
+/***********************************************************************
 WfClassMethod
 ***********************************************************************/
 
@@ -423,6 +438,11 @@ WfCustomType
 			void WfCustomType::AddMember(const WString& name, Ptr<WfMethodBase> value)
 			{
 				AddMethod(name, value);
+			}
+
+			void WfCustomType::AddMember(Ptr<WfClassConstructor> value)
+			{
+				AddConstructor(value);
 			}
 
 			void WfCustomType::AddMember(Ptr<WfInterfaceConstructor> value)

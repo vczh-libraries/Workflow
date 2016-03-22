@@ -100,6 +100,21 @@ Method
 				WfStaticMethod();
 			};
 
+/***********************************************************************
+Class Method
+***********************************************************************/
+
+			class WfClassConstructor : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+			public:
+				WfClassConstructor(Ptr<ITypeInfo> type);
+			};
+
 			class WfClassMethod : public WfMethodBase
 			{
 				typedef reflection::description::Value						Value;
@@ -111,6 +126,10 @@ Method
 
 				WfClassMethod();
 			};
+
+/***********************************************************************
+Interface Method
+***********************************************************************/
 
 			class WfInterfaceConstructor : public WfMethodBase
 			{
@@ -241,6 +260,7 @@ Custom Type
 
 				void									AddBaseType(ITypeDescriptor* type);
 				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
+				void									AddMember(Ptr<WfClassConstructor> value);
 				void									AddMember(Ptr<WfInterfaceConstructor> value);
 				void									AddMember(Ptr<WfField> value);
 				void									AddMember(Ptr<WfProperty> value);

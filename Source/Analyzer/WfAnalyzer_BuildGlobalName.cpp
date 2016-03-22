@@ -165,7 +165,20 @@ BuildGlobalNameFromModules
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					throw 0;
+					Ptr<ITypeInfo> typeInfo;
+					{
+						auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+						elementType->SetTypeDescriptor(td.Obj());
+
+						auto pointerType = MakePtr<TypeInfoImpl>(node->constructorType == WfConstructorType::RawPtr ? ITypeInfo::RawPtr : ITypeInfo::SharedPtr);
+						pointerType->SetElementType(elementType);
+
+						typeInfo = pointerType;
+					}
+
+					auto info = MakePtr<WfClassConstructor>(typeInfo);
+					td->AddMember(info);
+					manager->declarationMemberInfos.Add(node, info);
 				}
 
 				void Visit(WfClassDeclaration* node)override

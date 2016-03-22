@@ -737,6 +737,19 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
+				static void IOClassConstructor(WfReader& reader, Ptr<WfClassConstructor>& info)
+				{
+					info = new WfClassConstructor(nullptr);
+					IOMethodBase(reader, info.Obj());
+				}
+
+				static void IOClassConstructor(WfWriter& writer, WfClassConstructor* info)
+				{
+					IOMethodBase(writer, info);
+				}
+
+				//----------------------------------------------------
+
 				static void IOInterfaceConstructor(WfReader& reader, Ptr<WfInterfaceConstructor>& info)
 				{
 					Ptr<ITypeInfo> type;
@@ -765,19 +778,25 @@ Serialization (TypeImpl)
 
 				static void IOCustomType(WfReader& reader, WfCustomType* td, bool isClass)
 				{
-					if (isClass)
-					{
-					}
-					else
+					// constructors
 					{
 						vint methodCount = 0;
 						reader << methodCount;
 
 						for (vint i = 0; i < methodCount; i++)
 						{
-							Ptr<WfInterfaceConstructor> ctor;
-							IOInterfaceConstructor(reader, ctor);
-							td->AddMember(ctor);
+							if (isClass)
+							{
+								Ptr<WfClassConstructor> ctor;
+								IOClassConstructor(reader, ctor);
+								td->AddMember(ctor);
+							}
+							else
+							{
+								Ptr<WfInterfaceConstructor> ctor;
+								IOInterfaceConstructor(reader, ctor);
+								td->AddMember(ctor);
+							}
 						}
 					}
 
@@ -888,10 +907,6 @@ Serialization (TypeImpl)
 				static void IOCustomType(WfWriter& writer, WfCustomType* td, bool isClass)
 				{
 					// constructors
-					if (isClass)
-					{
-					}
-					else
 					{
 						vint methodCount = 0;
 						if (auto group = td->GetConstructorGroup())
@@ -901,8 +916,16 @@ Serialization (TypeImpl)
 
 							for (vint i = 0; i < methodCount; i++)
 							{
-								auto ctor = dynamic_cast<WfInterfaceConstructor*>(group->GetMethod(i));
-								IOInterfaceConstructor(writer, ctor);
+								if (isClass)
+								{
+									auto ctor = dynamic_cast<WfClassConstructor*>(group->GetMethod(i));
+									IOClassConstructor(writer, ctor);
+								}
+								else
+								{
+									auto ctor = dynamic_cast<WfInterfaceConstructor*>(group->GetMethod(i));
+									IOInterfaceConstructor(writer, ctor);
+								}
 							}
 						}
 						else

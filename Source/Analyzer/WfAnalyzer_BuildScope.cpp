@@ -148,7 +148,35 @@ BuildScopeForDeclaration
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					throw 0;
+					resultScope = new WfLexicalScope(parentScope);
+
+					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					{
+						Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
+						argumentSymbol->name = argument->name.value;
+						argumentSymbol->type = argument->type;
+						argumentSymbol->creatorNode = argument;
+						resultScope->symbols.Add(argumentSymbol->name, argumentSymbol);
+					}
+
+					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					{
+						FOREACH(Ptr<WfExpression>, argument, call->arguments)
+						{
+							BuildScopeForExpression(manager, resultScope, argument);
+						}
+					}
+
+					auto bodyScope = MakePtr<WfLexicalScope>(resultScope);
+					{
+						auto config = MakePtr<WfLexicalFunctionConfig>();
+						resultScope->functionConfig = config;
+
+						config->lambda = false;
+						config->thisAccessable = true;
+						config->parentThisAccessable = false;
+					}
+					BuildScopeForStatement(manager, bodyScope, node->statement);
 				}
 
 				void Visit(WfClassDeclaration* node)override

@@ -109,7 +109,17 @@ CompleteScopeForClassMember
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					throw 0;
+					auto scope = manager->nodeScopes[node];
+					auto info = manager->declarationMemberInfos[node].Cast<WfClassConstructor>();
+
+					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					{
+						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
+						{
+							auto paramInfo = MakePtr<ParameterInfoImpl>(info.Obj(), argument->name.value, typeInfo);
+							info->AddParameter(paramInfo);
+						}
+					}
 				}
 
 				void Visit(WfClassDeclaration* node)override
