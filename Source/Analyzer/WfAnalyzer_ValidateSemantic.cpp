@@ -2098,6 +2098,7 @@ ValidateSemantic(Expression)
 									}
 								}
 								{
+									SortedList<ITypeDescriptor*> searchedTypes;
 									List<ITypeDescriptor*> types;
 									types.Add(td);
 									vint begin = 0;
@@ -2105,6 +2106,12 @@ ValidateSemantic(Expression)
 									while (begin < types.Count())
 									{
 										ITypeDescriptor* currentType = types[begin++];
+										if (searchedTypes.Contains(currentType))
+										{
+											continue;
+										}
+										searchedTypes.Add(currentType);
+
 										vint count = currentType->GetBaseTypeDescriptorCount();
 										for (vint i = 0; i < count; i++)
 										{
