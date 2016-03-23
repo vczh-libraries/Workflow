@@ -56,7 +56,7 @@ Helper Functions
 				}
 			}
 
-			void SelectFunction(WfLexicalScopeManager* manager, parsing::ParsingTreeCustomBase* node, Ptr<WfExpression> functionExpression, List<ResolveExpressionResult>& functions, List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex)
+			Ptr<ITypeInfo> SelectFunction(WfLexicalScopeManager* manager, parsing::ParsingTreeCustomBase* node, Ptr<WfExpression> functionExpression, List<ResolveExpressionResult>& functions, List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex)
 			{
 				selectedFunctionIndex = -1;
 
@@ -141,6 +141,7 @@ Helper Functions
 							GetExpressionType(manager, arguments[i], CopyTypeInfo(argumentType));
 						}
 					}
+					return CopyTypeInfo(genericType->GetGenericArgument(0));
 				}
 				else
 				{
@@ -165,21 +166,7 @@ Helper Functions
 					{
 						CopyFrom(manager->errors, nonFunctionErrors, true);
 					}
-				}
-			}
-
-			Ptr<ITypeInfo> SelectFunction(WfLexicalScopeManager* manager, WfExpression* node, Ptr<WfExpression> functionExpression, List<ResolveExpressionResult>& functions, List<Ptr<WfExpression>>& arguments)
-			{
-				vint selectedFunctionIndex = -1;
-				SelectFunction(manager, node, functionExpression, functions, arguments, selectedFunctionIndex);
-				if (selectedFunctionIndex == -1)
-				{
 					return nullptr;
-				}
-				else
-				{
-					ITypeInfo* genericType = GetFunctionType(functions[selectedFunctionIndex])->GetElementType();
-					return CopyTypeInfo(genericType->GetGenericArgument(0));
 				}
 			}
 
@@ -1946,10 +1933,11 @@ ValidateSemantic(Expression)
 					List<ResolveExpressionResult> functions;
 					GetExpressionTypes(manager, node->function, nullptr, true, functions);
 
-					Ptr<ITypeInfo> resultType = SelectFunction(manager, node, node->function, functions, node->arguments);
+					vint selectedFunctionIndex = -1;
+					Ptr<ITypeInfo> resultType = SelectFunction(manager, node, node->function, functions, node->arguments, selectedFunctionIndex);
 					if (resultType)
 					{
-						manager->expressionResolvings.Add(node->function, functions[0]);
+						manager->expressionResolvings.Add(node->function, functions[selectedFunctionIndex]);
 						results.Add(ResolveExpressionResult::ReadonlyType(resultType));
 					}
 				}
@@ -2081,10 +2069,11 @@ ValidateSemantic(Expression)
 									functions.Add(ResolveExpressionResult::Method(info));
 								}
 
-								selectedType = SelectFunction(manager, node, nullptr, functions, node->arguments);
+								vint selectedFunctionIndex = -1;
+								selectedType = SelectFunction(manager, node, nullptr, functions, node->arguments, selectedFunctionIndex);
 								if (selectedType)
 								{
-									selectedConstructor = functions[0].methodInfo;
+									selectedConstructor = functions[selectedFunctionIndex].methodInfo;
 								}
 							}
 							else if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)

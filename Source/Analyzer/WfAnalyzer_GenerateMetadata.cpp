@@ -94,7 +94,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					throw 0;
+					//throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -156,7 +156,6 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override

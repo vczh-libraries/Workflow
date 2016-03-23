@@ -217,7 +217,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					throw 0;
+					//throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -266,7 +266,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					throw 0;
+					//throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override
