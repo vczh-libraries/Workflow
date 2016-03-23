@@ -404,6 +404,7 @@ WfLexicalScopeManager
 				interfaceMethodImpls.Clear();
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();
+				baseConstructorCallResolvings.Clear();
 			}
 
 			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames)
@@ -558,7 +559,7 @@ WfLexicalScopeManager
 			bool WfLexicalScopeManager::ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results)
 			{
 				vint oldResultCount = results.Count();
-				bool visibleToNonStatic = true;
+				bool visibleToNonStatic = false;
 				WfLexicalScope* firstConfigScope = nullptr;
 				while (scope)
 				{

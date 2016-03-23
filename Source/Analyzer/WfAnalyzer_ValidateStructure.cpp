@@ -536,7 +536,7 @@ ValidateStructure(Declaration)
 
 						FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
 						{
-							ValidateTypeStructure(manager, call->type, ValidateTypeStragety::BaseType);
+							ValidateTypeStructure(manager, call->type, ValidateTypeStragety::BaseType, classDecl);
 							FOREACH(Ptr<WfExpression>, argument, call->arguments)
 							{
 								ValidateStructureContext context;
@@ -580,6 +580,26 @@ ValidateStructure(Declaration)
 							if (node->constructorType != WfConstructorType::Undefined)
 							{
 								manager->errors.Add(WfErrors::ClassWithInterfaceConstructor(node));
+							}
+							if (!From(node->members)
+								.Select([](Ptr<WfClassMember> member)
+								{
+									return member->declaration;
+								})
+								.FindType<WfConstructorDeclaration>()
+								.First(nullptr))
+							{
+								auto member = MakePtr<WfClassMember>();
+								member->kind = WfClassMemberKind::Normal;
+								node->members.Add(member);
+
+								auto ctor = MakePtr<WfConstructorDeclaration>();
+								member->declaration = ctor;
+								ctor->codeRange = node->codeRange;
+								
+								auto stat = MakePtr<WfBlockStatement>();
+								ctor->statement = stat;
+								stat->codeRange = node->codeRange;
 							}
 						}
 						break;
