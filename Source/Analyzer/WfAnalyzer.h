@@ -141,7 +141,6 @@ Scope Manager
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
-				typedef collections::SortedList<Ptr<WfLexicalScope>>										ScopeSortedList;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
@@ -164,7 +163,6 @@ Scope Manager
 				Ptr<WfLexicalScopeName>						globalName;
 				NamespaceNameMap							namespaceNames;
 				TypeNameMap									typeNames;
-				ScopeSortedList								analyzedScopes;
 
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
 				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
@@ -202,7 +200,7 @@ Scope Manager
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
 				void										Rebuild(bool keepTypeDescriptorNames);
 
-				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results);
+				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);
 				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
 				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);
 				void										CreateLambdaCapture(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalCapture> capture = nullptr);
@@ -307,7 +305,9 @@ Scope Analyzing
 			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source, Ptr<WfClassMember> member);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
-			extern bool										CheckScopes(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_SymbolType(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_BaseType(WfLexicalScopeManager* manager);
 
 /***********************************************************************
 Semantic Analyzing
@@ -586,6 +586,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
 				static Ptr<parsing::ParsingError>			MissingFieldType(WfVariableDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 			};

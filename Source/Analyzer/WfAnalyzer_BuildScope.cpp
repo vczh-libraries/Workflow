@@ -691,17 +691,18 @@ BuildScope
 			}
 
 /***********************************************************************
-CheckScopes
+CheckScopes_DuplicatedSymbol
 ***********************************************************************/
 
-			bool CheckScopes(WfLexicalScopeManager* manager)
+			bool CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager)
 			{
+				SortedList<WfLexicalScope*> analyzedScopes;
 				vint errorCount = manager->errors.Count();
 				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
 				{
-					if (!manager->analyzedScopes.Contains(scope.Obj()))
+					if (!analyzedScopes.Contains(scope.Obj()))
 					{
-						manager->analyzedScopes.Add(scope);
+						analyzedScopes.Add(scope.Obj());
 
 						for (vint i = 0; i < scope->symbols.Count(); i++)
 						{
@@ -738,20 +739,9 @@ CheckScopes
 								}
 							}
 						}
-
-						for (vint i = 0; i < scope->symbols.Count(); i++)
-						{
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(i))
-							{
-								if (symbol->type)
-								{
-									symbol->typeInfo = CreateTypeInfoFromType(scope.Obj(), symbol->type);
-								}
-							}
-						}
 					}
 				}
-				return manager->errors.Count() == errorCount;
+				return errorCount == manager->errors.Count();
 			}
 		}
 	}

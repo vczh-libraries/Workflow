@@ -396,7 +396,6 @@ WfLexicalScopeManager
 
 				errors.Clear();
 				namespaceNames.Clear();
-				analyzedScopes.Clear();
 
 				nodeScopes.Clear();
 				expressionResolvings.Clear();
@@ -437,13 +436,15 @@ WfLexicalScopeManager
 					BuildScopeForModule(this, module);
 				}
 				ValidateScopeName(this, globalName);
-				CheckScopes(this);
+				CheckScopes_DuplicatedSymbol(this);
 				
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)
 				{
 					CompleteScopeForModule(this, module);
 				}
+				CheckScopes_BaseType(this);
+				CheckScopes_SymbolType(this);
 				
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)
@@ -454,8 +455,14 @@ WfLexicalScopeManager
 #undef EXIT_IF_ERRORS_EXIST
 			}
 
-			bool WfLexicalScopeManager::ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::List<ResolveExpressionResult>& results)
+			bool WfLexicalScopeManager::ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results)
 			{
+				if (searchedTypes.Contains(typeDescriptor))
+				{
+					return true;
+				}
+				searchedTypes.Add(typeDescriptor);
+
 				bool found = false;
 				bool foundStaticMember = false;
 
@@ -518,7 +525,7 @@ WfLexicalScopeManager
 					vint count = typeDescriptor->GetBaseTypeDescriptorCount();
 					for (vint i = 0; i < count; i++)
 					{
-						if (ResolveMember(typeDescriptor->GetBaseTypeDescriptor(i), name, preferStatic, results))
+						if (ResolveMember(typeDescriptor->GetBaseTypeDescriptor(i), name, preferStatic, searchedTypes, results))
 						{
 							found = true;
 						}
@@ -611,7 +618,8 @@ WfLexicalScopeManager
 
 					if (scope->typeOfThisExpr)
 					{
-						ResolveMember(scope->typeOfThisExpr, name, !visibleToNonStatic, results);
+						SortedList<ITypeDescriptor*> searchedTypes;
+						ResolveMember(scope->typeOfThisExpr, name, !visibleToNonStatic, searchedTypes, results);
 					}
 
 					scope = scope->parentScope.Obj();

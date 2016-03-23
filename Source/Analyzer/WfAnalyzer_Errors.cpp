@@ -546,6 +546,11 @@ WfErrors
 				return new ParsingError(node, L"G10: Class \"" + node->name.value + L"\" inherits from another class \"" + type->GetTypeName() + L"\" for multiple times.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
+			{
+				return new ParsingError(node, L"G10: Interface \"" + type->GetTypeName() + L"\" directly or indirectly inherits from itself.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type)
 			{
 				return new ParsingError(node, L"G11: Type \"" + type->GetTypeName() + L"\" is not a base type of this class.");

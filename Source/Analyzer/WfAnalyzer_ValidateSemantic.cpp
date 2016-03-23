@@ -389,75 +389,16 @@ ValidateSemantic(Declaration)
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node];
 
-					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					if (node->kind == WfClassKind::Interface)
 					{
-						if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
+						FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 						{
-							if (auto td = scopeName->typeDescriptor)
+							auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType);
+							auto baseTd = scopeName->typeDescriptor;
+							auto ctor = FindInterfaceConstructor(baseTd);
+							if (ctor == nullptr)
 							{
-								bool isClass = td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
-								bool isInterface = td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
-
-								switch (node->kind)
-								{
-								case WfClassKind::Class:
-									{
-										if (!isClass)
-										{
-											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, td));
-										}
-									}
-									break;
-								case WfClassKind::Interface:
-									{
-										if (!isInterface)
-										{
-											manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, td));
-										}
-									}
-									break;
-								}
-
-								if (isInterface)
-								{
-									auto ctor = FindInterfaceConstructor(td);
-									if (ctor == nullptr)
-									{
-										manager->errors.Add(WfErrors::WrongInterfaceBaseType(node, td));
-									}
-								}
-							}
-						}
-					}
-
-					if (node->kind == WfClassKind::Class)
-					{
-						List<ITypeDescriptor*> baseTypes;
-						SortedList<ITypeDescriptor*> duplicatedTypes;
-						baseTypes.Add(td.Obj());
-
-						for (vint i = 0; i < baseTypes.Count(); i++)
-						{
-							auto currentTd = baseTypes[i];
-							vint count = currentTd->GetBaseTypeDescriptorCount();
-							for (vint j = 0; j < count; j++)
-							{
-								auto baseTd = currentTd->GetBaseTypeDescriptor(j);
-								if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
-								{
-									if (baseTypes.Contains(baseTd))
-									{
-										if (!duplicatedTypes.Contains(baseTd))
-										{
-											duplicatedTypes.Add(baseTd);
-											manager->errors.Add(WfErrors::DuplicatedBaseClass(node, baseTd));
-										}
-									}
-									else
-									{
-										baseTypes.Add(baseTd);
-									}
-								}
+								manager->errors.Add(WfErrors::WrongInterfaceBaseType(node, baseTd));
 							}
 						}
 					}
@@ -1031,7 +972,8 @@ ValidateSemantic(Expression)
 					Ptr<ITypeInfo> type = GetExpressionType(manager, node->parent, 0);
 					if (type)
 					{
-						manager->ResolveMember(type->GetTypeDescriptor(), node->name.value, false, results);
+						SortedList<ITypeDescriptor*> searchedTypes;
+						manager->ResolveMember(type->GetTypeDescriptor(), node->name.value, false, searchedTypes, results);
 
 						if (results.Count() == 0)
 						{
@@ -1053,7 +995,8 @@ ValidateSemantic(Expression)
 						
 						if (scopeName->typeDescriptor)
 						{
-							manager->ResolveMember(scopeName->typeDescriptor, node->name.value, true, results);
+							SortedList<ITypeDescriptor*> searchedTypes;
+							manager->ResolveMember(scopeName->typeDescriptor, node->name.value, true, searchedTypes, results);
 
 							if (results.Count() > 0)
 							{
@@ -1849,7 +1792,7 @@ ValidateSemantic(Expression)
 						ExpandBindExpression(manager, node);
 						auto parentScope = manager->nodeScopes[node];
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-						if (CheckScopes(manager))
+						if (CheckScopes_DuplicatedSymbol(manager) && CheckScopes_SymbolType(manager))
 						{
 							GetExpressionType(manager, node->expandedExpression, 0);
 						}

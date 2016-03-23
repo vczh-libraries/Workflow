@@ -240,6 +240,165 @@ CompleteScopeForDeclaration
 			};
 
 /***********************************************************************
+CheckBaseClass
+***********************************************************************/
+
+			class CheckBaseClassDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			{
+			public:
+				WfLexicalScopeManager*					manager;
+				SortedList<ITypeDescriptor*>			checkedInterfaces;
+				SortedList<ITypeDescriptor*>			traversedInterfaces;
+
+				CheckBaseClassDeclarationVisitor(WfLexicalScopeManager* _manager)
+					:manager(_manager)
+				{
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+				}
+
+				void Visit(WfEventDeclaration* node)override
+				{
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
+				void CheckDuplicatedBaseClass(WfClassDeclaration* node, ITypeDescriptor* td)
+				{
+					List<ITypeDescriptor*> baseTypes;
+					SortedList<ITypeDescriptor*> duplicatedTypes;
+					baseTypes.Add(td);
+
+					for (vint i = 0; i < baseTypes.Count(); i++)
+					{
+						auto currentTd = baseTypes[i];
+						vint count = currentTd->GetBaseTypeDescriptorCount();
+						for (vint j = 0; j < count; j++)
+						{
+							auto baseTd = currentTd->GetBaseTypeDescriptor(j);
+							if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
+							{
+								if (baseTypes.Contains(baseTd))
+								{
+									if (!duplicatedTypes.Contains(baseTd))
+									{
+										duplicatedTypes.Add(baseTd);
+										manager->errors.Add(WfErrors::DuplicatedBaseClass(node, baseTd));
+									}
+								}
+								else
+								{
+									baseTypes.Add(baseTd);
+								}
+							}
+						}
+					}
+				}
+
+				void CheckDuplicatedBaseInterface(WfClassDeclaration* node, ITypeDescriptor* td)
+				{
+					if (traversedInterfaces.Contains(td))
+					{
+						manager->errors.Add(WfErrors::DuplicatedBaseInterface(node, td));
+					}
+					else
+					{
+						if (checkedInterfaces.Contains(td))
+						{
+							return;
+						}
+						checkedInterfaces.Add(td);
+
+						vint index = traversedInterfaces.Add(td);
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint i = 0; i < count; i++)
+						{
+							CheckDuplicatedBaseInterface(node, td->GetBaseTypeDescriptor(i));
+						}
+						traversedInterfaces.RemoveAt(index);
+					}
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					auto scope = manager->nodeScopes[node];
+					auto td = manager->declarationTypes[node].Obj();
+
+					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					{
+						if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
+						{
+							if (auto baseTd = scopeName->typeDescriptor)
+							{
+								bool isClass = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
+								bool isInterface = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
+
+								switch (node->kind)
+								{
+								case WfClassKind::Class:
+									{
+										if (!isClass)
+										{
+											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
+										}
+									}
+									break;
+								case WfClassKind::Interface:
+									{
+										if (!isInterface)
+										{
+											manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, baseTd));
+										}
+									}
+									break;
+								}
+							}
+						}
+					}
+
+					if (node->kind == WfClassKind::Class)
+					{
+						CheckDuplicatedBaseClass(node, td);
+					}
+					else
+					{
+						CheckDuplicatedBaseInterface(node, td);
+					}
+
+					FOREACH(Ptr<WfClassMember>, member, node->members)
+					{
+						member->declaration->Accept(this);
+					}
+				}
+
+				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
+				{
+					CompleteScopeForDeclarationVisitor visitor(manager, declaration);
+					declaration->Accept(&visitor);
+				}
+			};
+
+/***********************************************************************
 CompleteScope
 ***********************************************************************/
 
@@ -259,6 +418,53 @@ CompleteScope
 				{
 					CompleteScopeForDeclaration(manager, declaration);
 				}
+			}
+
+/***********************************************************************
+CheckScopes_SymbolType
+***********************************************************************/
+
+			bool CheckScopes_SymbolType(WfLexicalScopeManager* manager)
+			{
+				SortedList<WfLexicalScope*> analyzedScopes;
+				vint errorCount = manager->errors.Count();
+				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
+				{
+					if (!analyzedScopes.Contains(scope.Obj()))
+					{
+						analyzedScopes.Add(scope.Obj());
+
+						for (vint i = 0; i < scope->symbols.Count(); i++)
+						{
+							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(i))
+							{
+								if (symbol->type)
+								{
+									symbol->typeInfo = CreateTypeInfoFromType(scope.Obj(), symbol->type);
+								}
+							}
+						}
+					}
+				}
+				return errorCount == manager->errors.Count();
+			}
+
+/***********************************************************************
+CheckScopes_BaseType
+***********************************************************************/
+
+			bool CheckScopes_BaseType(WfLexicalScopeManager* manager)
+			{
+				vint errorCount = manager->errors.Count();
+				CheckBaseClassDeclarationVisitor visitor(manager);
+				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				{
+					FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+					{
+						declaration->Accept(&visitor);
+					}
+				}
+				return errorCount == manager->errors.Count();
 			}
 		}
 	}
