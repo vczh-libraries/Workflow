@@ -185,17 +185,17 @@ WfErrors
 				return new ParsingError(node, L"A19: Expression of type \"" + type->GetTypeFriendlyName() + L"\" is not an invokable function type.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::FunctionArgumentCountMismatched(WfExpression* node, vint expectedCount, const ResolveExpressionResult& function)
+			Ptr<parsing::ParsingError> WfErrors::FunctionArgumentCountMismatched(parsing::ParsingTreeCustomBase* node, vint expectedCount, const ResolveExpressionResult& function)
 			{
 				return new ParsingError(node, L"A20: Function " + function.GetFriendlyName() + L"\" is not allowed to call with " + itow(expectedCount) + L" arguments.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::FunctionArgumentTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType)
+			Ptr<parsing::ParsingError> WfErrors::FunctionArgumentTypeMismatched(parsing::ParsingTreeCustomBase* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType)
 			{
 				return new ParsingError(node, L"A21: The " + itow(index) + L"-th argument of function " + function.GetFriendlyName() + L" cannot implicitly convert from \"" + fromType->GetTypeFriendlyName() + L"\" to \"" + toType->GetTypeFriendlyName() + L"\".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedFunctions(WfExpression* node, collections::List<ResolveExpressionResult>& results)
+			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedFunctions(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
 				FOREACH_INDEXER(ResolveExpressionResult, result, index, results)
@@ -544,6 +544,16 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
 			{
 				return new ParsingError(node, L"G10: Class \"" + node->name.value + L"\" inherits from another class \"" + type->GetTypeName() + L"\" for multiple times.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type)
+			{
+				return new ParsingError(node, L"G11: Type \"" + type->GetTypeName() + L"\" is not a base type of this class.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type)
+			{
+				return new ParsingError(node, L"G12: Base type \"" + type->GetTypeName() + L"\" has already been initialized.");
 			}
 		}
 	}

@@ -170,7 +170,7 @@ BuildScopeForDeclaration
 					auto bodyScope = MakePtr<WfLexicalScope>(resultScope);
 					{
 						auto config = MakePtr<WfLexicalFunctionConfig>();
-						resultScope->functionConfig = config;
+						bodyScope->functionConfig = config;
 
 						config->lambda = false;
 						config->thisAccessable = true;

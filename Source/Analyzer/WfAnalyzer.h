@@ -149,6 +149,9 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<typeimpl::WfCustomType>>			DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
+				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
+				typedef collections::Dictionary<BaseConstructorCallKey, IMethodInfo*>						BaseConstructorCallResolvingMap;
+
 			protected:
 				ModuleList									modules;
 				ModuleCodeList								moduleCodes;
@@ -163,12 +166,13 @@ Scope Manager
 				TypeNameMap									typeNames;
 				ScopeSortedList								analyzedScopes;
 
-				NodeScopeMap								nodeScopes;					// the nearest scope for a AST
-				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
-				LambdaCaptureMap							lambdaCaptures;				// all captured symbols in a lambda AST
-				InterfaceMethodImplementationMap			interfaceMethodImpls;		// the IMethodInfo* that implemented by a function
-				DeclarationTypeMap							declarationTypes;			// ITypeDescriptor* for type declaration
-				DeclarationMemberInfoMap					declarationMemberInfos;		// IMemberInfo* for type description
+				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
+				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
+				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
+				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
+				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
+				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
+				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
@@ -502,9 +506,9 @@ Error Messages
 				static Ptr<parsing::ParsingError>			IndexOperatorOnWrongType(WfBinaryExpression* node, reflection::description::ITypeInfo* containerType);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotCollection(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotFunction(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			FunctionArgumentCountMismatched(WfExpression* node, vint expectedCount, const ResolveExpressionResult& function);
-				static Ptr<parsing::ParsingError>			FunctionArgumentTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			CannotPickOverloadedFunctions(WfExpression* node, collections::List<ResolveExpressionResult>& results);
+				static Ptr<parsing::ParsingError>			FunctionArgumentCountMismatched(parsing::ParsingTreeCustomBase* node, vint expectedCount, const ResolveExpressionResult& function);
+				static Ptr<parsing::ParsingError>			FunctionArgumentTypeMismatched(parsing::ParsingTreeCustomBase* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static Ptr<parsing::ParsingError>			CannotPickOverloadedFunctions(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results);
 				static Ptr<parsing::ParsingError>			ClassContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			InterfaceContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ConstructorReturnTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
@@ -582,6 +586,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
 				static Ptr<parsing::ParsingError>			MissingFieldType(WfVariableDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 			};
 		}
 	}
