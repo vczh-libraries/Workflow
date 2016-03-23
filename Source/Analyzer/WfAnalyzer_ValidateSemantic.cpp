@@ -289,15 +289,32 @@ ValidateSemantic(Statement)
 				void Visit(WfReturnStatement* node)override
 				{
 					auto scope = manager->nodeScopes[node].Obj();
-					auto decl = scope->FindDeclaration().Cast<WfFunctionDeclaration>();
-					auto returnType = CreateTypeInfoFromType(scope, decl->returnType);
-					if (node->expression)
+					auto decl = scope->FindDeclaration();
+					if (auto funcDecl = decl.Cast<WfFunctionDeclaration>())
 					{
-						GetExpressionType(manager, node->expression, returnType);
+						auto returnType = CreateTypeInfoFromType(scope, funcDecl->returnType);
+						if (node->expression)
+						{
+							if (returnType->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+							{
+								manager->errors.Add(WfErrors::CannotReturnExpression(node));
+							}
+							else
+							{
+								GetExpressionType(manager, node->expression, returnType);
+							}
+						}
+						else if (returnType->GetDecorator() != ITypeInfo::TypeDescriptor || returnType->GetTypeDescriptor() != description::GetTypeDescriptor<void>())
+						{
+							manager->errors.Add(WfErrors::ReturnMissExpression(node, returnType.Obj()));
+						}
 					}
-					else if (returnType->GetDecorator() != ITypeInfo::TypeDescriptor || returnType->GetTypeDescriptor() != description::GetTypeDescriptor<void>())
+					else
 					{
-						manager->errors.Add(WfErrors::ReturnMissExpression(node, returnType.Obj()));
+						if (node->expression)
+						{
+							manager->errors.Add(WfErrors::CannotReturnExpression(node));
+						}
 					}
 				}
 

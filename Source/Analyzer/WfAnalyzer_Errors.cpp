@@ -322,6 +322,11 @@ WfErrors
 				return new ParsingError(node, L"C5: Delete statement cannot apply on an expression of type \"" + type->GetTypeFriendlyName() + L"\", which is expected to be a raw pointer.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::CannotReturnExpression(WfStatement* node)
+			{
+				return new ParsingError(node, L"C6: Return statement cannot have a value in void functions or constructors.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
