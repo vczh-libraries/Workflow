@@ -662,6 +662,19 @@ WfRuntimeThreadContext
 							}
 						}
 
+						if (auto classMethod = dynamic_cast<WfClassMethod*>(ins.methodParameter))
+						{
+							if (classMethod->GetGlobalContext() == globalContext.Obj())
+							{
+								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
+								capturedVariable->variables.Resize(1);
+								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
+
+								CONTEXT_ACTION(PushStackFrame(classMethod->functionIndex, ins.countParameter, capturedVariable), L"failed to invoke a function.");
+								return WfRuntimeExecutionAction::EnterStackFrame;
+							}
+						}
+
 						Array<Value> arguments(ins.countParameter);
 						for (vint i = 0; i < ins.countParameter; i++)
 						{

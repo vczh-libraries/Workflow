@@ -17,12 +17,27 @@ namespace vl
 	{
 		namespace typeimpl
 		{
+			class WfClassInstance;
 			class WfInterfaceInstance;
 		}
 	}
 
 	namespace reflection
 	{
+		template<>
+		class Description<workflow::typeimpl::WfClassInstance> : public virtual DescriptableObject
+		{
+		private:
+			description::ITypeDescriptor*				associatedTypeDescriptor;
+
+		public:
+			Description(description::ITypeDescriptor* _associatedTypeDescriptor)
+				:associatedTypeDescriptor(_associatedTypeDescriptor)
+			{
+				typeDescriptor = &associatedTypeDescriptor;
+			}
+		};
+
 		template<>
 		class Description<workflow::typeimpl::WfInterfaceInstance> : public virtual DescriptableObject
 		{
@@ -245,12 +260,14 @@ Custom Type
 				typedef reflection::description::TypeDescriptorFlags		TypeDescriptorFlags;
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::IMethodGroupInfo			IMethodGroupInfo;
 				typedef collections::List<ITypeDescriptor*>					TypeDescriptorList;
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
 				bool									baseTypeExpanded = false;
 				TypeDescriptorList						expandedBaseTypes;
 				
+				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group);
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 				void									LoadInternal()override;
 			public:
@@ -288,6 +305,16 @@ Custom Type
 /***********************************************************************
 Instance
 ***********************************************************************/
+
+			class WfClassInstance : public Object, public reflection::Description<WfClassInstance>
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+			protected:
+
+			public:
+				WfClassInstance(ITypeDescriptor* _typeDescriptor);
+				~WfClassInstance();
+			};
 
 			class WfInterfaceInstance : public Object, public reflection::Description<WfInterfaceInstance>
 			{

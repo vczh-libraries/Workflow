@@ -72,9 +72,8 @@ WfStaticMethod
 
 			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
-				auto lambda = MakePtr<WfRuntimeLambda>(globalContext, nullptr, functionIndex);
 				auto argumentArray = IValueList::Create(arguments);
-				return lambda->Invoke(argumentArray);
+				return WfRuntimeLambda::Invoke(globalContext, nullptr, functionIndex, argumentArray);
 			}
 
 			WfStaticMethod::WfStaticMethod()
@@ -88,7 +87,24 @@ WfClassConstructor
 
 			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
-				throw 0;
+				auto instance = MakePtr<WfClassInstance>(GetOwnerTypeDescriptor());
+				{
+					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+					capturedVariables->variables.Resize(1);
+					capturedVariables->variables[0] = Value::From(instance.Obj());
+					
+					auto argumentArray = IValueList::Create(arguments);
+					WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+				}
+
+				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					return Value::From(instance);
+				}
+				else
+				{
+					return Value::From(instance.Detach());
+				}
 			}
 
 			WfClassConstructor::WfClassConstructor(Ptr<ITypeInfo> type)
@@ -103,13 +119,12 @@ WfClassMethod
 
 			Value WfClassMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
-				auto context = MakePtr<WfRuntimeVariableContext>();
-				context->variables.Resize(1);
-				context->variables[0] = thisObject;
+				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+				capturedVariables->variables.Resize(1);
+				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 
-				auto lambda = MakePtr<WfRuntimeLambda>(globalContext, nullptr, functionIndex);
 				auto argumentArray = IValueList::Create(arguments);
-				return lambda->Invoke(argumentArray);
+				return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
 			}
 
 			WfClassMethod::WfClassMethod()
@@ -363,23 +378,33 @@ WfProperty
 WfCustomType
 ***********************************************************************/
 
+			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group)
+			{
+				vint methodCount = group->GetMethodCount();
+				for (vint j = 0; j < methodCount; j++)
+				{
+					auto method = group->GetMethod(j);
+					if (auto methodInfo = dynamic_cast<WfMethodBase*>(method))
+					{
+						methodInfo->SetGlobalContext(globalContext);
+					}
+				}
+			}
+
 			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
 			{
 				globalContext = _globalContext;
+				
+				if (auto group = GetConstructorGroup())
+				{
+					SetGlobalContext(globalContext, group);
+				}
 
 				vint methodGroupCount = GetMethodGroupCount();
 				for (vint i = 0; i < methodGroupCount; i++)
 				{
 					auto group = GetMethodGroup(i);
-					vint methodCount = group->GetMethodCount();
-					for (vint j = 0; j < methodCount; j++)
-					{
-						auto method = group->GetMethod(j);
-						if (auto methodInfo = dynamic_cast<WfMethodBase*>(method))
-						{
-							methodInfo->SetGlobalContext(globalContext);
-						}
-					}
+					SetGlobalContext(globalContext, group);
 				}
 			}
 
@@ -492,7 +517,20 @@ WfInterface
 			}
 
 /***********************************************************************
-WfTypeImpl
+WfClassInstance
+***********************************************************************/
+
+			WfClassInstance::WfClassInstance(ITypeDescriptor* _typeDescriptor)
+				:Description<WfClassInstance>(_typeDescriptor)
+			{
+			}
+
+			WfClassInstance::~WfClassInstance()
+			{
+			}
+
+/***********************************************************************
+WfInterfaceInstance
 ***********************************************************************/
 
 			WfInterfaceInstance::WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors)
