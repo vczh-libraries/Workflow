@@ -198,13 +198,12 @@ GenerateInstructions(Declaration)
 					}
 					else if (classDecl->kind == WfClassKind::Class)
 					{
-						throw 0;
+						GenerateDeclarationInstructions(context, node);
 					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfEventDeclaration* node)override
@@ -217,7 +216,48 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					//throw 0;
+					auto meta = context.assembly->functions[context.constructors[node]];
+					auto functionContext = MakePtr<WfCodegenFunctionContext>();
+					functionContext->function = meta;
+					context.functionContext = functionContext;
+					meta->firstInstruction = context.assembly->instructions.Count();
+					
+					auto scope = context.manager->nodeScopes[node].Obj();
+					{
+						FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+						{
+							auto symbol = scope->symbols[argument->name.value][0];
+							functionContext->arguments.Add(symbol.Obj(), index);
+						}
+					}
+
+					{
+						auto td = scope->parentScope->typeOfThisExpr;
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint i = 0; i < count; i++)
+						{
+							throw 0;
+						}
+					}
+
+					FOREACH(Ptr<WfClassMember>, member, From(classDecl->members))
+					{
+						if (auto varDecl = member->declaration.Cast<WfVariableDeclaration>())
+						{
+							auto node = varDecl.Obj();
+							auto info = context.manager->declarationMemberInfos[varDecl.Obj()].Cast<WfField>().Obj();
+							GenerateExpressionInstructions(context, varDecl->expression);
+							INSTRUCTION(Ins::LoadCapturedVar(0));
+							INSTRUCTION(Ins::SetProperty(info));
+						}
+					}
+					GenerateStatementInstructions(context, node->statement);
+
+					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::Return());
+					meta->lastInstruction = context.assembly->instructions.Count() - 1;
+					context.functionContext = 0;
+					GenerateClosureInstructions(context, functionContext);
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -266,7 +306,6 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					//throw 0;
 				}
 
 				void Visit(WfClassDeclaration* node)override

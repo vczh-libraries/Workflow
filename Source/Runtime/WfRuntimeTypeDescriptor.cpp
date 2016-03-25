@@ -83,7 +83,7 @@ WfStaticMethod
 			}
 
 /***********************************************************************
-WfInterfaceConstructor
+WfClassConstructor
 ***********************************************************************/
 
 			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)

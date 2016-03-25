@@ -137,7 +137,7 @@ GenerateInstructions(Expression)
 						}
 						else
 						{
-							VisitThisExpression(node, getter->GetOwnerTypeDescriptor());
+							VisitThisExpression(node, result.propertyInfo->GetOwnerTypeDescriptor());
 							INSTRUCTION(Ins::GetProperty(result.propertyInfo));
 						}
 					}
@@ -153,25 +153,41 @@ GenerateInstructions(Expression)
 					vint count = context.GetThisStackCount(scope);
 					vint offset = 0;
 
-					Ptr<WfLexicalCapture> capture = nullptr;
+					Ptr<WfLexicalCapture> capture;
+					Ptr<WfLexicalFunctionConfig> lastConfig;
 					while (scope)
 					{
 						if (scope->typeOfThisExpr)
 						{
 							if (scope->typeOfThisExpr->CanConvertTo(td))
 							{
-								CHECK_ERROR(capture, L"TODO: Load the this argument in class method.");
-								INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count() + count - offset - 1));
+								if (capture)
+								{
+									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count() + count - offset - 1));
+								}
+								else
+								{
+									INSTRUCTION(Ins::LoadCapturedVar(0));
+								}
 								return;
 							}
 							else
 							{
 								offset++;
 							}
+
+							if (lastConfig)
+							{
+								if (!lastConfig->parentThisAccessable)
+								{
+									break;
+								}
+							}
 						}
 
 						if (scope->functionConfig)
 						{
+							lastConfig = scope->functionConfig;
 							if (!capture)
 							{
 								vint index = context.manager->lambdaCaptures.Keys().IndexOf(scope->ownerNode.Obj());
@@ -179,11 +195,6 @@ GenerateInstructions(Expression)
 								{
 									capture = context.manager->lambdaCaptures.Values()[index];
 								}
-							}
-
-							if (!scope->functionConfig->parentThisAccessable)
-							{
-								break;
 							}
 						}
 
@@ -206,8 +217,12 @@ GenerateInstructions(Expression)
 									auto capture = context.manager->lambdaCaptures[scope->ownerNode.Obj()];
 									auto count = context.GetThisStackCount(scope);
 									INSTRUCTION(Ins::LoadCapturedVar(capture->symbols.Count() + count - 1));
-									return;
 								}
+								else
+								{
+									INSTRUCTION(Ins::LoadCapturedVar(0));
+								}
+								return;
 							}
 							CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfThisExpression*)#Internal error, this expression is illegal here.");
 						}

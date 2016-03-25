@@ -75,13 +75,17 @@ GenerateGlobalDeclarationMetadata
 					}
 					else if (classDecl->kind == WfClassKind::Class)
 					{
-						throw 0;
+						GenerateGlobalDeclarationMetadata(context, node, namePrefix);
+						auto scope = context.manager->nodeScopes[node].Obj();
+						auto symbol = context.manager->GetDeclarationSymbol(scope, node);
+						auto index = context.globalFunctions[symbol.Obj()];
+						auto info = context.manager->declarationMemberInfos[node].Cast<WfClassMethod>();
+						info->functionIndex = index;
 					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfEventDeclaration* node)override
@@ -94,7 +98,20 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					//throw 0;
+					auto meta = MakePtr<WfAssemblyFunction>();
+					meta->name = namePrefix + L"#ctor";
+					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					{
+						meta->argumentNames.Add(argument->name.value);
+					}
+					meta->capturedVariableNames.Add(L"<captured-this>0");
+
+					vint index = context.assembly->functions.Add(meta);
+					context.assembly->functionByName.Add(meta->name, index);
+					context.constructors.Add(node, index);
+
+					auto info = context.manager->declarationMemberInfos[node].Cast<WfClassConstructor>();
+					info->functionIndex = index;
 				}
 
 				void Visit(WfClassDeclaration* node)override

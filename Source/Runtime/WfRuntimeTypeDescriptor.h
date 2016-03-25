@@ -112,6 +112,8 @@ Class Method
 
 				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
 			public:
+				vint									functionIndex = -1;
+
 				WfClassConstructor(Ptr<ITypeInfo> type);
 			};
 

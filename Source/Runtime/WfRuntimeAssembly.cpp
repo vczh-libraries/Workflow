@@ -740,11 +740,13 @@ Serialization (TypeImpl)
 				static void IOClassConstructor(WfReader& reader, Ptr<WfClassConstructor>& info)
 				{
 					info = new WfClassConstructor(nullptr);
+					reader << info->functionIndex;
 					IOMethodBase(reader, info.Obj());
 				}
 
 				static void IOClassConstructor(WfWriter& writer, WfClassConstructor* info)
 				{
+					writer << info->functionIndex;
 					IOMethodBase(writer, info);
 				}
 
@@ -997,23 +999,23 @@ Serialization (TypeImpl)
 						auto propInfo = td->GetProperty(i);
 						bool isProperty = false;
 
-						if (auto prop = dynamic_cast<WfProperty*>(propInfo))
+						if (dynamic_cast<WfProperty*>(propInfo))
 						{
 							isProperty = true;
-							WString propName = prop->GetName();
+							WString propName = propInfo->GetName();
 							writer << isProperty << propName;
 
-							auto getterName = prop->GetGetter() ? prop->GetGetter()->GetName() : L"";
-							auto setterName = prop->GetSetter() ? prop->GetSetter()->GetName() : L"";
-							auto eventName = prop->GetValueChangedEvent() ? prop->GetValueChangedEvent()->GetName() : L"";
+							auto getterName = propInfo->GetGetter() ? propInfo->GetGetter()->GetName() : L"";
+							auto setterName = propInfo->GetSetter() ? propInfo->GetSetter()->GetName() : L"";
+							auto eventName = propInfo->GetValueChangedEvent() ? propInfo->GetValueChangedEvent()->GetName() : L"";
 							writer << getterName << setterName << eventName;
 						}
 						else
 						{
 							isProperty = false;
-							WString propName = prop->GetName();
+							WString propName = propInfo->GetName();
 							writer << isProperty << propName;
-							IOType(writer, prop->GetReturn());
+							IOType(writer, propInfo->GetReturn());
 						}
 					}
 				}
