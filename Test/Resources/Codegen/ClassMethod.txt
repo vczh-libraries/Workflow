@@ -1,0 +1,57 @@
+module test;
+using system::*;
+
+class A
+{
+	var x : int = 0;
+
+	new()
+	{
+	}
+
+	new(_x : int)
+	{
+		x = _x;
+	}
+
+	func GetX() : int
+	{
+		return x;
+	}
+
+	func SetX(_x : int) : void
+	{
+		x = _x;
+	}
+
+	event XChanged();
+
+	prop X : int {GetX, SetX : XChanged}
+}
+
+var s = "";
+
+func main():string
+{
+	{
+		var a = new A^();
+		s = s & $"[$(a.x)]";
+	}
+	{
+		var a = new A^(100);
+		s = s & $"[$(a.x)]";
+	}
+	{
+		var a = new A^(1);
+		var handler = attach(a.XChanged, func():void{s = s & $"[$(a.X)]";});
+
+		a.X = a.X + 1;
+		a.X = a.X - 1;
+		a.X = a.X;
+
+		detach(handler);
+		a.X = 100;
+		s = s & $"[$(a.X)]";
+	}
+	return s;
+}

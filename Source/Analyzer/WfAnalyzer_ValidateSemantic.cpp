@@ -784,7 +784,10 @@ ValidateSemantic(Expression)
 									{
 										if (firstConfigScope)
 										{
-											if (!lastConfigScope->ownerClassMember)
+											bool inMethodBody = lastConfigScope->ownerClassMember && lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
+											bool inCtorBody = lastConfigScope->parentScope->ownerClassMember && lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
+
+											if (!inMethodBody && !inCtorBody)
 											{
 												manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 											}
