@@ -89,12 +89,7 @@ WfClassConstructor
 			{
 				auto instance = MakePtr<WfClassInstance>(GetOwnerTypeDescriptor());
 				{
-					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
-					capturedVariables->variables.Resize(1);
-					capturedVariables->variables[0] = Value::From(instance.Obj());
-					
-					auto argumentArray = IValueList::Create(arguments);
-					WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+					InvokeBaseCtor(Value::From(instance.Obj()), arguments);
 				}
 
 				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
@@ -111,6 +106,16 @@ WfClassConstructor
 				:WfMethodBase(true)
 			{
 				SetReturn(type);
+			}
+
+			void WfClassConstructor::InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments)
+			{
+				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+				capturedVariables->variables.Resize(1);
+				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
+					
+				auto argumentArray = IValueList::Create(arguments);
+				WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
 			}
 
 /***********************************************************************
@@ -523,10 +528,27 @@ WfClassInstance
 			WfClassInstance::WfClassInstance(ITypeDescriptor* _typeDescriptor)
 				:Description<WfClassInstance>(_typeDescriptor)
 			{
+				classType = dynamic_cast<WfCustomType*>(_typeDescriptor);
+				InitializeAggregation(classType->GetExpandedBaseTypes().Count());
 			}
 
 			WfClassInstance::~WfClassInstance()
 			{
+			}
+
+			void WfClassInstance::InstallBaseObject(ITypeDescriptor* td, Value& value)
+			{
+				Ptr<DescriptableObject> ptr;
+				{
+					if (!(ptr = value.GetSharedPtr()))
+					{
+						ptr = value.GetRawPtr();
+					}
+					value = Value();
+				}
+				
+				vint index = classType->GetExpandedBaseTypes().IndexOf(td);
+				SetAggregationParent(index, ptr);
 			}
 
 /***********************************************************************

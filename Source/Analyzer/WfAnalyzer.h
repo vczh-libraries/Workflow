@@ -149,7 +149,8 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
 				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
-				typedef collections::Dictionary<BaseConstructorCallKey, IMethodInfo*>						BaseConstructorCallResolvingMap;
+				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
+				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 
 			protected:
 				ModuleList									modules;

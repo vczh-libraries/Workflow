@@ -130,6 +130,8 @@ Class Method
 				vint									functionIndex = -1;
 
 				WfClassConstructor(Ptr<ITypeInfo> type);
+
+				void									InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments);
 			};
 
 			class WfClassMethod : public WfMethodBase
@@ -309,11 +311,15 @@ Instance
 			class WfClassInstance : public Object, public reflection::Description<WfClassInstance>
 			{
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::Value						Value;
 			protected:
+				WfCustomType*							classType = nullptr;
 
 			public:
 				WfClassInstance(ITypeDescriptor* _typeDescriptor);
 				~WfClassInstance();
+
+				void									InstallBaseObject(ITypeDescriptor* td, Value& value);
 			};
 
 			class WfInterfaceInstance : public Object, public reflection::Description<WfInterfaceInstance>

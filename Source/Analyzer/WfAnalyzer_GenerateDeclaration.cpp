@@ -236,7 +236,23 @@ GenerateInstructions(Declaration)
 						vint count = td->GetBaseTypeDescriptorCount();
 						for (vint i = 0; i < count; i++)
 						{
-							throw 0;
+							auto baseTd = td->GetBaseTypeDescriptor(i);
+							auto ctor = context.manager->baseConstructorCallResolvings[{node, baseTd}];
+							if (ctor.key)
+							{
+								FOREACH(Ptr<WfExpression>, argument, ctor.key->arguments)
+								{
+									GenerateExpressionInstructions(context, argument);
+								}
+								INSTRUCTION(Ins::LoadCapturedVar(0));
+								INSTRUCTION(Ins::InvokeBaseCtor(ctor.value, ctor.key->arguments.Count()));
+							}
+							else
+							{
+								INSTRUCTION(Ins::LoadCapturedVar(0));
+								INSTRUCTION(Ins::InvokeBaseCtor(ctor.value, 0));
+							}
+							INSTRUCTION(Ins::Pop());
 						}
 					}
 

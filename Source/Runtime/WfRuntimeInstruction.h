@@ -62,6 +62,7 @@ Instruction
 				InvokeProxy,			// count				: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeMethod,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeBaseCtor,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> <null>						;
 				AttachEvent,			// IEventInfo*			: Value-this, <function> -> <Listener>								;
 				DetachEvent,			// 						: <Listener> -> bool												;
 				InstallTry,				// label				: () -> ()															;
@@ -133,6 +134,7 @@ Instruction
 			APPLY_COUNT(InvokeProxy)\
 			APPLY_METHOD_COUNT(InvokeMethod)\
 			APPLY_EVENT_COUNT(InvokeEvent)\
+			APPLY_METHOD_COUNT(InvokeBaseCtor)\
 			APPLY_EVENT(AttachEvent)\
 			APPLY(DetachEvent)\
 			APPLY_LABEL(InstallTry)\

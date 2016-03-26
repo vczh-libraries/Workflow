@@ -253,9 +253,9 @@ ValidateSemantic(ClassMember)
 					SelectFunction(manager, node, nullptr, functions, arguments, selectedFunctionIndex);
 					if (selectedFunctionIndex != -1)
 					{
-						auto ctor = functions[selectedFunctionIndex].constructorInfo;
-						Pair<WfConstructorDeclaration*, ITypeDescriptor*> key(ctorDecl, td);
-						manager->baseConstructorCallResolvings.Add(key, ctor);
+						auto ctor = functions[selectedFunctionIndex].methodInfo;
+						auto call = dynamic_cast<WfBaseConstructorCall*>(node);
+						manager->baseConstructorCallResolvings.Add({ctorDecl, td}, {call, ctor});
 					}
 				}
 

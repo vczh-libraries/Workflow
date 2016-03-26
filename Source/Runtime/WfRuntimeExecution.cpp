@@ -705,6 +705,51 @@ WfRuntimeThreadContext
 						PushValue(Value());
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::InvokeBaseCtor:
+					{
+						Value thisValue;
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.eventParameter));
+						
+						if (auto ctor = dynamic_cast<WfClassConstructor*>(ins.methodParameter))
+						{
+							if (ctor->GetGlobalContext() == globalContext.Obj())
+							{
+								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
+								capturedVariable->variables.Resize(1);
+								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
+
+								CONTEXT_ACTION(PushStackFrame(ctor->functionIndex, ins.countParameter, capturedVariable), L"failed to invoke a function.");
+								return WfRuntimeExecutionAction::EnterStackFrame;
+							}
+						}
+
+						Array<Value> arguments(ins.countParameter);
+						for (vint i = 0; i < ins.countParameter; i++)
+						{
+							Value argument;
+							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
+							arguments[ins.countParameter - i - 1] = argument;
+						}
+						
+						if (auto ctor = dynamic_cast<WfClassConstructor*>(ins.methodParameter))
+						{
+							ctor->InvokeBaseCtor(thisValue, arguments);
+						}
+						else
+						{
+							auto instance = dynamic_cast<WfClassInstance*>(thisValue.GetRawPtr());
+							if (!instance)
+							{
+								INTERNAL_ERROR(L"Wrong class instance for invoking base constructor.");
+							}
+
+							Value baseValue = ins.methodParameter->Invoke(Value(), arguments);
+							instance->InstallBaseObject(ins.methodParameter->GetOwnerTypeDescriptor(), baseValue);
+						}
+						PushValue(Value());
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::AttachEvent:
 					{
 						Value thisValue, function;

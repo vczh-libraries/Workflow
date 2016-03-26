@@ -1,0 +1,89 @@
+module test;
+using test::*;
+using system::*;
+
+class Y
+{
+	var x : int = 0;
+
+	new()
+	{
+	}
+
+	new(_x : int)
+	{
+		x = _x;
+		if(this.x != x)
+		{
+			raise "The \"this\" expression is not correctly implemented.";
+		}
+	}
+
+	func GetX() : int
+	{
+		if(this.x != x)
+		{
+			raise "The \"this\" expression is not correctly implemented.";
+		}
+		return x;
+	}
+
+	func SetX(_x : int) : void
+	{
+		if(x != _x)
+		{
+			x = _x;
+			XChanged();
+		}
+	}
+
+	event XChanged();
+
+	prop X : int {GetX, SetX : XChanged}
+}
+
+class A : Y, ObservableValue
+{
+	new()
+	{
+	}
+
+	new(y : int, b : bool)
+		:Y(y)
+	{
+	}
+
+	new(b : bool, value : int)
+		:ObservableValue(value, b)
+	{
+	}
+
+	new(y : int, value : int)
+		:Y(y)
+		,ObservableValue(value)
+	{
+	}
+}
+
+var s = "";
+
+func main():string
+{
+	{
+		var a = new A^();
+		s = s & $"[$(a.X)][$(a.Value)]";
+	}
+	{
+		var a = new A^(1, true);
+		s = s & $"[$(a.X)][$(a.Value)]";
+	}
+	{
+		var a = new A^(true, 2);
+		s = s & $"[$(a.X)][$(a.Value)]";
+	}
+	{
+		var a = new A^(1, 2);
+		s = s & $"[$(a.X)][$(a.Value)]";
+	}
+	return s;
+}
