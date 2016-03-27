@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMETYPEDESCRIPTOR
 #define VCZH_WORKFLOW_RUNTIME_WFRUNTIMETYPEDESCRIPTOR
 
-#include "../WorkflowVlppReferences.h"
+#include "../../Import/Vlpp.h"
 
 namespace vl
 {
