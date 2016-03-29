@@ -1,0 +1,74 @@
+module test;
+using system::*;
+using test::*;
+
+interface IMyInterface : Enumerable
+{
+	func Get100() : int;
+}
+
+class MyClass
+{
+	var begin : int = -1;
+	var end : int = -1;
+
+	new(_begin : int, _end : int)
+	{
+		begin = _begin;
+		end = _end;
+	}
+
+	static func Get50() : int
+	{
+		return 50;
+	}
+
+	func CreateMyInterface() : IMyInterface^
+	{
+		return new IMyInterface^
+		{
+			override func CreateEnumerator() : Enumerator^
+			{
+				return new Enumerator^
+				{
+					var index = -1;
+
+					override func GetCurrent() : object
+					{
+						return begin + index;
+					}
+
+					override func GetIndex() : int
+					{
+						return index;
+					}
+
+					override func Next() : bool
+					{
+						if(index == end - begin)
+						{
+							return false;
+						}
+						else
+						{
+							index = index + 1;
+							return true;
+						}
+					}
+				};
+			}
+
+			override func Get100() : int
+			{
+				return Get50() * 2;
+			}
+		};
+	}
+}
+
+func main():string
+{
+	var x = new MyClass^(1, 5);
+	var xs = x.CreateMyInterface();
+	return $"[$(xs.Get100())][$(CustomInterfaceProcessor::Sum(xs))][$(CustomInterfaceProcessor::Sum(xs))]";
+}

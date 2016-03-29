@@ -784,39 +784,46 @@ WfCodegenContext
 			vint WfCodegenContext::GetThisStackCount(WfLexicalScope* scope)
 			{
 				vint count = 0;
-				Ptr<WfLexicalFunctionConfig> config;
+				Ptr<WfLexicalFunctionConfig> firstConfig, lastConfig;
 				while (scope)
 				{
+					if (scope->typeOfThisExpr)
+					{
+						if (lastConfig)
+						{
+							if (lastConfig->thisAccessable)
+							{
+								count++;
+							}
+							if (!lastConfig->parentThisAccessable)
+							{
+								break;
+							}
+						}
+					}
+
 					if (scope->functionConfig)
 					{
-						if (!config)
+						if (!firstConfig)
 						{
 							vint index = thisStackCounts.Keys().IndexOf(scope->functionConfig.Obj());
 							if (index == -1)
 							{
-								config = scope->functionConfig;
+								firstConfig = scope->functionConfig;
 							}
 							else
 							{
 								return thisStackCounts.Values()[index];
 							}
 						}
-
-						if (scope->functionConfig->thisAccessable)
-						{
-							count++;
-						}
-						if (!scope->functionConfig->parentThisAccessable)
-						{
-							break;
-						}
+						lastConfig = scope->functionConfig;
 					}
 					scope = scope->parentScope.Obj();
 				}
 
-				if (config)
+				if (firstConfig)
 				{
-					thisStackCounts.Add(config, count);
+					thisStackCounts.Add(firstConfig, count);
 				}
 				return count;
 			}

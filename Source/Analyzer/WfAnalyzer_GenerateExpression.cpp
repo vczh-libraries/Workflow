@@ -81,18 +81,22 @@ GenerateInstructions(Expression)
 					{
 						if (scope->functionConfig)
 						{
+							vint parentThisCount = context.GetThisStackCount(scope);
 							if (scope->functionConfig->lambda)
 							{
-								vint parentThisCount = context.GetThisStackCount(scope);
 								auto capture = context.manager->lambdaCaptures[scope->ownerNode.Obj()];
 								vint captureCount = capture->symbols.Count();
 								for (vint i = 0; i < parentThisCount; i++)
 								{
 									INSTRUCTION(Ins::LoadCapturedVar(captureCount + i));
 								}
-								return parentThisCount;
 							}
-							break;
+							else if (parentThisCount > 0)
+							{
+								CHECK_ERROR(parentThisCount == 1, L"GenerateExpressionInstructionsVisitor::PushCapturedThisValues(WfCodegenContext&, WfLexicalScope*, ParsingTreeCustomBase*)#Internal error, wrong parentThisCount value.");
+								INSTRUCTION(Ins::LoadCapturedVar(0));
+							}
+							return parentThisCount;
 						}
 						scope = scope->parentScope.Obj();
 					}
