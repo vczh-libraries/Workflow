@@ -231,6 +231,7 @@ GenerateInstructions(Declaration)
 						}
 					}
 
+					if (classDecl->baseTypes.Count() > 0)
 					{
 						auto td = scope->parentScope->typeOfThisExpr;
 						vint count = td->GetBaseTypeDescriptorCount();
