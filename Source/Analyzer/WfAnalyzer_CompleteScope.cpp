@@ -380,9 +380,12 @@ CheckBaseClass
 								{
 								case WfClassKind::Class:
 									{
-										if (!isClass)
+										if (!isClass || !baseTd->IsAggregatable())
 										{
-											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
+											if (!dynamic_cast<WfClass*>(baseTd))
+											{
+												manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
+											}
 										}
 									}
 									break;

@@ -392,7 +392,7 @@ namespace test
 		vint								y = 0;
 	};
 
-	class ObservableValue : public Object, public Description<ObservableValue>
+	class ObservableValue : public Object, public AggregatableDescription<ObservableValue>
 	{
 	protected:
 		vint								value;
@@ -418,6 +418,11 @@ namespace test
 		ObservableValue(vint _value, Nullable<bool> x)
 			:value(_value)
 		{
+		}
+
+		~ObservableValue()
+		{
+			FinalizeAggregation();
 		}
 
 		static Ptr<ObservableValue> Create(vint value, const WString& name)

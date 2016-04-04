@@ -517,7 +517,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
 			{
-				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of class \"" + node->name.value + L"\" is not a class.");
+				return new ParsingError(node, L"G6: Base type \"" + type->GetTypeName() + L"\" of class \"" + node->name.value + L"\" is not a class, or it is a class but it is not aggregatable.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
