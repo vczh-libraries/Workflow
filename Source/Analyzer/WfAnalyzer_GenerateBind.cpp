@@ -922,6 +922,14 @@ CopyDeclaration
 						ctor->arguments.Add(newArg);
 					}
 					ctor->statement = CopyStatement(node->statement);
+					result = ctor;
+				}
+
+				void Visit(WfDestructorDeclaration* node)override
+				{
+					auto dtor = MakePtr<WfDestructorDeclaration>();
+					dtor->statement = CopyStatement(node->statement);
+					result = dtor;
 				}
 
 				void Visit(WfClassDeclaration* node)override

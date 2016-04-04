@@ -114,6 +114,20 @@ GenerateGlobalDeclarationMetadata
 					info->functionIndex = index;
 				}
 
+				void Visit(WfDestructorDeclaration* node)override
+				{
+					auto meta = MakePtr<WfAssemblyFunction>();
+					meta->name = namePrefix + L"#dtor";
+					meta->capturedVariableNames.Add(L"<captured-this>0");
+
+					vint index = context.assembly->functions.Add(meta);
+					context.assembly->functionByName.Add(meta->name, index);
+					context.destructors.Add(node, index);
+
+					auto info = context.manager->declarationTypes[classDecl.Obj()].Cast<WfClass>();
+					info->destructorFunctionIndex = index;
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					GenerateGlobalDeclarationMetadata(context, node, namePrefix);
@@ -172,6 +186,10 @@ GenerateGlobalDeclarationMetadata
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
+				void Visit(WfDestructorDeclaration* node)override
 				{
 				}
 

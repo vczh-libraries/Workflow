@@ -322,6 +322,11 @@ ValidateSemantic(ClassMember)
 					ValidateStatementSemantic(manager, node->statement);
 				}
 
+				void Visit(WfDestructorDeclaration* node)override
+				{
+					ValidateStatementSemantic(manager, node->statement);
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					ValidateDeclarationSemantic(manager, node);
@@ -381,6 +386,10 @@ ValidateSemantic(Declaration)
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
+				void Visit(WfDestructorDeclaration* node)override
 				{
 				}
 
@@ -785,9 +794,10 @@ ValidateSemantic(Expression)
 										if (firstConfigScope)
 										{
 											bool inMethodBody = lastConfigScope->ownerClassMember && lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
+											bool inDtorBody = lastConfigScope->ownerClassMember && lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
 											bool inCtorBody = lastConfigScope->parentScope->ownerClassMember && lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
 
-											if (!inMethodBody && !inCtorBody)
+											if (!inMethodBody && !inDtorBody && !inCtorBody)
 											{
 												manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 											}
@@ -1975,6 +1985,10 @@ ValidateSemantic(Expression)
 					}
 
 					void Visit(WfConstructorDeclaration* node)override
+					{
+					}
+
+					void Visit(WfDestructorDeclaration* node)override
 					{
 					}
 

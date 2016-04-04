@@ -180,6 +180,10 @@ BuildGlobalNameFromModules
 					td->AddMember(info);
 					manager->declarationMemberInfos.Add(node, info);
 				}
+				
+				void Visit(WfDestructorDeclaration* node)override
+				{
+				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
@@ -236,6 +240,10 @@ BuildGlobalNameFromModules
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+				
+				void Visit(WfDestructorDeclaration* node)override
 				{
 				}
 
@@ -375,6 +383,10 @@ ValidateScopeName
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+				
+				void Visit(WfDestructorDeclaration* node)override
 				{
 				}
 

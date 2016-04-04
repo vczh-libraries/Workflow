@@ -1024,11 +1024,13 @@ Serialization (TypeImpl)
 
 				static void IOClass(WfReader& reader, WfClass* td)
 				{
+					reader << td->destructorFunctionIndex;
 					IOCustomType(reader, td, true);
 				}
 
 				static void IOClass(WfWriter& writer, WfClass* td)
 				{
+					writer << td->destructorFunctionIndex;
 					IOCustomType(writer, td, true);
 				}
 

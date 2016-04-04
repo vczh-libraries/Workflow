@@ -409,6 +409,11 @@ WfErrors
 				return new ParsingError(node, L"D7: Constructor cannot be defined outside of classes.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfDestructorDeclaration* node)
+			{
+				return new ParsingError(node, L"D7: Destructor cannot be defined outside of classes.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions and variables are allowed.");
@@ -559,6 +564,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type)
 			{
 				return new ParsingError(node, L"G12: Base type \"" + type->GetTypeName() + L"\" has already been initialized.");
+			}
+			
+			Ptr<parsing::ParsingError> WfErrors::TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G13: Class \"" + classDecl->name.value + L"\" has too many destructors.");
 			}
 		}
 	}

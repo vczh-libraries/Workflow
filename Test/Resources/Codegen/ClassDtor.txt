@@ -1,0 +1,42 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+class A
+{
+	var name : string = "";
+	var next : A* = null;
+
+	new*()
+	{
+	}
+
+	delete
+	{
+		s = $"$(s)[$(name)]";
+		if (next is not null)
+		{
+			delete next;
+		}
+	}
+}
+
+func main():string
+{
+	var x = new A*();
+	x.name = "x";
+
+	var y = new A*();
+	y.name = "y";
+
+	var z = new A*();
+	z.name = "z";
+
+	x.next = y;
+	y.next = z;
+	delete x;
+
+	return s;
+}

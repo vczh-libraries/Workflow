@@ -1180,6 +1180,15 @@ Print (Declaration)
 				writer.AfterPrint(node);
 			}
 
+			void Visit(WfDestructorDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteLine(L"delete");
+				writer.WriteString(indent);
+				WfPrint(node->statement, indent, writer);
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfClassDeclaration* node)override
 			{
 				writer.BeforePrint(node);

@@ -545,6 +545,11 @@ class ConstructorDeclaration : Declaration
 	Statement				statement;
 }
 
+class DestructorDeclaration : Declaration
+{
+	Statement				statement;
+}
+
 class ClassDeclaration : Declaration
 {
 	ClassKind				kind;
@@ -936,6 +941,10 @@ rule ConstructorDeclaration Constructor
 		Block : statement as ConstructorDeclaration
 	;
 
+rule DestructorDeclaration Destructor
+	= "delete" Block : statement as DestructorDeclaration
+	;
+
 rule ClassDeclaration ClassBody
 	= [":" WorkflowType : baseTypes {"," WorkflowType : baseTypes}] "{" {WorkflowClassMember : members} "}" as ClassDeclaration
 	;
@@ -953,6 +962,7 @@ rule Declaration WorkflowDeclaration
 	= !Event
 	= !Property
 	= !Constructor
+	= !Destructor
 	= !Class
 	;
 

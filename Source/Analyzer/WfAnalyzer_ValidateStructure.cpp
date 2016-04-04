@@ -554,6 +554,34 @@ ValidateStructure(Declaration)
 					}
 				}
 
+				void Visit(WfDestructorDeclaration* node)override
+				{
+					if (auto classMember = dynamic_cast<WfClassMember*>(source))
+					{
+						switch (classMember->kind)
+						{
+						case WfClassMemberKind::Normal:
+							break;
+						case WfClassMemberKind::Static:
+						case WfClassMemberKind::Override:
+							manager->errors.Add(WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(classMember));
+							break;
+						}
+
+						if (classDecl->kind != WfClassKind::Class)
+						{
+							manager->errors.Add(WfErrors::WrongDeclaration(node));
+						}
+
+						ValidateStructureContext context;
+						ValidateStatementStructure(manager, &context, node->statement);
+					}
+					else
+					{
+						manager->errors.Add(WfErrors::WrongDeclaration(node));
+					}
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					if (auto classMember = dynamic_cast<WfClassMember*>(source))
@@ -612,9 +640,22 @@ ValidateStructure(Declaration)
 						ValidateTypeStructure(manager, type, ValidateTypeStragety::BaseType, node);
 					}
 
+					Ptr<WfDestructorDeclaration> dtor;
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						ValidateDeclarationStructure(manager, member->declaration, node, member.Obj());
+						auto decl = member->declaration.Cast<WfDestructorDeclaration>();
+						if (decl)
+						{
+							if (dtor)
+							{
+								manager->errors.Add(WfErrors::TooManyDestructor(decl.Obj(), node));
+							}
+							else
+							{
+								dtor = decl;
+							}
+						}
 					}
 				}
 

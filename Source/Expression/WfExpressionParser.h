@@ -186,6 +186,7 @@ namespace vl
 		class WfNewInterfaceExpression;
 		class WfBaseConstructorCall;
 		class WfConstructorDeclaration;
+		class WfDestructorDeclaration;
 		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
@@ -971,6 +972,7 @@ namespace vl
 				virtual void Visit(WfEventDeclaration* node)=0;
 				virtual void Visit(WfPropertyDeclaration* node)=0;
 				virtual void Visit(WfConstructorDeclaration* node)=0;
+				virtual void Visit(WfDestructorDeclaration* node)=0;
 				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
@@ -1142,6 +1144,16 @@ namespace vl
 			void Accept(WfDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfConstructorDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfDestructorDeclaration : public WfDeclaration, vl::reflection::Description<WfDestructorDeclaration>
+		{
+		public:
+			vl::Ptr<WfStatement> statement;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfDestructorDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
@@ -1346,6 +1358,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfConstructorType)
 			DECL_TYPE_INFO(vl::workflow::WfBaseConstructorCall)
 			DECL_TYPE_INFO(vl::workflow::WfConstructorDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfDestructorDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
@@ -1671,6 +1684,11 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfConstructorDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfDestructorDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}

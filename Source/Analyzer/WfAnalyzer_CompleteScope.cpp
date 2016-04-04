@@ -122,6 +122,10 @@ CompleteScopeForClassMember
 					}
 				}
 
+				void Visit(WfDestructorDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					CompleteScopeForDeclaration(manager, node);
@@ -175,6 +179,10 @@ CompleteScopeForDeclaration
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
+				void Visit(WfDestructorDeclaration* node)override
 				{
 				}
 
@@ -291,6 +299,10 @@ CheckBaseClass
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
+				void Visit(WfDestructorDeclaration* node)override
 				{
 				}
 

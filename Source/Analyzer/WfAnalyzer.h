@@ -414,6 +414,7 @@ Code Generation
 			{
 				typedef collections::Dictionary<WfLexicalSymbol*, vint>											SymbolIndexMap;
 				typedef collections::Dictionary<WfConstructorDeclaration*, vint>								ConstructorIndexMap;
+				typedef collections::Dictionary<WfDestructorDeclaration*, vint>									DestructorIndexMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, parsing::ParsingTextRange>		NodePositionMap;
 				typedef collections::Dictionary<Ptr<WfLexicalFunctionConfig>, vint>								ThisStackCountMap;
 			public:
@@ -422,6 +423,7 @@ Code Generation
 				SymbolIndexMap						globalVariables;
 				SymbolIndexMap						globalFunctions;
 				ConstructorIndexMap					constructors;
+				DestructorIndexMap					destructors;
 				SymbolIndexMap						closureFunctions;
 				Ptr<WfCodegenFunctionContext>		functionContext;
 				NodePositionMap						nodePositionsBeforeCodegen;
@@ -556,6 +558,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 
 				// E: Module error
@@ -591,6 +594,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
 			};
 		}
 	}

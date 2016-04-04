@@ -179,6 +179,20 @@ BuildScopeForDeclaration
 					BuildScopeForStatement(manager, bodyScope, node->statement);
 				}
 
+				void Visit(WfDestructorDeclaration* node)override
+				{
+					resultScope = new WfLexicalScope(parentScope);
+					{
+						auto config = MakePtr<WfLexicalFunctionConfig>();
+						resultScope->functionConfig = config;
+
+						config->lambda = false;
+						config->thisAccessable = true;
+						config->parentThisAccessable = false;
+					}
+					BuildScopeForStatement(manager, resultScope, node->statement);
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());

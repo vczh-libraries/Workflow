@@ -531,12 +531,21 @@ WfClassInstance
 			WfClassInstance::WfClassInstance(ITypeDescriptor* _typeDescriptor)
 				:Description<WfClassInstance>(_typeDescriptor)
 			{
-				classType = dynamic_cast<WfCustomType*>(_typeDescriptor);
+				classType = dynamic_cast<WfClass*>(_typeDescriptor);
 				InitializeAggregation(classType->GetExpandedBaseTypes().Count());
 			}
 
 			WfClassInstance::~WfClassInstance()
 			{
+				if (classType->destructorFunctionIndex != -1)
+				{
+					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+					capturedVariables->variables.Resize(1);
+					capturedVariables->variables[0] = Value::From(this);
+
+					auto argumentArray = IValueList::Create();
+					WfRuntimeLambda::Invoke(classType->GetGlobalContext(), capturedVariables, classType->destructorFunctionIndex, argumentArray);
+				}
 			}
 
 			void WfClassInstance::InstallBaseObject(ITypeDescriptor* td, Value& value)

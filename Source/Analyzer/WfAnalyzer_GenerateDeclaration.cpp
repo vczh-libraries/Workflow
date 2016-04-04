@@ -64,6 +64,10 @@ GenerateInstructions(Initialize)
 				{
 				}
 
+				void Visit(WfDestructorDeclaration* node)override
+				{
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 				}
@@ -276,6 +280,24 @@ GenerateInstructions(Declaration)
 					context.functionContext = 0;
 					GenerateClosureInstructions(context, functionContext);
 				}
+				
+				void Visit(WfDestructorDeclaration* node)override
+				{
+					auto meta = context.assembly->functions[context.destructors[node]];
+					auto functionContext = MakePtr<WfCodegenFunctionContext>();
+					functionContext->function = meta;
+					context.functionContext = functionContext;
+					meta->firstInstruction = context.assembly->instructions.Count();
+					
+					auto scope = context.manager->nodeScopes[node].Obj();
+					GenerateStatementInstructions(context, node->statement);
+
+					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::Return());
+					meta->lastInstruction = context.assembly->instructions.Count() - 1;
+					context.functionContext = 0;
+					GenerateClosureInstructions(context, functionContext);
+				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
@@ -322,6 +344,10 @@ GenerateInstructions(Declaration)
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
+				{
+				}
+
+				void Visit(WfDestructorDeclaration* node)override
 				{
 				}
 
