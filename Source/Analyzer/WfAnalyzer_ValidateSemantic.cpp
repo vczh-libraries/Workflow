@@ -654,11 +654,8 @@ ValidateSemantic(Expression)
 
 							if (lastConfig->thisAccessable)
 							{
-								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-								elementType->SetTypeDescriptor(scope->typeOfThisExpr);
-
-								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
-								pointerType->SetElementType(elementType);
+								auto elementType = MakePtr<TypeDescriptorTypeInfo>(scope->typeOfThisExpr, TypeInfoHint::Normal);
+								auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 								return;
@@ -957,16 +954,11 @@ ValidateSemantic(Expression)
 						auto bodyType = GetExpressionType(manager, node->body, 0);
 						if (bodyType)
 						{
-							Ptr<TypeInfoImpl> funcType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-							funcType->SetTypeDescriptor(description::GetTypeDescriptor<IValueFunctionProxy>());
-
-							Ptr<TypeInfoImpl> genericType = new TypeInfoImpl(ITypeInfo::Generic);
-							genericType->SetElementType(funcType);
+							auto funcType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
+							auto genericType = MakePtr<GenericTypeInfo>(funcType);
 							genericType->AddGenericArgument(bodyType);
 
-							Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::SharedPtr);
-							pointerType->SetElementType(genericType);
-							resultType = pointerType;
+							resultType = MakePtr<SharedPtrTypeInfo>(genericType);
 						}
 					}
 
@@ -1065,40 +1057,29 @@ ValidateSemantic(Expression)
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<double>::CreateTypeInfo()));
 				}
 
+				template<typename T>
+				bool ValidateInteger(const WString& text, ITypeDescriptor*& resultTd)
+				{
+					auto td = description::GetTypeDescriptor<T>();
+					auto st = td->GetSerializableType();
+					Value value;
+					if (st->Deserialize(text, value))
+					{
+						resultTd = td;
+						return true;
+					}
+					return false;
+				}
+
 				void Visit(WfIntegerExpression* node)override
 				{
 					ITypeDescriptor* typeDescriptor = 0;
-#ifndef VCZH_64
-					typeDescriptor = description::GetTypeDescriptor<vint32_t>();
-					if (typeDescriptor->GetValueSerializer()->Validate(node->value.value))
-					{
-						goto TYPE_FINISHED;
-					}
-
-					typeDescriptor = description::GetTypeDescriptor<vuint32_t>();
-					if (typeDescriptor->GetValueSerializer()->Validate(node->value.value))
-					{
-						goto TYPE_FINISHED;
-					}
-#endif
-					typeDescriptor = description::GetTypeDescriptor<vint64_t>();
-					if (typeDescriptor->GetValueSerializer()->Validate(node->value.value))
-					{
-						goto TYPE_FINISHED;
-					}
-
-					typeDescriptor = description::GetTypeDescriptor<vuint64_t>();
-					if (typeDescriptor->GetValueSerializer()->Validate(node->value.value))
-					{
-						goto TYPE_FINISHED;
-					}
-
+					if (ValidateInteger<vint>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+					if (ValidateInteger<vuint>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
 					manager->errors.Add(WfErrors::IntegerLiteralOutOfRange(node));
 
 				TYPE_FINISHED:
-					Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					typeInfo->SetTypeDescriptor(typeDescriptor);
-					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
+					results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
 				}
 
 				void Visit(WfStringExpression* node)override
@@ -1560,15 +1541,11 @@ ValidateSemantic(Expression)
 							manager->errors.Add(WfErrors::RangeShouldBeInteger(node, elementType.Obj()));
 						}
 
-						Ptr<TypeInfoImpl> enumerableType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-						enumerableType->SetTypeDescriptor(description::GetTypeDescriptor<IValueEnumerable>());
-
-						Ptr<TypeInfoImpl> genericType = new TypeInfoImpl(ITypeInfo::Generic);
-						genericType->SetElementType(enumerableType);
+						auto enumerableType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Unknown);
+						auto genericType = MakePtr<GenericTypeInfo>(enumerableType);
 						genericType->AddGenericArgument(elementType);
 
-						Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::SharedPtr);
-						pointerType->SetElementType(genericType);
+						auto pointerType = MakePtr<SharedPtrTypeInfo>(genericType);
 						results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 					}
 				}
@@ -1673,18 +1650,12 @@ ValidateSemantic(Expression)
 						{
 							if (keyType && valueType)
 							{
-								Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::SharedPtr);
-								{
-									Ptr<TypeInfoImpl> genericType = new TypeInfoImpl(ITypeInfo::Generic);
-									pointerType->SetElementType(genericType);
-									{
-										Ptr<TypeInfoImpl> classType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-										classType->SetTypeDescriptor(description::GetTypeDescriptor<IValueDictionary>());
-										genericType->SetElementType(classType);
-									}
-									genericType->AddGenericArgument(keyType);
-									genericType->AddGenericArgument(valueType);
-								}
+								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueDictionary>(), TypeInfoHint::Unknown);
+								auto genericType = MakePtr<GenericTypeInfo>(classType);
+								genericType->AddGenericArgument(keyType);
+								genericType->AddGenericArgument(valueType);
+
+								auto pointerType = MakePtr<SharedPtrTypeInfo>(genericType);
 								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 							}
 						}
@@ -1692,17 +1663,11 @@ ValidateSemantic(Expression)
 						{
 							if (keyType)
 							{
-								Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::SharedPtr);
-								{
-									Ptr<TypeInfoImpl> genericType = new TypeInfoImpl(ITypeInfo::Generic);
-									pointerType->SetElementType(genericType);
-									{
-										Ptr<TypeInfoImpl> classType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-										classType->SetTypeDescriptor(description::GetTypeDescriptor<IValueList>());
-										genericType->SetElementType(classType);
-									}
-									genericType->AddGenericArgument(keyType);
-								}
+								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), TypeInfoHint::Unknown);
+								auto genericType = MakePtr<GenericTypeInfo>(classType);
+								genericType->AddGenericArgument(keyType);
+
+								auto pointerType = MakePtr<SharedPtrTypeInfo>(genericType);
 								results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 							}
 						}
@@ -1909,23 +1874,16 @@ ValidateSemantic(Expression)
 					ValidateDeclarationSemantic(manager, node->function);
 					auto scope = manager->nodeScopes[node->function.Obj()].Obj();
 
-					Ptr<TypeInfoImpl> functionType = new TypeInfoImpl(ITypeInfo::SharedPtr);
+					auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
+					auto genericType = MakePtr<GenericTypeInfo>(classType);
+					genericType->AddGenericArgument(CreateTypeInfoFromType(scope, node->function->returnType));
+					FOREACH(Ptr<WfFunctionArgument>, argument, node->function->arguments)
 					{
-						Ptr<TypeInfoImpl> genericType = new TypeInfoImpl(ITypeInfo::Generic);
-						functionType->SetElementType(genericType);
-						{
-							Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-							elementType->SetTypeDescriptor(description::GetTypeDescriptor<IValueFunctionProxy>());
-							genericType->SetElementType(elementType);
-						}
-
-						genericType->AddGenericArgument(CreateTypeInfoFromType(scope, node->function->returnType));
-						FOREACH(Ptr<WfFunctionArgument>, argument, node->function->arguments)
-						{
-							genericType->AddGenericArgument(scope->symbols[argument->name.value][0]->typeInfo);
-						}
+						genericType->AddGenericArgument(scope->symbols[argument->name.value][0]->typeInfo);
 					}
-					results.Add(ResolveExpressionResult::ReadonlyType(functionType));
+
+					auto pointerType = MakePtr<SharedPtrTypeInfo>(genericType);
+					results.Add(ResolveExpressionResult::ReadonlyType(pointerType));
 				}
 
 				Ptr<ITypeInfo> GetFunctionDeclarationType(WfLexicalScope* scope, Ptr<WfFunctionDeclaration> decl)

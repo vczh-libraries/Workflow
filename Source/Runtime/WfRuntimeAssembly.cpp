@@ -306,25 +306,35 @@ Serizliation (ITypeInfo)
 				{
 					vint decorator = 0;
 					reader << decorator;
-					auto typeInfoImpl = MakePtr<TypeInfoImpl>(static_cast<ITypeInfo::Decorator>(decorator));
-					typeInfo = typeInfoImpl;
-					
-					switch (typeInfoImpl->GetDecorator())
+					switch (static_cast<ITypeInfo::Decorator>(decorator))
 					{
 					case ITypeInfo::RawPtr:
+						{
+							Ptr<ITypeInfo> elementType;
+							IOType(reader, elementType);
+							typeInfo = MakePtr<RawPtrTypeInfo>(elementType);
+						}
+						break;
 					case ITypeInfo::SharedPtr:
+						{
+							Ptr<ITypeInfo> elementType;
+							IOType(reader, elementType);
+							typeInfo = MakePtr<RawPtrTypeInfo>(elementType);
+						}
+						break;
 					case ITypeInfo::Nullable:
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfoImpl->SetElementType(elementType);
+							typeInfo = MakePtr<NullableTypeInfo>(elementType);
 						}
 						break;
 					case ITypeInfo::Generic:
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfoImpl->SetElementType(elementType);
+							auto genericType = MakePtr<GenericTypeInfo>(elementType);
+							typeInfo = genericType;
 
 							vint count = 0;
 							reader << count;
@@ -332,15 +342,18 @@ Serizliation (ITypeInfo)
 							{
 								Ptr<ITypeInfo> argumentType;
 								IOType(reader, argumentType);
-								typeInfoImpl->AddGenericArgument(argumentType);
+								genericType->AddGenericArgument(argumentType);
 							}
 						}
 						break;
 					case ITypeInfo::TypeDescriptor:
 						{
+							vint hint = 0;
+							reader << hint;
+
 							vint index;
 							reader << index;
-							typeInfoImpl->SetTypeDescriptor(reader.context->tdIndex[index]);
+							typeInfo = MakePtr<TypeDescriptorTypeInfo>(reader.context->tdIndex[index], static_cast<TypeInfoHint>(hint));
 						}
 						break;
 					}
@@ -371,6 +384,9 @@ Serizliation (ITypeInfo)
 						break;
 					case ITypeInfo::TypeDescriptor:
 						{
+							vint hint = static_cast<vint>(typeInfo->GetHint());
+							writer << hint;
+
 							vint index = writer.context->tdIndex[typeInfo->GetTypeDescriptor()];
 							writer << index;
 						}
@@ -619,9 +635,28 @@ Serizliation (Metadata)
 						return;
 					}
 
-					WString text;
-					reader << text;
-					type->GetValueSerializer()->Parse(text, value);
+					if (auto st = type->GetSerializableType())
+					{
+						WString text;
+						reader << text;
+						st->Deserialize(text, value);
+					}
+					else
+					{
+						switch (type->GetTypeDescriptorFlags())
+						{
+						case TypeDescriptorFlags::FlagEnum:
+						case TypeDescriptorFlags::NormalEnum:
+							{
+								vuint64_t intValue;
+								reader << intValue;
+								value = type->GetEnumType()->ToEnum(intValue);
+							}
+							break;
+						case TypeDescriptorFlags::Struct:
+							throw 0;
+						}
+					}
 				}
 					
 				static void IO(WfWriter& writer, Value& value)
@@ -648,8 +683,27 @@ Serizliation (Metadata)
 
 						if (typeFlag == 2)
 						{
-							auto text = value.GetText();
-							writer << text;
+							if (auto st = type->GetSerializableType())
+							{
+								WString text;
+								st->Serialize(value, text);
+								writer << text;
+							}
+							else
+							{
+								switch (type->GetTypeDescriptorFlags())
+								{
+								case TypeDescriptorFlags::FlagEnum:
+								case TypeDescriptorFlags::NormalEnum:
+									{
+										vuint64_t intValue = type->GetEnumType()->FromEnum(value);
+										writer << intValue;
+									}
+									break;
+								case TypeDescriptorFlags::Struct:
+									throw 0;
+								}
+							}
 						}
 					}
 				}

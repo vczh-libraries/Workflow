@@ -219,11 +219,8 @@ CompleteScopeForDeclaration
 						{
 						case WfConstructorType::SharedPtr:
 							{
-								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-								elementType->SetTypeDescriptor(td.Obj());
-
-								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
-								pointerType->SetElementType(elementType);
+								auto elementType = MakePtr<TypeDescriptorTypeInfo>(td.Obj(), TypeInfoHint::Normal);
+								auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
 
 								auto ctor = MakePtr<WfInterfaceConstructor>(pointerType);
 								td->AddMember(ctor);
@@ -231,11 +228,8 @@ CompleteScopeForDeclaration
 							break;
 						case WfConstructorType::RawPtr:
 							{
-								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-								elementType->SetTypeDescriptor(td.Obj());
-
-								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
-								pointerType->SetElementType(elementType);
+								auto elementType = MakePtr<TypeDescriptorTypeInfo>(td.Obj(), TypeInfoHint::Normal);
+								auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 								auto ctor = MakePtr<WfInterfaceConstructor>(pointerType);
 								td->AddMember(ctor);
