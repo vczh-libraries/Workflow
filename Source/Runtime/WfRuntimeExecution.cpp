@@ -39,7 +39,7 @@ WfRuntimeThreadContext (Operators)
 				Value operand;\
 				CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");\
 				T value = OPERATOR UnboxValue<T>(operand);\
-				context.PushValue(BoxValue(value));\
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
 				return WfRuntimeExecutionAction::ExecuteInstruction;\
 			}\
 
@@ -51,7 +51,7 @@ WfRuntimeThreadContext (Operators)
 				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");\
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");\
 				T value = UnboxValue<T>(first) OPERATOR UnboxValue<T>(second);\
-				context.PushValue(BoxValue(value));\
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
 				return WfRuntimeExecutionAction::ExecuteInstruction;\
 			}\
 
@@ -84,7 +84,7 @@ WfRuntimeThreadContext (Operators)
 				T firstValue = UnboxValue<T>(first);
 				T secondValue = UnboxValue<T>(second);
 				T value = (T)exp(secondValue * log(firstValue));
-				context.PushValue(BoxValue(value));
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
 			
@@ -101,18 +101,18 @@ WfRuntimeThreadContext (Operators)
 				{
 					if (secondNull)
 					{
-						context.PushValue(BoxValue((vint)0));
+						CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
 					}
 					else
 					{
-						context.PushValue(BoxValue((vint)-1));
+						CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
 					}
 				}
 				else
 				{
 					if (secondNull)
 					{
-						context.PushValue(BoxValue((vint)1));
+						CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
 					}
 					else
 					{
@@ -120,15 +120,15 @@ WfRuntimeThreadContext (Operators)
 						T secondValue = UnboxValue<T>(second);
 						if (firstValue < secondValue)
 						{
-							context.PushValue(BoxValue((vint)-1));
+							CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
 						}
 						else if (firstValue > secondValue)
 						{
-							context.PushValue(BoxValue((vint)1));
+							CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
 						}
 						else
 						{
-							context.PushValue(BoxValue((vint)0));
+							CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
 						}
 					}
 				}
@@ -256,7 +256,7 @@ WfRuntimeThreadContext (Range)
 				T firstValue = UnboxValue<T>(first);
 				T secondValue = UnboxValue<T>(second);
 				auto enumerable = MakePtr<WfRuntimeRange<T>>(firstValue, secondValue);
-				context.PushValue(Value::From(enumerable));
+				CONTEXT_ACTION(PushValue(Value::From(enumerable)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
 			
@@ -346,30 +346,30 @@ WfRuntimeThreadContext
 				switch (ins.code)
 				{
 				case WfInsCode::LoadValue:
-					PushValue(ins.valueParameter);
+					CONTEXT_ACTION(PushValue(ins.valueParameter), L"failed to push a value to the stack.");
 					return WfRuntimeExecutionAction::ExecuteInstruction;
 				case WfInsCode::LoadFunction:
 					{
-						PushValue(BoxValue(ins.indexParameter));
+						CONTEXT_ACTION(PushValue(BoxValue(ins.indexParameter)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadException:
 					{
-						PushValue(BoxValue(exceptionInfo));
+						CONTEXT_ACTION(PushValue(BoxValue(exceptionInfo)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadLocalVar:
 					{
 						Value operand;
 						CONTEXT_ACTION(LoadLocalVariable(ins.indexParameter, operand), L"illegal local variable index.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadCapturedVar:
 					{
 						Value operand;
 						CONTEXT_ACTION(LoadCapturedVariable(ins.indexParameter, operand), L"illegal captured variable index.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadGlobalVar:
@@ -377,12 +377,12 @@ WfRuntimeThreadContext
 						CALL_DEBUGGER(callback->BreakRead(globalContext->assembly.Obj(), ins.indexParameter));
 						Value operand;
 						CONTEXT_ACTION(LoadGlobalVariable(ins.indexParameter, operand), L"illegal global variable index.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadMethodInfo:
 					{
-						PushValue(Value::From(ins.methodParameter));
+						CONTEXT_ACTION(PushValue(Value::From(ins.methodParameter)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadMethodClosure:
@@ -390,13 +390,13 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						auto closure = ins.methodParameter->CreateFunctionProxy(operand);
-						PushValue(closure);
+						CONTEXT_ACTION(PushValue(closure), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadClosureContext:
 					{
 						auto capturedVariables = GetCurrentStackFrame().capturedVariables;
-						PushValue(Value::From(capturedVariables));
+						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::StoreLocalVar:
@@ -426,7 +426,7 @@ WfRuntimeThreadContext
 						vint index = stack.Count() - 1 - ins.countParameter;
 						Value operand;
 						CONTEXT_ACTION(LoadStackValue(index, operand), L"failed to duplicate a value from the stack.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::Pop:
@@ -440,7 +440,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop the function result.");
 						CONTEXT_ACTION(PopStackFrame(), L"failed to pop the stack frame.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						if (stackFrames.Count() == 0)
 						{
 							status = WfRuntimeExecutionStatus::Finished;
@@ -456,7 +456,7 @@ WfRuntimeThreadContext
 							CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 							list->Add(operand);
 						}
-						PushValue(Value::From(list));
+						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateMap:
@@ -469,7 +469,7 @@ WfRuntimeThreadContext
 							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
 							map->Set(key, value);
 						}
-						PushValue(Value::From(map));
+						CONTEXT_ACTION(PushValue(Value::From(map)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateClosureContext:
@@ -487,7 +487,7 @@ WfRuntimeThreadContext
 							}
 						}
 
-						PushValue(Value::From(capturedVariables));
+						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateClosure:
@@ -499,7 +499,7 @@ WfRuntimeThreadContext
 						auto functionIndex = UnboxValue<vint>(function);
 
 						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, functionIndex);
-						PushValue(Value::From(lambda));
+						CONTEXT_ACTION(PushValue(Value::From(lambda)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateInterface:
@@ -525,7 +525,7 @@ WfRuntimeThreadContext
 						auto obj = ins.methodParameter->Invoke(Value(), arguments);
 						capturedVariables->variables[capturedVariables->variables.Count() - 1] = Value::From(obj.GetRawPtr());
 
-						PushValue(obj);
+						CONTEXT_ACTION(PushValue(obj), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateRange:
@@ -539,12 +539,22 @@ WfRuntimeThreadContext
 						EXECUTE(OpCreateRange, U4)
 						EXECUTE(OpCreateRange, U8)
 					END_TYPE
+				case WfInsCode::CreateStruct:
+					{
+						if (ins.typeDescriptorParameter->GetTypeDescriptorFlags() != TypeDescriptorFlags::Struct)
+						{
+							INTERNAL_ERROR(L"Type \"" + ins.typeDescriptorParameter->GetTypeName() + L"\" is not a struct.");
+						}
+						Value result = ins.typeDescriptorParameter->GetValueType()->CreateDefault();
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::ReverseEnumerable:
 					{
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						Value reversedEnumerable = OPERATOR_OpReverseEnumerable(operand);
-						PushValue(reversedEnumerable);
+						CONTEXT_ACTION(PushValue(reversedEnumerable), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::DeleteRawPtr:
@@ -560,7 +570,7 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
 						if (OPERATOR_OpConvertToType(result, converted, ins))
 						{
-							PushValue(converted);
+							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
 						}
 						else
 						{
@@ -593,11 +603,11 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
 						if (OPERATOR_OpConvertToType(result, converted, ins))
 						{
-							PushValue(converted);
+							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
 						}
 						else
 						{
-							PushValue(Value());
+							CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
 						}
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
@@ -607,11 +617,11 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						if (operand.GetTypeDescriptor() && operand.GetValueType() == ins.flagParameter && operand.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
 						{
-							PushValue(BoxValue(true));
+							CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
 						}
 						else
 						{
-							PushValue(BoxValue(false));
+							CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
 						}
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
@@ -619,7 +629,7 @@ WfRuntimeThreadContext
 					{
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						PushValue(Value::From(operand.GetTypeDescriptor()));
+						CONTEXT_ACTION(PushValue(Value::From(operand.GetTypeDescriptor())), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::Jump:
@@ -653,7 +663,7 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						CALL_DEBUGGER(callback->BreakGet(operand.GetRawPtr(), ins.propertyParameter));
 						Value result = ins.propertyParameter->GetValue(operand);
-						PushValue(result);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::SetProperty:
@@ -663,6 +673,16 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
 						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
 						ins.propertyParameter->SetValue(operand, value);
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::UpdateProperty:
+					{
+						Value operand, value;
+						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
+						ins.propertyParameter->SetValue(operand, value);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeProxy:
@@ -695,7 +715,7 @@ WfRuntimeThreadContext
 
 						Ptr<IValueList> list = new ValueListWrapper<List<Value>*>(&arguments);
 						Value result = proxy->Invoke(list);
-						PushValue(result);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeMethod:
@@ -735,7 +755,7 @@ WfRuntimeThreadContext
 						}
 
 						Value result = ins.methodParameter->Invoke(thisValue, arguments);
-						PushValue(result);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeEvent:
@@ -753,7 +773,7 @@ WfRuntimeThreadContext
 						}
 
 						ins.eventParameter->Invoke(thisValue, arguments);
-						PushValue(Value());
+						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeBaseCtor:
@@ -798,7 +818,7 @@ WfRuntimeThreadContext
 							Value baseValue = ins.methodParameter->Invoke(Value(), arguments);
 							instance->InstallBaseObject(ins.methodParameter->GetOwnerTypeDescriptor(), baseValue);
 						}
-						PushValue(Value());
+						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::AttachEvent:
@@ -809,7 +829,7 @@ WfRuntimeThreadContext
 						CALL_DEBUGGER(callback->BreakAttach(thisValue.GetRawPtr(), ins.eventParameter));
 						auto proxy = UnboxValue<Ptr<IValueFunctionProxy>>(function);
 						auto handler = ins.eventParameter->Attach(thisValue, proxy);
-						PushValue(Value::From(handler));
+						CONTEXT_ACTION(PushValue(Value::From(handler)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::DetachEvent:
@@ -819,7 +839,7 @@ WfRuntimeThreadContext
 						auto handler = UnboxValue<Ptr<IEventHandler>>(operand);
 						CALL_DEBUGGER(callback->BreakDetach(handler->GetOwnerObject().GetRawPtr(), handler->GetOwnerEvent()));
 						auto result = handler->Detach();
-						PushValue(BoxValue(result));
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InstallTry:
@@ -867,11 +887,11 @@ WfRuntimeThreadContext
 						{
 							if (enumerator->GetCurrent() == element)
 							{
-								PushValue(BoxValue(true));
+								CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
 								return WfRuntimeExecutionAction::ExecuteInstruction;
 							}
 						}
-						PushValue(BoxValue(false));
+						CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CompareLiteral:
@@ -895,7 +915,7 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
 						bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
-						PushValue(BoxValue(result));
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CompareValue:
@@ -904,7 +924,7 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
 						bool result = first == second;
-						PushValue(BoxValue(result));
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::OpNot:
@@ -951,7 +971,7 @@ WfRuntimeThreadContext
 						first.GetTypeDescriptor()->GetSerializableType()->Serialize(first, firstText);
 						first.GetTypeDescriptor()->GetSerializableType()->Serialize(second, secondText);
 
-						PushValue(BoxValue(firstText + secondText));
+						CONTEXT_ACTION(PushValue(BoxValue(firstText + secondText)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::OpExp:
@@ -1085,7 +1105,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value < 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value < 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -1094,7 +1114,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value > 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value > 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -1103,7 +1123,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value <= 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value <= 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -1112,7 +1132,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value >= 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value >= 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -1121,7 +1141,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value == 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value == 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -1130,7 +1150,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value != 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value != 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;

@@ -749,7 +749,19 @@ GenerateInstructions(Expression)
 				{
 					auto result = context.manager->expressionResolvings[node];
 
-					if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>()
+					if (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+					{
+						auto td = result.type->GetTypeDescriptor();
+						INSTRUCTION(Ins::CreateStruct(Value::BoxedValue, td));
+
+						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						{
+							auto prop = td->GetPropertyByName(argument->key.Cast<WfReferenceExpression>()->name.value, true);
+							GenerateExpressionInstructions(context, argument->value, CopyTypeInfo(prop->GetReturn()));
+							INSTRUCTION(Ins::UpdateProperty(prop));
+						}
+					}
+					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>()
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 					{

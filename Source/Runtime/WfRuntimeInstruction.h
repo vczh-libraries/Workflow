@@ -47,6 +47,7 @@ Instruction
 				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
 				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
 				CreateRange,			// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
+				CreateStruct,			// flag, typeDescriptor	: () -> Value														;
 				ReverseEnumerable,		//						: Value -> Value													;
 				DeleteRawPtr,			//						: Value -> ()														;
 				ConvertToType,			// flag, typeDescriptor	: Value -> Value													;
@@ -59,6 +60,7 @@ Instruction
 				InvokeWithContext,		// function, count		: Value-1, ..., Value-n -> Value									;
 				GetProperty,			// IPropertyInfo*		: Value-this -> Value												;
 				SetProperty,			// IPropertyInfo*		: Value, Value-this -> ()											;
+				UpdateProperty,			// IPropertyInfo*		: Value-this, Value -> Value-this									;
 				InvokeProxy,			// count				: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeMethod,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
@@ -118,6 +120,7 @@ Instruction
 			APPLY(CreateClosure)\
 			APPLY_METHOD_COUNT(CreateInterface)\
 			APPLY_TYPE(CreateRange)\
+			APPLY_FLAG_TYPEDESCRIPTOR(CreateStruct)\
 			APPLY(ReverseEnumerable)\
 			APPLY(DeleteRawPtr)\
 			APPLY_FLAG_TYPEDESCRIPTOR(ConvertToType)\
@@ -130,6 +133,7 @@ Instruction
 			APPLY_FUNCTION_COUNT(InvokeWithContext)\
 			APPLY_PROPERTY(GetProperty)\
 			APPLY_PROPERTY(SetProperty)\
+			APPLY_PROPERTY(UpdateProperty)\
 			APPLY_COUNT(InvokeProxy)\
 			APPLY_METHOD_COUNT(InvokeMethod)\
 			APPLY_EVENT_COUNT(InvokeEvent)\

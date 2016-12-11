@@ -89,8 +89,8 @@ TEST_CASE(TestCodegen)
 		
 		Value result;
 		WString actual;
-		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
 		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
 		UnitTest::PrintInfo(L"    expected: " + itemResult);
 		UnitTest::PrintInfo(L"    actual: " + actual);
 		TEST_ASSERT(actual == itemResult);
@@ -123,7 +123,7 @@ func main():string
 
 	Value result;
 	WString actual;
-	result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
 	TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+	result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
 	TEST_ASSERT(actual == L"Hello, world!");
 }

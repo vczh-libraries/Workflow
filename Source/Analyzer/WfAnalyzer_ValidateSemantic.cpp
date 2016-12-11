@@ -1631,6 +1631,7 @@ ValidateSemantic(Expression)
 								manager->errors.Add(WfErrors::ConstructorMixStructAndList(argument->value.Obj()));
 							}
 						}
+						results.Add(ResolveExpressionResult::ReadonlyType(expectedType));
 					}
 					else if (node->arguments.Count() == 0)
 					{

@@ -1030,8 +1030,14 @@ CreateDefaultValue
 					case TypeFlag::Struct:
 						if (elementType->GetTypeDescriptor()->GetSerializableType() == nullptr)
 						{
-							throw 0;
-							break;
+							auto ctorExpr = MakePtr<WfConstructorExpression>();
+
+							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							castExpr->strategy = WfTypeCastingStrategy::Strong;
+							castExpr->expression = ctorExpr;
+							castExpr->type = GetTypeFromTypeInfo(elementType);
+
+							return castExpr;
 						}
 					default:
 						{
