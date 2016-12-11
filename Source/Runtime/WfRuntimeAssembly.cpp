@@ -654,7 +654,20 @@ Serizliation (Metadata)
 							}
 							break;
 						case TypeDescriptorFlags::Struct:
-							throw 0;
+							{
+								value = type->GetValueType()->CreateDefault();
+								vint count = 0;
+								reader << count;
+
+								for (vint i = 0; i < count; i++)
+								{
+									vint propName = 0;
+									Value propValue;
+									reader << propName << propValue;
+									reader.context->piIndex[propName]->SetValue(value, propValue);
+								}
+							}
+							break;
 						}
 					}
 				}
@@ -701,7 +714,19 @@ Serizliation (Metadata)
 									}
 									break;
 								case TypeDescriptorFlags::Struct:
-									throw 0;
+									{
+										vint count = type->GetPropertyCount();
+										writer << count;
+
+										for (vint i = 0; i < count; i++)
+										{
+											auto prop = type->GetProperty(i);
+											vint propName = writer.context->piIndex[prop];
+											Value propValue = prop->GetValue(value);
+											writer << propName << propValue;
+										}
+									}
+									break;
 								}
 							}
 						}
