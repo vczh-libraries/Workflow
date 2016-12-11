@@ -492,7 +492,7 @@ CreateTypeInfoFromType
 							case TypeDescriptorFlags::NormalEnum:
 								break;
 							default:
-								manager->errors.Add(WfErrors::NullableToReferenceType(node, typeInfo.Obj()));
+								manager->errors.Add(WfErrors::NullableToNonReferenceType(node, typeInfo.Obj()));
 							}
 							break;
 						case ITypeInfo::TypeDescriptor:

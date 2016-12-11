@@ -117,18 +117,15 @@ GenerateInstructions(Declaration)
 
 			void GenerateFunctionInstructions_Epilog(WfCodegenContext& context, WfLexicalScope* scope, Ptr<WfAssemblyFunction> meta, Ptr<ITypeInfo> returnType, Ptr<WfLexicalSymbol> recursiveLambdaSymbol, const List<Ptr<WfLexicalSymbol>>& argumentSymbols, const List<Ptr<WfLexicalSymbol>>& capturedSymbols, Ptr<WfCodegenFunctionContext> functionContext, ParsingTreeCustomBase* node)
 			{
-				if (returnType->GetDecorator() == ITypeInfo::TypeDescriptor && returnType->GetTypeDescriptor()->GetValueSerializer())
+				Value result;
+				if (returnType->GetDecorator() == ITypeInfo::TypeDescriptor)
 				{
-					auto serializer = returnType->GetTypeDescriptor()->GetValueSerializer();
-					auto defaultText = serializer->GetDefaultText();
-					Value result;
-					serializer->Parse(defaultText, result);
-					INSTRUCTION(Ins::LoadValue(result));
+					if (auto vt = returnType->GetTypeDescriptor()->GetValueType())
+					{
+						result = vt->CreateDefault();
+					}
 				}
-				else
-				{
-					INSTRUCTION(Ins::LoadValue(Value()));
-				}
+				INSTRUCTION(Ins::LoadValue(Value()));
 				INSTRUCTION(Ins::Return());
 				meta->lastInstruction = context.assembly->instructions.Count() - 1;
 				context.functionContext = 0;

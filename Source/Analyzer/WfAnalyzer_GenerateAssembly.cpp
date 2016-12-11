@@ -39,7 +39,7 @@ GenerateTypeCastInstructions
 						case ITypeInfo::Nullable:
 						case ITypeInfo::TypeDescriptor:
 						case ITypeInfo::Generic:
-							INSTRUCTION(Ins::ConvertToType(Value::Text, expectedType->GetTypeDescriptor()));
+							INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, expectedType->GetTypeDescriptor()));
 							break;
 						}
 					}
@@ -56,7 +56,7 @@ GenerateTypeCastInstructions
 						case ITypeInfo::Nullable:
 						case ITypeInfo::TypeDescriptor:
 						case ITypeInfo::Generic:
-							INSTRUCTION(Ins::TryConvertToType(Value::Text, expectedType->GetTypeDescriptor()));
+							INSTRUCTION(Ins::TryConvertToType(Value::BoxedValue, expectedType->GetTypeDescriptor()));
 							break;
 						}
 					}
@@ -82,7 +82,7 @@ GetInstructionTypeArgument
 					case ITypeInfo::Nullable:
 					case ITypeInfo::TypeDescriptor:
 					case ITypeInfo::Generic:
-						INSTRUCTION(Ins::TestType(Value::Text, expectedType->GetTypeDescriptor()));
+						INSTRUCTION(Ins::TestType(Value::BoxedValue, expectedType->GetTypeDescriptor()));
 						break;
 					}
 				}
