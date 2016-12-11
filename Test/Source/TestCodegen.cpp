@@ -88,10 +88,12 @@ TEST_CASE(TestCodegen)
 		}
 		
 		Value result;
+		WString actual;
+		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
 		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
 		UnitTest::PrintInfo(L"    expected: " + itemResult);
-		UnitTest::PrintInfo(L"    actual: " + result.GetText());
-		TEST_ASSERT(result.GetText() == itemResult);
+		UnitTest::PrintInfo(L"    actual: " + actual);
+		TEST_ASSERT(actual == itemResult);
 		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
 	}
 }
@@ -120,6 +122,8 @@ func main():string
 	context.ExecuteToEnd();
 
 	Value result;
+	WString actual;
+	result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
 	TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-	TEST_ASSERT(result.GetText() == L"Hello, world!");
+	TEST_ASSERT(actual == L"Hello, world!");
 }

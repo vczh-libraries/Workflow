@@ -267,7 +267,7 @@ WfErrors
 				return new ParsingError(node, L"B3: A shared pointer" + (typeInfo ? L" \"" + typeInfo->GetTypeFriendlyName() + L"\"" : L"") + L" should point to a class or interface.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::NullableToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo)
+			Ptr<parsing::ParsingError> WfErrors::NullableToReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo)
 			{
 				return new ParsingError(node, L"B4: A nullable value" + (typeInfo ? L" \"" + typeInfo->GetTypeFriendlyName() + L"\"" : L"") + L" should point to a struct.");
 			}

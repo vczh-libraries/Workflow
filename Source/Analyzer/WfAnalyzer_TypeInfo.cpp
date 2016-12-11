@@ -28,7 +28,16 @@ GetTypeFlag
 				if (typeDescriptor == GetTypeDescriptor<float>())		return TypeFlag::F4;
 				if (typeDescriptor == GetTypeDescriptor<double>())		return TypeFlag::F8;
 				if (typeDescriptor == GetTypeDescriptor<WString>())		return TypeFlag::String;
-				return TypeFlag::Others;
+				switch (typeDescriptor->GetTypeDescriptorFlags())
+				{
+				case TypeDescriptorFlags::FlagEnum:
+				case TypeDescriptorFlags::NormalEnum:
+					return TypeFlag::Enum;
+				case TypeDescriptorFlags::Struct:
+					return TypeFlag::Struct;
+				default:
+					return TypeFlag::Others;
+				}
 			}
 
 			TypeFlag GetTypeFlag(reflection::description::ITypeInfo* typeInfo)
@@ -57,9 +66,8 @@ CreateTypeInfoFromTypeFlag
 				case TypeFlag::F4:		return TypeInfoRetriver<float>::CreateTypeInfo();
 				case TypeFlag::F8:		return TypeInfoRetriver<double>::CreateTypeInfo();
 				case TypeFlag::String:	return TypeInfoRetriver<WString>::CreateTypeInfo();
-				default:;
+				default:				return nullptr;
 				}
-				return 0;
 			}
 
 /***********************************************************************
@@ -458,59 +466,47 @@ CreateTypeInfoFromType
 						{
 						case ITypeInfo::RawPtr:
 						case ITypeInfo::SharedPtr:
+							switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
 							{
-								auto element = typeInfo->GetElementType();
-								if (element->GetDecorator() == ITypeInfo::Generic)
-								{
-									element = element->GetElementType();
-								}
-
-								if (element->GetDecorator() == ITypeInfo::TypeDescriptor)
-								{
-									if (element->GetTypeDescriptor()->GetValueSerializer() == 0)
-									{
-										goto RAW_SHARED_POINTER_CORRECT;
-									}
-								}
-
+							case TypeDescriptorFlags::IDescriptable:
+							case TypeDescriptorFlags::Class:
+							case TypeDescriptorFlags::Interface:
+								break;
+							default:
 								if (typeInfo->GetDecorator() == ITypeInfo::RawPtr)
 								{
-									manager->errors.Add(WfErrors::RawPointerToNonReferenceType(node, element));
+									manager->errors.Add(WfErrors::RawPointerToNonReferenceType(node, typeInfo.Obj()));
 								}
 								else
 								{
-									manager->errors.Add(WfErrors::SharedPointerToNonReferenceType(node, element));
+									manager->errors.Add(WfErrors::SharedPointerToNonReferenceType(node, typeInfo.Obj()));
 								}
-							RAW_SHARED_POINTER_CORRECT:
-								;
 							}
 							break;
 						case ITypeInfo::Nullable:
+							switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
 							{
-								auto element = typeInfo->GetElementType();
-								if (element->GetDecorator() == ITypeInfo::Generic)
-								{
-									element = element->GetElementType();
-								}
-
-								if (element->GetDecorator() == ITypeInfo::TypeDescriptor)
-								{
-									if (element->GetTypeDescriptor()->GetValueSerializer() != 0)
-									{
-										goto NULLABLE_CORRECT;
-									}
-								}
-
-								manager->errors.Add(WfErrors::NullableToNonReferenceType(node, element));
-							NULLABLE_CORRECT:
-								;
+							case TypeDescriptorFlags::Primitive:
+							case TypeDescriptorFlags::Struct:
+							case TypeDescriptorFlags::FlagEnum:
+							case TypeDescriptorFlags::NormalEnum:
+								break;
+							default:
+								manager->errors.Add(WfErrors::NullableToReferenceType(node, typeInfo.Obj()));
 							}
 							break;
 						case ITypeInfo::TypeDescriptor:
 							if (checkTypeForValue)
 							{
-								if (typeInfo->GetTypeDescriptor()->GetValueSerializer() == 0 && typeInfo->GetTypeDescriptor() != description::GetTypeDescriptor<Value>())
+								switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
 								{
+								case TypeDescriptorFlags::Object:
+								case TypeDescriptorFlags::Primitive:
+								case TypeDescriptorFlags::Struct:
+								case TypeDescriptorFlags::FlagEnum:
+								case TypeDescriptorFlags::NormalEnum:
+									break;
+								default:
 									manager->errors.Add(WfErrors::TypeNotForValue(node, typeInfo.Obj()));
 								}
 							}
@@ -532,9 +528,15 @@ CreateTypeInfoFromType
 					{
 						if (scopeName->typeDescriptor)
 						{
-							Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-							typeInfo->SetTypeDescriptor(scopeName->typeDescriptor);
-							result = typeInfo;
+							auto hint = TypeInfoHint::Normal;
+							if (scopeName->typeDescriptor == description::GetTypeDescriptor<IValueReadonlyList>() ||
+								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueList>() || 
+								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueReadonlyDictionary>() || 
+								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueDictionary>())
+							{
+								hint = TypeInfoHint::Unknown;
+							}
+							result = MakePtr<TypeDescriptorTypeInfo>(scopeName->typeDescriptor, hint);
 						}
 						else
 						{
@@ -583,9 +585,7 @@ CreateTypeInfoFromType
 					}
 					if (typeDescriptor)
 					{
-						Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-						typeInfo->SetTypeDescriptor(typeDescriptor);
-						result = typeInfo;
+						result = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 					}
 				}
 
@@ -603,9 +603,7 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), false))
 					{
-						Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::RawPtr);
-						typeInfo->SetElementType(element);
-						result = typeInfo;
+						result = MakePtr<RawPtrTypeInfo>(element);
 					}
 				}
 
@@ -613,9 +611,7 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), false))
 					{
-						Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::SharedPtr);
-						typeInfo->SetElementType(element);
-						result = typeInfo;
+						result = MakePtr<SharedPtrTypeInfo>(element);
 					}
 				}
 
@@ -623,9 +619,7 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), false))
 					{
-						Ptr<TypeInfoImpl> typeInfo = new TypeInfoImpl(ITypeInfo::Nullable);
-						typeInfo->SetElementType(element);
-						result = typeInfo;
+						result = MakePtr<NullableTypeInfo>(element);
 					}
 				}
 
@@ -633,16 +627,10 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), true))
 					{
-						Ptr<TypeInfoImpl> enumerableTypeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-						enumerableTypeInfo->SetTypeDescriptor(description::GetTypeDescriptor<IValueEnumerable>());
-
-						Ptr<TypeInfoImpl> genericTypeInfo = new TypeInfoImpl(ITypeInfo::Generic);
-						genericTypeInfo->SetElementType(enumerableTypeInfo);
+						auto enumerableTypeInfo = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Normal);
+						auto genericTypeInfo = MakePtr<GenericTypeInfo>(enumerableTypeInfo);
 						genericTypeInfo->AddGenericArgument(element);
-
-						Ptr<TypeInfoImpl> shared = new TypeInfoImpl(ITypeInfo::SharedPtr);
-						shared->SetElementType(genericTypeInfo);
-						result = shared;
+						result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
 					}
 				}
 
@@ -655,49 +643,43 @@ CreateTypeInfoFromType
 						if (!(key = Call(node->key.Obj(), true))) return;
 					}
 					
-					Ptr<TypeInfoImpl> mapTypeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
+					ITypeDescriptor* typeDescriptor = nullptr;
 					if (node->writability == WfMapWritability::Writable)
 					{
 						if (node->key)
 						{
-							mapTypeInfo->SetTypeDescriptor(description::GetTypeDescriptor<IValueDictionary>());
+							typeDescriptor = description::GetTypeDescriptor<IValueDictionary>();
 						}
 						else
 						{
-							mapTypeInfo->SetTypeDescriptor(description::GetTypeDescriptor<IValueList>());
+							typeDescriptor = description::GetTypeDescriptor<IValueList>();
 						}
 					}
 					else
 					{
 						if (node->key)
 						{
-							mapTypeInfo->SetTypeDescriptor(description::GetTypeDescriptor<IValueReadonlyDictionary>());
+							typeDescriptor = description::GetTypeDescriptor<IValueReadonlyDictionary>();
 						}
 						else
 						{
-							mapTypeInfo->SetTypeDescriptor(description::GetTypeDescriptor<IValueReadonlyList>());
+							typeDescriptor = description::GetTypeDescriptor<IValueReadonlyList>();
 						}
 					}
 
-					Ptr<TypeInfoImpl> genericTypeInfo = new TypeInfoImpl(ITypeInfo::Generic);
-					genericTypeInfo->SetElementType(mapTypeInfo);
+					auto mapTypeInfo = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+					auto genericTypeInfo = MakePtr<GenericTypeInfo>(mapTypeInfo);
 					if (key) genericTypeInfo->AddGenericArgument(key);
 					genericTypeInfo->AddGenericArgument(value);
-
-					Ptr<TypeInfoImpl> shared = new TypeInfoImpl(ITypeInfo::SharedPtr);
-					shared->SetElementType(genericTypeInfo);
-					result = shared;
+					result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
 				}
 
 				void Visit(WfFunctionType* node)override
 				{
 					if (Ptr<ITypeInfo> returnType = Call(node->result.Obj(), true))
 					{
-						Ptr<TypeInfoImpl> enumerableTypeInfo = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-						enumerableTypeInfo->SetTypeDescriptor(description::GetTypeDescriptor<IValueFunctionProxy>());
-
-						Ptr<TypeInfoImpl> genericTypeInfo = new TypeInfoImpl(ITypeInfo::Generic);
-						genericTypeInfo->SetElementType(enumerableTypeInfo);
+						auto enumerableTypeInfo = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
+						auto genericTypeInfo = MakePtr<GenericTypeInfo>(enumerableTypeInfo);
 						genericTypeInfo->AddGenericArgument(returnType);
 						FOREACH(Ptr<WfType>, argument, node->arguments)
 						{
@@ -710,10 +692,7 @@ CreateTypeInfoFromType
 								return;
 							}
 						}
-
-						Ptr<TypeInfoImpl> shared = new TypeInfoImpl(ITypeInfo::SharedPtr);
-						shared->SetElementType(genericTypeInfo);
-						result = shared;
+						result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
 					}
 				}
 
@@ -840,23 +819,16 @@ CreateTypeInfoFromType
 				switch (typeInfo->GetDecorator())
 				{
 				case ITypeInfo::RawPtr:
+					return MakePtr<RawPtrTypeInfo>(CopyTypeInfo(typeInfo->GetElementType()));
 				case ITypeInfo::SharedPtr:
+					return MakePtr<SharedPtrTypeInfo>(CopyTypeInfo(typeInfo->GetElementType()));
 				case ITypeInfo::Nullable:
-					{
-						Ptr<TypeInfoImpl> impl = new TypeInfoImpl(typeInfo->GetDecorator());
-						impl->SetElementType(CopyTypeInfo(typeInfo->GetElementType()));
-						return impl;
-					}
+					return MakePtr<NullableTypeInfo>(CopyTypeInfo(typeInfo->GetElementType()));
 				case ITypeInfo::TypeDescriptor:
-					{
-						Ptr<TypeInfoImpl> impl = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-						impl->SetTypeDescriptor(typeInfo->GetTypeDescriptor());
-						return impl;
-					}
+					return MakePtr<TypeDescriptorTypeInfo>(typeInfo->GetTypeDescriptor(), typeInfo->GetHint());
 				case ITypeInfo::Generic:
 					{
-						Ptr<TypeInfoImpl> impl = new TypeInfoImpl(ITypeInfo::Generic);
-						impl->SetElementType(CopyTypeInfo(typeInfo->GetElementType()));
+						auto impl = MakePtr<GenericTypeInfo>(typeInfo->GetElementType());
 						vint count = typeInfo->GetGenericArgumentCount();
 						for (vint i = 0; i < count; i++)
 						{
@@ -946,34 +918,50 @@ CanConvertToType
 						{
 							ITypeDescriptor* fromTd = fromType->GetTypeDescriptor();
 							ITypeDescriptor* toTd = toType->GetTypeDescriptor();
-							if ((fromTd->GetValueSerializer() != 0) != (toTd->GetValueSerializer() != 0))
+							bool fromValue = (fromTd->GetTypeDescriptorFlags() | TypeDescriptorFlags::ReferenceType) == TypeDescriptorFlags::Undefined;
+							bool toValue = (toTd->GetTypeDescriptorFlags() | TypeDescriptorFlags::ReferenceType) == TypeDescriptorFlags::Undefined;
+							if (fromValue != toValue)
 							{
 								return false;
 							}
 
-							if (fromTd->GetValueSerializer())
+							if (fromValue)
 							{
-								if (fromTd == toTd) return true;
+								if (fromTd == toTd)
+								{
+									return true;
+								}
+								else if (fromTd == GetTypeDescriptor<WString>())
+								{
+									return explicitly && toTd->GetSerializableType() != nullptr;
+								}
+								else if (toTd == GetTypeDescriptor<WString>())
+								{
+									return fromTd->GetSerializableType() != nullptr;
+								}
+
 								TypeFlag fromFlag = GetTypeFlag(fromTd);
 								TypeFlag toFlag = GetTypeFlag(toTd);
 								static vint conversionTable[(vint)TypeFlag::Count][(vint)TypeFlag::Count] = {
-									/*Bool		*/{1, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, /**/ 1, 0},
-									//-------------------------------------------------------------------------
-									/*I1		*/{0, /**/ 1, 1, 1, 1, /**/ 2, 2, 2, 2, /**/ 1, 1, /**/ 1, 0},
-									/*I2		*/{0, /**/ 2, 1, 1, 1, /**/ 2, 2, 2, 2, /**/ 1, 1, /**/ 1, 0},
-									/*I4		*/{0, /**/ 2, 2, 1, 1, /**/ 2, 2, 2, 2, /**/ 2, 1, /**/ 1, 0},
-									/*I8		*/{0, /**/ 2, 2, 2, 1, /**/ 2, 2, 2, 2, /**/ 2, 1, /**/ 1, 0},
-									//-------------------------------------------------------------------------
-									/*U1		*/{0, /**/ 2, 2, 2, 2, /**/ 1, 1, 1, 1, /**/ 1, 1, /**/ 1, 0},
-									/*U2		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 1, 1, 1, /**/ 1, 1, /**/ 1, 0},
-									/*U4		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 1, 1, /**/ 2, 1, /**/ 1, 0},
-									/*U8		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 1, /**/ 2, 1, /**/ 1, 0},
-									//-------------------------------------------------------------------------
-									/*F4		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 2, /**/ 1, 1, /**/ 1, 0},
-									/*F8		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 2, /**/ 2, 1, /**/ 1, 0},
-									//-------------------------------------------------------------------------
-									/*String	*/{2, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 2, /**/ 2, 2, /**/ 1, 2},
-									/*Others	*/{0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, /**/ 1, 0},
+									/*Bool		*/{1, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, /**/ 1, 0, 0, 0},
+									//-------------------------------------------------------------------------------
+									/*I1		*/{0, /**/ 1, 1, 1, 1, /**/ 2, 2, 2, 2, /**/ 1, 1, /**/ 1, 0, 0, 0},
+									/*I2		*/{0, /**/ 2, 1, 1, 1, /**/ 2, 2, 2, 2, /**/ 1, 1, /**/ 1, 0, 0, 0},
+									/*I4		*/{0, /**/ 2, 2, 1, 1, /**/ 2, 2, 2, 2, /**/ 2, 1, /**/ 1, 0, 0, 0},
+									/*I8		*/{0, /**/ 2, 2, 2, 1, /**/ 2, 2, 2, 2, /**/ 2, 1, /**/ 1, 0, 0, 0},
+									//-------------------------------------------------------------------------------
+									/*U1		*/{0, /**/ 2, 2, 2, 2, /**/ 1, 1, 1, 1, /**/ 1, 1, /**/ 1, 0, 0, 0},
+									/*U2		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 1, 1, 1, /**/ 1, 1, /**/ 1, 0, 0, 0},
+									/*U4		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 1, 1, /**/ 2, 1, /**/ 1, 0, 0, 0},
+									/*U8		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 1, /**/ 2, 1, /**/ 1, 2, 0, 0},
+									//-------------------------------------------------------------------------------
+									/*F4		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 2, /**/ 1, 1, /**/ 1, 0, 0, 0},
+									/*F8		*/{0, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 2, /**/ 2, 1, /**/ 1, 0, 0, 0},
+									//-------------------------------------------------------------------------------
+									/*String	*/{2, /**/ 2, 2, 2, 2, /**/ 2, 2, 2, 2, /**/ 2, 2, /**/ 1, 0, 0, 0},
+									/*Enum		*/{0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 2, /**/ 0, 0, /**/ 0, 0, 0, 0},
+									/*Struct	*/{0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, /**/ 0, 0, 0, 0},
+									/*Others	*/{0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, /**/ 0, 0, 0, 0},
 								};
 								vint conversion = conversionTable[(vint)fromFlag][(vint)toFlag];
 								return conversion == 1 || (explicitly && conversion == 2);
@@ -1107,24 +1095,15 @@ CreateTypeInfoFromMethodInfo
 
 			Ptr<reflection::description::ITypeInfo> CreateTypeInfoFromMethodInfo(reflection::description::IMethodInfo* info)
 			{
-				Ptr<TypeInfoImpl> functionType = new TypeInfoImpl(ITypeInfo::SharedPtr);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
+				auto genericType = MakePtr<GenericTypeInfo>(elementType);
+				genericType->AddGenericArgument(CopyTypeInfo(info->GetReturn()));
+				vint parameterCount = info->GetParameterCount();
+				for (vint j = 0; j < parameterCount; j++)
 				{
-					Ptr<TypeInfoImpl> genericType = new TypeInfoImpl(ITypeInfo::Generic);
-					functionType->SetElementType(genericType);
-					{
-						Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-						elementType->SetTypeDescriptor(description::GetTypeDescriptor<IValueFunctionProxy>());
-						genericType->SetElementType(elementType);
-					}
-
-					genericType->AddGenericArgument(CopyTypeInfo(info->GetReturn()));
-					vint parameterCount = info->GetParameterCount();
-					for (vint j = 0; j < parameterCount; j++)
-					{
-						genericType->AddGenericArgument(CopyTypeInfo(info->GetParameter(j)->GetType()));
-					}
+					genericType->AddGenericArgument(CopyTypeInfo(info->GetParameter(j)->GetType()));
 				}
-				return functionType;
+				return MakePtr<SharedPtrTypeInfo>(genericType);
 			}
 		}
 	}

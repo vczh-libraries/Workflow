@@ -208,8 +208,8 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 			return L"RawPtr";
 		case Value::SharedPtr:
 			return L"SharedPtr";
-		case Value::Text:
-			return L"Text";
+		case Value::BoxedValue:
+			return L"BoxedValue";
 		default:
 			return L"Null";
 		}
@@ -248,10 +248,49 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 		}
 	};
 
-	auto formatValue = [&formatFlag](const Value& value)->WString
+	Func<WString(const Value&)> serializeValue = [&](const Value& value)->WString
+	{
+		switch (value.GetValueType())
+		{
+		case Value::RawPtr:
+			return L"<*>";
+		case Value::SharedPtr:
+			return L"<^>";
+		case Value::BoxedValue:
+			{
+				auto td = value.GetTypeDescriptor();
+				if (auto st = td->GetSerializableType())
+				{
+					WString output;
+					return st->Serialize(value, output);
+				}
+				else if(td->GetTypeDescriptorFlags()==TypeDescriptorFlags::Struct)
+				{
+					WString output = L"{";
+					vint count = td->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
+					{
+						if (i != 0) output += L" ";
+						auto prop = td->GetProperty(i);
+						output += prop->GetName() + L":" + serializeValue(prop->GetValue(value));
+					}
+					return output;
+				}
+				else
+				{
+					return L"<struct>";
+				}
+			}
+			break;
+		default:
+			return L"<null>";
+		}
+	};
+
+	auto formatValue = [&](const Value& value)->WString
 	{
 		return L"<" +
-			value.GetText() + L", " +
+			serializeValue(value) + L", " +
 			formatFlag(value.GetValueType()) +
 			(value.GetTypeDescriptor() ? L", " + value.GetTypeDescriptor()->GetTypeName() : L"") +
 			L">";

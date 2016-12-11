@@ -55,6 +55,11 @@ WfMethodBase
 			WfMethodBase::~WfMethodBase()
 			{
 			}
+
+			IMethodInfo::ICpp* WfMethodBase::GetCpp()
+			{
+				return nullptr;
+			}
 			
 			runtime::WfRuntimeGlobalContext* WfMethodBase::GetGlobalContext()
 			{
@@ -312,6 +317,11 @@ WfEvent
 			{
 			}
 
+			IEventInfo::ICpp* WfEvent::GetCpp()
+			{
+				return nullptr;
+			}
+
 			void WfEvent::SetHandlerType(Ptr<ITypeInfo> typeInfo)
 			{
 				handlerType = typeInfo;
@@ -347,6 +357,11 @@ WfField
 
 			WfField::~WfField()
 			{
+			}
+
+			IPropertyInfo::ICpp* WfField::GetCpp()
+			{
+				return nullptr;
 			}
 
 			void WfField::SetReturn(Ptr<ITypeInfo> typeInfo)
@@ -386,6 +401,14 @@ WfProperty
 WfCustomType
 ***********************************************************************/
 
+			WfCustomType::WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
+				:workflowTypeName(_workflowTypeName)
+			{
+				typeName = workflowTypeName.Buffer();
+				cppFullTypeName = nullptr;
+				cppName = TypeInfoContent::CppType;
+			}
+
 			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group)
 			{
 				vint methodCount = group->GetMethodCount();
@@ -421,12 +444,13 @@ WfCustomType
 			}
 
 			WfCustomType::WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
-				:TypeDescriptorImpl(typeDescriptorFlags, typeName, L"")
+				:TypeDescriptorImpl(typeDescriptorFlags, (this->typeInfoContent = new WfTypeInfoContent(typeName)))
 			{
 			}
 
 			WfCustomType::~WfCustomType()
 			{
+				delete typeInfoContent;
 			}
 			
 			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()

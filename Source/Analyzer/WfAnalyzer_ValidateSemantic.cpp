@@ -1127,6 +1127,8 @@ ValidateSemantic(Expression)
 							case TypeFlag::F4:
 							case TypeFlag::F8:
 							case TypeFlag::String:
+							case TypeFlag::Enum:
+							case TypeFlag::Struct:
 							case TypeFlag::Others:
 								manager->errors.Add(WfErrors::UnaryOperatorOnWrongType(node, typeInfo.Obj()));
 								break;
@@ -1138,6 +1140,8 @@ ValidateSemantic(Expression)
 							{
 							case TypeFlag::Bool:
 							case TypeFlag::String:
+							case TypeFlag::Enum:
+							case TypeFlag::Struct:
 							case TypeFlag::Others:
 								manager->errors.Add(WfErrors::UnaryOperatorOnWrongType(node, typeInfo.Obj()));
 								break;
@@ -1153,6 +1157,8 @@ ValidateSemantic(Expression)
 							case TypeFlag::U4:
 							case TypeFlag::U8:
 							case TypeFlag::String:
+							case TypeFlag::Enum:
+							case TypeFlag::Struct:
 							case TypeFlag::Others:
 								manager->errors.Add(WfErrors::UnaryOperatorOnWrongType(node, typeInfo.Obj()));
 								break;

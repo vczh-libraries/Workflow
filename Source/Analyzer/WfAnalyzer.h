@@ -225,6 +225,8 @@ Type Analyzing
 				F4,
 				F8,
 				String,
+				Enum,
+				Struct,
 				Others,
 				Count,
 				Unknown = -1,
@@ -527,7 +529,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongInterfaceType(WfType* node);
 				static Ptr<parsing::ParsingError>			RawPointerToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
 				static Ptr<parsing::ParsingError>			SharedPointerToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
-				static Ptr<parsing::ParsingError>			NullableToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
+				static Ptr<parsing::ParsingError>			NullableToReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
 				static Ptr<parsing::ParsingError>			ChildOfNonReferenceType(WfType* node);
 				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, Ptr<WfLexicalScopeName> scopeName);
 				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, Ptr<WfLexicalSymbol> symbol);

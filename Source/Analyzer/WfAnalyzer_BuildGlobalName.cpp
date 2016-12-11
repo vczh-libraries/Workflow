@@ -167,13 +167,15 @@ BuildGlobalNameFromModules
 				{
 					Ptr<ITypeInfo> typeInfo;
 					{
-						auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-						elementType->SetTypeDescriptor(td.Obj());
-
-						auto pointerType = MakePtr<TypeInfoImpl>(node->constructorType == WfConstructorType::RawPtr ? ITypeInfo::RawPtr : ITypeInfo::SharedPtr);
-						pointerType->SetElementType(elementType);
-
-						typeInfo = pointerType;
+						auto elementType = MakePtr<TypeDescriptorTypeInfo>(td.Obj(), TypeInfoHint::Normal);
+						if (node->constructorType == WfConstructorType::RawPtr)
+						{
+							typeInfo = MakePtr<RawPtrTypeInfo>(elementType);
+						}
+						else
+						{
+							typeInfo = MakePtr<SharedPtrTypeInfo>(elementType);
+						}
 					}
 
 					auto info = MakePtr<WfClassConstructor>(typeInfo);

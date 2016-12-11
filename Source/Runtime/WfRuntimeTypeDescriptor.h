@@ -99,6 +99,7 @@ Method
 				WfMethodBase(bool isStatic);
 				~WfMethodBase();
 
+				ICpp*									GetCpp()override;
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetReturn(Ptr<ITypeInfo> type);
 			};
@@ -201,6 +202,7 @@ Event
 				WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
 				~WfEvent();
 
+				ICpp*									GetCpp()override;
 				void									SetHandlerType(Ptr<ITypeInfo> typeInfo);
 			};
 
@@ -231,6 +233,7 @@ Field
 				WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
 				~WfField();
 
+				ICpp*									GetCpp()override;
 				void									SetReturn(Ptr<ITypeInfo> typeInfo);
 			};
 
@@ -264,8 +267,17 @@ Custom Type
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::IMethodGroupInfo			IMethodGroupInfo;
 				typedef collections::List<ITypeDescriptor*>					TypeDescriptorList;
+
+				struct WfTypeInfoContent : reflection::description::TypeInfoContent
+				{
+					WString								workflowTypeName;
+
+					WfTypeInfoContent(const WString& _workflowTypeName);
+				};
+
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
+				WfTypeInfoContent*						typeInfoContent = nullptr;
 				bool									baseTypeExpanded = false;
 				TypeDescriptorList						expandedBaseTypes;
 				

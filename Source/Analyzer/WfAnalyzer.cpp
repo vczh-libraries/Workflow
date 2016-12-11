@@ -296,9 +296,13 @@ ResolveExpressionResult
 						setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
 					}
 				}
-				else if (!_propertyInfo->GetOwnerTypeDescriptor()->GetValueSerializer() && _propertyInfo->IsWritable())
+				else if (_propertyInfo->IsWritable())
 				{
-					setterType = CopyTypeInfo(_propertyInfo->GetReturn());
+					auto td = _propertyInfo->GetOwnerTypeDescriptor();
+					if ((td->GetTypeDescriptorFlags() | TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
+					{
+						setterType = CopyTypeInfo(_propertyInfo->GetReturn());
+					}
 				}
 
 				ResolveExpressionResult result;
