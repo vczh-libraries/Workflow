@@ -888,40 +888,12 @@ WfRuntimeThreadContext
 						EXECUTE(OpCompare, F8)
 						EXECUTE(OpCompare, String)
 					END_TYPE
-				case WfInsCode::CompareStruct:
-					{
-						Value first, second;
-						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						if (!first.IsNull() && !first.GetTypeDescriptor()->GetValueSerializer())
-						{
-							INTERNAL_ERROR(L"type" + first.GetTypeDescriptor()->GetTypeName() + L" is not a struct.");
-						}
-						if (!second.IsNull() && !second.GetTypeDescriptor()->GetValueSerializer())
-						{
-							INTERNAL_ERROR(L"type" + second.GetTypeDescriptor()->GetTypeName() + L" is not a struct.");
-						}
-
-						if (first.GetValueType() != second.GetValueType())
-						{
-							PushValue(BoxValue(false));
-						}
-						else if (first.IsNull())
-						{
-							PushValue(BoxValue(true));
-						}
-						else
-						{
-							PushValue(BoxValue(first.GetText() == second.GetText()));
-						}
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
 				case WfInsCode::CompareReference:
 					{
 						Value first, second;
 						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						bool result = first.GetValueType() != Value::Text && second.GetValueType() != Value::Text && first.GetRawPtr() == second.GetRawPtr();
+						bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
 						PushValue(BoxValue(result));
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
@@ -998,7 +970,12 @@ WfRuntimeThreadContext
 						Value first, second;
 						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						PushValue(BoxValue(first.GetText() + second.GetText()));
+
+						WString firstText, secondText;
+						first.GetTypeDescriptor()->GetSerializableType()->Serialize(first, firstText);
+						first.GetTypeDescriptor()->GetSerializableType()->Serialize(second, secondText);
+
+						PushValue(BoxValue(firstText + secondText));
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::OpExp:

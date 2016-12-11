@@ -519,6 +519,7 @@ GenerateInstructions(Expression)
 									switch (mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags())
 									{
 									case TypeDescriptorFlags::Object:
+									case TypeDescriptorFlags::Struct:
 										GenerateExpressionInstructions(context, node->first);
 										GenerateExpressionInstructions(context, node->second);
 										INSTRUCTION(Ins::CompareValue());
@@ -534,15 +535,6 @@ GenerateInstructions(Expression)
 										GenerateExpressionInstructions(context, node->second);
 										INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
 										INSTRUCTION(Ins::CompareLiteral(WfInsType::U8));
-										if (node->op == WfBinaryOperator::NE)
-										{
-											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
-										}
-										return;
-									case TypeDescriptorFlags::Struct:
-										GenerateExpressionInstructions(context, node->first);
-										GenerateExpressionInstructions(context, node->second);
-										INSTRUCTION(Ins::CompareStruct());
 										if (node->op == WfBinaryOperator::NE)
 										{
 											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
