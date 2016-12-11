@@ -1314,6 +1314,8 @@ ValidateSemantic(Expression)
 										/*F4		*/TypeFlag::F4,
 										/*F8		*/TypeFlag::F8,
 										/*String	*/TypeFlag::Unknown,
+										/*Enum		*/TypeFlag::Unknown,
+										/*Struct	*/TypeFlag::Unknown,
 										/*Others	*/TypeFlag::Unknown,
 									};
 									selectedTable = conversionTable;
@@ -1337,6 +1339,8 @@ ValidateSemantic(Expression)
 										/*F4		*/TypeFlag::F4,
 										/*F8		*/TypeFlag::F8,
 										/*String	*/TypeFlag::Unknown,
+										/*Enum		*/TypeFlag::Unknown,
+										/*Struct	*/TypeFlag::Unknown,
 										/*Others	*/TypeFlag::Unknown,
 									};
 									selectedTable = conversionTable;
@@ -1359,6 +1363,8 @@ ValidateSemantic(Expression)
 										/*F4		*/TypeFlag::Unknown,
 										/*F8		*/TypeFlag::Unknown,
 										/*String	*/TypeFlag::Unknown,
+										/*Enum		*/TypeFlag::Unknown,
+										/*Struct	*/TypeFlag::Unknown,
 										/*Others	*/TypeFlag::Unknown,
 									};
 									selectedTable = conversionTable;
@@ -1382,6 +1388,8 @@ ValidateSemantic(Expression)
 										/*F4		*/TypeFlag::Bool,
 										/*F8		*/TypeFlag::Bool,
 										/*String	*/TypeFlag::Bool,
+										/*Enum		*/TypeFlag::Unknown,
+										/*Struct	*/TypeFlag::Unknown,
 										/*Others	*/TypeFlag::Unknown,
 									};
 									selectedTable = conversionTable;
@@ -1411,6 +1419,8 @@ ValidateSemantic(Expression)
 										/*F4		*/TypeFlag::Unknown,
 										/*F8		*/TypeFlag::Unknown,
 										/*String	*/TypeFlag::Unknown,
+										/*Enum		*/TypeFlag::Unknown,
+										/*Struct	*/TypeFlag::Unknown,
 										/*Others	*/TypeFlag::Unknown,
 									};
 									selectedTable = conversionTable;
