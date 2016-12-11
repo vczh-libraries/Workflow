@@ -516,8 +516,9 @@ GenerateInstructions(Expression)
 								mergedType = GetMergedType(firstType, secondType);
 								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
 								{
-									if (mergedType->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
+									switch (mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags())
 									{
+									case TypeDescriptorFlags::Object:
 										GenerateExpressionInstructions(context, node->first);
 										GenerateExpressionInstructions(context, node->second);
 										INSTRUCTION(Ins::CompareValue());
@@ -526,22 +527,27 @@ GenerateInstructions(Expression)
 											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 										}
 										return;
-									}
-									else if (mergedType->GetTypeDescriptor()->GetValueSerializer())
-									{
-										auto structType = mergedType->GetDecorator() == ITypeInfo::Nullable ? CopyTypeInfo(mergedType->GetElementType()) : mergedType;
-										auto insType = GetInstructionTypeArgument(structType);
-										if (insType == WfInsType::Unknown)
+									case TypeDescriptorFlags::FlagEnum:
+									case TypeDescriptorFlags::NormalEnum:
+										GenerateExpressionInstructions(context, node->first);
+										INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+										GenerateExpressionInstructions(context, node->second);
+										INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+										INSTRUCTION(Ins::CompareLiteral(WfInsType::U8));
+										if (node->op == WfBinaryOperator::NE)
 										{
-											GenerateExpressionInstructions(context, node->first);
-											GenerateExpressionInstructions(context, node->second);
-											INSTRUCTION(Ins::CompareStruct());
-											if (node->op == WfBinaryOperator::NE)
-											{
-												INSTRUCTION(Ins::OpNot(WfInsType::Bool));
-											}
-											return;
+											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 										}
+										return;
+									case TypeDescriptorFlags::Struct:
+										GenerateExpressionInstructions(context, node->first);
+										GenerateExpressionInstructions(context, node->second);
+										INSTRUCTION(Ins::CompareStruct());
+										if (node->op == WfBinaryOperator::NE)
+										{
+											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+										}
+										return;
 									}
 								}
 							}

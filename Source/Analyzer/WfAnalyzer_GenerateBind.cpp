@@ -999,17 +999,53 @@ CreateDefaultValue
 
 			Ptr<WfExpression> CreateDefaultValue(ITypeInfo* elementType)
 			{
-				if (elementType->GetTypeDescriptor()->GetValueSerializer())
+				if (auto valueType = elementType->GetTypeDescriptor()->GetValueType())
 				{
-					auto stringExpr = MakePtr<WfStringExpression>();
-					stringExpr->value.value = elementType->GetTypeDescriptor()->GetValueSerializer()->GetDefaultText();
+					auto value = valueType->CreateDefault();
+					switch (GetTypeFlag(elementType))
+					{
+					case TypeFlag::Enum:
+						{
+							auto intExpr = MakePtr<WfIntegerExpression>();
+							intExpr->value.value = u64tow(elementType->GetTypeDescriptor()->GetEnumType()->FromEnum(value));
 
-					auto castExpr = MakePtr<WfTypeCastingExpression>();
-					castExpr->strategy = WfTypeCastingStrategy::Strong;
-					castExpr->expression = stringExpr;
-					castExpr->type = GetTypeFromTypeInfo(elementType);
+							auto inferExpr = MakePtr<WfInferExpression>();
+							inferExpr->expression = inferExpr;
+							inferExpr->type = GetTypeFromTypeInfo(CreateTypeInfoFromTypeFlag(TypeFlag::U8).Obj());
 
-					return castExpr;
+							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							castExpr->strategy = WfTypeCastingStrategy::Strong;
+							castExpr->expression = inferExpr;
+							castExpr->type = GetTypeFromTypeInfo(elementType);
+
+							return castExpr;
+						}
+					case TypeFlag::String:
+						{
+							auto stringExpr = MakePtr<WfStringExpression>();
+							elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
+							return stringExpr;
+						}
+						break;
+					case TypeFlag::Struct:
+						if (elementType->GetTypeDescriptor()->GetSerializableType() == nullptr)
+						{
+							throw 0;
+							break;
+						}
+					default:
+						{
+							auto stringExpr = MakePtr<WfStringExpression>();
+							elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
+
+							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							castExpr->strategy = WfTypeCastingStrategy::Strong;
+							castExpr->expression = stringExpr;
+							castExpr->type = GetTypeFromTypeInfo(elementType);
+
+							return castExpr;
+						}
+					}
 				}
 				else
 				{
