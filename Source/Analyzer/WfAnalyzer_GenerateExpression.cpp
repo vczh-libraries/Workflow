@@ -540,6 +540,7 @@ GenerateInstructions(Expression)
 											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 										}
 										return;
+									default:;
 									}
 								}
 							}

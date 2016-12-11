@@ -668,6 +668,7 @@ Serizliation (Metadata)
 								}
 							}
 							break;
+						default:;
 						}
 					}
 				}
@@ -727,6 +728,7 @@ Serizliation (Metadata)
 										}
 									}
 									break;
+								default:;
 								}
 							}
 						}
