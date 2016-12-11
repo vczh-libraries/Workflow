@@ -10922,6 +10922,10 @@ SerializableTypeDescriptor
 				WString										cppFullTypeName;
 
 				const WString&								GetFullName()override;
+
+			protected:
+				const TypeInfoContent*						GetTypeInfoContentInternal();
+
 			public:
 				TypeDescriptorImplBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
 				~TypeDescriptorImplBase();
@@ -12434,12 +12438,14 @@ ParameterAccessor<TStruct>
 					{
 						typeDescriptor = GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
 					}
-					return Value::From(new IValueType::TypedBox<T>(object), typeDescriptor);
+					using Type = typename vl::RemoveCVR<T>::Type;
+					return Value::From(new IValueType::TypedBox<Type>(object), typeDescriptor);
 				}
 
 				static T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor, const WString& valueName)
 				{
-					if (auto unboxedValue = value.GetBoxedValue().Cast<IValueType::TypedBox<T>>())
+					using Type = typename vl::RemoveCVR<T>::Type;
+					if (auto unboxedValue = value.GetBoxedValue().Cast<IValueType::TypedBox<Type>>())
 					{
 						return unboxedValue->value;
 					}

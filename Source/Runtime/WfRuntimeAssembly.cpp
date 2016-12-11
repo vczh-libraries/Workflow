@@ -319,7 +319,7 @@ Serizliation (ITypeInfo)
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfo = MakePtr<RawPtrTypeInfo>(elementType);
+							typeInfo = MakePtr<SharedPtrTypeInfo>(elementType);
 						}
 						break;
 					case ITypeInfo::Nullable:

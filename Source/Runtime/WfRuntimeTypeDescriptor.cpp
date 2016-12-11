@@ -444,13 +444,14 @@ WfCustomType
 			}
 
 			WfCustomType::WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
-				:TypeDescriptorImpl(typeDescriptorFlags, (this->typeInfoContent = new WfTypeInfoContent(typeName)))
+				:TypeDescriptorImpl(typeDescriptorFlags, new WfTypeInfoContent(typeName))
 			{
 			}
 
 			WfCustomType::~WfCustomType()
 			{
-				delete typeInfoContent;
+				auto typeInfoContent = GetTypeInfoContentInternal();
+				delete static_cast<WfTypeInfoContent*>(const_cast<TypeInfoContent*>(typeInfoContent));
 			}
 			
 			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()

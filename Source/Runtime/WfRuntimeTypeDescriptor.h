@@ -277,7 +277,6 @@ Custom Type
 
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
-				WfTypeInfoContent*						typeInfoContent = nullptr;
 				bool									baseTypeExpanded = false;
 				TypeDescriptorList						expandedBaseTypes;
 				
