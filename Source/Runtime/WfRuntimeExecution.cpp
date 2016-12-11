@@ -145,7 +145,7 @@ WfRuntimeThreadContext (TypeConversion)
 				case Value::Null:
 					return false;
 				case Value::RawPtr:
-					if (result.GetValueType() == Value::Text)
+					if (result.GetValueType() == Value::BoxedValue)
 					{
 						return false;
 					}
@@ -162,7 +162,7 @@ WfRuntimeThreadContext (TypeConversion)
 					}
 					break;
 				case Value::SharedPtr:
-					if (result.GetValueType() == Value::Text)
+					if (result.GetValueType() == Value::BoxedValue)
 					{
 						return false;
 					}
@@ -178,31 +178,65 @@ WfRuntimeThreadContext (TypeConversion)
 						}
 					}
 					break;
-				case Value::Text:
-					if (result.GetValueType() != Value::Text)
+				case Value::BoxedValue:
+					if (result.GetValueType() != Value::BoxedValue)
 					{
 						return false;
 					}
-					else if (ins.typeDescriptorParameter == GetTypeDescriptor<void>())
+					if (result.GetTypeDescriptor() == ins.typeDescriptorParameter)
 					{
-						if (result.GetText() != L"")
+						converted = result;
+						return true;
+					}
+
+					if (auto stFrom = result.GetTypeDescriptor()->GetSerializableType())
+					{
+						if (auto stTo = ins.typeDescriptorParameter->GetSerializableType())
 						{
-							return false;
+							WString text;
+							return stFrom->Serialize(result, text) && stTo->Deserialize(text, converted);
+						}
+						else
+						{
+							switch (ins.typeDescriptorParameter->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::FlagEnum:
+							case TypeDescriptorFlags::NormalEnum:
+								if (result.GetTypeDescriptor() != GetTypeDescriptor<vuint64_t>())
+								{
+									return false;
+								}
+								else
+								{
+									auto intValue = result.GetBoxedValue().Cast<IValueType::TypedBox<vuint64_t>>()->value;
+									converted = ins.typeDescriptorParameter->GetEnumType()->ToEnum(intValue);
+								}
+								break;
+							default:
+								return false;
+							}
 						}
 					}
 					else
 					{
-						auto serializer = ins.typeDescriptorParameter->GetValueSerializer();
-						if (!serializer)
+						switch (result.GetTypeDescriptor()->GetTypeDescriptorFlags())
 						{
-							return false;
-						}
-						if (!serializer->Parse(result.GetText(), converted))
-						{
+						case TypeDescriptorFlags::FlagEnum:
+						case TypeDescriptorFlags::NormalEnum:
+							if (ins.typeDescriptorParameter != GetTypeDescriptor<vuint64_t>())
+							{
+								return false;
+							}
+							else
+							{
+								auto intValue = result.GetTypeDescriptor()->GetEnumType()->FromEnum(result);
+								converted = BoxValue<vuint64_t>(intValue);
+							}
+							break;
+						default:
 							return false;
 						}
 					}
-					break;
 				}
 
 				return true;
@@ -529,7 +563,24 @@ WfRuntimeThreadContext
 						}
 						else
 						{
-							WString from = result.IsNull() ? L"<null>" : L"<" + result.GetText() + L"> of " + result.GetTypeDescriptor()->GetTypeName();
+							WString from;
+							if (result.IsNull())
+							{
+								from = L"<null>";
+							}
+							else
+							{
+								if (auto st = result.GetTypeDescriptor()->GetSerializableType())
+								{
+									WString text;
+									st->Serialize(result, text);
+									from = L"<" + text + L"> of " + result.GetTypeDescriptor()->GetTypeName();
+								}
+								else
+								{
+									from = result.GetTypeDescriptor()->GetTypeName();
+								}
+							}
 							WString to = ins.typeDescriptorParameter->GetTypeName();
 							RaiseException(L"Failed to convert from \"" + from + L"\" to \"" + to + L"\".", false);
 						}
@@ -787,9 +838,11 @@ WfRuntimeThreadContext
 					{
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						if (operand.GetValueType() == Value::Text)
+						if (operand.GetValueType() == Value::BoxedValue)
 						{
-							RaiseException(operand.GetText(), false);
+							WString text;
+							operand.GetTypeDescriptor()->GetSerializableType()->Serialize(operand, text);
+							RaiseException(text, false);
 						}
 						else if (auto info = operand.GetSharedPtr().Cast<WfRuntimeExceptionInfo>())
 						{
@@ -896,6 +949,7 @@ WfRuntimeThreadContext
 							{
 							case Value::Text:
 								PushValue(BoxValue(first.GetText() == second.GetText()));
+								break;
 							default:
 								PushValue(BoxValue(false));
 							}
