@@ -488,6 +488,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			AttachInBind(WfExpression* node);
 				static Ptr<parsing::ParsingError>			DetachInBind(WfExpression* node);
 				static Ptr<parsing::ParsingError>			ConstructorMixMapAndList(WfExpression* node);
+				static Ptr<parsing::ParsingError>			ConstructorMixStructAndList(WfExpression* node);
+				static Ptr<parsing::ParsingError>			DuplicatedConstructorField(WfReferenceExpression* node);
 				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewClassExpression* node);
 				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewInterfaceExpression* node);
 				static Ptr<parsing::ParsingError>			ScopeNameIsNotExpression(WfExpression* node, Ptr<WfLexicalScopeName> scopeName);

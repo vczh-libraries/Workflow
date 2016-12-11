@@ -1073,10 +1073,16 @@ ValidateSemantic(Expression)
 
 				void Visit(WfIntegerExpression* node)override
 				{
-					ITypeDescriptor* typeDescriptor = 0;
-					if (ValidateInteger<vint>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
-					if (ValidateInteger<vuint>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+					ITypeDescriptor* typeDescriptor = nullptr;
+#ifndef VCZH_64
+					if (ValidateInteger<vint32_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+					if (ValidateInteger<vuint32_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+#endif
+					if (ValidateInteger<vint64_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+					if (ValidateInteger<vuint64_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+
 					manager->errors.Add(WfErrors::IntegerLiteralOutOfRange(node));
+					typeDescriptor = description::GetTypeDescriptor<vint>();
 
 				TYPE_FINISHED:
 					results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
@@ -1591,7 +1597,42 @@ ValidateSemantic(Expression)
 
 				void Visit(WfConstructorExpression* node)override
 				{
-					if (node->arguments.Count() == 0)
+					if (expectedType && expectedType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+					{
+						SortedList<WString> fields;
+						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						{
+							if (!argument->value)
+							{
+								manager->errors.Add(WfErrors::ConstructorMixStructAndList(node));
+								return;
+							}
+							else if (auto field = argument->key.Cast<WfReferenceExpression>())
+							{
+								if (auto prop = expectedType->GetTypeDescriptor()->GetPropertyByName(field->name.value, true))
+								{
+									if (fields.Contains(field->name.value))
+									{
+										manager->errors.Add(WfErrors::DuplicatedConstructorField(field.Obj()));
+									}
+									else
+									{
+										fields.Add(field->name.value);
+									}
+									GetExpressionType(manager, argument->value, CopyTypeInfo(prop->GetReturn()));
+								}
+								else
+								{
+									manager->errors.Add(WfErrors::MemberNotExists(field.Obj(), expectedType->GetTypeDescriptor(), field->name.value));
+								}
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::ConstructorMixStructAndList(argument->value.Obj()));
+							}
+						}
+					}
+					else if (node->arguments.Count() == 0)
 					{
 						if (expectedType)
 						{
@@ -1688,11 +1729,9 @@ ValidateSemantic(Expression)
 				void Visit(WfTypeCastingExpression* node)override
 				{
 					auto scope = manager->nodeScopes[node].Obj();
-					Ptr<ITypeInfo> type = CreateTypeInfoFromType(scope, node->type);
-					Ptr<ITypeInfo> expressionType = GetExpressionType(manager, node->expression, 0);
-					if (type)
+					if (auto type = CreateTypeInfoFromType(scope, node->type))
 					{
-						if (expressionType)
+						if (auto expressionType = GetExpressionType(manager, node->expression, 0))
 						{
 							if (!CanConvertToType(expressionType.Obj(), type.Obj(), true))
 							{

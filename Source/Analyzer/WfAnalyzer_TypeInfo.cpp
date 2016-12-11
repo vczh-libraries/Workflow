@@ -918,8 +918,8 @@ CanConvertToType
 						{
 							ITypeDescriptor* fromTd = fromType->GetTypeDescriptor();
 							ITypeDescriptor* toTd = toType->GetTypeDescriptor();
-							bool fromValue = (fromTd->GetTypeDescriptorFlags() | TypeDescriptorFlags::ReferenceType) == TypeDescriptorFlags::Undefined;
-							bool toValue = (toTd->GetTypeDescriptorFlags() | TypeDescriptorFlags::ReferenceType) == TypeDescriptorFlags::Undefined;
+							bool fromValue = (fromTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) == TypeDescriptorFlags::Undefined;
+							bool toValue = (toTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) == TypeDescriptorFlags::Undefined;
 							if (fromValue != toValue)
 							{
 								return false;

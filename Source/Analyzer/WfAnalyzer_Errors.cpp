@@ -65,6 +65,16 @@ WfErrors
 				return new ParsingError(node, L"A5: Key-value pairs are not allowed in list constructor expression.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::ConstructorMixStructAndList(WfExpression* node)
+			{
+				return new ParsingError(node, L"A5: Field-value pairs are expected in struct constructor expression.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedConstructorField(WfReferenceExpression* node)
+			{
+				return new ParsingError(node, L"A5: The same field cannot be assigned more than once in struct constructor expression.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::ConstructorMixClassAndInterface(WfNewClassExpression* node)
 			{
 				return new ParsingError(node, L"A6: Arguments are not allowed in new interface expression.");

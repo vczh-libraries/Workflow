@@ -299,7 +299,7 @@ ResolveExpressionResult
 				else if (_propertyInfo->IsWritable())
 				{
 					auto td = _propertyInfo->GetOwnerTypeDescriptor();
-					if ((td->GetTypeDescriptorFlags() | TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
+					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 					{
 						setterType = CopyTypeInfo(_propertyInfo->GetReturn());
 					}
