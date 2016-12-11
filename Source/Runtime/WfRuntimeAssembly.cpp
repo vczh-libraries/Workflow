@@ -648,9 +648,9 @@ Serizliation (Metadata)
 						case TypeDescriptorFlags::FlagEnum:
 						case TypeDescriptorFlags::NormalEnum:
 							{
-								vuint64_t intValue;
+								vint64_t intValue;
 								reader << intValue;
-								value = type->GetEnumType()->ToEnum(intValue);
+								value = type->GetEnumType()->ToEnum((vuint64_t)intValue);
 							}
 							break;
 						case TypeDescriptorFlags::Struct:
@@ -696,7 +696,7 @@ Serizliation (Metadata)
 								case TypeDescriptorFlags::FlagEnum:
 								case TypeDescriptorFlags::NormalEnum:
 									{
-										vuint64_t intValue = type->GetEnumType()->FromEnum(value);
+										vint64_t intValue = (vint64_t)type->GetEnumType()->FromEnum(value);
 										writer << intValue;
 									}
 									break;
