@@ -180,7 +180,8 @@ enum BinaryOperator
 {
 	Assign,
 	Index,
-	Concat,
+	Union,
+	Intersect,
 	FailedThen,
 	Exp,
 	Add,
@@ -601,7 +602,8 @@ token SUB = "-";
 token MUL = "/*";
 token DIV = "//";
 token MOD = "%";
-token CONCAT = "&";
+token UNION = "&";
+token INTERSECTION = "/|";
 token LE = "/</=";
 token GE = "/>/=";
 token LT = "/<";
@@ -820,7 +822,8 @@ rule Expression Exp3
 	= !Exp2
 	= Exp3 : first "+" Exp2 : second as BinaryExpression with {op = "Add"}
 	= Exp3 : first "-" Exp2 : second as BinaryExpression with {op = "Sub"}
-	= Exp3 : first "&" Exp2 : second as BinaryExpression with {op = "Concat"}
+	= Exp3 : first "&" Exp2 : second as BinaryExpression with {op = "Union"}
+	= Exp3 : first "|" Exp2 : second as BinaryExpression with {op = "Intersect"}
 	;
 rule Expression Exp4
 	= !Exp3

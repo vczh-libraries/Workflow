@@ -454,12 +454,16 @@ GenerateInstructions(Expression)
 						GenerateExpressionInstructions(context, node->first);
 						INSTRUCTION(Ins::InvokeMethod(methodInfo, 1));
 					}
-					else if (node->op == WfBinaryOperator::Concat)
+					else if (node->op == WfBinaryOperator::Union)
 					{
 						auto type = TypeInfoRetriver<WString>::CreateTypeInfo();
 						GenerateExpressionInstructions(context, node->first, type);
 						GenerateExpressionInstructions(context, node->second, type);
 						INSTRUCTION(Ins::OpConcat());
+					}
+					else if (node->op == WfBinaryOperator::Intersect)
+					{
+						throw 0;
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{

@@ -406,8 +406,11 @@ Print (Expression)
 					case WfBinaryOperator::Assign:
 						writer.WriteString(L" = ");
 						break;
-					case WfBinaryOperator::Concat:
+					case WfBinaryOperator::Union:
 						writer.WriteString(L" & ");
+						break;
+					case WfBinaryOperator::Intersect:
+						writer.WriteString(L" | ");
 						break;
 					case WfBinaryOperator::FailedThen:
 						writer.WriteString(L" ?? ");

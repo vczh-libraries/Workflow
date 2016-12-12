@@ -972,7 +972,7 @@ ValidateStructure(Expression)
 								binary->codeRange = node->codeRange;
 								binary->first = current;
 								binary->second = expression;
-								binary->op = WfBinaryOperator::Concat;
+								binary->op = WfBinaryOperator::Union;
 								current = binary;
 							}
 

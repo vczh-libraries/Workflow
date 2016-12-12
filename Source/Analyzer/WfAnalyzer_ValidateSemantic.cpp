@@ -1160,7 +1160,6 @@ ValidateSemantic(Expression)
 
 				void Visit(WfBinaryExpression* node)override
 				{
-
 					if (node->op == WfBinaryOperator::Assign)
 					{
 						Ptr<ITypeInfo> variableType = GetLeftValueExpressionType(manager, node->first);
@@ -1261,12 +1260,16 @@ ValidateSemantic(Expression)
 							}
 						}
 					}
-					else if (node->op == WfBinaryOperator::Concat)
+					else if (node->op == WfBinaryOperator::Union)
 					{
 						Ptr<ITypeInfo> stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
 						GetExpressionType(manager, node->first, stringType);
 						GetExpressionType(manager, node->second, stringType);
 						results.Add(ResolveExpressionResult::ReadonlyType(stringType));
+					}
+					else if (node->op == WfBinaryOperator::Intersect)
+					{
+						throw 0;
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{
