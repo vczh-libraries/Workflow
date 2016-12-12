@@ -418,6 +418,18 @@ void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName,
 
 namespace test
 {
+	enum class Seasons
+	{
+		None = 0,
+		Spring = 1,
+		Summer = 2,
+		Autumn = 4,
+		Winter = 8,
+
+		Good = Spring | Autumn,
+		Bad = Summer | Winter,
+	};
+
 	struct Point
 	{
 		vint								x = 0;
@@ -532,6 +544,7 @@ namespace vl
 
 #define _ ,
 #define UNITTEST_TYPELIST(F)\
+			F(test::Seasons)\
 			F(test::Point)\
 			F(test::PointClass)\
 			F(test::ObservableValue)\
@@ -539,6 +552,16 @@ namespace vl
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
 			UNITTEST_TYPELIST(IMPL_CPP_TYPE_INFO)
+
+			BEGIN_ENUM_ITEM_MERGABLE(Seasons)
+				ENUM_CLASS_ITEM(None)
+				ENUM_CLASS_ITEM(Spring)
+				ENUM_CLASS_ITEM(Summer)
+				ENUM_CLASS_ITEM(Autumn)
+				ENUM_CLASS_ITEM(Winter)
+				ENUM_CLASS_ITEM(Good)
+				ENUM_CLASS_ITEM(Bad)
+			END_ENUM_ITEM(Seaspms)
 
 			BEGIN_STRUCT_MEMBER(Point)
 				STRUCT_MEMBER(x)

@@ -1,0 +1,20 @@
+module test;
+using system::*;
+using test::*;
+
+func Id(s : Season):Season
+{
+	return s;
+}
+
+func main():string
+{
+	var a = Spring of Seasons;
+	var b : Seasons = Summer;
+	var c = Id(Autumn);
+	var d = ({Winter} of Season[])[0];
+
+	return	(cast UInt64 a) & ", " & (cast UInt64 b) & ", " & (cast UInt64 c) & ", " & (cast UInt64 d) & ", " & 
+			(cast UInt64 (a | b)) & ", " & (cast UInt64 (a & Good of Summer)) & ", " & (cast UInt64 (a & Bad of Summer)) & ", " & 
+			(cast bool (a & Good of Summer)) & ", " & (cast bool (a & Bad of Summer));
+}
