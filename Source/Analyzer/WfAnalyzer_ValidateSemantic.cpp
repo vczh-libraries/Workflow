@@ -829,6 +829,27 @@ ValidateSemantic(Expression)
 
 				void Visit(WfReferenceExpression* node)override
 				{
+					if (expectedType && (expectedType->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+					{
+						auto scope = manager->nodeScopes[node].Obj();
+						List<ResolveExpressionResult> testResults;
+						manager->ResolveName(scope, node->name.value, testResults);
+
+						if (testResults.Count() == 0)
+						{
+							auto enumType = expectedType->GetTypeDescriptor()->GetEnumType();
+							if (enumType->IndexOfItem(node->name.value) == -1)
+							{
+								manager->errors.Add(WfErrors::EnumItemNotExists(node, expectedType->GetTypeDescriptor(), node->name.value));
+							}
+							else
+							{
+								results.Add(ResolveExpressionResult::ReadonlyType(expectedType));
+							}
+							return;
+						}
+					}
+
 					ResolveName(node, node->name.value);
 					FOREACH(ResolveExpressionResult, result, results)
 					{
@@ -1027,7 +1048,14 @@ ValidateSemantic(Expression)
 							}
 						}
 
-						manager->errors.Add(WfErrors::ChildSymbolNotExists(node, scopeName, node->name.value));
+						if (scopeName->typeDescriptor != nullptr && (scopeName->typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+						{
+							manager->errors.Add(WfErrors::EnumItemNotExists(node, scopeName->typeDescriptor, node->name.value));
+						}
+						else
+						{
+							manager->errors.Add(WfErrors::ChildSymbolNotExists(node, scopeName, node->name.value));
+						}
 					}
 				}
 
@@ -1262,14 +1290,50 @@ ValidateSemantic(Expression)
 					}
 					else if (node->op == WfBinaryOperator::Union)
 					{
-						Ptr<ITypeInfo> stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-						GetExpressionType(manager, node->first, stringType);
-						GetExpressionType(manager, node->second, stringType);
-						results.Add(ResolveExpressionResult::ReadonlyType(stringType));
+						auto typeA = GetExpressionType(manager, node->first, expectedType);
+						auto typeB = GetExpressionType(manager, node->second, expectedType);
+
+						if (typeA && typeB)
+						{
+							auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+							if (CanConvertToType(typeA.Obj(), stringType.Obj(), false) && CanConvertToType(typeB.Obj(), stringType.Obj(), false))
+							{
+								results.Add(ResolveExpressionResult::ReadonlyType(stringType));
+							}
+							else if (auto type = GetMergedType(typeA, typeB))
+							{
+								if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) == TypeDescriptorFlags::Undefined)
+								{
+									manager->errors.Add(WfErrors::IncorrectTypeForUnion(node->first.Obj(), type.Obj()));
+								}
+								results.Add(ResolveExpressionResult::ReadonlyType(type));
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
+							}
+						}
 					}
 					else if (node->op == WfBinaryOperator::Intersect)
 					{
-						throw 0;
+						auto typeA = GetExpressionType(manager, node->first, expectedType);
+						auto typeB = GetExpressionType(manager, node->second, expectedType);
+
+						if (typeA && typeB)
+						{
+							if (auto type = GetMergedType(typeA, typeB))
+							{
+								if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) == TypeDescriptorFlags::Undefined)
+								{
+									manager->errors.Add(WfErrors::IncorrectTypeForIntersect(node->first.Obj(), type.Obj()));
+								}
+								results.Add(ResolveExpressionResult::ReadonlyType(type));
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
+							}
+						}
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{

@@ -525,6 +525,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			WrongThisExpression(WfExpression* node);
+				static Ptr<parsing::ParsingError>			IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);
@@ -574,6 +576,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			MemberNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
 				static Ptr<parsing::ParsingError>			ReferenceNotExists(parsing::ParsingTreeCustomBase* node, const WString& name);
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name);
+				static Ptr<parsing::ParsingError>			EnumItemNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
 
 				// G: Class error
 				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node);

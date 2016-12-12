@@ -456,14 +456,32 @@ GenerateInstructions(Expression)
 					}
 					else if (node->op == WfBinaryOperator::Union)
 					{
-						auto type = TypeInfoRetriver<WString>::CreateTypeInfo();
-						GenerateExpressionInstructions(context, node->first, type);
-						GenerateExpressionInstructions(context, node->second, type);
-						INSTRUCTION(Ins::OpConcat());
+						auto type = context.manager->expressionResolvings[node].type;
+						if (type->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
+						{
+							GenerateExpressionInstructions(context, node->first, type);
+							GenerateExpressionInstructions(context, node->second, type);
+							INSTRUCTION(Ins::OpConcat());
+						}
+						else
+						{
+							GenerateExpressionInstructions(context, node->first, type);
+							INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+							GenerateExpressionInstructions(context, node->second, type);
+							INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+							INSTRUCTION(Ins::OpAnd(WfInsType::U8));
+							INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, type->GetTypeDescriptor()));
+						}
 					}
 					else if (node->op == WfBinaryOperator::Intersect)
 					{
-						throw 0;
+						auto type = context.manager->expressionResolvings[node].type;
+						GenerateExpressionInstructions(context, node->first, type);
+						INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+						GenerateExpressionInstructions(context, node->second, type);
+						INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+						INSTRUCTION(Ins::OpOr(WfInsType::U8));
+						INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, type->GetTypeDescriptor()));
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{

@@ -257,6 +257,16 @@ WfErrors
 				return new ParsingError(node, L"A29: The \"this\" expression can only be used in class methods or functions in new interface expressions");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type)
+			{
+				return new ParsingError(node, L"A30: Expression of type \"" + type->GetTypeFriendlyName() + L"\" cannot be used in union (&) expression because it is not string or enum.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type)
+			{
+				return new ParsingError(node, L"A30: Expression of type \"" + type->GetTypeFriendlyName() + L"\" cannot be used in intersect (|) expression because it is not enum.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
 			{
 				return new ParsingError(node, L"B0: Void is not a type for a value.");
@@ -463,6 +473,11 @@ WfErrors
 					description += result.GetFriendlyName();
 				}
 				return new ParsingError(node, L"F3: Symbol \"" + name + L"\" references to too many targets: " + description + L".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::EnumItemNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name)
+			{
+				return new ParsingError(node, L"F2: Enum item \"" + name + L"\" does not exist in enum type \"" + typeDescriptor->GetTypeName() + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node)

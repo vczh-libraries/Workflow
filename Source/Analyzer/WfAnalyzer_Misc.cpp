@@ -43,6 +43,13 @@ IsExpressionDependOnExpectedType(Expression)
 
 				void Visit(WfReferenceExpression* node)override
 				{
+					auto scope = manager->nodeScopes[node].Obj();
+					List<ResolveExpressionResult> testResults;
+					manager->ResolveName(scope, node->name.value, testResults);
+					if (testResults.Count() == 0)
+					{
+						result = true;
+					}
 				}
 
 				void Visit(WfOrderedNameExpression* node)override
@@ -131,9 +138,9 @@ IsExpressionDependOnExpectedType(Expression)
 								if (auto refExpr = argument->key.Cast<WfReferenceExpression>())
 								{
 									possibleFieldCount++;
-									List<ResolveExpressionResult> results;
-									manager->ResolveName(scope, refExpr->name.value, results);
-									if (results.Count() == 0)
+									List<ResolveExpressionResult> testResults;
+									manager->ResolveName(scope, refExpr->name.value, testResults);
+									if (testResults.Count() == 0)
 									{
 										unresolvableField = true;
 									}

@@ -470,6 +470,22 @@ WfLexicalScopeManager
 				bool found = false;
 				bool foundStaticMember = false;
 
+
+				if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+				{
+					if (preferStatic)
+					{
+						auto enumType = typeDescriptor->GetEnumType();
+						vint index = enumType->IndexOfItem(name);
+						if (index != -1)
+						{
+							results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
+							return true;
+						}
+					}
+					return false;
+				}
+
 				{
 					auto scopeName = typeNames[typeDescriptor];
 					vint index = scopeName->children.Keys().IndexOf(name);
