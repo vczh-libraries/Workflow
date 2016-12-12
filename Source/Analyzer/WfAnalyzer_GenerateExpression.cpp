@@ -113,7 +113,7 @@ GenerateInstructions(Expression)
 					return functionIndex;
 				}
 
-				void VisitReferenceExpression(WfExpression* node)
+				void VisitReferenceExpression(WfExpression* node, const WString& name)
 				{
 					auto result = context.manager->expressionResolvings[node];
 					if (result.symbol)
@@ -147,7 +147,18 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitReferenceExpression(WfExpression*)#Internal error, cannot find any record of this expression.");
+						if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+						{
+							auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
+							vint index = enumType->IndexOfItem(name);
+							if (index != -1)
+							{
+								auto intValue = enumType->GetItemValue(index);
+								INSTRUCTION(Ins::LoadValue(enumType->ToEnum(intValue)));
+								return;
+							}
+						}
+						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitReferenceExpression(WfExpression*, const WString&)#Internal error, cannot find any record of this expression.");
 					}
 				}
 
@@ -204,7 +215,7 @@ GenerateInstructions(Expression)
 
 						scope = scope->parentScope.Obj();
 					}
-					CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitReferenceExpression(WfExpression*)#Internal error, cannot find any record of the this value.");
+					CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::VisitThisExpression(WfExpression*, ITypeDescriptor*)#Internal error, cannot find any record of the this value.");
 				}
 
 				void Visit(WfThisExpression* node)override
@@ -237,17 +248,17 @@ GenerateInstructions(Expression)
 
 				void Visit(WfTopQualifiedExpression* node)override
 				{
-					VisitReferenceExpression(node);
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfReferenceExpression* node)override
 				{
-					VisitReferenceExpression(node);
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfOrderedNameExpression* node)override
 				{
-					VisitReferenceExpression(node);
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfOrderedLambdaExpression* node)override
@@ -296,7 +307,7 @@ GenerateInstructions(Expression)
 
 				void Visit(WfChildExpression* node)override
 				{
-					VisitReferenceExpression(node);
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfLiteralExpression* node)override
