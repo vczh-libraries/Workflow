@@ -114,7 +114,35 @@ IsExpressionDependOnExpectedType(Expression)
 
 				void Visit(WfConstructorExpression* node)override
 				{
-					result = node->arguments.Count() == 0;
+					if (node->arguments.Count() == 0)
+					{
+						result = true;
+					}
+					else
+					{
+						vint possibleFieldCount = 0;
+						bool unresolvableField = false;
+						auto scope = manager->nodeScopes[node].Obj();
+
+						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						{
+							if (argument->value)
+							{
+								if (auto refExpr = argument->key.Cast<WfReferenceExpression>())
+								{
+									possibleFieldCount++;
+									List<ResolveExpressionResult> results;
+									manager->ResolveName(scope, refExpr->name.value, results);
+									if (results.Count() == 0)
+									{
+										unresolvableField = true;
+									}
+								}
+							}
+						}
+
+						result = unresolvableField&&possibleFieldCount == node->arguments.Count();
+					}
 				}
 
 				void Visit(WfInferExpression* node)override
