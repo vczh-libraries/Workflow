@@ -18,6 +18,7 @@ using namespace vl::reflection;
 using namespace vl::reflection::description;
 
 extern Ptr<ParsingTable>	GetWorkflowTable();
+extern void					ReleaseWorkflowTable();
 extern WString				GetTestResourcePath();
 extern WString				GetTestOutputPath();
 extern void					LoadSampleIndex(const WString& sampleName, List<WString>& itemNames);

@@ -1,4 +1,4 @@
-#include "TestFunctions.h"
+#include "Helper.h"
 
 void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleName)
 {
