@@ -494,6 +494,8 @@ Plugin
 			public:
 				collections::List<Ptr<WfClass>>			classes;
 				collections::List<Ptr<WfInterface>>		interfaces;
+				collections::List<Ptr<WfStruct>>		structs;
+				collections::List<Ptr<WfEnum>>			enums;
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);

@@ -1129,6 +1129,76 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
+				static void IOStruct(WfReader& reader, WfStruct* td)
+				{
+					vint count;
+					reader << count;
+
+					for (vint i = 0; i < count; i++)
+					{
+						WString name;
+						reader << name;
+
+						Ptr<ITypeInfo> typeInfo;
+						IOType(reader, typeInfo);
+
+						auto field = MakePtr<WfStructField>(td, name);
+						field->SetReturn(typeInfo);
+						td->AddMember(field);
+					}
+				}
+
+				static void IOStruct(WfWriter& writer, WfStruct* td)
+				{
+					vint count = td->GetPropertyCount();
+					writer << count;
+
+					for (vint i = 0; i < count; i++)
+					{
+						auto prop = td->GetProperty(i);
+
+						WString name = prop->GetName();
+						writer << name;
+
+						ITypeInfo* typeInfo = prop->GetReturn();
+						IOType(writer, typeInfo);
+					}
+				}
+
+				//----------------------------------------------------
+
+				static void IOEnum(WfReader& reader, WfEnum* td)
+				{
+					vint count;
+					reader << count;
+
+					auto et = td->GetEnumType();
+					for (vint i = 0; i < count; i++)
+					{
+						WString name;
+						vint64_t value;
+						reader << name << value;
+						td->AddEnumItem(name, (vuint64_t)value);
+					}
+				}
+
+				static void IOEnum(WfWriter& writer, WfEnum* td)
+				{
+					auto et = td->GetEnumType();
+
+					vint count = et->GetItemCount();
+					writer << count;
+					
+					for (vint i = 0; i < count; i++)
+					{
+						WString name = et->GetItemName(i);
+						vint64_t value = (vint64_t)et->GetItemValue(i);
+						writer << name << value;
+					}
+				}
+
+				//----------------------------------------------------
+
 				static void IO(WfReader& reader, WfTypeImpl& value)
 				{
 					// fill types
@@ -1139,6 +1209,14 @@ Serialization (TypeImpl)
 					FOREACH(Ptr<WfInterface>, td, value.interfaces)
 					{
 						IOInterface(reader, td.Obj());
+					}
+					FOREACH(Ptr<WfStruct>, td, value.structs)
+					{
+						IOStruct(reader, td.Obj());
+					}
+					FOREACH(Ptr<WfEnum>, td, value.enums)
+					{
+						IOEnum(reader, td.Obj());
 					}
 				}
 					
@@ -1152,6 +1230,14 @@ Serialization (TypeImpl)
 					FOREACH(Ptr<WfInterface>, td, value.interfaces)
 					{
 						IOInterface(writer, td.Obj());
+					}
+					FOREACH(Ptr<WfStruct>, td, value.structs)
+					{
+						IOStruct(writer, td.Obj());
+					}
+					FOREACH(Ptr<WfEnum>, td, value.enums)
+					{
+						IOEnum(writer, td.Obj());
 					}
 				}
 			};
@@ -1299,6 +1385,38 @@ Serialization (Assembly)
 			{
 				//----------------------------------------------------
 
+				static void IOCustomType(WfReader& reader, Ptr<WfEnum>& type)
+				{
+					bool isFlags;
+					WString typeName;
+					reader << isFlags << typeName;
+					type = MakePtr<WfEnum>(isFlags, typeName);
+				}
+
+				static void IOCustomType(WfWriter& writer, Ptr<WfEnum>& type)
+				{
+					bool isFlags = type->GetTypeDescriptorFlags() == TypeDescriptorFlags::FlagEnum;
+					WString typeName = type->GetTypeName();
+					writer << isFlags << typeName;
+				}
+
+				template<typename TType>
+				static void IOCustomType(WfReader& reader, Ptr<TType>& type)
+				{
+					WString typeName;
+					reader << typeName;
+					type = MakePtr<TType>(typeName);
+				}
+
+				template<typename TType>
+				static void IOCustomType(WfWriter& writer, Ptr<TType>& type)
+				{
+					WString typeName = type->GetTypeName();
+					writer << typeName;
+				}
+
+				//----------------------------------------------------
+
 				template<typename TType>
 				static void IOCustomTypeList(WfReader& reader, List<Ptr<TType>>& types)
 				{
@@ -1306,9 +1424,9 @@ Serialization (Assembly)
 					reader << typeCount;
 					for (vint i = 0; i < typeCount; i++)
 					{
-						WString typeName;
-						reader << typeName;
-						types.Add(MakePtr<TType>(typeName));
+						Ptr<TType> type;
+						IOCustomType(reader, type);
+						types.Add(type);
 					}
 
 					for (vint i = 0; i < typeCount; i++)
@@ -1325,8 +1443,8 @@ Serialization (Assembly)
 					writer << typeCount;
 					for (vint i = 0; i < typeCount; i++)
 					{
-						WString typeName = types[i]->GetTypeName();
-						writer << typeName;
+						auto type = types[i];
+						IOCustomType(writer, type);
 					}
 					
 					for (vint i = 0; i < typeCount; i++)
@@ -1348,6 +1466,8 @@ Serialization (Assembly)
 						value.typeImpl = new WfTypeImpl;
 						IOCustomTypeList(reader, value.typeImpl->classes);
 						IOCustomTypeList(reader, value.typeImpl->interfaces);
+						IOCustomTypeList(reader, value.typeImpl->structs);
+						IOCustomTypeList(reader, value.typeImpl->enums);
 					}
 
 					vint tdCount = -1;
@@ -1397,6 +1517,8 @@ Serialization (Assembly)
 					{
 						IOCustomTypeList(writer, value.typeImpl->classes);
 						IOCustomTypeList(writer, value.typeImpl->interfaces);
+						IOCustomTypeList(writer, value.typeImpl->structs);
+						IOCustomTypeList(writer, value.typeImpl->enums);
 					}
 
 					WfWriterContextPrepare prepare;

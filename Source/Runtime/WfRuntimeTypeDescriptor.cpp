@@ -899,6 +899,14 @@ WfTypeImpl
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
+				FOREACH(Ptr<WfStruct>, td, structs)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
+				FOREACH(Ptr<WfEnum>, td, enums)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
 			}
 
 			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
@@ -908,6 +916,14 @@ WfTypeImpl
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
 				FOREACH(Ptr<WfInterface>, td, interfaces)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfStruct>, td, structs)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfEnum>, td, enums)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
