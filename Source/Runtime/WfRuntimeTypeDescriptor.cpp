@@ -370,6 +370,57 @@ WfField
 			}
 
 /***********************************************************************
+WfStructField
+***********************************************************************/
+
+			Value WfStructField::GetValueInternal(const Value& thisObject)
+			{
+				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				if (!structValue)
+				{
+					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+				}
+				vint index = structValue->value.fieldValues.Keys().IndexOf(this);
+				if (index == -1)
+				{
+					return returnInfo->GetTypeDescriptor()->GetValueType()->CreateDefault();
+				}
+				else
+				{
+					return structValue->value.fieldValues.Values()[index];
+				}
+			}
+
+			void WfStructField::SetValueInternal(Value& thisObject, const Value& newValue)
+			{
+				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				if (!structValue)
+				{
+					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+				}
+				structValue->value.fieldValues.Set(this, newValue);
+			}
+
+			WfStructField::WfStructField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:FieldInfoImpl(ownerTypeDescriptor, name, nullptr)
+			{
+			}
+
+			WfStructField::~WfStructField()
+			{
+			}
+
+			IPropertyInfo::ICpp* WfStructField::GetCpp()
+			{
+				return nullptr;
+			}
+
+			void WfStructField::SetReturn(Ptr<ITypeInfo> typeInfo)
+			{
+				returnInfo = typeInfo;
+			}
+
+/***********************************************************************
 WfProperty
 ***********************************************************************/
 
@@ -398,16 +449,20 @@ WfProperty
 			}
 
 /***********************************************************************
-WfCustomType
+WfTypeInfoContent
 ***********************************************************************/
 
-			WfCustomType::WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
+			WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
 				:workflowTypeName(_workflowTypeName)
 			{
 				typeName = workflowTypeName.Buffer();
 				cppFullTypeName = nullptr;
 				cppName = TypeInfoContent::CppType;
 			}
+
+/***********************************************************************
+WfCustomType
+***********************************************************************/
 
 			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group)
 			{
@@ -443,15 +498,13 @@ WfCustomType
 			{
 			}
 
-			WfCustomType::WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
-				:TypeDescriptorImpl(typeDescriptorFlags, new WfTypeInfoContent(typeName))
+			WfCustomType::WfCustomType(reflection::description::TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
+				:WfCustomTypeBase<reflection::description::TypeDescriptorImpl>(typeDescriptorFlags, typeName)
 			{
 			}
 
 			WfCustomType::~WfCustomType()
 			{
-				auto typeInfoContent = GetTypeInfoContentInternal();
-				delete static_cast<WfTypeInfoContent*>(const_cast<TypeInfoContent*>(typeInfoContent));
 			}
 			
 			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()
@@ -547,6 +600,178 @@ WfInterface
 
 			WfInterface::~WfInterface()
 			{
+			}
+
+/***********************************************************************
+WfStruct
+***********************************************************************/
+
+			WfStruct::WfValueType::WfValueType(WfStruct* _owner)
+				:owner(_owner)
+			{
+			}
+
+			Value WfStruct::WfValueType::CreateDefault()
+			{
+				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
+			}
+
+			IValueType::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
+			{
+				return IValueType::CompareResult::NotComparable;
+			}
+
+			WfStruct::WfStruct(const WString& typeName)
+				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>(TypeDescriptorFlags::Struct, typeName)
+			{
+				this->valueType = new WfValueType(this);
+			}
+
+			WfStruct::~WfStruct()
+			{
+			}
+
+			vint WfStruct::GetPropertyCount()
+			{
+				this->Load();
+				return fields.Count();
+			}
+
+			IPropertyInfo* WfStruct::GetProperty(vint index)
+			{
+				this->Load();
+				if (index < 0 || index >= fields.Count())
+				{
+					return nullptr;
+				}
+				return fields.Values()[index].Obj();
+			}
+
+			bool WfStruct::IsPropertyExists(const WString& name, bool inheritable)
+			{
+				this->Load();
+				return fields.Keys().Contains(name);
+			}
+
+			IPropertyInfo* WfStruct::GetPropertyByName(const WString& name, bool inheritable)
+			{
+				this->Load();
+				vint index = fields.Keys().IndexOf(name);
+				if (index == -1) return nullptr;
+				return fields.Values()[index].Obj();
+			}
+
+			void WfStruct::AddMember(Ptr<WfStructField> value)
+			{
+				fields.Add(value->GetName(), value);
+			}
+
+/***********************************************************************
+WfEnum::WfEnumType
+***********************************************************************/
+
+			WfEnum::WfEnumType::WfEnumType(WfEnum* _owner)
+				:owner(_owner)
+			{
+			}
+
+			bool WfEnum::WfEnumType::IsFlagEnum()
+			{
+				return owner->GetTypeDescriptorFlags() == TypeDescriptorFlags::FlagEnum;
+			}
+
+			vint WfEnum::WfEnumType::GetItemCount()
+			{
+				return owner->enumItems.Count();
+			}
+
+			WString WfEnum::WfEnumType::GetItemName(vint index)
+			{
+				if (index < 0 || index >= owner->enumItems.Count())
+				{
+					return L"";
+				}
+				return owner->enumItems.Keys()[index];
+			}
+
+			vuint64_t WfEnum::WfEnumType::GetItemValue(vint index)
+			{
+				if (index < 0 || index >= owner->enumItems.Count())
+				{
+					return 0;
+				}
+				return owner->enumItems.Values()[index];
+			}
+
+			vint WfEnum::WfEnumType::IndexOfItem(WString name)
+			{
+				return owner->enumItems.Keys().IndexOf(name);
+			}
+
+			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
+			{
+				auto boxedValue = MakePtr<IValueType::TypedBox<WfEnumInstance>>();
+				boxedValue->value.value = value;
+				return Value::From(boxedValue, owner);
+			}
+
+			vuint64_t WfEnum::WfEnumType::FromEnum(const Value& value)
+			{
+				auto enumValue = value.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!enumValue)
+				{
+					throw ArgumentTypeMismtatchException(L"enumValue", owner, Value::BoxedValue, value);
+				}
+				return enumValue->value.value;
+			}
+
+/***********************************************************************
+WfEnum
+***********************************************************************/
+
+			WfEnum::WfValueType::WfValueType(WfEnum* _owner)
+				:owner(_owner)
+			{
+			}
+
+			Value WfEnum::WfValueType::CreateDefault()
+			{
+				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
+			}
+
+			IValueType::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
+			{
+				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!ea)
+				{
+					throw ArgumentTypeMismtatchException(L"ea", owner, Value::BoxedValue, a);
+				}
+
+				auto eb = b.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!eb)
+				{
+					throw ArgumentTypeMismtatchException(L"eb", owner, Value::BoxedValue, b);
+				}
+
+				if (ea->value.value < eb->value.value) return IValueType::Smaller;
+				if (ea->value.value > eb->value.value)return IValueType::Greater;
+				return IValueType::Equal;
+			}
+
+			WfEnum::WfEnum(bool isFlags, const WString& typeName)
+				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>((isFlags ? TypeDescriptorFlags::FlagEnum : TypeDescriptorFlags::NormalEnum), typeName)
+			{
+				this->valueType = new WfValueType(this);
+				this->enumType = new WfEnumType(this);
+			}
+
+			WfEnum::~WfEnum()
+			{
+			}
+
+			void WfEnum::AddEnumItem(const WString& name, vuint64_t value)
+			{
+				enumItems.Add(name, value);
 			}
 
 /***********************************************************************
