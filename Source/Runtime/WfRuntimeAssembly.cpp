@@ -120,6 +120,8 @@ Serialization (CollectMetadata)
 
 			static void CollectTd(WfCustomType* td, WfWriterContextPrepare& prepare)
 			{
+				CollectTd((ITypeDescriptor*)td, prepare);
+
 				vint baseCount = td->GetBaseTypeDescriptorCount();
 				for (vint i = 0; i < baseCount; i++)
 				{
@@ -162,6 +164,22 @@ Serialization (CollectMetadata)
 				}
 			}
 
+			static void CollectTd(WfStruct* td, WfWriterContextPrepare& prepare)
+			{
+				CollectTd((ITypeDescriptor*)td, prepare);
+
+				vint propertyCount = td->GetPropertyCount();
+				for (vint i = 0; i < propertyCount; i++)
+				{
+					CollectTd(td->GetProperty(i), prepare);
+				}
+			}
+
+			static void CollectTd(WfEnum* td, WfWriterContextPrepare& prepare)
+			{
+				CollectTd((ITypeDescriptor*)td, prepare);
+			}
+
 			static void CollectMetadata(WfTypeImpl* typeImpl, WfWriterContextPrepare& prepare)
 			{
 				FOREACH(Ptr<WfClass>, td, typeImpl->classes)
@@ -169,6 +187,14 @@ Serialization (CollectMetadata)
 					CollectTd(td.Obj(), prepare);
 				}
 				FOREACH(Ptr<WfInterface>, td, typeImpl->interfaces)
+				{
+					CollectTd(td.Obj(), prepare);
+				}
+				FOREACH(Ptr<WfStruct>, td, typeImpl->structs)
+				{
+					CollectTd(td.Obj(), prepare);
+				}
+				FOREACH(Ptr<WfEnum>, td, typeImpl->enums)
 				{
 					CollectTd(td.Obj(), prepare);
 				}
@@ -214,7 +240,8 @@ Serialization (CollectMetadata)
 							COLLECTMETADATA_EVENT,
 							COLLECTMETADATA_EVENT_COUNT,
 							COLLECTMETADATA_LABEL,
-							COLLECTMETADATA_TYPE)
+							COLLECTMETADATA_TYPE
+							)
 					}
 				}
 
