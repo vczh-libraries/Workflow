@@ -559,6 +559,48 @@ class ClassDeclaration : Declaration
 	ClassMember[]			members;
 }
 
+enum EnumKind
+{
+	Normal,
+	Flag,
+}
+
+enum EnumItemKind
+{
+	Constant,
+	Intersection,
+}
+
+class EnumItemIntersection
+{
+	token					name;
+}
+
+class EnumItem
+{
+	token					name;
+	EnumItemKind			kind;
+	token					number;
+	EnumItemIntersection[]	intersections;
+}
+
+class EnumDeclaration : Declaration
+{
+	EnumKind				kind;
+	EnumItem[]				items;
+}
+
+class StructMember
+{
+	token					name;
+	Type					type;
+}
+
+class StructDeclaration : Declaration
+{
+	StructMember[]			members;
+}
+
 class ModuleUsingFragment
 {
 }
@@ -681,6 +723,9 @@ token KEYWORD_TRY = "try";
 token KEYWORD_CATCH = "catch";
 token KEYWORD_FINALLY = "finally";
 token KEYWORD_CLASS = "class";
+token KEYWORD_ENUM = "enum";
+token KEYWORD_FLAGENUM = "flagenum";
+token KEYWORD_STRUCT = "struct";
 token KEYWORD_PROP = "prop";
 token KEYWORD_EVENT = "event";
 token KEYWORD_STATIC = "static";
@@ -958,6 +1003,31 @@ rule ClassDeclaration Class
 	= "interface" NAME : name "*" !ClassBody with {kind = "Interface"} with {constructorType = "RawPtr"}
 	;
 
+rule EnumItemIntersection EnumItemInt
+	= NAME : name as EnumItemIntersection
+	;
+
+rule EnumItem EnumItemA
+	= NAME : name "=" INTEGER : number "," as EnumItem with {kind = "Constant"}
+	;
+
+rule EnumItem EnumItemB
+	= NAME : name "=" EnumItemInt : intersections {"," EnumItemInt : intersections} "," as EnumItem with {kind = "Intersection"}
+	;
+
+rule EnumDeclaration Enum
+	= "enum" NAME : name "{" EnumItemA : items {EnumItemA : items} "}" as EnumDeclaration with {kind = "Normal"}
+	= "flagenum" NAME : name "{" EnumItemA : items {EnumItemA : items} {EnumItemB : items} "}" as EnumDeclaration with {kind = "Flag"}
+	;
+
+rule StructMember WorkflowStructMember
+	= NAME : name ":" WorkflowType : type ";" as StructMember
+	;
+
+rule StructDeclaration Struct
+	= "struct" NAME : name "{" {WorkflowStructMember : members} "}" as StructDeclaration
+	;
+
 rule Declaration WorkflowDeclaration
 	= !Namespace
 	= !Function
@@ -967,6 +1037,8 @@ rule Declaration WorkflowDeclaration
 	= !Constructor
 	= !Destructor
 	= !Class
+	= !Enum
+	= !Struct
 	;
 
 rule ModuleUsingFragment UsingFragment

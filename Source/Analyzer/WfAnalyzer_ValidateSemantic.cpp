@@ -1302,7 +1302,7 @@ ValidateSemantic(Expression)
 							}
 							else if (auto type = GetMergedType(typeA, typeB))
 							{
-								if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) == TypeDescriptorFlags::Undefined)
+								if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
 								{
 									manager->errors.Add(WfErrors::IncorrectTypeForUnion(node->first.Obj(), type.Obj()));
 								}
@@ -1323,7 +1323,7 @@ ValidateSemantic(Expression)
 						{
 							if (auto type = GetMergedType(typeA, typeB))
 							{
-								if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) == TypeDescriptorFlags::Undefined)
+								if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
 								{
 									manager->errors.Add(WfErrors::IncorrectTypeForIntersect(node->first.Obj(), type.Obj()));
 								}

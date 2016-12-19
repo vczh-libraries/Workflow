@@ -566,6 +566,11 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
+				static Ptr<parsing::ParsingError>			FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
+				static Ptr<parsing::ParsingError>			FlagValueNotExists(WfEnumItem* node, WfEnumDeclaration* owner);
+				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
+				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

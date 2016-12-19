@@ -259,12 +259,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type)
 			{
-				return new ParsingError(node, L"A30: Expression of type \"" + type->GetTypeFriendlyName() + L"\" cannot be used in union (&) expression because it is not string or enum.");
+				return new ParsingError(node, L"A30: Expression of type \"" + type->GetTypeFriendlyName() + L"\" cannot be used in union (&) expression because it is not string or flag enum.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type)
 			{
-				return new ParsingError(node, L"A30: Expression of type \"" + type->GetTypeFriendlyName() + L"\" cannot be used in intersect (|) expression because it is not enum.");
+				return new ParsingError(node, L"A30: Expression of type \"" + type->GetTypeFriendlyName() + L"\" cannot be used in intersect (|) expression because it is not flag enum.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
@@ -437,6 +437,31 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions and variables are allowed.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node)
+			{
+				return new ParsingError(node, L"D9: Item values in enum \"" + node->name.value + L"\" should be consecutive and starts from zero, like 0, 1, 2, 3, 4, ...");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node)
+			{
+				return new ParsingError(node, L"D9: Item values in flag enum \"" + node->name.value + L"\" should be consecutive powers of 2 and starts from zero, like 0, 1, 2, 4, 8, ...");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::FlagValueNotExists(WfEnumItem* node, WfEnumDeclaration* owner)
+			{
+				return new ParsingError(node, L"D10: Item \"" + node->name.value + L" does not exists in the current flag enum \"" + owner->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner)
+			{
+				return new ParsingError(node, L"D11: Type of member\"" + node->name.value + L"\" of struct \"" + owner->name.value + L"\" is not value type.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node)
+			{
+				return new ParsingError(node, L"D11: Struct \"" + node->name.value + L"\" recursively include itself.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
