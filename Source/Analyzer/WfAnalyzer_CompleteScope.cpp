@@ -131,6 +131,16 @@ CompleteScopeForClassMember
 					CompleteScopeForDeclaration(manager, node);
 				}
 
+				void Visit(WfEnumDeclaration* node)override
+				{
+					CompleteScopeForDeclaration(manager, node);
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					CompleteScopeForDeclaration(manager, node);
+				}
+
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member)
 				{
 					CompleteScopeForClassMemberVisitor visitor(manager, td, classDecl, member);
@@ -189,7 +199,7 @@ CompleteScopeForDeclaration
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
-					auto td = manager->declarationTypes[node];
+					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
 
 					if (node->baseTypes.Count() > 0)
 					{
@@ -242,6 +252,45 @@ CompleteScopeForDeclaration
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						CompleteScopeForClassMember(manager, td, node, member);
+					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+					auto td = manager->declarationTypes[node].Cast<WfEnum>();
+					Dictionary<WString, vuint64_t> items;
+					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					{
+						vuint64_t value = 0;
+						switch (item->kind)
+						{
+						case WfEnumItemKind::Constant:
+							value = TypedValueSerializerProvider<vuint64_t>::Deserialize(item->number.value, value);
+							break;
+						case WfEnumItemKind::Intersection:
+							FOREACH(Ptr<WfEnumItemIntersection>, itemInt, item->intersections)
+							{
+								value |= items[itemInt->name.value];
+							}
+							break;
+						}
+						td->AddEnumItem(item->name.value, value);
+						items.Add(item->name.value, value);
+					}
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					auto scope = manager->nodeScopes[node];
+					auto td = manager->declarationTypes[node].Cast<WfStruct>();
+					FOREACH(Ptr<WfStructMember>, member, node->members)
+					{
+						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), member->type))
+						{
+							auto field = MakePtr<WfStructField>(td.Obj(), member->name.value);
+							field->SetReturn(typeInfo);
+							td->AddMember(field);
+						}
 					}
 				}
 
@@ -409,6 +458,14 @@ CheckBaseClass
 					{
 						member->declaration->Accept(this);
 					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)

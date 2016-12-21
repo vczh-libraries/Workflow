@@ -71,7 +71,7 @@ BuildGlobalNameFromModules
 				{
 				}
 
-				static void BuildClass(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, Ptr<WfClassDeclaration> declaration)
+				static WString GetTypeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName)
 				{
 					WString typeName = scopeName->name;
 					{
@@ -82,7 +82,23 @@ BuildGlobalNameFromModules
 							name = name->parent;
 						}
 					}
+					return typeName;
+				}
 
+				static void AddCustomType(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, Ptr<WfDeclaration> declaration, Ptr<ITypeDescriptor> td)
+				{
+					manager->declarationTypes.Add(declaration, td);
+
+					if (!scopeName->typeDescriptor)
+					{
+						scopeName->typeDescriptor = td.Obj();
+						manager->typeNames.Add(td.Obj(), scopeName);
+					}
+				}
+
+				static void BuildClass(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, Ptr<WfClassDeclaration> declaration)
+				{
+					WString typeName = GetTypeName(manager, scopeName);
 					Ptr<WfCustomType> td;
 					switch (declaration->kind)
 					{
@@ -93,13 +109,7 @@ BuildGlobalNameFromModules
 						td = MakePtr<WfInterface>(typeName);
 						break;
 					}
-					manager->declarationTypes.Add(declaration, td);
-
-					if (!scopeName->typeDescriptor)
-					{
-						scopeName->typeDescriptor = td.Obj();
-						manager->typeNames.Add(td.Obj(), scopeName);
-					}
+					AddCustomType(manager, scopeName, declaration, td);
 
 					FOREACH(Ptr<WfClassMember>, member, declaration->members)
 					{
@@ -193,6 +203,24 @@ BuildGlobalNameFromModules
 					newScopeName->declarations.Add(node);
 					BuildClass(manager, newScopeName, node);
 				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+					auto newScopeName = scopeName->AccessChild(node->name.value, false);
+					newScopeName->declarations.Add(node);
+
+					auto td = MakePtr<WfEnum>(node->kind == WfEnumKind::Flag, GetTypeName(manager, newScopeName));
+					AddCustomType(manager, newScopeName, node, td);
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					auto newScopeName = scopeName->AccessChild(node->name.value, false);
+					newScopeName->declarations.Add(node);
+
+					auto td = MakePtr<WfStruct>(GetTypeName(manager, newScopeName));
+					AddCustomType(manager, newScopeName, node, td);
+				}
 			};
 
 			class BuildNameDeclarationVisitor : public Object, public WfDeclaration::IVisitor
@@ -252,6 +280,14 @@ BuildGlobalNameFromModules
 				void Visit(WfClassDeclaration* node)override
 				{
 					BuildClassMemberVisitor::BuildClass(manager, scopeName, node);
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
 				}
 			};
 
@@ -393,6 +429,30 @@ ValidateScopeName
 				}
 
 				void Visit(WfClassDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Type;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Type;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfStructDeclaration* node)override
 				{
 					if (category == None)
 					{

@@ -210,6 +210,24 @@ BuildScopeForDeclaration
 					}
 				}
 
+				void Visit(WfEnumDeclaration* node)override
+				{
+					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					symbol->name = node->name.value;
+					symbol->creatorNode = node;
+					symbol->creatorClassMember = member;
+					parentScope->symbols.Add(symbol->name, symbol);
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					symbol->name = node->name.value;
+					symbol->creatorNode = node;
+					symbol->creatorClassMember = member;
+					parentScope->symbols.Add(symbol->name, symbol);
+				}
+
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfClassMember> member, Ptr<WfDeclaration> declaration)
 				{
 					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source, member);

@@ -154,7 +154,7 @@ GenerateAssembly
 				if (manager->declarationTypes.Count() > 0)
 				{
 					assembly->typeImpl = new WfTypeImpl;
-					FOREACH(Ptr<WfCustomType>, td, manager->declarationTypes.Values())
+					FOREACH(Ptr<WfCustomType>, td, From(manager->declarationTypes.Values()).FindType<WfCustomType>())
 					{
 						if (auto tdClass = td.Cast<WfClass>())
 						{
