@@ -434,6 +434,16 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfStructDeclaration* node)override
 				{
+					auto scope = manager->nodeScopes[node];
+					auto td = manager->declarationTypes[node].Cast<WfStruct>();
+					FOREACH(Ptr<WfStructMember>, member, node->members)
+					{
+						auto memberTd = td->GetPropertyByName(member->name.value, false)->GetReturn()->GetTypeDescriptor();
+						if ((memberTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+						{
+							manager->errors.Add(WfErrors::StructContainsNonValueType(member.Obj(), node));
+						}
+					}
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
