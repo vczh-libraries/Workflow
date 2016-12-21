@@ -950,6 +950,40 @@ CopyDeclaration
 					}
 					result = classDecl;
 				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+					auto enumDecl = MakePtr<WfEnumDeclaration>();
+					enumDecl->kind = node->kind;
+					enumDecl->name.value = node->name.value;
+					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					{
+						auto enumItem = MakePtr<WfEnumItem>();
+						enumItem->kind = item->kind;
+						enumItem->name.value = item->name.value;
+						enumItem->number.value = item->number.value;
+						FOREACH(Ptr<WfEnumItemIntersection>, itemInt, item->intersections)
+						{
+							auto enumItemInt = MakePtr<WfEnumItemIntersection>();
+							enumItemInt->name.value = itemInt->name.value;
+							enumItem->intersections.Add(enumItemInt);
+						}
+						enumDecl->items.Add(enumItem);
+					}
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					auto structDecl = MakePtr<WfStructDeclaration>();
+					structDecl->name.value = node->name.value;
+					FOREACH(Ptr<WfStructMember>, member, node->members)
+					{
+						auto structMember = MakePtr<WfStructMember>();
+						structMember->name.value = member->name.value;
+						structMember->type = CopyType(member->type);
+						structDecl->members.Add(structMember);
+					}
+				}
 			};
 
 			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration)

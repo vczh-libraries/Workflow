@@ -449,19 +449,29 @@ WfErrors
 				return new ParsingError(node, L"D9: Item values in flag enum \"" + node->name.value + L"\" should be consecutive powers of 2 and starts from zero, like 0, 1, 2, 4, 8, ...");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::FlagValueNotExists(WfEnumItem* node, WfEnumDeclaration* owner)
+			Ptr<parsing::ParsingError> WfErrors::FlagValueNotExists(WfEnumItemIntersection* node, WfEnumDeclaration* owner)
 			{
 				return new ParsingError(node, L"D10: Item \"" + node->name.value + L" does not exists in the current flag enum \"" + owner->name.value + L"\".");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedFlagValue(WfEnumItem* node, WfEnumDeclaration* owner)
+			{
+				return new ParsingError(node, L"D11: Item \"" + node->name.value + L" already exists in the current flag enum \"" + owner->name.value + L"\".");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner)
 			{
-				return new ParsingError(node, L"D11: Type of member\"" + node->name.value + L"\" of struct \"" + owner->name.value + L"\" is not value type.");
+				return new ParsingError(node, L"D12: Type of member \"" + node->name.value + L"\" of struct \"" + owner->name.value + L"\" is not value type.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node)
 			{
-				return new ParsingError(node, L"D11: Struct \"" + node->name.value + L"\" recursively include itself.");
+				return new ParsingError(node, L"D13: Struct \"" + node->name.value + L"\" recursively include itself.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner)
+			{
+				return new ParsingError(node, L"D12: Member \"" + node->name.value + L"\" already exists in struct \"" + owner->name.value + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)

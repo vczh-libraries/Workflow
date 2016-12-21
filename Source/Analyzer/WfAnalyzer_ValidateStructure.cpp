@@ -8,6 +8,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace parsing;
+			using namespace reflection::description;
 
 /***********************************************************************
 ValidateStructureContext
@@ -655,6 +656,81 @@ ValidateStructure(Declaration)
 							{
 								dtor = decl;
 							}
+						}
+					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+					vuint64_t current = 0;
+					bool reportedNotConsecutive = false;
+					SortedList<WString> discoveredItems;
+					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					{
+						switch (item->kind)
+						{
+						case WfEnumItemKind::Constant:
+							{
+								vuint64_t value = -1;
+								TypedValueSerializerProvider<vuint64_t>::Deserialize(item->name.value, value);
+								if (!reportedNotConsecutive && value != current)
+								{
+									reportedNotConsecutive = true;
+									switch (node->kind)
+									{
+									case WfEnumKind::Normal:
+										manager->errors.Add(WfErrors::EnumValuesNotConsecutiveFromZero(node));
+										break;
+									case WfEnumKind::Flag:
+										manager->errors.Add(WfErrors::FlagValuesNotConsecutiveFromZero(node));
+										break;
+									}
+								}
+								switch (node->kind)
+								{
+								case WfEnumKind::Normal:
+									current++;
+									break;
+								case WfEnumKind::Flag:
+									current = current == 0 ? 1 : current * 2;
+									break;
+								}
+							}
+							break;
+						case WfEnumItemKind::Intersection:
+							FOREACH(Ptr<WfEnumItemIntersection>, enumInt, item->intersections)
+							{
+								if (!discoveredItems.Contains(enumInt->name.value))
+								{
+									manager->errors.Add(WfErrors::FlagValueNotExists(enumInt.Obj(), node));
+								}
+							}
+							break;
+						}
+
+						if (discoveredItems.Contains(item->name.value))
+						{
+							manager->errors.Add(WfErrors::DuplicatedFlagValue(item.Obj(), node));
+						}
+						else
+						{
+							discoveredItems.Add(item->name.value);
+						}
+					}
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					SortedList<WString> discoveredItems;
+					FOREACH(Ptr<WfStructMember>, member, node->members)
+					{
+						if (discoveredItems.Contains(member->name.value))
+						{
+							manager->errors.Add(WfErrors::DuplicatedStructMember(member.Obj(), node));
+						}
+						else
+						{
+							discoveredItems.Add(member->name.value);
 						}
 					}
 				}

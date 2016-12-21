@@ -1253,6 +1253,74 @@ Print (Declaration)
 				writer.WriteString(indent + L"}");
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfEnumDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				switch (node->kind)
+				{
+				case WfEnumKind::Normal:
+					writer.WriteString(L"enum ");
+					break;
+				case WfEnumKind::Flag:
+					writer.WriteString(L"flagenum ");
+					break;
+				}
+				writer.WriteLine(node->name.value);
+
+				writer.WriteLine(L"");
+				writer.WriteLine(indent + L"{");
+
+				FOREACH(Ptr<WfEnumItem>, item, node->items)
+				{
+					writer.WriteString(indent);
+					writer.WriteString(item->name.value);
+					writer.WriteString(L" = ");
+					switch (item->kind)
+					{
+					case WfEnumItemKind::Constant:
+						writer.WriteString(item->number.value);
+						break;
+					case WfEnumItemKind::Intersection:
+						FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, itemInt, index, item->intersections)
+						{
+							if (index != 0)writer.WriteString(L" | ");
+							writer.WriteString(itemInt->name.value);
+						}
+						break;
+					}
+					writer.WriteLine(L",");
+				}
+
+				writer.WriteString(indent + L"}");
+				writer.AfterPrint(node);
+
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfStructDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"struct ");
+				writer.WriteLine(node->name.value);
+				writer.WriteLine(L"");
+				writer.WriteLine(indent + L"{");
+
+				auto newIndent = indent + L"    ";
+				FOREACH(Ptr<WfStructMember>, member, node->members)
+				{
+					writer.WriteString(newIndent);
+					writer.WriteString(member->name.value);
+					writer.WriteString(L" : ");
+					WfPrint(member->type, newIndent, writer);
+					writer.WriteLine(L";");
+				}
+
+				writer.WriteString(indent + L"}");
+				writer.AfterPrint(node);
+
+				writer.AfterPrint(node);
+			}
 		};
 
 /***********************************************************************

@@ -1088,12 +1088,10 @@ ValidateSemantic(Expression)
 				template<typename T>
 				bool ValidateInteger(const WString& text, ITypeDescriptor*& resultTd)
 				{
-					auto td = description::GetTypeDescriptor<T>();
-					auto st = td->GetSerializableType();
-					Value value;
-					if (st->Deserialize(text, value))
+					T value;
+					if (TypedValueSerializerProvider<bool>::Deserialize(text, value))
 					{
-						resultTd = td;
+						resultTd = description::GetTypeDescriptor<T>();
 						return true;
 					}
 					return false;

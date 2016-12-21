@@ -1079,6 +1079,14 @@ GenerateInstructions(Expression)
 					{
 					}
 
+					void Visit(WfEnumDeclaration* node)override
+					{
+					}
+
+					void Visit(WfStructDeclaration* node)override
+					{
+					}
+
 					void Execute(WfNewInterfaceExpression* node)
 					{
 						FOREACH(Ptr<WfClassMember>, member, node->members)

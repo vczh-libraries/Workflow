@@ -132,6 +132,14 @@ GenerateGlobalDeclarationMetadata
 				{
 					GenerateGlobalDeclarationMetadata(context, node, namePrefix);
 				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+				}
 			};
 
 			class GenerateGlobalDeclarationMetadataVisitor : public Object, public WfDeclaration::IVisitor
@@ -200,6 +208,14 @@ GenerateGlobalDeclarationMetadata
 						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", node, member);
 						member->declaration->Accept(&visitor);
 					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
 				}
 			};
 

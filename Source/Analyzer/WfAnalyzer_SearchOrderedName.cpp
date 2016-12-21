@@ -75,6 +75,14 @@ SearchOrderedName(Declaration)
 					}
 				}
 
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+				}
+
 				static void Execute(WfLexicalScope* scope, Ptr<WfDeclaration> declaration, SortedList<vint>& names)
 				{
 					SearchOrderedNameDeclarationVisitor visitor(scope, names);

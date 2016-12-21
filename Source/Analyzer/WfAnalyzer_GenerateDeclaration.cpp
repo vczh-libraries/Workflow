@@ -71,6 +71,14 @@ GenerateInstructions(Initialize)
 				void Visit(WfClassDeclaration* node)override
 				{
 				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+				}
 			};
 
 			void GenerateInitializeInstructions(WfCodegenContext& context, Ptr<WfDeclaration> declaration)
@@ -300,6 +308,14 @@ GenerateInstructions(Declaration)
 				{
 					GenerateDeclarationInstructions(context, node);
 				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+				}
 			};
 
 			class GenerateDeclarationInstructionsVisitor : public Object, public WfDeclaration::IVisitor
@@ -355,6 +371,14 @@ GenerateInstructions(Declaration)
 						GenerateClassMemberInstructionsVisitor visitor(context, node, member);
 						member->declaration->Accept(&visitor);
 					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
 				}
 			};
 
