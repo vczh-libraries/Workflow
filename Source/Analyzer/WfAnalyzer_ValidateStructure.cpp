@@ -672,7 +672,7 @@ ValidateStructure(Declaration)
 						case WfEnumItemKind::Constant:
 							{
 								vuint64_t value = -1;
-								TypedValueSerializerProvider<vuint64_t>::Deserialize(item->name.value, value);
+								TypedValueSerializerProvider<vuint64_t>::Deserialize(item->number.value, value);
 								if (!reportedNotConsecutive && value != current)
 								{
 									reportedNotConsecutive = true;
@@ -710,7 +710,7 @@ ValidateStructure(Declaration)
 
 						if (discoveredItems.Contains(item->name.value))
 						{
-							manager->errors.Add(WfErrors::DuplicatedFlagValue(item.Obj(), node));
+							manager->errors.Add(WfErrors::DuplicatedEnumValue(item.Obj(), node));
 						}
 						else
 						{

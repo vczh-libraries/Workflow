@@ -454,9 +454,9 @@ WfErrors
 				return new ParsingError(node, L"D10: Item \"" + node->name.value + L" does not exists in the current flag enum \"" + owner->name.value + L"\".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::DuplicatedFlagValue(WfEnumItem* node, WfEnumDeclaration* owner)
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedEnumValue(WfEnumItem* node, WfEnumDeclaration* owner)
 			{
-				return new ParsingError(node, L"D11: Item \"" + node->name.value + L" already exists in the current flag enum \"" + owner->name.value + L"\".");
+				return new ParsingError(node, L"D11: Item \"" + node->name.value + L" already exists in the current enum \"" + owner->name.value + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner)
@@ -471,7 +471,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner)
 			{
-				return new ParsingError(node, L"D12: Member \"" + node->name.value + L"\" already exists in struct \"" + owner->name.value + L"\".");
+				return new ParsingError(node, L"D14: Member \"" + node->name.value + L"\" already exists in struct \"" + owner->name.value + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)

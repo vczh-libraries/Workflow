@@ -293,6 +293,7 @@ Global Name
 ***********************************************************************/
 
 			extern void										BuildGlobalNameFromTypeDescriptors(WfLexicalScopeManager* manager);
+			extern void										BuildNameForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, WfDeclaration* decl);
 			extern void										BuildGlobalNameFromModules(WfLexicalScopeManager* manager);
 			extern void										ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name);
 
@@ -569,7 +570,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
 				static Ptr<parsing::ParsingError>			FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
 				static Ptr<parsing::ParsingError>			FlagValueNotExists(WfEnumItemIntersection* node, WfEnumDeclaration* owner);
-				static Ptr<parsing::ParsingError>			DuplicatedFlagValue(WfEnumItem* node, WfEnumDeclaration* owner);
+				static Ptr<parsing::ParsingError>			DuplicatedEnumValue(WfEnumItem* node, WfEnumDeclaration* owner);
 				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);

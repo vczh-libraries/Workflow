@@ -430,12 +430,10 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfStructDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
@@ -2393,8 +2391,7 @@ ValidateSemantic
 							vint index = manager->nodeScopes.Keys().IndexOf(decl.Obj());
 							if (index == -1) continue;
 							auto scope = manager->nodeScopes.Values()[index];
-							bool isVariable = decl.Cast<WfVariableDeclaration>();
-							if (!isVariable)
+							if (scope->ownerNode == decl)
 							{
 								scope = scope->parentScope;
 							}

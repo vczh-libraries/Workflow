@@ -1,0 +1,30 @@
+module test;
+using system::*;
+
+flagenum Seasons
+{
+	None = 0,
+	Spring = 1,
+	Summer = 2,
+	Autumn = 4,
+	Winter = 8,
+
+	Good = Spring | Autumn,
+	Bad = Summer | Winter,
+}
+
+func Id(s : Seasons):Seasons
+{
+	return s;
+}
+
+func main():string
+{
+	var a = Spring of Seasons;
+	var b : Seasons = Summer;
+	var c = Id(Autumn);
+	var d = Seasons::Winter;
+
+	return	(cast UInt64 a) & ", " & (cast UInt64 b) & ", " & (cast UInt64 c) & ", " & (cast UInt64 d) & ", " & 
+			(cast UInt64 (a | b)) & ", " & (cast UInt64 (a & (Good of Seasons))) & ", " & (cast UInt64 (a & (Bad of Seasons)));
+}

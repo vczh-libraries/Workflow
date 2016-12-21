@@ -1294,8 +1294,6 @@ Print (Declaration)
 
 				writer.WriteString(indent + L"}");
 				writer.AfterPrint(node);
-
-				writer.AfterPrint(node);
 			}
 
 			void Visit(WfStructDeclaration* node)override
@@ -1317,8 +1315,6 @@ Print (Declaration)
 				}
 
 				writer.WriteString(indent + L"}");
-				writer.AfterPrint(node);
-
 				writer.AfterPrint(node);
 			}
 		};

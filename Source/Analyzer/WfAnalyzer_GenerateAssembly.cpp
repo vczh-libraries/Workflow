@@ -154,7 +154,7 @@ GenerateAssembly
 				if (manager->declarationTypes.Count() > 0)
 				{
 					assembly->typeImpl = new WfTypeImpl;
-					FOREACH(Ptr<WfCustomType>, td, From(manager->declarationTypes.Values()).FindType<WfCustomType>())
+					FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
 					{
 						if (auto tdClass = td.Cast<WfClass>())
 						{
@@ -163,6 +163,14 @@ GenerateAssembly
 						else if (auto tdInterface = td.Cast<WfInterface>())
 						{
 							assembly->typeImpl->interfaces.Add(tdInterface);
+						}
+						else if (auto tdStruct = td.Cast<WfStruct>())
+						{
+							assembly->typeImpl->structs.Add(tdStruct);
+						}
+						else if (auto tdEnum = td.Cast<WfEnum>())
+						{
+							assembly->typeImpl->enums.Add(tdEnum);
 						}
 					}
 				}

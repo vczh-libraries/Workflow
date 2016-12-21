@@ -265,7 +265,7 @@ CompleteScopeForDeclaration
 						switch (item->kind)
 						{
 						case WfEnumItemKind::Constant:
-							value = TypedValueSerializerProvider<vuint64_t>::Deserialize(item->number.value, value);
+							TypedValueSerializerProvider<vuint64_t>::Deserialize(item->number.value, value);
 							break;
 						case WfEnumItemKind::Intersection:
 							FOREACH(Ptr<WfEnumItemIntersection>, itemInt, item->intersections)
