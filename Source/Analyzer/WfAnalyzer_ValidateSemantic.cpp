@@ -332,6 +332,16 @@ ValidateSemantic(ClassMember)
 					ValidateDeclarationSemantic(manager, node);
 				}
 
+				void Visit(WfEnumDeclaration* node)override
+				{
+					ValidateDeclarationSemantic(manager, node);
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					ValidateDeclarationSemantic(manager, node);
+				}
+
 				static void Execute(Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, WfLexicalScopeManager* manager)
 				{
 					ValidateSemanticClassMemberVisitor visitor(td, classDecl, member, manager);
@@ -396,7 +406,7 @@ ValidateSemantic(Declaration)
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
-					auto td = manager->declarationTypes[node];
+					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
 
 					if (node->kind == WfClassKind::Interface)
 					{
@@ -416,6 +426,16 @@ ValidateSemantic(Declaration)
 					{
 						ValidateClassMemberSemantic(manager, td, node, member);
 					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					throw 0;
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
@@ -1089,7 +1109,7 @@ ValidateSemantic(Expression)
 				bool ValidateInteger(const WString& text, ITypeDescriptor*& resultTd)
 				{
 					T value;
-					if (TypedValueSerializerProvider<bool>::Deserialize(text, value))
+					if (TypedValueSerializerProvider<T>::Deserialize(text, value))
 					{
 						resultTd = description::GetTypeDescriptor<T>();
 						return true;
@@ -2079,6 +2099,14 @@ ValidateSemantic(Expression)
 							member->declaration->Accept(this);
 							ValidateDeclarationSemantic(manager, member->declaration);
 						}
+					}
+
+					void Visit(WfEnumDeclaration* node)override
+					{
+					}
+
+					void Visit(WfStructDeclaration* node)override
+					{
 					}
 				};
 
