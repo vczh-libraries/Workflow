@@ -464,9 +464,9 @@ WfErrors
 				return new ParsingError(node, L"D12: Type of member \"" + node->name.value + L"\" of struct \"" + owner->name.value + L"\" is not value type.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node)
+			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path)
 			{
-				return new ParsingError(node, L"D13: Struct \"" + node->name.value + L"\" recursively include itself.");
+				return new ParsingError(node, L"D13: Struct \"" + node->name.value + L"\" recursively include itself via \"" + path + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner)

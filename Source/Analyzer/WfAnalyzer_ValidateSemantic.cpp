@@ -432,6 +432,37 @@ ValidateSemantic(Declaration)
 				{
 				}
 
+				void SearchForItself(WfStructDeclaration* node, ITypeDescriptor* target, ITypeDescriptor* current, List<WString>& path)
+				{
+					if (target == current)
+					{
+						manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(
+							node, 
+							From(path).Aggregate([](const WString& a, const WString& b) {return a + L"::" + b; })
+							));
+						return;
+					}
+
+					if (current == nullptr)
+					{
+						current = target;
+					}
+
+					vint count = current->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto prop = current->GetProperty(i);
+						auto propType = prop->GetReturn();
+						auto propTd = prop->GetReturn()->GetTypeDescriptor();
+						if (propType->GetDecorator()==ITypeInfo::TypeDescriptor && propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+						{
+							vint index = path.Add(prop->GetName());
+							SearchForItself(node, target, propTd, path);
+							path.RemoveAt(index);
+						}
+					}
+				}
+
 				void Visit(WfStructDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
@@ -444,6 +475,9 @@ ValidateSemantic(Declaration)
 							manager->errors.Add(WfErrors::StructContainsNonValueType(member.Obj(), node));
 						}
 					}
+					List<WString> path;
+					path.Add(td->GetTypeName());
+					SearchForItself(node, td.Obj(), nullptr, path);
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)

@@ -572,7 +572,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			FlagValueNotExists(WfEnumItemIntersection* node, WfEnumDeclaration* owner);
 				static Ptr<parsing::ParsingError>			DuplicatedEnumValue(WfEnumItem* node, WfEnumDeclaration* owner);
 				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
-				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node);
+				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path);
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
 
 				// E: Module error
