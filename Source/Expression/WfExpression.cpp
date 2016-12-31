@@ -223,11 +223,11 @@ Print (Type)
 					}
 					WfPrint(type, indent, writer);
 				}
-				writer.WriteString(L"))");
+				writer.WriteString(L")");
 
 				writer.WriteString(L" : (");
 				WfPrint(node->result, indent, writer);
-				writer.WriteString(L")");
+				writer.WriteString(L"))");
 				writer.AfterPrint(node);
 			}
 
