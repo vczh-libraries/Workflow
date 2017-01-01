@@ -15,7 +15,7 @@ argument cannot be modified
 + - not x[y]
 ^
 * /
-+ - &(for string concatination)
++ - &(string, enum) |(enum)
 shl shr
 < > <= >= != ==
 xor
@@ -23,7 +23,7 @@ and
 or
 ?? (if a failed or null then b)
 ----------------------------
-"String" // can be implicitly converted to all other serializable types
+"String"
 $"1 + 2 = $(1 + 2)"
 ' and " is exchangable, '' in 'string' means ''', "" in "string" means '"'
 true false null
@@ -36,12 +36,13 @@ x [not] in collection
 // the meaning of the following patterns of expression dependes on the destination type
 {a b c d}
 {a:b c:d}
-"Spring"
-"Spring | Summer | Autumn | Winter"
+Spring
+Spring | Summer | Autumn | Winter
 ----------------------------
 {a b c d} of int[]
 {a:b c:d e:f} of int[string]
 {x:10 y:20} of Point
+(Spring | Summer) of Seasons
 ----------------------------
 new int[]
 new int[string]
@@ -71,7 +72,7 @@ expression is [not] null		// test
 ----------------------------
 attach(event, function)
 detach(handler)
-execute(event, a, b, c)
+event(a, b, c)
 typeof(type)
 type(expression)
 ----------------------------
@@ -118,9 +119,10 @@ func Name(a : Type, b : Type) : Type (<statement> | ;)
 namespace Name { ... }
 ======================================================
 event Name(Type1, Typeb);
-prop Readonly : int { GetValue }
-prop Writable : int { GetValue, SetValue }
-(class | interface) A : B, C, D { ... }
+prop Value : int { GetValue[, SetValue][ : ValueChanged] }
+(class | interface) A : B, C, D { ... new(){...} delete(){...} }
+[flag]enum A {B=0, C=1, D=B|C, ...}
+struct A{x:int; y:int;}
 ======================================================
 module <module-name>
 using <type-path>; // can contain class
