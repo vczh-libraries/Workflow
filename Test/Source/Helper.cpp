@@ -96,6 +96,19 @@ WString GetTestOutputPath()
 #endif
 }
 
+WString GetCppOutputPath()
+{
+#if defined VCZH_MSVC
+#ifdef _WIN64
+	return GetExePath() + L"..\\..\\..\\SourceCppGen\\";
+#else
+	return GetExePath() + L"..\\..\\SourceCppGen\\";
+#endif
+#elif defined VCZH_GCC
+	return L"../SourceCppGen/";
+#endif
+}
+
 void LoadSampleIndex(const WString& sampleName, List<WString>& itemNames)
 {
 	FileStream fileStream(GetTestResourcePath() + L"Index" + sampleName + L".txt", FileStream::ReadOnly);

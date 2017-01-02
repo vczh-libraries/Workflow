@@ -35,66 +35,106 @@ TEST_CASE(TestCodegen)
 		TEST_ASSERT(node);
 
 		manager.Clear(true, true);
-		List<RegexToken> tokens;
-		Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
-		manager.AddModule(module);
-		manager.Rebuild(true);
-		MemoryStream stream;
 		{
-			StreamWriter writer(stream);
-			WfPrint(module, L"", writer);
-		}
-		{
-			stream.SeekFromBegin(0);
-			StreamReader reader(stream);
-			LogSampleParseResult(L"Codegen", itemName, reader.ReadToEnd(), node, &manager);
-		}
-		TEST_ASSERT(manager.errors.Count() == 0);
-		
-		Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
-		TEST_ASSERT(assembly);
-		LogSampleCodegenResult(L"Codegen", itemName, assembly);
-		LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
-
-		WfRuntimeThreadContext context(assembly);
-		TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Finished);
-
-		{
-			vint functionIndex = assembly->functionByName[L"<initialize>"][0];
-			context.PushStackFrame(functionIndex, 0);
-			TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
-
-			while (context.status != WfRuntimeExecutionStatus::Finished)
+			List<RegexToken> tokens;
+			Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
+			manager.AddModule(module);
+			manager.Rebuild(true);
+			MemoryStream stream;
 			{
-				auto action = context.Execute(nullptr);
-				TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
+				StreamWriter writer(stream);
+				WfPrint(module, L"", writer);
 			}
-			TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
+			{
+				stream.SeekFromBegin(0);
+				StreamReader reader(stream);
+				LogSampleParseResult(L"Codegen", itemName, reader.ReadToEnd(), node, &manager);
+			}
+			TEST_ASSERT(manager.errors.Count() == 0);
+		}
+
+		{
+			WfCppConfig config(&manager);
+			config.assemblyName = itemName;
+
+			{
+				FileStream headerFile(GetCppOutputPath() + config.assemblyName + L".h", FileStream::WriteOnly);
+				BomEncoder headerEncoder(BomEncoder::Utf16);
+				EncoderStream headerStream(headerFile, headerEncoder);
+				StreamWriter headerWriter(headerStream);
+
+				headerWriter.WriteLine(L"/***********************************************************************");
+				headerWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
+				headerWriter.WriteLine(L"***********************************************************************/");
+				headerWriter.WriteLine(L"");
+				headerWriter.WriteLine(L"#ifndef VCZH_WORKFLOW_CPP_GENERATED_" + wupper(config.assemblyName));
+				headerWriter.WriteLine(L"#define VCZH_WORKFLOW_CPP_GENERATED_" + wupper(config.assemblyName));
+				headerWriter.WriteLine(L"");
+				headerWriter.WriteLine(L"#include \"../Source/CppTypes.h\"");
+				headerWriter.WriteLine(L"");
+				headerWriter.WriteLine(L"#endif");
+			}
+
+			{
+				FileStream cppFile(GetCppOutputPath() + config.assemblyName + L".cpp", FileStream::WriteOnly);
+				BomEncoder cppEncoder(BomEncoder::Utf16);
+				EncoderStream cppStream(cppFile, cppEncoder);
+				StreamWriter cppWriter(cppStream);
+
+				cppWriter.WriteLine(L"/***********************************************************************");
+				cppWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
+				cppWriter.WriteLine(L"***********************************************************************/");
+				cppWriter.WriteLine(L"");
+				cppWriter.WriteLine(L"#include \"" + config.assemblyName + L".h\"");
+			}
+		}
+		
+		{
+			Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
+			TEST_ASSERT(assembly);
+			LogSampleCodegenResult(L"Codegen", itemName, assembly);
+			LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
+
+			WfRuntimeThreadContext context(assembly);
+			TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Finished);
+
+			{
+				vint functionIndex = assembly->functionByName[L"<initialize>"][0];
+				context.PushStackFrame(functionIndex, 0);
+				TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
+
+				while (context.status != WfRuntimeExecutionStatus::Finished)
+				{
+					auto action = context.Execute(nullptr);
+					TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
+				}
+				TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
+				Value result;
+				TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+			}
+
+			{
+				vint functionIndex = assembly->functionByName[L"main"][0];
+				context.PushStackFrame(functionIndex, 0);
+				TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
+
+				while (context.status != WfRuntimeExecutionStatus::Finished)
+				{
+					auto action = context.Execute(nullptr);
+					TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
+				}
+				TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
+			}
+
 			Value result;
+			WString actual;
 			TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+			result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
+			UnitTest::PrintInfo(L"    expected: " + itemResult);
+			UnitTest::PrintInfo(L"    actual: " + actual);
+			TEST_ASSERT(actual == itemResult);
+			TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
 		}
-
-		{
-			vint functionIndex = assembly->functionByName[L"main"][0];
-			context.PushStackFrame(functionIndex, 0);
-			TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
-
-			while (context.status != WfRuntimeExecutionStatus::Finished)
-			{
-				auto action = context.Execute(nullptr);
-				TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
-			}
-			TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
-		}
-		
-		Value result;
-		WString actual;
-		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
-		UnitTest::PrintInfo(L"    expected: " + itemResult);
-		UnitTest::PrintInfo(L"    actual: " + actual);
-		TEST_ASSERT(actual == itemResult);
-		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
 	}
 }
 

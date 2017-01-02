@@ -2,6 +2,7 @@
 #define WORKFLOW_UNITTEST_TESTFUNCTIONS
 
 #include "../../Source/Analyzer/WfAnalyzer.h"
+#include "../../Source/Cpp/WfCpp.h"
 #include "../../Source/Runtime/WfRuntime.h"
 
 using namespace vl;
@@ -13,6 +14,7 @@ using namespace vl::parsing;
 using namespace vl::parsing::tabling;
 using namespace vl::workflow;
 using namespace vl::workflow::analyzer;
+using namespace vl::workflow::cppcodegen;
 using namespace vl::workflow::runtime;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
@@ -21,6 +23,7 @@ extern Ptr<ParsingTable>	GetWorkflowTable();
 extern void					ReleaseWorkflowTable();
 extern WString				GetTestResourcePath();
 extern WString				GetTestOutputPath();
+extern WString				GetCppOutputPath();
 extern void					LoadSampleIndex(const WString& sampleName, List<WString>& itemNames);
 extern WString				LoadSample(const WString& sampleName, const WString& itemName);
 extern void					LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, WfLexicalScopeManager* manager = 0);
