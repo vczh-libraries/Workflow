@@ -8,6 +8,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace regex;
+			using namespace reflection::description;
 			using namespace analyzer;
 
 /***********************************************************************
@@ -20,7 +21,7 @@ WfCppConfig
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
 					{
-						CollectDeclaration(this, decl);
+						CollectDeclaration(this, decl, nullptr);
 					}
 				}
 			}
@@ -49,6 +50,21 @@ WfCppConfig
 				{
 					return name;
 				}
+			}
+
+			WString WfCppConfig::ConvertFullName(const WString& fullName)
+			{
+				List<Ptr<RegexMatch>> matches;
+				regexSplitName.Split(fullName, false, matches);
+				return From(matches)
+					.Select([this](Ptr<RegexMatch> match)
+					{
+						return L"::" + ConvertName(match->Result().Value());
+					})
+					.Aggregate([](const WString& a, const WString& b)
+					{
+						return a + b;
+					});
 			}
 
 			WString WfCppConfig::WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name)
@@ -143,7 +159,43 @@ WfCppConfig::WriteHeader
 				writer.WriteLine(L"}");
 			}
 
+			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix)
+			{
+				writer.WriteLine(prefix + L"enum class " + name + L" : vl::vuint64_t");
+				writer.WriteLine(prefix + L"{");
+				FOREACH(Ptr<WfEnumItem>, item, decl->items)
+				{
+					switch (item->kind)
+					{
+					case WfEnumItemKind::Constant:
+						writer.WriteLine(prefix + L"\t" + item->name.value + L" = " + item->number.value + L"UL,");
+						break;
+					case WfEnumItemKind::Intersection:
+						writer.WriteString(prefix + L"\t" + item->name.value + L" = ");
+						FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
+						{
+							if (index > 0)
+							{
+								writer.WriteString(L" | ");
+							}
+							writer.WriteString(enumInt->name.value);
+						}
+						writer.WriteLine(L",");
+						break;
+					}
+				}
+				writer.WriteLine(prefix + L"};");
+			}
+
 			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss)
+			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				WString name;
+				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				WriteHeader_Enum(writer, decl, name, prefix);
+			}
+
+			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix)
 			{
 			}
 
@@ -151,7 +203,15 @@ WfCppConfig::WriteHeader
 			{
 			}
 
+			void WfCppConfig::WriteHeader_ClassPreDecls(stream::StreamWriter& writer, const WString& prefix)
+			{
+			}
+
 			void WfCppConfig::WriteHeader_ClassPreDecls(stream::StreamWriter& writer, collections::List<WString>& nss)
+			{
+			}
+
+			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix)
 			{
 			}
 

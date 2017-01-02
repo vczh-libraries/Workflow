@@ -74,35 +74,44 @@ TEST_CASE(TestCodegen)
 				headerWriter.WriteLine(L"#include \"../Source/CppTypes.h\"");
 				headerWriter.WriteLine(L"");
 
-				headerWriter.WriteLine(L"/***********************************************************************");
-				headerWriter.WriteLine(L"Enums");
-				headerWriter.WriteLine(L"***********************************************************************/");
-				headerWriter.WriteLine(L"");
-				FOREACH(Ptr<WfEnumDeclaration>, decl, config.enumDecls)
+				if (config.enumDecls.Keys().Contains(nullptr))
 				{
-					config.WriteHeader_Enum(headerWriter, decl, nss);
+					headerWriter.WriteLine(L"/***********************************************************************");
+					headerWriter.WriteLine(L"Enums");
+					headerWriter.WriteLine(L"***********************************************************************/");
 					headerWriter.WriteLine(L"");
+					FOREACH(Ptr<WfEnumDeclaration>, decl, config.enumDecls[nullptr])
+					{
+						config.WriteHeader_Enum(headerWriter, decl, nss);
+						headerWriter.WriteLine(L"");
+					}
 				}
 
-				headerWriter.WriteLine(L"/***********************************************************************");
-				headerWriter.WriteLine(L"Structs");
-				headerWriter.WriteLine(L"***********************************************************************/");
-				headerWriter.WriteLine(L"");
-				FOREACH(Ptr<WfStructDeclaration>, decl, config.structDecls)
+				if (config.structDecls.Keys().Contains(nullptr))
 				{
-					config.WriteHeader_Struct(headerWriter, decl, nss);
+					headerWriter.WriteLine(L"/***********************************************************************");
+					headerWriter.WriteLine(L"Structs");
+					headerWriter.WriteLine(L"***********************************************************************/");
 					headerWriter.WriteLine(L"");
+					FOREACH(Ptr<WfStructDeclaration>, decl, config.structDecls[nullptr])
+					{
+						config.WriteHeader_Struct(headerWriter, decl, nss);
+						headerWriter.WriteLine(L"");
+					}
 				}
 
-				headerWriter.WriteLine(L"/***********************************************************************");
-				headerWriter.WriteLine(L"Classes");
-				headerWriter.WriteLine(L"***********************************************************************/");
-				headerWriter.WriteLine(L"");
-				config.WriteHeader_ClassPreDecls(headerWriter, nss);
-				headerWriter.WriteLine(L"");
-				FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls)
+				if (config.classDecls.Keys().Contains(nullptr))
 				{
-					config.WriteHeader_Class(headerWriter, decl, nss);
+					headerWriter.WriteLine(L"/***********************************************************************");
+					headerWriter.WriteLine(L"Classes");
+					headerWriter.WriteLine(L"***********************************************************************/");
+					headerWriter.WriteLine(L"");
+					config.WriteHeader_ClassPreDecls(headerWriter, nss);
+					headerWriter.WriteLine(L"");
+					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[nullptr])
+					{
+						config.WriteHeader_Class(headerWriter, decl, nss);
+					}
 				}
 
 
@@ -137,58 +146,74 @@ TEST_CASE(TestCodegen)
 				config.WriteCpp_Global(cppWriter);
 				cppWriter.WriteLine(L"");
 
-				cppWriter.WriteLine(L"/***********************************************************************");
-				cppWriter.WriteLine(L"Lambda Functions (Declaration)");
-				cppWriter.WriteLine(L"***********************************************************************/");
-				cppWriter.WriteLine(L"");
-				FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
-				{
-					config.WriteCpp_LambdaExprDecl(cppWriter, expr, nss);
-					cppWriter.WriteLine(L"");
-				}
-
-				cppWriter.WriteLine(L"/***********************************************************************");
-				cppWriter.WriteLine(L"Lambda Classes (Declaration)");
-				cppWriter.WriteLine(L"***********************************************************************/");
-				cppWriter.WriteLine(L"");
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
-				{
-					config.WriteCpp_ClassExprDecl(cppWriter, expr, nss);
-					cppWriter.WriteLine(L"");
-				}
-
-				cppWriter.WriteLine(L"/***********************************************************************");
-				cppWriter.WriteLine(L"Lambda Functions (Implementation)");
-				cppWriter.WriteLine(L"***********************************************************************/");
-				cppWriter.WriteLine(L"");
-				FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
-				{
-					config.WriteCpp_LambdaExprImpl(cppWriter, expr, nss);
-					cppWriter.WriteLine(L"");
-				}
-
-				cppWriter.WriteLine(L"/***********************************************************************");
-				cppWriter.WriteLine(L"Lambda Classes (Implementation)");
-				cppWriter.WriteLine(L"***********************************************************************/");
-				cppWriter.WriteLine(L"");
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
-				{
-					config.WriteCpp_ClassExprImpl(cppWriter, expr, nss);
-					cppWriter.WriteLine(L"");
-				}
-				FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls)
+				if (config.lambdaExprs.Count() > 0)
 				{
 					cppWriter.WriteLine(L"/***********************************************************************");
-					cppWriter.WriteLine(L"Class (" + CppGetFullName(manager.declarationTypes[decl.Obj()].Obj()) + L")");
+					cppWriter.WriteLine(L"Lambda Functions (Declaration)");
 					cppWriter.WriteLine(L"***********************************************************************/");
 					cppWriter.WriteLine(L"");
-
-					List<Ptr<WfClassMember>> members;
-					config.GetClassMembers(decl, members);
-					FOREACH(Ptr<WfClassMember>, member, members)
+					FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
 					{
-						config.WriteCpp_ClassMember(cppWriter, decl, member, nss);
+						config.WriteCpp_LambdaExprDecl(cppWriter, expr, nss);
 						cppWriter.WriteLine(L"");
+					}
+				}
+
+				if (config.classExprs.Count() > 0)
+				{
+					cppWriter.WriteLine(L"/***********************************************************************");
+					cppWriter.WriteLine(L"Lambda Classes (Declaration)");
+					cppWriter.WriteLine(L"***********************************************************************/");
+					cppWriter.WriteLine(L"");
+					FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
+					{
+						config.WriteCpp_ClassExprDecl(cppWriter, expr, nss);
+						cppWriter.WriteLine(L"");
+					}
+				}
+
+				if (config.lambdaExprs.Count() > 0)
+				{
+					cppWriter.WriteLine(L"/***********************************************************************");
+					cppWriter.WriteLine(L"Lambda Functions (Implementation)");
+					cppWriter.WriteLine(L"***********************************************************************/");
+					cppWriter.WriteLine(L"");
+					FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
+					{
+						config.WriteCpp_LambdaExprImpl(cppWriter, expr, nss);
+						cppWriter.WriteLine(L"");
+					}
+				}
+
+				if (config.classExprs.Count() > 0)
+				{
+					cppWriter.WriteLine(L"/***********************************************************************");
+					cppWriter.WriteLine(L"Lambda Classes (Implementation)");
+					cppWriter.WriteLine(L"***********************************************************************/");
+					cppWriter.WriteLine(L"");
+					FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
+					{
+						config.WriteCpp_ClassExprImpl(cppWriter, expr, nss);
+						cppWriter.WriteLine(L"");
+					}
+				}
+
+				FOREACH(Ptr<WfClassDeclaration>, key, config.classDecls.Keys())
+				{
+					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[key.Obj()])
+					{
+						cppWriter.WriteLine(L"/***********************************************************************");
+						cppWriter.WriteLine(L"Class (" + CppGetFullName(manager.declarationTypes[decl.Obj()].Obj()) + L")");
+						cppWriter.WriteLine(L"***********************************************************************/");
+						cppWriter.WriteLine(L"");
+
+						List<Ptr<WfClassMember>> members;
+						config.GetClassMembers(decl, members);
+						FOREACH(Ptr<WfClassMember>, member, members)
+						{
+							config.WriteCpp_ClassMember(cppWriter, decl, member, nss);
+							cppWriter.WriteLine(L"");
+						}
 					}
 				}
 
