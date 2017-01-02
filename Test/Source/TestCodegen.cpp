@@ -62,6 +62,7 @@ TEST_CASE(TestCodegen)
 				Utf8Encoder headerEncoder;
 				EncoderStream headerStream(headerFile, headerEncoder);
 				StreamWriter headerWriter(headerStream);
+				List<WString> nss;
 
 				headerWriter.WriteLine(L"/***********************************************************************");
 				headerWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
@@ -86,7 +87,7 @@ TEST_CASE(TestCodegen)
 				headerWriter.WriteLine(L"");
 				FOREACH(Ptr<WfEnumDeclaration>, decl, config.enumDecls)
 				{
-					config.WriteHeader_Enum(headerWriter, decl);
+					config.WriteHeader_Enum(headerWriter, decl, nss);
 					headerWriter.WriteLine(L"");
 				}
 
@@ -96,7 +97,7 @@ TEST_CASE(TestCodegen)
 				headerWriter.WriteLine(L"");
 				FOREACH(Ptr<WfStructDeclaration>, decl, config.structDecls)
 				{
-					config.WriteHeader_Struct(headerWriter, decl);
+					config.WriteHeader_Struct(headerWriter, decl, nss);
 					headerWriter.WriteLine(L"");
 				}
 
@@ -104,11 +105,14 @@ TEST_CASE(TestCodegen)
 				headerWriter.WriteLine(L"Classes");
 				headerWriter.WriteLine(L"***********************************************************************/");
 				headerWriter.WriteLine(L"");
+				config.WriteHeader_ClassPreDecls(headerWriter, nss);
+				headerWriter.WriteLine(L"");
 				FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls)
 				{
-					config.WriteHeader_Class(headerWriter, decl);
+					config.WriteHeader_Class(headerWriter, decl, nss);
 				}
 
+				config.WriteEnd(headerWriter, nss);
 				headerWriter.WriteLine(L"#endif");
 			}
 
@@ -117,6 +121,7 @@ TEST_CASE(TestCodegen)
 				Utf8Encoder cppEncoder;
 				EncoderStream cppStream(cppFile, cppEncoder);
 				StreamWriter cppWriter(cppStream);
+				List<WString> nss;
 
 				cppWriter.WriteLine(L"/***********************************************************************");
 				cppWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
@@ -138,7 +143,7 @@ TEST_CASE(TestCodegen)
 				cppWriter.WriteLine(L"");
 				FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
 				{
-					config.WriteCpp_LambdaExprDecl(cppWriter, expr);
+					config.WriteCpp_LambdaExprDecl(cppWriter, expr, nss);
 					cppWriter.WriteLine(L"");
 				}
 
@@ -148,7 +153,7 @@ TEST_CASE(TestCodegen)
 				cppWriter.WriteLine(L"");
 				FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
 				{
-					config.WriteCpp_ClassExprDecl(cppWriter, expr);
+					config.WriteCpp_ClassExprDecl(cppWriter, expr, nss);
 					cppWriter.WriteLine(L"");
 				}
 
@@ -158,7 +163,7 @@ TEST_CASE(TestCodegen)
 				cppWriter.WriteLine(L"");
 				FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
 				{
-					config.WriteCpp_LambdaExprImpl(cppWriter, expr);
+					config.WriteCpp_LambdaExprImpl(cppWriter, expr, nss);
 					cppWriter.WriteLine(L"");
 				}
 
@@ -168,7 +173,7 @@ TEST_CASE(TestCodegen)
 				cppWriter.WriteLine(L"");
 				FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
 				{
-					config.WriteCpp_ClassExprImpl(cppWriter, expr);
+					config.WriteCpp_ClassExprImpl(cppWriter, expr, nss);
 					cppWriter.WriteLine(L"");
 				}
 				FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls)
@@ -182,10 +187,12 @@ TEST_CASE(TestCodegen)
 					config.GetClassMembers(decl, members);
 					FOREACH(Ptr<WfClassMember>, member, members)
 					{
-						config.WriteCpp_ClassMember(cppWriter, decl, member);
+						config.WriteCpp_ClassMember(cppWriter, decl, member, nss);
 						cppWriter.WriteLine(L"");
 					}
 				}
+
+				config.WriteEnd(cppWriter, nss);
 			}
 		}
 		
