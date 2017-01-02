@@ -8,6 +8,19 @@ Generated from ../Resources/Codegen/HelloWorld.txt
 Global Variables and Functions
 ***********************************************************************/
 
+BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_HelloWorld)
+	vl_workflow_global::HelloWorld instance;
+	INITIALIZE_GLOBAL_STORAGE_CLASS
+	FINALIZE_GLOBAL_STORAGE_CLASS
+END_GLOBAL_STORAGE_CLASS(vl_workflow_global_HelloWorld)
+
+namespace vl_workflow_global
+{
+	HelloWorld& HelloWorld::Instance()
+	{
+		return Getvl_workflow_global_HelloWorld().instance;
+	}
+}
 
 /***********************************************************************
 Lambda Functions (Declaration)

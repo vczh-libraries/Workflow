@@ -8,6 +8,19 @@ Generated from ../Resources/Codegen/NestedLambda.txt
 Global Variables and Functions
 ***********************************************************************/
 
+BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_NestedLambda)
+	vl_workflow_global::NestedLambda instance;
+	INITIALIZE_GLOBAL_STORAGE_CLASS
+	FINALIZE_GLOBAL_STORAGE_CLASS
+END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NestedLambda)
+
+namespace vl_workflow_global
+{
+	NestedLambda& NestedLambda::Instance()
+	{
+		return Getvl_workflow_global_NestedLambda().instance;
+	}
+}
 
 /***********************************************************************
 Lambda Functions (Declaration)

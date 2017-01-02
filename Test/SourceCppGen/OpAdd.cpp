@@ -8,6 +8,19 @@ Generated from ../Resources/Codegen/OpAdd.txt
 Global Variables and Functions
 ***********************************************************************/
 
+BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpAdd)
+	vl_workflow_global::OpAdd instance;
+	INITIALIZE_GLOBAL_STORAGE_CLASS
+	FINALIZE_GLOBAL_STORAGE_CLASS
+END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpAdd)
+
+namespace vl_workflow_global
+{
+	OpAdd& OpAdd::Instance()
+	{
+		return Getvl_workflow_global_OpAdd().instance;
+	}
+}
 
 /***********************************************************************
 Lambda Functions (Declaration)

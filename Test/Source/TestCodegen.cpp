@@ -75,13 +75,6 @@ TEST_CASE(TestCodegen)
 				headerWriter.WriteLine(L"");
 
 				headerWriter.WriteLine(L"/***********************************************************************");
-				headerWriter.WriteLine(L"Global Variables and Functions");
-				headerWriter.WriteLine(L"***********************************************************************/");
-				headerWriter.WriteLine(L"");
-				config.WriteHeader_Global(headerWriter);
-				headerWriter.WriteLine(L"");
-
-				headerWriter.WriteLine(L"/***********************************************************************");
 				headerWriter.WriteLine(L"Enums");
 				headerWriter.WriteLine(L"***********************************************************************/");
 				headerWriter.WriteLine(L"");
@@ -112,6 +105,13 @@ TEST_CASE(TestCodegen)
 					config.WriteHeader_Class(headerWriter, decl, nss);
 				}
 
+
+				headerWriter.WriteLine(L"/***********************************************************************");
+				headerWriter.WriteLine(L"Global Variables and Functions");
+				headerWriter.WriteLine(L"***********************************************************************/");
+				headerWriter.WriteLine(L"");
+				config.WriteHeader_Global(headerWriter, nss);
+				headerWriter.WriteLine(L"");
 				config.WriteEnd(headerWriter, nss);
 				headerWriter.WriteLine(L"#endif");
 			}

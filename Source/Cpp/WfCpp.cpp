@@ -7,6 +7,7 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
+			using namespace regex;
 			using namespace analyzer;
 
 /***********************************************************************
@@ -26,6 +27,9 @@ WfCppConfig
 
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager)
 				:manager(_manager)
+				, regexSplitName(L"::")
+				, regexSpecialName(L"/<(<category>/w+)/>(<name>/w*)")
+				, assemblyNamespace(L"vl_workflow_global")
 			{
 				Collect();
 			}
@@ -34,16 +38,109 @@ WfCppConfig
 			{
 			}
 
+			WString WfCppConfig::ConvertName(const WString& name)
+			{
+				auto match = regexSpecialName.MatchHead(name);
+				if (match)
+				{
+					return L"__vwsn_" + match->Groups()[L"category"][0].Value() + L"_" + match->Groups()[L"category"][0].Value();
+				}
+				else
+				{
+					return name;
+				}
+			}
+
+			WString WfCppConfig::WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name)
+			{
+				List<Ptr<RegexMatch>> matches;
+				regexSplitName.Split(fullName, false, matches);
+
+				List<WString> nss2;
+				CopyFrom(
+					nss2,
+					From(matches)
+						.Select([this](Ptr<RegexMatch> match)
+						{
+							return ConvertName(match->Result().Value());
+						})
+					);
+
+				vint commonPrefix = 0;
+				for (vint i = 0; i < nss.Count() && i < nss2.Count() - 1; i++)
+				{
+					if (nss[i] == nss2[i])
+					{
+						commonPrefix++;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				while (nss.Count() > commonPrefix)
+				{
+					for (vint i = 1; i < nss.Count(); i++)
+					{
+						writer.WriteChar(L'\t');
+					}
+					writer.WriteLine(L"}");
+					nss.RemoveAt(nss.Count() - 1);
+				}
+
+				WString prefix;
+				for (vint i = 0; i < nss.Count(); i++)
+				{
+					prefix += L'\t';
+				}
+
+				for (vint i = commonPrefix; i < nss2.Count() - 1; i++)
+				{
+					writer.WriteString(prefix);
+					writer.WriteString(L"namespace ");
+					writer.WriteLine(nss[i]);
+
+					writer.WriteString(prefix);
+					writer.WriteLine(L"{");
+
+					nss.Add(nss2[i]);
+					prefix += L'\t';
+				}
+
+				name = nss2[nss.Count()];
+				return prefix;
+			}
+
 			void WfCppConfig::WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss)
 			{
+				while (nss.Count() > 0)
+				{
+					for (vint i = 1; i < nss.Count(); i++)
+					{
+						writer.WriteChar(L'\t');
+					}
+					writer.WriteLine(L"}");
+				}
+				nss.Clear();
 			}
 
 /***********************************************************************
 WfCppConfig::WriteHeader
 ***********************************************************************/
 
-			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer)
+			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer, collections::List<WString>& nss)
 			{
+				WriteEnd(writer, nss);
+				writer.WriteLine(L"namespace " + assemblyNamespace);
+				writer.WriteLine(L"{");
+				writer.WriteLine(L"\tclass " + assemblyName);
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\tpublic:");
+				writer.WriteLine(L"");
+				writer.WriteLine(L"\t\tstatic " + assemblyName + L"& Instance();");
+				writer.WriteLine(L"\t};");
+				writer.WriteLine(L"}");
 			}
 
 			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss)
@@ -68,6 +165,21 @@ WfCppConfig::WriteCpp
 
 			void WfCppConfig::WriteCpp_Global(stream::StreamWriter& writer)
 			{
+				WString storageName = assemblyNamespace + L"_" + assemblyName;
+				writer.WriteLine(L"BEGIN_GLOBAL_STORAGE_CLASS(" + storageName + L")");
+				writer.WriteLine(L"\t" + assemblyNamespace + L"::" + assemblyName + L" instance;");
+				writer.WriteLine(L"\tINITIALIZE_GLOBAL_STORAGE_CLASS");
+				writer.WriteLine(L"\tFINALIZE_GLOBAL_STORAGE_CLASS");
+				writer.WriteLine(L"END_GLOBAL_STORAGE_CLASS(" + storageName + L")");
+				writer.WriteLine(L"");
+
+				writer.WriteLine(L"namespace vl_workflow_global");
+				writer.WriteLine(L"{");
+				writer.WriteLine(L"\t" + assemblyName + L"& " + assemblyName + L"::Instance()");
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");
+				writer.WriteLine(L"\t}");
+				writer.WriteLine(L"}");
 			}
 
 			void WfCppConfig::WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda, collections::List<WString>& nss)

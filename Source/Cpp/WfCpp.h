@@ -20,10 +20,14 @@ namespace vl
 			class WfCppConfig : public Object
 			{
 			protected:
+				regex::Regex										regexSplitName;
+				regex::Regex										regexSpecialName;
+
 				void												Collect();
 
 			public:
 				analyzer::WfLexicalScopeManager*					manager;
+				WString												assemblyNamespace;
 				WString												assemblyName;
 
 				collections::List<Ptr<WfEnumDeclaration>>			enumDecls;
@@ -37,7 +41,11 @@ namespace vl
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager);
 				~WfCppConfig();
 
-				void					WriteHeader_Global(stream::StreamWriter& writer);
+				WString					ConvertName(const WString& name);
+				WString					WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
+				void					WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
+
+				void					WriteHeader_Global(stream::StreamWriter& writer, collections::List<WString>& nss);
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
 				void					WriteHeader_ClassPreDecls(stream::StreamWriter& writer, collections::List<WString>& nss);
@@ -50,8 +58,6 @@ namespace vl
 				void					WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda, collections::List<WString>& nss);
 				void					GetClassMembers(Ptr<WfClassDeclaration> decl, collections::List<Ptr<WfClassMember>>& members);
 				void					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss);
-
-				void					WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
 			};
 
 /***********************************************************************
