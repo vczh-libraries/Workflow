@@ -59,7 +59,7 @@ TEST_CASE(TestCodegen)
 
 			{
 				FileStream headerFile(GetCppOutputPath() + config.assemblyName + L".h", FileStream::WriteOnly);
-				BomEncoder headerEncoder(BomEncoder::Utf16);
+				Utf8Encoder headerEncoder;
 				EncoderStream headerStream(headerFile, headerEncoder);
 				StreamWriter headerWriter(headerStream);
 
@@ -72,12 +72,49 @@ TEST_CASE(TestCodegen)
 				headerWriter.WriteLine(L"");
 				headerWriter.WriteLine(L"#include \"../Source/CppTypes.h\"");
 				headerWriter.WriteLine(L"");
+
+				headerWriter.WriteLine(L"/***********************************************************************");
+				headerWriter.WriteLine(L"Global Variables and Functions");
+				headerWriter.WriteLine(L"***********************************************************************/");
+				headerWriter.WriteLine(L"");
+				config.WriteHeader_Global(headerWriter);
+				headerWriter.WriteLine(L"");
+
+				headerWriter.WriteLine(L"/***********************************************************************");
+				headerWriter.WriteLine(L"Enums");
+				headerWriter.WriteLine(L"***********************************************************************/");
+				headerWriter.WriteLine(L"");
+				FOREACH(Ptr<WfEnumDeclaration>, decl, config.enumDecls)
+				{
+					config.WriteHeader_Enum(headerWriter, decl);
+					headerWriter.WriteLine(L"");
+				}
+
+				headerWriter.WriteLine(L"/***********************************************************************");
+				headerWriter.WriteLine(L"Structs");
+				headerWriter.WriteLine(L"***********************************************************************/");
+				headerWriter.WriteLine(L"");
+				FOREACH(Ptr<WfStructDeclaration>, decl, config.structDecls)
+				{
+					config.WriteHeader_Struct(headerWriter, decl);
+					headerWriter.WriteLine(L"");
+				}
+
+				headerWriter.WriteLine(L"/***********************************************************************");
+				headerWriter.WriteLine(L"Classes");
+				headerWriter.WriteLine(L"***********************************************************************/");
+				headerWriter.WriteLine(L"");
+				FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls)
+				{
+					config.WriteHeader_Class(headerWriter, decl);
+				}
+
 				headerWriter.WriteLine(L"#endif");
 			}
 
 			{
 				FileStream cppFile(GetCppOutputPath() + config.assemblyName + L".cpp", FileStream::WriteOnly);
-				BomEncoder cppEncoder(BomEncoder::Utf16);
+				Utf8Encoder cppEncoder;
 				EncoderStream cppStream(cppFile, cppEncoder);
 				StreamWriter cppWriter(cppStream);
 
@@ -86,6 +123,69 @@ TEST_CASE(TestCodegen)
 				cppWriter.WriteLine(L"***********************************************************************/");
 				cppWriter.WriteLine(L"");
 				cppWriter.WriteLine(L"#include \"" + config.assemblyName + L".h\"");
+				cppWriter.WriteLine(L"");
+
+				cppWriter.WriteLine(L"/***********************************************************************");
+				cppWriter.WriteLine(L"Global Variables and Functions");
+				cppWriter.WriteLine(L"***********************************************************************/");
+				cppWriter.WriteLine(L"");
+				config.WriteCpp_Global(cppWriter);
+				cppWriter.WriteLine(L"");
+
+				cppWriter.WriteLine(L"/***********************************************************************");
+				cppWriter.WriteLine(L"Lambda Functions (Declaration)");
+				cppWriter.WriteLine(L"***********************************************************************/");
+				cppWriter.WriteLine(L"");
+				FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
+				{
+					config.WriteCpp_LambdaExprDecl(cppWriter, expr);
+					cppWriter.WriteLine(L"");
+				}
+
+				cppWriter.WriteLine(L"/***********************************************************************");
+				cppWriter.WriteLine(L"Lambda Classes (Declaration)");
+				cppWriter.WriteLine(L"***********************************************************************/");
+				cppWriter.WriteLine(L"");
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
+				{
+					config.WriteCpp_ClassExprDecl(cppWriter, expr);
+					cppWriter.WriteLine(L"");
+				}
+
+				cppWriter.WriteLine(L"/***********************************************************************");
+				cppWriter.WriteLine(L"Lambda Functions (Implementation)");
+				cppWriter.WriteLine(L"***********************************************************************/");
+				cppWriter.WriteLine(L"");
+				FOREACH(Ptr<WfExpression>, expr, config.lambdaExprs)
+				{
+					config.WriteCpp_LambdaExprImpl(cppWriter, expr);
+					cppWriter.WriteLine(L"");
+				}
+
+				cppWriter.WriteLine(L"/***********************************************************************");
+				cppWriter.WriteLine(L"Lambda Classes (Implementation)");
+				cppWriter.WriteLine(L"***********************************************************************/");
+				cppWriter.WriteLine(L"");
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, config.classExprs)
+				{
+					config.WriteCpp_ClassExprImpl(cppWriter, expr);
+					cppWriter.WriteLine(L"");
+				}
+				FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls)
+				{
+					cppWriter.WriteLine(L"/***********************************************************************");
+					cppWriter.WriteLine(L"Class (" + CppGetFullName(manager.declarationTypes[decl.Obj()].Obj()) + L")");
+					cppWriter.WriteLine(L"***********************************************************************/");
+					cppWriter.WriteLine(L"");
+
+					List<Ptr<WfClassMember>> members;
+					config.GetClassMembers(decl, members);
+					FOREACH(Ptr<WfClassMember>, member, members)
+					{
+						config.WriteCpp_ClassMember(cppWriter, decl, member);
+						cppWriter.WriteLine(L"");
+					}
+				}
 			}
 		}
 		

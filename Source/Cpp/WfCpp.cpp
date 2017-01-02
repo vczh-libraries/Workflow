@@ -62,11 +62,19 @@ WfCppConfig::WriteCpp
 			{
 			}
 
-			void WfCppConfig::WriteCpp_LambdaDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
+			void WfCppConfig::WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
 			{
 			}
 
-			void WfCppConfig::WriteCpp_LambdaImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
+			void WfCppConfig::WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
+			{
+			}
+
+			void WfCppConfig::WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
+			{
+			}
+
+			void WfCppConfig::WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
 			{
 			}
 

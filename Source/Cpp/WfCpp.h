@@ -43,8 +43,10 @@ namespace vl
 				void					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl);
 
 				void					WriteCpp_Global(stream::StreamWriter& writer);
-				void					WriteCpp_LambdaDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
-				void					WriteCpp_LambdaImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
+				void					WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
+				void					WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
+				void					WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda);
+				void					WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda);
 				void					GetClassMembers(Ptr<WfClassDeclaration> decl, collections::List<Ptr<WfClassMember>>& members);
 				void					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member);
 			};
