@@ -73,3 +73,8 @@ namespace vl_workflow_global
 Class (::IMyInterface)
 ***********************************************************************/
 
+::vl::vint32_t IMyInterface::Get50()
+{
+	throw 0;
+}
+

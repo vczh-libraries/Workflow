@@ -17,6 +17,10 @@ namespace vl
 				if (index != -1)
 				{
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos.Values()[index].Obj());
+					if (methodInfo->IsStatic())
+					{
+						return false;
+					}
 					auto td = methodInfo->GetOwnerTypeDescriptor();
 					return td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
 				}

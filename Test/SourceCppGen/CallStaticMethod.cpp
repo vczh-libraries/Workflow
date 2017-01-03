@@ -45,3 +45,8 @@ Calculator::Calculator()
 Class (::Calculator::Internal)
 ***********************************************************************/
 
+::vl::vint32_t Calculator::Internal::Sum(::vl::vint32_t begin, ::vl::vint32_t end)
+{
+	throw 0;
+}
+
