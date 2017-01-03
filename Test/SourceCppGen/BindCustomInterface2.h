@@ -1,0 +1,51 @@
+/***********************************************************************
+Generated from ../Resources/Codegen/BindCustomInterface2.txt
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_CPP_GENERATED_BINDCUSTOMINTERFACE2
+#define VCZH_WORKFLOW_CPP_GENERATED_BINDCUSTOMINTERFACE2
+
+#include "../Source/CppTypes.h"
+
+#pragma warning(push)
+#pragma warning(disable:4250)
+class ISummer;
+class IAdder;
+
+class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ISummer>
+{
+public:
+
+	virtual ::vl::vint32_t GetSum() = 0;
+	::vl::Event<void()> SumChanged;
+};
+
+class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>
+{
+public:
+
+	virtual void Add(::vl::vint32_t value) = 0;
+};
+#pragma warning(pop)
+
+/***********************************************************************
+Global Variables and Functions
+***********************************************************************/
+
+namespace vl_workflow_global
+{
+	class BindCustomInterface2
+	{
+	public:
+
+		::vl::WString s;
+
+		::vl::Ptr<::vl::reflection::description::IValueSubscription> Bind(::vl::Ptr<::ISummer> summer);
+		void Execute(::vl::Ptr<::IAdder> adder);
+		::vl::WString main();
+
+		static BindCustomInterface2& Instance();
+	};
+}
+
+#endif
