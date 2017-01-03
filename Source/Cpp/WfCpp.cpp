@@ -380,8 +380,9 @@ WfCppConfig::WriteHeader
 						bool hasClassBase = Range(0, count)
 							.Any([=](vint index)
 							{
-								return td->GetBaseTypeDescriptor(index)->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class
-									&& td != description::GetTypeDescriptor<DescriptableObject>();
+								auto baseTd = td->GetBaseTypeDescriptor(index);
+								return baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class
+									&& baseTd != description::GetTypeDescriptor<DescriptableObject>();
 							});
 
 						if (!hasClassBase)
@@ -433,7 +434,7 @@ WfCppConfig::WriteHeader
 				}
 
 				{
-					vint index = enumDecls.Keys().IndexOf(decl.Obj());
+					vint index = structDecls.Keys().IndexOf(decl.Obj());
 					if (index != -1)
 					{
 						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls.GetByIndex(index))
@@ -445,7 +446,7 @@ WfCppConfig::WriteHeader
 				}
 
 				{
-					vint index = enumDecls.Keys().IndexOf(decl.Obj());
+					vint index = classDecls.Keys().IndexOf(decl.Obj());
 					if (index != -1)
 					{
 						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))

@@ -17,7 +17,7 @@ class IMyInterface : public virtual ::vl::reflection::description::IValueEnumera
 public:
 };
 
-class MyClass : public ::vl::reflection::Description<MyClass>
+class MyClass : public virtual ::vl::Object, public ::vl::reflection::Description<MyClass>
 {
 public:
 };

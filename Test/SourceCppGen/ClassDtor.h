@@ -11,7 +11,7 @@ Generated from ../Resources/Codegen/ClassDtor.txt
 #pragma warning(disable:4250)
 class A;
 
-class A : public ::vl::reflection::Description<A>
+class A : public virtual ::vl::Object, public ::vl::reflection::Description<A>
 {
 public:
 };

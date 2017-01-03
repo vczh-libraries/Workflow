@@ -11,7 +11,7 @@ Generated from ../Resources/Codegen/CallStaticMethod.txt
 #pragma warning(disable:4250)
 class Calculator;
 
-class Calculator : public ::vl::reflection::Description<Calculator>
+class Calculator : public virtual ::vl::Object, public ::vl::reflection::Description<Calculator>
 {
 public:
 };
