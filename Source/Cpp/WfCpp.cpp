@@ -91,6 +91,12 @@ WfCppConfig
 			{
 			}
 
+			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix)
+			{
+				auto block = stat.Cast<WfBlockStatement>();
+				writer.WriteLine(prefix + L"throw 0;");
+			}
+
 			WString WfCppConfig::ConvertName(const WString& name)
 			{
 				auto match = regexSpecialName.Match(name);
@@ -697,7 +703,7 @@ WfCppConfig::WriteCpp
 					WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
 					writer.WriteLine(L"");
 					writer.WriteLine(L"\t{");
-					writer.WriteLine(L"\t\tthrow 0;");
+					WriteFunctionBody(writer, decl->statement, L"\t\t");
 					writer.WriteLine(L"\t}");
 					writer.WriteLine(L"");
 				}
@@ -706,25 +712,45 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");
 				writer.WriteLine(L"\t}");
 
-				FOREACH(Ptr<WfExpression>, expr, lambdaExprs.Keys())
+				Dictionary<WString, Ptr<WfExpression>> reversedLambdaExprs;
+				CopyFrom(
+					reversedLambdaExprs,
+					From(lambdaExprs)
+						.Select([](Pair<Ptr<WfExpression>, WString> pair)
+						{
+							return Pair<WString, Ptr<WfExpression>>(pair.value, pair.key);
+						})
+					);
+
+				Dictionary<WString, Ptr<WfNewInterfaceExpression>> reversedClassExprs;
+				CopyFrom(
+					reversedClassExprs,
+					From(classExprs)
+						.Select([](Pair<Ptr<WfNewInterfaceExpression>, WString> pair)
+						{
+							return Pair<WString, Ptr<WfNewInterfaceExpression>>(pair.value, pair.key);
+						})
+					);
+
+				FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_LambdaExprDecl(writer, expr);
 				}
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs.Keys())
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_ClassExprDecl(writer, expr);
 				}
 
-				FOREACH(Ptr<WfExpression>, expr, lambdaExprs.Keys())
+				FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_LambdaExprImpl(writer, expr);
 				}
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs.Keys())
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_ClassExprImpl(writer, expr);

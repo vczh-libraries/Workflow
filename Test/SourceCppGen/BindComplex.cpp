@@ -33,14 +33,6 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_BindComplex().instance;
 	}
 
-	class __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
-	{
-	public:
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
-	};
-
 	class __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
@@ -63,21 +55,13 @@ namespace vl_workflow_global
 		bool Close() override;
 	};
 
-
-	::vl::reflection::description::IValueSubscription* __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	class __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
-		throw 0;
-	}
-
-	bool __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
-	{
-		throw 0;
-	}
+	public:
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
 
 
 
@@ -125,6 +109,22 @@ namespace vl_workflow_global
 	}
 
 	bool __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::Close()
+	{
+		throw 0;
+	}
+
+
+	::vl::reflection::description::IValueSubscription* __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		throw 0;
 	}

@@ -44,6 +44,8 @@ namespace vl
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName);
 				~WfCppConfig();
 
+				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix);
+
 				WString					ConvertName(const WString& name);
 				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
 				WString					ConvertType(ITypeInfo* typeInfo);
