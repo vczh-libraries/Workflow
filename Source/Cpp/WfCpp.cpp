@@ -657,22 +657,46 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"\t{");
 				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");
 				writer.WriteLine(L"\t}");
+
+				FOREACH(Ptr<WfExpression>, expr, lambdaExprs)
+				{
+					writer.WriteLine(L"");
+					WriteCpp_LambdaExprDecl(writer, expr);
+				}
+
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs)
+				{
+					writer.WriteLine(L"");
+					WriteCpp_ClassExprDecl(writer, expr);
+				}
+
+				FOREACH(Ptr<WfExpression>, expr, lambdaExprs)
+				{
+					writer.WriteLine(L"");
+					WriteCpp_LambdaExprImpl(writer, expr);
+				}
+
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs)
+				{
+					writer.WriteLine(L"");
+					WriteCpp_ClassExprImpl(writer, expr);
+				}
 				writer.WriteLine(L"}");
 			}
 
-			void WfCppConfig::WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda, collections::List<WString>& nss)
+			void WfCppConfig::WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
 			{
 			}
 
-			void WfCppConfig::WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda, collections::List<WString>& nss)
+			void WfCppConfig::WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
 			{
 			}
 
-			void WfCppConfig::WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda, collections::List<WString>& nss)
+			void WfCppConfig::WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
 			{
 			}
 
-			void WfCppConfig::WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda, collections::List<WString>& nss)
+			void WfCppConfig::WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
 			{
 			}
 
