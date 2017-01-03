@@ -9,16 +9,16 @@ Generated from ../Resources/Codegen/ClassDtor.txt
 
 #pragma warning(push)
 #pragma warning(disable:4250)
-class A;
+class Dtor;
 
-class A : public ::vl::Object, public ::vl::reflection::Description<A>
+class Dtor : public ::vl::Object, public ::vl::reflection::Description<Dtor>
 {
 public:
 
 	::vl::WString name;
-	::A* next = nullptr;
-	A();
-	~A();
+	::Dtor* next = nullptr;
+	Dtor();
+	~Dtor();
 };
 #pragma warning(pop)
 

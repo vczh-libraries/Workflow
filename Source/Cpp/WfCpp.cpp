@@ -8,6 +8,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace regex;
+			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace analyzer;
@@ -197,7 +198,17 @@ WfCppConfig
 
 			vint WfCppConfig::CountClassNamespace(Ptr<WfClassDeclaration> decl)
 			{
-
+				vint result = 0;
+				auto scope = manager->nodeScopes[decl.Obj()].Obj();
+				while (scope)
+				{
+					if (scope->ownerNode.Cast<WfNamespaceDeclaration>())
+					{
+						result++;
+					}
+					scope = scope->parentScope.Obj();
+				}
+				return result;
 			}
 
 			void WfCppConfig::GetClassNamespace(Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)

@@ -9,10 +9,10 @@ Generated from ../Resources/Codegen/NewCustomInterface3.txt
 
 #pragma warning(push)
 #pragma warning(disable:4250)
-class IMyInterface;
+class IMyInterface3;
 class MyClass;
 
-class IMyInterface : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface>
+class IMyInterface3 : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface3>
 {
 public:
 
@@ -27,7 +27,7 @@ public:
 	::vl::vint32_t end = 0;
 	MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end);
 	::vl::vint32_t Get50();
-	::vl::Ptr<::IMyInterface> CreateMyInterface();
+	::vl::Ptr<::IMyInterface3> CreateMyInterface();
 };
 #pragma warning(pop)
 

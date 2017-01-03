@@ -40,25 +40,25 @@ Lambda Functions (Implementation)
 
 
 /***********************************************************************
-Class (::A)
+Class (::Methods)
 ***********************************************************************/
 
-::A::A()
+Methods::Methods()
 {
 	throw 0;
 }
 
-::A::A(::vl::vint32_t _x)
+Methods::Methods(::vl::vint32_t _x)
 {
 	throw 0;
 }
 
-::vl::vint32_t ::A::GetX()
+::vl::vint32_t Methods::GetX()
 {
 	throw 0;
 }
 
-void ::A::SetX(::vl::vint32_t _x)
+void Methods::SetX(::vl::vint32_t _x)
 {
 	throw 0;
 }

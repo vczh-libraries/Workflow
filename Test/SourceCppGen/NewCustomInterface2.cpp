@@ -40,10 +40,10 @@ Lambda Classes (Implementation)
 
 
 /***********************************************************************
-Class (::IMyInterface)
+Class (::IMyInterface2)
 ***********************************************************************/
 
-::vl::vint32_t ::IMyInterface::Get100()
+::vl::vint32_t IMyInterface2::Get100()
 {
 	throw 0;
 }

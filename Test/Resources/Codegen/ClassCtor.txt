@@ -2,7 +2,7 @@ module test;
 using test::*;
 using system::*;
 
-class Y
+class Base
 {
 	var x : int = 0;
 
@@ -42,14 +42,14 @@ class Y
 	prop X : int {GetX, SetX : XChanged}
 }
 
-class A : Y, ObservableValue
+class Ctor : Base, ObservableValue
 {
 	new()
 	{
 	}
 
 	new(y : int, b : bool)
-		:Y(y)
+		:Base(y)
 	{
 	}
 
@@ -59,7 +59,7 @@ class A : Y, ObservableValue
 	}
 
 	new(y : int, value : int)
-		:Y(y)
+		:Base(y)
 		,ObservableValue(value)
 	{
 	}
@@ -70,19 +70,19 @@ var s = "";
 func main():string
 {
 	{
-		var a = new A^();
+		var a = new Ctor^();
 		s = s & $"[$(a.X)][$(a.Value)]";
 	}
 	{
-		var a = new A^(1, true);
+		var a = new Ctor^(1, true);
 		s = s & $"[$(a.X)][$(a.Value)]";
 	}
 	{
-		var a = new A^(true, 2);
+		var a = new Ctor^(true, 2);
 		s = s & $"[$(a.X)][$(a.Value)]";
 	}
 	{
-		var a = new A^(1, 2);
+		var a = new Ctor^(1, 2);
 		s = s & $"[$(a.X)][$(a.Value)]";
 	}
 	return s;

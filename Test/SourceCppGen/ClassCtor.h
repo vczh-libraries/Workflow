@@ -9,29 +9,29 @@ Generated from ../Resources/Codegen/ClassCtor.txt
 
 #pragma warning(push)
 #pragma warning(disable:4250)
-class Y;
-class A;
+class Base;
+class Ctor;
 
-class Y : public ::vl::Object, public ::vl::reflection::Description<Y>
+class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 {
 public:
 
 	::vl::vint32_t x = 0;
-	Y();
-	Y(::vl::vint32_t _x);
+	Base();
+	Base(::vl::vint32_t _x);
 	::vl::vint32_t GetX();
 	void SetX(::vl::vint32_t _x);
 	::vl::Event<void()> XChanged;
 };
 
-class A : public ::Y, public ::test::ObservableValue, public ::vl::reflection::Description<A>
+class Ctor : public ::Base, public ::test::ObservableValue, public ::vl::reflection::Description<Ctor>
 {
 public:
 
-	A();
-	A(::vl::vint32_t y, bool b);
-	A(bool b, ::vl::vint32_t value);
-	A(::vl::vint32_t y, ::vl::vint32_t value);
+	Ctor();
+	Ctor(::vl::vint32_t y, bool b);
+	Ctor(bool b, ::vl::vint32_t value);
+	Ctor(::vl::vint32_t y, ::vl::vint32_t value);
 };
 #pragma warning(pop)
 

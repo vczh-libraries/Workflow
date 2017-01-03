@@ -67,7 +67,7 @@ Lambda Classes (Implementation)
 Class (::ISummer)
 ***********************************************************************/
 
-::vl::vint32_t ::ISummer::GetSum()
+::vl::vint32_t ISummer::GetSum()
 {
 	throw 0;
 }
@@ -76,7 +76,7 @@ Class (::ISummer)
 Class (::IAdder)
 ***********************************************************************/
 
-void ::IAdder::Add(::vl::vint32_t value)
+void IAdder::Add(::vl::vint32_t value)
 {
 	throw 0;
 }

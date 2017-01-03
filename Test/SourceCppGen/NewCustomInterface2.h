@@ -9,9 +9,9 @@ Generated from ../Resources/Codegen/NewCustomInterface2.txt
 
 #pragma warning(push)
 #pragma warning(disable:4250)
-class IMyInterface;
+class IMyInterface2;
 
-class IMyInterface : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface>
+class IMyInterface2 : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface2>
 {
 public:
 

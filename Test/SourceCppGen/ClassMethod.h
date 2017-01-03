@@ -9,15 +9,15 @@ Generated from ../Resources/Codegen/ClassMethod.txt
 
 #pragma warning(push)
 #pragma warning(disable:4250)
-class A;
+class Methods;
 
-class A : public ::vl::Object, public ::vl::reflection::Description<A>
+class Methods : public ::vl::Object, public ::vl::reflection::Description<Methods>
 {
 public:
 
 	::vl::vint32_t x = 0;
-	A();
-	A(::vl::vint32_t _x);
+	Methods();
+	Methods(::vl::vint32_t _x);
 	::vl::vint32_t GetX();
 	void SetX(::vl::vint32_t _x);
 	::vl::Event<void()> XChanged;

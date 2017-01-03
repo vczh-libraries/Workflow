@@ -69,17 +69,17 @@ Lambda Classes (Implementation)
 Class (::IA)
 ***********************************************************************/
 
-::vl::vint32_t ::IA::GetA()
+::vl::vint32_t IA::GetA()
 {
 	throw 0;
 }
 
-void ::IA::SetA(::vl::vint32_t value)
+void IA::SetA(::vl::vint32_t value)
 {
 	throw 0;
 }
 
-::vl::WString ::IA::Calculate()
+::vl::WString IA::Calculate()
 {
 	throw 0;
 }
@@ -88,17 +88,17 @@ void ::IA::SetA(::vl::vint32_t value)
 Class (::IB)
 ***********************************************************************/
 
-::vl::vint32_t ::IB::GetB()
+::vl::vint32_t IB::GetB()
 {
 	throw 0;
 }
 
-void ::IB::SetB(::vl::vint32_t value)
+void IB::SetB(::vl::vint32_t value)
 {
 	throw 0;
 }
 
-::vl::WString ::IB::Calculate()
+::vl::WString IB::Calculate()
 {
 	throw 0;
 }

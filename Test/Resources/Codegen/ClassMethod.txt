@@ -1,7 +1,7 @@
 module test;
 using system::*;
 
-class A
+class Methods
 {
 	var x : int = 0;
 
@@ -46,15 +46,15 @@ var s = "";
 func main():string
 {
 	{
-		var a = new A^();
+		var a = new Methods^();
 		s = s & $"[$(a.x)]";
 	}
 	{
-		var a = new A^(100);
+		var a = new Methods^(100);
 		s = s & $"[$(a.x)]";
 	}
 	{
-		var a = new A^(1);
+		var a = new Methods^(1);
 		var handler = attach(a.XChanged, func():void{s = s & $"[$(a.X)]";});
 
 		a.X = a.X + 1;

@@ -30,49 +30,49 @@ namespace vl_workflow_global
 }
 
 /***********************************************************************
-Class (::Y)
+Class (::Base)
 ***********************************************************************/
 
-::Y::Y()
+Base::Base()
 {
 	throw 0;
 }
 
-::Y::Y(::vl::vint32_t _x)
+Base::Base(::vl::vint32_t _x)
 {
 	throw 0;
 }
 
-::vl::vint32_t ::Y::GetX()
+::vl::vint32_t Base::GetX()
 {
 	throw 0;
 }
 
-void ::Y::SetX(::vl::vint32_t _x)
+void Base::SetX(::vl::vint32_t _x)
 {
 	throw 0;
 }
 
 /***********************************************************************
-Class (::A)
+Class (::Ctor)
 ***********************************************************************/
 
-::A::A()
+Ctor::Ctor()
 {
 	throw 0;
 }
 
-::A::A(::vl::vint32_t y, bool b)
+Ctor::Ctor(::vl::vint32_t y, bool b)
 {
 	throw 0;
 }
 
-::A::A(bool b, ::vl::vint32_t value)
+Ctor::Ctor(bool b, ::vl::vint32_t value)
 {
 	throw 0;
 }
 
-::A::A(::vl::vint32_t y, ::vl::vint32_t value)
+Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
 {
 	throw 0;
 }
