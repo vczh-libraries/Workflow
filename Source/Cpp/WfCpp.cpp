@@ -372,6 +372,48 @@ WfCppConfig
 				}
 			}
 
+			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType)
+			{
+				if (writeReturnType)
+				{
+					writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
+					writer.WriteChar(L' ');
+				}
+				writer.WriteString(name);
+				writer.WriteString(L"(");
+				for (vint i = 0; i < arguments.Count(); i++)
+				{
+					if (i > 0)
+					{
+						writer.WriteString(L", ");
+					}
+					writer.WriteString(ConvertArgumentType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
+					writer.WriteChar(L' ');
+					writer.WriteString(ConvertName(arguments[i]));
+				}
+				writer.WriteString(L")");
+			}
+
+			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType)
+			{
+				auto result = manager->expressionResolvings[ordered.Obj()];
+				auto typeInfo = result.type.Obj();
+
+				auto scope = manager->nodeScopes[ordered.Obj()].Obj();
+				List<WString> arguments;
+				CopyFrom(
+					arguments,
+					Range<vint>(0, scope->symbols.Count())
+						.Select([scope](vint index)
+						{
+							return scope->symbols.GetByIndex(index)[0]->name; 
+						})
+						.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
+					);
+
+				WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+			}
+
 			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType)
 			{
 				vint index1 = manager->declarationMemberInfos.Keys().IndexOf(decl.Obj());
@@ -391,24 +433,16 @@ WfCppConfig
 					auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
 					auto typeInfo = symbol->typeInfo.Obj();
 
-					if (writeReturnType)
-					{
-						writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
-						writer.WriteChar(L' ');
-					}
-					writer.WriteString(name);
-					writer.WriteString(L"(");
-					for (vint i = 0; i < decl->arguments.Count(); i++)
-					{
-						if (i > 0)
-						{
-							writer.WriteString(L", ");
-						}
-						writer.WriteString(ConvertArgumentType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
-						writer.WriteChar(L' ');
-						writer.WriteString(ConvertName(decl->arguments[i]->name.value));
-					}
-					writer.WriteString(L")");
+					List<WString> arguments;
+					CopyFrom(
+						arguments,
+						From(decl->arguments)
+							.Select([](Ptr<WfFunctionArgument> argument)
+							{
+								return argument->name.value;
+							})
+						);
+					WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
 				}
 			}
 
@@ -760,6 +794,26 @@ WfCppConfig::WriteCpp
 
 			void WfCppConfig::WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
 			{
+				if (auto ordered = lambda.Cast<WfOrderedLambdaExpression>())
+				{
+					auto name = lambdaExprs[lambda.Obj()];
+					writer.WriteLine(L"\tstruct " + name);
+					writer.WriteLine(L"\t{");
+					writer.WriteString(L"\t\t");
+					WriteFunctionHeader(writer, ordered, L"operator()", true);
+					writer.WriteLine(L";");
+					writer.WriteLine(L"\t};");
+				}
+				else if (auto funcExpr = lambda.Cast<WfFunctionExpression>())
+				{
+					auto name = lambdaExprs[lambda.Obj()];
+					writer.WriteLine(L"\tstruct " + name);
+					writer.WriteLine(L"\t{");
+					writer.WriteString(L"\t\t");
+					WriteFunctionHeader(writer, funcExpr->function, L"operator()", true);
+					writer.WriteLine(L";");
+					writer.WriteLine(L"\t};");
+				}
 			}
 
 			void WfCppConfig::WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
