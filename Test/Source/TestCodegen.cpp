@@ -106,22 +106,25 @@ TEST_CASE(TestCodegen)
 					headerWriter.WriteLine(L"Classes");
 					headerWriter.WriteLine(L"***********************************************************************/");
 					headerWriter.WriteLine(L"");
-					config.WriteHeader_ClassPreDecls(headerWriter, nss);
-					headerWriter.WriteLine(L"");
 					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[nullptr])
 					{
+						config.WriteHeader_ClassPreDecl(headerWriter, decl, nss);
+					}
+					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[nullptr])
+					{
+						headerWriter.WriteLine(L"");
 						config.WriteHeader_Class(headerWriter, decl, nss);
 					}
 				}
+				config.WriteEnd(headerWriter, nss);
 
-
+				headerWriter.WriteLine(L"");
 				headerWriter.WriteLine(L"/***********************************************************************");
 				headerWriter.WriteLine(L"Global Variables and Functions");
 				headerWriter.WriteLine(L"***********************************************************************/");
 				headerWriter.WriteLine(L"");
-				config.WriteHeader_Global(headerWriter, nss);
+				config.WriteHeader_Global(headerWriter);
 				headerWriter.WriteLine(L"");
-				config.WriteEnd(headerWriter, nss);
 				headerWriter.WriteLine(L"#endif");
 			}
 

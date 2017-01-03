@@ -11,6 +11,13 @@ Generated from ../Resources/Codegen/CallStaticMethod.txt
 Classes
 ***********************************************************************/
 
+class Calculator;
+namespace Calculator
+{
+	class Internal;
+
+
+}
 
 /***********************************************************************
 Global Variables and Functions

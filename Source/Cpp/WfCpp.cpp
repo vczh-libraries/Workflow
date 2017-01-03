@@ -243,7 +243,7 @@ WfCppConfig
 				{
 					writer.WriteString(prefix);
 					writer.WriteString(L"namespace ");
-					writer.WriteLine(nss[i]);
+					writer.WriteLine(nss2[i]);
 
 					writer.WriteString(prefix);
 					writer.WriteLine(L"{");
@@ -265,8 +265,8 @@ WfCppConfig
 						writer.WriteChar(L'\t');
 					}
 					writer.WriteLine(L"}");
+					nss.RemoveAt(0);
 				}
-				nss.Clear();
 			}
 
 			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name)
@@ -291,49 +291,6 @@ WfCppConfig
 /***********************************************************************
 WfCppConfig::WriteHeader
 ***********************************************************************/
-
-			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer, collections::List<WString>& nss)
-			{
-				WriteEnd(writer, nss);
-				writer.WriteLine(L"namespace " + assemblyNamespace);
-				writer.WriteLine(L"{");
-				writer.WriteLine(L"\tclass " + assemblyName);
-				writer.WriteLine(L"\t{");
-				writer.WriteLine(L"\tpublic:");
-				if (varDecls.Count() > 0)
-				{
-					writer.WriteLine(L"");
-					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
-					{
-						auto scope = manager->nodeScopes[decl.Obj()].Obj();
-						auto symbol = scope->symbols[decl->name.value][0];
-						auto typeInfo = symbol->typeInfo;
-						writer.WriteString(L"\t\t" + ConvertType(typeInfo.Obj()) + L" " + ConvertName(decl->name.value));
-						auto defaultValue = DefaultValue(typeInfo.Obj());
-						if (defaultValue != L"")
-						{
-							writer.WriteString(L" = " + defaultValue);
-						}
-						writer.WriteLine(L";");
-					}
-				}
-				if (funcDecls.Count() > 0)
-				{
-					writer.WriteLine(L"");
-					FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
-					{
-						auto scope = manager->nodeScopes[decl.Obj()].Obj();
-						auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
-						writer.WriteString(L"\t\t");
-						WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), ConvertName(decl->name.value));
-						writer.WriteLine(L";");
-					}
-				}
-				writer.WriteLine(L"");
-				writer.WriteLine(L"\t\tstatic " + assemblyName + L"& Instance();");
-				writer.WriteLine(L"\t};");
-				writer.WriteLine(L"}");
-			}
 
 			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix)
 			{
@@ -397,12 +354,17 @@ WfCppConfig::WriteHeader
 				WriteHeader_Struct(writer, decl, name, prefix);
 			}
 
-			void WfCppConfig::WriteHeader_ClassPreDecls(stream::StreamWriter& writer, const WString& prefix)
+			void WfCppConfig::WriteHeader_ClassPreDecl(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix)
 			{
+				writer.WriteLine(prefix + L"class " + name + L";");
 			}
 
-			void WfCppConfig::WriteHeader_ClassPreDecls(stream::StreamWriter& writer, collections::List<WString>& nss)
+			void WfCppConfig::WriteHeader_ClassPreDecl(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
 			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				WString name;
+				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				WriteHeader_ClassPreDecl(writer, decl, name, prefix);
 			}
 
 			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix)
@@ -411,6 +373,48 @@ WfCppConfig::WriteHeader
 
 			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
 			{
+			}
+
+			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer)
+			{
+				writer.WriteLine(L"namespace " + assemblyNamespace);
+				writer.WriteLine(L"{");
+				writer.WriteLine(L"\tclass " + assemblyName);
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\tpublic:");
+				if (varDecls.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					{
+						auto scope = manager->nodeScopes[decl.Obj()].Obj();
+						auto symbol = scope->symbols[decl->name.value][0];
+						auto typeInfo = symbol->typeInfo;
+						writer.WriteString(L"\t\t" + ConvertType(typeInfo.Obj()) + L" " + ConvertName(decl->name.value));
+						auto defaultValue = DefaultValue(typeInfo.Obj());
+						if (defaultValue != L"")
+						{
+							writer.WriteString(L" = " + defaultValue);
+						}
+						writer.WriteLine(L";");
+					}
+				}
+				if (funcDecls.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+					{
+						auto scope = manager->nodeScopes[decl.Obj()].Obj();
+						auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
+						writer.WriteString(L"\t\t");
+						WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), ConvertName(decl->name.value));
+						writer.WriteLine(L";");
+					}
+				}
+				writer.WriteLine(L"");
+				writer.WriteLine(L"\t\tstatic " + assemblyName + L"& Instance();");
+				writer.WriteLine(L"\t};");
+				writer.WriteLine(L"}");
 			}
 
 /***********************************************************************

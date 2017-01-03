@@ -7,6 +7,7 @@ Generated from ../Resources/Codegen/ClassField.txt
 
 #include "../Source/CppTypes.h"
 
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

@@ -11,6 +11,10 @@ Generated from ../Resources/Codegen/ClassCtor.txt
 Classes
 ***********************************************************************/
 
+class Y;
+class A;
+
+
 
 /***********************************************************************
 Global Variables and Functions

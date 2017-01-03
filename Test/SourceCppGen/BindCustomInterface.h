@@ -11,6 +11,10 @@ Generated from ../Resources/Codegen/BindCustomInterface.txt
 Classes
 ***********************************************************************/
 
+class ISummer;
+class IAdder;
+
+
 
 /***********************************************************************
 Global Variables and Functions

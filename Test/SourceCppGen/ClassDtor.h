@@ -11,6 +11,8 @@ Generated from ../Resources/Codegen/ClassDtor.txt
 Classes
 ***********************************************************************/
 
+class A;
+
 
 /***********************************************************************
 Global Variables and Functions

@@ -11,6 +11,10 @@ Generated from ../Resources/Codegen/NestedLambda.txt
 Classes
 ***********************************************************************/
 
+class IA;
+class IB;
+
+
 
 /***********************************************************************
 Global Variables and Functions

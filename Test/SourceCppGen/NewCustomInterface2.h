@@ -11,6 +11,8 @@ Generated from ../Resources/Codegen/NewCustomInterface2.txt
 Classes
 ***********************************************************************/
 
+class IMyInterface;
+
 
 /***********************************************************************
 Global Variables and Functions
