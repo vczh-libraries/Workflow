@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NamedLambda)
 
 namespace vl_workflow_global
 {
+	::vl::WString NamedLambda::main()
+	{
+		throw 0;
+	}
+
 	NamedLambda& NamedLambda::Instance()
 	{
 		return Getvl_workflow_global_NamedLambda().instance;

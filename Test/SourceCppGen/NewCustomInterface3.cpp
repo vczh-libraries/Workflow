@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewCustomInterface3)
 
 namespace vl_workflow_global
 {
+	::vl::WString NewCustomInterface3::main()
+	{
+		throw 0;
+	}
+
 	NewCustomInterface3& NewCustomInterface3::Instance()
 	{
 		return Getvl_workflow_global_NewCustomInterface3().instance;

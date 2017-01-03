@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpAdd)
 
 namespace vl_workflow_global
 {
+	::vl::WString OpAdd::main()
+	{
+		throw 0;
+	}
+
 	OpAdd& OpAdd::Instance()
 	{
 		return Getvl_workflow_global_OpAdd().instance;

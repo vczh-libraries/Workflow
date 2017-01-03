@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_TypeOf)
 
 namespace vl_workflow_global
 {
+	::vl::WString TypeOf::main()
+	{
+		throw 0;
+	}
+
 	TypeOf& TypeOf::Instance()
 	{
 		return Getvl_workflow_global_TypeOf().instance;

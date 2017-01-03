@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_MapProcessing)
 
 namespace vl_workflow_global
 {
+	::vl::WString MapProcessing::main()
+	{
+		throw 0;
+	}
+
 	MapProcessing& MapProcessing::Instance()
 	{
 		return Getvl_workflow_global_MapProcessing().instance;

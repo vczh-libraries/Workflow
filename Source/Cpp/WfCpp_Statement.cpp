@@ -7,6 +7,8 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
 			using namespace analyzer;
 
 			class WfGenerateStatementVisitor : public Object, public WfStatement::IVisitor

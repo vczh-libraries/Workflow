@@ -17,6 +17,9 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::test::Seasons Id(::test::Seasons s);
+		::vl::WString main();
+
 		static EnumCtor& Instance();
 	};
 }

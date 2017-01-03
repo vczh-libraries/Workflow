@@ -17,6 +17,9 @@ namespace vl_workflow_global
 	{
 	public:
 
+		bool Delete(::test::ObservableValue* value);
+		::vl::WString main();
+
 		static Delete& Instance();
 	};
 }

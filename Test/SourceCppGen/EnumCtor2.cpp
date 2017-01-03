@@ -16,6 +16,16 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_EnumCtor2)
 
 namespace vl_workflow_global
 {
+	::Seasons EnumCtor2::Id(::Seasons s)
+	{
+		throw 0;
+	}
+
+	::vl::WString EnumCtor2::main()
+	{
+		throw 0;
+	}
+
 	EnumCtor2& EnumCtor2::Instance()
 	{
 		return Getvl_workflow_global_EnumCtor2().instance;

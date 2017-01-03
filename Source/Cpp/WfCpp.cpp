@@ -106,14 +106,14 @@ WfCppConfig
 			{
 				List<Ptr<RegexMatch>> matches;
 				regexSplitName.Split(fullName, false, matches);
-				return From(matches)
+				return WString(fullName[0] == L':' ? L"::" : L"") + From(matches)
 					.Select([this](Ptr<RegexMatch> match)
 					{
-						return L"::" + ConvertName(match->Result().Value());
+						return ConvertName(match->Result().Value());
 					})
 					.Aggregate([](const WString& a, const WString& b)
 					{
-						return a + b;
+						return a + L"::" + b;
 					});
 			}
 
@@ -124,7 +124,18 @@ WfCppConfig
 				case ITypeInfo::RawPtr:
 					return ConvertType(typeInfo->GetElementType()) + L"*";
 				case ITypeInfo::SharedPtr:
-					return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType()) + L">";
+					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+					{
+						return ConvertType(typeInfo->GetElementType());
+					}
+					else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						return ConvertType(typeInfo->GetElementType());
+					}
+					else
+					{
+						return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType()) + L">";
+					}
 				case ITypeInfo::Nullable:
 					return L"::vl::Nullable<" + ConvertType(typeInfo->GetElementType()) + L">";
 				case ITypeInfo::Generic:
@@ -258,6 +269,25 @@ WfCppConfig
 				nss.Clear();
 			}
 
+			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name)
+			{
+				writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
+				writer.WriteChar(L' ');
+				writer.WriteString(name);
+				writer.WriteString(L"(");
+				for (vint i = 0; i < decl->arguments.Count(); i++)
+				{
+					if (i > 0)
+					{
+						writer.WriteString(L", ");
+					}
+					writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
+					writer.WriteChar(L' ');
+					writer.WriteString(decl->arguments[i]->name.value);
+				}
+				writer.WriteString(L")");
+			}
+
 /***********************************************************************
 WfCppConfig::WriteHeader
 ***********************************************************************/
@@ -275,6 +305,16 @@ WfCppConfig::WriteHeader
 					writer.WriteLine(L"");
 					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
 					{
+						auto scope = manager->nodeScopes[decl.Obj()].Obj();
+						auto symbol = scope->symbols[decl->name.value][0];
+						auto typeInfo = symbol->typeInfo;
+						writer.WriteString(L"\t\t" + ConvertType(typeInfo.Obj()) + L" " + ConvertName(decl->name.value));
+						auto defaultValue = DefaultValue(typeInfo.Obj());
+						if (defaultValue != L"")
+						{
+							writer.WriteString(L" = " + defaultValue);
+						}
+						writer.WriteLine(L";");
 					}
 				}
 				if (funcDecls.Count() > 0)
@@ -282,7 +322,11 @@ WfCppConfig::WriteHeader
 					writer.WriteLine(L"");
 					FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
 					{
-
+						auto scope = manager->nodeScopes[decl.Obj()].Obj();
+						auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
+						writer.WriteString(L"\t\t");
+						WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), ConvertName(decl->name.value));
+						writer.WriteLine(L";");
 					}
 				}
 				writer.WriteLine(L"");
@@ -300,17 +344,17 @@ WfCppConfig::WriteHeader
 					switch (item->kind)
 					{
 					case WfEnumItemKind::Constant:
-						writer.WriteLine(prefix + L"\t" + item->name.value + L" = " + item->number.value + L"UL,");
+						writer.WriteLine(prefix + L"\t" + ConvertName(item->name.value) + L" = " + item->number.value + L"UL,");
 						break;
 					case WfEnumItemKind::Intersection:
-						writer.WriteString(prefix + L"\t" + item->name.value + L" = ");
+						writer.WriteString(prefix + L"\t" + ConvertName(item->name.value) + L" = ");
 						FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
 						{
 							if (index > 0)
 							{
 								writer.WriteString(L" | ");
 							}
-							writer.WriteString(enumInt->name.value);
+							writer.WriteString(ConvertName(enumInt->name.value));
 						}
 						writer.WriteLine(L",");
 						break;
@@ -340,7 +384,7 @@ WfCppConfig::WriteHeader
 					{
 						defaultValue = L" = " + defaultValue;
 					}
-					writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn()) + L" " + member->name.value + defaultValue + L";");
+					writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn()) + L" " + ConvertName(member->name.value) + defaultValue + L";");
 				}
 				writer.WriteLine(prefix + L"};");
 			}
@@ -379,12 +423,40 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"BEGIN_GLOBAL_STORAGE_CLASS(" + storageName + L")");
 				writer.WriteLine(L"\t" + assemblyNamespace + L"::" + assemblyName + L" instance;");
 				writer.WriteLine(L"\tINITIALIZE_GLOBAL_STORAGE_CLASS");
+				if (varDecls.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					{
+						auto scope = manager->nodeScopes[decl.Obj()].Obj();
+						auto symbol = scope->symbols[decl->name.value][0];
+						auto typeInfo = symbol->typeInfo;
+						if (decl->expression)
+						{
+							writer.WriteString(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ");
+							GenerateExpression(this, writer, decl->expression, L"\t\t");
+							writer.WriteLine(L";");
+						}
+					}
+				}
 				writer.WriteLine(L"\tFINALIZE_GLOBAL_STORAGE_CLASS");
 				writer.WriteLine(L"END_GLOBAL_STORAGE_CLASS(" + storageName + L")");
 				writer.WriteLine(L"");
 
 				writer.WriteLine(L"namespace vl_workflow_global");
 				writer.WriteLine(L"{");
+				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+				{
+					auto scope = manager->nodeScopes[decl.Obj()].Obj();
+					auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
+					writer.WriteString(L"\t");
+					WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), assemblyName + L"::" + ConvertName(decl->name.value));
+					writer.WriteLine(L"");
+					writer.WriteLine(L"\t{");
+					writer.WriteLine(L"\t\tthrow 0;");
+					writer.WriteLine(L"\t}");
+					writer.WriteLine(L"");
+				}
 				writer.WriteLine(L"\t" + assemblyName + L"& " + assemblyName + L"::Instance()");
 				writer.WriteLine(L"\t{");
 				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");

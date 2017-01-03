@@ -17,6 +17,10 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::WString Show1(::vl::Ptr<::vl::reflection::description::IValueList> xs);
+		::vl::WString Show2(::vl::Ptr<::vl::reflection::description::IValueList> xs);
+		::vl::WString main();
+
 		static ForEach& Instance();
 	};
 }

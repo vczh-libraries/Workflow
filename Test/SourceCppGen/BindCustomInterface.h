@@ -22,6 +22,12 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::WString s;
+
+		::vl::Ptr<::vl::reflection::description::IValueSubscription> Bind(::vl::Ptr<::ISummer> summer);
+		void Execute(::vl::Ptr<::IAdder> adder);
+		::vl::WString main();
+
 		static BindCustomInterface& Instance();
 	};
 }

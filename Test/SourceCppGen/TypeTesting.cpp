@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_TypeTesting)
 
 namespace vl_workflow_global
 {
+	::vl::WString TypeTesting::main()
+	{
+		throw 0;
+	}
+
 	TypeTesting& TypeTesting::Instance()
 	{
 		return Getvl_workflow_global_TypeTesting().instance;

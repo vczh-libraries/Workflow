@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_ElementInSet)
 
 namespace vl_workflow_global
 {
+	::vl::WString ElementInSet::main()
+	{
+		throw 0;
+	}
+
 	ElementInSet& ElementInSet::Instance()
 	{
 		return Getvl_workflow_global_ElementInSet().instance;

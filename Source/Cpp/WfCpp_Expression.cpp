@@ -7,6 +7,8 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
 			using namespace analyzer;
 
 			class WfGenerateExpressionVisitor : public Object, public WfExpression::IVisitor
@@ -60,22 +62,73 @@ namespace vl
 
 				void Visit(WfLiteralExpression* node)override
 				{
-					throw 0;
+					switch (node->value)
+					{
+					case WfLiteralValue::Null:
+						writer.WriteString(L"nullptr");
+						break;
+					case WfLiteralValue::True:
+						writer.WriteString(L"true");
+						break;
+					case WfLiteralValue::False:
+						writer.WriteString(L"false");
+						break;
+					}
 				}
 
 				void Visit(WfFloatingExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto td = result.type->GetTypeDescriptor();
+					if (td == description::GetTypeDescriptor<float>())
+					{
+						writer.WriteString(node->value.value + L"f");
+					}
+					else if (td == description::GetTypeDescriptor<double>())
+					{
+						writer.WriteString(node->value.value);
+					}
 				}
 
 				void Visit(WfIntegerExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto td = result.type->GetTypeDescriptor();
+					if (td == description::GetTypeDescriptor<vint32_t>())
+					{
+						writer.WriteString(node->value.value);
+					}
+					else if (td == description::GetTypeDescriptor<vuint32_t>())
+					{
+						writer.WriteString(node->value.value + L"U");
+					}
+					else if (td == description::GetTypeDescriptor<vint64_t>())
+					{
+						writer.WriteString(node->value.value + L"L");
+					}
+					else if (td == description::GetTypeDescriptor<vuint64_t>())
+					{
+						writer.WriteString(node->value.value + L"UL");
+					}
 				}
 
 				void Visit(WfStringExpression* node)override
 				{
-					throw 0;
+					writer.WriteString(L"L\"");
+					for (vint i = 0; i < node->value.value.Length(); i++)
+					{
+						auto c = node->value.value[i];
+						switch (c)
+						{
+						case L'\'': writer.WriteString(L"\\\'"); break;
+						case L'\"': writer.WriteString(L"\\\""); break;
+						case L'\r': writer.WriteString(L"\\r"); break;
+						case L'\n': writer.WriteString(L"\\n"); break;
+						case L'\t': writer.WriteString(L"\\t"); break;
+						default: writer.WriteChar(c);
+						}
+					}
+					writer.WriteString(L"\"");
 				}
 
 				void Visit(WfFormatExpression* node)override
@@ -115,7 +168,23 @@ namespace vl
 
 				void Visit(WfConstructorExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto td = result.type->GetTypeDescriptor();
+					if (node->arguments.Count() == 0)
+					{
+						if ((td->GetTypeDescriptorFlags()&TypeDescriptorFlags::StructType)!=TypeDescriptorFlags::Undefined)
+						{
+							writer.WriteString(config->ConvertType(result.type.Obj()) + L"{}");
+						}
+						else
+						{
+							writer.WriteString(config->ConvertFullName(CppGetFullName(td)) + L"::Create()");
+						}
+					}
+					else
+					{
+						throw 0;
+					}
 				}
 
 				void Visit(WfInferExpression* node)override

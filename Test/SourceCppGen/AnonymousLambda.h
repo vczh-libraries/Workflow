@@ -17,6 +17,9 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> Adder(::vl::vint32_t x);
+		::vl::WString main();
+
 		static AnonymousLambda& Instance();
 	};
 }

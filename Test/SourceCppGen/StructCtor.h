@@ -17,6 +17,9 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::vint32_t Do(::test::Point p);
+		::vl::WString main();
+
 		static StructCtor& Instance();
 	};
 }

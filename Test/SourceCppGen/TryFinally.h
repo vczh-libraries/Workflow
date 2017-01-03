@@ -17,6 +17,14 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::vint32_t sum = 0;
+
+		void test1();
+		void test2();
+		void test3();
+		void test4();
+		::vl::WString main();
+
 		static TryFinally& Instance();
 	};
 }

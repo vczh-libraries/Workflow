@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpCompare)
 
 namespace vl_workflow_global
 {
+	::vl::WString OpCompare::main()
+	{
+		throw 0;
+	}
+
 	OpCompare& OpCompare::Instance()
 	{
 		return Getvl_workflow_global_OpCompare().instance;

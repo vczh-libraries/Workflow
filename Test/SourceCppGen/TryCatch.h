@@ -17,6 +17,15 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::WString log;
+
+		void Test1();
+		void Test2();
+		void Throw(::vl::WString message);
+		void Test3();
+		void Test4();
+		::vl::WString main();
+
 		static TryCatch& Instance();
 	};
 }

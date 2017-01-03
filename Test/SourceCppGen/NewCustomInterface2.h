@@ -22,6 +22,8 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::WString main();
+
 		static NewCustomInterface2& Instance();
 	};
 }

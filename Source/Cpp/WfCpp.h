@@ -50,6 +50,7 @@ namespace vl
 
 				WString					WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
 				void					WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
+				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name);
 
 				void					WriteHeader_Global(stream::StreamWriter& writer, collections::List<WString>& nss);
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);

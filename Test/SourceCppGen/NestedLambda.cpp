@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NestedLambda)
 
 namespace vl_workflow_global
 {
+	::vl::WString NestedLambda::main()
+	{
+		throw 0;
+	}
+
 	NestedLambda& NestedLambda::Instance()
 	{
 		return Getvl_workflow_global_NestedLambda().instance;

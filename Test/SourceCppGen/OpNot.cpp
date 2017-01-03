@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpNot)
 
 namespace vl_workflow_global
 {
+	::vl::WString OpNot::main()
+	{
+		throw 0;
+	}
+
 	OpNot& OpNot::Instance()
 	{
 		return Getvl_workflow_global_OpNot().instance;

@@ -16,6 +16,16 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_StructCtor)
 
 namespace vl_workflow_global
 {
+	::vl::vint32_t StructCtor::Do(::test::Point p)
+	{
+		throw 0;
+	}
+
+	::vl::WString StructCtor::main()
+	{
+		throw 0;
+	}
+
 	StructCtor& StructCtor::Instance()
 	{
 		return Getvl_workflow_global_StructCtor().instance;

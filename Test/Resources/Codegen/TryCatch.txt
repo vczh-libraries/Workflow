@@ -3,11 +3,11 @@ using system::*;
 
 var log = "";
 
-func test1():void
+func Test1():void
 {
 	try
 	{
-		raise "test1::catch";
+		raise "Test1::catch";
 	}
 	catch(ex)
 	{
@@ -15,11 +15,11 @@ func test1():void
 	}
 }
 
-func test2():void
+func Test2():void
 {
 	try
 	{
-		raise "test2::catch";
+		raise "Test2::catch";
 	}
 	catch(ex)
 	{
@@ -27,22 +27,22 @@ func test2():void
 	}
 	finally
 	{
-		log = log & "[test2::finally]";
+		log = log & "[Test2::finally]";
 	}
 }
 
-func throw(message : string):void
+func Throw(message : string):void
 {
 	raise message;
 }
 
-func test3():void
+func Test3():void
 {
 	try
 	{
 		try
 		{
-			throw("test3::catch");
+			Throw("Test3::catch");
 		}
 		catch(ex)
 		{
@@ -51,7 +51,7 @@ func test3():void
 		}
 		finally
 		{
-			log = log & "[test3::finally1]";
+			log = log & "[Test3::finally1]";
 		}
 	}
 	catch(ex)
@@ -60,11 +60,11 @@ func test3():void
 	}
 	finally
 	{
-		log = log & "[test3::finally2]";
+		log = log & "[Test3::finally2]";
 	}
 }
 
-func test4():void
+func Test4():void
 {
 	try
 	{
@@ -78,7 +78,7 @@ func test4():void
 		}
 		finally
 		{
-			log = log & "[test4::finally1]";
+			log = log & "[Test4::finally1]";
 		}
 	}
 	catch(ex)
@@ -87,15 +87,15 @@ func test4():void
 	}
 	finally
 	{
-		log = log & "[test4::finally2]";
+		log = log & "[Test4::finally2]";
 	}
 }
 
 func main():string
 {
-	test1();
-	test2();
-	test3();
-	test4();
+	Test1();
+	Test2();
+	Test3();
+	Test4();
 	return log;
 }

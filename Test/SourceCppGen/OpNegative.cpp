@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpNegative)
 
 namespace vl_workflow_global
 {
+	::vl::WString OpNegative::main()
+	{
+		throw 0;
+	}
+
 	OpNegative& OpNegative::Instance()
 	{
 		return Getvl_workflow_global_OpNegative().instance;

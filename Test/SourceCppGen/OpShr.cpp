@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpShr)
 
 namespace vl_workflow_global
 {
+	::vl::WString OpShr::main()
+	{
+		throw 0;
+	}
+
 	OpShr& OpShr::Instance()
 	{
 		return Getvl_workflow_global_OpShr().instance;

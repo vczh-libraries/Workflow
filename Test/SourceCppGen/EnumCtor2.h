@@ -32,6 +32,9 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::Seasons Id(::Seasons s);
+		::vl::WString main();
+
 		static EnumCtor2& Instance();
 	};
 }

@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_CallStaticMethod)
 
 namespace vl_workflow_global
 {
+	::vl::WString CallStaticMethod::main()
+	{
+		throw 0;
+	}
+
 	CallStaticMethod& CallStaticMethod::Instance()
 	{
 		return Getvl_workflow_global_CallStaticMethod().instance;

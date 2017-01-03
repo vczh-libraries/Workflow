@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_ListProcessing)
 
 namespace vl_workflow_global
 {
+	::vl::WString ListProcessing::main()
+	{
+		throw 0;
+	}
+
 	ListProcessing& ListProcessing::Instance()
 	{
 		return Getvl_workflow_global_ListProcessing().instance;

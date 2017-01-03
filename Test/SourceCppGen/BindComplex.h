@@ -17,6 +17,11 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::WString s;
+
+		void Callback(::vl::reflection::description::Value value);
+		::vl::WString main();
+
 		static BindComplex& Instance();
 	};
 }

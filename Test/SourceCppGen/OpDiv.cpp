@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OpDiv)
 
 namespace vl_workflow_global
 {
+	::vl::WString OpDiv::main()
+	{
+		throw 0;
+	}
+
 	OpDiv& OpDiv::Instance()
 	{
 		return Getvl_workflow_global_OpDiv().instance;

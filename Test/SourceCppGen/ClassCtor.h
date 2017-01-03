@@ -22,6 +22,10 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::WString s;
+
+		::vl::WString main();
+
 		static ClassCtor& Instance();
 	};
 }

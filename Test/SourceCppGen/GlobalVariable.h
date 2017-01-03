@@ -17,6 +17,11 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::vint32_t x = 0;
+
+		::vl::vint32_t Add(::vl::vint32_t y);
+		::vl::WString main();
+
 		static GlobalVariable& Instance();
 	};
 }

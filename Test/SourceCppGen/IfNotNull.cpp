@@ -16,6 +16,11 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_IfNotNull)
 
 namespace vl_workflow_global
 {
+	::vl::WString IfNotNull::main()
+	{
+		throw 0;
+	}
+
 	IfNotNull& IfNotNull::Instance()
 	{
 		return Getvl_workflow_global_IfNotNull().instance;

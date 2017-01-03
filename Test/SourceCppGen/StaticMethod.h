@@ -17,6 +17,9 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::Ptr<::test::ObservableValue> Create2(::vl::vint32_t value, ::vl::WString name);
+		::vl::WString main();
+
 		static StaticMethod& Instance();
 	};
 }

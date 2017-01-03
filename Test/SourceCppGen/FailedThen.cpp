@@ -16,6 +16,16 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_FailedThen)
 
 namespace vl_workflow_global
 {
+	::vl::vint32_t FailedThen::GetValue(::vl::Ptr<::test::ObservableValue> value, ::vl::vint32_t increase, ::vl::vint32_t defaultValue)
+	{
+		throw 0;
+	}
+
+	::vl::WString FailedThen::main()
+	{
+		throw 0;
+	}
+
 	FailedThen& FailedThen::Instance()
 	{
 		return Getvl_workflow_global_FailedThen().instance;

@@ -17,6 +17,12 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::Ptr<::vl::reflection::description::IValueList> olds;
+		::vl::Ptr<::vl::reflection::description::IValueList> news;
+
+		void EventHandler(::vl::vint32_t oldValue, ::vl::vint32_t newValue);
+		::vl::WString main();
+
 		static Event& Instance();
 	};
 }
