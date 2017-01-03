@@ -20,6 +20,8 @@ public:
 class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClass>
 {
 public:
+	::vl::vint32_t begin = 0;
+	::vl::vint32_t end = 0;
 };
 #pragma warning(pop)
 

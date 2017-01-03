@@ -15,6 +15,7 @@ class A;
 class Y : public ::vl::Object, public ::vl::reflection::Description<Y>
 {
 public:
+	::vl::vint32_t x = 0;
 };
 
 class A : public ::Y, public ::test::ObservableValue, public ::vl::reflection::Description<A>

@@ -461,6 +461,11 @@ WfCppConfig::WriteHeader
 					}
 				}
 
+				FOREACH(Ptr<WfClassMember>, member, decl->members)
+				{
+					GenerateClassMemberDecl(this, writer, decl, member, prefix + L"\t");
+				}
+
 				writer.WriteLine(prefix + L"};");
 			}
 
