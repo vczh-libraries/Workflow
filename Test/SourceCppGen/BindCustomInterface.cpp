@@ -39,6 +39,14 @@ namespace vl_workflow_global
 	}
 
 
+	class __vwsnc3_main__IAdder : public ::vl::Object, public virtual ::IAdder
+	{
+	public:
+		::vl::vint32_t sum = 0;
+		::vl::vint32_t GetSum() override;
+		void Add(::vl::vint32_t value) override;
+	};
+
 	class __vwsnc1_Bind__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
@@ -50,17 +58,9 @@ namespace vl_workflow_global
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_1_0();
 		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(::vl::Func<void(::vl::reflection::description::Value)> callback) override;
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback) override;
 		bool Update() override;
 		bool Close() override;
-	};
-
-	class __vwsnc3_main__IAdder : public ::vl::Object, public virtual ::IAdder
-	{
-	public:
-		::vl::vint32_t sum = 0;
-		::vl::vint32_t GetSum() override;
-		void Add(::vl::vint32_t value) override;
 	};
 
 	class __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
@@ -71,6 +71,18 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
+
+
+
+	::vl::vint32_t __vwsnc3_main__IAdder::GetSum()
+	{
+		throw 0;
+	}
+
+	void __vwsnc3_main__IAdder::Add(::vl::vint32_t value)
+	{
+		throw 0;
+	}
 
 
 
@@ -93,7 +105,7 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Subscribe(::vl::Func<void(::vl::reflection::description::Value)> callback)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
 	{
 		throw 0;
 	}
@@ -104,18 +116,6 @@ namespace vl_workflow_global
 	}
 
 	bool __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Close()
-	{
-		throw 0;
-	}
-
-
-
-	::vl::vint32_t __vwsnc3_main__IAdder::GetSum()
-	{
-		throw 0;
-	}
-
-	void __vwsnc3_main__IAdder::Add(::vl::vint32_t value)
 	{
 		throw 0;
 	}

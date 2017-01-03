@@ -28,7 +28,7 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	void TryCatch::Throw(::vl::WString message)
+	void TryCatch::Throw(const ::vl::WString& message)
 	{
 		throw 0;
 	}

@@ -174,6 +174,29 @@ WfCppConfig
 				return ConvertFullName(CppGetFullName(typeInfo->GetTypeDescriptor()));
 			}
 
+			WString WfCppConfig::ConvertArgumentType(ITypeInfo* typeInfo)
+			{
+				auto td = typeInfo->GetTypeDescriptor();
+				bool constRef =
+					td == description::GetTypeDescriptor<WString>() ||
+					(
+						typeInfo->GetDecorator() == ITypeInfo::SharedPtr && typeInfo->GetElementType()->GetDecorator() == ITypeInfo::Generic &&
+						(
+							td == description::GetTypeDescriptor<IValueFunctionProxy>() ||
+							td == description::GetTypeDescriptor<IValueEnumerable>()
+							)
+					);
+
+				if (constRef)
+				{
+					return L"const " + ConvertType(typeInfo) + L"&";
+				}
+				else
+				{
+					return ConvertType(typeInfo);
+				}
+			}
+
 			WString WfCppConfig::DefaultValue(ITypeInfo* typeInfo)
 			{
 				switch (typeInfo->GetDecorator())
@@ -374,7 +397,7 @@ WfCppConfig
 						{
 							writer.WriteString(L", ");
 						}
-						writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
+						writer.WriteString(ConvertArgumentType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
 						writer.WriteChar(L' ');
 						writer.WriteString(ConvertName(decl->arguments[i]->name.value));
 					}
@@ -398,7 +421,7 @@ WfCppConfig
 					{
 						writer.WriteString(L", ");
 					}
-					writer.WriteString(ConvertType(methodInfo->GetParameter(i)->GetType()));
+					writer.WriteString(ConvertArgumentType(methodInfo->GetParameter(i)->GetType()));
 					writer.WriteChar(L' ');
 					writer.WriteString(methodInfo->GetParameter(i)->GetName());
 				}

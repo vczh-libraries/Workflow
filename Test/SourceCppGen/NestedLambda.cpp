@@ -35,16 +35,6 @@ namespace vl_workflow_global
 
 
 
-	class __vwsnc1_main__IA : public ::vl::Object, public virtual ::IA
-	{
-	public:
-		::vl::vint32_t a = 0;
-		::vl::vint32_t GetA() override;
-		void SetA(::vl::vint32_t value) override;
-		::vl::WString H();
-		::vl::WString Calculate() override;
-	};
-
 	class __vwsnc2_main_H__IB : public ::vl::Object, public virtual ::IB
 	{
 	public:
@@ -55,36 +45,24 @@ namespace vl_workflow_global
 		::vl::WString Calculate() override;
 	};
 
-
-
-
-
-
-
-
-
-
-
-
-	::vl::vint32_t __vwsnc1_main__IA::GetA()
+	class __vwsnc1_main__IA : public ::vl::Object, public virtual ::IA
 	{
-		throw 0;
-	}
+	public:
+		::vl::vint32_t a = 0;
+		::vl::vint32_t GetA() override;
+		void SetA(::vl::vint32_t value) override;
+		::vl::WString H();
+		::vl::WString Calculate() override;
+	};
 
-	void __vwsnc1_main__IA::SetA(::vl::vint32_t value)
-	{
-		throw 0;
-	}
 
-	::vl::WString __vwsnc1_main__IA::H()
-	{
-		throw 0;
-	}
 
-	::vl::WString __vwsnc1_main__IA::Calculate()
-	{
-		throw 0;
-	}
+
+
+
+
+
+
 
 
 
@@ -104,6 +82,28 @@ namespace vl_workflow_global
 	}
 
 	::vl::WString __vwsnc2_main_H__IB::Calculate()
+	{
+		throw 0;
+	}
+
+
+
+	::vl::vint32_t __vwsnc1_main__IA::GetA()
+	{
+		throw 0;
+	}
+
+	void __vwsnc1_main__IA::SetA(::vl::vint32_t value)
+	{
+		throw 0;
+	}
+
+	::vl::WString __vwsnc1_main__IA::H()
+	{
+		throw 0;
+	}
+
+	::vl::WString __vwsnc1_main__IA::Calculate()
 	{
 		throw 0;
 	}

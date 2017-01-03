@@ -18,7 +18,7 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::vint32_t Apply(::vl::Func<::vl::vint32_t(::vl::vint32_t)> f, ::vl::vint32_t arg);
+		::vl::vint32_t Apply(const ::vl::Func<::vl::vint32_t(::vl::vint32_t)>& f, ::vl::vint32_t arg);
 		::vl::Func<::vl::vint32_t(::vl::vint32_t)> Adder(::vl::vint32_t x);
 		::vl::WString main();
 

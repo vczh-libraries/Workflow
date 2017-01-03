@@ -18,8 +18,8 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString Show1(::vl::collections::LazyList<::vl::vint32_t> xs);
-		::vl::WString Show2(::vl::collections::LazyList<::vl::vint32_t> xs);
+		::vl::WString Show1(const ::vl::collections::LazyList<::vl::vint32_t>& xs);
+		::vl::WString Show2(const ::vl::collections::LazyList<::vl::vint32_t>& xs);
 		::vl::WString main();
 
 		static NewInterface& Instance();

@@ -58,7 +58,7 @@ namespace vl_workflow_global
 		void __vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_3_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(::vl::Func<void(::vl::reflection::description::Value)> callback) override;
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback) override;
 		bool Update() override;
 		bool Close() override;
 	};
@@ -114,7 +114,7 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_main__vl_reflection_description_IValueSubscription::Subscribe(::vl::Func<void(::vl::reflection::description::Value)> callback)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
 	{
 		throw 0;
 	}

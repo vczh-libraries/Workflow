@@ -33,14 +33,6 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_BindSimple().instance;
 	}
 
-	class __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
-	{
-	public:
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
-	};
-
 	class __vwsnc1_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
@@ -58,26 +50,18 @@ namespace vl_workflow_global
 		void __vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_3_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(::vl::Func<void(::vl::reflection::description::Value)> callback) override;
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback) override;
 		bool Update() override;
 		bool Close() override;
 	};
 
-
-	::vl::reflection::description::IValueSubscription* __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	class __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
-		throw 0;
-	}
-
-	bool __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
-	{
-		throw 0;
-	}
+	public:
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
 
 
 
@@ -114,7 +98,7 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_main__vl_reflection_description_IValueSubscription::Subscribe(::vl::Func<void(::vl::reflection::description::Value)> callback)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
 	{
 		throw 0;
 	}
@@ -125,6 +109,22 @@ namespace vl_workflow_global
 	}
 
 	bool __vwsnc1_main__vl_reflection_description_IValueSubscription::Close()
+	{
+		throw 0;
+	}
+
+
+	::vl::reflection::description::IValueSubscription* __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		throw 0;
 	}

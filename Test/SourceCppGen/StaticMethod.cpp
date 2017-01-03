@@ -16,7 +16,7 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_StaticMethod)
 
 namespace vl_workflow_global
 {
-	::vl::Ptr<::test::ObservableValue> StaticMethod::Create2(::vl::vint32_t value, ::vl::WString name)
+	::vl::Ptr<::test::ObservableValue> StaticMethod::Create2(::vl::vint32_t value, const ::vl::WString& name)
 	{
 		throw 0;
 	}

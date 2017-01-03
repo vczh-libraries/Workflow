@@ -22,7 +22,7 @@ namespace vl_workflow_global
 
 		void Test1();
 		void Test2();
-		void Throw(::vl::WString message);
+		void Throw(const ::vl::WString& message);
 		void Test3();
 		void Test4();
 		::vl::WString main();

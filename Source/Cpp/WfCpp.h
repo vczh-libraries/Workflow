@@ -47,6 +47,7 @@ namespace vl
 				WString					ConvertName(const WString& name);
 				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
 				WString					ConvertType(ITypeInfo* typeInfo);
+				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
 
 				vint					CountClassNamespace(Ptr<WfClassDeclaration> decl);
