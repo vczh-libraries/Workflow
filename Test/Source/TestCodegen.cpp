@@ -201,12 +201,12 @@ TEST_CASE(TestCodegen)
 						cppWriter.WriteLine(L"***********************************************************************/");
 						cppWriter.WriteLine(L"");
 
-						List<Ptr<WfClassMember>> members;
-						config.GetClassMembers(decl, members);
-						FOREACH(Ptr<WfClassMember>, member, members)
+						FOREACH(Ptr<WfClassMember>, member, decl->members)
 						{
-							config.WriteCpp_ClassMember(cppWriter, decl, member, nss);
-							cppWriter.WriteLine(L"");
+							if (config.WriteCpp_ClassMember(cppWriter, decl, member, nss))
+							{
+								cppWriter.WriteLine(L"");
+							}
 						}
 					}
 				}

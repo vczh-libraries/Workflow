@@ -613,12 +613,12 @@ WfCppConfig::WriteCpp
 			{
 			}
 
-			void WfCppConfig::GetClassMembers(Ptr<WfClassDeclaration> decl, collections::List<Ptr<WfClassMember>>& members)
+			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss)
 			{
-			}
-
-			void WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss)
-			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				WString name;
+				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				return GenerateClassMemberImpl(this, writer, decl, member, prefix);
 			}
 		}
 	}

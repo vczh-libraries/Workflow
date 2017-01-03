@@ -43,3 +43,8 @@ Lambda Classes (Implementation)
 Class (::IMyInterface)
 ***********************************************************************/
 
+::vl::vint32_t ::IMyInterface::Get100()
+{
+	throw 0;
+}
+

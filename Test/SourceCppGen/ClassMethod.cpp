@@ -43,3 +43,23 @@ Lambda Functions (Implementation)
 Class (::A)
 ***********************************************************************/
 
+::A::A()
+{
+	throw 0;
+}
+
+::A::A(::vl::vint32_t _x)
+{
+	throw 0;
+}
+
+::vl::vint32_t ::A::GetX()
+{
+	throw 0;
+}
+
+void ::A::SetX(::vl::vint32_t _x)
+{
+	throw 0;
+}
+
