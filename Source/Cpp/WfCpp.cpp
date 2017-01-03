@@ -72,11 +72,12 @@ WfCppConfig
 				}
 			}
 
-			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager)
+			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName)
 				:manager(_manager)
 				, regexSplitName(L"::")
 				, regexSpecialName(L"/<(<category>/w+)(-(<category>/w+))*/>(<name>/w*)")
 				, assemblyNamespace(L"vl_workflow_global")
+				, assemblyName(_assemblyName)
 			{
 				Collect();
 				for (vint i = 0; i < structDecls.Count(); i++)

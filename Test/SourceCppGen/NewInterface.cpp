@@ -36,13 +36,13 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_NewInterface().instance;
 	}
 
-	class __vwsnc1_main__vl_reflection_description_IValueEnumerable : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerable
+	class __vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerable
 	{
 	public:
 		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
 	};
 
-	class __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
+	class __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
 	{
 	public:
 		::vl::vint32_t index = 0;
@@ -52,24 +52,24 @@ namespace vl_workflow_global
 	};
 
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_main__vl_reflection_description_IValueEnumerable::CreateEnumerator()
+	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable::CreateEnumerator()
 	{
 		throw 0;
 	}
 
 
 
-	::vl::reflection::description::Value __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
+	::vl::reflection::description::Value __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
 		throw 0;
 	}
 
-	::vl::vint32_t __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
+	::vl::vint32_t __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
 	{
 		throw 0;
 	}
 
-	bool __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
+	bool __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
 	{
 		throw 0;
 	}

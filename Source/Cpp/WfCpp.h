@@ -41,7 +41,7 @@ namespace vl
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
 
-				WfCppConfig(analyzer::WfLexicalScopeManager* _manager);
+				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName);
 				~WfCppConfig();
 
 				WString					ConvertName(const WString& name);

@@ -26,7 +26,14 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_NewCustomInterface().instance;
 	}
 
-	class __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
+	class __vwsnc1_NewCustomInterface_main__IMyInterface : public ::vl::Object, public virtual ::IMyInterface
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
+		::vl::vint32_t Get100() override;
+	};
+
+	class __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
 	{
 	public:
 		::vl::vint32_t index = 0;
@@ -35,37 +42,30 @@ namespace vl_workflow_global
 		bool Next() override;
 	};
 
-	class __vwsnc1_main__IMyInterface : public ::vl::Object, public virtual ::IMyInterface
-	{
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
-		::vl::vint32_t Get100() override;
-	};
 
-
-
-	::vl::reflection::description::Value __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
+	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_NewCustomInterface_main__IMyInterface::CreateEnumerator()
 	{
 		throw 0;
 	}
 
-	::vl::vint32_t __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
+	::vl::vint32_t __vwsnc1_NewCustomInterface_main__IMyInterface::Get100()
 	{
 		throw 0;
 	}
 
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_main__IMyInterface::CreateEnumerator()
+
+	::vl::reflection::description::Value __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
 		throw 0;
 	}
 
-	::vl::vint32_t __vwsnc1_main__IMyInterface::Get100()
+	::vl::vint32_t __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
 	{
 		throw 0;
 	}

@@ -39,15 +39,7 @@ namespace vl_workflow_global
 	}
 
 
-	class __vwsnc3_main__IAdder : public ::vl::Object, public virtual ::IAdder
-	{
-	public:
-		::vl::vint32_t sum = 0;
-		::vl::vint32_t GetSum() override;
-		void Add(::vl::vint32_t value) override;
-	};
-
-	class __vwsnc1_Bind__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::vl::Ptr<::ISummer> __vwsn_bind_cache_1;
@@ -63,7 +55,7 @@ namespace vl_workflow_global
 		bool Close() override;
 	};
 
-	class __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	class __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
@@ -71,67 +63,75 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
+	class __vwsnc3_BindCustomInterface_main__IAdder : public ::vl::Object, public virtual ::IAdder
+	{
+	public:
+		::vl::vint32_t sum = 0;
+		::vl::vint32_t GetSum() override;
+		void Add(::vl::vint32_t value) override;
+	};
 
 
 
-	::vl::vint32_t __vwsnc3_main__IAdder::GetSum()
+
+
+
+
+
+	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		throw 0;
 	}
 
-	void __vwsnc3_main__IAdder::Add(::vl::vint32_t value)
+	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	{
+		throw 0;
+	}
+
+	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		throw 0;
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
+	{
+		throw 0;
+	}
+
+	bool __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::Update()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::Close()
+	{
+		throw 0;
+	}
+
+
+	::vl::reflection::description::IValueSubscription* __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		throw 0;
 	}
 
 
 
-
-
-
-
-	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	::vl::vint32_t __vwsnc3_BindCustomInterface_main__IAdder::GetSum()
 	{
 		throw 0;
 	}
 
-	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
-	{
-		throw 0;
-	}
-
-	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
-	{
-		throw 0;
-	}
-
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
-	{
-		throw 0;
-	}
-
-	bool __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Update()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Close()
-	{
-		throw 0;
-	}
-
-
-	::vl::reflection::description::IValueSubscription* __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::GetStopped()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::StopListening()
+	void __vwsnc3_BindCustomInterface_main__IAdder::Add(::vl::vint32_t value)
 	{
 		throw 0;
 	}

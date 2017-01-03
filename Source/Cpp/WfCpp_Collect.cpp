@@ -57,7 +57,7 @@ WfCollectExpressionVisitor
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					WString prefix = L"__vwsno" + itow(config->lambdaExprs.Count() + 1) + L"_";
+					WString prefix = L"__vwsno" + itow(config->lambdaExprs.Count() + 1) + L"_" + config->assemblyName + L"_";
 					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
 					WString name = prefix + postfix;
 
@@ -200,7 +200,7 @@ WfCollectExpressionVisitor
 
 				void Visit(WfFunctionExpression* node)override
 				{
-					WString prefix = L"__vwsnf" + itow(config->lambdaExprs.Count() + 1) + L"_";
+					WString prefix = L"__vwsnf" + itow(config->lambdaExprs.Count() + 1) + L"_" + config->assemblyName + L"_";
 					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
 					WString name = prefix + postfix;
 
@@ -218,7 +218,7 @@ WfCollectExpressionVisitor
 
 				void Visit(WfNewInterfaceExpression* node)override
 				{
-					WString prefix = L"__vwsnc" + itow(config->classExprs.Count() + 1) + L"_";
+					WString prefix = L"__vwsnc" + itow(config->classExprs.Count() + 1) + L"_" + config->assemblyName + L"_";
 					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
 					
 					auto result = config->manager->expressionResolvings[node];

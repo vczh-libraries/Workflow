@@ -54,8 +54,7 @@ TEST_CASE(TestCodegen)
 		}
 
 		{
-			WfCppConfig config(&manager);
-			config.assemblyName = itemName;
+			WfCppConfig config(&manager, itemName);
 
 			{
 				FileStream headerFile(GetCppOutputPath() + config.assemblyName + L".h", FileStream::WriteOnly);

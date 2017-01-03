@@ -35,7 +35,7 @@ namespace vl_workflow_global
 
 
 
-	class __vwsnc2_main_H__IB : public ::vl::Object, public virtual ::IB
+	class __vwsnc2_NestedLambda_main_H__IB : public ::vl::Object, public virtual ::IB
 	{
 	public:
 		::vl::vint32_t b = 0;
@@ -45,7 +45,7 @@ namespace vl_workflow_global
 		::vl::WString Calculate() override;
 	};
 
-	class __vwsnc1_main__IA : public ::vl::Object, public virtual ::IA
+	class __vwsnc1_NestedLambda_main__IA : public ::vl::Object, public virtual ::IA
 	{
 	public:
 		::vl::vint32_t a = 0;
@@ -66,44 +66,44 @@ namespace vl_workflow_global
 
 
 
-	::vl::vint32_t __vwsnc2_main_H__IB::GetB()
+	::vl::vint32_t __vwsnc2_NestedLambda_main_H__IB::GetB()
 	{
 		throw 0;
 	}
 
-	void __vwsnc2_main_H__IB::SetB(::vl::vint32_t value)
+	void __vwsnc2_NestedLambda_main_H__IB::SetB(::vl::vint32_t value)
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc2_main_H__IB::H()
+	::vl::WString __vwsnc2_NestedLambda_main_H__IB::H()
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc2_main_H__IB::Calculate()
+	::vl::WString __vwsnc2_NestedLambda_main_H__IB::Calculate()
 	{
 		throw 0;
 	}
 
 
 
-	::vl::vint32_t __vwsnc1_main__IA::GetA()
+	::vl::vint32_t __vwsnc1_NestedLambda_main__IA::GetA()
 	{
 		throw 0;
 	}
 
-	void __vwsnc1_main__IA::SetA(::vl::vint32_t value)
+	void __vwsnc1_NestedLambda_main__IA::SetA(::vl::vint32_t value)
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc1_main__IA::H()
+	::vl::WString __vwsnc1_NestedLambda_main__IA::H()
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc1_main__IA::Calculate()
+	::vl::WString __vwsnc1_NestedLambda_main__IA::Calculate()
 	{
 		throw 0;
 	}

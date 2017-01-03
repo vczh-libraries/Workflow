@@ -33,7 +33,7 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_BindFormat().instance;
 	}
 
-	class __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	class __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
@@ -41,7 +41,7 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
-	class __vwsnc1_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_1;
@@ -58,17 +58,17 @@ namespace vl_workflow_global
 	};
 
 
-	::vl::reflection::description::IValueSubscription* __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	::vl::reflection::description::IValueSubscription* __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
 		throw 0;
 	}
 
-	bool __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	bool __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
 		throw 0;
 	}
 
-	bool __vwsnc2_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
+	bool __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		throw 0;
 	}
@@ -79,32 +79,32 @@ namespace vl_workflow_global
 
 
 
-	void __vwsnc1_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		throw 0;
 	}
 
-	void __vwsnc1_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
+	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
 		throw 0;
 	}
 
-	void __vwsnc1_main__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
 		throw 0;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
 	{
 		throw 0;
 	}
 
-	bool __vwsnc1_main__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::Update()
 	{
 		throw 0;
 	}
 
-	bool __vwsnc1_main__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::Close()
 	{
 		throw 0;
 	}
