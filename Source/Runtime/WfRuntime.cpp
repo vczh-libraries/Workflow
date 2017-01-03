@@ -117,7 +117,7 @@ WfRuntimeCallStackInfo
 
 			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetLocalArguments()
 			{
-				return GetVariables(assembly->functions[functionIndex]->argumentNames, localVariables, cachedLocalArguments);
+				return GetVariables(assembly->functions[functionIndex]->argumentNames, arguments, cachedLocalArguments);
 			}
 
 			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetCapturedVariables()
