@@ -26,16 +26,56 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_NewCustomInterface3().instance;
 	}
 
+	class __vwsnc2_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
+	{
+	public:
+		::vl::vint32_t index = 0;
+		::vl::reflection::description::Value GetCurrent() override;
+		::vl::vint32_t GetIndex() override;
+		bool Next() override;
+	};
+
+	class __vwsnc1_MyClass_CreateMyInterface__IMyInterface3 : public ::vl::Object, public virtual ::IMyInterface3
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
+		::vl::vint32_t Get100() override;
+	};
 
 
 
+	::vl::reflection::description::Value __vwsnc2_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator()
+	{
+		throw 0;
+	}
+
+	::vl::vint32_t __vwsnc2_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator()
+	{
+		throw 0;
+	}
+
+
+	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_MyClass_CreateMyInterface__IMyInterface3::__vwsnc1_MyClass_CreateMyInterface__IMyInterface3()
+	{
+		throw 0;
+	}
+
+	::vl::vint32_t __vwsnc1_MyClass_CreateMyInterface__IMyInterface3::__vwsnc1_MyClass_CreateMyInterface__IMyInterface3()
+	{
+		throw 0;
+	}
 }
 
 /***********************************************************************
 Class (::IMyInterface3)
 ***********************************************************************/
 
-::vl::vint32_t IMyInterface3::Get100()
+::vl::vint32_t IMyInterface3::IMyInterface3()
 {
 	throw 0;
 }
@@ -49,12 +89,12 @@ MyClass::MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end)
 	throw 0;
 }
 
-::vl::vint32_t MyClass::Get50()
+::vl::vint32_t MyClass::MyClass()
 {
 	throw 0;
 }
 
-::vl::Ptr<::IMyInterface3> MyClass::CreateMyInterface()
+::vl::Ptr<::IMyInterface3> MyClass::MyClass()
 {
 	throw 0;
 }

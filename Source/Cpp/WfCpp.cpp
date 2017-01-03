@@ -75,7 +75,7 @@ WfCppConfig
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager)
 				:manager(_manager)
 				, regexSplitName(L"::")
-				, regexSpecialName(L"/<(<category>/w+)/>(<name>/w*)")
+				, regexSpecialName(L"/<(<category>/w+)(-(<category>/w+))*/>(<name>/w*)")
 				, assemblyNamespace(L"vl_workflow_global")
 			{
 				Collect();
@@ -92,10 +92,20 @@ WfCppConfig
 
 			WString WfCppConfig::ConvertName(const WString& name)
 			{
-				auto match = regexSpecialName.MatchHead(name);
+				auto match = regexSpecialName.Match(name);
 				if (match)
 				{
-					return L"__vwsn_" + match->Groups()[L"category"][0].Value() + L"_" + match->Groups()[L"category"][0].Value();
+					return L"__vwsn_" 
+						+ From(match->Groups()[L"category"])
+							.Select([](const RegexString& rs)
+							{
+								return rs.Value();
+							})
+							.Aggregate([](const WString& a, const WString& b)
+							{
+								return a + L"_" + b;
+							})
+						+ L"_" + match->Groups()[L"name"][0].Value();
 				}
 				else
 				{
@@ -332,26 +342,44 @@ WfCppConfig
 				}
 			}
 
-			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name, bool writeReturnType)
+			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType)
 			{
-				if(writeReturnType)
+				vint index1 = manager->declarationMemberInfos.Keys().IndexOf(decl.Obj());
+				vint index2 = manager->interfaceMethodImpls.Keys().IndexOf(decl.Obj());
+				auto methodInfo =
+					index1 != -1 ? dynamic_cast<IMethodInfo*>(manager->declarationMemberInfos.Values()[index1].Obj()) :
+					index2 != -1 ? manager->interfaceMethodImpls.Values()[index2] :
+					nullptr;
+
+				if (methodInfo)
 				{
-					writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
-					writer.WriteChar(L' ');
+					WriteFunctionHeader(writer, methodInfo, name, writeReturnType);
 				}
-				writer.WriteString(name);
-				writer.WriteString(L"(");
-				for (vint i = 0; i < decl->arguments.Count(); i++)
+				else
 				{
-					if (i > 0)
+					auto scope = manager->nodeScopes[decl.Obj()].Obj();
+					auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
+					auto typeInfo = symbol->typeInfo.Obj();
+
+					if (writeReturnType)
 					{
-						writer.WriteString(L", ");
+						writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
+						writer.WriteChar(L' ');
 					}
-					writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
-					writer.WriteChar(L' ');
-					writer.WriteString(decl->arguments[i]->name.value);
+					writer.WriteString(name);
+					writer.WriteString(L"(");
+					for (vint i = 0; i < decl->arguments.Count(); i++)
+					{
+						if (i > 0)
+						{
+							writer.WriteString(L", ");
+						}
+						writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
+						writer.WriteChar(L' ');
+						writer.WriteString(ConvertName(decl->arguments[i]->name.value));
+					}
+					writer.WriteString(L")");
 				}
-				writer.WriteString(L")");
 			}
 
 			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType)
@@ -553,7 +581,7 @@ WfCppConfig::WriteHeader
 				writer.WriteLine(L"");
 				FOREACH(Ptr<WfClassMember>, member, decl->members)
 				{
-					GenerateClassMemberDecl(this, writer, decl, member, prefix + L"\t");
+					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), member, prefix + L"\t");
 				}
 
 				writer.WriteLine(prefix + L"};");
@@ -596,10 +624,8 @@ WfCppConfig::WriteHeader
 					writer.WriteLine(L"");
 					FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
 					{
-						auto scope = manager->nodeScopes[decl.Obj()].Obj();
-						auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
 						writer.WriteString(L"\t\t");
-						WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), ConvertName(decl->name.value), true);
+						WriteFunctionHeader(writer, decl, ConvertName(decl->name.value), true);
 						writer.WriteLine(L";");
 					}
 				}
@@ -643,10 +669,8 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"{");
 				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
 				{
-					auto scope = manager->nodeScopes[decl.Obj()].Obj();
-					auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
 					writer.WriteString(L"\t");
-					WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), assemblyName + L"::" + ConvertName(decl->name.value), true);
+					WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
 					writer.WriteLine(L"");
 					writer.WriteLine(L"\t{");
 					writer.WriteLine(L"\t\tthrow 0;");
@@ -694,10 +718,27 @@ WfCppConfig::WriteCpp
 
 			void WfCppConfig::WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
 			{
+				auto result = manager->expressionResolvings[lambda.Obj()];
+				auto td = result.constructorInfo->GetOwnerTypeDescriptor();
+				auto name = classExprs[lambda.Obj()];
+				writer.WriteLine(L"\tclass " + name + L" : public ::vl::Object, public virtual " + ConvertFullName(CppGetFullName(td)));
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\tpublic:");
+				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				{
+					GenerateClassMemberDecl(this, writer, name, member, L"\t\t");
+				}
+				writer.WriteLine(L"\t};");
 			}
 
 			void WfCppConfig::WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
 			{
+				auto name = classExprs[lambda.Obj()];
+				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				{
+					writer.WriteLine(L"");
+					GenerateClassMemberImpl(this, writer, name, name, member, L"\t");
+				}
 			}
 
 			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss)
@@ -705,7 +746,7 @@ WfCppConfig::WriteCpp
 				List<WString> nss2;
 				GetClassNamespace(decl, nss2);
 				auto prefix = WriteNamespace(writer, nss, nss2);
-				return GenerateClassMemberImpl(this, writer, decl, member, prefix);
+				return GenerateClassMemberImpl(this, writer, GetClassBaseName(decl), ConvertName(decl->name.value), member, prefix);
 			}
 		}
 	}

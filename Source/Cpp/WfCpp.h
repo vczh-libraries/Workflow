@@ -55,7 +55,7 @@ namespace vl
 				WString					WriteNamespace(stream::StreamWriter& writer, collections::List<WString>& nss, collections::List<WString>& nss2);
 				WString					WriteNamespace(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
 				void					WriteNamespaceEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
-				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name, bool writeReturnType);
+				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
 
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
@@ -91,8 +91,8 @@ WfCppConfig::Write
 
 			extern void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, const WString& prefix);
 			extern void GenerateStatement(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix);
-			extern void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, const WString& prefix);
-			extern bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, const WString& prefix);
+			extern void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
+			extern bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
 		}
 	}
 }

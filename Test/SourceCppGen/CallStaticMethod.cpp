@@ -31,7 +31,7 @@ namespace vl_workflow_global
 Class (::Calculator)
 ***********************************************************************/
 
-::vl::vint32_t Calculator::Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum)
+::vl::vint32_t Calculator::Calculator(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum)
 {
 	throw 0;
 }
@@ -45,7 +45,7 @@ Calculator::Calculator()
 Class (::Calculator::Internal)
 ***********************************************************************/
 
-::vl::vint32_t Calculator::Internal::Sum(::vl::vint32_t begin, ::vl::vint32_t end)
+::vl::vint32_t Calculator::Internal::Internal(::vl::vint32_t begin, ::vl::vint32_t end)
 {
 	throw 0;
 }

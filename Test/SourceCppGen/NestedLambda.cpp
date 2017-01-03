@@ -35,6 +35,25 @@ namespace vl_workflow_global
 
 
 
+	class __vwsnc2_main_H__IB : public ::vl::Object, public virtual ::IB
+	{
+	public:
+		::vl::vint32_t b = 0;
+		::vl::vint32_t GetB() override;
+		void SetB(::vl::vint32_t value) override;
+		::vl::WString H();
+		::vl::WString Calculate() override;
+	};
+
+	class __vwsnc1_main__IA : public ::vl::Object, public virtual ::IA
+	{
+	public:
+		::vl::vint32_t a = 0;
+		::vl::vint32_t GetA() override;
+		void SetA(::vl::vint32_t value) override;
+		::vl::WString H();
+		::vl::WString Calculate() override;
+	};
 
 
 
@@ -47,23 +66,64 @@ namespace vl_workflow_global
 
 
 
+	::vl::vint32_t __vwsnc2_main_H__IB::__vwsnc2_main_H__IB()
+	{
+		throw 0;
+	}
+
+	void __vwsnc2_main_H__IB::__vwsnc2_main_H__IB(::vl::vint32_t value)
+	{
+		throw 0;
+	}
+
+	::vl::WString __vwsnc2_main_H__IB::__vwsnc2_main_H__IB()
+	{
+		throw 0;
+	}
+
+	::vl::WString __vwsnc2_main_H__IB::__vwsnc2_main_H__IB()
+	{
+		throw 0;
+	}
+
+
+
+	::vl::vint32_t __vwsnc1_main__IA::__vwsnc1_main__IA()
+	{
+		throw 0;
+	}
+
+	void __vwsnc1_main__IA::__vwsnc1_main__IA(::vl::vint32_t value)
+	{
+		throw 0;
+	}
+
+	::vl::WString __vwsnc1_main__IA::__vwsnc1_main__IA()
+	{
+		throw 0;
+	}
+
+	::vl::WString __vwsnc1_main__IA::__vwsnc1_main__IA()
+	{
+		throw 0;
+	}
 }
 
 /***********************************************************************
 Class (::IA)
 ***********************************************************************/
 
-::vl::vint32_t IA::GetA()
+::vl::vint32_t IA::IA()
 {
 	throw 0;
 }
 
-void IA::SetA(::vl::vint32_t value)
+void IA::IA(::vl::vint32_t value)
 {
 	throw 0;
 }
 
-::vl::WString IA::Calculate()
+::vl::WString IA::IA()
 {
 	throw 0;
 }
@@ -72,17 +132,17 @@ void IA::SetA(::vl::vint32_t value)
 Class (::IB)
 ***********************************************************************/
 
-::vl::vint32_t IB::GetB()
+::vl::vint32_t IB::IB()
 {
 	throw 0;
 }
 
-void IB::SetB(::vl::vint32_t value)
+void IB::IB(::vl::vint32_t value)
 {
 	throw 0;
 }
 
-::vl::WString IB::Calculate()
+::vl::WString IB::IB()
 {
 	throw 0;
 }
