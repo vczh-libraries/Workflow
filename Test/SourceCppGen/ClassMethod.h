@@ -18,6 +18,8 @@ public:
 	::vl::vint32_t x = 0;
 	A();
 	A(::vl::vint32_t _x);
+	::vl::vint32_t GetX();
+	void SetX(::vl::vint32_t _x);
 };
 #pragma warning(pop)
 

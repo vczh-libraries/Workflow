@@ -19,6 +19,8 @@ public:
 	::vl::vint32_t x = 0;
 	Y();
 	Y(::vl::vint32_t _x);
+	::vl::vint32_t GetX();
+	void SetX(::vl::vint32_t _x);
 };
 
 class A : public ::Y, public ::test::ObservableValue, public ::vl::reflection::Description<A>

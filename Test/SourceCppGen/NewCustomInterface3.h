@@ -16,6 +16,7 @@ class IMyInterface : public virtual ::vl::reflection::description::IValueEnumera
 {
 public:
 
+	::vl::vint32_t Get100();
 };
 
 class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClass>
@@ -25,6 +26,8 @@ public:
 	::vl::vint32_t begin = 0;
 	::vl::vint32_t end = 0;
 	MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end);
+	::vl::vint32_t Get50();
+	::vl::Ptr<::IMyInterface> CreateMyInterface();
 };
 #pragma warning(pop)
 

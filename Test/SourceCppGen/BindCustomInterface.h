@@ -16,12 +16,14 @@ class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::ref
 {
 public:
 
+	::vl::vint32_t GetSum();
 };
 
 class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>
 {
 public:
 
+	void Add(::vl::vint32_t value);
 };
 #pragma warning(pop)
 

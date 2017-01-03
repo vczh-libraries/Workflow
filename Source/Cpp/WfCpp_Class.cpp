@@ -39,6 +39,10 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
+					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
+					writer.WriteString(prefix);
+					config->WriteFunctionHeader(writer, methodInfo, config->ConvertName(node->name.value), true);
+					writer.WriteLine(L";");
 				}
 
 				void Visit(WfVariableDeclaration* node)override
@@ -57,6 +61,18 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfEventDeclaration* node)override
 				{
+					auto eventInfo = dynamic_cast<IEventInfo*>(config->manager->declarationMemberInfos[node].Obj());
+					auto typeInfo = eventInfo->GetHandlerType();
+					writer.WriteString(prefix);
+
+					writer.WriteString(prefix + L"::vl::Event<void(");
+					vint count = typeInfo->GetGenericArgumentCount();
+					for (vint i = 1; i < count; i++)
+					{
+						if (i > 1) writer.WriteString(L", ");
+						writer.WriteString(config->ConvertType(typeInfo->GetGenericArgument(i)));
+					}
+					writer.WriteLine(L")> " + config->ConvertName(node->name.value) + L";");
 				}
 
 				void Visit(WfPropertyDeclaration* node)override

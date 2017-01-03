@@ -16,12 +16,18 @@ class IA : public virtual ::vl::reflection::IDescriptable, public ::vl::reflecti
 {
 public:
 
+	::vl::vint32_t GetA();
+	void SetA(::vl::vint32_t value);
+	::vl::WString Calculate();
 };
 
 class IB : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IB>
 {
 public:
 
+	::vl::vint32_t GetB();
+	void SetB(::vl::vint32_t value);
+	::vl::WString Calculate();
 };
 #pragma warning(pop)
 
