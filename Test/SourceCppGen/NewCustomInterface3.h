@@ -26,7 +26,7 @@ public:
 	::vl::vint32_t begin = 0;
 	::vl::vint32_t end = 0;
 	MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end);
-	::vl::vint32_t Get50();
+	static ::vl::vint32_t Get50();
 	::vl::Ptr<::IMyInterface3> CreateMyInterface();
 };
 #pragma warning(pop)

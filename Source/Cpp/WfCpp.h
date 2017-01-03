@@ -38,14 +38,14 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
 				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
-				collections::List<Ptr<WfExpression>>										lambdaExprs;
-				collections::List<Ptr<WfNewInterfaceExpression>>							classExprs;
+				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
+				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
 
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager);
 				~WfCppConfig();
 
 				WString					ConvertName(const WString& name);
-				WString					ConvertFullName(const WString& fullName);
+				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
 				WString					ConvertType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
 

@@ -103,18 +103,18 @@ WfCppConfig
 				}
 			}
 
-			WString WfCppConfig::ConvertFullName(const WString& fullName)
+			WString WfCppConfig::ConvertFullName(const WString& fullName, WString delimiter)
 			{
 				List<Ptr<RegexMatch>> matches;
 				regexSplitName.Split(fullName, false, matches);
-				return WString(fullName[0] == L':' ? L"::" : L"") + From(matches)
+				return (fullName[0] == L':' ? delimiter : WString::Empty) + From(matches)
 					.Select([this](Ptr<RegexMatch> match)
 					{
 						return ConvertName(match->Result().Value());
 					})
-					.Aggregate([](const WString& a, const WString& b)
+					.Aggregate([&](const WString& a, const WString& b)
 					{
-						return a + L"::" + b;
+						return a + delimiter + b;
 					});
 			}
 
@@ -658,25 +658,25 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");
 				writer.WriteLine(L"\t}");
 
-				FOREACH(Ptr<WfExpression>, expr, lambdaExprs)
+				FOREACH(Ptr<WfExpression>, expr, lambdaExprs.Keys())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_LambdaExprDecl(writer, expr);
 				}
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs)
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs.Keys())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_ClassExprDecl(writer, expr);
 				}
 
-				FOREACH(Ptr<WfExpression>, expr, lambdaExprs)
+				FOREACH(Ptr<WfExpression>, expr, lambdaExprs.Keys())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_LambdaExprImpl(writer, expr);
 				}
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs)
+				FOREACH(Ptr<WfNewInterfaceExpression>, expr, classExprs.Keys())
 				{
 					writer.WriteLine(L"");
 					WriteCpp_ClassExprImpl(writer, expr);

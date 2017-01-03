@@ -41,7 +41,15 @@ WfGenerateClassMemberDeclVisitor
 				{
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
 					writer.WriteString(prefix);
+					if (classMember->kind == WfClassMemberKind::Static)
+					{
+						writer.WriteString(L"static ");
+					}
 					config->WriteFunctionHeader(writer, methodInfo, config->ConvertName(node->name.value), true);
+					if (classMember->kind == WfClassMemberKind::Override)
+					{
+						writer.WriteString(L" override");
+					}
 					writer.WriteLine(L";");
 				}
 

@@ -7,6 +7,8 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
+			using namespace regex;
+			using namespace reflection::description;
 			using namespace analyzer;
 
 /***********************************************************************
@@ -21,6 +23,20 @@ WfCollectExpressionVisitor
 				WfCollectExpressionVisitor(WfCppConfig* _config)
 					:config(_config)
 				{
+				}
+
+				WString GetScopePostfix(WfLexicalScope* scope)
+				{
+					WString name;
+					while (scope)
+					{
+						if (auto decl = scope->ownerNode.Cast<WfDeclaration>())
+						{
+							name = config->ConvertName(decl->name.value) + L"_" + name;
+						}
+						scope = scope->parentScope.Obj();
+					}
+					return name;
 				}
 
 				void Visit(WfThisExpression* node)override
@@ -41,7 +57,11 @@ WfCollectExpressionVisitor
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					config->lambdaExprs.Add(node);
+					WString prefix = L"__vwsno" + itow(config->lambdaExprs.Count() + 1) + L"_";
+					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
+					WString name = prefix + postfix;
+
+					config->lambdaExprs.Add(node, name);
 					CollectExpression(config, node->body);
 				}
 
@@ -180,7 +200,11 @@ WfCollectExpressionVisitor
 
 				void Visit(WfFunctionExpression* node)override
 				{
-					config->lambdaExprs.Add(node);
+					WString prefix = L"__vwsnf" + itow(config->lambdaExprs.Count() + 1) + L"_";
+					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
+					WString name = prefix + postfix;
+
+					config->lambdaExprs.Add(node, name);
 					CollectStatement(config, node->function->statement);
 				}
 
@@ -194,7 +218,14 @@ WfCollectExpressionVisitor
 
 				void Visit(WfNewInterfaceExpression* node)override
 				{
-					config->classExprs.Add(node);
+					WString prefix = L"__vwsnc" + itow(config->classExprs.Count() + 1) + L"_";
+					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
+					
+					auto result = config->manager->expressionResolvings[node];
+					auto td = result.constructorInfo->GetOwnerTypeDescriptor();
+					WString name = prefix + postfix + config->ConvertFullName(CppGetFullName(td), L"_");
+
+					config->classExprs.Add(node, name);
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						CollectClassMember(config, member, nullptr);

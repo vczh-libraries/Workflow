@@ -20,10 +20,10 @@ public:
 	{
 	public:
 
-		::vl::vint32_t Sum(::vl::vint32_t begin, ::vl::vint32_t end);
+		static ::vl::vint32_t Sum(::vl::vint32_t begin, ::vl::vint32_t end);
 	};
 
-	::vl::vint32_t Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum);
+	static ::vl::vint32_t Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum);
 	Calculator();
 };
 #pragma warning(pop)
