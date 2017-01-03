@@ -43,6 +43,16 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfVariableDeclaration* node)override
 				{
+					auto scope = config->manager->nodeScopes[node].Obj();
+					auto symbol = scope->symbols[node->name.value][0];
+					auto typeInfo = symbol->typeInfo;
+					writer.WriteString(prefix + config->ConvertType(typeInfo.Obj()) + L" " + config->ConvertName(node->name.value));
+					auto defaultValue = config->DefaultValue(typeInfo.Obj());
+					if (defaultValue != L"")
+					{
+						writer.WriteString(L" = " + defaultValue);
+					}
+					writer.WriteLine(L";");
 				}
 
 				void Visit(WfEventDeclaration* node)override
@@ -59,6 +69,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
+					writer.WriteLine(prefix + L"~" + config->ConvertName(classDecl->name.value) + L"();");
 				}
 
 				void Visit(WfClassDeclaration* node)override

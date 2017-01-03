@@ -16,6 +16,7 @@ class A : public ::vl::Object, public ::vl::reflection::Description<A>
 public:
 	::vl::WString name;
 	::A* next = nullptr;
+	~A();
 };
 #pragma warning(pop)
 
