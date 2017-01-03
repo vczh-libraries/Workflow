@@ -16,7 +16,7 @@ class IMyInterface3 : public virtual ::vl::reflection::description::IValueEnumer
 {
 public:
 
-	::vl::vint32_t Get100();
+	virtual ::vl::vint32_t Get100() = 0;
 };
 
 class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClass>

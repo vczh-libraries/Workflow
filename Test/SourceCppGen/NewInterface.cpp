@@ -36,6 +36,12 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_NewInterface().instance;
 	}
 
+	class __vwsnc1_main__vl_reflection_description_IValueEnumerable : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerable
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
+	};
+
 	class __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
 	{
 	public:
@@ -45,31 +51,25 @@ namespace vl_workflow_global
 		bool Next() override;
 	};
 
-	class __vwsnc1_main__vl_reflection_description_IValueEnumerable : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerable
-	{
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
-	};
 
-
-
-	::vl::reflection::description::Value __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator()
-	{
-		throw 0;
-	}
-
-	::vl::vint32_t __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator()
+	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_main__vl_reflection_description_IValueEnumerable::CreateEnumerator()
 	{
 		throw 0;
 	}
 
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_main__vl_reflection_description_IValueEnumerable::__vwsnc1_main__vl_reflection_description_IValueEnumerable()
+
+	::vl::reflection::description::Value __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
+	{
+		throw 0;
+	}
+
+	::vl::vint32_t __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
 	{
 		throw 0;
 	}

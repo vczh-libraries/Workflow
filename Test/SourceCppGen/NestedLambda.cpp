@@ -35,16 +35,6 @@ namespace vl_workflow_global
 
 
 
-	class __vwsnc2_main_H__IB : public ::vl::Object, public virtual ::IB
-	{
-	public:
-		::vl::vint32_t b = 0;
-		::vl::vint32_t GetB() override;
-		void SetB(::vl::vint32_t value) override;
-		::vl::WString H();
-		::vl::WString Calculate() override;
-	};
-
 	class __vwsnc1_main__IA : public ::vl::Object, public virtual ::IA
 	{
 	public:
@@ -55,6 +45,15 @@ namespace vl_workflow_global
 		::vl::WString Calculate() override;
 	};
 
+	class __vwsnc2_main_H__IB : public ::vl::Object, public virtual ::IB
+	{
+	public:
+		::vl::vint32_t b = 0;
+		::vl::vint32_t GetB() override;
+		void SetB(::vl::vint32_t value) override;
+		::vl::WString H();
+		::vl::WString Calculate() override;
+	};
 
 
 
@@ -66,44 +65,45 @@ namespace vl_workflow_global
 
 
 
-	::vl::vint32_t __vwsnc2_main_H__IB::__vwsnc2_main_H__IB()
+
+	::vl::vint32_t __vwsnc1_main__IA::GetA()
 	{
 		throw 0;
 	}
 
-	void __vwsnc2_main_H__IB::__vwsnc2_main_H__IB(::vl::vint32_t value)
+	void __vwsnc1_main__IA::SetA(::vl::vint32_t value)
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc2_main_H__IB::__vwsnc2_main_H__IB()
+	::vl::WString __vwsnc1_main__IA::H()
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc2_main_H__IB::__vwsnc2_main_H__IB()
+	::vl::WString __vwsnc1_main__IA::Calculate()
 	{
 		throw 0;
 	}
 
 
 
-	::vl::vint32_t __vwsnc1_main__IA::__vwsnc1_main__IA()
+	::vl::vint32_t __vwsnc2_main_H__IB::GetB()
 	{
 		throw 0;
 	}
 
-	void __vwsnc1_main__IA::__vwsnc1_main__IA(::vl::vint32_t value)
+	void __vwsnc2_main_H__IB::SetB(::vl::vint32_t value)
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc1_main__IA::__vwsnc1_main__IA()
+	::vl::WString __vwsnc2_main_H__IB::H()
 	{
 		throw 0;
 	}
 
-	::vl::WString __vwsnc1_main__IA::__vwsnc1_main__IA()
+	::vl::WString __vwsnc2_main_H__IB::Calculate()
 	{
 		throw 0;
 	}
@@ -113,37 +113,7 @@ namespace vl_workflow_global
 Class (::IA)
 ***********************************************************************/
 
-::vl::vint32_t IA::IA()
-{
-	throw 0;
-}
-
-void IA::IA(::vl::vint32_t value)
-{
-	throw 0;
-}
-
-::vl::WString IA::IA()
-{
-	throw 0;
-}
-
 /***********************************************************************
 Class (::IB)
 ***********************************************************************/
-
-::vl::vint32_t IB::IB()
-{
-	throw 0;
-}
-
-void IB::IB(::vl::vint32_t value)
-{
-	throw 0;
-}
-
-::vl::WString IB::IB()
-{
-	throw 0;
-}
 

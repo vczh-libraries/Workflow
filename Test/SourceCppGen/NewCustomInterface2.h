@@ -15,7 +15,7 @@ class IMyInterface2 : public virtual ::vl::reflection::description::IValueEnumer
 {
 public:
 
-	::vl::vint32_t Get100();
+	virtual ::vl::vint32_t Get100() = 0;
 };
 #pragma warning(pop)
 

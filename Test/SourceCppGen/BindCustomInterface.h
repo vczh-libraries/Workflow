@@ -16,7 +16,7 @@ class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::ref
 {
 public:
 
-	::vl::vint32_t GetSum();
+	virtual ::vl::vint32_t GetSum() = 0;
 	::vl::Event<void()> SumChanged;
 };
 
@@ -24,7 +24,7 @@ class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IA
 {
 public:
 
-	void Add(::vl::vint32_t value);
+	virtual void Add(::vl::vint32_t value) = 0;
 };
 #pragma warning(pop)
 

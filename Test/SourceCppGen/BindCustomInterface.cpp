@@ -55,14 +55,6 @@ namespace vl_workflow_global
 		bool Close() override;
 	};
 
-	class __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
-	{
-	public:
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
-	};
-
 	class __vwsnc3_main__IAdder : public ::vl::Object, public virtual ::IAdder
 	{
 	public:
@@ -71,6 +63,13 @@ namespace vl_workflow_global
 		void Add(::vl::vint32_t value) override;
 	};
 
+	class __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
 
 
 
@@ -78,60 +77,61 @@ namespace vl_workflow_global
 
 
 
-	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_Bind__vl_reflection_description_IValueSubscription()
+
+	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		throw 0;
 	}
 
-	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_Bind__vl_reflection_description_IValueSubscription()
+	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
 	{
 		throw 0;
 	}
 
-	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_Bind__vl_reflection_description_IValueSubscription()
+	void __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
 		throw 0;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_Bind__vl_reflection_description_IValueSubscription(::vl::Func<void(::vl::reflection::description::Value)> callback)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Subscribe(::vl::Func<void(::vl::reflection::description::Value)> callback)
 	{
 		throw 0;
 	}
 
-	bool __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_Bind__vl_reflection_description_IValueSubscription()
+	bool __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Update()
 	{
 		throw 0;
 	}
 
-	bool __vwsnc1_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_Bind__vl_reflection_description_IValueSubscription()
-	{
-		throw 0;
-	}
-
-
-	::vl::reflection::description::IValueSubscription* __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener()
-	{
-		throw 0;
-	}
-
-	bool __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener()
+	bool __vwsnc1_Bind__vl_reflection_description_IValueSubscription::Close()
 	{
 		throw 0;
 	}
 
 
 
-	::vl::vint32_t __vwsnc3_main__IAdder::__vwsnc3_main__IAdder()
+	::vl::vint32_t __vwsnc3_main__IAdder::GetSum()
 	{
 		throw 0;
 	}
 
-	void __vwsnc3_main__IAdder::__vwsnc3_main__IAdder(::vl::vint32_t value)
+	void __vwsnc3_main__IAdder::Add(::vl::vint32_t value)
+	{
+		throw 0;
+	}
+
+
+	::vl::reflection::description::IValueSubscription* __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		throw 0;
+	}
+
+	bool __vwsnc2_Bind_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		throw 0;
 	}
@@ -141,17 +141,7 @@ namespace vl_workflow_global
 Class (::ISummer)
 ***********************************************************************/
 
-::vl::vint32_t ISummer::ISummer()
-{
-	throw 0;
-}
-
 /***********************************************************************
 Class (::IAdder)
 ***********************************************************************/
-
-void IAdder::IAdder(::vl::vint32_t value)
-{
-	throw 0;
-}
 

@@ -20,7 +20,7 @@ public:
 	{
 	public:
 
-		static ::vl::vint32_t Sum(::vl::vint32_t begin, ::vl::vint32_t end);
+		virtual ::vl::vint32_t Sum(::vl::vint32_t begin, ::vl::vint32_t end) = 0;
 	};
 
 	static ::vl::vint32_t Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum);

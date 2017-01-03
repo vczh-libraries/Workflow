@@ -45,33 +45,33 @@ namespace vl_workflow_global
 
 
 
-	::vl::reflection::description::Value __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator()
+	::vl::reflection::description::Value __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
 		throw 0;
 	}
 
-	::vl::vint32_t __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator()
+	::vl::vint32_t __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
 	{
 		throw 0;
 	}
 
-	bool __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator()
+	bool __vwsnc2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
 	{
 		throw 0;
 	}
 
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_main__IMyInterface2::__vwsnc1_main__IMyInterface2()
+	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_main__IMyInterface2::CreateEnumerator()
 	{
 		throw 0;
 	}
 
-	::vl::vint32_t __vwsnc1_main__IMyInterface2::__vwsnc1_main__IMyInterface2()
+	::vl::vint32_t __vwsnc1_main__IMyInterface2::Get50()
 	{
 		throw 0;
 	}
 
-	::vl::vint32_t __vwsnc1_main__IMyInterface2::__vwsnc1_main__IMyInterface2()
+	::vl::vint32_t __vwsnc1_main__IMyInterface2::Get100()
 	{
 		throw 0;
 	}
@@ -80,9 +80,4 @@ namespace vl_workflow_global
 /***********************************************************************
 Class (::IMyInterface2)
 ***********************************************************************/
-
-::vl::vint32_t IMyInterface2::IMyInterface2()
-{
-	throw 0;
-}
 

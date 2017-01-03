@@ -11,6 +11,18 @@ namespace vl
 			using namespace reflection::description;
 			using namespace analyzer;
 
+			bool IsVirtual(WfCppConfig* config, WfFunctionDeclaration* node)
+			{
+				vint index = config->manager->declarationMemberInfos.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos.Values()[index].Obj());
+					auto td = methodInfo->GetOwnerTypeDescriptor();
+					return td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
+				}
+				return false;
+			}
+
 /***********************************************************************
 WfGenerateClassMemberDeclVisitor
 ***********************************************************************/
@@ -39,13 +51,23 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
+					bool isVirtual = IsVirtual(config, node);
+
 					writer.WriteString(prefix);
-					if (classMember->kind == WfClassMemberKind::Static)
+					if (isVirtual)
+					{
+						writer.WriteString(L"virtual ");
+					}
+					else if (classMember->kind == WfClassMemberKind::Static)
 					{
 						writer.WriteString(L"static ");
 					}
 					config->WriteFunctionHeader(writer, node, config->ConvertName(node->name.value), true);
-					if (classMember->kind == WfClassMemberKind::Override)
+					if (isVirtual)
+					{
+						writer.WriteString(L" = 0");
+					}
+					else if (classMember->kind == WfClassMemberKind::Override)
 					{
 						writer.WriteString(L" override");
 					}
@@ -149,14 +171,17 @@ WfGenerateClassMemberImplVisitor
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					printableMember = true;
-					writer.WriteString(prefix);
-					config->WriteFunctionHeader(writer, node, classBaseName + L"::" + className, true);
-					writer.WriteLine(L"");
+					if (!IsVirtual(config, node))
+					{
+						printableMember = true;
+						writer.WriteString(prefix);
+						config->WriteFunctionHeader(writer, node, classBaseName + L"::" + config->ConvertName(node->name.value), true);
+						writer.WriteLine(L"");
 
-					writer.WriteLine(prefix + L"{");
-					writer.WriteLine(prefix + L"\tthrow 0;");
-					writer.WriteLine(prefix + L"}");
+						writer.WriteLine(prefix + L"{");
+						writer.WriteLine(prefix + L"\tthrow 0;");
+						writer.WriteLine(prefix + L"}");
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override

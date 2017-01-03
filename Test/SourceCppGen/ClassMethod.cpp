@@ -45,12 +45,12 @@ Methods::Methods(::vl::vint32_t _x)
 	throw 0;
 }
 
-::vl::vint32_t Methods::Methods()
+::vl::vint32_t Methods::GetX()
 {
 	throw 0;
 }
 
-void Methods::Methods(::vl::vint32_t _x)
+void Methods::SetX(::vl::vint32_t _x)
 {
 	throw 0;
 }

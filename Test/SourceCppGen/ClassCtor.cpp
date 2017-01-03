@@ -43,12 +43,12 @@ Base::Base(::vl::vint32_t _x)
 	throw 0;
 }
 
-::vl::vint32_t Base::Base()
+::vl::vint32_t Base::GetX()
 {
 	throw 0;
 }
 
-void Base::Base(::vl::vint32_t _x)
+void Base::SetX(::vl::vint32_t _x)
 {
 	throw 0;
 }
