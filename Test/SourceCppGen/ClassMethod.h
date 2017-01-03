@@ -7,8 +7,15 @@ Generated from ../Resources/Codegen/ClassMethod.txt
 
 #include "../Source/CppTypes.h"
 
+#pragma warning(push)
+#pragma warning(disable:4250)
 class A;
 
+class A : public ::vl::reflection::Description<A>
+{
+public:
+};
+#pragma warning(pop)
 
 /***********************************************************************
 Global Variables and Functions

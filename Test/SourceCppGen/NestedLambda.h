@@ -7,10 +7,21 @@ Generated from ../Resources/Codegen/NestedLambda.txt
 
 #include "../Source/CppTypes.h"
 
+#pragma warning(push)
+#pragma warning(disable:4250)
 class IA;
 class IB;
 
+class IA : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IA>
+{
+public:
+};
 
+class IB : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IB>
+{
+public:
+};
+#pragma warning(pop)
 
 /***********************************************************************
 Global Variables and Functions

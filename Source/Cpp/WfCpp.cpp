@@ -369,6 +369,98 @@ WfCppConfig::WriteHeader
 
 			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix)
 			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+
+				writer.WriteString(prefix + L"class " + name + L" : ");
+				switch (decl->kind)
+				{
+				case WfClassKind::Class:
+					{
+						vint count = td->GetBaseTypeDescriptorCount();
+						bool hasClassBase = Range(0, count)
+							.Any([=](vint index)
+							{
+								return td->GetBaseTypeDescriptor(index)->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class
+									&& td != description::GetTypeDescriptor<DescriptableObject>();
+							});
+
+						if (!hasClassBase)
+						{
+							writer.WriteString(L"public virtual ::vl::Object, ");
+						}
+						for (vint i = 0; i < count; i++)
+						{
+							auto baseTd = td->GetBaseTypeDescriptor(i);
+							switch (baseTd->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::Class:
+								if (baseTd != description::GetTypeDescriptor<DescriptableObject>())
+								{
+									writer.WriteString(L"public " + ConvertFullName(CppGetFullName(baseTd)) + L", ");
+								}
+								break;
+							case TypeDescriptorFlags::Interface:
+								writer.WriteString(L"public virtual " + ConvertFullName(CppGetFullName(baseTd)) + L", ");
+								break;
+							}
+						}
+					}
+					break;
+				case WfClassKind::Interface:
+					{
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint i = 0; i < count; i++)
+						{
+							writer.WriteString(L"public virtual " + ConvertFullName(CppGetFullName(td->GetBaseTypeDescriptor(i))) + L", ");
+						}
+					}
+					break;
+				}
+				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
+				writer.WriteLine(prefix + L"{");
+				writer.WriteLine(prefix + L"public:");
+
+				{
+					vint index = enumDecls.Keys().IndexOf(decl.Obj());
+					if (index != -1)
+					{
+						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls.GetByIndex(index))
+						{
+							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+							writer.WriteLine(L"");
+						}
+					}
+				}
+
+				{
+					vint index = enumDecls.Keys().IndexOf(decl.Obj());
+					if (index != -1)
+					{
+						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls.GetByIndex(index))
+						{
+							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+							writer.WriteLine(L"");
+						}
+					}
+				}
+
+				{
+					vint index = enumDecls.Keys().IndexOf(decl.Obj());
+					if (index != -1)
+					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
+						{
+							WriteHeader_ClassPreDecl(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+						}
+						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
+						{
+							writer.WriteLine(L"");
+							WriteHeader_Class(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+						}
+					}
+				}
+
+				writer.WriteLine(prefix + L"};");
 			}
 
 			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)

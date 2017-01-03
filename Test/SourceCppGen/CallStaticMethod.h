@@ -7,8 +7,15 @@ Generated from ../Resources/Codegen/CallStaticMethod.txt
 
 #include "../Source/CppTypes.h"
 
+#pragma warning(push)
+#pragma warning(disable:4250)
 class Calculator;
 
+class Calculator : public ::vl::reflection::Description<Calculator>
+{
+public:
+};
+#pragma warning(pop)
 
 /***********************************************************************
 Global Variables and Functions

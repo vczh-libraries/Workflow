@@ -94,6 +94,8 @@ TEST_CASE(TestCodegen)
 
 				if (config.classDecls.Keys().Contains(nullptr))
 				{
+					headerWriter.WriteLine(L"#pragma warning(push)");
+					headerWriter.WriteLine(L"#pragma warning(disable:4250)");
 					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[nullptr])
 					{
 						config.WriteHeader_ClassPreDecl(headerWriter, decl, nss);
@@ -103,6 +105,7 @@ TEST_CASE(TestCodegen)
 						headerWriter.WriteLine(L"");
 						config.WriteHeader_Class(headerWriter, decl, nss);
 					}
+					headerWriter.WriteLine(L"#pragma warning(pop)");
 				}
 				config.WriteEnd(headerWriter, nss);
 

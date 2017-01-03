@@ -7,10 +7,21 @@ Generated from ../Resources/Codegen/BindCustomInterface.txt
 
 #include "../Source/CppTypes.h"
 
+#pragma warning(push)
+#pragma warning(disable:4250)
 class ISummer;
 class IAdder;
 
+class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ISummer>
+{
+public:
+};
 
+class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>
+{
+public:
+};
+#pragma warning(pop)
 
 /***********************************************************************
 Global Variables and Functions

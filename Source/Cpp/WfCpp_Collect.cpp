@@ -310,11 +310,6 @@ WfCollectClassMemberVisitor
 				{
 				}
 
-				WfCollectClassMemberVisitor(WfCppConfig* _config)
-					:config(_config)
-				{
-				}
-
 				void Visit(WfNamespaceDeclaration* node)override
 				{
 				}
