@@ -19,11 +19,13 @@ namespace vl
 		{
 			class WfCppConfig : public Object
 			{
+				using ITypeInfo = reflection::description::ITypeInfo;
 			protected:
 				regex::Regex										regexSplitName;
 				regex::Regex										regexSpecialName;
 
 				void												Collect();
+				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
 
 			public:
 				analyzer::WfLexicalScopeManager*											manager;
@@ -43,6 +45,9 @@ namespace vl
 
 				WString					ConvertName(const WString& name);
 				WString					ConvertFullName(const WString& fullName);
+				WString					ConvertType(ITypeInfo* typeInfo);
+				WString					DefaultValue(ITypeInfo* typeInfo);
+
 				WString					WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
 				void					WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
 

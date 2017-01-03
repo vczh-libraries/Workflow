@@ -11,6 +11,12 @@ Generated from ../Resources/Codegen/StructCtor2.txt
 Structs
 ***********************************************************************/
 
+struct Point
+{
+	::vl::vint32_t x = 0;
+	::vl::vint32_t y = 0;
+	::vl::Nullable<::Point> z;
+};
 
 /***********************************************************************
 Global Variables and Functions

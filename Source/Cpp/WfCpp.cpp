@@ -8,6 +8,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace regex;
+			using namespace reflection;
 			using namespace reflection::description;
 			using namespace analyzer;
 
@@ -26,6 +27,50 @@ WfCppConfig
 				}
 			}
 
+			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
+			{
+				List<ITypeDescriptor*> tds;
+				FOREACH_INDEXER(Ptr<WfStructDeclaration>, decl, index, structDecls)
+				{
+					tds.Add(manager->declarationTypes[decl.Obj()].Obj());
+				}
+
+				for (vint i = 0; i < tds.Count(); i++)
+				{
+					for (vint j = i; i < tds.Count(); j++)
+					{
+						auto td = tds[j];
+						vint count = td->GetPropertyCount();
+						bool found = false;
+						for (vint k = 0; k < count && !found; k++)
+						{
+							auto prop = td->GetProperty(k);
+							auto propTd = prop->GetReturn()->GetTypeDescriptor();
+							for (vint l = k + 1; l < tds.Count() && !found; l++)
+							{
+								found = tds[l] == propTd;
+							}
+						}
+
+						if (!found)
+						{
+							if (j != i)
+							{
+								auto t = tds[j];
+								tds.RemoveAt(j);
+								tds.Insert(i, t);
+
+								auto decl = structDecls[j];
+								structDecls.RemoveAt(j);
+								structDecls.Insert(i, decl);
+							}
+
+							break;
+						}
+					}
+				}
+			}
+
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager)
 				:manager(_manager)
 				, regexSplitName(L"::")
@@ -33,6 +78,11 @@ WfCppConfig
 				, assemblyNamespace(L"vl_workflow_global")
 			{
 				Collect();
+				for (vint i = 0; i < structDecls.Count(); i++)
+				{
+					const auto& values = structDecls.GetByIndex(i);
+					Sort(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
+				}
 			}
 
 			WfCppConfig::~WfCppConfig()
@@ -65,6 +115,73 @@ WfCppConfig
 					{
 						return a + b;
 					});
+			}
+
+			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo)
+			{
+				switch (typeInfo->GetDecorator())
+				{
+				case ITypeInfo::RawPtr:
+					return ConvertType(typeInfo->GetElementType()) + L"*";
+				case ITypeInfo::SharedPtr:
+					return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType()) + L">";
+				case ITypeInfo::Nullable:
+					return L"::vl::Nullable<" + ConvertType(typeInfo->GetElementType()) + L">";
+				case ITypeInfo::Generic:
+					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+					{
+						WString type = L"::vl::Func<" + ConvertType(typeInfo->GetGenericArgument(0)) + L"(";
+						vint count = typeInfo->GetGenericArgumentCount();
+						for (vint i = 1; i < count; i++)
+						{
+							if (i > 1) type += L", ";
+							type += ConvertType(typeInfo->GetGenericArgument(i));
+						}
+						type += L")>";
+						return type;
+					}
+					else if(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						return L"::vl::collections::LazyList<" + ConvertType(typeInfo->GetGenericArgument(0)) + L">";
+					}
+					else
+					{
+						return ConvertType(typeInfo->GetElementType());
+					}
+				}
+				return ConvertFullName(CppGetFullName(typeInfo->GetTypeDescriptor()));
+			}
+
+			WString WfCppConfig::DefaultValue(ITypeInfo* typeInfo)
+			{
+				switch (typeInfo->GetDecorator())
+				{
+				case ITypeInfo::RawPtr:
+					return L"nullptr";
+				case ITypeInfo::SharedPtr:
+					return L"";
+				case ITypeInfo::Nullable:
+					return L"";
+				case ITypeInfo::Generic:
+					return L"";
+				}
+				auto td = typeInfo->GetTypeDescriptor();
+				if ((td->GetTypeDescriptorFlags()&TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+				{
+					return L"static_cast<" + ConvertType(typeInfo) + L">(0)";
+				}
+				if (td == description::GetTypeDescriptor<vint8_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<vint16_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<vint32_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<vint64_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<vuint8_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<vuint16_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<vuint32_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<vuint64_t>()) return L"0";
+				if (td == description::GetTypeDescriptor<bool>()) return L"false";
+				if (td == description::GetTypeDescriptor<float>()) return L"0.0f";
+				if (td == description::GetTypeDescriptor<double>()) return L"0.0";
+				return L"";
 			}
 
 			WString WfCppConfig::WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name)
@@ -197,10 +314,28 @@ WfCppConfig::WriteHeader
 
 			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix)
 			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				writer.WriteLine(prefix + L"struct " + name);
+				writer.WriteLine(prefix + L"{");
+				FOREACH(Ptr<WfStructMember>, member, decl->members)
+				{
+					auto prop = td->GetPropertyByName(member->name.value, false);
+					auto defaultValue = DefaultValue(prop->GetReturn());
+					if (defaultValue != L"")
+					{
+						defaultValue = L" = " + defaultValue;
+					}
+					writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn()) + L" " + member->name.value + defaultValue + L";");
+				}
+				writer.WriteLine(prefix + L"};");
 			}
 
 			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss)
 			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				WString name;
+				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				WriteHeader_Struct(writer, decl, name, prefix);
 			}
 
 			void WfCppConfig::WriteHeader_ClassPreDecls(stream::StreamWriter& writer, const WString& prefix)
