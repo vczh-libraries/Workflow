@@ -16,7 +16,7 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Delete)
 
 namespace vl_workflow_global
 {
-	bool Delete::Delete(::test::ObservableValue* value)
+	bool Delete::DoDelete(::test::ObservableValue* value)
 	{
 		throw 0;
 	}
