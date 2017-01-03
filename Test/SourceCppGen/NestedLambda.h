@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/NestedLambda.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Classes
-***********************************************************************/
-
 class IA;
 class IB;
 

@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/ClassMethod.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Classes
-***********************************************************************/
-
 class A;
 
 

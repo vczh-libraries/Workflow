@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/NewCustomInterface3.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Classes
-***********************************************************************/
-
 class IMyInterface;
 class MyClass;
 

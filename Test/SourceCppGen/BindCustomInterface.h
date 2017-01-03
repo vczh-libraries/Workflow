@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/BindCustomInterface.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Classes
-***********************************************************************/
-
 class ISummer;
 class IAdder;
 

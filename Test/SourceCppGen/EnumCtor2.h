@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/EnumCtor2.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Enums
-***********************************************************************/
-
 enum class Seasons : vl::vuint64_t
 {
 	None = 0UL,

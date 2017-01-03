@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/ClassCtor.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Classes
-***********************************************************************/
-
 class Y;
 class A;
 

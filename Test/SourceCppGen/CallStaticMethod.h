@@ -7,17 +7,8 @@ Generated from ../Resources/Codegen/CallStaticMethod.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Classes
-***********************************************************************/
-
 class Calculator;
-namespace Calculator
-{
-	class Internal;
 
-
-}
 
 /***********************************************************************
 Global Variables and Functions

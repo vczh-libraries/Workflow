@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/StructCtor2.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Structs
-***********************************************************************/
-
 struct Point
 {
 	::vl::vint32_t x = 0;

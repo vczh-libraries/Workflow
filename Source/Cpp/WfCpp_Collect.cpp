@@ -426,7 +426,7 @@ WfCollectDeclarationVisitor
 					config->classDecls.Add(classDecl, node);
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						CollectClassMember(config, member, classDecl);
+						CollectClassMember(config, member, node);
 					}
 				}
 

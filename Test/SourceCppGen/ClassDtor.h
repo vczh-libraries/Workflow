@@ -7,10 +7,6 @@ Generated from ../Resources/Codegen/ClassDtor.txt
 
 #include "../Source/CppTypes.h"
 
-/***********************************************************************
-Classes
-***********************************************************************/
-
 class A;
 
 

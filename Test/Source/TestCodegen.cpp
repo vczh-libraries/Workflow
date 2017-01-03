@@ -76,10 +76,6 @@ TEST_CASE(TestCodegen)
 
 				if (config.enumDecls.Keys().Contains(nullptr))
 				{
-					headerWriter.WriteLine(L"/***********************************************************************");
-					headerWriter.WriteLine(L"Enums");
-					headerWriter.WriteLine(L"***********************************************************************/");
-					headerWriter.WriteLine(L"");
 					FOREACH(Ptr<WfEnumDeclaration>, decl, config.enumDecls[nullptr])
 					{
 						config.WriteHeader_Enum(headerWriter, decl, nss);
@@ -89,10 +85,6 @@ TEST_CASE(TestCodegen)
 
 				if (config.structDecls.Keys().Contains(nullptr))
 				{
-					headerWriter.WriteLine(L"/***********************************************************************");
-					headerWriter.WriteLine(L"Structs");
-					headerWriter.WriteLine(L"***********************************************************************/");
-					headerWriter.WriteLine(L"");
 					FOREACH(Ptr<WfStructDeclaration>, decl, config.structDecls[nullptr])
 					{
 						config.WriteHeader_Struct(headerWriter, decl, nss);
@@ -102,10 +94,6 @@ TEST_CASE(TestCodegen)
 
 				if (config.classDecls.Keys().Contains(nullptr))
 				{
-					headerWriter.WriteLine(L"/***********************************************************************");
-					headerWriter.WriteLine(L"Classes");
-					headerWriter.WriteLine(L"***********************************************************************/");
-					headerWriter.WriteLine(L"");
 					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[nullptr])
 					{
 						config.WriteHeader_ClassPreDecl(headerWriter, decl, nss);

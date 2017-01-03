@@ -373,6 +373,10 @@ WfCppConfig::WriteHeader
 
 			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
 			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				WString name;
+				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				WriteHeader_Class(writer, decl, name, prefix);
 			}
 
 			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer)
