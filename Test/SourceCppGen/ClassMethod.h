@@ -20,6 +20,7 @@ public:
 	A(::vl::vint32_t _x);
 	::vl::vint32_t GetX();
 	void SetX(::vl::vint32_t _x);
+	::vl::Event<void()> XChanged;
 };
 #pragma warning(pop)
 

@@ -18,6 +18,7 @@ public:
 
 	::vl::vint32_t GetA();
 	void SetA(::vl::vint32_t value);
+	::vl::Event<void()> AChanged;
 	::vl::WString Calculate();
 };
 
@@ -27,6 +28,7 @@ public:
 
 	::vl::vint32_t GetB();
 	void SetB(::vl::vint32_t value);
+	::vl::Event<void()> BChanged;
 	::vl::WString Calculate();
 };
 #pragma warning(pop)

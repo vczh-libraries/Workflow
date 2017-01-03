@@ -17,6 +17,7 @@ class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::ref
 public:
 
 	::vl::vint32_t GetSum();
+	::vl::Event<void()> SumChanged;
 };
 
 class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>

@@ -65,7 +65,7 @@ WfGenerateClassMemberDeclVisitor
 					auto typeInfo = eventInfo->GetHandlerType();
 					writer.WriteString(prefix);
 
-					writer.WriteString(prefix + L"::vl::Event<void(");
+					writer.WriteString(L"::vl::Event<void(");
 					vint count = typeInfo->GetGenericArgumentCount();
 					for (vint i = 1; i < count; i++)
 					{
