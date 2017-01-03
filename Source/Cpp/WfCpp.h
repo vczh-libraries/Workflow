@@ -78,6 +78,13 @@ WfCppConfig::Collect
 			extern void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node);
 			extern void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl);
 			extern void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl);
+
+/***********************************************************************
+WfCppConfig::Write
+***********************************************************************/
+
+			extern void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, const WString& prefix);
+			extern void GenerateStatement(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix);
 		}
 	}
 }

@@ -270,6 +270,21 @@ WfCppConfig::WriteHeader
 				writer.WriteLine(L"\tclass " + assemblyName);
 				writer.WriteLine(L"\t{");
 				writer.WriteLine(L"\tpublic:");
+				if (varDecls.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					{
+					}
+				}
+				if (funcDecls.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+					{
+
+					}
+				}
 				writer.WriteLine(L"");
 				writer.WriteLine(L"\t\tstatic " + assemblyName + L"& Instance();");
 				writer.WriteLine(L"\t};");
