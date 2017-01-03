@@ -42,7 +42,6 @@ namespace vl_workflow_global
 		bool Next() override;
 	};
 
-
 	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_NewCustomInterface_main__IMyInterface::CreateEnumerator()
 	{
 		throw 0;
@@ -52,8 +51,6 @@ namespace vl_workflow_global
 	{
 		throw 0;
 	}
-
-
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
@@ -69,6 +66,7 @@ namespace vl_workflow_global
 	{
 		throw 0;
 	}
+
 }
 
 /***********************************************************************

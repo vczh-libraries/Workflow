@@ -80,12 +80,6 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-
-
-
-
-
-
 	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		throw 0;
@@ -116,7 +110,6 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-
 	::vl::reflection::description::IValueSubscription* __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
 		throw 0;
@@ -132,8 +125,6 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-
-
 	::vl::vint32_t __vwsnc3_BindCustomInterface_main__IAdder::GetSum()
 	{
 		throw 0;
@@ -143,6 +134,7 @@ namespace vl_workflow_global
 	{
 		throw 0;
 	}
+
 }
 
 /***********************************************************************

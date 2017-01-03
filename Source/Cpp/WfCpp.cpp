@@ -811,10 +811,13 @@ WfCppConfig::WriteCpp
 					WriteCpp_LambdaExprImpl(writer, expr);
 				}
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+				if (reversedClassExprs.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					WriteCpp_ClassExprImpl(writer, expr);
+					FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+					{
+						WriteCpp_ClassExprImpl(writer, expr);
+					}
 				}
 				writer.WriteLine(L"}");
 			}
@@ -887,8 +890,10 @@ WfCppConfig::WriteCpp
 				auto name = classExprs[lambda.Obj()];
 				FOREACH(Ptr<WfClassMember>, member, lambda->members)
 				{
-					writer.WriteLine(L"");
-					GenerateClassMemberImpl(this, writer, name, name, member, L"\t");
+					if (GenerateClassMemberImpl(this, writer, name, name, member, L"\t"))
+					{
+						writer.WriteLine(L"");
+					}
 				}
 			}
 

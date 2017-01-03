@@ -136,8 +136,6 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-
-
 	::vl::vint32_t __vwsnc1_NestedLambda_main__IA::GetA()
 	{
 		throw 0;
@@ -158,8 +156,6 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-
-
 	::vl::vint32_t __vwsnc2_NestedLambda_main_H__IB::GetB()
 	{
 		throw 0;
@@ -179,6 +175,7 @@ namespace vl_workflow_global
 	{
 		throw 0;
 	}
+
 }
 
 /***********************************************************************
