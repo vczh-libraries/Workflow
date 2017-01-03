@@ -91,6 +91,11 @@ WfCppConfig
 			{
 			}
 
+			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> stat, const WString& prefix)
+			{
+				writer.WriteLine(prefix + L"throw 0;");
+			}
+
 			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix)
 			{
 				auto block = stat.Cast<WfBlockStatement>();
@@ -99,6 +104,11 @@ WfCppConfig
 
 			WString WfCppConfig::ConvertName(const WString& name)
 			{
+				if (name.Length() > 0 && name[0] == L'$')
+				{
+					return L"__vwsno_" + name.Sub(1, name.Length() - 1);
+				}
+
 				auto match = regexSpecialName.Match(name);
 				if (match)
 				{
@@ -411,6 +421,23 @@ WfCppConfig
 						.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
 					);
 
+				WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+			}
+
+			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType)
+			{
+				auto result = manager->expressionResolvings[funcExpr.Obj()];
+				auto typeInfo = result.type.Obj();
+
+				List<WString> arguments;
+				CopyFrom(
+					arguments,
+					From(funcExpr->function->arguments)
+						.Select([](Ptr<WfFunctionArgument> argument)
+						{
+							return argument->name.value;
+						})
+					);
 				WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
 			}
 
@@ -801,7 +828,7 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L"\t{");
 					writer.WriteString(L"\t\t");
 					WriteFunctionHeader(writer, ordered, L"operator()", true);
-					writer.WriteLine(L";");
+					writer.WriteLine(L" const;");
 					writer.WriteLine(L"\t};");
 				}
 				else if (auto funcExpr = lambda.Cast<WfFunctionExpression>())
@@ -810,14 +837,34 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L"\tstruct " + name);
 					writer.WriteLine(L"\t{");
 					writer.WriteString(L"\t\t");
-					WriteFunctionHeader(writer, funcExpr->function, L"operator()", true);
-					writer.WriteLine(L";");
+					WriteFunctionHeader(writer, funcExpr, L"operator()", true);
+					writer.WriteLine(L" const;");
 					writer.WriteLine(L"\t};");
 				}
 			}
 
 			void WfCppConfig::WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
 			{
+				if (auto ordered = lambda.Cast<WfOrderedLambdaExpression>())
+				{
+					auto name = lambdaExprs[lambda.Obj()];
+					writer.WriteString(L"\t");
+					WriteFunctionHeader(writer, ordered, name + L"::operator()", true);
+					writer.WriteLine(L" const");
+					writer.WriteLine(L"\t{");
+					WriteFunctionBody(writer, ordered->body, L"\t\t");
+					writer.WriteLine(L"\t}");
+				}
+				else if (auto funcExpr = lambda.Cast<WfFunctionExpression>())
+				{
+					auto name = lambdaExprs[lambda.Obj()];
+					writer.WriteString(L"\t");
+					WriteFunctionHeader(writer, funcExpr, name + L"::operator()", true);
+					writer.WriteLine(L" const");
+					writer.WriteLine(L"\t{");
+					WriteFunctionBody(writer, funcExpr->function->statement, L"\t\t");
+					writer.WriteLine(L"\t}");
+				}
 			}
 
 			void WfCppConfig::WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)

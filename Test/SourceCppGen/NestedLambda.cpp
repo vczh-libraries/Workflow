@@ -26,14 +26,50 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_NestedLambda().instance;
 	}
 
+	struct __vwsnf3_NestedLambda_main_H_Calculate_
+	{
+		::vl::vint32_t operator()() const;
+	};
 
+	struct __vwsnf4_NestedLambda_main_H_Calculate_
+	{
+		::vl::vint32_t operator()() const;
+	};
 
+	struct __vwsnf7_NestedLambda_main_Calculate_
+	{
+		::vl::vint32_t operator()() const;
+	};
 
+	struct __vwsnf8_NestedLambda_main_Calculate_
+	{
+		::vl::vint32_t operator()() const;
+	};
 
+	struct __vwsno1_NestedLambda_main_H_
+	{
+		::vl::WString operator()() const;
+	};
 
+	struct __vwsno2_NestedLambda_main_H_Calculate_
+	{
+		::vl::vint32_t operator()() const;
+	};
 
+	struct __vwsno5_NestedLambda_main_H_Calculate__
+	{
+		::vl::vint32_t operator()() const;
+	};
 
+	struct __vwsno6_NestedLambda_main_Calculate_
+	{
+		::vl::vint32_t operator()() const;
+	};
 
+	struct __vwsno9_NestedLambda_main_Calculate__
+	{
+		::vl::vint32_t operator()() const;
+	};
 
 	class __vwsnc1_NestedLambda_main__IA : public ::vl::Object, public virtual ::IA
 	{
@@ -55,14 +91,50 @@ namespace vl_workflow_global
 		::vl::WString Calculate() override;
 	};
 
+	::vl::vint32_t __vwsnf3_NestedLambda_main_H_Calculate_::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsnf4_NestedLambda_main_H_Calculate_::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsnf7_NestedLambda_main_Calculate_::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsnf8_NestedLambda_main_Calculate_::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::WString __vwsno1_NestedLambda_main_H_::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsno2_NestedLambda_main_H_Calculate_::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsno5_NestedLambda_main_H_Calculate__::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsno6_NestedLambda_main_Calculate_::operator()() const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsno9_NestedLambda_main_Calculate__::operator()() const
+	{
+		throw 0;
+	}
 
 
 

@@ -44,6 +44,7 @@ namespace vl
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName);
 				~WfCppConfig();
 
+				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> stat, const WString& prefix);
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix);
 
 				WString					ConvertName(const WString& name);
@@ -60,6 +61,7 @@ namespace vl
 				void					WriteNamespaceEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType);
+				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
 

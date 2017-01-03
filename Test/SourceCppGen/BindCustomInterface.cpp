@@ -38,6 +38,10 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_BindCustomInterface().instance;
 	}
 
+	struct __vwsnf1_BindCustomInterface_Bind_
+	{
+		void operator()(::vl::reflection::description::Value value) const;
+	};
 
 	class __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
@@ -71,6 +75,10 @@ namespace vl_workflow_global
 		void Add(::vl::vint32_t value) override;
 	};
 
+	void __vwsnf1_BindCustomInterface_Bind_::operator()(::vl::reflection::description::Value value) const
+	{
+		throw 0;
+	}
 
 
 

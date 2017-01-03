@@ -26,6 +26,14 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_NamedLambda().instance;
 	}
 
+	struct __vwsnf1_NamedLambda_main_
+	{
+		::vl::vint32_t operator()(::vl::vint32_t n) const;
+	};
 
+	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
+	{
+		throw 0;
+	}
 }
 

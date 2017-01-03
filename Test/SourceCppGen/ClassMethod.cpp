@@ -28,7 +28,15 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_ClassMethod().instance;
 	}
 
+	struct __vwsnf1_ClassMethod_main_
+	{
+		void operator()() const;
+	};
 
+	void __vwsnf1_ClassMethod_main_::operator()() const
+	{
+		throw 0;
+	}
 }
 
 /***********************************************************************

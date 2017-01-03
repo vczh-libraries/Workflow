@@ -36,8 +36,24 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_OrderedLambda().instance;
 	}
 
+	struct __vwsno1_OrderedLambda_Adder_
+	{
+		::vl::vint32_t operator()(::vl::vint32_t __vwsno_1) const;
+	};
 
+	struct __vwsno2_OrderedLambda_Adder_
+	{
+		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
+	};
 
+	::vl::vint32_t __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_1) const
+	{
+		throw 0;
+	}
 
+	::vl::vint32_t __vwsno2_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_2) const
+	{
+		throw 0;
+	}
 }
 
