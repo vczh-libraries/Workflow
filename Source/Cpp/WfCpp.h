@@ -49,8 +49,12 @@ namespace vl
 				WString					ConvertType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
 
-				WString					WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
-				void					WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
+				vint					CountClassNamespace(Ptr<WfClassDeclaration> decl);
+				void					GetClassNamespace(Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
+				WString					GetClassBaseName(Ptr<WfClassDeclaration> decl);
+				WString					WriteNamespace(stream::StreamWriter& writer, collections::List<WString>& nss, collections::List<WString>& nss2);
+				WString					WriteNamespace(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
+				void					WriteNamespaceEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name, bool writeReturnType);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
 

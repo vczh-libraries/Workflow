@@ -195,23 +195,56 @@ WfCppConfig
 				return L"";
 			}
 
-			WString WfCppConfig::WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name)
+			vint WfCppConfig::CountClassNamespace(Ptr<WfClassDeclaration> decl)
 			{
-				List<Ptr<RegexMatch>> matches;
-				regexSplitName.Split(fullName, false, matches);
 
-				List<WString> nss2;
+			}
+
+			void WfCppConfig::GetClassNamespace(Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
+			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				auto name = ConvertFullName(CppGetFullName(td));
+				vint count = CountClassNamespace(decl);
+
+				List<Ptr<RegexMatch>> matches;
+				regexSplitName.Split(name, false, matches);
+
 				CopyFrom(
-					nss2,
+					nss,
 					From(matches)
+						.Take(count)
 						.Select([this](Ptr<RegexMatch> match)
 						{
 							return ConvertName(match->Result().Value());
 						})
 					);
+			}
 
+			WString WfCppConfig::GetClassBaseName(Ptr<WfClassDeclaration> decl)
+			{
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				auto name = ConvertFullName(CppGetFullName(td));
+				vint count = CountClassNamespace(decl);
+
+				List<Ptr<RegexMatch>> matches;
+				regexSplitName.Split(name, false, matches);
+
+				return From(matches)
+					.Skip(count)
+					.Select([this](Ptr<RegexMatch> match)
+					{
+						return ConvertName(match->Result().Value());
+					})
+					.Aggregate([](const WString& a, const WString& b)
+					{
+						return a + L"::" + b;
+					});
+			}
+
+			WString WfCppConfig::WriteNamespace(stream::StreamWriter& writer, collections::List<WString>& nss, collections::List<WString>& nss2)
+			{
 				vint commonPrefix = 0;
-				for (vint i = 0; i < nss.Count() && i < nss2.Count() - 1; i++)
+				for (vint i = 0; i < nss.Count() && i < nss2.Count(); i++)
 				{
 					if (nss[i] == nss2[i])
 					{
@@ -252,11 +285,30 @@ WfCppConfig
 					prefix += L'\t';
 				}
 
-				name = nss2[nss.Count()];
 				return prefix;
 			}
 
-			void WfCppConfig::WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss)
+			WString WfCppConfig::WriteNamespace(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name)
+			{
+				List<Ptr<RegexMatch>> matches;
+				regexSplitName.Split(fullName, false, matches);
+
+				List<WString> nss2;
+				CopyFrom(
+					nss2,
+					From(matches)
+						.Select([this](Ptr<RegexMatch> match)
+						{
+							return ConvertName(match->Result().Value());
+						})
+					);
+
+				name = nss2[nss2.Count() - 1];
+				nss2.RemoveAt(nss2.Count() - 1);
+				return WriteNamespace(writer, nss, nss2);
+			}
+
+			void WfCppConfig::WriteNamespaceEnd(stream::StreamWriter& writer, collections::List<WString>& nss)
 			{
 				while (nss.Count() > 0)
 				{
@@ -350,7 +402,7 @@ WfCppConfig::WriteHeader
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				WString name;
-				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
 				WriteHeader_Enum(writer, decl, name, prefix);
 			}
 
@@ -376,7 +428,7 @@ WfCppConfig::WriteHeader
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				WString name;
-				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
 				WriteHeader_Struct(writer, decl, name, prefix);
 			}
 
@@ -389,7 +441,7 @@ WfCppConfig::WriteHeader
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				WString name;
-				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
 				WriteHeader_ClassPreDecl(writer, decl, name, prefix);
 			}
 
@@ -500,7 +552,7 @@ WfCppConfig::WriteHeader
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				WString name;
-				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
 				WriteHeader_Class(writer, decl, name, prefix);
 			}
 
@@ -615,9 +667,9 @@ WfCppConfig::WriteCpp
 
 			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss)
 			{
-				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				WString name;
-				auto prefix = WriteName(writer, CppGetFullName(td), nss, name);
+				List<WString> nss2;
+				GetClassNamespace(decl, nss2);
+				auto prefix = WriteNamespace(writer, nss, nss2);
 				return GenerateClassMemberImpl(this, writer, decl, member, prefix);
 			}
 		}

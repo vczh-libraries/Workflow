@@ -107,7 +107,7 @@ TEST_CASE(TestCodegen)
 					}
 					headerWriter.WriteLine(L"#pragma warning(pop)");
 				}
-				config.WriteEnd(headerWriter, nss);
+				config.WriteNamespaceEnd(headerWriter, nss);
 
 				headerWriter.WriteLine(L"");
 				headerWriter.WriteLine(L"/***********************************************************************");
@@ -211,7 +211,7 @@ TEST_CASE(TestCodegen)
 					}
 				}
 
-				config.WriteEnd(cppWriter, nss);
+				config.WriteNamespaceEnd(cppWriter, nss);
 			}
 		}
 		

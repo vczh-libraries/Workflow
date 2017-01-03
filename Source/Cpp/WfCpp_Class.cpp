@@ -142,9 +142,8 @@ WfGenerateClassMemberImplVisitor
 				{
 					printableMember = true;
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
-					auto td = methodInfo->GetOwnerTypeDescriptor();
 					writer.WriteString(prefix);
-					config->WriteFunctionHeader(writer, methodInfo, config->ConvertFullName(CppGetFullName(td)) + L"::" + config->ConvertName(node->name.value), true);
+					config->WriteFunctionHeader(writer, methodInfo, config->GetClassBaseName(classDecl) + L"::" + config->ConvertName(node->name.value), true);
 					writer.WriteLine(L"");
 
 					writer.WriteLine(prefix + L"{");
@@ -168,9 +167,8 @@ WfGenerateClassMemberImplVisitor
 				{
 					printableMember = true;
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
-					auto td = methodInfo->GetOwnerTypeDescriptor();
 					writer.WriteString(prefix);
-					config->WriteFunctionHeader(writer, methodInfo, config->ConvertFullName(CppGetFullName(td)) + L"::" + config->ConvertName(classDecl->name.value), false);
+					config->WriteFunctionHeader(writer, methodInfo, config->GetClassBaseName(classDecl) + L"::" + config->ConvertName(classDecl->name.value), false);
 					writer.WriteLine(L"");
 
 					writer.WriteLine(prefix + L"{");
@@ -181,8 +179,7 @@ WfGenerateClassMemberImplVisitor
 				void Visit(WfDestructorDeclaration* node)override
 				{
 					printableMember = true;
-					auto td = config->manager->declarationTypes[classDecl.Obj()].Obj();
-					writer.WriteLine(prefix + config->ConvertFullName(CppGetFullName(td)) + L"::~" + config->ConvertName(classDecl->name.value) + L"()");
+					writer.WriteLine(prefix + config->GetClassBaseName(classDecl) + L"::~" + config->ConvertName(classDecl->name.value) + L"()");
 
 					writer.WriteLine(prefix + L"{");
 					writer.WriteLine(prefix + L"\tthrow 0;");
