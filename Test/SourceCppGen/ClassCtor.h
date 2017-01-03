@@ -12,7 +12,7 @@ Generated from ../Resources/Codegen/ClassCtor.txt
 class Y;
 class A;
 
-class Y : public virtual ::vl::Object, public ::vl::reflection::Description<Y>
+class Y : public ::vl::Object, public ::vl::reflection::Description<Y>
 {
 public:
 };

@@ -387,7 +387,7 @@ WfCppConfig::WriteHeader
 
 						if (!hasClassBase)
 						{
-							writer.WriteString(L"public virtual ::vl::Object, ");
+							writer.WriteString(L"public ::vl::Object, ");
 						}
 						for (vint i = 0; i < count; i++)
 						{
