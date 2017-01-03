@@ -20,6 +20,7 @@ namespace vl
 			class WfCppConfig : public Object
 			{
 				using ITypeInfo = reflection::description::ITypeInfo;
+				using IMethodInfo = reflection::description::IMethodInfo;
 			protected:
 				regex::Regex										regexSplitName;
 				regex::Regex										regexSpecialName;
@@ -50,7 +51,8 @@ namespace vl
 
 				WString					WriteName(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
 				void					WriteEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
-				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name);
+				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name, bool writeReturnType);
+				void					WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
 
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss);

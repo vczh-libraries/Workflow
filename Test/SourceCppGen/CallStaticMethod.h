@@ -19,7 +19,10 @@ public:
 	class Internal : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<Internal>
 	{
 	public:
+
 	};
+
+	Calculator();
 };
 #pragma warning(pop)
 

@@ -269,10 +269,13 @@ WfCppConfig
 				}
 			}
 
-			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name)
+			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, ITypeInfo* typeInfo, const WString& name, bool writeReturnType)
 			{
-				writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
-				writer.WriteChar(L' ');
+				if(writeReturnType)
+				{
+					writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
+					writer.WriteChar(L' ');
+				}
 				writer.WriteString(name);
 				writer.WriteString(L"(");
 				for (vint i = 0; i < decl->arguments.Count(); i++)
@@ -284,6 +287,29 @@ WfCppConfig
 					writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(i + 1)));
 					writer.WriteChar(L' ');
 					writer.WriteString(decl->arguments[i]->name.value);
+				}
+				writer.WriteString(L")");
+			}
+
+			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType)
+			{
+				if (writeReturnType)
+				{
+					writer.WriteString(ConvertType(methodInfo->GetReturn()));
+					writer.WriteChar(L' ');
+				}
+				writer.WriteString(name);
+				writer.WriteString(L"(");
+				vint count = methodInfo->GetParameterCount();
+				for (vint i = 0; i < count; i++)
+				{
+					if (i > 0)
+					{
+						writer.WriteString(L", ");
+					}
+					writer.WriteString(ConvertType(methodInfo->GetParameter(i)->GetType()));
+					writer.WriteChar(L' ');
+					writer.WriteString(methodInfo->GetParameter(i)->GetName());
 				}
 				writer.WriteString(L")");
 			}
@@ -461,6 +487,7 @@ WfCppConfig::WriteHeader
 					}
 				}
 
+				writer.WriteLine(L"");
 				FOREACH(Ptr<WfClassMember>, member, decl->members)
 				{
 					GenerateClassMemberDecl(this, writer, decl, member, prefix + L"\t");
@@ -509,7 +536,7 @@ WfCppConfig::WriteHeader
 						auto scope = manager->nodeScopes[decl.Obj()].Obj();
 						auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
 						writer.WriteString(L"\t\t");
-						WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), ConvertName(decl->name.value));
+						WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), ConvertName(decl->name.value), true);
 						writer.WriteLine(L";");
 					}
 				}
@@ -556,7 +583,7 @@ WfCppConfig::WriteCpp
 					auto scope = manager->nodeScopes[decl.Obj()].Obj();
 					auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
 					writer.WriteString(L"\t");
-					WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), assemblyName + L"::" + ConvertName(decl->name.value));
+					WriteFunctionHeader(writer, decl, symbol->typeInfo.Obj(), assemblyName + L"::" + ConvertName(decl->name.value), true);
 					writer.WriteLine(L"");
 					writer.WriteLine(L"\t{");
 					writer.WriteLine(L"\t\tthrow 0;");

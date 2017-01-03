@@ -15,12 +15,20 @@ class A;
 class Y : public ::vl::Object, public ::vl::reflection::Description<Y>
 {
 public:
+
 	::vl::vint32_t x = 0;
+	Y();
+	Y(::vl::vint32_t _x);
 };
 
 class A : public ::Y, public ::test::ObservableValue, public ::vl::reflection::Description<A>
 {
 public:
+
+	A();
+	A(::vl::vint32_t y, bool b);
+	A(bool b, ::vl::vint32_t value);
+	A(::vl::vint32_t y, ::vl::vint32_t value);
 };
 #pragma warning(pop)
 

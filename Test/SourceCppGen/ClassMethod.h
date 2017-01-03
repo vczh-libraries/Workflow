@@ -14,7 +14,10 @@ class A;
 class A : public ::vl::Object, public ::vl::reflection::Description<A>
 {
 public:
+
 	::vl::vint32_t x = 0;
+	A();
+	A(::vl::vint32_t _x);
 };
 #pragma warning(pop)
 

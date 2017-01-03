@@ -14,6 +14,7 @@ class IMyInterface;
 class IMyInterface : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface>
 {
 public:
+
 };
 #pragma warning(pop)
 

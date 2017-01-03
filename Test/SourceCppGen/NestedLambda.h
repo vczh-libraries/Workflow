@@ -15,11 +15,13 @@ class IB;
 class IA : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IA>
 {
 public:
+
 };
 
 class IB : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IB>
 {
 public:
+
 };
 #pragma warning(pop)
 

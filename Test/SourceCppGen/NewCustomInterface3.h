@@ -15,13 +15,16 @@ class MyClass;
 class IMyInterface : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface>
 {
 public:
+
 };
 
 class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClass>
 {
 public:
+
 	::vl::vint32_t begin = 0;
 	::vl::vint32_t end = 0;
+	MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end);
 };
 #pragma warning(pop)
 

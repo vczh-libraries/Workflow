@@ -65,6 +65,10 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
+					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
+					writer.WriteString(prefix);
+					config->WriteFunctionHeader(writer, methodInfo, config->ConvertName(classDecl->name.value), false);
+					writer.WriteLine(L";");
 				}
 
 				void Visit(WfDestructorDeclaration* node)override
