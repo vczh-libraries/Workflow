@@ -38,8 +38,9 @@ namespace vl
 			public:
 				class ClosureInfo : public Object
 				{
+					using SymbolMap = collections::Dictionary<WString, Ptr<analyzer::WfLexicalSymbol>>;
 				public:
-					Ptr<analyzer::WfLexicalCapture>					symbols;
+					SymbolMap										symbols;
 					collections::List<ITypeDescriptor*>				thisTypes;				// nearer this pointer first
 				};
 

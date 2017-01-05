@@ -86,17 +86,33 @@ WfCppConfig::CollectClosureInfo
 
 			Ptr<WfCppConfig::ClosureInfo> WfCppConfig::CollectClosureInfo(Ptr<WfExpression> closure)
 			{
+				using SymbolPair = Pair<WString, Ptr<analyzer::WfLexicalSymbol>>;
+
 				auto info = MakePtr<ClosureInfo>();
 				WfLexicalScope* scope = nullptr;
 
 				if (auto ordered = closure.Cast<WfOrderedLambdaExpression>())
 				{
-					info->symbols = manager->lambdaCaptures[ordered.Obj()];
+					CopyFrom(
+						info->symbols,
+						From(manager->lambdaCaptures[ordered.Obj()]->symbols)
+							.Select([](Ptr<WfLexicalSymbol> symbol)
+							{
+								return SymbolPair(symbol->name, symbol);
+							})
+						);
 					scope = manager->nodeScopes[ordered.Obj()].Obj();
 				}
 				else if (auto funcExpr = closure.Cast<WfFunctionExpression>())
 				{
-					info->symbols = manager->lambdaCaptures[funcExpr->function.Obj()];
+					CopyFrom(
+						info->symbols,
+						From(manager->lambdaCaptures[funcExpr->function.Obj()]->symbols)
+							.Select([](Ptr<WfLexicalSymbol> symbol)
+							{
+								return SymbolPair(symbol->name, symbol);
+							})
+						);
 					scope = manager->nodeScopes[funcExpr->function.Obj()].Obj();
 				}
 				else if (auto classExpr = closure.Cast<WfNewInterfaceExpression>())
@@ -104,10 +120,17 @@ WfCppConfig::CollectClosureInfo
 					WfCppCollectClassExprInfoVisitor visitor(this);
 					visitor.Execute(classExpr.Obj());
 
-					info->symbols = MakePtr<WfLexicalCapture>();
 					if (visitor.capture)
 					{
-						CopyFrom(info->symbols->symbols, From(visitor.capture->symbols).Skip(visitor.variableCount));
+						CopyFrom(
+							info->symbols,
+							From(visitor.capture->symbols)
+								.Skip(visitor.variableCount)
+								.Select([](Ptr<WfLexicalSymbol> symbol)
+								{
+									return SymbolPair(symbol->name, symbol);
+								})
+							);
 					}
 
 					scope = manager->nodeScopes[classExpr.Obj()].Obj();
@@ -150,7 +173,7 @@ WfCppConfig::WriteCpp
 			{
 				auto info = closureInfos[closure.Obj()];
 
-				FOREACH(Ptr<WfLexicalSymbol>, symbol, info->symbols->symbols)
+				FOREACH(Ptr<WfLexicalSymbol>, symbol, info->symbols.Values())
 				{
 					writer.WriteString(L"\t\t");
 					writer.WriteString(ConvertType(symbol->typeInfo.Obj()));
@@ -178,7 +201,7 @@ WfCppConfig::WriteCpp
 				writer.WriteString(name);
 				writer.WriteString(L"(");
 
-				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, info->symbols->symbols)
+				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, info->symbols.Values())
 				{
 					if (index > 0)
 					{
@@ -193,7 +216,7 @@ WfCppConfig::WriteCpp
 				{
 					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
 
-					if (index > 0 || info->symbols->symbols.Count() > 0)
+					if (index > 0 || info->symbols.Count() > 0)
 					{
 						writer.WriteString(L", ");
 					}
@@ -208,7 +231,7 @@ WfCppConfig::WriteCpp
 			{
 				auto info = closureInfos[closure.Obj()];
 
-				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, info->symbols->symbols)
+				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, info->symbols.Values())
 				{
 					if (index > 0)
 					{
@@ -226,7 +249,7 @@ WfCppConfig::WriteCpp
 
 				FOREACH_INDEXER(ITypeDescriptor*, thisType, index, info->thisTypes)
 				{
-					if (index > 0 || info->symbols->symbols.Count() > 0)
+					if (index > 0 || info->symbols.Count() > 0)
 					{
 						writer.WriteString(L"\t\t, ");
 					}
