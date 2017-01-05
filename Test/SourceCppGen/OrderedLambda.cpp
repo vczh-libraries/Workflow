@@ -38,17 +38,35 @@ namespace vl_workflow_global
 
 	struct __vwsno1_OrderedLambda_Adder_
 	{
+		::vl::vint32_t x;
+
+		__vwsno1_OrderedLambda_Adder_(::vl::vint32_t _x);
+
 		::vl::vint32_t operator()(::vl::vint32_t __vwsno_1) const;
 	};
 
 	struct __vwsno2_OrderedLambda_Adder_
 	{
+		::vl::vint32_t __vwsno_1;
+
+		__vwsno2_OrderedLambda_Adder_(::vl::vint32_t ___vwsno_1);
+
 		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
 	};
+
+	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint32_t _x)
+		:x(_x)
+	{
+	}
 
 	::vl::vint32_t __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_1) const
 	{
 		throw 0;
+	}
+
+	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t ___vwsno_1)
+		:__vwsno_1(___vwsno_1)
+	{
 	}
 
 	::vl::vint32_t __vwsno2_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_2) const

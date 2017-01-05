@@ -28,8 +28,15 @@ namespace vl_workflow_global
 
 	struct __vwsnf1_NamedLambda_main_
 	{
+
+		__vwsnf1_NamedLambda_main_();
+
 		::vl::vint32_t operator()(::vl::vint32_t n) const;
 	};
+
+	__vwsnf1_NamedLambda_main_::__vwsnf1_NamedLambda_main_()
+	{
+	}
 
 	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
 	{

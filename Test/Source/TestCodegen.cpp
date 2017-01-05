@@ -52,6 +52,8 @@ TEST_CASE(TestCodegen)
 			}
 			TEST_ASSERT(manager.errors.Count() == 0);
 		}
+		Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
+		TEST_ASSERT(assembly);
 
 		{
 			WfCppConfig config(&manager, itemName);
@@ -163,8 +165,6 @@ TEST_CASE(TestCodegen)
 		}
 		
 		{
-			Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
-			TEST_ASSERT(assembly);
 			LogSampleCodegenResult(L"Codegen", itemName, assembly);
 			LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
 

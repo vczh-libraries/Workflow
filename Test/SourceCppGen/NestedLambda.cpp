@@ -28,52 +28,82 @@ namespace vl_workflow_global
 
 	struct __vwsnf3_NestedLambda_main_H_Calculate_
 	{
+
+		__vwsnf3_NestedLambda_main_H_Calculate_();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsnf4_NestedLambda_main_H_Calculate_
 	{
+
+		__vwsnf4_NestedLambda_main_H_Calculate_();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsnf7_NestedLambda_main_Calculate_
 	{
+
+		__vwsnf7_NestedLambda_main_Calculate_();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsnf8_NestedLambda_main_Calculate_
 	{
+
+		__vwsnf8_NestedLambda_main_Calculate_();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno1_NestedLambda_main_H_
 	{
+
+		__vwsno1_NestedLambda_main_H_();
+
 		::vl::WString operator()() const;
 	};
 
 	struct __vwsno2_NestedLambda_main_H_Calculate_
 	{
+
+		__vwsno2_NestedLambda_main_H_Calculate_();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno5_NestedLambda_main_H_Calculate__
 	{
+
+		__vwsno5_NestedLambda_main_H_Calculate__();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno6_NestedLambda_main_Calculate_
 	{
+
+		__vwsno6_NestedLambda_main_Calculate_();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno9_NestedLambda_main_Calculate__
 	{
+
+		__vwsno9_NestedLambda_main_Calculate__();
+
 		::vl::vint32_t operator()() const;
 	};
 
 	class __vwsnc1_NestedLambda_main__IA : public ::vl::Object, public virtual ::IA
 	{
 	public:
+
+		__vwsnc1_NestedLambda_main__IA();
+
 		::vl::vint32_t a = 0;
 		::vl::vint32_t GetA() override;
 		void SetA(::vl::vint32_t value) override;
@@ -84,6 +114,9 @@ namespace vl_workflow_global
 	class __vwsnc2_NestedLambda_main_H__IB : public ::vl::Object, public virtual ::IB
 	{
 	public:
+
+		__vwsnc2_NestedLambda_main_H__IB();
+
 		::vl::vint32_t b = 0;
 		::vl::vint32_t GetB() override;
 		void SetB(::vl::vint32_t value) override;
@@ -91,9 +124,17 @@ namespace vl_workflow_global
 		::vl::WString Calculate() override;
 	};
 
+	__vwsnf3_NestedLambda_main_H_Calculate_::__vwsnf3_NestedLambda_main_H_Calculate_()
+	{
+	}
+
 	::vl::vint32_t __vwsnf3_NestedLambda_main_H_Calculate_::operator()() const
 	{
 		throw 0;
+	}
+
+	__vwsnf4_NestedLambda_main_H_Calculate_::__vwsnf4_NestedLambda_main_H_Calculate_()
+	{
 	}
 
 	::vl::vint32_t __vwsnf4_NestedLambda_main_H_Calculate_::operator()() const
@@ -101,9 +142,17 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
+	__vwsnf7_NestedLambda_main_Calculate_::__vwsnf7_NestedLambda_main_Calculate_()
+	{
+	}
+
 	::vl::vint32_t __vwsnf7_NestedLambda_main_Calculate_::operator()() const
 	{
 		throw 0;
+	}
+
+	__vwsnf8_NestedLambda_main_Calculate_::__vwsnf8_NestedLambda_main_Calculate_()
+	{
 	}
 
 	::vl::vint32_t __vwsnf8_NestedLambda_main_Calculate_::operator()() const
@@ -111,9 +160,17 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
+	__vwsno1_NestedLambda_main_H_::__vwsno1_NestedLambda_main_H_()
+	{
+	}
+
 	::vl::WString __vwsno1_NestedLambda_main_H_::operator()() const
 	{
 		throw 0;
+	}
+
+	__vwsno2_NestedLambda_main_H_Calculate_::__vwsno2_NestedLambda_main_H_Calculate_()
+	{
 	}
 
 	::vl::vint32_t __vwsno2_NestedLambda_main_H_Calculate_::operator()() const
@@ -121,9 +178,17 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
+	__vwsno5_NestedLambda_main_H_Calculate__::__vwsno5_NestedLambda_main_H_Calculate__()
+	{
+	}
+
 	::vl::vint32_t __vwsno5_NestedLambda_main_H_Calculate__::operator()() const
 	{
 		throw 0;
+	}
+
+	__vwsno6_NestedLambda_main_Calculate_::__vwsno6_NestedLambda_main_Calculate_()
+	{
 	}
 
 	::vl::vint32_t __vwsno6_NestedLambda_main_Calculate_::operator()() const
@@ -131,9 +196,17 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
+	__vwsno9_NestedLambda_main_Calculate__::__vwsno9_NestedLambda_main_Calculate__()
+	{
+	}
+
 	::vl::vint32_t __vwsno9_NestedLambda_main_Calculate__::operator()() const
 	{
 		throw 0;
+	}
+
+	__vwsnc1_NestedLambda_main__IA::__vwsnc1_NestedLambda_main__IA()
+	{
 	}
 
 	::vl::vint32_t __vwsnc1_NestedLambda_main__IA::GetA()
@@ -154,6 +227,10 @@ namespace vl_workflow_global
 	::vl::WString __vwsnc1_NestedLambda_main__IA::Calculate()
 	{
 		throw 0;
+	}
+
+	__vwsnc2_NestedLambda_main_H__IB::__vwsnc2_NestedLambda_main_H__IB()
+	{
 	}
 
 	::vl::vint32_t __vwsnc2_NestedLambda_main_H__IB::GetB()

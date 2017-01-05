@@ -30,8 +30,17 @@ namespace vl_workflow_global
 
 	struct __vwsnf1_ClassMethod_main_
 	{
+		::vl::Ptr<::Methods> a;
+
+		__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> _a);
+
 		void operator()() const;
 	};
+
+	__vwsnf1_ClassMethod_main_::__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> _a)
+		:a(_a)
+	{
+	}
 
 	void __vwsnf1_ClassMethod_main_::operator()() const
 	{

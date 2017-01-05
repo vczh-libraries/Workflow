@@ -21,10 +21,21 @@ namespace vl
 			{
 				using ITypeInfo = reflection::description::ITypeInfo;
 				using IMethodInfo = reflection::description::IMethodInfo;
+				using ITypeDescriptor = reflection::description::ITypeDescriptor;
+
+			public:
+				class ClosureInfo : public Object
+				{
+				public:
+					Ptr<analyzer::WfLexicalCapture>					symbols;
+					collections::List<ITypeDescriptor*>				thisTypes;
+				};
+
 			protected:
 				regex::Regex										regexSplitName;
 				regex::Regex										regexSpecialName;
 
+				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
 
@@ -40,6 +51,7 @@ namespace vl
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
+				collections::Dictionary<Ptr<WfExpression>, Ptr<ClosureInfo>>				closureInfos;
 
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName);
 				~WfCppConfig();
@@ -59,6 +71,7 @@ namespace vl
 				WString					WriteNamespace(stream::StreamWriter& writer, collections::List<WString>& nss, collections::List<WString>& nss2);
 				WString					WriteNamespace(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
 				void					WriteNamespaceEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
+
 				void					WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType);
 				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType);
@@ -71,6 +84,9 @@ namespace vl
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
 
+				void					WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure);
+				void					WriteCpp_ClosureCtor(stream::StreamWriter& writer, Ptr<WfExpression> closure, const WString& name);
+				void					WriteCpp_ClosureCtorInitList(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
 				void					WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
 				void					WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda);

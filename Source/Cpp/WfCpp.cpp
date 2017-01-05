@@ -8,10 +8,8 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace regex;
-			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
-			using namespace analyzer;
 
 /***********************************************************************
 WfCppConfig
@@ -25,6 +23,16 @@ WfCppConfig
 					{
 						CollectDeclaration(this, decl, nullptr);
 					}
+				}
+
+				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
+				{
+					closureInfos.Add(lambda, CollectClosureInfo(lambda));
+				}
+
+				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
+				{
+					closureInfos.Add(classExpr, CollectClosureInfo(classExpr));
 				}
 			}
 

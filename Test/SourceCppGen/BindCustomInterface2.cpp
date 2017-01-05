@@ -40,12 +40,19 @@ namespace vl_workflow_global
 
 	struct __vwsnf1_BindCustomInterface2_Bind_
 	{
+
+		__vwsnf1_BindCustomInterface2_Bind_();
+
 		void operator()(::vl::reflection::description::Value value) const;
 	};
 
 	class __vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
+		::vl::Ptr<::ISummer> summer;
+
+		__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> _summer);
+
 		::vl::Ptr<::ISummer> __vwsn_bind_cache_1;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
@@ -62,6 +69,11 @@ namespace vl_workflow_global
 	class __vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+
+		__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_);
+
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
 		bool GetStopped() override;
 		bool StopListening() override;
@@ -70,14 +82,26 @@ namespace vl_workflow_global
 	class __vwsnc3_BindCustomInterface2_main__IAdder : public ::vl::Object, public virtual ::IAdder
 	{
 	public:
+
+		__vwsnc3_BindCustomInterface2_main__IAdder();
+
 		::vl::vint32_t sum = 0;
 		::vl::vint32_t GetSum() override;
 		void Add(::vl::vint32_t value) override;
 	};
 
+	__vwsnf1_BindCustomInterface2_Bind_::__vwsnf1_BindCustomInterface2_Bind_()
+	{
+	}
+
 	void __vwsnf1_BindCustomInterface2_Bind_::operator()(::vl::reflection::description::Value value) const
 	{
 		throw 0;
+	}
+
+	__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> _summer)
+		:summer(_summer)
+	{
 	}
 
 	void __vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
@@ -110,6 +134,12 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
+	__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_)
+		:__vwsn_subscription_(___vwsn_subscription_)
+		, __vwsn_bind_listeners_(___vwsn_bind_listeners_)
+	{
+	}
+
 	::vl::reflection::description::IValueSubscription* __vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
 		throw 0;
@@ -123,6 +153,10 @@ namespace vl_workflow_global
 	bool __vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		throw 0;
+	}
+
+	__vwsnc3_BindCustomInterface2_main__IAdder::__vwsnc3_BindCustomInterface2_main__IAdder()
+	{
 	}
 
 	::vl::vint32_t __vwsnc3_BindCustomInterface2_main__IAdder::GetSum()

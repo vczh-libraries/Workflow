@@ -36,6 +36,10 @@ namespace vl_workflow_global
 	class __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
+		::vl::Ptr<::test::ObservableValue> x;
+
+		__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> _x);
+
 		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_1;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
@@ -52,10 +56,20 @@ namespace vl_workflow_global
 	class __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+
+		__vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_);
+
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
 		bool GetStopped() override;
 		bool StopListening() override;
 	};
+
+	__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> _x)
+		:x(_x)
+	{
+	}
 
 	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
@@ -85,6 +99,12 @@ namespace vl_workflow_global
 	bool __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::Close()
 	{
 		throw 0;
+	}
+
+	__vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_)
+		:__vwsn_subscription_(___vwsn_subscription_)
+		, __vwsn_bind_listeners_(___vwsn_bind_listeners_)
+	{
 	}
 
 	::vl::reflection::description::IValueSubscription* __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()

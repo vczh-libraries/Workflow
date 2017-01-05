@@ -33,17 +33,37 @@ namespace vl_workflow_global
 
 	struct __vwsnf1_AnonymousLambda_Adder_
 	{
+		::vl::vint32_t x;
+
+		__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t _x);
+
 		::vl::Func<::vl::vint32_t()> operator()(::vl::vint32_t y) const;
 	};
 
 	struct __vwsnf2_AnonymousLambda_Adder__
 	{
+		::vl::vint32_t x;
+		::vl::vint32_t y;
+
+		__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t _x, ::vl::vint32_t _y);
+
 		::vl::vint32_t operator()() const;
 	};
+
+	__vwsnf1_AnonymousLambda_Adder_::__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t _x)
+		:x(_x)
+	{
+	}
 
 	::vl::Func<::vl::vint32_t()> __vwsnf1_AnonymousLambda_Adder_::operator()(::vl::vint32_t y) const
 	{
 		throw 0;
+	}
+
+	__vwsnf2_AnonymousLambda_Adder__::__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t _x, ::vl::vint32_t _y)
+		:x(_x)
+		, y(_y)
+	{
 	}
 
 	::vl::vint32_t __vwsnf2_AnonymousLambda_Adder__::operator()() const

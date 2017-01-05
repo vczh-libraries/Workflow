@@ -29,6 +29,11 @@ namespace vl_workflow_global
 	class __vwsnc1_NewCustomInterface2_main__IMyInterface2 : public ::vl::Object, public virtual ::IMyInterface2
 	{
 	public:
+		::vl::vint32_t begin;
+		::vl::vint32_t end;
+
+		__vwsnc1_NewCustomInterface2_main__IMyInterface2(::vl::vint32_t _begin, ::vl::vint32_t _end);
+
 		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
 		::vl::vint32_t Get50();
 		::vl::vint32_t Get100() override;
@@ -37,11 +42,22 @@ namespace vl_workflow_global
 	class __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
 	{
 	public:
+		::vl::vint32_t begin;
+		::vl::vint32_t end;
+
+		__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t _begin, ::vl::vint32_t _end);
+
 		::vl::vint32_t index = 0;
 		::vl::reflection::description::Value GetCurrent() override;
 		::vl::vint32_t GetIndex() override;
 		bool Next() override;
 	};
+
+	__vwsnc1_NewCustomInterface2_main__IMyInterface2::__vwsnc1_NewCustomInterface2_main__IMyInterface2(::vl::vint32_t _begin, ::vl::vint32_t _end)
+		:begin(_begin)
+		, end(_end)
+	{
+	}
 
 	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_NewCustomInterface2_main__IMyInterface2::CreateEnumerator()
 	{
@@ -56,6 +72,12 @@ namespace vl_workflow_global
 	::vl::vint32_t __vwsnc1_NewCustomInterface2_main__IMyInterface2::Get100()
 	{
 		throw 0;
+	}
+
+	__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t _begin, ::vl::vint32_t _end)
+		:begin(_begin)
+		, end(_end)
+	{
 	}
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
