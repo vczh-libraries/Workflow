@@ -87,14 +87,17 @@ WfCppConfig::CollectClosureInfo
 			Ptr<WfCppConfig::ClosureInfo> WfCppConfig::CollectClosureInfo(Ptr<WfExpression> closure)
 			{
 				auto info = MakePtr<ClosureInfo>();
+				WfLexicalScope* scope = nullptr;
 
 				if (auto ordered = closure.Cast<WfOrderedLambdaExpression>())
 				{
 					info->symbols = manager->lambdaCaptures[ordered.Obj()];
+					scope = manager->nodeScopes[ordered.Obj()].Obj();
 				}
 				else if (auto funcExpr = closure.Cast<WfFunctionExpression>())
 				{
 					info->symbols = manager->lambdaCaptures[funcExpr->function.Obj()];
+					scope = manager->nodeScopes[funcExpr->function.Obj()].Obj();
 				}
 				else if (auto classExpr = closure.Cast<WfNewInterfaceExpression>())
 				{
@@ -106,6 +109,34 @@ WfCppConfig::CollectClosureInfo
 					{
 						CopyFrom(info->symbols->symbols, From(visitor.capture->symbols).Skip(visitor.variableCount));
 					}
+
+					scope = manager->nodeScopes[classExpr.Obj()].Obj();
+				}
+
+				Ptr<WfLexicalFunctionConfig> methodConfig;
+				while (scope)
+				{
+					if (scope->typeOfThisExpr)
+					{
+						if (methodConfig)
+						{
+							info->thisTypes.Add(scope->typeOfThisExpr);
+							if (!methodConfig->parentThisAccessable)
+							{
+								break;
+							}
+							methodConfig = nullptr;
+						}
+					}
+
+					if (scope->functionConfig)
+					{
+						if (scope->functionConfig->thisAccessable)
+						{
+							methodConfig = scope->functionConfig;
+						}
+					}
+					scope = scope->parentScope.Obj();
 				}
 
 				return info;
@@ -135,7 +166,7 @@ WfCppConfig::WriteCpp
 					writer.WriteString(L"\t\t");
 					writer.WriteString(ConvertType(typeInfo.Obj()));
 					writer.WriteString(L" ");
-					writer.WriteString(L"__vwsn_this_" + itow(index));
+					writer.WriteString(L"__vwsnthis_" + itow(index));
 					writer.WriteLine(L";");
 				}
 			}
@@ -154,7 +185,7 @@ WfCppConfig::WriteCpp
 						writer.WriteString(L", ");
 					}
 					writer.WriteString(ConvertType(symbol->typeInfo.Obj()));
-					writer.WriteString(L" _");
+					writer.WriteString(L" __vwsnctor_");
 					writer.WriteString(ConvertName(symbol->name));
 				}
 
@@ -167,8 +198,7 @@ WfCppConfig::WriteCpp
 						writer.WriteString(L", ");
 					}
 					writer.WriteString(ConvertType(typeInfo.Obj()));
-					writer.WriteString(L" _");
-					writer.WriteString(L"__vwsn_this_" + itow(index));
+					writer.WriteString(L" __vwsnctorthis_" + itow(index));
 				}
 
 				writer.WriteString(L")");
@@ -189,7 +219,7 @@ WfCppConfig::WriteCpp
 						writer.WriteString(L"\t\t:");
 					}
 					writer.WriteString(ConvertName(symbol->name));
-					writer.WriteString(L"(_");
+					writer.WriteString(L"(__vwsnctor_");
 					writer.WriteString(ConvertName(symbol->name));
 					writer.WriteLine(L")");
 				}
@@ -204,9 +234,8 @@ WfCppConfig::WriteCpp
 					{
 						writer.WriteString(L"\t\t:");
 					}
-					writer.WriteString(L"__vwsn_this_" + itow(index));
-					writer.WriteString(L"(_");
-					writer.WriteString(L"__vwsn_this_" + itow(index));
+					writer.WriteString(L"__vwsnthis_" + itow(index));
+					writer.WriteString(L"(__vwsnctorthis_" + itow(index));
 					writer.WriteLine(L")");
 				}
 			}

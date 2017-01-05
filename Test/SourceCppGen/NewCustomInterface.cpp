@@ -32,7 +32,7 @@ namespace vl_workflow_global
 		::vl::vint32_t begin;
 		::vl::vint32_t end;
 
-		__vwsnc1_NewCustomInterface_main__IMyInterface(::vl::vint32_t _begin, ::vl::vint32_t _end);
+		__vwsnc1_NewCustomInterface_main__IMyInterface(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end);
 
 		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
 		::vl::vint32_t Get100() override;
@@ -43,8 +43,9 @@ namespace vl_workflow_global
 	public:
 		::vl::vint32_t begin;
 		::vl::vint32_t end;
+		::IMyInterface* __vwsnthis_0;
 
-		__vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t _begin, ::vl::vint32_t _end);
+		__vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::IMyInterface* __vwsnctorthis_0);
 
 		::vl::vint32_t index = 0;
 		::vl::reflection::description::Value GetCurrent() override;
@@ -52,9 +53,9 @@ namespace vl_workflow_global
 		bool Next() override;
 	};
 
-	__vwsnc1_NewCustomInterface_main__IMyInterface::__vwsnc1_NewCustomInterface_main__IMyInterface(::vl::vint32_t _begin, ::vl::vint32_t _end)
-		:begin(_begin)
-		, end(_end)
+	__vwsnc1_NewCustomInterface_main__IMyInterface::__vwsnc1_NewCustomInterface_main__IMyInterface(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end)
+		:begin(__vwsnctor_begin)
+		, end(__vwsnctor_end)
 	{
 	}
 
@@ -68,9 +69,10 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t _begin, ::vl::vint32_t _end)
-		:begin(_begin)
-		, end(_end)
+	__vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::IMyInterface* __vwsnctorthis_0)
+		:begin(__vwsnctor_begin)
+		, end(__vwsnctor_end)
+		, __vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 

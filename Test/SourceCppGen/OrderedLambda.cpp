@@ -40,7 +40,7 @@ namespace vl_workflow_global
 	{
 		::vl::vint32_t x;
 
-		__vwsno1_OrderedLambda_Adder_(::vl::vint32_t _x);
+		__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x);
 
 		::vl::vint32_t operator()(::vl::vint32_t __vwsno_1) const;
 	};
@@ -49,13 +49,13 @@ namespace vl_workflow_global
 	{
 		::vl::vint32_t __vwsno_1;
 
-		__vwsno2_OrderedLambda_Adder_(::vl::vint32_t ___vwsno_1);
+		__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1);
 
 		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
 	};
 
-	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint32_t _x)
-		:x(_x)
+	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x)
+		:x(__vwsnctor_x)
 	{
 	}
 
@@ -64,8 +64,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t ___vwsno_1)
-		:__vwsno_1(___vwsno_1)
+	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1)
+		:__vwsno_1(__vwsnctor___vwsno_1)
 	{
 	}
 

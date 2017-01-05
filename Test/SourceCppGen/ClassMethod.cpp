@@ -32,13 +32,13 @@ namespace vl_workflow_global
 	{
 		::vl::Ptr<::Methods> a;
 
-		__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> _a);
+		__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a);
 
 		void operator()() const;
 	};
 
-	__vwsnf1_ClassMethod_main_::__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> _a)
-		:a(_a)
+	__vwsnf1_ClassMethod_main_::__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a)
+		:a(__vwsnctor_a)
 	{
 	}
 

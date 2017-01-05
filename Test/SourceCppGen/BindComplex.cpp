@@ -36,11 +36,11 @@ namespace vl_workflow_global
 	class __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::vl::Ptr<::test::ObservableValue> y;
 		::vl::Ptr<::test::ObservableValue> z;
+		::vl::Ptr<::test::ObservableValue> y;
 		::vl::Ptr<::test::ObservableValue> x;
 
-		__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> _y, ::vl::Ptr<::test::ObservableValue> _z, ::vl::Ptr<::test::ObservableValue> _x);
+		__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> __vwsnctor_z, ::vl::Ptr<::test::ObservableValue> __vwsnctor_y, ::vl::Ptr<::test::ObservableValue> __vwsnctor_x);
 
 		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_1;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
@@ -66,18 +66,19 @@ namespace vl_workflow_global
 	public:
 		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
 
-		__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_);
+		__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0);
 
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
 		bool GetStopped() override;
 		bool StopListening() override;
 	};
 
-	__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> _y, ::vl::Ptr<::test::ObservableValue> _z, ::vl::Ptr<::test::ObservableValue> _x)
-		:y(_y)
-		, z(_z)
-		, x(_x)
+	__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> __vwsnctor_z, ::vl::Ptr<::test::ObservableValue> __vwsnctor_y, ::vl::Ptr<::test::ObservableValue> __vwsnctor_x)
+		:z(__vwsnctor_z)
+		, y(__vwsnctor_y)
+		, x(__vwsnctor_x)
 	{
 	}
 
@@ -121,9 +122,10 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_)
-		:__vwsn_subscription_(___vwsn_subscription_)
-		, __vwsn_bind_listeners_(___vwsn_bind_listeners_)
+	__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0)
+		:__vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 

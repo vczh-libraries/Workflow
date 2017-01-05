@@ -35,7 +35,7 @@ namespace vl_workflow_global
 	{
 		::vl::vint32_t x;
 
-		__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t _x);
+		__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t __vwsnctor_x);
 
 		::vl::Func<::vl::vint32_t()> operator()(::vl::vint32_t y) const;
 	};
@@ -45,13 +45,13 @@ namespace vl_workflow_global
 		::vl::vint32_t x;
 		::vl::vint32_t y;
 
-		__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t _x, ::vl::vint32_t _y);
+		__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t __vwsnctor_x, ::vl::vint32_t __vwsnctor_y);
 
 		::vl::vint32_t operator()() const;
 	};
 
-	__vwsnf1_AnonymousLambda_Adder_::__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t _x)
-		:x(_x)
+	__vwsnf1_AnonymousLambda_Adder_::__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t __vwsnctor_x)
+		:x(__vwsnctor_x)
 	{
 	}
 
@@ -60,9 +60,9 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnf2_AnonymousLambda_Adder__::__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t _x, ::vl::vint32_t _y)
-		:x(_x)
-		, y(_y)
+	__vwsnf2_AnonymousLambda_Adder__::__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t __vwsnctor_x, ::vl::vint32_t __vwsnctor_y)
+		:x(__vwsnctor_x)
+		, y(__vwsnctor_y)
 	{
 	}
 

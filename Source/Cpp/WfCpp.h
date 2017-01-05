@@ -17,6 +17,18 @@ namespace vl
 	{
 		namespace cppcodegen
 		{
+			/*
+			Vczh Workflow Special Name:
+				__vwsn_CATEGORY			: <CATEGORY>
+				__vwsn_CATEGORY_NAME	: <CATEGORY>NAME
+				__vwsno#_ASSEMBLY_*		: ordered lambda class name
+				__vwsnf#_ASSEMBLY_*		: function expression class name
+				__vwsnc#_ASSEMBLY_*		: anonymous interface class name
+				__vwsnthis_#			: captured this pointer in fields
+				__vwsnctor_*			: captured symbol in constructor arguments, assigned to "this->*"
+				__vwsnctorthis_#		: captured this pointer in constructor arguments assigned to "this->__vwsnthis_#'
+			*/
+
 			class WfCppConfig : public Object
 			{
 				using ITypeInfo = reflection::description::ITypeInfo;
@@ -28,7 +40,7 @@ namespace vl
 				{
 				public:
 					Ptr<analyzer::WfLexicalCapture>					symbols;
-					collections::List<ITypeDescriptor*>				thisTypes;
+					collections::List<ITypeDescriptor*>				thisTypes;				// nearer this pointer first
 				};
 
 			protected:

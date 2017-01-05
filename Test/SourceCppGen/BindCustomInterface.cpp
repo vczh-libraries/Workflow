@@ -51,7 +51,7 @@ namespace vl_workflow_global
 	public:
 		::vl::Ptr<::ISummer> summer;
 
-		__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> _summer);
+		__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer);
 
 		::vl::Ptr<::ISummer> __vwsn_bind_cache_1;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
@@ -71,8 +71,9 @@ namespace vl_workflow_global
 	public:
 		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
 
-		__vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_);
+		__vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0);
 
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
 		bool GetStopped() override;
@@ -99,8 +100,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> _summer)
-		:summer(_summer)
+	__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer)
+		:summer(__vwsnctor_summer)
 	{
 	}
 
@@ -134,9 +135,10 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* ___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> ___vwsn_bind_listeners_)
-		:__vwsn_subscription_(___vwsn_subscription_)
-		, __vwsn_bind_listeners_(___vwsn_bind_listeners_)
+	__vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0)
+		:__vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 

@@ -28,72 +28,85 @@ namespace vl_workflow_global
 
 	struct __vwsnf3_NestedLambda_main_H_Calculate_
 	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
 
-		__vwsnf3_NestedLambda_main_H_Calculate_();
+		__vwsnf3_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsnf4_NestedLambda_main_H_Calculate_
 	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
 
-		__vwsnf4_NestedLambda_main_H_Calculate_();
+		__vwsnf4_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsnf7_NestedLambda_main_Calculate_
 	{
+		::IA* __vwsnthis_0;
 
-		__vwsnf7_NestedLambda_main_Calculate_();
+		__vwsnf7_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
 
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsnf8_NestedLambda_main_Calculate_
 	{
+		::IA* __vwsnthis_0;
 
-		__vwsnf8_NestedLambda_main_Calculate_();
+		__vwsnf8_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
 
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno1_NestedLambda_main_H_
 	{
+		::IA* __vwsnthis_0;
 
-		__vwsno1_NestedLambda_main_H_();
+		__vwsno1_NestedLambda_main_H_(::IA* __vwsnctorthis_0);
 
 		::vl::WString operator()() const;
 	};
 
 	struct __vwsno2_NestedLambda_main_H_Calculate_
 	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
 
-		__vwsno2_NestedLambda_main_H_Calculate_();
+		__vwsno2_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno5_NestedLambda_main_H_Calculate__
 	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
 
-		__vwsno5_NestedLambda_main_H_Calculate__();
+		__vwsno5_NestedLambda_main_H_Calculate__(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno6_NestedLambda_main_Calculate_
 	{
+		::IA* __vwsnthis_0;
 
-		__vwsno6_NestedLambda_main_Calculate_();
+		__vwsno6_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
 
 		::vl::vint32_t operator()() const;
 	};
 
 	struct __vwsno9_NestedLambda_main_Calculate__
 	{
+		::IA* __vwsnthis_0;
 
-		__vwsno9_NestedLambda_main_Calculate__();
+		__vwsno9_NestedLambda_main_Calculate__(::IA* __vwsnctorthis_0);
 
 		::vl::vint32_t operator()() const;
 	};
@@ -114,8 +127,9 @@ namespace vl_workflow_global
 	class __vwsnc2_NestedLambda_main_H__IB : public ::vl::Object, public virtual ::IB
 	{
 	public:
+		::IA* __vwsnthis_0;
 
-		__vwsnc2_NestedLambda_main_H__IB();
+		__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0);
 
 		::vl::vint32_t b = 0;
 		::vl::vint32_t GetB() override;
@@ -124,7 +138,9 @@ namespace vl_workflow_global
 		::vl::WString Calculate() override;
 	};
 
-	__vwsnf3_NestedLambda_main_H_Calculate_::__vwsnf3_NestedLambda_main_H_Calculate_()
+	__vwsnf3_NestedLambda_main_H_Calculate_::__vwsnf3_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
+		:__vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
 	{
 	}
 
@@ -133,7 +149,9 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnf4_NestedLambda_main_H_Calculate_::__vwsnf4_NestedLambda_main_H_Calculate_()
+	__vwsnf4_NestedLambda_main_H_Calculate_::__vwsnf4_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
+		:__vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
 	{
 	}
 
@@ -142,7 +160,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnf7_NestedLambda_main_Calculate_::__vwsnf7_NestedLambda_main_Calculate_()
+	__vwsnf7_NestedLambda_main_Calculate_::__vwsnf7_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
@@ -151,7 +170,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnf8_NestedLambda_main_Calculate_::__vwsnf8_NestedLambda_main_Calculate_()
+	__vwsnf8_NestedLambda_main_Calculate_::__vwsnf8_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
@@ -160,7 +180,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsno1_NestedLambda_main_H_::__vwsno1_NestedLambda_main_H_()
+	__vwsno1_NestedLambda_main_H_::__vwsno1_NestedLambda_main_H_(::IA* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
@@ -169,7 +190,9 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsno2_NestedLambda_main_H_Calculate_::__vwsno2_NestedLambda_main_H_Calculate_()
+	__vwsno2_NestedLambda_main_H_Calculate_::__vwsno2_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
+		:__vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
 	{
 	}
 
@@ -178,7 +201,9 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsno5_NestedLambda_main_H_Calculate__::__vwsno5_NestedLambda_main_H_Calculate__()
+	__vwsno5_NestedLambda_main_H_Calculate__::__vwsno5_NestedLambda_main_H_Calculate__(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
+		:__vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
 	{
 	}
 
@@ -187,7 +212,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsno6_NestedLambda_main_Calculate_::__vwsno6_NestedLambda_main_Calculate_()
+	__vwsno6_NestedLambda_main_Calculate_::__vwsno6_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
@@ -196,7 +222,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsno9_NestedLambda_main_Calculate__::__vwsno9_NestedLambda_main_Calculate__()
+	__vwsno9_NestedLambda_main_Calculate__::__vwsno9_NestedLambda_main_Calculate__(::IA* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
@@ -229,7 +256,8 @@ namespace vl_workflow_global
 		throw 0;
 	}
 
-	__vwsnc2_NestedLambda_main_H__IB::__vwsnc2_NestedLambda_main_H__IB()
+	__vwsnc2_NestedLambda_main_H__IB::__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
