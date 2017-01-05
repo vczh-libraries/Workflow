@@ -55,6 +55,33 @@ namespace vl
 					writer.WriteLine(L"\t}");
 				}
 			}
+
+			void WfCppConfig::WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
+			{
+				auto result = manager->expressionResolvings[lambda.Obj()];
+				auto td = result.constructorInfo->GetOwnerTypeDescriptor();
+				auto name = classExprs[lambda.Obj()];
+				writer.WriteLine(L"\tclass " + name + L" : public ::vl::Object, public virtual " + ConvertFullName(CppGetFullName(td)));
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\tpublic:");
+				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				{
+					GenerateClassMemberDecl(this, writer, name, member, L"\t\t");
+				}
+				writer.WriteLine(L"\t};");
+			}
+
+			void WfCppConfig::WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
+			{
+				auto name = classExprs[lambda.Obj()];
+				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				{
+					if (GenerateClassMemberImpl(this, writer, name, name, member, L"\t"))
+					{
+						writer.WriteLine(L"");
+					}
+				}
+			}
 		}
 	}
 }
