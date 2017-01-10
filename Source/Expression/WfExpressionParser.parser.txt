@@ -318,6 +318,7 @@ class AttachEventExpression : Expression
 
 class DetachEventExpression : Expression
 {
+	Expression				event;
 	Expression				handler;
 }
 
@@ -841,7 +842,7 @@ rule Expression ExpPrimitive
 	= "typeof" "(" WorkflowType : type ")" as TypeOfTypeExpression
 	= "type" "(" WorkflowExpression : expression ")" as TypeOfExpressionExpression
 	= "attach" "(" WorkflowExpression : event "," WorkflowExpression : function ")" as AttachEventExpression
-	= "detach" "(" WorkflowExpression : handler ")" as DetachEventExpression
+	= "detach" "(" WorkflowExpression : event "," WorkflowExpression : handler ")" as DetachEventExpression
 	= "::" NAME : name as TopQualifiedExpression
 	;
 

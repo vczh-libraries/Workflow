@@ -377,6 +377,7 @@ SearchOrderedName(Expression)
 
 				void Visit(WfDetachEventExpression* node)override
 				{
+					node->event->Accept(this);
 					node->handler->Accept(this);
 				}
 

@@ -1,9 +1,11 @@
 module test;
 
 using system::reflection::*;
+using test::*;
 
 func main() : void
 {
+	var x : ObservableValue^ = null;
 	var h : EventHandler^ = null;
-	var x : int = detach(h);
+	var b : int = detach(x.ValueChanged, h);
 }

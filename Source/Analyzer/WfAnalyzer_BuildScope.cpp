@@ -600,6 +600,7 @@ BuildScopeForExpression
 
 				void Visit(WfDetachEventExpression* node)override
 				{
+					BuildScopeForExpression(manager, parentScope, node->event);
 					BuildScopeForExpression(manager, parentScope, node->handler);
 				}
 

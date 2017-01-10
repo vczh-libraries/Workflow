@@ -274,19 +274,28 @@ WfEvent
 				return GetInfoRecord<EventRecord>(this, thisObject, EventRecordInternalPropertyName, createIfNotExist);
 			}
 
-			void WfEvent::AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
+			Ptr<IEventHandler> WfEvent::AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)
 			{
 				auto record = GetEventRecord(thisObject, true);
-				record->handlers.Add(this, eventHandler);
+				auto result = MakePtr<EventHandlerImpl>(handler);
+				record->handlers.Add(this, result);
+				return result;
 			}
 
-			void WfEvent::DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
+			bool WfEvent::DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)
 			{
+				auto impl = handler.Cast<EventHandlerImpl>();
+				if (!impl)return false;
 				auto record = GetEventRecord(thisObject, true);
-				record->handlers.Remove(this, eventHandler);
+				if (record->handlers.Remove(this, impl.Obj()))
+				{
+					impl->isAttached = false;
+					return true;
+				}
+				return false;
 			}
 
-			void WfEvent::InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)
+			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
 			{
 				auto record = GetEventRecord(thisObject, false);
 				if (record)
@@ -295,9 +304,9 @@ WfEvent
 					if (index != -1)
 					{
 						auto& values = record->handlers.GetByIndex(index);
-						FOREACH(IEventHandler*, handler, values)
+						FOREACH(Ptr<EventHandlerImpl>, handler, values)
 						{
-							handler->Invoke(Value::From(thisObject), arguments);
+							handler->proxy->Invoke(arguments);
 						}
 					}
 				}

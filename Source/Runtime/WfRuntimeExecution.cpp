@@ -764,12 +764,12 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
 						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.eventParameter));
 
-						Array<Value> arguments(ins.countParameter);
+						auto arguments = IValueList::Create();
 						for (vint i = 0; i < ins.countParameter; i++)
 						{
 							Value argument;
 							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
-							arguments[ins.countParameter - i - 1] = argument;
+							arguments->Insert(0, argument);
 						}
 
 						ins.eventParameter->Invoke(thisValue, arguments);
@@ -834,11 +834,12 @@ WfRuntimeThreadContext
 					}
 				case WfInsCode::DetachEvent:
 					{
-						Value operand;
+						Value thisValue, operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakDetach(thisValue.GetRawPtr(), ins.eventParameter));
 						auto handler = UnboxValue<Ptr<IEventHandler>>(operand);
-						CALL_DEBUGGER(callback->BreakDetach(handler->GetOwnerObject().GetRawPtr(), handler->GetOwnerEvent()));
-						auto result = handler->Detach();
+						auto result = ins.eventParameter->Detach(thisValue, handler);
 						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}

@@ -176,6 +176,7 @@ WfCollectExpressionVisitor
 
 				void Visit(WfDetachEventExpression* node)override
 				{
+					CollectExpression(config, node->event);
 					CollectExpression(config, node->handler);
 				}
 

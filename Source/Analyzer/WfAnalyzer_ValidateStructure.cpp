@@ -1172,6 +1172,7 @@ ValidateStructure(Expression)
 					{
 						manager->errors.Add(WfErrors::DetachInBind(node));
 					}
+					ValidateExpressionStructure(manager, context, node->event);
 					ValidateExpressionStructure(manager, context, node->handler);
 				}
 

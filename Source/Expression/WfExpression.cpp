@@ -642,6 +642,8 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"detach(");
+				WfPrint(node->event, indent, writer);
+				writer.WriteString(L", ");
 				WfPrint(node->handler, indent, writer);
 				writer.WriteString(L")");
 				writer.AfterPrint(node);

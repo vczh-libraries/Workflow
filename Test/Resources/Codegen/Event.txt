@@ -17,9 +17,9 @@ func main():string
 	var handler = attach(o.ValueChanged, EventHandler);
 	o.Value = 20;
 	o.Value = 30;
-	var b1 = detach(handler);
+	var b1 = detach(o.ValueChanged, handler);
 	o.Value = 40;
-	var b2 = detach(handler);
+	var b2 = detach(o.ValueChanged, handler);
 	return
 		olds.Count & ", " & olds[0] & ", " & olds[1] & ", " &
 		news.Count & ", " & news[0] & ", " & news[1] & ", " &

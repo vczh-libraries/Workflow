@@ -904,8 +904,11 @@ GenerateInstructions(Expression)
 
 				void Visit(WfDetachEventExpression* node)override
 				{
+					auto result = context.manager->expressionResolvings[node->event.Obj()];
+					auto parent = node->event.Cast<WfMemberExpression>()->parent;
+					GenerateExpressionInstructions(context, parent);
 					GenerateExpressionInstructions(context, node->handler);
-					INSTRUCTION(Ins::DetachEvent());
+					INSTRUCTION(Ins::DetachEvent(result.eventInfo));
 				}
 
 				void Visit(WfBindExpression* node)override

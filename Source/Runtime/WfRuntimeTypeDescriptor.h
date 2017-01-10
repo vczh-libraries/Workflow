@@ -172,9 +172,28 @@ Event
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::IEventHandler				IEventHandler;
+				typedef reflection::description::IValueFunctionProxy		IValueFunctionProxy;
+				typedef reflection::description::IValueList					IValueList;
 				typedef reflection::description::Value						Value;
-				typedef collections::Group<WfEvent*, IEventHandler*>		EventHandlerGroup;
 
+				class EventHandlerImpl : public Object, public IEventHandler
+				{
+				public:
+					bool								isAttached = true;
+					Ptr<IValueFunctionProxy>			proxy;
+
+					EventHandlerImpl(Ptr<IValueFunctionProxy> _proxy)
+						:proxy(_proxy)
+					{
+					}
+
+					bool IsAttached()override
+					{
+						return isAttached;
+					}
+				};
+
+				typedef collections::Group<WfEvent*, Ptr<EventHandlerImpl>>	EventHandlerGroup;
 				class EventRecord : public Object
 				{
 				public:
@@ -185,9 +204,9 @@ Event
 			protected:
 
 				Ptr<EventRecord>						GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist);
-				void									AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
-				void									DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
-				void									InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override;
+				Ptr<IEventHandler>						AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)override;
+				bool									DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)override;
+				void									InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override;
 				Ptr<ITypeInfo>							GetHandlerTypeInternal()override;
 			public:
 				WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name);

@@ -1937,6 +1937,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfDetachEventExpression* node)override
 				{
+					GetExpressionEventInfo(manager, node->event);
 					Ptr<ITypeInfo> pointerType = TypeInfoRetriver<Ptr<IEventHandler>>::CreateTypeInfo();
 					GetExpressionType(manager, node->handler, pointerType);
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));

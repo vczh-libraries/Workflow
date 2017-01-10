@@ -750,6 +750,7 @@ namespace vl
 		class WfDetachEventExpression : public WfExpression, vl::reflection::Description<WfDetachEventExpression>
 		{
 		public:
+			vl::Ptr<WfExpression> event;
 			vl::Ptr<WfExpression> handler;
 
 			void Accept(WfExpression::IVisitor* visitor)override;

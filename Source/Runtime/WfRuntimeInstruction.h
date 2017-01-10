@@ -66,7 +66,7 @@ Instruction
 				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeBaseCtor,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> <null>						;
 				AttachEvent,			// IEventInfo*			: Value-this, <function> -> <Listener>								;
-				DetachEvent,			// 						: <Listener> -> bool												;
+				DetachEvent,			// IEventInfo*			: Value-this, <Listener> -> bool									;
 				InstallTry,				// label				: () -> ()															;
 				UninstallTry,			// count				: () -> ()															;
 				RaiseException,			// 						: Value -> ()														; (trap)
@@ -139,7 +139,7 @@ Instruction
 			APPLY_EVENT_COUNT(InvokeEvent)\
 			APPLY_METHOD_COUNT(InvokeBaseCtor)\
 			APPLY_EVENT(AttachEvent)\
-			APPLY(DetachEvent)\
+			APPLY_EVENT(DetachEvent)\
 			APPLY_LABEL(InstallTry)\
 			APPLY_COUNT(UninstallTry)\
 			APPLY(RaiseException)\
