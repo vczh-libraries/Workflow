@@ -139,6 +139,7 @@ namespace vl
 											return;
 										}
 									}
+									break;
 								}
 							}
 							writer.WriteString(L"/* NOT EXISTS: convert (");
