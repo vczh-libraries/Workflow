@@ -119,16 +119,11 @@ namespace vl
 						WString item = match->Result().Value();
 						if (match->Success())
 						{
-							auto result = callback(item);
-							if (result == L"*")
+							if (!callback(item))
 							{
 								writer.WriteString(L"/* NOT EXISTS: ");
 								writer.WriteString(item);
 								writer.WriteString(L" */ __vwsn_not_exists__");
-							}
-							else
-							{
-								writer.WriteString(result);
 							}
 						}
 						else
@@ -138,112 +133,153 @@ namespace vl
 					}
 				}
 
-				WString GetThisExpression(WfExpression* node, ITypeDescriptor* td)
+				void VisitThisExpression(WfExpression* node, ITypeDescriptor* td)
 				{
 					if (auto closureInfo = GetClosureInfo(node))
 					{
 						auto index = closureInfo->thisTypes.IndexOf(td);
 						if (index != -1)
 						{
-							return L"__vwsnthis_" + itow(index);
+							writer.WriteString(L"__vwsnthis_");
+							writer.WriteString(L"itow(index)");
 						}
 					}
-					return L"this";
+					writer.WriteString(L"this");
 				}
 
-				void VisitThisExpression(WfExpression* node, ITypeDescriptor* td)
+				void VisitSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol)
 				{
-					writer.WriteString(GetThisExpression(node, td));
-				}
-
-				void VisitReferenceExpression(WfExpression* node, const WString& name)
-				{
-					auto result = config->manager->expressionResolvings[node];
-					if (result.symbol)
+					if (auto varDecl = symbol->creatorNode.Cast<WfVariableDeclaration>())
 					{
-						if (auto varDecl = result.symbol->creatorNode.Cast<WfVariableDeclaration>())
+						auto ownerNode = symbol->ownerScope->ownerNode;
+						if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
 						{
-							auto ownerNode = result.symbol->ownerScope->ownerNode;
-							if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
-							{
-								WriteGlobalObject();
-								writer.WriteString(L".");
-								writer.WriteString(config->ConvertName(result.symbol->name));
-								return;
-							}
-							else
-							{
-								auto closureInfo = GetClosureInfo(node);
-								if (closureInfo->symbols.Values().Contains(result.symbol.Obj()))
-								{
-									writer.WriteString(L"this->");
-									writer.WriteString(config->ConvertName(result.symbol->name));
-									return;
-								}
-							}
+							WriteGlobalObject();
+							writer.WriteString(L".");
+							writer.WriteString(config->ConvertName(symbol->name));
+							return;
 						}
-						else if (auto funcDecl = result.symbol->creatorNode.Cast<WfFunctionDeclaration>())
+						else
 						{
-							auto ownerNode = result.symbol->ownerScope->ownerNode;
-							if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
+							auto closureInfo = GetClosureInfo(node);
+							if (closureInfo->symbols.Values().Contains(symbol.Obj()))
 							{
-								writer.WriteString(config->ConvertType(result.symbol->typeInfo.Obj()));
-								writer.WriteString(L"(&");
-								WriteGlobalObject();
-								writer.WriteString(L", &");
-								WriteGlobalType();
-								writer.WriteString(L"::");
-								writer.WriteString(config->ConvertName(result.symbol->name));
-								writer.WriteString(L")");
-								return;
-							}
-							else if (auto classExpr = ownerNode.Cast<WfNewInterfaceExpression>())
-							{
-								writer.WriteString(config->ConvertType(result.symbol->typeInfo.Obj()));
-								writer.WriteString(L"(this, &");
-								writer.WriteString(GetClosureInfo(classExpr.Obj())->lambdaClassName);
-								writer.WriteString(L"::");
-								writer.WriteString(config->ConvertName(result.symbol->name));
-								writer.WriteString(L")");
+								writer.WriteString(L"this->");
+								writer.WriteString(config->ConvertName(symbol->name));
 								return;
 							}
 						}
-						writer.WriteString(config->ConvertName(result.symbol->name));
 					}
-					else if (result.methodInfo)
+					else if (auto funcDecl = symbol->creatorNode.Cast<WfFunctionDeclaration>())
+					{
+						auto ownerNode = symbol->ownerScope->ownerNode;
+						if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
+						{
+							writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
+							writer.WriteString(L"(&");
+							WriteGlobalObject();
+							writer.WriteString(L", &");
+							WriteGlobalType();
+							writer.WriteString(L"::");
+							writer.WriteString(config->ConvertName(symbol->name));
+							writer.WriteString(L")");
+							return;
+						}
+						else if (auto classExpr = ownerNode.Cast<WfNewInterfaceExpression>())
+						{
+							writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
+							writer.WriteString(L"(this, &");
+							writer.WriteString(GetClosureInfo(classExpr.Obj())->lambdaClassName);
+							writer.WriteString(L"::");
+							writer.WriteString(config->ConvertName(symbol->name));
+							writer.WriteString(L")");
+							return;
+						}
+					}
+					writer.WriteString(config->ConvertName(symbol->name));
+				}
+
+				template<typename TThis, typename TArguments>
+				void WriteMethodTemplate(const WString& templateValue, IMethodInfo* methodInfo, const TThis& thisCallback, const TArguments& argumentsCallback)
+				{
+					WriteTemplate(templateValue, [&](const WString& item)
+					{
+						if (item == L"$Type")
+						{
+							writer.WriteString(config->ConvertFullName(CppGetFullName(methodInfo->GetOwnerTypeDescriptor())));
+							return true;
+						}
+						else if (item == L"$Func")
+						{
+							writer.WriteString(config->ConvertFunctionType(methodInfo));
+							return true;
+						}
+						else if (item == L"$Name")
+						{
+							writer.WriteString(config->ConvertName(methodInfo->GetName()));
+							return true;
+						}
+						else if (item == L"$This")
+						{
+							if (!methodInfo->IsStatic())
+							{
+								return thisCallback(methodInfo);
+							}
+						}
+						else if (item == L"$Arguments")
+						{
+							return argumentsCallback(methodInfo, false);
+						}
+						else if (item == L", $Arguments")
+						{
+							return argumentsCallback(methodInfo, true);
+						}
+						return false;
+					});
+				}
+
+				template<typename TThis>
+				void WritePropertyTemplate(const WString& templateValue, IPropertyInfo* propertyInfo, const TThis& thisCallback)
+				{
+					WriteTemplate(templateValue, [&](const WString& item)
+					{
+						if (item == L"$Type")
+						{
+							config->ConvertFullName(CppGetFullName(propertyInfo->GetOwnerTypeDescriptor()));
+							return true;
+						}
+						else if (item == L"$Name")
+						{
+							config->ConvertName(propertyInfo->GetName());
+							return true;
+						}
+						else if (item == L"$This")
+						{
+							return thisCallback(propertyInfo);
+						}
+						return false;
+					});
+				}
+
+				template<typename TMethodThis, typename TPropertyThis>
+				bool WriteReferenceTemplate(ResolveExpressionResult& result, const TMethodThis& methodThis, const TPropertyThis& propertyThis)
+				{
+					if (result.methodInfo)
 					{
 						if (CppExists(result.methodInfo))
 						{
-							auto templateValue = CppGetClosureTemplate(result.methodInfo);
 							auto methodInfo = result.methodInfo;
-							WriteTemplate(templateValue, [&](const WString& item)
-							{
-								if (item == L"$Type")
+							WriteMethodTemplate(CppGetClosureTemplate(methodInfo), methodInfo, methodThis,
+								[&](IMethodInfo*, bool)
 								{
-									return config->ConvertFullName(CppGetFullName(methodInfo->GetOwnerTypeDescriptor()));
-								}
-								else if (item == L"$Func")
-								{
-									return config->ConvertFunctionType(methodInfo);
-								}
-								else if (item == L"$Name")
-								{
-									return config->ConvertName(methodInfo->GetName());
-								}
-								else if (item == L"$This")
-								{
-									if (!methodInfo->IsStatic())
-									{
-										return GetThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
-									}
-								}
-								return WString(L"*", false);
-							});
+									return false;
+								});
 						}
 						else
 						{
 							WriteNotExists(result.methodInfo);
 						}
+						return true;
 					}
 					else if (result.propertyInfo)
 					{
@@ -251,78 +287,90 @@ namespace vl
 						{
 							if (result.propertyInfo->GetCpp() == nullptr && result.propertyInfo->GetGetter() != nullptr)
 							{
-								auto templateValue = CppGetInvokeTemplate(result.propertyInfo->GetGetter());
 								auto methodInfo = result.propertyInfo->GetGetter();
-								WriteTemplate(templateValue, [&](const WString& item)
-								{
-									if (item == L"$Type")
+								WriteMethodTemplate(CppGetClosureTemplate(methodInfo), methodInfo, methodThis,
+									[&](IMethodInfo*, bool)
 									{
-										return config->ConvertFullName(CppGetFullName(methodInfo->GetOwnerTypeDescriptor()));
-									}
-									else if (item == L"$Func")
-									{
-										return config->ConvertFunctionType(methodInfo);
-									}
-									else if (item == L"$Name")
-									{
-										return config->ConvertName(methodInfo->GetName());
-									}
-									else if (item == L"$This")
-									{
-										if (!methodInfo->IsStatic())
-										{
-											return GetThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
-										}
-									}
-									else if (item == L"$Arguments")
-									{
-										return WString::Empty;
-									}
-									return WString(L"*", false);
-								});
+										return true;
+									});
 							}
 							else
 							{
 								auto templateValue = CppGetReferenceTemplate(result.propertyInfo);
 								auto propertyInfo = result.propertyInfo;
-								WriteTemplate(templateValue, [&](const WString& item)
-								{
-									if (item == L"$Type")
-									{
-										return config->ConvertFullName(CppGetFullName(propertyInfo->GetOwnerTypeDescriptor()));
-									}
-									else if (item == L"$Name")
-									{
-										return config->ConvertName(propertyInfo->GetName());
-									}
-									else if (item == L"$This")
-									{
-										return GetThisExpression(node, propertyInfo->GetOwnerTypeDescriptor());
-									}
-									return WString(L"*", false);
-								});
+								WritePropertyTemplate(CppGetReferenceTemplate(propertyInfo), propertyInfo, propertyThis);
 							}
 						}
 						else
 						{
 							WriteNotExists(result.propertyInfo);
 						}
+						return true;
 					}
 					else
 					{
-						if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+						return false;
+					}
+				}
+
+				void VisitReferenceExpression(WfExpression* node, const WString& name)
+				{
+					auto result = config->manager->expressionResolvings[node];
+					bool success = WriteReferenceTemplate(result,
+						[&](IMethodInfo* methodInfo)
 						{
-							auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
-							vint index = enumType->IndexOfItem(name);
-							if (index != -1)
-							{
-								writer.WriteString(config->ConvertType(result.type.Obj()));
-								writer.WriteString(L"::");
-								writer.WriteString(name);
-								return;
-							}
+							VisitThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
+							return true;
+						},
+						[&](IPropertyInfo* propertyInfo)
+						{
+							VisitThisExpression(node, propertyInfo->GetOwnerTypeDescriptor());
+							return true;
+						});
+
+					if (!success)
+					{
+						if (result.symbol)
+						{
+							VisitSymbol(node, result.symbol);
 						}
-						CHECK_FAIL(L"WfGenerateExpressionVisitor::VisitReferenceExpression(WfExpression*, const WString&)#Internal error, cannot find any record of this expression.");
+						else
+						{
+							if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+							{
+								auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
+								vint index = enumType->IndexOfItem(name);
+								if (index != -1)
+								{
+									writer.WriteString(config->ConvertType(result.type.Obj()));
+									writer.WriteString(L"::");
+									writer.WriteString(name);
+									return;
+								}
+							}
+							CHECK_FAIL(L"WfGenerateExpressionVisitor::VisitReferenceExpression(WfExpression*, const WString&)#Internal error, cannot find any record of this expression.");
+						}
+					}
+				}
+				
+				void WriteClosureArguments(Ptr<WfCppConfig::ClosureInfo> closureInfo, WfExpression* node)
+				{
+					FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, closureInfo->symbols.Values())
+					{
+						if (index > 0)
+						{
+							writer.WriteString(L", ");
+						}
+						VisitSymbol(node, symbol);
+					}
+
+					FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
+					{
+						if (index > 0 || closureInfo->symbols.Count() > 0)
+						{
+							writer.WriteString(L", ");
+						}
+						VisitThisExpression(node, thisType);
 					}
 				}
 
@@ -349,12 +397,32 @@ namespace vl
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					throw 0;
+					writer.WriteString(L"LAMBDA(::");
+					writer.WriteString(config->assemblyNamespace);
+					writer.WriteString(L"::");
+					writer.WriteString(config->lambdaExprs[node]);
+					writer.WriteString(L"(");
+
+					auto closureInfo = config->closureInfos[node];
+					WriteClosureArguments(closureInfo, node);
+
+					writer.WriteString(L"))");
 				}
 
 				void Visit(WfMemberExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					WriteReferenceTemplate(result,
+						[&](IMethodInfo* methodInfo)
+						{
+							node->parent->Accept(this);
+							return true;
+						},
+						[&](IPropertyInfo* propertyInfo)
+						{
+							node->parent->Accept(this);
+							return true;
+						});
 				}
 
 				void Visit(WfChildExpression* node)override
@@ -435,7 +503,7 @@ namespace vl
 
 				void Visit(WfFormatExpression* node)override
 				{
-					throw 0;
+					node->expandedExpression->Accept(this);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -491,7 +559,7 @@ namespace vl
 
 				void Visit(WfInferExpression* node)override
 				{
-					throw 0;
+					node->expression->Accept(this);
 				}
 
 				void Visit(WfTypeCastingExpression* node)override
@@ -506,12 +574,12 @@ namespace vl
 
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
-					throw 0;
+					writer.WriteString(L"/* NOT SUPPORTS: typeof() */ __vwsn_not_exists__");
 				}
 
 				void Visit(WfTypeOfExpressionExpression* node)override
 				{
-					throw 0;
+					writer.WriteString(L"/* NOT SUPPORTS: type() */ __vwsn_not_exists__");
 				}
 
 				void Visit(WfAttachEventExpression* node)override
@@ -526,12 +594,11 @@ namespace vl
 
 				void Visit(WfBindExpression* node)override
 				{
-					throw 0;
+					node->expandedExpression->Accept(this);
 				}
 
 				void Visit(WfObserveExpression* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfCallExpression* node)override
@@ -541,7 +608,16 @@ namespace vl
 
 				void Visit(WfFunctionExpression* node)override
 				{
-					throw 0;
+					writer.WriteString(L"LAMBDA(::");
+					writer.WriteString(config->assemblyNamespace);
+					writer.WriteString(L"::");
+					writer.WriteString(config->lambdaExprs[node]);
+					writer.WriteString(L"(");
+
+					auto closureInfo = config->closureInfos[node];
+					WriteClosureArguments(closureInfo, node);
+
+					writer.WriteString(L"))");
 				}
 
 				void Visit(WfNewClassExpression* node)override

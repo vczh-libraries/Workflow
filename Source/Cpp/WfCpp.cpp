@@ -88,7 +88,7 @@ WfCppConfig
 				:manager(_manager)
 				, regexSplitName(L"::")
 				, regexSpecialName(L"/<(<category>/w+)(-(<category>/w+))*/>(<name>/w*)")
-				, regexTemplate(L"/$/l+")
+				, regexTemplate(L", /$Arguments|/$/l+")
 				, assemblyNamespace(L"vl_workflow_global")
 				, assemblyName(_assemblyName)
 			{
