@@ -18,33 +18,147 @@ namespace vl
 				WfCppConfig*				config;
 				stream::StreamWriter&		writer;
 				WString						prefix;
-				ITypeInfo*					expectedType;
 
-				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix, ITypeInfo* _expectedType)
+				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix)
 					:config(_config)
 					, writer(_writer)
 					, prefix(_prefix)
-					, expectedType(_expectedType)
 				{
 				}
 
-				template<typename T>
-				void Call(ITypeInfo* fromType, ITypeInfo* toType, Ptr<WfExpression> node, const T& coreCallback)
+				bool NeedConvertType(ITypeInfo* fromType, ITypeInfo*& toType)
 				{
-					if (!toType || IsSameType(fromType, toType))
+					if (toType == nullptr)
 					{
-						coreCallback(fromType, node);
+						toType = fromType;
+						return false;
+					}
+					if (IsSameType(fromType, toType))
+					{
+						return false;
 					}
 					else
 					{
-						// generate type conversion
-						coreCallback(toType, node);
+						return true;
 					}
 				}
 
-				void Call(Ptr<WfExpression> node, ITypeInfo* _expectedType)
+				void ConvertMultipleTypes(ITypeInfo** types, vint typesLength, Func<void()> writeExpression)
 				{
-					GenerateExpression(config, writer, node, prefix, _expectedType);
+					if (typesLength == 1)
+					{
+						writeExpression();
+					}
+					else if (NeedConvertType(types[0], types[1]))
+					{
+						ConvertMultipleTypes(types + 1, typesLength - 1, [&]()
+						{
+							auto fromType = types[0];
+							auto toType = types[0];
+							/*
+							value <-> string
+							enum <-> vuint64_t
+							number <-> number
+							T? <-> T
+							T* <-> T^
+							T* <-> U*
+							T^ <-> U^
+							*/
+							if (fromType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+							{
+								switch (toType->GetDecorator())
+								{
+								case ITypeInfo::RawPtr:
+									return;
+								case ITypeInfo::SharedPtr:
+									return;
+								case ITypeInfo::Nullable:
+									return;
+								case ITypeInfo::TypeDescriptor:
+									return;
+								}
+							}
+							else if (toType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+							{
+								switch (toType->GetDecorator())
+								{
+								case ITypeInfo::RawPtr:
+									return;
+								case ITypeInfo::SharedPtr:
+									return;
+								case ITypeInfo::Nullable:
+									return;
+								case ITypeInfo::TypeDescriptor:
+									return;
+								}
+							}
+							else
+							{
+								switch (fromType->GetDecorator())
+								{
+								case ITypeInfo::RawPtr:
+									{
+										switch (toType->GetDecorator())
+										{
+										case ITypeInfo::RawPtr:
+											return;
+										case ITypeInfo::SharedPtr:
+											return;
+										}
+									}
+									break;
+								case ITypeInfo::SharedPtr:
+									{
+										switch (toType->GetDecorator())
+										{
+										case ITypeInfo::RawPtr:
+											return;
+										case ITypeInfo::SharedPtr:
+											return;
+										}
+									}
+									break;
+								case ITypeInfo::Nullable:
+									{
+										switch (toType->GetDecorator())
+										{
+										case ITypeInfo::Nullable:
+											return;
+										case ITypeInfo::TypeDescriptor:
+											return;
+										}
+									}
+									break;
+								case ITypeInfo::TypeDescriptor:
+									{
+										switch (toType->GetDecorator())
+										{
+										case ITypeInfo::Nullable:
+											return;
+										case ITypeInfo::TypeDescriptor:
+											return;
+										}
+									}
+								}
+							}
+							writer.WriteString(L"/* NOT EXISTS: convert (");
+							writer.WriteString(config->ConvertType(fromType));
+							writer.WriteString(L") to (");
+							writer.WriteString(config->ConvertType(toType));
+							writer.WriteString(L") */ __vwsn_not_exists__(");
+							writeExpression();
+							writer.WriteString(L")");
+						});
+					}
+					else
+					{
+						ConvertMultipleTypes(types + 1, typesLength - 1, writeExpression);
+					}
+				}
+
+				void Call(Ptr<WfExpression> node, ITypeInfo* expectedType = nullptr)
+				{
+					GenerateExpression(config, writer, node, prefix, expectedType);
 				}
 
 				Ptr<WfCppConfig::ClosureInfo> GetClosureInfo(WfExpression* node)
@@ -436,12 +550,12 @@ namespace vl
 					WriteReferenceTemplate(result,
 						[&](IMethodInfo* methodInfo)
 						{
-							Call(node->parent, nullptr);
+							Call(node->parent);
 							return true;
 						},
 						[&](IPropertyInfo* propertyInfo)
 						{
-							Call(node->parent, nullptr);
+							Call(node->parent);
 							return true;
 						});
 				}
@@ -524,7 +638,7 @@ namespace vl
 
 				void Visit(WfFormatExpression* node)override
 				{
-					Call(node->expandedExpression, expectedType);
+					Call(node->expandedExpression);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -619,7 +733,7 @@ namespace vl
 
 				void Visit(WfBindExpression* node)override
 				{
-					Call(node->expandedExpression, expectedType);
+					Call(node->expandedExpression);
 				}
 
 				void Visit(WfObserveExpression* node)override
@@ -659,13 +773,12 @@ namespace vl
 			void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, const WString& prefix, reflection::description::ITypeInfo* expectedType)
 			{
 				auto result = config->manager->expressionResolvings[node.Obj()];
-				WfGenerateExpressionVisitor visitor(config, writer, prefix, expectedType);
-				visitor.Call(result.type.Obj(), result.expectedType.Obj(), node, [&](ITypeInfo* type, Ptr<WfExpression> node)
+				WfGenerateExpressionVisitor visitor(config, writer, prefix);
+
+				ITypeInfo* types[] = { result.type.Obj(), result.expectedType.Obj(), expectedType };
+				visitor.ConvertMultipleTypes(types, sizeof(types) / sizeof(*types), [&]()
 				{
-					visitor.Call(type, expectedType, node, [&](ITypeInfo* type, Ptr<WfExpression> node)
-					{
-						visitor.Call(node, type);
-					});
+					node->Accept(&visitor);
 				});
 			}
 		}
