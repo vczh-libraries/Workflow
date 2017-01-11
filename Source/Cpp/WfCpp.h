@@ -45,10 +45,12 @@ namespace vl
 					collections::List<ITypeDescriptor*>				thisTypes;				// nearer this pointer first
 				};
 
-			protected:
+			public:
 				regex::Regex										regexSplitName;
 				regex::Regex										regexSpecialName;
+				regex::Regex										regexTemplate;
 
+			protected:
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
@@ -75,6 +77,8 @@ namespace vl
 
 				WString					ConvertName(const WString& name);
 				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
+				WString					ConvertFunctionType(IMethodInfo* methodInfo);
+				WString					ConvertFunctionType(ITypeInfo* typeInfo);
 				WString					ConvertType(ITypeInfo* typeInfo);
 				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);

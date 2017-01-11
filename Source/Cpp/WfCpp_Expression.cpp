@@ -7,6 +7,7 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
+			using namespace regex;
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace analyzer;
@@ -57,19 +58,102 @@ namespace vl
 					return closureInfo;
 				}
 
-				void VisitThisExpression(WfExpression* node, ITypeDescriptor* td)
+				void WriteGlobalType()
+				{
+					writer.WriteString(L"::");
+					writer.WriteString(config->assemblyNamespace);
+					writer.WriteString(L"::");
+					writer.WriteString(config->assemblyName);
+				}
+
+				void WriteGlobalObject()
+				{
+					writer.WriteString(L"::");
+					writer.WriteString(config->assemblyNamespace);
+					writer.WriteString(L"::");
+					writer.WriteString(config->assemblyName);
+					writer.WriteString(L"::Instance()");
+				}
+
+				void WriteNotExists(ITypeDescriptor* typeDescriptor)
+				{
+					writer.WriteString(L"/* NOT EXISTS: type(");
+					writer.WriteString(typeDescriptor->GetTypeName());
+					writer.WriteString(L") */ __vwsn_not_exists__");
+				}
+
+				void WriteNotExists(IMethodInfo* methodInfo)
+				{
+					writer.WriteString(L"/* NOT EXISTS: method(");
+					writer.WriteString(methodInfo->GetName());
+					writer.WriteString(L") of type (");
+					writer.WriteString(methodInfo->GetOwnerTypeDescriptor()->GetTypeName());
+					writer.WriteString(L") */ __vwsn_not_exists__");
+				}
+
+				void WriteNotExists(IPropertyInfo* propertyInfo)
+				{
+					writer.WriteString(L"/* NOT EXISTS: property(");
+					writer.WriteString(propertyInfo->GetName());
+					writer.WriteString(L") of type (");
+					writer.WriteString(propertyInfo->GetOwnerTypeDescriptor()->GetTypeName());
+					writer.WriteString(L") */ __vwsn_not_exists__");
+				}
+
+				void WriteNotExists(IEventInfo* eventInfo)
+				{
+					writer.WriteString(L"/* NOT EXISTS: event(");
+					writer.WriteString(eventInfo->GetName());
+					writer.WriteString(L") of type (");
+					writer.WriteString(eventInfo->GetOwnerTypeDescriptor()->GetTypeName());
+					writer.WriteString(L") */ __vwsn_not_exists__");
+				}
+
+				template<typename T>
+				void WriteTemplate(const WString& templateValue, const T& callback)
+				{
+					List<Ptr<RegexMatch>> matches;
+					config->regexTemplate.Cut(templateValue, false, matches);
+					FOREACH(Ptr<RegexMatch>, match, matches)
+					{
+						WString item = match->Result().Value();
+						if (match->Success())
+						{
+							auto result = callback(item);
+							if (result == L"*")
+							{
+								writer.WriteString(L"/* NOT EXISTS: ");
+								writer.WriteString(item);
+								writer.WriteString(L" */ __vwsn_not_exists__");
+							}
+							else
+							{
+								writer.WriteString(result);
+							}
+						}
+						else
+						{
+							writer.WriteString(item);
+						}
+					}
+				}
+
+				WString GetThisExpression(WfExpression* node, ITypeDescriptor* td)
 				{
 					if (auto closureInfo = GetClosureInfo(node))
 					{
 						auto index = closureInfo->thisTypes.IndexOf(td);
 						if (index != -1)
 						{
-							writer.WriteString(L"__vwsnthis_");
-							writer.WriteString(itow(index));
-							return;
+							return L"__vwsnthis_" + itow(index);
 						}
 					}
-					writer.WriteString(L"this");
+					return L"this";
+				}
+
+				void VisitThisExpression(WfExpression* node, ITypeDescriptor* td)
+				{
+					writer.WriteString(GetThisExpression(node, td));
 				}
 
 				void VisitReferenceExpression(WfExpression* node, const WString& name)
@@ -82,11 +166,8 @@ namespace vl
 							auto ownerNode = result.symbol->ownerScope->ownerNode;
 							if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
 							{
-								writer.WriteString(L"::");
-								writer.WriteString(config->assemblyNamespace);
-								writer.WriteString(L"::");
-								writer.WriteString(config->assemblyName);
-								writer.WriteString(L"::Instance().");
+								WriteGlobalObject();
+								writer.WriteString(L".");
 								writer.WriteString(config->ConvertName(result.symbol->name));
 								return;
 							}
@@ -106,10 +187,24 @@ namespace vl
 							auto ownerNode = result.symbol->ownerScope->ownerNode;
 							if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
 							{
+								writer.WriteString(config->ConvertType(result.symbol->typeInfo.Obj()));
+								writer.WriteString(L"(&");
+								WriteGlobalObject();
+								writer.WriteString(L", &");
+								WriteGlobalType();
+								writer.WriteString(L"::");
+								writer.WriteString(config->ConvertName(result.symbol->name));
+								writer.WriteString(L")");
 								return;
 							}
 							else if (auto classExpr = ownerNode.Cast<WfNewInterfaceExpression>())
 							{
+								writer.WriteString(config->ConvertType(result.symbol->typeInfo.Obj()));
+								writer.WriteString(L"(this, &");
+								writer.WriteString(GetClosureInfo(classExpr.Obj())->lambdaClassName);
+								writer.WriteString(L"::");
+								writer.WriteString(config->ConvertName(result.symbol->name));
+								writer.WriteString(L")");
 								return;
 							}
 						}
@@ -117,9 +212,101 @@ namespace vl
 					}
 					else if (result.methodInfo)
 					{
+						if (CppExists(result.methodInfo))
+						{
+							auto templateValue = CppGetClosureTemplate(result.methodInfo);
+							auto methodInfo = result.methodInfo;
+							WriteTemplate(templateValue, [&](const WString& item)
+							{
+								if (item == L"$Type")
+								{
+									return config->ConvertFullName(CppGetFullName(methodInfo->GetOwnerTypeDescriptor()));
+								}
+								else if (item == L"$Func")
+								{
+									return config->ConvertFunctionType(methodInfo);
+								}
+								else if (item == L"$Name")
+								{
+									return config->ConvertName(methodInfo->GetName());
+								}
+								else if (item == L"$This")
+								{
+									if (!methodInfo->IsStatic())
+									{
+										return GetThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
+									}
+								}
+								return WString(L"*", false);
+							});
+						}
+						else
+						{
+							WriteNotExists(result.methodInfo);
+						}
 					}
 					else if (result.propertyInfo)
 					{
+						if (CppExists(result.propertyInfo))
+						{
+							if (result.propertyInfo->GetCpp() == nullptr && result.propertyInfo->GetGetter() != nullptr)
+							{
+								auto templateValue = CppGetInvokeTemplate(result.propertyInfo->GetGetter());
+								auto methodInfo = result.propertyInfo->GetGetter();
+								WriteTemplate(templateValue, [&](const WString& item)
+								{
+									if (item == L"$Type")
+									{
+										return config->ConvertFullName(CppGetFullName(methodInfo->GetOwnerTypeDescriptor()));
+									}
+									else if (item == L"$Func")
+									{
+										return config->ConvertFunctionType(methodInfo);
+									}
+									else if (item == L"$Name")
+									{
+										return config->ConvertName(methodInfo->GetName());
+									}
+									else if (item == L"$This")
+									{
+										if (!methodInfo->IsStatic())
+										{
+											return GetThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
+										}
+									}
+									else if (item == L"$Arguments")
+									{
+										return WString::Empty;
+									}
+									return WString(L"*", false);
+								});
+							}
+							else
+							{
+								auto templateValue = CppGetReferenceTemplate(result.propertyInfo);
+								auto propertyInfo = result.propertyInfo;
+								WriteTemplate(templateValue, [&](const WString& item)
+								{
+									if (item == L"$Type")
+									{
+										return config->ConvertFullName(CppGetFullName(propertyInfo->GetOwnerTypeDescriptor()));
+									}
+									else if (item == L"$Name")
+									{
+										return config->ConvertName(propertyInfo->GetName());
+									}
+									else if (item == L"$This")
+									{
+										return GetThisExpression(node, propertyInfo->GetOwnerTypeDescriptor());
+									}
+									return WString(L"*", false);
+								});
+							}
+						}
+						else
+						{
+							WriteNotExists(result.propertyInfo);
+						}
 					}
 					else
 					{

@@ -88,6 +88,7 @@ WfCppConfig
 				:manager(_manager)
 				, regexSplitName(L"::")
 				, regexSpecialName(L"/<(<category>/w+)(-(<category>/w+))*/>(<name>/w*)")
+				, regexTemplate(L"/$/l+")
 				, assemblyNamespace(L"vl_workflow_global")
 				, assemblyName(_assemblyName)
 			{
@@ -157,6 +158,42 @@ WfCppConfig
 					});
 			}
 
+			WString WfCppConfig::ConvertFunctionType(IMethodInfo* methodInfo)
+			{
+				WString type = ConvertType(methodInfo->GetReturn()) + L"(";
+				vint count = methodInfo->GetParameterCount();
+				for (vint i = 0; i < count; i++)
+				{
+					if (i > 0)
+					{
+						type += L", ";
+					}
+					type += ConvertArgumentType(methodInfo->GetParameter(i)->GetType());
+				}
+				type += L")";
+				return type;
+			}
+
+			WString WfCppConfig::ConvertFunctionType(ITypeInfo* typeInfo)
+			{
+				if (typeInfo->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					return ConvertFunctionType(typeInfo->GetElementType());
+				}
+				CHECK_ERROR(typeInfo->GetDecorator() == ITypeInfo::Generic, L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Wrong function type.");
+				CHECK_ERROR(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>(), L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Wrong function type.");
+
+				WString type = ConvertType(typeInfo->GetGenericArgument(0)) + L"(";
+				vint count = typeInfo->GetGenericArgumentCount();
+				for (vint i = 1; i < count; i++)
+				{
+					if (i > 1) type += L", ";
+					type += ConvertType(typeInfo->GetGenericArgument(i));
+				}
+				type += L")";
+				return type;
+			}
+
 			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo)
 			{
 				switch (typeInfo->GetDecorator())
@@ -181,15 +218,7 @@ WfCppConfig
 				case ITypeInfo::Generic:
 					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
 					{
-						WString type = L"::vl::Func<" + ConvertType(typeInfo->GetGenericArgument(0)) + L"(";
-						vint count = typeInfo->GetGenericArgumentCount();
-						for (vint i = 1; i < count; i++)
-						{
-							if (i > 1) type += L", ";
-							type += ConvertType(typeInfo->GetGenericArgument(i));
-						}
-						type += L")>";
-						return type;
+						return L"::vl::Func<" + ConvertFunctionType(typeInfo) + L">";
 					}
 					else if(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
 					{
