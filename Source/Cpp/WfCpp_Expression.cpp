@@ -18,12 +18,33 @@ namespace vl
 				WfCppConfig*				config;
 				stream::StreamWriter&		writer;
 				WString						prefix;
+				ITypeInfo*					expectedType;
 
-				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix)
+				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix, ITypeInfo* _expectedType)
 					:config(_config)
 					, writer(_writer)
 					, prefix(_prefix)
+					, expectedType(_expectedType)
 				{
+				}
+
+				template<typename T>
+				void Call(ITypeInfo* fromType, ITypeInfo* toType, Ptr<WfExpression> node, const T& coreCallback)
+				{
+					if (!toType || IsSameType(fromType, toType))
+					{
+						coreCallback(fromType, node);
+					}
+					else
+					{
+						// generate type conversion
+						coreCallback(toType, node);
+					}
+				}
+
+				void Call(Ptr<WfExpression> node, ITypeInfo* _expectedType)
+				{
+					GenerateExpression(config, writer, node, prefix, _expectedType);
 				}
 
 				Ptr<WfCppConfig::ClosureInfo> GetClosureInfo(WfExpression* node)
@@ -415,12 +436,12 @@ namespace vl
 					WriteReferenceTemplate(result,
 						[&](IMethodInfo* methodInfo)
 						{
-							node->parent->Accept(this);
+							Call(node->parent, nullptr);
 							return true;
 						},
 						[&](IPropertyInfo* propertyInfo)
 						{
-							node->parent->Accept(this);
+							Call(node->parent, nullptr);
 							return true;
 						});
 				}
@@ -503,7 +524,7 @@ namespace vl
 
 				void Visit(WfFormatExpression* node)override
 				{
-					node->expandedExpression->Accept(this);
+					Call(node->expandedExpression, expectedType);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -559,12 +580,16 @@ namespace vl
 
 				void Visit(WfInferExpression* node)override
 				{
-					node->expression->Accept(this);
+					auto scope = config->manager->nodeScopes[node].Obj();
+					auto typeInfo = CreateTypeInfoFromType(scope, node->type);
+					Call(node->expression, typeInfo.Obj());
 				}
 
 				void Visit(WfTypeCastingExpression* node)override
 				{
-					throw 0;
+					auto scope = config->manager->nodeScopes[node].Obj();
+					auto typeInfo = CreateTypeInfoFromType(scope, node->type);
+					Call(node->expression, typeInfo.Obj());
 				}
 
 				void Visit(WfTypeTestingExpression* node)override
@@ -594,7 +619,7 @@ namespace vl
 
 				void Visit(WfBindExpression* node)override
 				{
-					node->expandedExpression->Accept(this);
+					Call(node->expandedExpression, expectedType);
 				}
 
 				void Visit(WfObserveExpression* node)override
@@ -631,10 +656,17 @@ namespace vl
 				}
 			};
 
-			void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, const WString& prefix)
+			void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, const WString& prefix, reflection::description::ITypeInfo* expectedType)
 			{
-				WfGenerateExpressionVisitor visitor(config, writer, prefix);
-				node->Accept(&visitor);
+				auto result = config->manager->expressionResolvings[node.Obj()];
+				WfGenerateExpressionVisitor visitor(config, writer, prefix, expectedType);
+				visitor.Call(result.type.Obj(), result.expectedType.Obj(), node, [&](ITypeInfo* type, Ptr<WfExpression> node)
+				{
+					visitor.Call(type, expectedType, node, [&](ITypeInfo* type, Ptr<WfExpression> node)
+					{
+						visitor.Call(node, type);
+					});
+				});
 			}
 		}
 	}

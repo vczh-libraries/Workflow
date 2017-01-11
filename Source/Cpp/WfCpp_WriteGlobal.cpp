@@ -65,7 +65,7 @@ namespace vl
 						if (decl->expression)
 						{
 							writer.WriteString(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ");
-							GenerateExpression(this, writer, decl->expression, L"\t\t");
+							GenerateExpression(this, writer, decl->expression, L"\t\t", typeInfo.Obj());
 							writer.WriteLine(L";");
 						}
 					}
