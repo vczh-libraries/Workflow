@@ -58,6 +58,7 @@ Scope
 				WfLexicalScopeManager*						ownerManager;				// nullable
 				Ptr<WfClassMember>							ownerClassMember;			// nullable
 				Ptr<parsing::ParsingTreeCustomBase>			ownerNode;					// nullable
+				parsing::ParsingTreeCustomBase*				ownerNodeSource = nullptr;	// nullable
 
 				Ptr<WfLexicalFunctionConfig>				functionConfig;
 				reflection::description::ITypeDescriptor*	typeOfThisExpr = nullptr;	// visible members to this scope

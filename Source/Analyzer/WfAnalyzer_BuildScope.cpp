@@ -53,6 +53,7 @@ BuildScopeForDeclaration
 					resultScope = new WfLexicalScope(parentScope);
 					auto config = MakePtr<WfLexicalFunctionConfig>();
 					resultScope->functionConfig = config;
+					resultScope->ownerNodeSource = source;
 
 					if (source)
 					{

@@ -27,12 +27,16 @@ WfCppConfig
 
 				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
 				{
-					closureInfos.Add(lambda, CollectClosureInfo(lambda));
+					auto closureInfo = CollectClosureInfo(lambda);
+					closureInfo->lambdaClassName = lambdaExprs[lambda.Obj()];
+					closureInfos.Add(lambda, closureInfo);
 				}
 
 				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
 				{
-					closureInfos.Add(classExpr, CollectClosureInfo(classExpr));
+					auto closureInfo = CollectClosureInfo(classExpr);
+					closureInfo->lambdaClassName = classExprs[classExpr.Obj()];
+					closureInfos.Add(classExpr, closureInfo);
 				}
 			}
 

@@ -25,24 +25,139 @@ namespace vl
 				{
 				}
 
+				Ptr<WfCppConfig::ClosureInfo> GetClosureInfo(WfExpression* node)
+				{
+					Ptr<WfCppConfig::ClosureInfo> closureInfo;
+					auto scope = config->manager->nodeScopes[node].Obj();
+
+					while (scope)
+					{
+						if (scope->functionConfig && scope->functionConfig->lambda)
+						{
+							auto source = scope->ownerNodeSource ? scope->ownerNodeSource : scope->ownerNode.Obj();
+							if (auto ordered = dynamic_cast<WfOrderedLambdaExpression*>(source))
+							{
+								closureInfo = config->closureInfos[ordered];
+								break;
+							}
+							else if (auto funcExpr = dynamic_cast<WfFunctionExpression*>(source))
+							{
+								closureInfo = config->closureInfos[funcExpr];
+								break;
+							}
+							else if (auto classExpr = dynamic_cast<WfNewInterfaceExpression*>(source))
+							{
+								closureInfo = config->closureInfos[classExpr];
+								break;
+							}
+						}
+						scope = scope->parentScope.Obj();
+					}
+
+					return closureInfo;
+				}
+
+				void VisitThisExpression(WfExpression* node, ITypeDescriptor* td)
+				{
+					if (auto closureInfo = GetClosureInfo(node))
+					{
+						auto index = closureInfo->thisTypes.IndexOf(td);
+						if (index != -1)
+						{
+							writer.WriteString(L"__vwsnthis_");
+							writer.WriteString(itow(index));
+							return;
+						}
+					}
+					writer.WriteString(L"this");
+				}
+
+				void VisitReferenceExpression(WfExpression* node, const WString& name)
+				{
+					auto result = config->manager->expressionResolvings[node];
+					if (result.symbol)
+					{
+						if (auto varDecl = result.symbol->creatorNode.Cast<WfVariableDeclaration>())
+						{
+							auto ownerNode = result.symbol->ownerScope->ownerNode;
+							if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
+							{
+								writer.WriteString(L"::");
+								writer.WriteString(config->assemblyNamespace);
+								writer.WriteString(L"::");
+								writer.WriteString(config->assemblyName);
+								writer.WriteString(L"::Instance().");
+								writer.WriteString(config->ConvertName(result.symbol->name));
+								return;
+							}
+							else
+							{
+								auto closureInfo = GetClosureInfo(node);
+								if (closureInfo->symbols.Values().Contains(result.symbol.Obj()))
+								{
+									writer.WriteString(L"this->");
+									writer.WriteString(config->ConvertName(result.symbol->name));
+									return;
+								}
+							}
+						}
+						else if (auto funcDecl = result.symbol->creatorNode.Cast<WfFunctionDeclaration>())
+						{
+							auto ownerNode = result.symbol->ownerScope->ownerNode;
+							if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
+							{
+								return;
+							}
+							else if (auto classExpr = ownerNode.Cast<WfNewInterfaceExpression>())
+							{
+								return;
+							}
+						}
+						writer.WriteString(config->ConvertName(result.symbol->name));
+					}
+					else if (result.methodInfo)
+					{
+					}
+					else if (result.propertyInfo)
+					{
+					}
+					else
+					{
+						if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+						{
+							auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
+							vint index = enumType->IndexOfItem(name);
+							if (index != -1)
+							{
+								writer.WriteString(config->ConvertType(result.type.Obj()));
+								writer.WriteString(L"::");
+								writer.WriteString(name);
+								return;
+							}
+						}
+						CHECK_FAIL(L"WfGenerateExpressionVisitor::VisitReferenceExpression(WfExpression*, const WString&)#Internal error, cannot find any record of this expression.");
+					}
+				}
+
 				void Visit(WfThisExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					VisitThisExpression(node, result.type->GetTypeDescriptor());
 				}
 
 				void Visit(WfTopQualifiedExpression* node)override
 				{
-					throw 0;
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfReferenceExpression* node)override
 				{
-					throw 0;
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfOrderedNameExpression* node)override
 				{
-					throw 0;
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfOrderedLambdaExpression* node)override
@@ -57,7 +172,7 @@ namespace vl
 
 				void Visit(WfChildExpression* node)override
 				{
-					throw 0;
+					VisitReferenceExpression(node, node->name.value);
 				}
 
 				void Visit(WfLiteralExpression* node)override

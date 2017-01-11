@@ -95,20 +95,20 @@ namespace vl
 				CopyFrom(
 					reversedLambdaExprs,
 					From(lambdaExprs)
-					.Select([](Pair<Ptr<WfExpression>, WString> pair)
-				{
-					return Pair<WString, Ptr<WfExpression>>(pair.value, pair.key);
-				})
+						.Select([](Pair<Ptr<WfExpression>, WString> pair)
+					{
+						return Pair<WString, Ptr<WfExpression>>(pair.value, pair.key);
+					})
 				);
 
 				Dictionary<WString, Ptr<WfNewInterfaceExpression>> reversedClassExprs;
 				CopyFrom(
 					reversedClassExprs,
 					From(classExprs)
-					.Select([](Pair<Ptr<WfNewInterfaceExpression>, WString> pair)
-				{
-					return Pair<WString, Ptr<WfNewInterfaceExpression>>(pair.value, pair.key);
-				})
+						.Select([](Pair<Ptr<WfNewInterfaceExpression>, WString> pair)
+					{
+						return Pair<WString, Ptr<WfNewInterfaceExpression>>(pair.value, pair.key);
+					})
 				);
 
 				FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())

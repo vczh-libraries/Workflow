@@ -40,6 +40,7 @@ namespace vl
 				{
 					using SymbolMap = collections::Dictionary<WString, Ptr<analyzer::WfLexicalSymbol>>;
 				public:
+					WString											lambdaClassName;
 					SymbolMap										symbols;
 					collections::List<ITypeDescriptor*>				thisTypes;				// nearer this pointer first
 				};
