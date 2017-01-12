@@ -199,11 +199,9 @@ namespace vl
 										switch (toType->GetDecorator())
 										{
 										case ITypeInfo::Nullable:
-											writer.WriteString(L"[&](){ ");
+											writer.WriteString(L"[](");
 											writer.WriteString(config->ConvertType(fromType));
-											writer.WriteString(L" __vwsn__temp__ = ");
-											writeExpression();
-											writer.WriteString(L"; if (__vwsn__temp__) return ");
+											writer.WriteString(L" __vwsn__temp__){ if (__vwsn__temp__) return ");
 											writer.WriteString(config->ConvertType(toType));
 											writer.WriteString(L"(");
 											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
@@ -212,7 +210,9 @@ namespace vl
 											});
 											writer.WriteString(L"); else return ");
 											writer.WriteString(config->ConvertType(toType));
-											writer.WriteString(L"(); }()");
+											writer.WriteString(L"(); }(");
+											writeExpression();
+											writer.WriteString(L")");
 											return;
 										case ITypeInfo::TypeDescriptor:
 											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
