@@ -103,6 +103,11 @@ namespace vl_workflow_global
 	__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer)
 		:summer(__vwsnctor_summer)
 	{
+		this->__vwsn_bind_cache_1 = nullptr;
+		this->__vwsn_bind_handler_1_0 = nullptr;
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
 	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
@@ -159,6 +164,7 @@ namespace vl_workflow_global
 
 	__vwsnc3_BindCustomInterface_main__IAdder::__vwsnc3_BindCustomInterface_main__IAdder()
 	{
+		this->sum = 0;
 	}
 
 	::vl::vint32_t __vwsnc3_BindCustomInterface_main__IAdder::GetSum()

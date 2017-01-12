@@ -39,13 +39,15 @@ WfGenerateClassMemberDeclVisitor
 				WString						className;
 				Ptr<WfClassMember>			classMember;
 				WString						prefix;
+				bool						forClassExpr;
 
-				WfGenerateClassMemberDeclVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _className, Ptr<WfClassMember> _classMember, const WString& _prefix)
+				WfGenerateClassMemberDeclVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _className, Ptr<WfClassMember> _classMember, const WString& _prefix, bool _forClassExpr)
 					:config(_config)
 					, writer(_writer)
 					, className(_className)
 					, classMember(_classMember)
 					, prefix(_prefix)
+					, forClassExpr(_forClassExpr)
 				{
 				}
 
@@ -84,10 +86,19 @@ WfGenerateClassMemberDeclVisitor
 					auto symbol = scope->symbols[node->name.value][0];
 					auto typeInfo = symbol->typeInfo;
 					writer.WriteString(prefix + config->ConvertType(typeInfo.Obj()) + L" " + config->ConvertName(node->name.value));
-					auto defaultValue = config->DefaultValue(typeInfo.Obj());
-					if (defaultValue != L"")
+					if (!forClassExpr && node->expression)
 					{
-						writer.WriteString(L" = " + defaultValue);
+						writer.WriteString(L" = ");
+						GenerateExpression(config, writer, node->expression, typeInfo.Obj());
+					}
+					else
+					{
+						auto defaultValue = config->DefaultValue(typeInfo.Obj());
+						if (defaultValue != L"")
+						{
+							writer.WriteString(L" = ");
+							writer.WriteString(defaultValue);
+						}
 					}
 					writer.WriteLine(L";");
 				}
@@ -138,9 +149,9 @@ WfGenerateClassMemberDeclVisitor
 				}
 			};
 
-			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix)
+			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix, bool forClassExpr)
 			{
-				WfGenerateClassMemberDeclVisitor visitor(config, writer, className, member, prefix);
+				WfGenerateClassMemberDeclVisitor visitor(config, writer, className, member, prefix, forClassExpr);
 				member->declaration->Accept(&visitor);
 			}
 

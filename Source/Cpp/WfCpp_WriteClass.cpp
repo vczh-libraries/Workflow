@@ -120,7 +120,7 @@ namespace vl
 				writer.WriteLine(L"");
 				FOREACH(Ptr<WfClassMember>, member, decl->members)
 				{
-					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), member, prefix + L"\t");
+					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), member, prefix + L"\t", false);
 				}
 
 				writer.WriteLine(prefix + L"};");

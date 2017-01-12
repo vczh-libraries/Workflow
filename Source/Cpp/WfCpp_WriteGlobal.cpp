@@ -27,7 +27,8 @@ namespace vl
 						auto defaultValue = DefaultValue(typeInfo.Obj());
 						if (defaultValue != L"")
 						{
-							writer.WriteString(L" = " + defaultValue);
+							writer.WriteString(L" = ");
+							writer.WriteString(defaultValue);
 						}
 						writer.WriteLine(L";");
 					}
@@ -65,7 +66,7 @@ namespace vl
 						if (decl->expression)
 						{
 							writer.WriteString(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ");
-							GenerateExpression(this, writer, decl->expression, L"\t\t", typeInfo.Obj());
+							GenerateExpression(this, writer, decl->expression, typeInfo.Obj());
 							writer.WriteLine(L";");
 						}
 					}

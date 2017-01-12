@@ -80,6 +80,15 @@ namespace vl_workflow_global
 		, y(__vwsnctor_y)
 		, z(__vwsnctor_z)
 	{
+		this->__vwsn_bind_cache_1 = nullptr;
+		this->__vwsn_bind_handler_1_0 = nullptr;
+		this->__vwsn_bind_cache_2 = nullptr;
+		this->__vwsn_bind_handler_2_0 = nullptr;
+		this->__vwsn_bind_cache_3 = nullptr;
+		this->__vwsn_bind_handler_3_0 = nullptr;
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()

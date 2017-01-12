@@ -234,6 +234,7 @@ namespace vl_workflow_global
 
 	__vwsnc1_NestedLambda_main__IA::__vwsnc1_NestedLambda_main__IA()
 	{
+		this->a = 0;
 	}
 
 	::vl::vint32_t __vwsnc1_NestedLambda_main__IA::GetA()
@@ -259,6 +260,7 @@ namespace vl_workflow_global
 	__vwsnc2_NestedLambda_main_H__IB::__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
+		this->b = 0;
 	}
 
 	::vl::vint32_t __vwsnc2_NestedLambda_main_H__IB::GetB()

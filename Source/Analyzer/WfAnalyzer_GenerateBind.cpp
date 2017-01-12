@@ -1034,7 +1034,8 @@ CreateDefaultValue
 
 			Ptr<WfExpression> CreateDefaultValue(ITypeInfo* elementType)
 			{
-				if (auto valueType = elementType->GetTypeDescriptor()->GetValueType())
+				auto valueType = elementType->GetTypeDescriptor()->GetValueType();
+				if (elementType->GetDecorator()==ITypeInfo::TypeDescriptor && valueType != nullptr)
 				{
 					auto value = valueType->CreateDefault();
 					switch (GetTypeFlag(elementType))
@@ -1076,15 +1077,55 @@ CreateDefaultValue
 						}
 					default:
 						{
-							auto stringExpr = MakePtr<WfStringExpression>();
-							elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
+							auto td = elementType->GetTypeDescriptor();
+							if (td == description::GetTypeDescriptor<bool>())
+							{
+								auto expr = MakePtr<WfLiteralExpression>();
+								expr->value = WfLiteralValue::False;
+								return expr;
+							}
+							else if (td == description::GetTypeDescriptor<float>()
+								|| td == description::GetTypeDescriptor<double>())
+							{
+								auto valueExpr = MakePtr<WfFloatingExpression>();
+								valueExpr->value.value = L"0";
 
-							auto castExpr = MakePtr<WfTypeCastingExpression>();
-							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->expression = stringExpr;
-							castExpr->type = GetTypeFromTypeInfo(elementType);
+								auto inferExpr = MakePtr<WfInferExpression>();
+								inferExpr->expression = valueExpr;
+								inferExpr->type = GetTypeFromTypeInfo(elementType);
 
-							return castExpr;
+								return inferExpr;
+							}
+							else if (td == description::GetTypeDescriptor<vint8_t>()
+								|| td == description::GetTypeDescriptor<vint16_t>()
+								|| td == description::GetTypeDescriptor<vint32_t>()
+								|| td == description::GetTypeDescriptor<vint64_t>()
+								|| td == description::GetTypeDescriptor<vuint8_t>()
+								|| td == description::GetTypeDescriptor<vuint16_t>()
+								|| td == description::GetTypeDescriptor<vuint32_t>()
+								|| td == description::GetTypeDescriptor<vuint64_t>())
+							{
+								auto valueExpr = MakePtr<WfIntegerExpression>();
+								valueExpr->value.value = L"0";
+
+								auto inferExpr = MakePtr<WfInferExpression>();
+								inferExpr->expression = valueExpr;
+								inferExpr->type = GetTypeFromTypeInfo(elementType);
+
+								return inferExpr;
+							}
+							else
+							{
+								auto stringExpr = MakePtr<WfStringExpression>();
+								elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
+
+								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+								castExpr->expression = stringExpr;
+								castExpr->type = GetTypeFromTypeInfo(elementType);
+
+								return castExpr;
+							}
 						}
 					}
 				}

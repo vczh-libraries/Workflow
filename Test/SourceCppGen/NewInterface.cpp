@@ -78,6 +78,7 @@ namespace vl_workflow_global
 		, end(__vwsnctor_end)
 		, __vwsnthis_0(__vwsnctorthis_0)
 	{
+		this->index = (- 1);
 	}
 
 	::vl::reflection::description::Value __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()

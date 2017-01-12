@@ -17,12 +17,10 @@ namespace vl
 			public:
 				WfCppConfig*				config;
 				stream::StreamWriter&		writer;
-				WString						prefix;
 
-				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix)
+				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer)
 					:config(_config)
 					, writer(_writer)
-					, prefix(_prefix)
 				{
 				}
 
@@ -261,7 +259,7 @@ namespace vl
 
 				void Call(Ptr<WfExpression> node, ITypeInfo* expectedType = nullptr)
 				{
-					GenerateExpression(config, writer, node, prefix, expectedType);
+					GenerateExpression(config, writer, node, expectedType);
 				}
 
 				Ptr<WfCppConfig::ClosureInfo> GetClosureInfo(WfExpression* node)
@@ -746,7 +744,25 @@ namespace vl
 
 				void Visit(WfUnaryExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					switch (node->op)
+					{
+					case WfUnaryOperator::Positive:
+						writer.WriteString(L"(+ ");
+						Call(node->operand, result.type.Obj());
+						writer.WriteString(L")");
+						break;
+					case WfUnaryOperator::Negative:
+						writer.WriteString(L"(- ");
+						Call(node->operand, result.type.Obj());
+						writer.WriteString(L")");
+						break;
+					case WfUnaryOperator::Not:
+						writer.WriteString(L"(! ");
+						Call(node->operand, result.type.Obj());
+						writer.WriteString(L")");
+						break;
+					}
 				}
 
 				void Visit(WfBinaryExpression* node)override
@@ -873,10 +889,10 @@ namespace vl
 				}
 			};
 
-			void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, const WString& prefix, reflection::description::ITypeInfo* expectedType)
+			void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType)
 			{
 				auto result = config->manager->expressionResolvings[node.Obj()];
-				WfGenerateExpressionVisitor visitor(config, writer, prefix);
+				WfGenerateExpressionVisitor visitor(config, writer);
 
 				ITypeInfo* types[] = { result.type.Obj(), result.expectedType.Obj(), expectedType };
 				visitor.ConvertMultipleTypes(types, sizeof(types) / sizeof(*types), [&]()

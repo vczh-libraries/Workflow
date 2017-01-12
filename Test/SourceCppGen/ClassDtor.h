@@ -15,7 +15,7 @@ class Dtor : public ::vl::Object, public ::vl::reflection::Description<Dtor>
 {
 public:
 
-	::vl::WString name;
+	::vl::WString name = L"";
 	::Dtor* next = nullptr;
 	Dtor();
 	~Dtor();

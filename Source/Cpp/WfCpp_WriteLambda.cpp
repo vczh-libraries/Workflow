@@ -363,7 +363,7 @@ WfCppConfig::WriteCpp
 
 				FOREACH(Ptr<WfClassMember>, member, lambda->members)
 				{
-					GenerateClassMemberDecl(this, writer, name, member, L"\t\t");
+					GenerateClassMemberDecl(this, writer, name, member, L"\t\t", true);
 				}
 				writer.WriteLine(L"\t};");
 			}
@@ -377,6 +377,25 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"");
 				WriteCpp_ClosureCtorInitList(writer, lambda);
 				writer.WriteLine(L"\t{");
+
+				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				{
+					if (auto varDecl = member->declaration.Cast<WfVariableDeclaration>())
+					{
+						if (varDecl->expression)
+						{
+							auto scope = manager->nodeScopes[varDecl.Obj()].Obj();
+							auto symbol = scope->symbols[varDecl->name.value][0];
+							auto typeInfo = symbol->typeInfo;
+							writer.WriteString(L"\t\tthis->");
+							writer.WriteString(ConvertName(varDecl->name.value));
+							writer.WriteString(L" = ");
+							GenerateExpression(this, writer, varDecl->expression, typeInfo.Obj());
+							writer.WriteLine(L";");
+						}
+					}
+				}
+
 				writer.WriteLine(L"\t}");
 				writer.WriteLine(L"");
 
