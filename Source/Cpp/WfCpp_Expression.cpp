@@ -43,6 +43,81 @@ namespace vl
 					}
 				}
 
+				template<typename T>
+				void WriteBoxValue(ITypeInfo* type, const T& writeExpression)
+				{
+					writer.WriteString(L"::vl::reflection::description::BoxValue<");
+					writer.WriteString(config->ConvertType(type));
+					writer.WriteString(L">(");
+					writeExpression();
+					writer.WriteString(L")");
+				}
+
+				template<typename T>
+				void WriteUnboxValue(ITypeInfo* type, const T& writeExpression)
+				{
+					writer.WriteString(L"::vl::reflection::description::UnboxValue<");
+					writer.WriteString(config->ConvertType(type));
+					writer.WriteString(L">(");
+					writeExpression();
+					writer.WriteString(L")");
+				}
+
+				template<typename T>
+				void WriteBoxParameter(ITypeInfo* type, const T& writeExpression)
+				{
+					writer.WriteString(L"::vl::reflection::description::BoxParameter<");
+					writer.WriteString(config->ConvertType(type));
+					writer.WriteString(L">(");
+					writeExpression();
+					writer.WriteString(L")");
+				}
+
+				template<typename T>
+				void WriteUnboxParameter(ITypeInfo* type, const T& writeExpression)
+				{
+					writer.WriteString(L"[&](){ ");
+					writer.WriteString(config->ConvertType(type));
+					writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::UnboxParameter<");
+					writer.WriteString(config->ConvertType(type));
+					writer.WriteString(L">(");
+					writeExpression();
+					writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
+				}
+
+				template<typename T>
+				void ConvertValueType(ITypeDescriptor* fromTd, ITypeDescriptor* toTd, const T& writeExpression)
+				{
+					if (fromTd == description::GetTypeDescriptor<WString>())
+					{
+						writer.WriteString(L"[&](){ ");
+						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
+						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(L">::Deserialize(");
+						writeExpression();
+						writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
+					}
+					else if (toTd == description::GetTypeDescriptor<WString>())
+					{
+						writer.WriteString(L"[&](){ ");
+						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
+						writer.WriteString(config->ConvertFullName(CppGetFullName(fromTd)));
+						writer.WriteString(L">::Serialize(");
+						writeExpression();
+						writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
+					}
+					else
+					{
+						writer.WriteString(L"static_cast<");
+						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(L">(");
+						writeExpression();
+						writer.WriteString(L")");
+					}
+				}
+
 				void ConvertMultipleTypes(ITypeInfo** types, vint typesLength, Func<void()> writeExpression)
 				{
 					if (typesLength == 1)
@@ -55,42 +130,29 @@ namespace vl
 						{
 							auto fromType = types[0];
 							auto toType = types[0];
-							/*
-							value <-> string
-							enum <-> vuint64_t
-							number <-> number
-							T? <-> T
-							T* <-> T^
-							T* <-> U*
-							T^ <-> U^
-							*/
 							if (fromType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{
-								switch (toType->GetDecorator())
+								if (config->IsSpecialGenericType(toType))
 								{
-								case ITypeInfo::RawPtr:
-									return;
-								case ITypeInfo::SharedPtr:
-									return;
-								case ITypeInfo::Nullable:
-									return;
-								case ITypeInfo::TypeDescriptor:
-									return;
+									WriteUnboxParameter(toType, writeExpression);
 								}
+								else
+								{
+									WriteUnboxValue(toType, writeExpression);
+								}
+								return;
 							}
 							else if (toType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{
-								switch (toType->GetDecorator())
+								if (config->IsSpecialGenericType(fromType))
 								{
-								case ITypeInfo::RawPtr:
-									return;
-								case ITypeInfo::SharedPtr:
-									return;
-								case ITypeInfo::Nullable:
-									return;
-								case ITypeInfo::TypeDescriptor:
-									return;
+									WriteBoxParameter(fromType, writeExpression);
 								}
+								else
+								{
+									WriteBoxValue(fromType, writeExpression);
+								}
+								return;
 							}
 							else
 							{
@@ -101,8 +163,18 @@ namespace vl
 										switch (toType->GetDecorator())
 										{
 										case ITypeInfo::RawPtr:
+											writer.WriteString(L"dynamic_cast<");
+											writer.WriteString(config->ConvertType(toType));
+											writer.WriteString(L">(");
+											writeExpression();
+											writer.WriteString(L")");
 											return;
 										case ITypeInfo::SharedPtr:
+											writer.WriteString(L"::vl::Ptr<");
+											writer.WriteString(config->ConvertType(toType));
+											writer.WriteString(L">(");
+											writeExpression();
+											writer.WriteString(L")");
 											return;
 										}
 									}
@@ -112,8 +184,14 @@ namespace vl
 										switch (toType->GetDecorator())
 										{
 										case ITypeInfo::RawPtr:
+											writeExpression();
+											writer.WriteString(L".Obj()");
 											return;
 										case ITypeInfo::SharedPtr:
+											writeExpression();
+											writer.WriteString(L".Cast<");
+											writer.WriteString(config->ConvertFullName(CppGetFullName(toType->GetTypeDescriptor())));
+											writer.WriteString(L">()");
 											return;
 										}
 									}
@@ -123,8 +201,27 @@ namespace vl
 										switch (toType->GetDecorator())
 										{
 										case ITypeInfo::Nullable:
+											writer.WriteString(L"[&](){ ");
+											writer.WriteString(config->ConvertType(fromType));
+											writer.WriteString(L" __vwsn__temp__ = ");
+											writeExpression();
+											writer.WriteString(L"; if (__vwsn__temp__) return ");
+											writer.WriteString(config->ConvertType(toType));
+											writer.WriteString(L"(");
+											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
+											{
+												writer.WriteString(L"__vwsn__temp");
+											});
+											writer.WriteString(L"); else return ");
+											writer.WriteString(config->ConvertType(toType));
+											writer.WriteString(L"(); }()");
 											return;
 										case ITypeInfo::TypeDescriptor:
+											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
+											{
+												writeExpression();
+												writer.WriteString(L".Value()");
+											});
 											return;
 										}
 									}
@@ -134,8 +231,13 @@ namespace vl
 										switch (toType->GetDecorator())
 										{
 										case ITypeInfo::Nullable:
+											writer.WriteString(config->ConvertType(toType));
+											writer.WriteString(L"(");
+											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
+											writer.WriteString(L")");
 											return;
 										case ITypeInfo::TypeDescriptor:
+											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
 											return;
 										}
 									}

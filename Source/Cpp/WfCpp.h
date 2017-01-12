@@ -20,6 +20,7 @@ namespace vl
 			/*
 			Vczh Workflow Special Name:
 				__vwsn_not_exists__		: Represents all not supported code
+				__vwsn_temp__			: Temporary variable
 				__vwsn_CATEGORY			: <CATEGORY>
 				__vwsn_CATEGORY_NAME	: <CATEGORY>NAME
 				__vwsno#_ASSEMBLY_*		: ordered lambda class name
@@ -80,6 +81,7 @@ namespace vl
 				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
 				WString					ConvertFunctionType(IMethodInfo* methodInfo);
 				WString					ConvertFunctionType(ITypeInfo* typeInfo);
+				bool					IsSpecialGenericType(ITypeInfo* typeInfo);
 				WString					ConvertType(ITypeInfo* typeInfo);
 				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);

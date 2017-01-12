@@ -194,6 +194,28 @@ WfCppConfig
 				return type;
 			}
 
+			bool WfCppConfig::IsSpecialGenericType(ITypeInfo* typeInfo)
+			{
+				switch (typeInfo->GetDecorator())
+				{
+				case ITypeInfo::SharedPtr:
+					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+					{
+						return true;
+					}
+					else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				default:
+					return false;
+				}
+			}
+
 			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo)
 			{
 				switch (typeInfo->GetDecorator())
