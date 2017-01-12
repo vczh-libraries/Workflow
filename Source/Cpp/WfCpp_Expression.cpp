@@ -435,6 +435,13 @@ namespace vl
 					writer.WriteString(config->ConvertName(symbol->name));
 				}
 
+				enum class CommaPosition
+				{
+					Left,
+					Right,
+					No,
+				};
+
 				template<typename TThis, typename TArguments>
 				void WriteMethodTemplate(const WString& templateValue, IMethodInfo* methodInfo, const TThis& thisCallback, const TArguments& argumentsCallback)
 				{
@@ -464,11 +471,15 @@ namespace vl
 						}
 						else if (item == L"$Arguments")
 						{
-							return argumentsCallback(methodInfo, false);
+							return argumentsCallback(methodInfo, CommaPosition::No);
 						}
 						else if (item == L", $Arguments")
 						{
-							return argumentsCallback(methodInfo, true);
+							return argumentsCallback(methodInfo, CommaPosition::Left);
+						}
+						else if (item == L"$Arguments, ")
+						{
+							return argumentsCallback(methodInfo, CommaPosition::Right);
 						}
 						return false;
 					});
@@ -506,7 +517,7 @@ namespace vl
 						{
 							auto methodInfo = result.methodInfo;
 							WriteMethodTemplate(CppGetClosureTemplate(methodInfo), methodInfo, methodThis,
-								[&](IMethodInfo*, bool)
+								[&](IMethodInfo*, CommaPosition)
 								{
 									return false;
 								});
@@ -525,7 +536,7 @@ namespace vl
 							{
 								auto methodInfo = result.propertyInfo->GetGetter();
 								WriteMethodTemplate(CppGetClosureTemplate(methodInfo), methodInfo, methodThis,
-									[&](IMethodInfo*, bool)
+									[&](IMethodInfo*, CommaPosition)
 									{
 										return true;
 									});
@@ -720,7 +731,7 @@ namespace vl
 
 				void Visit(WfStringExpression* node)override
 				{
-					writer.WriteString(L"L\"");
+					writer.WriteString(L"::vl::WString(L\"");
 					for (vint i = 0; i < node->value.value.Length(); i++)
 					{
 						auto c = node->value.value[i];
@@ -734,7 +745,7 @@ namespace vl
 						default: writer.WriteChar(c);
 						}
 					}
-					writer.WriteString(L"\"");
+					writer.WriteString(L"\", false)");
 				}
 
 				void Visit(WfFormatExpression* node)override

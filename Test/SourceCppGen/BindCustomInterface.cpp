@@ -12,7 +12,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindCustomInterface)
 	vl_workflow_global::BindCustomInterface instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = L"";
+		instance.s = ::vl::WString(L"", false);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindCustomInterface)
 
