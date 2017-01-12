@@ -91,9 +91,9 @@ namespace vl
 					if (fromTd == description::GetTypeDescriptor<WString>())
 					{
 						writer.WriteString(L"[&](){ ");
-						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(config->ConvertType(toTd));
 						writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
-						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(config->ConvertType(toTd));
 						writer.WriteString(L">::Deserialize(");
 						writeExpression();
 						writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
@@ -101,9 +101,9 @@ namespace vl
 					else if (toTd == description::GetTypeDescriptor<WString>())
 					{
 						writer.WriteString(L"[&](){ ");
-						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(config->ConvertType(toTd));
 						writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
-						writer.WriteString(config->ConvertFullName(CppGetFullName(fromTd)));
+						writer.WriteString(config->ConvertType(fromTd));
 						writer.WriteString(L">::Serialize(");
 						writeExpression();
 						writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
@@ -111,7 +111,7 @@ namespace vl
 					else
 					{
 						writer.WriteString(L"static_cast<");
-						writer.WriteString(config->ConvertFullName(CppGetFullName(toTd)));
+						writer.WriteString(config->ConvertType(toTd));
 						writer.WriteString(L">(");
 						writeExpression();
 						writer.WriteString(L")");
@@ -190,7 +190,7 @@ namespace vl
 										case ITypeInfo::SharedPtr:
 											writeExpression();
 											writer.WriteString(L".Cast<");
-											writer.WriteString(config->ConvertFullName(CppGetFullName(toType->GetTypeDescriptor())));
+											writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
 											writer.WriteString(L">()");
 											return;
 										}
@@ -444,7 +444,7 @@ namespace vl
 					{
 						if (item == L"$Type")
 						{
-							writer.WriteString(config->ConvertFullName(CppGetFullName(methodInfo->GetOwnerTypeDescriptor())));
+							writer.WriteString(config->ConvertType(methodInfo->GetOwnerTypeDescriptor()));
 							return true;
 						}
 						else if (item == L"$Func")
@@ -483,7 +483,7 @@ namespace vl
 					{
 						if (item == L"$Type")
 						{
-							config->ConvertFullName(CppGetFullName(propertyInfo->GetOwnerTypeDescriptor()));
+							config->ConvertType(propertyInfo->GetOwnerTypeDescriptor());
 							return true;
 						}
 						else if (item == L"$Name")
@@ -786,7 +786,7 @@ namespace vl
 						}
 						else
 						{
-							writer.WriteString(config->ConvertFullName(CppGetFullName(td)) + L"::Create()");
+							writer.WriteString(config->ConvertType(td) + L"::Create()");
 						}
 					}
 					else

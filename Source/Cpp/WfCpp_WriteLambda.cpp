@@ -350,7 +350,7 @@ WfCppConfig::WriteCpp
 				auto result = manager->expressionResolvings[lambda.Obj()];
 				auto td = result.constructorInfo->GetOwnerTypeDescriptor();
 				auto name = classExprs[lambda.Obj()];
-				writer.WriteLine(L"\tclass " + name + L" : public ::vl::Object, public virtual " + ConvertFullName(CppGetFullName(td)));
+				writer.WriteLine(L"\tclass " + name + L" : public ::vl::Object, public virtual " + ConvertType(td));
 				writer.WriteLine(L"\t{");
 				writer.WriteLine(L"\tpublic:");
 

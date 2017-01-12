@@ -53,11 +53,11 @@ namespace vl
 						case TypeDescriptorFlags::Class:
 							if (baseTd != description::GetTypeDescriptor<DescriptableObject>())
 							{
-								writer.WriteString(L"public " + ConvertFullName(CppGetFullName(baseTd)) + L", ");
+								writer.WriteString(L"public " + ConvertType(baseTd) + L", ");
 							}
 							break;
 						case TypeDescriptorFlags::Interface:
-							writer.WriteString(L"public virtual " + ConvertFullName(CppGetFullName(baseTd)) + L", ");
+							writer.WriteString(L"public virtual " + ConvertType(baseTd) + L", ");
 							break;
 						}
 					}
@@ -68,7 +68,7 @@ namespace vl
 					vint count = td->GetBaseTypeDescriptorCount();
 					for (vint i = 0; i < count; i++)
 					{
-						writer.WriteString(L"public virtual " + ConvertFullName(CppGetFullName(td->GetBaseTypeDescriptor(i))) + L", ");
+						writer.WriteString(L"public virtual " + ConvertType(td->GetBaseTypeDescriptor(i)) + L", ");
 					}
 				}
 				break;

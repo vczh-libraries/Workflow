@@ -216,6 +216,11 @@ WfCppConfig
 				}
 			}
 
+			WString WfCppConfig::ConvertType(ITypeDescriptor* typeInfo, WString delimiter)
+			{
+				return ConvertFullName(CppGetFullName(typeInfo), delimiter);
+			}
+
 			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo)
 			{
 				switch (typeInfo->GetDecorator())
@@ -251,7 +256,7 @@ WfCppConfig
 						return ConvertType(typeInfo->GetElementType());
 					}
 				}
-				return ConvertFullName(CppGetFullName(typeInfo->GetTypeDescriptor()));
+				return ConvertType(typeInfo->GetTypeDescriptor());
 			}
 
 			WString WfCppConfig::ConvertArgumentType(ITypeInfo* typeInfo)
@@ -327,7 +332,7 @@ WfCppConfig
 			void WfCppConfig::GetClassNamespace(Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				auto name = ConvertFullName(CppGetFullName(td));
+				auto name = ConvertType(td);
 				vint count = CountClassNamespace(decl);
 
 				List<Ptr<RegexMatch>> matches;
@@ -347,7 +352,7 @@ WfCppConfig
 			WString WfCppConfig::GetClassBaseName(Ptr<WfClassDeclaration> decl)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				auto name = ConvertFullName(CppGetFullName(td));
+				auto name = ConvertType(td);
 				vint count = CountClassNamespace(decl);
 
 				List<Ptr<RegexMatch>> matches;

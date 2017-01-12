@@ -224,7 +224,7 @@ WfCollectExpressionVisitor
 					
 					auto result = config->manager->expressionResolvings[node];
 					auto td = result.constructorInfo->GetOwnerTypeDescriptor();
-					WString name = prefix + postfix + config->ConvertFullName(CppGetFullName(td), L"_");
+					WString name = prefix + postfix + config->ConvertType(td, L"_");
 
 					config->classExprs.Add(node, name);
 					FOREACH(Ptr<WfClassMember>, member, node->members)

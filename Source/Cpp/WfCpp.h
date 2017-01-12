@@ -82,6 +82,7 @@ namespace vl
 				WString					ConvertFunctionType(IMethodInfo* methodInfo);
 				WString					ConvertFunctionType(ITypeInfo* typeInfo);
 				bool					IsSpecialGenericType(ITypeInfo* typeInfo);
+				WString					ConvertType(ITypeDescriptor* typeInfo, WString delimiter = L"::");
 				WString					ConvertType(ITypeInfo* typeInfo);
 				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
