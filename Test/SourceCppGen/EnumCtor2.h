@@ -17,6 +17,8 @@ enum class Seasons : vl::vuint64_t
 	Good = Spring | Autumn,
 	Bad = Summer | Winter,
 };
+inline Seasons operator& (Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
+inline Seasons operator| (Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
 
 
 /***********************************************************************

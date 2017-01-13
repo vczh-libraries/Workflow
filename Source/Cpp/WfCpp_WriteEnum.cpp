@@ -34,6 +34,25 @@ namespace vl
 					}
 				}
 				writer.WriteLine(prefix + L"};");
+
+				const wchar_t* ops[] = { L"&", L"|" };
+				for (auto op : ops)
+				{
+					writer.WriteString(prefix);
+					writer.WriteString(L"inline ");
+					writer.WriteString(name);
+					writer.WriteString(L" operator");
+					writer.WriteString(op);
+					writer.WriteString(L" (");
+					writer.WriteString(name);
+					writer.WriteString(L" a, ");
+					writer.WriteString(name);
+					writer.WriteString(L" b) { return static_cast<");
+					writer.WriteString(name);
+					writer.WriteString(L">(static_cast<::vl::vuint64_t>(a) ");
+					writer.WriteString(op);
+					writer.WriteLine(L" static_cast<::vl::vuint64_t>(b)); }");
+				}
 			}
 
 			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss)

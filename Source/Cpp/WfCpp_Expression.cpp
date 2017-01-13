@@ -776,66 +776,157 @@ namespace vl
 					}
 				}
 
+				void VisitBinaryExpression(WfBinaryExpression* node, const wchar_t* op, ITypeDescriptor* type = nullptr)
+				{
+					if (type)
+					{
+						writer.WriteString(L"static_cast<");
+						writer.WriteString(config->ConvertType(type));
+						writer.WriteString(L">");
+					}
+					writer.WriteString(L"(");
+					Call(node->first);
+					writer.WriteString(L" ");
+					writer.WriteString(op);
+					writer.WriteString(L" ");
+					Call(node->second);
+					writer.WriteString(L")");
+				}
+
+				bool BinaryNeedConvert(ITypeDescriptor* type)
+				{
+					return type == description::GetTypeDescriptor<vint8_t>()
+						|| type == description::GetTypeDescriptor<vint16_t>()
+						|| type == description::GetTypeDescriptor<vuint8_t>()
+						|| type == description::GetTypeDescriptor<vuint16_t>()
+						;
+				}
+
 				void Visit(WfBinaryExpression* node)override
 				{
 					if (node->op == WfBinaryOperator::Assign)
 					{
 						if (auto binary = node->first.Cast<WfBinaryExpression>())
 						{
-							// a[b] = c;
-							throw 0;
-						}
-						else if (auto member = node->first.Cast<WfMemberExpression>())
-						{
-							// a.b = c;
-							auto result = config->manager->expressionResolvings[member.Obj()];
-							// use ICpp instead of GetSetter
-							if (auto methodInfo = result.propertyInfo->GetSetter())
+							auto containerType = config->manager->expressionResolvings[binary->first.Obj()].type.Obj();
+							auto keyType = config->manager->expressionResolvings[binary->second.Obj()].type.Obj();
+							auto valueType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
+							Call(binary->first);
+							writer.WriteString(L"->Set(");
+							if (containerType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
 							{
-								throw 0;
+								WriteBoxParameter(keyType, [&]() {Call(binary->second); });
 							}
 							else
 							{
-								throw 0;
+								Call(binary->second);
+							}
+							writer.WriteString(L", ");
+							WriteBoxParameter(valueType, [&]() {Call(node->second); });
+							writer.WriteString(L")");
+						}
+						else if (auto member = node->first.Cast<WfMemberExpression>())
+						{
+							auto result = config->manager->expressionResolvings[member.Obj()];
+							auto propInfo = result.propertyInfo;
+							if (CppExists(propInfo))
+							{
+								if (propInfo->GetCpp() == nullptr && propInfo->GetSetter() != nullptr)
+								{
+									WriteMethodTemplate(CppGetInvokeTemplate(propInfo->GetSetter()), propInfo->GetSetter(),
+										[&](IMethodInfo*)
+										{
+											Call(member->parent);
+											return true;
+										},
+										[&](IMethodInfo*, CommaPosition cp)
+										{
+											if (cp == CommaPosition::Left) writer.WriteString(L", ");
+											Call(node->second);
+											if (cp == CommaPosition::Right) writer.WriteString(L", ");
+											return true;
+										});
+								}
+								else
+								{
+									writer.WriteString(L"(");
+									WritePropertyTemplate(CppGetReferenceTemplate(propInfo), propInfo, 
+										[&](IPropertyInfo*)
+										{
+											Call(member->parent);
+											return true;
+										});
+									writer.WriteString(L")");
+								}
+							}
+							else
+							{
+								WriteNotExists(propInfo);
 							}
 						}
 						else
 						{
-							// reference expression
-							throw 0;
+							VisitBinaryExpression(node, L"=");
 						}
 					}
 					else if (node->op == WfBinaryOperator::Index)
 					{
-						// a[b]
-						throw 0;
+						auto containerType = config->manager->expressionResolvings[node->first.Obj()].type.Obj();
+						auto keyType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
+						auto valueType = config->manager->expressionResolvings[node].type.Obj();
+						WriteUnboxParameter(valueType, [&]()
+						{
+							Call(node->first);
+							writer.WriteString(L"->Get(");
+							if (containerType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>()))
+							{
+								WriteBoxParameter(keyType, [&]() {Call(node->second); });
+							}
+							else
+							{
+								Call(node->second);
+							}
+							writer.WriteString(L")");
+						});
 					}
 					else if (node->op == WfBinaryOperator::Union)
 					{
 						auto type = config->manager->expressionResolvings[node].type;
 						if (type->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
 						{
-							throw 0;
+							VisitBinaryExpression(node, L"+");
 						}
 						else
 						{
-							throw 0;
+							VisitBinaryExpression(node, L"&");
 						}
 					}
 					else if (node->op == WfBinaryOperator::Intersect)
 					{
-						throw 0;
+						VisitBinaryExpression(node, L"|");
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{
-						throw 0;
+						writer.WriteString(L"[&](){ try{ return ");
+						Call(node->first);
+						writer.WriteString(L"; } catch(...){ return ");
+						Call(node->second);
+						writer.WriteString(L"; } }()");
 					}
 					else
 					{
-						Ptr<ITypeInfo> mergedType;
+						auto result = config->manager->expressionResolvings[node];
 						switch (node->op)
 						{
 						case WfBinaryOperator::Exp:
+							writer.WriteString(L"static_cast<");
+							writer.WriteString(config->ConvertType(result.type->GetTypeDescriptor()));
+							writer.WriteString(L">(pow(static_cast<double>(");
+							Call(node->first);
+							writer.WriteString(L"), static_cast<double>(");
+							Call(node->second);
+							writer.WriteString(L")))");
+							return;
 						case WfBinaryOperator::Add:
 						case WfBinaryOperator::Sub:
 						case WfBinaryOperator::Mul:
@@ -844,79 +935,135 @@ namespace vl
 						case WfBinaryOperator::Shl:
 						case WfBinaryOperator::Shr:
 							{
-								auto result = config->manager->expressionResolvings[node];
-								mergedType = result.type;
+								const wchar_t* op = nullptr;
+								switch (node->op)
+								{
+								case WfBinaryOperator::Add: op = L"+"; break;
+								case WfBinaryOperator::Sub: op = L"-"; break;
+								case WfBinaryOperator::Mul: op = L"*"; break;
+								case WfBinaryOperator::Div: op = L"/"; break;
+								case WfBinaryOperator::Mod: op = L"%"; break;
+								case WfBinaryOperator::Shl: op = L"<<"; break;
+								case WfBinaryOperator::Shr: op = L">>"; break;
+								default:;
+								}
+								VisitBinaryExpression(node, op, (BinaryNeedConvert(result.type->GetTypeDescriptor()) ? result.type->GetTypeDescriptor() : nullptr));
 							}
-							break;
-						default:
+							return;
+						case WfBinaryOperator::EQ:
+						case WfBinaryOperator::NE:
 							{
 								auto firstResult = config->manager->expressionResolvings[node->first.Obj()];
 								auto secondResult = config->manager->expressionResolvings[node->second.Obj()];
-								auto firstType = firstResult.expectedType ? firstResult.expectedType : firstResult.type;
-								auto secondType = secondResult.expectedType ? secondResult.expectedType : secondResult.type;
-								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
+								if (firstResult.type->GetDecorator() == ITypeInfo::RawPtr || firstResult.type->GetDecorator() == ITypeInfo::SharedPtr)
 								{
-									if (firstType->GetDecorator() == ITypeInfo::RawPtr || firstType->GetDecorator() == ITypeInfo::SharedPtr)
-									{
-										throw 0;
-									}
-								}
+									auto mergedType = GetMergedType(firstResult.type, secondResult.type);
+									auto td = mergedType->GetTypeDescriptor();
+									auto tdFirst = firstResult.type->GetTypeDescriptor();
+									auto tdSecond = secondResult.type->GetTypeDescriptor();
+									auto dFirst = firstResult.type->GetDecorator();
+									auto dSecond = secondResult.type->GetDecorator();
 
-								// generate == and != for enum and struct
-								// generate & and | for enum
-								mergedType = GetMergedType(firstType, secondType);
-								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
-								{
-									switch (mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags())
+									writer.WriteString(L"(");
+
+									if (td != tdFirst)
 									{
-									case TypeDescriptorFlags::Object:
-									case TypeDescriptorFlags::Struct:
-										throw 0;
-									case TypeDescriptorFlags::FlagEnum:
-									case TypeDescriptorFlags::NormalEnum:
-										throw 0;
-									default:;
+										writer.WriteString(L"static_cast<");
+										writer.WriteString(config->ConvertType(tdFirst));
+										writer.WriteString(L"*>(");
 									}
+									Call(node->first);
+									if (dFirst == ITypeInfo::SharedPtr)
+									{
+										writer.WriteString(L".Obj()");
+									}
+									if (td != tdFirst)
+									{
+										writer.WriteString(L")");
+									}
+
+									if (node->op == WfBinaryOperator::EQ)
+									{
+										writer.WriteString(L" == ");
+									}
+									else
+									{
+										writer.WriteString(L" != ");
+									}
+
+									if (td != tdSecond)
+									{
+										writer.WriteString(L"static_cast<");
+										writer.WriteString(config->ConvertType(tdSecond));
+										writer.WriteString(L"*>(");
+									}
+									Call(node->second);
+									if (dSecond == ITypeInfo::SharedPtr)
+									{
+										writer.WriteString(L".Obj()");
+									}
+									if (td != tdSecond)
+									{
+										writer.WriteString(L")");
+									}
+
+									writer.WriteString(L")");
+									return;
 								}
 							}
-						}
-
-						switch (node->op)
-						{
-						case WfBinaryOperator::Exp:
-							throw 0;
-						case WfBinaryOperator::Add:
-							throw 0;
-						case WfBinaryOperator::Sub:
-							throw 0;
-						case WfBinaryOperator::Mul:
-							throw 0;
-						case WfBinaryOperator::Div:
-							throw 0;
-						case WfBinaryOperator::Mod:
-							throw 0;
-						case WfBinaryOperator::Shl:
-							throw 0;
-						case WfBinaryOperator::Shr:
-							throw 0;
 						case WfBinaryOperator::LT:
-							throw 0;
 						case WfBinaryOperator::GT:
-							throw 0;
 						case WfBinaryOperator::LE:
-							throw 0;
 						case WfBinaryOperator::GE:
-							throw 0;
-						case WfBinaryOperator::EQ:
-							throw 0;
-						case WfBinaryOperator::NE:
-							throw 0;
+							{
+								const wchar_t* op = nullptr;
+								switch (node->op)
+								{
+								case WfBinaryOperator::LT: op = L"<"; break;
+								case WfBinaryOperator::GT: op = L">"; break;
+								case WfBinaryOperator::LE: op = L"<="; break;
+								case WfBinaryOperator::GE: op = L">="; break;
+								case WfBinaryOperator::EQ: op = L"=="; break;
+								case WfBinaryOperator::NE: op = L"!="; break;
+								default:;
+								}
+								VisitBinaryExpression(node, op);
+							}
+							return;
 						case WfBinaryOperator::Xor:
-							throw 0;
 						case WfBinaryOperator::And:
-							throw 0;
 						case WfBinaryOperator::Or:
-							throw 0;
+							{
+								auto td = result.type->GetTypeDescriptor();
+								const wchar_t* op = nullptr;
+								if (td == description::GetTypeDescriptor<bool>())
+								{
+									switch (node->op)
+									{
+									case WfBinaryOperator::Xor: op = L"^"; break;
+									case WfBinaryOperator::And: op = L"&&"; break;
+									case WfBinaryOperator::Or: op = L"||"; break;
+									default:;
+									}
+									td = nullptr;
+								}
+								else
+								{
+									switch (node->op)
+									{
+									case WfBinaryOperator::Xor: op = L"^"; break;
+									case WfBinaryOperator::And: op = L"&"; break;
+									case WfBinaryOperator::Or: op = L"|"; break;
+									default:;
+									}
+									if (!BinaryNeedConvert(td))
+									{
+										td = nullptr;
+									}
+								}
+								VisitBinaryExpression(node, op, td);
+							}
+							return;
 						default:;
 						}
 					}

@@ -13,6 +13,20 @@ struct Point
 	::vl::vint32_t y = 0;
 	::vl::Nullable<::Point> z;
 };
+inline bool operator== (const Point& a, const Point& b)
+{
+	if (a.x != b.x) return false;
+	if (a.y != b.y) return false;
+	if (a.z != b.z) return false;
+	return true;
+}
+inline bool operator!= (const Point& a, const Point& b)
+{
+	if (a.x != b.x) return true;
+	if (a.y != b.y) return true;
+	if (a.z != b.z) return true;
+	return false;
+}
 
 
 /***********************************************************************
