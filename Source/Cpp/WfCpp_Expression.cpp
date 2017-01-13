@@ -1071,22 +1071,94 @@ namespace vl
 
 				void Visit(WfLetExpression* node)override
 				{
-					throw 0;
+					auto scope = config->manager->nodeScopes[node];
+					writer.WriteString(L"[&](");
+					FOREACH_INDEXER(Ptr<WfLetVariable>, letVar, index, node->variables)
+					{
+						if (index > 0)
+						{
+							writer.WriteString(L", ");
+						}
+						auto symbol = scope->symbols[letVar->name.value][0];
+						writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
+						writer.WriteString(L" ");
+						writer.WriteString(config->ConvertName(letVar->name.value));
+					}
+					writer.WriteString(L"){ return ");
+					Call(node->expression);
+					writer.WriteString(L"; }(");
+					FOREACH_INDEXER(Ptr<WfLetVariable>, letVar, index, node->variables)
+					{
+						if (index > 0)
+						{
+							writer.WriteString(L", ");
+						}
+						Call(letVar->value);
+					}
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfIfExpression* node)override
 				{
-					throw 0;
+					writer.WriteString(L"[&](){ if (");
+					Call(node->condition);
+					writer.WriteString(L") return ");
+					Call(node->trueBranch);
+					writer.WriteString(L"; else return ");
+					Call(node->falseBranch);
+					writer.WriteString(L"; }()");
 				}
 
 				void Visit(WfRangeExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+
+					writer.WriteString(L"[&](");
+					writer.WriteString(config->ConvertType(elementType));
+					writer.WriteString(L" __vwsn_1, ");
+					writer.WriteString(config->ConvertType(elementType));
+					writer.WriteString(L" __vwsn_2){ return ::vl::collections::Range<");
+					writer.WriteString(config->ConvertType(elementType));
+					writer.WriteString(L">(__vwsn_1, __vwsn_2 - __vwsn_1); }(");
+					Call(node->begin);
+					if (node->beginBoundary == WfRangeBoundary::Exclusive)
+					{
+						writer.WriteString(L" + 1");
+					}
+					writer.WriteString(L", ");
+					Call(node->end);
+					if (node->endBoundary == WfRangeBoundary::Inclusive)
+					{
+						writer.WriteString(L" + 1");
+					}
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfSetTestingExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node->collection.Obj()];
+					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+
+					writer.WriteString(L"[&](");
+					writer.WriteString(config->ConvertType(elementType));
+					writer.WriteString(L" __vwsn_1){ return ");
+					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						writer.WriteString(L"::vl::reflection::description::GetLazyList<");
+						writer.WriteString(config->ConvertType(elementType));
+						writer.WriteString(L"(");
+					}
+					Call(node->collection);
+					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						writer.WriteString(L")");
+					}
+					writer.WriteString(L".Any([&](");
+					writer.WriteString(config->ConvertType(elementType));
+					writer.WriteString(L" __vwsn_2){ return __vwsn_1 == __vwsn_2; }); }(");
+					Call(node->element);
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfConstructorExpression* node)override
