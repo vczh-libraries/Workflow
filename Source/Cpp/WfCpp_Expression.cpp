@@ -778,7 +778,148 @@ namespace vl
 
 				void Visit(WfBinaryExpression* node)override
 				{
-					throw 0;
+					if (node->op == WfBinaryOperator::Assign)
+					{
+						if (auto binary = node->first.Cast<WfBinaryExpression>())
+						{
+							// a[b] = c;
+							throw 0;
+						}
+						else if (auto member = node->first.Cast<WfMemberExpression>())
+						{
+							// a.b = c;
+							auto result = config->manager->expressionResolvings[member.Obj()];
+							// use ICpp instead of GetSetter
+							if (auto methodInfo = result.propertyInfo->GetSetter())
+							{
+								throw 0;
+							}
+							else
+							{
+								throw 0;
+							}
+						}
+						else
+						{
+							// reference expression
+							throw 0;
+						}
+					}
+					else if (node->op == WfBinaryOperator::Index)
+					{
+						// a[b]
+						throw 0;
+					}
+					else if (node->op == WfBinaryOperator::Union)
+					{
+						auto type = config->manager->expressionResolvings[node].type;
+						if (type->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
+						{
+							throw 0;
+						}
+						else
+						{
+							throw 0;
+						}
+					}
+					else if (node->op == WfBinaryOperator::Intersect)
+					{
+						throw 0;
+					}
+					else if (node->op == WfBinaryOperator::FailedThen)
+					{
+						throw 0;
+					}
+					else
+					{
+						Ptr<ITypeInfo> mergedType;
+						switch (node->op)
+						{
+						case WfBinaryOperator::Exp:
+						case WfBinaryOperator::Add:
+						case WfBinaryOperator::Sub:
+						case WfBinaryOperator::Mul:
+						case WfBinaryOperator::Div:
+						case WfBinaryOperator::Mod:
+						case WfBinaryOperator::Shl:
+						case WfBinaryOperator::Shr:
+							{
+								auto result = config->manager->expressionResolvings[node];
+								mergedType = result.type;
+							}
+							break;
+						default:
+							{
+								auto firstResult = config->manager->expressionResolvings[node->first.Obj()];
+								auto secondResult = config->manager->expressionResolvings[node->second.Obj()];
+								auto firstType = firstResult.expectedType ? firstResult.expectedType : firstResult.type;
+								auto secondType = secondResult.expectedType ? secondResult.expectedType : secondResult.type;
+								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
+								{
+									if (firstType->GetDecorator() == ITypeInfo::RawPtr || firstType->GetDecorator() == ITypeInfo::SharedPtr)
+									{
+										throw 0;
+									}
+								}
+
+								// generate == and != for enum and struct
+								// generate & and | for enum
+								mergedType = GetMergedType(firstType, secondType);
+								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
+								{
+									switch (mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags())
+									{
+									case TypeDescriptorFlags::Object:
+									case TypeDescriptorFlags::Struct:
+										throw 0;
+									case TypeDescriptorFlags::FlagEnum:
+									case TypeDescriptorFlags::NormalEnum:
+										throw 0;
+									default:;
+									}
+								}
+							}
+						}
+
+						switch (node->op)
+						{
+						case WfBinaryOperator::Exp:
+							throw 0;
+						case WfBinaryOperator::Add:
+							throw 0;
+						case WfBinaryOperator::Sub:
+							throw 0;
+						case WfBinaryOperator::Mul:
+							throw 0;
+						case WfBinaryOperator::Div:
+							throw 0;
+						case WfBinaryOperator::Mod:
+							throw 0;
+						case WfBinaryOperator::Shl:
+							throw 0;
+						case WfBinaryOperator::Shr:
+							throw 0;
+						case WfBinaryOperator::LT:
+							throw 0;
+						case WfBinaryOperator::GT:
+							throw 0;
+						case WfBinaryOperator::LE:
+							throw 0;
+						case WfBinaryOperator::GE:
+							throw 0;
+						case WfBinaryOperator::EQ:
+							throw 0;
+						case WfBinaryOperator::NE:
+							throw 0;
+						case WfBinaryOperator::Xor:
+							throw 0;
+						case WfBinaryOperator::And:
+							throw 0;
+						case WfBinaryOperator::Or:
+							throw 0;
+						default:;
+						}
+					}
 				}
 
 				void Visit(WfLetExpression* node)override
