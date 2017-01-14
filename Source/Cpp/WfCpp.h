@@ -74,7 +74,7 @@ namespace vl
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName);
 				~WfCppConfig();
 
-				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> stat, const WString& prefix);
+				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix);
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix);
 
 				WString					ConvertName(const WString& name);

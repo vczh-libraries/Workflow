@@ -104,9 +104,12 @@ WfCppConfig
 			{
 			}
 
-			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> stat, const WString& prefix)
+			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix)
 			{
-				writer.WriteLine(prefix + L"throw 0;");
+				writer.WriteString(prefix);
+				writer.WriteString(L"return ");
+				GenerateExpression(this, writer, expr, nullptr);
+				writer.WriteLine(L";");
 			}
 
 			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix)

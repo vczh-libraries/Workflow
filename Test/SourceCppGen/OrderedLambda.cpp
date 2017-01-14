@@ -61,7 +61,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_1) const
 	{
-		throw 0;
+		return ((__vwsno_1 * 0) + ::vl_workflow_global::OrderedLambda::Instance().Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
 	}
 
 	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1)
@@ -71,7 +71,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsno2_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_2) const
 	{
-		throw 0;
+		return (__vwsno_1 + __vwsno_2);
 	}
 }
 

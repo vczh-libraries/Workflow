@@ -572,7 +572,7 @@ namespace vl
 							if (result.propertyInfo->GetCpp() == nullptr && result.propertyInfo->GetGetter() != nullptr)
 							{
 								auto methodInfo = result.propertyInfo->GetGetter();
-								WriteMethodTemplate(CppGetClosureTemplate(methodInfo), methodInfo, methodThis,
+								WriteMethodTemplate(CppGetInvokeTemplate(methodInfo), methodInfo, methodThis,
 									[&](IMethodInfo*, CommaPosition)
 									{
 										return true;
@@ -1565,6 +1565,7 @@ namespace vl
 							[&](IMethodInfo* methodInfo) { return thisCallback(methodInfo->GetOwnerTypeDescriptor()); },
 							[&](IMethodInfo*, CommaPosition cp) { return argumentsCallback(cp); }
 							);
+						return;
 					}
 					else if (result.eventInfo)
 					{
@@ -1572,6 +1573,7 @@ namespace vl
 							[&](IEventInfo* eventInfo) { return thisCallback(eventInfo->GetOwnerTypeDescriptor()); },
 							[&](IEventInfo*, CommaPosition cp) { return argumentsCallback(cp); }
 							);
+						return;
 					}
 					else if (result.symbol)
 					{
@@ -1586,12 +1588,18 @@ namespace vl
 							{
 								WriteGlobalObject();
 								writer.WriteString(L".");
+								writer.WriteString(config->ConvertName(result.symbol->name));
 							}
 							writer.WriteString(L"(");
 							argumentsCallback(CommaPosition::No);
 							writer.WriteString(L")");
+							return;
 						}
 					}
+					Call(node->function);
+					writer.WriteString(L"(");
+					argumentsCallback(CommaPosition::No);
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfFunctionExpression* node)override
