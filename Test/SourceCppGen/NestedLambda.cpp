@@ -187,7 +187,7 @@ namespace vl_workflow_global
 
 	::vl::WString __vwsno1_NestedLambda_main_H_::operator()() const
 	{
-		return ::vl::Ptr<::IB>(new ::vl_workflow_global::__vwsnc2_NestedLambda_main_H__IB(__vwsnthis_0))->Calculate();
+		return ::vl::__vwsn::This(::vl::Ptr<::IB>(new ::vl_workflow_global::__vwsnc2_NestedLambda_main_H__IB(__vwsnthis_0)))->Calculate();
 	}
 
 	__vwsno2_NestedLambda_main_H_Calculate_::__vwsno2_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
@@ -198,7 +198,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsno2_NestedLambda_main_H_Calculate_::operator()() const
 	{
-		return (LAMBDA(::vl_workflow_global::__vwsnf3_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1))() + __vwsnthis_0->GetB());
+		return (LAMBDA(::vl_workflow_global::__vwsnf3_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1))() + ::vl::__vwsn::This(__vwsnthis_0)->GetB());
 	}
 
 	__vwsno5_NestedLambda_main_H_Calculate__::__vwsno5_NestedLambda_main_H_Calculate__(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
@@ -209,7 +209,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsno5_NestedLambda_main_H_Calculate__::operator()() const
 	{
-		return __vwsnthis_1->GetA();
+		return ::vl::__vwsn::This(__vwsnthis_1)->GetA();
 	}
 
 	__vwsno6_NestedLambda_main_Calculate_::__vwsno6_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
@@ -229,7 +229,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsno9_NestedLambda_main_Calculate__::operator()() const
 	{
-		return __vwsnthis_0->GetA();
+		return ::vl::__vwsn::This(__vwsnthis_0)->GetA();
 	}
 
 	__vwsnc1_NestedLambda_main__IA::__vwsnc1_NestedLambda_main__IA()

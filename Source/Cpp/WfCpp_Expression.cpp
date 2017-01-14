@@ -403,7 +403,7 @@ namespace vl
 							auto closureInfo = GetClosureInfo(node);
 							if (closureInfo->symbols.Values().Contains(symbol.Obj()))
 							{
-								writer.WriteString(L"this->");
+								writer.WriteString(L"::vl::__vwsn::This(this)->");
 								writer.WriteString(config->ConvertName(symbol->name));
 								return;
 							}
@@ -427,7 +427,7 @@ namespace vl
 						else if (auto classExpr = ownerNode.Cast<WfNewInterfaceExpression>())
 						{
 							writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
-							writer.WriteString(L"(this, &");
+							writer.WriteString(L"(::vl::__vwsn::This(this), &");
 							writer.WriteString(GetClosureInfo(classExpr.Obj())->lambdaClassName);
 							writer.WriteString(L"::");
 							writer.WriteString(config->ConvertName(symbol->name));
@@ -603,12 +603,16 @@ namespace vl
 					bool success = WriteReferenceTemplate(result,
 						[&](IMethodInfo* methodInfo)
 						{
+							writer.WriteString(L"::vl::__vwsn::This(");
 							VisitThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
+							writer.WriteString(L")");
 							return true;
 						},
 						[&](IPropertyInfo* propertyInfo)
 						{
+							writer.WriteString(L"::vl::__vwsn::This(");
 							VisitThisExpression(node, propertyInfo->GetOwnerTypeDescriptor());
+							writer.WriteString(L")");
 							return true;
 						});
 
@@ -699,12 +703,16 @@ namespace vl
 					WriteReferenceTemplate(result,
 						[&](IMethodInfo* methodInfo)
 						{
+							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->parent);
+							writer.WriteString(L")");
 							return true;
 						},
 						[&](IPropertyInfo* propertyInfo)
 						{
+							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->parent);
+							writer.WriteString(L")");
 							return true;
 						});
 				}
@@ -848,8 +856,9 @@ namespace vl
 							auto containerType = config->manager->expressionResolvings[binary->first.Obj()].type.Obj();
 							auto keyType = config->manager->expressionResolvings[binary->second.Obj()].type.Obj();
 							auto valueType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
+							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(binary->first);
-							writer.WriteString(L"->Set(");
+							writer.WriteString(L")->Set(");
 							if (containerType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
 							{
 								WriteBoxParameter(keyType, [&]() {Call(binary->second); });
@@ -873,7 +882,9 @@ namespace vl
 									WriteMethodTemplate(CppGetInvokeTemplate(propInfo->GetSetter()), propInfo->GetSetter(),
 										[&](IMethodInfo*)
 										{
+											writer.WriteString(L"::vl::__vwsn::This(");
 											Call(member->parent);
+											writer.WriteString(L")");
 											return true;
 										},
 										[&](IMethodInfo*, CommaPosition cp)
@@ -890,7 +901,9 @@ namespace vl
 									WritePropertyTemplate(CppGetReferenceTemplate(propInfo), propInfo, 
 										[&](IPropertyInfo*)
 										{
+											writer.WriteString(L"::vl::__vwsn::This(");
 											Call(member->parent);
+											writer.WriteString(L")");
 											return true;
 										});
 									writer.WriteString(L")");
@@ -913,8 +926,9 @@ namespace vl
 						auto valueType = config->manager->expressionResolvings[node].type.Obj();
 						WriteUnboxParameter(valueType, [&]()
 						{
+							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->first);
-							writer.WriteString(L"->Get(");
+							writer.WriteString(L")->Get(");
 							if (containerType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>()))
 							{
 								WriteBoxParameter(keyType, [&]() {Call(node->second); });
@@ -1470,6 +1484,7 @@ namespace vl
 						WriteEventTemplate(CppGetAttachTemplate(result.eventInfo), result.eventInfo,
 							[&](IEventInfo*)
 							{
+								writer.WriteString(L"::vl::__vwsn::This(");
 								if (auto member = node->event.Cast<WfMemberExpression>())
 								{
 									Call(member->parent);
@@ -1478,6 +1493,7 @@ namespace vl
 								{
 									VisitThisExpression(node, result.eventInfo->GetOwnerTypeDescriptor());
 								}
+								writer.WriteString(L")");
 								return true;
 							},
 							[&](IEventInfo*, CommaPosition)
@@ -1500,6 +1516,7 @@ namespace vl
 						WriteEventTemplate(CppGetDetachTemplate(result.eventInfo), result.eventInfo,
 							[&](IEventInfo* eventInfo)
 							{
+								writer.WriteString(L"::vl::__vwsn::This(");
 								if (auto member = node->event.Cast<WfMemberExpression>())
 								{
 									Call(member->parent);
@@ -1508,6 +1525,7 @@ namespace vl
 								{
 									VisitThisExpression(node, eventInfo->GetOwnerTypeDescriptor());
 								}
+								writer.WriteString(L")");
 								return true;
 							},
 							[&](IEventInfo*, CommaPosition)
@@ -1535,6 +1553,7 @@ namespace vl
 				{
 					auto thisCallback = [&](ITypeDescriptor* td)
 					{
+						writer.WriteString(L"::vl::__vwsn::This(");
 						if (auto member = node->function.Cast<WfMemberExpression>())
 						{
 							Call(member->parent);
@@ -1543,6 +1562,7 @@ namespace vl
 						{
 							VisitThisExpression(node, td);
 						}
+						writer.WriteString(L")");
 						return true;
 					};
 
@@ -1581,7 +1601,7 @@ namespace vl
 						{
 							if (result.symbol->ownerScope->ownerNode.Cast<WfNewInterfaceExpression>())
 							{
-								writer.WriteString(L"this->");
+								writer.WriteString(L"::vl::__vwsn::This(this)->");
 								writer.WriteString(config->ConvertName(result.symbol->name));
 							}
 							else
