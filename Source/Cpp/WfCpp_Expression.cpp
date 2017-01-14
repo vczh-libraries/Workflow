@@ -1542,7 +1542,31 @@ namespace vl
 
 				void Visit(WfNewInterfaceExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto ctor = result.constructorInfo;
+
+					if (ctor->GetReturn()->GetDecorator() == ITypeInfo::SharedPtr)
+					{
+						writer.WriteString(L"::vl::Ptr<");
+						writer.WriteString(config->ConvertType(ctor->GetReturn()->GetTypeDescriptor()));
+						writer.WriteString(L">(");
+					}
+
+					writer.WriteString(L"new ::");
+					writer.WriteString(config->assemblyNamespace);
+					writer.WriteString(L"::");
+					writer.WriteString(config->classExprs[node]);
+					writer.WriteString(L"(");
+
+					auto closureInfo = config->closureInfos[node];
+					WriteClosureArguments(closureInfo, node);
+
+					writer.WriteString(L")");
+
+					if (ctor->GetReturn()->GetDecorator() == ITypeInfo::SharedPtr)
+					{
+						writer.WriteString(L")");
+					}
 				}
 			};
 
