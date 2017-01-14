@@ -15,13 +15,17 @@ namespace vl
 			{
 			public:
 				WfCppConfig*				config;
+				Ptr<FunctionRecord>			functionRecord;
 				stream::StreamWriter&		writer;
+				WString						prefixBlock;
 				WString						prefix;
 				ITypeInfo*					returnType;
 
-				WfGenerateStatementVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix, ITypeInfo* _returnType)
+				WfGenerateStatementVisitor(WfCppConfig* _config, Ptr<FunctionRecord> _functionRecord, stream::StreamWriter& _writer, const WString& _prefixBlock, const WString& _prefix, ITypeInfo* _returnType)
 					:config(_config)
+					, functionRecord(_functionRecord)
 					, writer(_writer)
+					, prefixBlock(_prefixBlock)
 					, prefix(_prefix)
 					, returnType(_returnType)
 				{
@@ -29,37 +33,73 @@ namespace vl
 
 				void Call(Ptr<WfStatement> node, WString prefixDelta = WString(L"\t", false))
 				{
-					GenerateStatement(config, writer, node, prefix + prefixDelta, returnType);
+					GenerateStatement(config, functionRecord, writer, node, prefix, prefix + prefixDelta, returnType);
 				}
 
 				void Visit(WfBreakStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefix);
+					writer.WriteLine(L"break;");
 				}
 
 				void Visit(WfContinueStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefix);
+					writer.WriteLine(L"continue;");
 				}
 
 				void Visit(WfReturnStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefix);
+					if (node->expression)
+					{
+						writer.WriteString(L"return ");
+						GenerateExpression(config, writer, node->expression, returnType);
+						writer.WriteLine(L";");
+					}
+					else
+					{
+						writer.WriteLine(L"return;");
+					}
 				}
 
 				void Visit(WfDeleteStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefix);
+					writer.WriteString(L"::vl::__vwsn::This(");
+					GenerateExpression(config, writer, node->expression, nullptr);
+					writer.WriteLine(L")->Dispose(true);");
 				}
 
 				void Visit(WfRaiseExceptionStatement* node)override
 				{
-					throw 0;
+					if (node->expression)
+					{
+						writer.WriteString(prefix);
+						writer.WriteString(L"throw ::vl::reflection::description::TypeDescriptorException(");
+						GenerateExpression(config, writer, node->expression, TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+						writer.WriteLine(L", false);");
+					}
+					else
+					{
+						writer.WriteString(prefix);
+						writer.WriteLine(L"throw;");
+					}
 				}
 
 				void Visit(WfIfStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefix);
+					writer.WriteString(L"if (");
+					GenerateExpression(config, writer, node->expression, TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+					writer.WriteLine(L")");
+					Call(node->trueBranch);
+					if (node->falseBranch)
+					{
+						writer.WriteString(prefix);
+						writer.WriteLine(L"else");
+						Call(node->falseBranch);
+					}
 				}
 
 				void Visit(WfSwitchStatement* node)override
@@ -69,12 +109,50 @@ namespace vl
 
 				void Visit(WfWhileStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefix);
+					writer.WriteString(L"while (");
+					GenerateExpression(config, writer, node->condition, TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+					writer.WriteLine(L")");
+					Call(node->statement);
 				}
 
 				void Visit(WfForEachStatement* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node->collection.Obj()];
+					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+
+					auto typeName = L"__vwsnt_" + itow(functionRecord->typeCounter++);
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(typeName);
+					writer.WriteString(L" = ");
+					writer.WriteString(config->ConvertType(elementType));
+					writer.WriteLine(L";");
+
+					writer.WriteString(prefix);
+					writer.WriteString(L"FOREACH(");
+					writer.WriteString(typeName);
+					writer.WriteString(L", ");
+					writer.WriteString(config->ConvertName(node->name.value));
+					writer.WriteString(L", ");
+					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						writer.WriteString(L" ::vl::reflection::description::GetLazyList<");
+						writer.WriteString(config->ConvertType(elementType));
+						writer.WriteString(L"<(");
+					}
+					GenerateExpression(config, writer, node->collection, nullptr);
+					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+					{
+						writer.WriteString(L")");
+					}
+					if (node->direction == WfForEachDirection::Reversed)
+					{
+						writer.WriteString(L".Reverse()");
+					}
+					writer.WriteLine(L");");
+
+					Call(node->statement);
 				}
 
 				void Visit(WfTryStatement* node)override
@@ -84,23 +162,52 @@ namespace vl
 
 				void Visit(WfBlockStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefixBlock);
+					writer.WriteLine(L"{");
+					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					{
+						if (statement.Cast<WfBlockStatement>())
+						{
+							Call(statement);
+						}
+						else
+						{
+							Call(statement, WString::Empty);
+						}
+					}
+					writer.WriteString(prefixBlock);
+					writer.WriteLine(L"}");
 				}
 
 				void Visit(WfExpressionStatement* node)override
 				{
-					throw 0;
+					writer.WriteString(prefix);
+					GenerateExpression(config, writer, node->expression, nullptr);
+					writer.WriteLine(L";");
 				}
 
 				void Visit(WfVariableStatement* node)override
 				{
-					throw 0;
+					auto scope = config->manager->nodeScopes[node->variable.Obj()];
+					auto symbol = scope->symbols[node->variable->name.value][0].Obj();
+
+					writer.WriteString(prefix);
+					writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
+					writer.WriteString(L" ");
+					writer.WriteString(config->ConvertName(node->variable->name.value));
+
+					if (node->variable->expression)
+					{
+						writer.WriteString(L" = ");
+						GenerateExpression(config, writer, node->variable->expression, symbol->typeInfo.Obj());
+					}
+					writer.WriteLine(L";");
 				}
 			};
 
-			void GenerateStatement(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, reflection::description::ITypeInfo* returnType)
+			void GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType)
 			{
-				WfGenerateStatementVisitor visitor(config, writer, prefix, returnType);
+				WfGenerateStatementVisitor visitor(config, functionRecord, writer, prefix, prefix + prefixDelta, returnType);
 				node->Accept(&visitor);
 			}
 		}

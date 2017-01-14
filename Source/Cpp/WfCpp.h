@@ -28,7 +28,10 @@ namespace vl
 				__vwsnc#_ASSEMBLY_*		: anonymous interface class name
 				__vwsnthis_#			: captured this pointer in fields
 				__vwsnctor_*			: captured symbol in constructor arguments, assigned to "this->*"
-				__vwsnctorthis_#		: captured this pointer in constructor arguments assigned to "this->__vwsnthis_#'
+				__vwsnctorthis_#		: captured this pointer in constructor arguments assigned to "this->__vwsnthis_#"?
+				__vwsnt_#				: Temporary type
+				__vwsne_#				: Temporary variable (not for lambda)
+				__vwsnb_#				: Temporary block
 			*/
 
 			class WfCppConfig : public Object
@@ -137,8 +140,14 @@ WfCppConfig::Collect
 WfCppConfig::Write
 ***********************************************************************/
 
+			class FunctionRecord : public Object
+			{
+			public:
+				vint					typeCounter = 0;
+			};
+
 			extern void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType);
-			extern void GenerateStatement(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, reflection::description::ITypeInfo* returnType);
+			extern void GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
 			extern void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix, bool forClassExpr);
 			extern bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
 		}
