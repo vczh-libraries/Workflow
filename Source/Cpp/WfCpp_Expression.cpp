@@ -508,6 +508,40 @@ namespace vl
 					});
 				}
 
+				template<typename TThis, typename TArguments>
+				void WriteEventTemplate(const WString& templateValue, IEventInfo* eventInfo, const TThis& thisCallback, const TArguments& argumentsCallback)
+				{
+					WriteTemplate(templateValue, [&](const WString& item)
+					{
+						if (item == L"$Name")
+						{
+							writer.WriteString(config->ConvertName(eventInfo->GetName()));
+							return true;
+						}
+						else if (item == L"$This")
+						{
+							return thisCallback(eventInfo);
+						}
+						else if (item == L"$Handler")
+						{
+							return argumentsCallback(eventInfo, CommaPosition::No);
+						}
+						else if (item == L"$Arguments")
+						{
+							return argumentsCallback(eventInfo, CommaPosition::No);
+						}
+						else if (item == L", $Arguments")
+						{
+							return argumentsCallback(eventInfo, CommaPosition::Left);
+						}
+						else if (item == L"$Arguments, ")
+						{
+							return argumentsCallback(eventInfo, CommaPosition::Right);
+						}
+						return false;
+					});
+				}
+
 				template<typename TMethodThis, typename TPropertyThis>
 				bool WriteReferenceTemplate(ResolveExpressionResult& result, const TMethodThis& methodThis, const TPropertyThis& propertyThis)
 				{
@@ -1411,6 +1445,7 @@ namespace vl
 							}
 						}
 						break;
+					default:;
 					}
 				}
 
@@ -1426,12 +1461,50 @@ namespace vl
 
 				void Visit(WfAttachEventExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto parent = node->event.Cast<WfMemberExpression>()->parent;
+					if (CppExists(result.eventInfo))
+					{
+						WriteEventTemplate(CppGetAttachTemplate(result.eventInfo), result.eventInfo,
+							[&](IEventInfo*)
+							{
+								Call(parent);
+								return true;
+							},
+							[&](IEventInfo*, CommaPosition)
+							{
+								Call(node->function);
+								return true;
+							});
+					}
+					else
+					{
+						WriteNotExists(result.eventInfo);
+					}
 				}
 
 				void Visit(WfDetachEventExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto parent = node->event.Cast<WfMemberExpression>()->parent;
+					if (CppExists(result.eventInfo))
+					{
+						WriteEventTemplate(CppGetDetachTemplate(result.eventInfo), result.eventInfo,
+							[&](IEventInfo*)
+							{
+								Call(parent);
+								return true;
+							},
+							[&](IEventInfo*, CommaPosition)
+							{
+								Call(node->handler);
+								return true;
+							});
+					}
+					else
+					{
+						WriteNotExists(result.eventInfo);
+					}
 				}
 
 				void Visit(WfBindExpression* node)override
