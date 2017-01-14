@@ -76,11 +76,11 @@ namespace vl
 				{
 					writer.WriteString(L"[&](){ ");
 					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::UnboxParameter<");
+					writer.WriteString(L" __vwsn_temp__; ::vl::reflection::description::UnboxParameter<");
 					writer.WriteString(config->ConvertType(type));
 					writer.WriteString(L">(");
 					writeExpression();
-					writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
+					writer.WriteString(L", __vwsn_temp__); return __vwsn_temp__; }()");
 				}
 
 				template<typename T>
@@ -90,21 +90,21 @@ namespace vl
 					{
 						writer.WriteString(L"[&](){ ");
 						writer.WriteString(config->ConvertType(toTd));
-						writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
+						writer.WriteString(L" __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
 						writer.WriteString(config->ConvertType(toTd));
 						writer.WriteString(L">::Deserialize(");
 						writeExpression();
-						writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
+						writer.WriteString(L", __vwsn_temp__); return __vwsn_temp__; }()");
 					}
 					else if (toTd == description::GetTypeDescriptor<WString>())
 					{
 						writer.WriteString(L"[&](){ ");
 						writer.WriteString(config->ConvertType(toTd));
-						writer.WriteString(L" __vwsn__temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
+						writer.WriteString(L" __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
 						writer.WriteString(config->ConvertType(fromTd));
 						writer.WriteString(L">::Serialize(");
 						writeExpression();
-						writer.WriteString(L", __vwsn__temp__); return __vwsn__temp__; }()");
+						writer.WriteString(L", __vwsn_temp__); return __vwsn_temp__; }()");
 					}
 					else
 					{
@@ -201,7 +201,7 @@ namespace vl
 										case ITypeInfo::Nullable:
 											writer.WriteString(L"[](");
 											writer.WriteString(config->ConvertType(fromType));
-											writer.WriteString(L" __vwsn__temp__){ if (__vwsn__temp__) return ");
+											writer.WriteString(L" __vwsn_temp__){ if (__vwsn_temp__) return ");
 											writer.WriteString(config->ConvertType(toType));
 											writer.WriteString(L"(");
 											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
@@ -1167,7 +1167,7 @@ namespace vl
 					auto td = result.type->GetTypeDescriptor();
 					if (node->arguments.Count() == 0)
 					{
-						if ((td->GetTypeDescriptorFlags()&TypeDescriptorFlags::StructType)!=TypeDescriptorFlags::Undefined)
+						if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
 						{
 							writer.WriteString(config->ConvertType(result.type.Obj()) + L"{}");
 						}
@@ -1178,7 +1178,58 @@ namespace vl
 					}
 					else
 					{
-						throw 0;
+						if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+						{
+							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+							writer.WriteString(L"[&](){ auto __vwsn_temp__ = ");
+							writer.WriteString(config->ConvertType(td));
+							writer.WriteString(L"::Create();");
+
+							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							{
+								writer.WriteString(L" __vwsn_temp__->Add(");
+								WriteBoxParameter(elementType, [&]() {Call(argument->key); });
+								writer.WriteString(L");");
+							}
+
+							writer.WriteString(L" return __vwsn_temp__; }()");
+						}
+						else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
+						{
+							auto keyType = result.type->GetElementType()->GetGenericArgument(0);
+							auto valueType = result.type->GetElementType()->GetGenericArgument(1);
+							writer.WriteString(L"[&](){ auto __vwsn_temp__ = ");
+							writer.WriteString(config->ConvertType(td));
+							writer.WriteString(L"::Create();");
+
+							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							{
+								writer.WriteString(L" __vwsn_temp__->Set(");
+								WriteBoxParameter(keyType, [&]() {Call(argument->key); });
+								writer.WriteString(L", ");
+								WriteBoxParameter(valueType, [&]() {Call(argument->value); });
+								writer.WriteString(L");");
+							}
+
+							writer.WriteString(L" return __vwsn_temp__; }()");
+						}
+						else
+						{
+							writer.WriteString(L"[&](){ ");
+							writer.WriteString(config->ConvertType(td));
+							writer.WriteString(L" __vwsn_temp__;");
+
+							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							{
+								writer.WriteString(L" __vwsn_temp__.");
+								writer.WriteString(argument->key.Cast<WfReferenceExpression>()->name.value);
+								writer.WriteString(L" = ");
+								Call(argument->value);
+								writer.WriteString(L";");
+							}
+
+							writer.WriteString(L" return __vwsn_temp__; }()");
+						}
 					}
 				}
 
