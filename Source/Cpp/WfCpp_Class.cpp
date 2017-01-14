@@ -190,11 +190,11 @@ WfGenerateClassMemberImplVisitor
 					{
 						printableMember = true;
 						writer.WriteString(prefix);
-						config->WriteFunctionHeader(writer, node, classBaseName + L"::" + config->ConvertName(node->name.value), true);
+						auto returnType = config->WriteFunctionHeader(writer, node, classBaseName + L"::" + config->ConvertName(node->name.value), true);
 						writer.WriteLine(L"");
 
 						writer.WriteLine(prefix + L"{");
-						config->WriteFunctionBody(writer, node->statement, prefix + L"\t");
+						config->WriteFunctionBody(writer, node->statement, prefix + L"\t", returnType);
 						writer.WriteLine(prefix + L"}");
 					}
 				}
@@ -220,7 +220,7 @@ WfGenerateClassMemberImplVisitor
 					writer.WriteLine(L"");
 
 					writer.WriteLine(prefix + L"{");
-					config->WriteFunctionBody(writer, node->statement, prefix + L"\t");
+					config->WriteFunctionBody(writer, node->statement, prefix + L"\t", nullptr);
 					writer.WriteLine(prefix + L"}");
 				}
 
@@ -230,7 +230,7 @@ WfGenerateClassMemberImplVisitor
 					writer.WriteLine(prefix + classBaseName + L"::~" + className + L"()");
 
 					writer.WriteLine(prefix + L"{");
-					config->WriteFunctionBody(writer, node->statement, prefix + L"\t");
+					config->WriteFunctionBody(writer, node->statement, prefix + L"\t", nullptr);
 					writer.WriteLine(prefix + L"}");
 				}
 

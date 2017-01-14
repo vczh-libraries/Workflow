@@ -17,12 +17,19 @@ namespace vl
 				WfCppConfig*				config;
 				stream::StreamWriter&		writer;
 				WString						prefix;
+				ITypeInfo*					returnType;
 
-				WfGenerateStatementVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix)
+				WfGenerateStatementVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix, ITypeInfo* _returnType)
 					:config(_config)
 					, writer(_writer)
 					, prefix(_prefix)
+					, returnType(_returnType)
 				{
+				}
+
+				void Call(Ptr<WfStatement> node, WString prefixDelta = WString(L"\t", false))
+				{
+					GenerateStatement(config, writer, node, prefix + prefixDelta, returnType);
 				}
 
 				void Visit(WfBreakStatement* node)override
@@ -91,9 +98,9 @@ namespace vl
 				}
 			};
 
-			void GenerateStatement(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix)
+			void GenerateStatement(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, reflection::description::ITypeInfo* returnType)
 			{
-				WfGenerateStatementVisitor visitor(config, writer, prefix);
+				WfGenerateStatementVisitor visitor(config, writer, prefix, returnType);
 				node->Accept(&visitor);
 			}
 		}

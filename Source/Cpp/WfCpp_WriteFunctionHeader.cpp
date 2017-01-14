@@ -7,14 +7,18 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
+			using namespace reflection::description;
 
-			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType)
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType)
 			{
+				ITypeInfo* returnType = nullptr;
 				if (writeReturnType)
 				{
-					writer.WriteString(ConvertType(typeInfo->GetElementType()->GetGenericArgument(0)));
+					returnType = typeInfo->GetElementType()->GetGenericArgument(0);
+					writer.WriteString(ConvertType(returnType));
 					writer.WriteChar(L' ');
 				}
+
 				writer.WriteString(name);
 				writer.WriteString(L"(");
 				for (vint i = 0; i < arguments.Count(); i++)
@@ -28,9 +32,11 @@ namespace vl
 					writer.WriteString(ConvertName(arguments[i]));
 				}
 				writer.WriteString(L")");
+
+				return returnType;
 			}
 
-			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType)
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType)
 			{
 				auto result = manager->expressionResolvings[ordered.Obj()];
 				auto typeInfo = result.type.Obj();
@@ -47,10 +53,10 @@ namespace vl
 					.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
 					);
 
-				WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+				return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
 			}
 
-			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType)
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType)
 			{
 				auto result = manager->expressionResolvings[funcExpr.Obj()];
 				auto typeInfo = result.type.Obj();
@@ -64,10 +70,10 @@ namespace vl
 					return argument->name.value;
 				})
 				);
-				WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+				return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
 			}
 
-			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType)
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType)
 			{
 				vint index1 = manager->declarationMemberInfos.Keys().IndexOf(decl.Obj());
 				vint index2 = manager->interfaceMethodImpls.Keys().IndexOf(decl.Obj());
@@ -78,7 +84,7 @@ namespace vl
 
 				if (methodInfo)
 				{
-					WriteFunctionHeader(writer, methodInfo, name, writeReturnType);
+					return WriteFunctionHeader(writer, methodInfo, name, writeReturnType);
 				}
 				else
 				{
@@ -90,20 +96,22 @@ namespace vl
 					CopyFrom(
 						arguments,
 						From(decl->arguments)
-						.Select([](Ptr<WfFunctionArgument> argument)
-					{
-						return argument->name.value;
-					})
-					);
-					WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+							.Select([](Ptr<WfFunctionArgument> argument)
+							{
+								return argument->name.value;
+							})
+						);
+					return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
 				}
 			}
 
-			void WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType)
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType)
 			{
+				ITypeInfo* returnType = nullptr;
 				if (writeReturnType)
 				{
-					writer.WriteString(ConvertType(methodInfo->GetReturn()));
+					returnType = methodInfo->GetReturn();
+					writer.WriteString(ConvertType(returnType));
 					writer.WriteChar(L' ');
 				}
 				writer.WriteString(name);
@@ -120,6 +128,7 @@ namespace vl
 					writer.WriteString(methodInfo->GetParameter(i)->GetName());
 				}
 				writer.WriteString(L")");
+				return returnType;
 			}
 		}
 	}

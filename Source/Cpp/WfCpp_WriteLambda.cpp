@@ -318,10 +318,10 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L"");
 
 					writer.WriteString(L"\t");
-					WriteFunctionHeader(writer, ordered, name + L"::operator()", true);
+					auto returnType = WriteFunctionHeader(writer, ordered, name + L"::operator()", true);
 					writer.WriteLine(L" const");
 					writer.WriteLine(L"\t{");
-					WriteFunctionBody(writer, ordered->body, L"\t\t");
+					WriteFunctionBody(writer, ordered->body, L"\t\t", returnType);
 					writer.WriteLine(L"\t}");
 				}
 				else if (auto funcExpr = lambda.Cast<WfFunctionExpression>())
@@ -337,10 +337,10 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L"");
 
 					writer.WriteString(L"\t");
-					WriteFunctionHeader(writer, funcExpr, name + L"::operator()", true);
+					auto returnType = WriteFunctionHeader(writer, funcExpr, name + L"::operator()", true);
 					writer.WriteLine(L" const");
 					writer.WriteLine(L"\t{");
-					WriteFunctionBody(writer, funcExpr->function->statement, L"\t\t");
+					WriteFunctionBody(writer, funcExpr->function->statement, L"\t\t", returnType);
 					writer.WriteLine(L"\t}");
 				}
 			}

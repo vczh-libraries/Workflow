@@ -80,10 +80,10 @@ namespace vl
 				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
 				{
 					writer.WriteString(L"\t");
-					WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
+					auto returnType = WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
 					writer.WriteLine(L"");
 					writer.WriteLine(L"\t{");
-					WriteFunctionBody(writer, decl->statement, L"\t\t");
+					WriteFunctionBody(writer, decl->statement, L"\t\t", returnType);
 					writer.WriteLine(L"\t}");
 					writer.WriteLine(L"");
 				}

@@ -104,15 +104,15 @@ WfCppConfig
 			{
 			}
 
-			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix)
+			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix, ITypeInfo* expectedType)
 			{
 				writer.WriteString(prefix);
 				writer.WriteString(L"return ");
-				GenerateExpression(this, writer, expr, nullptr);
+				GenerateExpression(this, writer, expr, expectedType);
 				writer.WriteLine(L";");
 			}
 
-			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix)
+			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType)
 			{
 				auto block = stat.Cast<WfBlockStatement>();
 				writer.WriteLine(prefix + L"throw 0;");
