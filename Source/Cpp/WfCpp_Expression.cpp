@@ -373,11 +373,14 @@ namespace vl
 				{
 					if (auto closureInfo = GetClosureInfo(node))
 					{
-						auto index = closureInfo->thisTypes.IndexOf(td);
-						if (index != -1)
+						FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
 						{
-							writer.WriteString(L"__vwsnthis_");
-							writer.WriteString(L"itow(index)");
+							if (thisType->CanConvertTo(td))
+							{
+								writer.WriteString(L"__vwsnthis_");
+								writer.WriteString(itow(index));
+								return;
+							}
 						}
 					}
 					writer.WriteString(L"this");
@@ -1462,13 +1465,19 @@ namespace vl
 				void Visit(WfAttachEventExpression* node)override
 				{
 					auto result = config->manager->expressionResolvings[node];
-					auto parent = node->event.Cast<WfMemberExpression>()->parent;
 					if (CppExists(result.eventInfo))
 					{
 						WriteEventTemplate(CppGetAttachTemplate(result.eventInfo), result.eventInfo,
 							[&](IEventInfo*)
 							{
-								Call(parent);
+								if (auto member = node->event.Cast<WfMemberExpression>())
+								{
+									Call(member->parent);
+								}
+								else
+								{
+									VisitThisExpression(node, result.eventInfo->GetOwnerTypeDescriptor());
+								}
 								return true;
 							},
 							[&](IEventInfo*, CommaPosition)
@@ -1486,13 +1495,19 @@ namespace vl
 				void Visit(WfDetachEventExpression* node)override
 				{
 					auto result = config->manager->expressionResolvings[node];
-					auto parent = node->event.Cast<WfMemberExpression>()->parent;
 					if (CppExists(result.eventInfo))
 					{
 						WriteEventTemplate(CppGetDetachTemplate(result.eventInfo), result.eventInfo,
-							[&](IEventInfo*)
+							[&](IEventInfo* eventInfo)
 							{
-								Call(parent);
+								if (auto member = node->event.Cast<WfMemberExpression>())
+								{
+									Call(member->parent);
+								}
+								else
+								{
+									VisitThisExpression(node, eventInfo->GetOwnerTypeDescriptor());
+								}
 								return true;
 							},
 							[&](IEventInfo*, CommaPosition)
@@ -1518,7 +1533,65 @@ namespace vl
 
 				void Visit(WfCallExpression* node)override
 				{
-					throw 0;
+					auto thisCallback = [&](ITypeDescriptor* td)
+					{
+						if (auto member = node->function.Cast<WfMemberExpression>())
+						{
+							Call(member->parent);
+						}
+						else
+						{
+							VisitThisExpression(node, td);
+						}
+						return true;
+					};
+
+					auto argumentsCallback = [&](CommaPosition cp)
+					{
+						if (cp == CommaPosition::Left) writer.WriteString(L", ");
+						FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+						{
+							if (index > 0) writer.WriteString(L", ");
+							Call(argument);
+						}
+						if (cp == CommaPosition::Right) writer.WriteString(L", ");
+						return true;
+					};
+
+					auto result = config->manager->expressionResolvings[node->function.Obj()];
+					if (result.methodInfo)
+					{
+						WriteMethodTemplate(CppGetInvokeTemplate(result.methodInfo), result.methodInfo,
+							[&](IMethodInfo* methodInfo) { return thisCallback(methodInfo->GetOwnerTypeDescriptor()); },
+							[&](IMethodInfo*, CommaPosition cp) { return argumentsCallback(cp); }
+							);
+					}
+					else if (result.eventInfo)
+					{
+						WriteEventTemplate(CppGetInvokeTemplate(result.eventInfo), result.eventInfo,
+							[&](IEventInfo* eventInfo) { return thisCallback(eventInfo->GetOwnerTypeDescriptor()); },
+							[&](IEventInfo*, CommaPosition cp) { return argumentsCallback(cp); }
+							);
+					}
+					else if (result.symbol)
+					{
+						if (result.symbol->creatorNode.Cast<WfFunctionDeclaration>())
+						{
+							if (result.symbol->ownerScope->ownerNode.Cast<WfNewInterfaceExpression>())
+							{
+								writer.WriteString(L"this->");
+								writer.WriteString(config->ConvertName(result.symbol->name));
+							}
+							else
+							{
+								WriteGlobalObject();
+								writer.WriteString(L".");
+							}
+							writer.WriteString(L"(");
+							argumentsCallback(CommaPosition::No);
+							writer.WriteString(L")");
+						}
+					}
 				}
 
 				void Visit(WfFunctionExpression* node)override

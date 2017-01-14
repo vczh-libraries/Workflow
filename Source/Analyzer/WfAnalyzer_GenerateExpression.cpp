@@ -896,8 +896,14 @@ GenerateInstructions(Expression)
 				void Visit(WfAttachEventExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node->event.Obj()];
-					auto parent = node->event.Cast<WfMemberExpression>()->parent;
-					GenerateExpressionInstructions(context, parent);
+					if (auto member = node->event.Cast<WfMemberExpression>())
+					{
+						GenerateExpressionInstructions(context, member->parent);
+					}
+					else
+					{
+						VisitThisExpression(node, result.eventInfo->GetOwnerTypeDescriptor());
+					}
 					GenerateExpressionInstructions(context, node->function);
 					INSTRUCTION(Ins::AttachEvent(result.eventInfo));
 				}
@@ -905,8 +911,14 @@ GenerateInstructions(Expression)
 				void Visit(WfDetachEventExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node->event.Obj()];
-					auto parent = node->event.Cast<WfMemberExpression>()->parent;
-					GenerateExpressionInstructions(context, parent);
+					if (auto member = node->event.Cast<WfMemberExpression>())
+					{
+						GenerateExpressionInstructions(context, member->parent);
+					}
+					else
+					{
+						VisitThisExpression(node, result.eventInfo->GetOwnerTypeDescriptor());
+					}
 					GenerateExpressionInstructions(context, node->handler);
 					INSTRUCTION(Ins::DetachEvent(result.eventInfo));
 				}
