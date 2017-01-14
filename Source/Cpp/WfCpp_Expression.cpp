@@ -1249,7 +1249,169 @@ namespace vl
 
 				void Visit(WfTypeTestingExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node->expression.Obj()];
+					Ptr<ITypeInfo> type;
+					if (node->type)
+					{
+						auto scope = config->manager->nodeScopes[node].Obj();
+						type = CreateTypeInfoFromType(scope, node->type);
+					}
+
+					switch (result.type->GetDecorator())
+					{
+					case ITypeInfo::RawPtr:
+						{
+							switch (node->test)
+							{
+							case WfTypeTesting::IsNull:
+								writer.WriteString(L"(");
+								Call(node->expression);
+								writer.WriteString(L" == nullptr)");
+								break;
+							case WfTypeTesting::IsNotNull:
+								writer.WriteString(L"(");
+								Call(node->expression);
+								writer.WriteString(L" != nullptr)");
+								break;
+							case WfTypeTesting::IsType:
+								writer.WriteString(L"(dynamic_cast<");
+								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+								writer.WriteString(L"*>(");
+								Call(node->expression);
+								writer.WriteString(L") != nullptr)");
+								break;
+							case WfTypeTesting::IsNotType:
+								writer.WriteString(L"(dynamic_cast<");
+								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+								writer.WriteString(L"*>(");
+								Call(node->expression);
+								writer.WriteString(L") == nullptr)");
+								break;
+							}
+						}
+						break;
+					case ITypeInfo::SharedPtr:
+						{
+							switch (node->test)
+							{
+							case WfTypeTesting::IsNull:
+								writer.WriteString(L"(! static_cast<bool>(");
+								Call(node->expression);
+								writer.WriteString(L"))");
+								break;
+							case WfTypeTesting::IsNotNull:
+								writer.WriteString(L"static_cast<bool>(");
+								Call(node->expression);
+								writer.WriteString(L")");
+								break;
+								break;
+							case WfTypeTesting::IsType:
+								writer.WriteString(L"static_cast<bool>(");
+								Call(node->expression);
+								writer.WriteString(L".Cast<");
+								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+								writer.WriteString(L">())");
+								break;
+							case WfTypeTesting::IsNotType:
+								writer.WriteString(L"(! static_cast<bool>(");
+								Call(node->expression);
+								writer.WriteString(L".Cast<");
+								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+								writer.WriteString(L">()))");
+								break;
+							}
+						}
+						break;
+					case ITypeInfo::Nullable:
+						{
+							switch (node->test)
+							{
+							case WfTypeTesting::IsNull:
+								writer.WriteString(L"(! static_cast<bool>(");
+								Call(node->expression);
+								writer.WriteString(L"))");
+								break;
+							case WfTypeTesting::IsNotNull:
+								writer.WriteString(L"static_cast<bool>(");
+								Call(node->expression);
+								writer.WriteString(L")");
+								break;
+							case WfTypeTesting::IsType:
+								if (type->GetTypeDescriptor() == result.type->GetTypeDescriptor())
+								{
+									writer.WriteString(L"static_cast<bool>(");
+									Call(node->expression);
+									writer.WriteString(L")");
+								}
+								else
+								{
+									writer.WriteString(L"false");
+								}
+								break;
+							case WfTypeTesting::IsNotType:
+								if (type->GetTypeDescriptor() == result.type->GetTypeDescriptor())
+								{
+									writer.WriteString(L"false");
+								}
+								else
+								{
+									writer.WriteString(L"true");
+								}
+								break;
+							}
+						}
+						break;
+					case ITypeInfo::TypeDescriptor:
+						{
+							if (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+							{
+								switch (node->test)
+								{
+								case WfTypeTesting::IsNull:
+									Call(node->expression);
+									writer.WriteString(L".IsNull()");
+									break;
+								case WfTypeTesting::IsNotNull:
+									writer.WriteString(L"(! ");
+									Call(node->expression);
+									writer.WriteString(L".IsNull())");
+									break;
+								case WfTypeTesting::IsType:
+								case WfTypeTesting::IsNotType:
+									if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+									{
+										writer.WriteString(L"(dynamic_cast<");
+										writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+										writer.WriteString(L"*>(");
+										Call(node->expression);
+										writer.WriteString(L".GetRawPtr()) ");
+										writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
+										writer.WriteString(L" nullptr)");
+									}
+									else
+									{
+										writer.WriteString(L"(dynamic_cast<::vl::reflection::description::IValueType::TypedBox<");
+										writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+										writer.WriteString(L">*>(");
+										Call(node->expression);
+										writer.WriteString(L".GetBoxedValue().Obj()) ");
+										writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
+										writer.WriteString(L" nullptr)");
+									}
+									break;
+								}
+							}
+							else if ((type->GetTypeDescriptor() == result.type->GetTypeDescriptor()) == (node->test == WfTypeTesting::IsType))
+							{
+								writer.WriteString(L"true");
+							}
+							else
+							{
+								writer.WriteString(L"false");
+							}
+						}
+						break;
+					}
 				}
 
 				void Visit(WfTypeOfTypeExpression* node)override
