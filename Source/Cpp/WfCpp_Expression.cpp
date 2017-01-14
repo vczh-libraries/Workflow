@@ -1537,7 +1537,36 @@ namespace vl
 
 				void Visit(WfNewClassExpression* node)override
 				{
-					throw 0;
+					auto result = config->manager->expressionResolvings[node];
+					auto ctor = result.constructorInfo;
+
+					if (ctor->GetReturn()->GetDecorator() == ITypeInfo::SharedPtr)
+					{
+						writer.WriteString(L"::vl::Ptr<");
+						writer.WriteString(config->ConvertType(ctor->GetReturn()->GetTypeDescriptor()));
+						writer.WriteString(L">(");
+					}
+
+					WriteMethodTemplate(CppGetInvokeTemplate(ctor), ctor, [&](IMethodInfo*) { return false; },
+						[&](IMethodInfo*, CommaPosition cp)
+						{
+							if (node->arguments.Count() > 0)
+							{
+								if (cp == CommaPosition::Left) writer.WriteString(L", ");
+								FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+								{
+									if (index > 0) writer.WriteString(L", ");
+									Call(argument);
+								}
+								if (cp == CommaPosition::Right) writer.WriteString(L", ");
+							}
+							return true;
+						});
+
+					if (ctor->GetReturn()->GetDecorator() == ITypeInfo::SharedPtr)
+					{
+						writer.WriteString(L")");
+					}
 				}
 
 				void Visit(WfNewInterfaceExpression* node)override
@@ -1551,6 +1580,12 @@ namespace vl
 						writer.WriteString(config->ConvertType(ctor->GetReturn()->GetTypeDescriptor()));
 						writer.WriteString(L">(");
 					}
+					else
+					{
+						writer.WriteString(L"static_cast<");
+						writer.WriteString(config->ConvertType(ctor->GetReturn()->GetTypeDescriptor()));
+						writer.WriteString(L"*>(");
+					}
 
 					writer.WriteString(L"new ::");
 					writer.WriteString(config->assemblyNamespace);
@@ -1561,12 +1596,7 @@ namespace vl
 					auto closureInfo = config->closureInfos[node];
 					WriteClosureArguments(closureInfo, node);
 
-					writer.WriteString(L")");
-
-					if (ctor->GetReturn()->GetDecorator() == ITypeInfo::SharedPtr)
-					{
-						writer.WriteString(L")");
-					}
+					writer.WriteString(L"))");
 				}
 			};
 
