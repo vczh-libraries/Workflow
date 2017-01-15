@@ -24,7 +24,6 @@ namespace vl_workflow_global
 				::vl::__vwsn::This(value)->Dispose(true);
 				return true;
 			}
-			__vwsnb_0();
 		}
 		catch(const ::vl::Exception& __vwsne_0)
 		{
@@ -32,7 +31,6 @@ namespace vl_workflow_global
 			{
 				return false;
 			}
-			__vwsnb_0();
 		}
 		catch(const ::vl::Error& __vwsne_0)
 		{
@@ -40,7 +38,6 @@ namespace vl_workflow_global
 			{
 				return false;
 			}
-			__vwsnb_0();
 		}
 	}
 

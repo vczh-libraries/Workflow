@@ -23,9 +23,8 @@ namespace vl_workflow_global
 		try
 		{
 			{
-				throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"Test1::catch", false), false);
+				throw ::vl::Exception(::vl::WString(L"Test1::catch", false));
 			}
-			__vwsnb_0();
 		}
 		catch(const ::vl::Exception& __vwsne_0)
 		{
@@ -33,7 +32,6 @@ namespace vl_workflow_global
 			{
 				(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
 			}
-			__vwsnb_0();
 		}
 		catch(const ::vl::Error& __vwsne_0)
 		{
@@ -41,7 +39,6 @@ namespace vl_workflow_global
 			{
 				(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
 			}
-			__vwsnb_0();
 		}
 	}
 
@@ -56,7 +53,7 @@ namespace vl_workflow_global
 			try
 			{
 				{
-					throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"Test2::catch", false), false);
+					throw ::vl::Exception(::vl::WString(L"Test2::catch", false));
 				}
 				__vwsnb_0();
 			}
@@ -81,7 +78,7 @@ namespace vl_workflow_global
 
 	void TryCatch::Throw(const ::vl::WString& message)
 	{
-		throw ::vl::reflection::description::TypeDescriptorException(message, false);
+		throw ::vl::Exception(message);
 	}
 
 	void TryCatch::Test3()

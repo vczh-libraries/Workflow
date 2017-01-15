@@ -58,7 +58,7 @@ Base::Base(::vl::vint32_t _x)
 	(::vl::__vwsn::This(this)-> = _x);
 	if ((::vl::__vwsn::This(this)-> != ::vl::__vwsn::This(this)->))
 	{
-		throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"The \"this\" expression is not correctly implemented.", false), false);
+		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
 }
 
@@ -66,7 +66,7 @@ Base::Base(::vl::vint32_t _x)
 {
 	if ((::vl::__vwsn::This(this)-> != ::vl::__vwsn::This(this)->))
 	{
-		throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"The \"this\" expression is not correctly implemented.", false), false);
+		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
 	return ::vl::__vwsn::This(this)->;
 }

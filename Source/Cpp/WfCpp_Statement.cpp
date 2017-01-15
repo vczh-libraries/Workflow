@@ -76,9 +76,9 @@ namespace vl
 					if (node->expression)
 					{
 						writer.WriteString(prefix);
-						writer.WriteString(L"throw ::vl::reflection::description::TypeDescriptorException(");
+						writer.WriteString(L"throw ::vl::Exception(");
 						GenerateExpression(config, writer, node->expression, TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-						writer.WriteLine(L", false);");
+						writer.WriteLine(L");");
 					}
 					else
 					{
@@ -220,9 +220,12 @@ namespace vl
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"{");
 					GenerateStatement(config, functionRecord, writer, node->protectedStatement, bodyPrefix, WString(L"\t", false), returnType);
-					writer.WriteString(bodyPrefix);
-					writer.WriteString(blockName);
-					writer.WriteLine(L"();");
+					if (node->finallyStatement)
+					{
+						writer.WriteString(bodyPrefix);
+						writer.WriteString(blockName);
+						writer.WriteLine(L"();");
+					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
@@ -246,9 +249,12 @@ namespace vl
 						writer.WriteLine(L".Message());");
 						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
 					}
-					writer.WriteString(bodyPrefix);
-					writer.WriteString(blockName);
-					writer.WriteLine(L"();");
+					if (node->finallyStatement)
+					{
+						writer.WriteString(bodyPrefix);
+						writer.WriteString(blockName);
+						writer.WriteLine(L"();");
+					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
@@ -272,9 +278,12 @@ namespace vl
 						writer.WriteLine(L".Description());");
 						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
 					}
-					writer.WriteString(bodyPrefix);
-					writer.WriteString(blockName);
-					writer.WriteLine(L"();");
+					if (node->finallyStatement)
+					{
+						writer.WriteString(bodyPrefix);
+						writer.WriteString(blockName);
+						writer.WriteLine(L"();");
+					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
