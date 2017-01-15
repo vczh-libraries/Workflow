@@ -54,7 +54,7 @@ namespace vl_workflow_global
 
 	::vl::WString ForEach::main()
 	{
-		::vl::Ptr<::vl::reflection::description::IValueList> xs = [&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 1; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 2; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 3; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 4; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 5; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); return __vwsn_temp__; }();
+		::vl::Ptr<::vl::reflection::description::IValueList> xs = [&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add(::vl::__vwsn::Box(1)); __vwsn_temp__->Add(::vl::__vwsn::Box(2)); __vwsn_temp__->Add(::vl::__vwsn::Box(3)); __vwsn_temp__->Add(::vl::__vwsn::Box(4)); __vwsn_temp__->Add(::vl::__vwsn::Box(5)); return __vwsn_temp__; }();
 		return ((((::vl::WString(L"[", false) + ::vl_workflow_global::ForEach::Instance().Show1(xs)) + ::vl::WString(L"][", false)) + ::vl_workflow_global::ForEach::Instance().Show2(xs)) + ::vl::WString(L"]", false));
 	}
 

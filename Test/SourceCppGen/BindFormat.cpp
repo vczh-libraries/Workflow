@@ -54,7 +54,7 @@ namespace vl_workflow_global
 
 	void BindFormat::Callback(::vl::reflection::description::Value value)
 	{
-		(::vl_workflow_global::BindFormat::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindFormat::Instance().s) + ::vl::WString(L"[", false)) + ::vl::reflection::description::UnboxValue<::vl::WString>(value)) + ::vl::WString(L"]", false)));
+		(::vl_workflow_global::BindFormat::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindFormat::Instance().s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false)));
 	}
 
 	::vl::WString BindFormat::main()
@@ -90,7 +90,7 @@ namespace vl_workflow_global
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
-			[&](){ ::vl::Func<void(::vl::reflection::description::Value)> __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_, __vwsn_temp__); return __vwsn_temp__; }()(::vl::reflection::description::BoxValue<::vl::WString>(__vwsn_bind_activator_result_));
+			::vl::__vwsn::Unbox<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 		}
 	}
 
@@ -114,7 +114,7 @@ namespace vl_workflow_global
 		}
 		::vl::reflection::description::IValueSubscription* __vwsn_subscription_ = this;
 		::vl::Ptr<::vl::reflection::description::IValueListener> __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this));
-		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::reflection::description::BoxValue<::vl::Ptr<::vl::reflection::description::IValueListener>>(__vwsn_listener_shared_), [&](){ ::vl::Func<void(::vl::reflection::description::Value)> __vwsn_temp__ = __vwsn_bind_callback_; return ::vl::reflection::description::BoxParameter<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_temp__); }());
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
 		return __vwsn_listener_shared_;
 	}
 
@@ -156,14 +156,14 @@ namespace vl_workflow_global
 
 	bool __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
-		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)));
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
 	}
 
 	bool __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)))
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
 			return true;
 		}
 		return false;

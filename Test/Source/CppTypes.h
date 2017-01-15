@@ -114,5 +114,21 @@ namespace vl
 			CHECK_ERROR(reflection::description::TypedValueSerializerProvider<T>::Deserialize(str, value), L"Failed to serialize.");
 			return value;
 		}
+
+		template<typename T>
+		reflection::description::Value Box(const T& value)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			return reflection::description::BoxParameter<Type>(const_cast<T&>(value));
+		}
+
+		template<typename T>
+		T Unbox(const reflection::description::Value& value)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			T result;
+			reflection::description::UnboxParameter<Type>(value, result);
+			return result;
+		}
 	}
 }

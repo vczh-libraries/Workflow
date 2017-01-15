@@ -77,7 +77,7 @@ namespace vl_workflow_global
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
-		return ::vl::reflection::description::BoxValue<::vl::vint32_t>((::vl::__vwsn::This(__vwsnthis_1)->begin + index));
+		return ::vl::__vwsn::Box((::vl::__vwsn::This(__vwsnthis_1)->begin + index));
 	}
 
 	::vl::vint32_t __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()

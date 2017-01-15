@@ -44,9 +44,7 @@ namespace vl
 				template<typename T>
 				void WriteBoxValue(ITypeInfo* type, const T& writeExpression)
 				{
-					writer.WriteString(L"::vl::reflection::description::BoxValue<");
-					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L">(");
+					writer.WriteString(L"::vl::__vwsn::Box(");
 					writeExpression();
 					writer.WriteString(L")");
 				}
@@ -54,35 +52,11 @@ namespace vl
 				template<typename T>
 				void WriteUnboxValue(ITypeInfo* type, const T& writeExpression)
 				{
-					writer.WriteString(L"::vl::reflection::description::UnboxValue<");
+					writer.WriteString(L"::vl::__vwsn::Unbox<");
 					writer.WriteString(config->ConvertType(type));
 					writer.WriteString(L">(");
 					writeExpression();
 					writer.WriteString(L")");
-				}
-
-				template<typename T>
-				void WriteBoxParameter(ITypeInfo* type, const T& writeExpression)
-				{
-					writer.WriteString(L"[&](){ ");
-					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L" __vwsn_temp__ = ");
-					writeExpression();
-					writer.WriteString(L"; return ::vl::reflection::description::BoxParameter<");
-					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L">(__vwsn_temp__); }()");
-				}
-
-				template<typename T>
-				void WriteUnboxParameter(ITypeInfo* type, const T& writeExpression)
-				{
-					writer.WriteString(L"[&](){ ");
-					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L" __vwsn_temp__; ::vl::reflection::description::UnboxParameter<");
-					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L">(");
-					writeExpression();
-					writer.WriteString(L", __vwsn_temp__); return __vwsn_temp__; }()");
 				}
 
 				template<typename T>
@@ -126,26 +100,12 @@ namespace vl
 							auto toType = types[1];
 							if (fromType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{
-								if (config->IsSpecialGenericType(toType))
-								{
-									WriteUnboxParameter(toType, writeExpression);
-								}
-								else
-								{
-									WriteUnboxValue(toType, writeExpression);
-								}
+								WriteUnboxValue(toType, writeExpression);
 								return;
 							}
 							else if (toType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{
-								if (config->IsSpecialGenericType(fromType))
-								{
-									WriteBoxParameter(fromType, writeExpression);
-								}
-								else
-								{
-									WriteBoxValue(fromType, writeExpression);
-								}
+								WriteBoxValue(fromType, writeExpression);
 								return;
 							}
 							else
@@ -1011,14 +971,14 @@ namespace vl
 							writer.WriteString(L".Obj())->Set(");
 							if (containerType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
 							{
-								WriteBoxParameter(keyType, [&]() {Call(binary->second); });
+								WriteBoxValue(keyType, [&]() {Call(binary->second); });
 							}
 							else
 							{
 								Call(binary->second);
 							}
 							writer.WriteString(L", ");
-							WriteBoxParameter(valueType, [&]() {Call(node->second); });
+							WriteBoxValue(valueType, [&]() {Call(node->second); });
 							writer.WriteString(L")");
 						}
 						else
@@ -1031,14 +991,14 @@ namespace vl
 						auto containerType = config->manager->expressionResolvings[node->first.Obj()].type.Obj();
 						auto keyType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
 						auto valueType = config->manager->expressionResolvings[node].type.Obj();
-						WriteUnboxParameter(valueType, [&]()
+						WriteUnboxValue(valueType, [&]()
 						{
 							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->first);
 							writer.WriteString(L".Obj())->Get(");
 							if (containerType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>()))
 							{
-								WriteBoxParameter(keyType, [&]() {Call(node->second); });
+								WriteBoxValue(keyType, [&]() {Call(node->second); });
 							}
 							else
 							{
@@ -1370,7 +1330,7 @@ namespace vl
 							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 							{
 								writer.WriteString(L" __vwsn_temp__->Add(");
-								WriteBoxParameter(elementType, [&]() {Call(argument->key); });
+								WriteBoxValue(elementType, [&]() {Call(argument->key); });
 								writer.WriteString(L");");
 							}
 
@@ -1387,9 +1347,9 @@ namespace vl
 							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 							{
 								writer.WriteString(L" __vwsn_temp__->Set(");
-								WriteBoxParameter(keyType, [&]() {Call(argument->key); });
+								WriteBoxValue(keyType, [&]() {Call(argument->key); });
 								writer.WriteString(L", ");
-								WriteBoxParameter(valueType, [&]() {Call(argument->value); });
+								WriteBoxValue(valueType, [&]() {Call(argument->value); });
 								writer.WriteString(L");");
 							}
 

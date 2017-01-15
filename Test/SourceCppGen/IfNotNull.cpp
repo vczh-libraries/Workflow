@@ -18,10 +18,10 @@ namespace vl_workflow_global
 {
 	::vl::WString IfNotNull::main()
 	{
-		::vl::reflection::description::Value x = ::vl::reflection::description::BoxValue<::vl::Ptr<::vl::reflection::description::IValueList>>([&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 1; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); return __vwsn_temp__; }());
-		::vl::reflection::description::Value y = ::vl::reflection::description::BoxValue<::vl::Ptr<::vl::reflection::description::IValueDictionary>>([&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueDictionary::Create(); __vwsn_temp__->Set([&](){ ::vl::vint32_t __vwsn_temp__ = 1; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }(), [&](){ ::vl::vint32_t __vwsn_temp__ = 2; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); return __vwsn_temp__; }());
+		::vl::reflection::description::Value x = ::vl::__vwsn::Box([&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add(::vl::__vwsn::Box(1)); return __vwsn_temp__; }());
+		::vl::reflection::description::Value y = ::vl::__vwsn::Box([&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueDictionary::Create(); __vwsn_temp__->Set(::vl::__vwsn::Box(1), ::vl::__vwsn::Box(2)); return __vwsn_temp__; }());
 		::vl::WString s = ::vl::WString(L"", false);
-		if (::vl::reflection::description::UnboxValue<bool>(x))
+		if (::vl::__vwsn::Unbox<bool>(x))
 		{
 			(s = (s + ::vl::WString(L"{1} is a list", false)));
 		}
@@ -30,7 +30,7 @@ namespace vl_workflow_global
 			(s = (s + ::vl::WString(L"{1} is not a list", false)));
 		}
 		(s = (s + ::vl::WString(L", ", false)));
-		if (::vl::reflection::description::UnboxValue<bool>(y))
+		if (::vl::__vwsn::Unbox<bool>(y))
 		{
 			(s = (s + ::vl::WString(L"{1:2} is a list", false)));
 		}

@@ -21,8 +21,8 @@ namespace vl_workflow_global
 {
 	void Event::EventHandler(::vl::vint32_t oldValue, ::vl::vint32_t newValue)
 	{
-		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Add(::vl::reflection::description::BoxValue<::vl::vint32_t>(oldValue));
-		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Add(::vl::reflection::description::BoxValue<::vl::vint32_t>(newValue));
+		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Add(::vl::__vwsn::Box(oldValue));
+		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Add(::vl::__vwsn::Box(newValue));
 	}
 
 	::vl::WString Event::main()
@@ -34,7 +34,7 @@ namespace vl_workflow_global
 		bool b1 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o.Obj())->ValueChanged, handler);
 		::vl::__vwsn::This(o.Obj())->SetValue(40);
 		bool b2 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o.Obj())->ValueChanged, handler);
-		return ((((((((((((((::vl::__vwsn::ToString(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Get(0), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Get(1), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->GetCount())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Get(0), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Get(1), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b2));
+		return ((((((((((((((::vl::__vwsn::ToString(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Get(0)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Get(1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->GetCount())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Get(0)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Get(1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b2));
 	}
 
 	Event& Event::Instance()
