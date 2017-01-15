@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString ListProcessing::main()
 	{
-		::vl::Ptr<::vl::reflection::description::IValueList> xs = [&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add(::vl::__vwsn::Box(1)); __vwsn_temp__->Add(::vl::__vwsn::Box(2)); __vwsn_temp__->Add(::vl::__vwsn::Box(3)); __vwsn_temp__->Add(::vl::__vwsn::Box(4)); __vwsn_temp__->Add(::vl::__vwsn::Box(5)); return __vwsn_temp__; }();
+		::vl::Ptr<::vl::reflection::description::IValueList> xs = (::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list;
 		::vl::WString s1 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(0)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(4))));
 		::vl::__vwsn::This(xs.Obj())->Set(4, ::vl::__vwsn::Box(6));
 		::vl::__vwsn::This(xs.Obj())->Add(::vl::__vwsn::Box(7));

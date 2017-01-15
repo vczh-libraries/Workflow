@@ -1314,37 +1314,33 @@ namespace vl
 						if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 						{
 							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
-							writer.WriteString(L"[&](){ auto __vwsn_temp__ = ");
-							writer.WriteString(config->ConvertType(td));
-							writer.WriteString(L"::Create();");
+							writer.WriteString(L"(::vl::__vwsn::CreateList()");
 
 							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 							{
-								writer.WriteString(L" __vwsn_temp__->Add(");
-								WriteBoxValue(elementType, [&]() {Call(argument->key); });
-								writer.WriteString(L");");
+								writer.WriteString(L".Add(");
+								Call(argument->key);
+								writer.WriteString(L")");
 							}
 
-							writer.WriteString(L" return __vwsn_temp__; }()");
+							writer.WriteString(L").list");
 						}
 						else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
 						{
 							auto keyType = result.type->GetElementType()->GetGenericArgument(0);
 							auto valueType = result.type->GetElementType()->GetGenericArgument(1);
-							writer.WriteString(L"[&](){ auto __vwsn_temp__ = ");
-							writer.WriteString(config->ConvertType(td));
-							writer.WriteString(L"::Create();");
+							writer.WriteString(L"(::vl::__vwsn::CreateDictionary()");
 
 							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 							{
-								writer.WriteString(L" __vwsn_temp__->Set(");
-								WriteBoxValue(keyType, [&]() {Call(argument->key); });
+								writer.WriteString(L".Add(");
+								Call(argument->key);
 								writer.WriteString(L", ");
-								WriteBoxValue(valueType, [&]() {Call(argument->value); });
-								writer.WriteString(L");");
+								Call(argument->value);
+								writer.WriteString(L")");
 							}
 
-							writer.WriteString(L" return __vwsn_temp__; }()");
+							writer.WriteString(L").dictionary");
 						}
 						else
 						{

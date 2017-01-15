@@ -148,5 +148,53 @@ namespace vl
 		{
 			return InSet<T>(value, reflection::description::GetLazyList<T>(collection));
 		}
+
+		struct CreateList
+		{
+			using IValueList = reflection::description::IValueList;
+
+			Ptr<IValueList>			list;
+
+			CreateList()
+				:list(IValueList::Create())
+			{
+			}
+
+			CreateList(Ptr<IValueList> _list)
+				:list(_list)
+			{
+			}
+
+			template<typename T>
+			CreateList Add(const T& value)
+			{
+				list->Add(Box(value));
+				return { list };
+			}
+		};
+
+		struct CreateDictionary
+		{
+			using IValueDictionary = reflection::description::IValueDictionary;
+
+			Ptr<IValueDictionary>	dictionary;
+
+			CreateDictionary()
+				:dictionary(IValueDictionary::Create())
+			{
+			}
+
+			CreateDictionary(Ptr<IValueDictionary> _dictionary)
+				:dictionary(_dictionary)
+			{
+			}
+
+			template<typename K, typename V>
+			CreateDictionary Add(const K& key, const V& value)
+			{
+				dictionary->Set(Box(key), Box(value));
+				return { dictionary };
+			}
+		};
 	}
 }

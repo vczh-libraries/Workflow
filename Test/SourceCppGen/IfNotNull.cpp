@@ -18,8 +18,8 @@ namespace vl_workflow_global
 {
 	::vl::WString IfNotNull::main()
 	{
-		::vl::reflection::description::Value x = ::vl::__vwsn::Box([&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add(::vl::__vwsn::Box(1)); return __vwsn_temp__; }());
-		::vl::reflection::description::Value y = ::vl::__vwsn::Box([&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueDictionary::Create(); __vwsn_temp__->Set(::vl::__vwsn::Box(1), ::vl::__vwsn::Box(2)); return __vwsn_temp__; }());
+		::vl::reflection::description::Value x = ::vl::__vwsn::Box((::vl::__vwsn::CreateList().Add(1)).list);
+		::vl::reflection::description::Value y = ::vl::__vwsn::Box((::vl::__vwsn::CreateDictionary().Add(1, 2)).dictionary);
 		::vl::WString s = ::vl::WString(L"", false);
 		if (::vl::__vwsn::Unbox<bool>(x))
 		{
