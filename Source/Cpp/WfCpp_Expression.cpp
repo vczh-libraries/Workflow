@@ -64,11 +64,13 @@ namespace vl
 				template<typename T>
 				void WriteBoxParameter(ITypeInfo* type, const T& writeExpression)
 				{
-					writer.WriteString(L"::vl::reflection::description::BoxParameter<");
+					writer.WriteString(L"[&](){ ");
 					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L">(");
+					writer.WriteString(L" __vwsn_temp__ = ");
 					writeExpression();
-					writer.WriteString(L")");
+					writer.WriteString(L"; return ::vl::reflection::description::BoxParameter<");
+					writer.WriteString(config->ConvertType(type));
+					writer.WriteString(L">(__vwsn_temp__); }()");
 				}
 
 				template<typename T>

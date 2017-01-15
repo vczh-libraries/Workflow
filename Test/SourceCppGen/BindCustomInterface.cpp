@@ -29,7 +29,7 @@ namespace vl_workflow_global
 	{
 		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl_workflow_global::BindCustomInterface::Instance().Bind(adder);
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, [&](::vl::vint32_t __vwsn_1, ::vl::vint32_t __vwsn_2){ return ::vl::collections::Range<::vl::vint32_t>(__vwsn_1, __vwsn_2 - __vwsn_1); }(1, 5 + 1));
+		FOREACH(__vwsnt_0, x, [&](::vl::vint32_t __vwsn_1, ::vl::vint32_t __vwsn_2){ return ::vl::collections::Range<::vl::vint32_t>(__vwsn_1, __vwsn_2 - __vwsn_1); }(1, 5 + 1))
 		{
 			::vl::__vwsn::This(adder)->Add(x);
 		}
@@ -123,7 +123,7 @@ namespace vl_workflow_global
 	{
 		::vl::vint32_t __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSum();
 		using __vwsnt_0 = ::vl::reflection::description::Value;
-		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()));
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()))
 		{
 			::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(__vwsn_bind_callback_)(__vwsn_bind_activator_result_);
 		}

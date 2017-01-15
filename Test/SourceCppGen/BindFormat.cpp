@@ -88,7 +88,7 @@ namespace vl_workflow_global
 	{
 		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue()));
 		using __vwsnt_0 = ::vl::reflection::description::Value;
-		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()));
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()))
 		{
 			::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(__vwsn_bind_callback_)(__vwsn_bind_activator_result_);
 		}

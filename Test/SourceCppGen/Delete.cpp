@@ -28,6 +28,15 @@ namespace vl_workflow_global
 		}
 		catch(const ::vl::Exception& __vwsne_0)
 		{
+			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+			{
+				return false;
+			}
+			__vwsnb_0();
+		}
+		catch(const ::vl::Error& __vwsne_0)
+		{
+			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 			{
 				return false;
 			}

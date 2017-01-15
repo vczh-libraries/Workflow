@@ -20,7 +20,7 @@ namespace vl_workflow_global
 	{
 		::vl::WString s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, xs);
+		FOREACH(__vwsnt_0, x, xs)
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{
@@ -38,7 +38,7 @@ namespace vl_workflow_global
 	{
 		::vl::WString s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, xs.Reverse());
+		FOREACH(__vwsnt_0, x, xs.Reverse())
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{

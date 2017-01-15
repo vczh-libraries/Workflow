@@ -20,7 +20,7 @@ namespace vl_workflow_global
 	{
 		::vl::WString s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x,  ::vl::reflection::description::GetLazyList<::vl::vint32_t<(xs));
+		FOREACH(__vwsnt_0, x,  ::vl::reflection::description::GetLazyList<::vl::vint32_t<(xs))
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{
@@ -38,7 +38,7 @@ namespace vl_workflow_global
 	{
 		::vl::WString s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x,  ::vl::reflection::description::GetLazyList<::vl::vint32_t<(xs).Reverse());
+		FOREACH(__vwsnt_0, x,  ::vl::reflection::description::GetLazyList<::vl::vint32_t<(xs).Reverse())
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{
@@ -54,7 +54,7 @@ namespace vl_workflow_global
 
 	::vl::WString ForEach::main()
 	{
-		::vl::Ptr<::vl::reflection::description::IValueList> xs = [&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add(::vl::reflection::description::BoxParameter<::vl::vint32_t>(1)); __vwsn_temp__->Add(::vl::reflection::description::BoxParameter<::vl::vint32_t>(2)); __vwsn_temp__->Add(::vl::reflection::description::BoxParameter<::vl::vint32_t>(3)); __vwsn_temp__->Add(::vl::reflection::description::BoxParameter<::vl::vint32_t>(4)); __vwsn_temp__->Add(::vl::reflection::description::BoxParameter<::vl::vint32_t>(5)); return __vwsn_temp__; }();
+		::vl::Ptr<::vl::reflection::description::IValueList> xs = [&](){ auto __vwsn_temp__ = ::vl::reflection::description::IValueList::Create(); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 1; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 2; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 3; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 4; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); __vwsn_temp__->Add([&](){ ::vl::vint32_t __vwsn_temp__ = 5; return ::vl::reflection::description::BoxParameter<::vl::vint32_t>(__vwsn_temp__); }()); return __vwsn_temp__; }();
 		return ((((::vl::WString(L"[", false) + ::vl_workflow_global::ForEach::Instance().Show1(xs)) + ::vl::WString(L"][", false)) + ::vl_workflow_global::ForEach::Instance().Show2(xs)) + ::vl::WString(L"]", false));
 	}
 

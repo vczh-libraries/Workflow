@@ -189,7 +189,7 @@ namespace vl
 					{
 						writer.WriteString(L".Reverse()");
 					}
-					writer.WriteLine(L");");
+					writer.WriteLine(L")");
 
 					Call(node->statement);
 				}
@@ -227,13 +227,23 @@ namespace vl
 					writer.WriteLine(L"}");
 
 					writer.WriteString(tryPrefix);
-					writer.WriteString(L"catch(const ::vl::Exception& ");
-					writer.WriteString(exName);
+					writer.WriteString(L"catch(const ::vl::Exception&");
+					if (node->catchStatement)
+					{
+						writer.WriteString(L" ");
+						writer.WriteString(exName);
+					}
 					writer.WriteLine(L")");
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"{");
 					if (node->catchStatement)
 					{
+						writer.WriteString(bodyPrefix);
+						writer.WriteString(L"auto ");
+						writer.WriteString(config->ConvertName(node->name.value));
+						writer.WriteString(L" = ::vl::reflection::description::IValueException::Create(");
+						writer.WriteString(exName);
+						writer.WriteLine(L".Message());");
 						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
 					}
 					writer.WriteString(bodyPrefix);
@@ -242,6 +252,31 @@ namespace vl
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
+					writer.WriteString(tryPrefix);
+					writer.WriteString(L"catch(const ::vl::Error&");
+					if (node->catchStatement)
+					{
+						writer.WriteString(L" ");
+						writer.WriteString(exName);
+					}
+					writer.WriteLine(L")");
+					writer.WriteString(tryPrefix);
+					writer.WriteLine(L"{");
+					if (node->catchStatement)
+					{
+						writer.WriteString(bodyPrefix);
+						writer.WriteString(L"auto ");
+						writer.WriteString(config->ConvertName(node->name.value));
+						writer.WriteString(L" = ::vl::reflection::description::IValueException::Create(");
+						writer.WriteString(exName);
+						writer.WriteLine(L".Description());");
+						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
+					}
+					writer.WriteString(bodyPrefix);
+					writer.WriteString(blockName);
+					writer.WriteLine(L"();");
+					writer.WriteString(tryPrefix);
+					writer.WriteLine(L"}");
 
 					if (node->finallyStatement)
 					{
