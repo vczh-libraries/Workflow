@@ -16,7 +16,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewInterface)
 
 namespace vl_workflow_global
 {
-
 	class __vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerable
 	{
 	public:
@@ -42,6 +41,7 @@ namespace vl_workflow_global
 		::vl::vint32_t GetIndex() override;
 		bool Next() override;
 	};
+
 	::vl::WString NewInterface::Show1(const ::vl::collections::LazyList<::vl::vint32_t>& xs)
 	{
 		::vl::WString s = ::vl::WString(L"", false);

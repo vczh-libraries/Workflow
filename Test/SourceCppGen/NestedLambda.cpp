@@ -16,7 +16,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NestedLambda)
 
 namespace vl_workflow_global
 {
-
 	struct __vwsnf3_NestedLambda_main_H_Calculate_
 	{
 		::IB* __vwsnthis_0;
@@ -128,6 +127,7 @@ namespace vl_workflow_global
 		::vl::WString H();
 		::vl::WString Calculate() override;
 	};
+
 	::vl::WString NestedLambda::main()
 	{
 		return ::vl::__vwsn::This(::vl::Ptr<::IA>(new ::vl_workflow_global::__vwsnc1_NestedLambda_main__IA()))->Calculate();

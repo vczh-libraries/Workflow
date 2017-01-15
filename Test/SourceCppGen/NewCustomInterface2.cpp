@@ -16,7 +16,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewCustomInterface2)
 
 namespace vl_workflow_global
 {
-
 	class __vwsnc1_NewCustomInterface2_main__IMyInterface2 : public ::vl::Object, public virtual ::IMyInterface2
 	{
 	public:
@@ -44,6 +43,7 @@ namespace vl_workflow_global
 		::vl::vint32_t GetIndex() override;
 		bool Next() override;
 	};
+
 	::vl::WString NewCustomInterface2::main()
 	{
 		::vl::vint32_t begin = 1;

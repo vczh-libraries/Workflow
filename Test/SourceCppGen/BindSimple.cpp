@@ -18,7 +18,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindSimple)
 
 namespace vl_workflow_global
 {
-
 	class __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
@@ -60,6 +59,7 @@ namespace vl_workflow_global
 		bool GetStopped() override;
 		bool StopListening() override;
 	};
+
 	void BindSimple::Callback(::vl::reflection::description::Value value)
 	{
 		(::vl_workflow_global::BindSimple::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindSimple::Instance().s) + ::vl::WString(L"[", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::reflection::description::UnboxValue<::vl::vint32_t>(value), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false)));

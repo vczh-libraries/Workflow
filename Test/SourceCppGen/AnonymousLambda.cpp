@@ -16,7 +16,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_AnonymousLambda)
 
 namespace vl_workflow_global
 {
-
 	struct __vwsnf1_AnonymousLambda_Adder_
 	{
 		::vl::vint32_t x;
@@ -35,6 +34,7 @@ namespace vl_workflow_global
 
 		::vl::vint32_t operator()() const;
 	};
+
 	::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> AnonymousLambda::Adder(::vl::vint32_t x)
 	{
 		return LAMBDA(::vl_workflow_global::__vwsnf1_AnonymousLambda_Adder_(x));

@@ -100,14 +100,14 @@ namespace vl
 
 				FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
 				{
-					writer.WriteLine(L"");
 					WriteCpp_LambdaExprDecl(writer, expr);
+					writer.WriteLine(L"");
 				}
 
 				FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
 				{
-					writer.WriteLine(L"");
 					WriteCpp_ClassExprDecl(writer, expr);
+					writer.WriteLine(L"");
 				}
 
 				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)

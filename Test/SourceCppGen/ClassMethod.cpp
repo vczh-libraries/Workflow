@@ -18,7 +18,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_ClassMethod)
 
 namespace vl_workflow_global
 {
-
 	struct __vwsnf1_ClassMethod_main_
 	{
 		::vl::Ptr<::Methods> a;
@@ -27,6 +26,7 @@ namespace vl_workflow_global
 
 		void operator()() const;
 	};
+
 	::vl::WString ClassMethod::main()
 	{
 		{

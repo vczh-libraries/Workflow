@@ -18,7 +18,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindCustomInterface2)
 
 namespace vl_workflow_global
 {
-
 	struct __vwsnf1_BindCustomInterface2_Bind_
 	{
 
@@ -71,6 +70,7 @@ namespace vl_workflow_global
 		::vl::vint32_t GetSum() override;
 		void Add(::vl::vint32_t value) override;
 	};
+
 	::vl::Ptr<::vl::reflection::description::IValueSubscription> BindCustomInterface2::Bind(::vl::Ptr<::ISummer> summer)
 	{
 		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(summer));
