@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ClassField.txt
 
 #include "ClassField.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ClassField::
+#define GLOBAL_NAME ::vl_workflow_global::ClassField::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ClassField::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -32,3 +36,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

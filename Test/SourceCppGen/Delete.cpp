@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/Delete.txt
 
 #include "Delete.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::Delete::
+#define GLOBAL_NAME ::vl_workflow_global::Delete::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::Delete::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -49,8 +53,8 @@ namespace vl_workflow_global
 		auto a = (raw1 == nullptr);
 		auto b = (raw2 == nullptr);
 		auto c = (! static_cast<bool>(shared));
-		auto d = ::vl_workflow_global::Delete::Instance().DoDelete(raw1);
-		auto e = ::vl_workflow_global::Delete::Instance().DoDelete(raw2);
+		auto d = GLOBAL_NAME DoDelete(raw1);
+		auto e = GLOBAL_NAME DoDelete(raw2);
 		return ((((((((::vl::__vwsn::ToString(a) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(e));
 	}
 
@@ -60,3 +64,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/OrderedLambda.txt
 
 #include "OrderedLambda.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::OrderedLambda::
+#define GLOBAL_NAME ::vl_workflow_global::OrderedLambda::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::OrderedLambda::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -46,8 +50,8 @@ namespace vl_workflow_global
 
 	::vl::WString OrderedLambda::main()
 	{
-		auto f = ::vl_workflow_global::OrderedLambda::Instance().Adder(1);
-		auto g = ::vl_workflow_global::OrderedLambda::Instance().Adder(2);
+		auto f = GLOBAL_NAME Adder(1);
+		auto g = GLOBAL_NAME Adder(2);
 		return ((((((::vl::__vwsn::ToString(f(1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(2)));
 	}
 
@@ -63,7 +67,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_1) const
 	{
-		return ((__vwsno_1 * 0) + ::vl_workflow_global::OrderedLambda::Instance().Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
+		return ((__vwsno_1 * 0) + GLOBAL_NAME Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
 	}
 
 	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1)
@@ -77,3 +81,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

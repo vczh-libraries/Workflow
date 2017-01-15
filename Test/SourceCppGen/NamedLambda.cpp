@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/NamedLambda.txt
 
 #include "NamedLambda.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::NamedLambda::
+#define GLOBAL_NAME ::vl_workflow_global::NamedLambda::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::NamedLambda::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -46,3 +50,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

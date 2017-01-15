@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ClassMethod.txt
 
 #include "ClassMethod.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ClassMethod::
+#define GLOBAL_NAME ::vl_workflow_global::ClassMethod::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ClassMethod::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -31,11 +35,11 @@ namespace vl_workflow_global
 	{
 		{
 			auto a = ::vl::Ptr<::Methods>(new ::Methods());
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
 		}
 		{
 			auto a = ::vl::Ptr<::Methods>(new ::Methods(100));
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
 		}
 		{
 			auto a = ::vl::Ptr<::Methods>(new ::Methods(1));
@@ -45,9 +49,9 @@ namespace vl_workflow_global
 			::vl::__vwsn::This(a.Obj())->SetX(::vl::__vwsn::This(a.Obj())->GetX());
 			::vl::__vwsn::EventDetach(::vl::__vwsn::This(a.Obj())->XChanged, handler);
 			::vl::__vwsn::This(a.Obj())->SetX(100);
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"]", false))));
 		}
-		return ::vl_workflow_global::ClassMethod::Instance().s;
+		return GLOBAL_NAME s;
 	}
 
 	ClassMethod& ClassMethod::Instance()
@@ -62,7 +66,7 @@ namespace vl_workflow_global
 
 	void __vwsnf1_ClassMethod_main_::operator()() const
 	{
-		(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl::__vwsn::This(this)->a.Obj())->GetX())) + ::vl::WString(L"]", false))));
+		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl::__vwsn::This(this)->a.Obj())->GetX())) + ::vl::WString(L"]", false))));
 	}
 }
 
@@ -101,3 +105,7 @@ void Methods::SetX(::vl::vint32_t _x)
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

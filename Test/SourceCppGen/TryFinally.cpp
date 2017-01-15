@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/TryFinally.txt
 
 #include "TryFinally.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::TryFinally::
+#define GLOBAL_NAME ::vl_workflow_global::TryFinally::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::TryFinally::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -26,7 +30,7 @@ namespace vl_workflow_global
 			{
 				auto __vwsnb_0 = [&]()
 				{
-					(::vl_workflow_global::TryFinally::Instance().sum = (::vl_workflow_global::TryFinally::Instance().sum + 1));
+					(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1));
 				}
 				;
 				try
@@ -56,7 +60,7 @@ namespace vl_workflow_global
 			{
 				auto __vwsnb_0 = [&]()
 				{
-					(::vl_workflow_global::TryFinally::Instance().sum = (::vl_workflow_global::TryFinally::Instance().sum + 10));
+					(GLOBAL_NAME sum = (GLOBAL_NAME sum + 10));
 				}
 				;
 				try
@@ -83,7 +87,7 @@ namespace vl_workflow_global
 		{
 			auto __vwsnb_0 = [&]()
 			{
-				(::vl_workflow_global::TryFinally::Instance().sum = (::vl_workflow_global::TryFinally::Instance().sum + 100));
+				(GLOBAL_NAME sum = (GLOBAL_NAME sum + 100));
 			}
 			;
 			try
@@ -109,7 +113,7 @@ namespace vl_workflow_global
 		{
 			auto __vwsnb_0 = [&]()
 			{
-				(::vl_workflow_global::TryFinally::Instance().sum = (::vl_workflow_global::TryFinally::Instance().sum + 1000));
+				(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
 			}
 			;
 			try
@@ -118,7 +122,7 @@ namespace vl_workflow_global
 					{
 						auto __vwsnb_1 = [&]()
 						{
-							(::vl_workflow_global::TryFinally::Instance().sum = (::vl_workflow_global::TryFinally::Instance().sum + 1000));
+							(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
 						}
 						;
 						try
@@ -127,7 +131,7 @@ namespace vl_workflow_global
 								{
 									auto __vwsnb_2 = [&]()
 									{
-										(::vl_workflow_global::TryFinally::Instance().sum = (::vl_workflow_global::TryFinally::Instance().sum + 1000));
+										(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
 									}
 									;
 									try
@@ -174,11 +178,11 @@ namespace vl_workflow_global
 
 	::vl::WString TryFinally::main()
 	{
-		::vl_workflow_global::TryFinally::Instance().test1();
-		::vl_workflow_global::TryFinally::Instance().test2();
-		::vl_workflow_global::TryFinally::Instance().test3();
-		::vl_workflow_global::TryFinally::Instance().test4();
-		return ::vl::__vwsn::ToString(::vl_workflow_global::TryFinally::Instance().sum);
+		GLOBAL_NAME test1();
+		GLOBAL_NAME test2();
+		GLOBAL_NAME test3();
+		GLOBAL_NAME test4();
+		return ::vl::__vwsn::ToString(GLOBAL_NAME sum);
 	}
 
 	TryFinally& TryFinally::Instance()
@@ -187,3 +191,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

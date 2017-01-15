@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/BindCustomInterface2.txt
 
 #include "BindCustomInterface2.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::BindCustomInterface2::
+#define GLOBAL_NAME ::vl_workflow_global::BindCustomInterface2::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::BindCustomInterface2::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -80,7 +84,7 @@ namespace vl_workflow_global
 
 	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder> adder)
 	{
-		auto subscription = ::vl_workflow_global::BindCustomInterface2::Instance().Bind(adder.Cast<::ISummer>());
+		auto subscription = GLOBAL_NAME Bind(adder.Cast<::ISummer>());
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
@@ -91,8 +95,8 @@ namespace vl_workflow_global
 
 	::vl::WString BindCustomInterface2::main()
 	{
-		::vl_workflow_global::BindCustomInterface2::Instance().Execute(::vl::Ptr<::IAdder>(new ::vl_workflow_global::__vwsnc3_BindCustomInterface2_main__IAdder()));
-		return ::vl_workflow_global::BindCustomInterface2::Instance().s;
+		GLOBAL_NAME Execute(::vl::Ptr<::IAdder>(new ::vl_workflow_global::__vwsnc3_BindCustomInterface2_main__IAdder()));
+		return GLOBAL_NAME s;
 	}
 
 	BindCustomInterface2& BindCustomInterface2::Instance()
@@ -106,7 +110,7 @@ namespace vl_workflow_global
 
 	void __vwsnf1_BindCustomInterface2_Bind_::operator()(::vl::reflection::description::Value value) const
 	{
-		(::vl_workflow_global::BindCustomInterface2::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindCustomInterface2::Instance().s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
 
 	__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer)
@@ -230,3 +234,7 @@ Class (::ISummer)
 Class (::IAdder)
 ***********************************************************************/
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

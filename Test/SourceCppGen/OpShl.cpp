@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/OpShl.txt
 
 #include "OpShl.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::OpShl::
+#define GLOBAL_NAME ::vl_workflow_global::OpShl::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::OpShl::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -39,3 +43,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

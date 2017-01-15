@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/LetIn.txt
 
 #include "LetIn.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::LetIn::
+#define GLOBAL_NAME ::vl_workflow_global::LetIn::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::LetIn::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -27,3 +31,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

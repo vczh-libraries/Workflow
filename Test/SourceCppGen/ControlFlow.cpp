@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ControlFlow.txt
 
 #include "ControlFlow.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ControlFlow::
+#define GLOBAL_NAME ::vl_workflow_global::ControlFlow::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ControlFlow::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -90,7 +94,7 @@ namespace vl_workflow_global
 
 	::vl::WString ControlFlow::main()
 	{
-		return ((((((((::vl::__vwsn::ToString(::vl_workflow_global::ControlFlow::Instance().Sum1(1, 10)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl_workflow_global::ControlFlow::Instance().Sum2(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl_workflow_global::ControlFlow::Instance().Sum3(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl_workflow_global::ControlFlow::Instance().Sum4(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl_workflow_global::ControlFlow::Instance().Sum5(1, 10)));
+		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Sum1(1, 10)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum2(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum3(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum4(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum5(1, 10)));
 	}
 
 	ControlFlow& ControlFlow::Instance()
@@ -99,3 +103,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

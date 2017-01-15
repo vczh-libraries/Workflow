@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/OpAnd.txt
 
 #include "OpAnd.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::OpAnd::
+#define GLOBAL_NAME ::vl_workflow_global::OpAnd::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::OpAnd::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -39,3 +43,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/FailedThen.txt
 
 #include "FailedThen.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::FailedThen::
+#define GLOBAL_NAME ::vl_workflow_global::FailedThen::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::FailedThen::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -23,7 +27,7 @@ namespace vl_workflow_global
 
 	::vl::WString FailedThen::main()
 	{
-		return (((::vl::WString(L"", false) + ::vl::__vwsn::ToString(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(), 10, (- 1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
+		return (((::vl::WString(L"", false) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(), 10, (- 1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
 	}
 
 	FailedThen& FailedThen::Instance()
@@ -32,3 +36,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

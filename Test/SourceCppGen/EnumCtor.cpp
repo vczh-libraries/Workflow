@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/EnumCtor.txt
 
 #include "EnumCtor.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::EnumCtor::
+#define GLOBAL_NAME ::vl_workflow_global::EnumCtor::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::EnumCtor::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -25,7 +29,7 @@ namespace vl_workflow_global
 	{
 		auto a = ::test::Seasons::Spring;
 		auto b = ::test::Seasons::Summer;
-		auto c = ::vl_workflow_global::EnumCtor::Instance().Id(::test::Seasons::Autumn);
+		auto c = GLOBAL_NAME Id(::test::Seasons::Autumn);
 		auto d = ::test::Seasons::Winter;
 		return ((((((((((((::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(a)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(b))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(c))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(d))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a | b)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::test::Seasons::Good)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::test::Seasons::Bad))));
 	}
@@ -36,3 +40,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

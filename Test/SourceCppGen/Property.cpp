@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/Property.txt
 
 #include "Property.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::Property::
+#define GLOBAL_NAME ::vl_workflow_global::Property::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::Property::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -33,3 +37,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/BindComplex.txt
 
 #include "BindComplex.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::BindComplex::
+#define GLOBAL_NAME ::vl_workflow_global::BindComplex::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::BindComplex::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -62,7 +66,7 @@ namespace vl_workflow_global
 
 	void BindComplex::Callback(::vl::reflection::description::Value value)
 	{
-		(::vl_workflow_global::BindComplex::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindComplex::Instance().s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
 
 	::vl::WString BindComplex::main()
@@ -71,12 +75,12 @@ namespace vl_workflow_global
 		auto y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
 		auto z = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
 		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(x, y, z));
-		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(&::vl_workflow_global::BindComplex::Instance(), &::vl_workflow_global::BindComplex::Callback));
+		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
 		::vl::__vwsn::This(x.Obj())->SetValue(10);
 		::vl::__vwsn::This(y.Obj())->SetValue(20);
 		::vl::__vwsn::This(z.Obj())->SetValue(30);
 		::vl::__vwsn::This(subscription.Obj())->Close();
-		return ::vl_workflow_global::BindComplex::Instance().s;
+		return GLOBAL_NAME s;
 	}
 
 	BindComplex& BindComplex::Instance()
@@ -216,3 +220,7 @@ namespace vl_workflow_global
 
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

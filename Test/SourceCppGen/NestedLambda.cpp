@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/NestedLambda.txt
 
 #include "NestedLambda.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::NestedLambda::
+#define GLOBAL_NAME ::vl_workflow_global::NestedLambda::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::NestedLambda::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -315,3 +319,7 @@ Class (::IA)
 Class (::IB)
 ***********************************************************************/
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

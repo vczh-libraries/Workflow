@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/IfNotNull.txt
 
 #include "IfNotNull.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::IfNotNull::
+#define GLOBAL_NAME ::vl_workflow_global::IfNotNull::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::IfNotNull::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -47,3 +51,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

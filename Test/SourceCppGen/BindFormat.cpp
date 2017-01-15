@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/BindFormat.txt
 
 #include "BindFormat.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::BindFormat::
+#define GLOBAL_NAME ::vl_workflow_global::BindFormat::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::BindFormat::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -54,19 +58,19 @@ namespace vl_workflow_global
 
 	void BindFormat::Callback(::vl::reflection::description::Value value)
 	{
-		(::vl_workflow_global::BindFormat::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindFormat::Instance().s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false)));
 	}
 
 	::vl::WString BindFormat::main()
 	{
 		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
 		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(x));
-		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(&::vl_workflow_global::BindFormat::Instance(), &::vl_workflow_global::BindFormat::Callback));
+		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
 		::vl::__vwsn::This(x.Obj())->SetValue(10);
 		::vl::__vwsn::This(x.Obj())->SetValue(20);
 		::vl::__vwsn::This(x.Obj())->SetValue(30);
 		::vl::__vwsn::This(subscription.Obj())->Close();
-		return ::vl_workflow_global::BindFormat::Instance().s;
+		return GLOBAL_NAME s;
 	}
 
 	BindFormat& BindFormat::Instance()
@@ -171,3 +175,7 @@ namespace vl_workflow_global
 
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

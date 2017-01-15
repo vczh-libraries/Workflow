@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ClassCtor.txt
 
 #include "ClassCtor.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ClassCtor::
+#define GLOBAL_NAME ::vl_workflow_global::ClassCtor::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ClassCtor::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -22,21 +26,21 @@ namespace vl_workflow_global
 	{
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor());
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(1, true));
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(true, 2));
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(1, 2));
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
-		return ::vl_workflow_global::ClassCtor::Instance().s;
+		return GLOBAL_NAME s;
 	}
 
 	ClassCtor& ClassCtor::Instance()
@@ -100,3 +104,7 @@ Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
 {
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

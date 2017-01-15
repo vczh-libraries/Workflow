@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ClassDtor.txt
 
 #include "ClassDtor.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ClassDtor::
+#define GLOBAL_NAME ::vl_workflow_global::ClassDtor::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ClassDtor::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -29,7 +33,7 @@ namespace vl_workflow_global
 		(::vl::__vwsn::This(x)->next = y);
 		(::vl::__vwsn::This(y)->next = z);
 		::vl::__vwsn::This(x)->Dispose(true);
-		return ::vl_workflow_global::ClassDtor::Instance().s;
+		return GLOBAL_NAME s;
 	}
 
 	ClassDtor& ClassDtor::Instance()
@@ -48,10 +52,14 @@ Dtor::Dtor()
 
 Dtor::~Dtor()
 {
-	(::vl_workflow_global::ClassDtor::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::ClassDtor::Instance().s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(this)->name) + ::vl::WString(L"]", false)));
+	(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(this)->name) + ::vl::WString(L"]", false)));
 	if ((::vl::__vwsn::This(this)->next != nullptr))
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(this)->next)->Dispose(true);
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

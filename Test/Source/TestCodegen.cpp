@@ -71,7 +71,6 @@ TEST_CASE(TestCodegen)
 				Utf8Encoder headerEncoder;
 				EncoderStream headerStream(headerFile, headerEncoder);
 				StreamWriter headerWriter(headerStream);
-				List<WString> nss;
 
 				headerWriter.WriteLine(L"/***********************************************************************");
 				headerWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
@@ -82,48 +81,7 @@ TEST_CASE(TestCodegen)
 				headerWriter.WriteLine(L"");
 				headerWriter.WriteLine(L"#include \"../Source/CppTypes.h\"");
 				headerWriter.WriteLine(L"");
-
-				if (config.enumDecls.Keys().Contains(nullptr))
-				{
-					FOREACH(Ptr<WfEnumDeclaration>, decl, config.enumDecls[nullptr])
-					{
-						config.WriteHeader_Enum(headerWriter, decl, nss);
-						headerWriter.WriteLine(L"");
-					}
-				}
-
-				if (config.structDecls.Keys().Contains(nullptr))
-				{
-					FOREACH(Ptr<WfStructDeclaration>, decl, config.structDecls[nullptr])
-					{
-						config.WriteHeader_Struct(headerWriter, decl, nss);
-						headerWriter.WriteLine(L"");
-					}
-				}
-
-				if (config.classDecls.Keys().Contains(nullptr))
-				{
-					headerWriter.WriteLine(L"#pragma warning(push)");
-					headerWriter.WriteLine(L"#pragma warning(disable:4250)");
-					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[nullptr])
-					{
-						config.WriteHeader_ClassPreDecl(headerWriter, decl, nss);
-					}
-					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[nullptr])
-					{
-						headerWriter.WriteLine(L"");
-						config.WriteHeader_Class(headerWriter, decl, nss);
-					}
-					headerWriter.WriteLine(L"#pragma warning(pop)");
-				}
-				config.WriteNamespaceEnd(headerWriter, nss);
-
-				headerWriter.WriteLine(L"");
-				headerWriter.WriteLine(L"/***********************************************************************");
-				headerWriter.WriteLine(L"Global Variables and Functions");
-				headerWriter.WriteLine(L"***********************************************************************/");
-				headerWriter.WriteLine(L"");
-				config.WriteHeader_Global(headerWriter);
+				config.WriteHeader(headerWriter);
 				headerWriter.WriteLine(L"");
 				headerWriter.WriteLine(L"#endif");
 			}
@@ -133,7 +91,6 @@ TEST_CASE(TestCodegen)
 				Utf8Encoder cppEncoder;
 				EncoderStream cppStream(cppFile, cppEncoder);
 				StreamWriter cppWriter(cppStream);
-				List<WString> nss;
 
 				cppWriter.WriteLine(L"/***********************************************************************");
 				cppWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
@@ -141,34 +98,7 @@ TEST_CASE(TestCodegen)
 				cppWriter.WriteLine(L"");
 				cppWriter.WriteLine(L"#include \"" + config.assemblyName + L".h\"");
 				cppWriter.WriteLine(L"");
-
-				cppWriter.WriteLine(L"/***********************************************************************");
-				cppWriter.WriteLine(L"Global Variables and Functions");
-				cppWriter.WriteLine(L"***********************************************************************/");
-				cppWriter.WriteLine(L"");
-				config.WriteCpp_Global(cppWriter);
-				cppWriter.WriteLine(L"");
-
-				FOREACH(Ptr<WfClassDeclaration>, key, config.classDecls.Keys())
-				{
-					FOREACH(Ptr<WfClassDeclaration>, decl, config.classDecls[key.Obj()])
-					{
-						cppWriter.WriteLine(L"/***********************************************************************");
-						cppWriter.WriteLine(L"Class (" + CppGetFullName(manager.declarationTypes[decl.Obj()].Obj()) + L")");
-						cppWriter.WriteLine(L"***********************************************************************/");
-						cppWriter.WriteLine(L"");
-
-						FOREACH(Ptr<WfClassMember>, member, decl->members)
-						{
-							if (config.WriteCpp_ClassMember(cppWriter, decl, member, nss))
-							{
-								cppWriter.WriteLine(L"");
-							}
-						}
-					}
-				}
-
-				config.WriteNamespaceEnd(cppWriter, nss);
+				config.WriteCpp(cppWriter);
 			}
 		}
 		

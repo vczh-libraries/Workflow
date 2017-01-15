@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/NewInterface.txt
 
 #include "NewInterface.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::NewInterface::
+#define GLOBAL_NAME ::vl_workflow_global::NewInterface::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::NewInterface::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -83,7 +87,7 @@ namespace vl_workflow_global
 		auto begin = 1;
 		auto end = 5;
 		auto xs = ::vl::reflection::description::GetLazyList<::vl::vint32_t>(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(new ::vl_workflow_global::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(begin, end)));
-		return ((((::vl::WString(L"[", false) + ::vl_workflow_global::NewInterface::Instance().Show1(xs)) + ::vl::WString(L"][", false)) + ::vl_workflow_global::NewInterface::Instance().Show2(xs)) + ::vl::WString(L"]", false));
+		return ((((::vl::WString(L"[", false) + GLOBAL_NAME Show1(xs)) + ::vl::WString(L"][", false)) + GLOBAL_NAME Show2(xs)) + ::vl::WString(L"]", false));
 	}
 
 	NewInterface& NewInterface::Instance()
@@ -135,3 +139,7 @@ namespace vl_workflow_global
 
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

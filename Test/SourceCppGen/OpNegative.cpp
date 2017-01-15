@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/OpNegative.txt
 
 #include "OpNegative.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::OpNegative::
+#define GLOBAL_NAME ::vl_workflow_global::OpNegative::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::OpNegative::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -39,3 +43,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

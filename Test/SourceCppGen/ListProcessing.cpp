@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ListProcessing.txt
 
 #include "ListProcessing.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ListProcessing::
+#define GLOBAL_NAME ::vl_workflow_global::ListProcessing::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ListProcessing::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -32,3 +36,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ElementInSet.txt
 
 #include "ElementInSet.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ElementInSet::
+#define GLOBAL_NAME ::vl_workflow_global::ElementInSet::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ElementInSet::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -30,3 +34,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

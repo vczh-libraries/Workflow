@@ -451,6 +451,114 @@ WfCppConfig
 					nss.RemoveAt(0);
 				}
 			}
+			
+			void WfCppConfig::WriteHeader(stream::StreamWriter& writer)
+			{
+				List<WString> nss;
+
+				if (enumDecls.Keys().Contains(nullptr))
+				{
+					FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
+					{
+						WriteHeader_Enum(writer, decl, nss);
+						writer.WriteLine(L"");
+					}
+				}
+
+				if (structDecls.Keys().Contains(nullptr))
+				{
+					FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
+					{
+						WriteHeader_Struct(writer, decl, nss);
+						writer.WriteLine(L"");
+					}
+				}
+
+				if (classDecls.Keys().Contains(nullptr))
+				{
+					writer.WriteLine(L"#pragma warning(push)");
+					writer.WriteLine(L"#pragma warning(disable:4250)");
+					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+					{
+						WriteHeader_ClassPreDecl(writer, decl, nss);
+					}
+					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+					{
+						writer.WriteLine(L"");
+						WriteHeader_Class(writer, decl, nss);
+					}
+					writer.WriteLine(L"#pragma warning(pop)");
+				}
+				WriteNamespaceEnd(writer, nss);
+
+				writer.WriteLine(L"");
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Global Variables and Functions");
+				writer.WriteLine(L"***********************************************************************/");
+				writer.WriteLine(L"");
+				WriteHeader_Global(writer);
+			}
+
+			void WfCppConfig::WriteCpp(stream::StreamWriter& writer)
+			{
+				List<WString> nss;
+
+				writer.WriteString(L"#define GLOBAL_SYMBOL ");
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyNamespace);
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyName);
+				writer.WriteLine(L"::");
+
+				writer.WriteString(L"#define GLOBAL_NAME ");
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyNamespace);
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyName);
+				writer.WriteLine(L"::Instance().");
+
+				writer.WriteString(L"#define GLOBAL_OBJ ");
+				writer.WriteString(L"&::");
+				writer.WriteString(assemblyNamespace);
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyName);
+				writer.WriteLine(L"::Instance()");
+
+				writer.WriteLine(L"");
+
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Global Variables and Functions");
+				writer.WriteLine(L"***********************************************************************/");
+				writer.WriteLine(L"");
+				WriteCpp_Global(writer);
+				writer.WriteLine(L"");
+
+				FOREACH(Ptr<WfClassDeclaration>, key, classDecls.Keys())
+				{
+					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[key.Obj()])
+					{
+						writer.WriteLine(L"/***********************************************************************");
+						writer.WriteLine(L"Class (" + CppGetFullName(manager->declarationTypes[decl.Obj()].Obj()) + L")");
+						writer.WriteLine(L"***********************************************************************/");
+						writer.WriteLine(L"");
+
+						FOREACH(Ptr<WfClassMember>, member, decl->members)
+						{
+							if (WriteCpp_ClassMember(writer, decl, member, nss))
+							{
+								writer.WriteLine(L"");
+							}
+						}
+					}
+				}
+
+				WriteNamespaceEnd(writer, nss);
+
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#undef GLOBAL_SYMBOL");
+				writer.WriteLine(L"#undef GLOBAL_NAME");
+				writer.WriteLine(L"#undef GLOBAL_OBJ");
+			}
 		}
 	}
 }

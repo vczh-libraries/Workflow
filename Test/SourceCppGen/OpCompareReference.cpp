@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/OpCompareReference.txt
 
 #include "OpCompareReference.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::OpCompareReference::
+#define GLOBAL_NAME ::vl_workflow_global::OpCompareReference::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::OpCompareReference::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -30,3 +34,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

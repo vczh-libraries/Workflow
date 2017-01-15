@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/ForEach.txt
 
 #include "ForEach.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::ForEach::
+#define GLOBAL_NAME ::vl_workflow_global::ForEach::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::ForEach::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -55,7 +59,7 @@ namespace vl_workflow_global
 	::vl::WString ForEach::main()
 	{
 		auto xs = (::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list;
-		return ((((::vl::WString(L"[", false) + ::vl_workflow_global::ForEach::Instance().Show1(xs)) + ::vl::WString(L"][", false)) + ::vl_workflow_global::ForEach::Instance().Show2(xs)) + ::vl::WString(L"]", false));
+		return ((((::vl::WString(L"[", false) + GLOBAL_NAME Show1(xs)) + ::vl::WString(L"][", false)) + GLOBAL_NAME Show2(xs)) + ::vl::WString(L"]", false));
 	}
 
 	ForEach& ForEach::Instance()
@@ -64,3 +68,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

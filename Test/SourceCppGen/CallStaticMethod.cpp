@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/CallStaticMethod.txt
 
 #include "CallStaticMethod.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::CallStaticMethod::
+#define GLOBAL_NAME ::vl_workflow_global::CallStaticMethod::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::CallStaticMethod::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -56,3 +60,7 @@ Class (::Calculator::Internal)
 	return ::Calculator::Sum2(begin, end, 0);
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

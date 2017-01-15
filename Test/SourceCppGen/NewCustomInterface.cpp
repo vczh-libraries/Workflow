@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/NewCustomInterface.txt
 
 #include "NewCustomInterface.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::NewCustomInterface::
+#define GLOBAL_NAME ::vl_workflow_global::NewCustomInterface::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::NewCustomInterface::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -114,3 +118,7 @@ Class (::IMyInterface)
 	return 50;
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

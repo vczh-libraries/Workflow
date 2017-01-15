@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/AnonymousLambda.txt
 
 #include "AnonymousLambda.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::AnonymousLambda::
+#define GLOBAL_NAME ::vl_workflow_global::AnonymousLambda::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::AnonymousLambda::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -42,8 +46,8 @@ namespace vl_workflow_global
 
 	::vl::WString AnonymousLambda::main()
 	{
-		auto f = ::vl_workflow_global::AnonymousLambda::Instance().Adder(1);
-		auto g = ::vl_workflow_global::AnonymousLambda::Instance().Adder(2);
+		auto f = GLOBAL_NAME Adder(1);
+		auto g = GLOBAL_NAME Adder(2);
 		return ((((((::vl::__vwsn::ToString(f(1)()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(2)())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(1)())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(2)()));
 	}
 
@@ -74,3 +78,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ

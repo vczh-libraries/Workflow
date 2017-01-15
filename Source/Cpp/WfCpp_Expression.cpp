@@ -274,23 +274,6 @@ namespace vl
 					return closureInfo;
 				}
 
-				void WriteGlobalType()
-				{
-					writer.WriteString(L"::");
-					writer.WriteString(config->assemblyNamespace);
-					writer.WriteString(L"::");
-					writer.WriteString(config->assemblyName);
-				}
-
-				void WriteGlobalObject()
-				{
-					writer.WriteString(L"::");
-					writer.WriteString(config->assemblyNamespace);
-					writer.WriteString(L"::");
-					writer.WriteString(config->assemblyName);
-					writer.WriteString(L"::Instance()");
-				}
-
 				void WriteNotExists(ITypeDescriptor* typeDescriptor)
 				{
 					writer.WriteString(L"/* NOT EXISTS: type(");
@@ -373,8 +356,7 @@ namespace vl
 						auto ownerNode = symbol->ownerScope->ownerNode;
 						if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
 						{
-							WriteGlobalObject();
-							writer.WriteString(L".");
+							writer.WriteString(L"GLOBAL_NAME ");
 							writer.WriteString(config->ConvertName(symbol->name));
 							return;
 						}
@@ -396,11 +378,7 @@ namespace vl
 						if (ownerNode.Cast<WfNamespaceDeclaration>() || ownerNode.Cast<WfModule>())
 						{
 							writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
-							writer.WriteString(L"(&");
-							WriteGlobalObject();
-							writer.WriteString(L", &");
-							WriteGlobalType();
-							writer.WriteString(L"::");
+							writer.WriteString(L"(GLOBAL_OBJ, &GLOBAL_SYMBOL ");
 							writer.WriteString(config->ConvertName(symbol->name));
 							writer.WriteString(L")");
 							return;
@@ -1733,8 +1711,7 @@ namespace vl
 							}
 							else
 							{
-								WriteGlobalObject();
-								writer.WriteString(L".");
+								writer.WriteString(L"GLOBAL_NAME ");
 								writer.WriteString(config->ConvertName(result.symbol->name));
 							}
 							writer.WriteString(L"(");

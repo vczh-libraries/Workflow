@@ -4,6 +4,10 @@ Generated from ../Resources/Codegen/GlobalVariable.txt
 
 #include "GlobalVariable.h"
 
+#define GLOBAL_SYMBOL ::vl_workflow_global::GlobalVariable::
+#define GLOBAL_NAME ::vl_workflow_global::GlobalVariable::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::GlobalVariable::Instance()
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -20,16 +24,16 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t GlobalVariable::Add(::vl::vint32_t y)
 	{
-		auto z = ::vl_workflow_global::GlobalVariable::Instance().x;
-		(::vl_workflow_global::GlobalVariable::Instance().x = (::vl_workflow_global::GlobalVariable::Instance().x + y));
+		auto z = GLOBAL_NAME x;
+		(GLOBAL_NAME x = (GLOBAL_NAME x + y));
 		return z;
 	}
 
 	::vl::WString GlobalVariable::main()
 	{
-		(::vl_workflow_global::GlobalVariable::Instance().x = 10);
-		auto y = ::vl_workflow_global::GlobalVariable::Instance().Add(20);
-		return ((::vl::__vwsn::ToString(::vl_workflow_global::GlobalVariable::Instance().x) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(y));
+		(GLOBAL_NAME x = 10);
+		auto y = GLOBAL_NAME Add(20);
+		return ((::vl::__vwsn::ToString(GLOBAL_NAME x) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(y));
 	}
 
 	GlobalVariable& GlobalVariable::Instance()
@@ -38,3 +42,7 @@ namespace vl_workflow_global
 	}
 }
 
+
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ
