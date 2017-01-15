@@ -16,6 +16,14 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NamedLambda)
 
 namespace vl_workflow_global
 {
+
+	struct __vwsnf1_NamedLambda_main_
+	{
+
+		__vwsnf1_NamedLambda_main_();
+
+		::vl::vint32_t operator()(::vl::vint32_t n) const;
+	};
 	::vl::WString NamedLambda::main()
 	{
 		::vl::Func<::vl::vint32_t(::vl::vint32_t)> fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
@@ -26,14 +34,6 @@ namespace vl_workflow_global
 	{
 		return Getvl_workflow_global_NamedLambda().instance;
 	}
-
-	struct __vwsnf1_NamedLambda_main_
-	{
-
-		__vwsnf1_NamedLambda_main_();
-
-		::vl::vint32_t operator()(::vl::vint32_t n) const;
-	};
 
 	__vwsnf1_NamedLambda_main_::__vwsnf1_NamedLambda_main_()
 	{

@@ -16,6 +16,24 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OrderedLambda)
 
 namespace vl_workflow_global
 {
+
+	struct __vwsno1_OrderedLambda_Adder_
+	{
+		::vl::vint32_t x;
+
+		__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x);
+
+		::vl::vint32_t operator()(::vl::vint32_t __vwsno_1) const;
+	};
+
+	struct __vwsno2_OrderedLambda_Adder_
+	{
+		::vl::vint32_t __vwsno_1;
+
+		__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1);
+
+		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
+	};
 	::vl::vint32_t OrderedLambda::Apply(const ::vl::Func<::vl::vint32_t(::vl::vint32_t)>& f, ::vl::vint32_t arg)
 	{
 		return f(arg);
@@ -37,24 +55,6 @@ namespace vl_workflow_global
 	{
 		return Getvl_workflow_global_OrderedLambda().instance;
 	}
-
-	struct __vwsno1_OrderedLambda_Adder_
-	{
-		::vl::vint32_t x;
-
-		__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x);
-
-		::vl::vint32_t operator()(::vl::vint32_t __vwsno_1) const;
-	};
-
-	struct __vwsno2_OrderedLambda_Adder_
-	{
-		::vl::vint32_t __vwsno_1;
-
-		__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1);
-
-		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
-	};
 
 	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x)
 		:x(__vwsnctor_x)

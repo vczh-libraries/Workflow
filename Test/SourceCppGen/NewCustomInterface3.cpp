@@ -16,17 +16,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewCustomInterface3)
 
 namespace vl_workflow_global
 {
-	::vl::WString NewCustomInterface3::main()
-	{
-		::vl::Ptr<::MyClass> x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
-		::vl::Ptr<::IMyInterface3> xs = ::vl::__vwsn::This(x)->CreateMyInterface();
-		return ((((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(xs)->Get100(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false));
-	}
-
-	NewCustomInterface3& NewCustomInterface3::Instance()
-	{
-		return Getvl_workflow_global_NewCustomInterface3().instance;
-	}
 
 	class __vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3 : public ::vl::Object, public virtual ::IMyInterface3
 	{
@@ -52,6 +41,17 @@ namespace vl_workflow_global
 		::vl::vint32_t GetIndex() override;
 		bool Next() override;
 	};
+	::vl::WString NewCustomInterface3::main()
+	{
+		::vl::Ptr<::MyClass> x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
+		::vl::Ptr<::IMyInterface3> xs = ::vl::__vwsn::This(x)->CreateMyInterface();
+		return ((((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(xs)->Get100(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false));
+	}
+
+	NewCustomInterface3& NewCustomInterface3::Instance()
+	{
+		return Getvl_workflow_global_NewCustomInterface3().instance;
+	}
 
 	__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3::__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3(::MyClass* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)

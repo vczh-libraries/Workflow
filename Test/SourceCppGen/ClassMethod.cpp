@@ -18,6 +18,15 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_ClassMethod)
 
 namespace vl_workflow_global
 {
+
+	struct __vwsnf1_ClassMethod_main_
+	{
+		::vl::Ptr<::Methods> a;
+
+		__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a);
+
+		void operator()() const;
+	};
 	::vl::WString ClassMethod::main()
 	{
 		{
@@ -45,15 +54,6 @@ namespace vl_workflow_global
 	{
 		return Getvl_workflow_global_ClassMethod().instance;
 	}
-
-	struct __vwsnf1_ClassMethod_main_
-	{
-		::vl::Ptr<::Methods> a;
-
-		__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a);
-
-		void operator()() const;
-	};
 
 	__vwsnf1_ClassMethod_main_::__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a)
 		:a(__vwsnctor_a)

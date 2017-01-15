@@ -17,12 +17,16 @@ namespace test
 		Good = Spring | Autumn,
 		Bad = Summer | Winter,
 	};
+	inline Seasons operator&(Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<vuint64_t>(a) & static_cast<vuint64_t>(a)); }
+	inline Seasons operator|(Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<vuint64_t>(a) | static_cast<vuint64_t>(a)); }
 
 	struct Point
 	{
 		vint								x = 0;
 		vint								y = 0;
 	};
+	inline bool operator==(Point a, Point b) { return a.x == b.x && a.y == b.y; }
+	inline bool operator!=(Point a, Point b) { return a.x != b.x || a.y != b.y; }
 
 	class PointClass : public Object, public Description<PointClass>
 	{

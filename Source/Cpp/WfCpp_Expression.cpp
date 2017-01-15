@@ -732,7 +732,18 @@ namespace vl
 					switch (node->value)
 					{
 					case WfLiteralValue::Null:
-						writer.WriteString(L"nullptr");
+						{
+							auto result = config->manager->expressionResolvings[node];
+							if (result.type->GetDecorator() == ITypeInfo::Nullable)
+							{
+								writer.WriteString(config->ConvertType(result.type.Obj()));
+								writer.WriteString(L"()");
+							}
+							else
+							{
+								writer.WriteString(L"nullptr");
+							}
+						}
 						break;
 					case WfLiteralValue::True:
 						writer.WriteString(L"true");
