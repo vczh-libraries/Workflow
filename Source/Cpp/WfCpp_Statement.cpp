@@ -176,9 +176,9 @@ namespace vl
 					writer.WriteString(L", ");
 					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
 					{
-						writer.WriteString(L" ::vl::reflection::description::GetLazyList<");
+						writer.WriteString(L"::vl::reflection::description::GetLazyList<");
 						writer.WriteString(elementTypeCpp);
-						writer.WriteString(L"<(");
+						writer.WriteString(L">(");
 					}
 					GenerateExpression(config, writer, node->collection, nullptr);
 					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())

@@ -21,8 +21,8 @@ namespace vl_workflow_global
 {
 	void Event::EventHandler(::vl::vint32_t oldValue, ::vl::vint32_t newValue)
 	{
-		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Add(oldValue);
-		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Add(newValue);
+		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Add(::vl::reflection::description::BoxValue<::vl::vint32_t>(oldValue));
+		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Add(::vl::reflection::description::BoxValue<::vl::vint32_t>(newValue));
 	}
 
 	::vl::WString Event::main()

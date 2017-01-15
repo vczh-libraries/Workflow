@@ -608,6 +608,10 @@ namespace vl
 						{
 							writer.WriteString(L"::vl::__vwsn::This(");
 							VisitThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
+							if (result.type->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								writer.WriteString(L".Obj()");
+							}
 							writer.WriteString(L")");
 							return true;
 						},
@@ -709,6 +713,10 @@ namespace vl
 						{
 							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->parent);
+							if (result.type->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								writer.WriteString(L".Obj()");
+							}
 							writer.WriteString(L")");
 							return true;
 						},
@@ -1627,13 +1635,17 @@ namespace vl
 						return true;
 					};
 
-					auto argumentsCallback = [&](CommaPosition cp)
+					auto argumentsCallback = [&](IMethodInfo* methodInfo, ITypeInfo* typeInfo, CommaPosition cp)
 					{
 						if (cp == CommaPosition::Left) writer.WriteString(L", ");
 						FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
 						{
 							if (index > 0) writer.WriteString(L", ");
-							Call(argument);
+							auto type = methodInfo
+								? methodInfo->GetParameter(index)->GetType()
+								: typeInfo->GetElementType()->GetGenericArgument(index + 1)
+								;
+							Call(argument, type);
 						}
 						if (cp == CommaPosition::Right) writer.WriteString(L", ");
 						return true;
@@ -1644,7 +1656,7 @@ namespace vl
 					{
 						WriteMethodTemplate(CppGetInvokeTemplate(result.methodInfo), result.methodInfo,
 							[&](IMethodInfo* methodInfo) { return thisCallback(methodInfo->GetOwnerTypeDescriptor()); },
-							[&](IMethodInfo*, CommaPosition cp) { return argumentsCallback(cp); }
+							[&](IMethodInfo* methodInfo, CommaPosition cp) { return argumentsCallback(methodInfo, nullptr, cp); }
 							);
 						return;
 					}
@@ -1652,7 +1664,7 @@ namespace vl
 					{
 						WriteEventTemplate(CppGetInvokeTemplate(result.eventInfo), result.eventInfo,
 							[&](IEventInfo* eventInfo) { return thisCallback(eventInfo->GetOwnerTypeDescriptor()); },
-							[&](IEventInfo*, CommaPosition cp) { return argumentsCallback(cp); }
+							[&](IEventInfo* eventInfo, CommaPosition cp) { return argumentsCallback(nullptr, eventInfo->GetHandlerType(), cp); }
 							);
 						return;
 					}
@@ -1672,14 +1684,14 @@ namespace vl
 								writer.WriteString(config->ConvertName(result.symbol->name));
 							}
 							writer.WriteString(L"(");
-							argumentsCallback(CommaPosition::No);
+							argumentsCallback(nullptr, result.symbol->typeInfo.Obj(), CommaPosition::No);
 							writer.WriteString(L")");
 							return;
 						}
 					}
 					Call(node->function);
 					writer.WriteString(L"(");
-					argumentsCallback(CommaPosition::No);
+					argumentsCallback(nullptr, result.type.Obj(), CommaPosition::No);
 					writer.WriteString(L")");
 				}
 

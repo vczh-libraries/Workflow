@@ -19,8 +19,8 @@ namespace vl_workflow_global
 	::vl::WString MethodClosure::main()
 	{
 		::vl::Ptr<::test::ObservableValue> x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(10));
-		::vl::Func<::vl::vint32_t()> get = ::vl::Func<::vl::vint32_t()>(::vl::__vwsn::This(x), &::test::ObservableValue::GetValue);
-		::vl::Func<void(::vl::vint32_t)> set = ::vl::Func<void(::vl::vint32_t)>(::vl::__vwsn::This(x), &::test::ObservableValue::SetValue);
+		::vl::Func<::vl::vint32_t()> get = ::vl::Func<::vl::vint32_t()>(::vl::__vwsn::This(x.Obj()), &::test::ObservableValue::GetValue);
+		::vl::Func<void(::vl::vint32_t)> set = ::vl::Func<void(::vl::vint32_t)>(::vl::__vwsn::This(x.Obj()), &::test::ObservableValue::SetValue);
 		::vl::vint32_t s1 = get();
 		set(20);
 		::vl::vint32_t s2 = get();
