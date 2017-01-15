@@ -1274,7 +1274,7 @@ namespace vl
 
 						writer.WriteString(L"[&](");
 						writer.WriteString(config->ConvertType(resultElement.type.Obj()));
-						writer.WriteString(L" __vwsn_1{ return ");
+						writer.WriteString(L" __vwsn_1){ return ");
 
 						Call(range->begin);
 						writer.WriteString(range->beginBoundary == WfRangeBoundary::Inclusive ? L" <= " : L" < ");
@@ -1299,7 +1299,7 @@ namespace vl
 						{
 							writer.WriteString(L"::vl::reflection::description::GetLazyList<");
 							writer.WriteString(elementTypeCpp);
-							writer.WriteString(L"(");
+							writer.WriteString(L">(");
 						}
 						Call(node->collection);
 						if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
