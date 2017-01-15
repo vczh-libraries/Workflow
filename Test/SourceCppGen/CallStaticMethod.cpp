@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString CallStaticMethod::main()
 	{
-		throw 0;
+				return static_cast<::vl::vint32_t>(::Calculator::Internal::Sum(1, 10));
 	}
 
 	CallStaticMethod& CallStaticMethod::Instance()
@@ -33,12 +33,18 @@ Class (::Calculator)
 
 ::vl::vint32_t Calculator::Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum)
 {
-	throw 0;
+		if ((begin > end))
+		{
+										return sum;
+		}
+		else
+		{
+										return ::Calculator::Sum2((begin + 1), end, (sum + begin));
+		}
 }
 
 Calculator::Calculator()
 {
-	throw 0;
 }
 
 /***********************************************************************
@@ -47,6 +53,6 @@ Class (::Calculator::Internal)
 
 ::vl::vint32_t Calculator::Internal::Sum(::vl::vint32_t begin, ::vl::vint32_t end)
 {
-	throw 0;
+		return ::Calculator::Sum2(begin, end, 0);
 }
 

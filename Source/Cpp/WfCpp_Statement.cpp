@@ -158,13 +158,14 @@ namespace vl
 				{
 					auto result = config->manager->expressionResolvings[node->collection.Obj()];
 					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+					auto elementTypeCpp = elementType ? config->ConvertType(elementType) : config->ConvertType(description::GetTypeDescriptor<Value>());
 
 					auto typeName = L"__vwsnt_" + itow(functionRecord->typeCounter++);
 					writer.WriteString(prefix);
 					writer.WriteString(L"using ");
 					writer.WriteString(typeName);
 					writer.WriteString(L" = ");
-					writer.WriteString(config->ConvertType(elementType));
+					writer.WriteString(elementTypeCpp);
 					writer.WriteLine(L";");
 
 					writer.WriteString(prefix);
@@ -176,7 +177,7 @@ namespace vl
 					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
 					{
 						writer.WriteString(L" ::vl::reflection::description::GetLazyList<");
-						writer.WriteString(config->ConvertType(elementType));
+						writer.WriteString(elementTypeCpp);
 						writer.WriteString(L"<(");
 					}
 					GenerateExpression(config, writer, node->collection, nullptr);

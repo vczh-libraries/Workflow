@@ -18,12 +18,14 @@ namespace vl_workflow_global
 {
 	::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> AnonymousLambda::Adder(::vl::vint32_t x)
 	{
-		throw 0;
+				return LAMBDA(::vl_workflow_global::__vwsnf1_AnonymousLambda_Adder_(x));
 	}
 
 	::vl::WString AnonymousLambda::main()
 	{
-		throw 0;
+				::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> f = ::vl_workflow_global::AnonymousLambda::Instance().Adder(1);
+				::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> g = ::vl_workflow_global::AnonymousLambda::Instance().Adder(2);
+				return ((((((static_cast<::vl::vint32_t>(f(1)()) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(f(2)())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(g(1)())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(g(2)()));
 	}
 
 	AnonymousLambda& AnonymousLambda::Instance()
@@ -57,7 +59,7 @@ namespace vl_workflow_global
 
 	::vl::Func<::vl::vint32_t()> __vwsnf1_AnonymousLambda_Adder_::operator()(::vl::vint32_t y) const
 	{
-		throw 0;
+				return LAMBDA(::vl_workflow_global::__vwsnf2_AnonymousLambda_Adder__(x, y));
 	}
 
 	__vwsnf2_AnonymousLambda_Adder__::__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t __vwsnctor_x, ::vl::vint32_t __vwsnctor_y)
@@ -68,7 +70,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf2_AnonymousLambda_Adder__::operator()() const
 	{
-		throw 0;
+				return (x + y);
 	}
 }
 

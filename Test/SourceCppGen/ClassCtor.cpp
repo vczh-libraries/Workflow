@@ -20,7 +20,23 @@ namespace vl_workflow_global
 {
 	::vl::WString ClassCtor::main()
 	{
-		throw 0;
+		{
+										::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor());
+										(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+		}
+		{
+										::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(1, true));
+										(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+		}
+		{
+										::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(true, 2));
+										(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+		}
+		{
+										::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(1, 2));
+										(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+		}
+				return ::vl_workflow_global::ClassCtor::Instance().s;
 	}
 
 	ClassCtor& ClassCtor::Instance()
@@ -35,22 +51,33 @@ Class (::Base)
 
 Base::Base()
 {
-	throw 0;
 }
 
 Base::Base(::vl::vint32_t _x)
 {
-	throw 0;
+		(::vl::__vwsn::This(this)-> = _x);
+		if ((::vl::__vwsn::This(this)-> != ::vl::__vwsn::This(this)->))
+		{
+										throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"The \"this\" expression is not correctly implemented.", false), false);
+		}
 }
 
 ::vl::vint32_t Base::GetX()
 {
-	throw 0;
+		if ((::vl::__vwsn::This(this)-> != ::vl::__vwsn::This(this)->))
+		{
+										throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"The \"this\" expression is not correctly implemented.", false), false);
+		}
+		return ::vl::__vwsn::This(this)->;
 }
 
 void Base::SetX(::vl::vint32_t _x)
 {
-	throw 0;
+		if ((::vl::__vwsn::This(this)-> != _x))
+		{
+										(::vl::__vwsn::This(this)-> = _x);
+										::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->XChanged)();
+		}
 }
 
 /***********************************************************************
@@ -59,21 +86,17 @@ Class (::Ctor)
 
 Ctor::Ctor()
 {
-	throw 0;
 }
 
 Ctor::Ctor(::vl::vint32_t y, bool b)
 {
-	throw 0;
 }
 
 Ctor::Ctor(bool b, ::vl::vint32_t value)
 {
-	throw 0;
 }
 
 Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
 {
-	throw 0;
 }
 

@@ -20,32 +20,150 @@ namespace vl_workflow_global
 {
 	void TryCatch::Test1()
 	{
-		throw 0;
+				try
+				{
+					{
+												throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"Test1::catch", false), false);
+					}
+					__vwsnb_0();
+				}
+				catch(const ::vl::Exception& __vwsne_0)
+				{
+					{
+												(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
+					}
+					__vwsnb_0();
+				}
 	}
 
 	void TryCatch::Test2()
 	{
-		throw 0;
+				{
+					auto __vwsnb_0 = [&]()
+					{
+												(::vl_workflow_global::TryCatch::Instance().log = (::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[Test2::finally]", false)));
+					}
+					;
+					try
+					{
+						{
+														throw ::vl::reflection::description::TypeDescriptorException(::vl::WString(L"Test2::catch", false), false);
+						}
+						__vwsnb_0();
+					}
+					catch(const ::vl::Exception& __vwsne_0)
+					{
+						{
+														(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
+						}
+						__vwsnb_0();
+					}
+				}
 	}
 
 	void TryCatch::Throw(const ::vl::WString& message)
 	{
-		throw 0;
+				throw ::vl::reflection::description::TypeDescriptorException(message, false);
 	}
 
 	void TryCatch::Test3()
 	{
-		throw 0;
+				{
+					auto __vwsnb_0 = [&]()
+					{
+												(::vl_workflow_global::TryCatch::Instance().log = (::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[Test3::finally2]", false)));
+					}
+					;
+					try
+					{
+						{
+														{
+															auto __vwsnb_1 = [&]()
+															{
+																																(::vl_workflow_global::TryCatch::Instance().log = (::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[Test3::finally1]", false)));
+															}
+															;
+															try
+															{
+																{
+																																		::vl_workflow_global::TryCatch::Instance().Throw(::vl::WString(L"Test3::catch", false));
+																}
+																__vwsnb_1();
+															}
+															catch(const ::vl::Exception& __vwsne_1)
+															{
+																{
+																																		(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"1]", false)));
+																																		throw;
+																}
+																__vwsnb_1();
+															}
+														}
+						}
+						__vwsnb_0();
+					}
+					catch(const ::vl::Exception& __vwsne_0)
+					{
+						{
+														(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"2]", false)));
+						}
+						__vwsnb_0();
+					}
+				}
 	}
 
 	void TryCatch::Test4()
 	{
-		throw 0;
+				{
+					auto __vwsnb_0 = [&]()
+					{
+												(::vl_workflow_global::TryCatch::Instance().log = (::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[Test4::finally2]", false)));
+					}
+					;
+					try
+					{
+						{
+														{
+															auto __vwsnb_1 = [&]()
+															{
+																																(::vl_workflow_global::TryCatch::Instance().log = (::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[Test4::finally1]", false)));
+															}
+															;
+															try
+															{
+																{
+																}
+																__vwsnb_1();
+															}
+															catch(const ::vl::Exception& __vwsne_1)
+															{
+																{
+																																		(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"1]", false)));
+																																		throw;
+																}
+																__vwsnb_1();
+															}
+														}
+						}
+						__vwsnb_0();
+					}
+					catch(const ::vl::Exception& __vwsne_0)
+					{
+						{
+														(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"2]", false)));
+						}
+						__vwsnb_0();
+					}
+				}
 	}
 
 	::vl::WString TryCatch::main()
 	{
-		throw 0;
+				::vl_workflow_global::TryCatch::Instance().Test1();
+				::vl_workflow_global::TryCatch::Instance().Test2();
+				::vl_workflow_global::TryCatch::Instance().Test3();
+				::vl_workflow_global::TryCatch::Instance().Test4();
+				return ::vl_workflow_global::TryCatch::Instance().log;
 	}
 
 	TryCatch& TryCatch::Instance()

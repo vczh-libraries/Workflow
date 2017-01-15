@@ -398,9 +398,8 @@ namespace vl
 							writer.WriteString(config->ConvertName(symbol->name));
 							return;
 						}
-						else
+						else if(auto closureInfo = GetClosureInfo(node))
 						{
-							auto closureInfo = GetClosureInfo(node);
 							if (closureInfo->symbols.Values().Contains(symbol.Obj()))
 							{
 								writer.WriteString(L"::vl::__vwsn::This(this)->");
@@ -408,6 +407,8 @@ namespace vl
 								return;
 							}
 						}
+						writer.WriteString(config->ConvertName(symbol->name));
+						return;
 					}
 					else if (auto funcDecl = symbol->creatorNode.Cast<WfFunctionDeclaration>())
 					{
@@ -428,7 +429,7 @@ namespace vl
 						{
 							writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
 							writer.WriteString(L"(::vl::__vwsn::This(this), &");
-							writer.WriteString(GetClosureInfo(classExpr.Obj())->lambdaClassName);
+							writer.WriteString(config->classExprs[classExpr.Obj()]);
 							writer.WriteString(L"::");
 							writer.WriteString(config->ConvertName(symbol->name));
 							writer.WriteString(L")");
@@ -1188,28 +1189,52 @@ namespace vl
 
 				void Visit(WfSetTestingExpression* node)override
 				{
-					auto result = config->manager->expressionResolvings[node->collection.Obj()];
-					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+					if (auto range = node->collection.Cast<WfRangeExpression>())
+					{
+						auto resultElement = config->manager->expressionResolvings[node->element.Obj()];
+						auto resultBegin = config->manager->expressionResolvings[range->begin.Obj()];
+						auto resultEnd = config->manager->expressionResolvings[range->end.Obj()];
 
-					writer.WriteString(L"[&](");
-					writer.WriteString(config->ConvertType(elementType));
-					writer.WriteString(L" __vwsn_1){ return ");
-					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
-					{
-						writer.WriteString(L"::vl::reflection::description::GetLazyList<");
-						writer.WriteString(config->ConvertType(elementType));
-						writer.WriteString(L"(");
-					}
-					Call(node->collection);
-					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
-					{
+						writer.WriteString(L"[&](");
+						writer.WriteString(config->ConvertType(resultElement.type.Obj()));
+						writer.WriteString(L" __vwsn_1{ return ");
+
+						Call(range->begin);
+						writer.WriteString(range->beginBoundary == WfRangeBoundary::Inclusive ? L" <= " : L" < ");
+						writer.WriteString(L" __vwsn_1 && __vwsn_1");
+						writer.WriteString(range->endBoundary == WfRangeBoundary::Inclusive ? L" <= " : L" < ");
+						Call(range->end);
+
+						writer.WriteString(L"; }(");
+						Call(node->element);
 						writer.WriteString(L")");
 					}
-					writer.WriteString(L".Any([&](");
-					writer.WriteString(config->ConvertType(elementType));
-					writer.WriteString(L" __vwsn_2){ return __vwsn_1 == __vwsn_2; }); }(");
-					Call(node->element);
-					writer.WriteString(L")");
+					else
+					{
+						auto result = config->manager->expressionResolvings[node->collection.Obj()];
+						auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+						auto elementTypeCpp = elementType ? config->ConvertType(elementType) : config->ConvertType(description::GetTypeDescriptor<Value>());
+
+						writer.WriteString(L"[&](");
+						writer.WriteString(elementTypeCpp);
+						writer.WriteString(L" __vwsn_1){ return ");
+						if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+						{
+							writer.WriteString(L"::vl::reflection::description::GetLazyList<");
+							writer.WriteString(elementTypeCpp);
+							writer.WriteString(L"(");
+						}
+						Call(node->collection);
+						if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+						{
+							writer.WriteString(L")");
+						}
+						writer.WriteString(L".Any([&](");
+						writer.WriteString(elementTypeCpp);
+						writer.WriteString(L" __vwsn_2){ return __vwsn_1 == __vwsn_2; }); }(");
+						Call(node->element);
+						writer.WriteString(L")");
+					}
 				}
 
 				void Visit(WfConstructorExpression* node)override
@@ -1478,7 +1503,7 @@ namespace vl
 
 				void Visit(WfAttachEventExpression* node)override
 				{
-					auto result = config->manager->expressionResolvings[node];
+					auto result = config->manager->expressionResolvings[node->event.Obj()];
 					if (CppExists(result.eventInfo))
 					{
 						WriteEventTemplate(CppGetAttachTemplate(result.eventInfo), result.eventInfo,
@@ -1510,7 +1535,7 @@ namespace vl
 
 				void Visit(WfDetachEventExpression* node)override
 				{
-					auto result = config->manager->expressionResolvings[node];
+					auto result = config->manager->expressionResolvings[node->event.Obj()];
 					if (CppExists(result.eventInfo))
 					{
 						WriteEventTemplate(CppGetDetachTemplate(result.eventInfo), result.eventInfo,

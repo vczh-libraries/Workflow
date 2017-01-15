@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString LetIn::main()
 	{
-		throw 0;
+				return [&](::vl::vint32_t x, ::vl::vint32_t y){ return static_cast<::vl::vint32_t>((x + y)); }(10, 20);
 	}
 
 	LetIn& LetIn::Instance()

@@ -18,7 +18,9 @@ namespace vl_workflow_global
 {
 	::vl::WString NewCustomInterface3::main()
 	{
-		throw 0;
+				::vl::Ptr<::MyClass> x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
+				::vl::Ptr<::IMyInterface3> xs = ::vl::__vwsn::This(x)->CreateMyInterface();
+				return ((((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(xs)->Get100())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::test::CustomInterfaceProcessor::Sum(xs))) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::test::CustomInterfaceProcessor::Sum(xs))) + ::vl::WString(L"]", false));
 	}
 
 	NewCustomInterface3& NewCustomInterface3::Instance()
@@ -58,12 +60,12 @@ namespace vl_workflow_global
 
 	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3::CreateEnumerator()
 	{
-		throw 0;
+				return ::vl::Ptr<::vl::reflection::description::IValueEnumerator>(new ::vl_workflow_global::__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator(this, __vwsnthis_0));
 	}
 
 	::vl::vint32_t __vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3::Get100()
 	{
-		throw 0;
+				return (::MyClass::Get50() * 2);
 	}
 
 	__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator(::IMyInterface3* __vwsnctorthis_0, ::MyClass* __vwsnctorthis_1)
@@ -75,17 +77,25 @@ namespace vl_workflow_global
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
-		throw 0;
+				return static_cast<::vl::vint32_t>((::vl::__vwsn::This(__vwsnthis_1)-> + index));
 	}
 
 	::vl::vint32_t __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
 	{
-		throw 0;
+				return index;
 	}
 
 	bool __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
 	{
-		throw 0;
+				if ((index == (::vl::__vwsn::This(__vwsnthis_1)-> - ::vl::__vwsn::This(__vwsnthis_1)->)))
+				{
+																		return false;
+				}
+				else
+				{
+																		(index = (index + 1));
+																		return true;
+				}
 	}
 
 }
@@ -100,16 +110,17 @@ Class (::MyClass)
 
 MyClass::MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end)
 {
-	throw 0;
+		(::vl::__vwsn::This(this)-> = _begin);
+		(::vl::__vwsn::This(this)-> = _end);
 }
 
 ::vl::vint32_t MyClass::Get50()
 {
-	throw 0;
+		return 50;
 }
 
 ::vl::Ptr<::IMyInterface3> MyClass::CreateMyInterface()
 {
-	throw 0;
+		return ::vl::Ptr<::IMyInterface3>(new ::vl_workflow_global::__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3(this));
 }
 

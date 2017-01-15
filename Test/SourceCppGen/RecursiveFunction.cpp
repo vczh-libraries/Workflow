@@ -18,12 +18,12 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t RecursiveFunction::Fib(::vl::vint32_t n)
 	{
-		throw 0;
+				return [&](){ if ((n <= 2)) return 1; else return (::vl_workflow_global::RecursiveFunction::Instance().Fib((n - 1)) + ::vl_workflow_global::RecursiveFunction::Instance().Fib((n - 2))); }();
 	}
 
 	::vl::WString RecursiveFunction::main()
 	{
-		throw 0;
+				return ((((((((static_cast<::vl::vint32_t>(::vl_workflow_global::RecursiveFunction::Instance().Fib(1)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl_workflow_global::RecursiveFunction::Instance().Fib(2))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl_workflow_global::RecursiveFunction::Instance().Fib(3))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl_workflow_global::RecursiveFunction::Instance().Fib(4))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl_workflow_global::RecursiveFunction::Instance().Fib(5)));
 	}
 
 	RecursiveFunction& RecursiveFunction::Instance()
