@@ -41,7 +41,8 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
 	{
-		return [&](){ if ((n <= 2)) return 1; else return (::vl_workflow_global::NamedLambda::Instance().Fib((n - 1)) + ::vl_workflow_global::NamedLambda::Instance().Fib((n - 2))); }();
+		::vl::Func<::vl::vint32_t(::vl::vint32_t)> fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		return [&](){ if ((n <= 2)) return 1; else return ((*this)((n - 1)) + fib2((n - 2))); }();
 	}
 }
 

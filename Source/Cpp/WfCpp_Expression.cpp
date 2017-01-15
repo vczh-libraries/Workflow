@@ -442,6 +442,38 @@ namespace vl
 							writer.WriteString(L")");
 							return;
 						}
+						else if (symbol->ownerScope->functionConfig && symbol->ownerScope->functionConfig->lambda && symbol->name == funcDecl->name.value)
+						{
+							auto scope = config->manager->nodeScopes[funcDecl.Obj()];
+							auto closureInfo = config->closureInfos[dynamic_cast<WfFunctionExpression*>(scope->ownerNodeSource)];
+
+							writer.WriteString(L"LAMBDA(::");
+							writer.WriteString(config->assemblyNamespace);
+							writer.WriteString(L"::");
+							writer.WriteString(closureInfo->lambdaClassName);
+							writer.WriteString(L"(");
+
+							FOREACH_INDEXER(WString, symbolName, index, closureInfo->symbols.Keys())
+							{
+								if (index > 0)
+								{
+									writer.WriteString(L", ");
+								}
+								writer.WriteString(config->ConvertName(symbol->name));
+							}
+
+							FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
+							{
+								if (index > 0 || closureInfo->symbols.Count() > 0)
+								{
+									writer.WriteString(L", ");
+								}
+								writer.WriteString(L" __vwsnctorthis_" + itow(index));
+							}
+
+							writer.WriteString(L"))");
+							return;
+						}
 					}
 					writer.WriteString(config->ConvertName(symbol->name));
 				}
@@ -1693,12 +1725,16 @@ namespace vl
 					}
 					else if (result.symbol)
 					{
-						if (result.symbol->creatorNode.Cast<WfFunctionDeclaration>())
+						if (auto funcDecl = result.symbol->creatorNode.Cast<WfFunctionDeclaration>())
 						{
 							if (result.symbol->ownerScope->ownerNode.Cast<WfNewInterfaceExpression>())
 							{
 								writer.WriteString(L"::vl::__vwsn::This(this)->");
 								writer.WriteString(config->ConvertName(result.symbol->name));
+							}
+							else if (result.symbol->ownerScope->functionConfig && result.symbol->ownerScope->functionConfig->lambda && result.symbol->name == funcDecl->name.value)
+							{
+								writer.WriteString(L"(*this)");
 							}
 							else
 							{
