@@ -42,7 +42,7 @@ namespace vl_workflow_global
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0();
 		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback) override;
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_) override;
 		bool Update() override;
 		bool Close() override;
 	};
@@ -140,7 +140,7 @@ namespace vl_workflow_global
 		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SumChanged, ::vl::Func<void()>(::vl::__vwsn::This(this), &__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_)
 	{
 		if ((! __vwsn_bind_opened_))
 		{

@@ -97,10 +97,11 @@ namespace vl
 				WString					WriteNamespace(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
 				void					WriteNamespaceEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
 
-				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, ITypeInfo* typeInfo, collections::List<WString>& arguments, const WString& name, bool writeReturnType);
 				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType);
 				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType);
 				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, collections::List<WString>& arguments, const WString& name, bool writeReturnType);
 				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
 
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);

@@ -9,7 +9,7 @@ namespace vl
 			using namespace collections;
 			using namespace reflection::description;
 
-			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType)
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, ITypeInfo* typeInfo, collections::List<WString>& arguments, const WString& name, bool writeReturnType)
 			{
 				ITypeInfo* returnType = nullptr;
 				if (writeReturnType)
@@ -53,7 +53,7 @@ namespace vl
 						.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
 					);
 
-				return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+				return WriteFunctionHeader(writer, typeInfo, arguments, name, writeReturnType);
 			}
 
 			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType)
@@ -70,7 +70,7 @@ namespace vl
 							return argument->name.value;
 						})
 					);
-				return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+				return WriteFunctionHeader(writer, typeInfo, arguments, name, writeReturnType);
 			}
 
 			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType)
@@ -82,9 +82,19 @@ namespace vl
 					index2 != -1 ? manager->interfaceMethodImpls.Values()[index2] :
 					nullptr;
 
+				List<WString> arguments;
+				CopyFrom(
+					arguments,
+					From(decl->arguments)
+						.Select([](Ptr<WfFunctionArgument> argument)
+						{
+							return argument->name.value;
+						})
+					);
+
 				if (methodInfo)
 				{
-					return WriteFunctionHeader(writer, methodInfo, name, writeReturnType);
+					return WriteFunctionHeader(writer, methodInfo, arguments, name, writeReturnType);
 				}
 				else
 				{
@@ -92,20 +102,11 @@ namespace vl
 					auto symbol = manager->GetDeclarationSymbol(scope, decl.Obj());
 					auto typeInfo = symbol->typeInfo.Obj();
 
-					List<WString> arguments;
-					CopyFrom(
-						arguments,
-						From(decl->arguments)
-							.Select([](Ptr<WfFunctionArgument> argument)
-							{
-								return argument->name.value;
-							})
-						);
-					return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
+					return WriteFunctionHeader(writer, typeInfo, arguments, name, writeReturnType);
 				}
 			}
 
-			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType)
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, collections::List<WString>& arguments, const WString& name, bool writeReturnType)
 			{
 				ITypeInfo* returnType = nullptr;
 				if (writeReturnType)
@@ -125,10 +126,23 @@ namespace vl
 					}
 					writer.WriteString(ConvertArgumentType(methodInfo->GetParameter(i)->GetType()));
 					writer.WriteChar(L' ');
-					writer.WriteString(methodInfo->GetParameter(i)->GetName());
+					if (arguments.Count() == 0)
+					{
+						writer.WriteString(methodInfo->GetParameter(i)->GetName());
+					}
+					else
+					{
+						writer.WriteString(ConvertName(arguments[i]));
+					}
 				}
 				writer.WriteString(L")");
 				return returnType;
+			}
+
+			ITypeInfo* WfCppConfig::WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType)
+			{
+				List<WString> arguments;
+				return WriteFunctionHeader(writer, methodInfo, arguments, name, writeReturnType);
 			}
 		}
 	}
