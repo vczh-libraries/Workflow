@@ -13,6 +13,13 @@ TEST_CASE(TestCodegen)
 		vint index = wcschr(reading, L'=') - reading;
 		WString itemName = codegenName.Sub(0, index);
 		WString itemResult = codegenName.Sub(index + 1, codegenName.Length() - index - 1);
+		bool cppCodegen = true;
+
+		if (itemName.Length() > 0 && itemName[0] == L'-')
+		{
+			cppCodegen = false;
+			itemName = itemName.Sub(1, itemName.Length() - 1);
+		}
 		if (itemName.Length() > 3 && itemName.Sub(itemName.Length() - 3, 3) == L"@32")
 		{
 #ifdef VCZH_64
@@ -55,6 +62,7 @@ TEST_CASE(TestCodegen)
 		Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
 		TEST_ASSERT(assembly);
 
+		if (cppCodegen)
 		{
 			WfCppConfig config(&manager, itemName);
 
