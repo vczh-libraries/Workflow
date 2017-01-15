@@ -86,7 +86,7 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue(), __vwsn_temp__); return __vwsn_temp__; }());
+		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue()));
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{

@@ -51,7 +51,7 @@ namespace vl_workflow_global
 		bool c = (! static_cast<bool>(shared));
 		bool d = ::vl_workflow_global::Delete::Instance().DoDelete(raw1);
 		bool e = ::vl_workflow_global::Delete::Instance().DoDelete(raw2);
-		return (((((((([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(a, __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(b, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(c, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(d, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(e, __vwsn_temp__); return __vwsn_temp__; }());
+		return ((((((((::vl::__vwsn::ToString(a) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(e));
 	}
 
 	Delete& Delete::Instance()

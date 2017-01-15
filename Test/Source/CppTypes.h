@@ -96,5 +96,23 @@ namespace vl
 			CHECK_ERROR(thisValue != nullptr, L"The this pointer cannot be null.");
 			return thisValue;
 		}
+
+		template<typename T>
+		WString ToString(const T& value)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			WString str;
+			CHECK_ERROR(reflection::description::TypedValueSerializerProvider<T>::Serialize(value, str), L"Failed to serialize.");
+			return str;
+		}
+
+		template<typename T>
+		T Parse(const WString& str)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			T value;
+			CHECK_ERROR(reflection::description::TypedValueSerializerProvider<T>::Deserialize(str, value), L"Failed to serialize.");
+			return value;
+		}
 	}
 }

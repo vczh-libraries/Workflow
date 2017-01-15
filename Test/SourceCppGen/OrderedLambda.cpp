@@ -48,7 +48,7 @@ namespace vl_workflow_global
 	{
 		::vl::Func<::vl::vint32_t(::vl::vint32_t)> f = ::vl_workflow_global::OrderedLambda::Instance().Adder(1);
 		::vl::Func<::vl::vint32_t(::vl::vint32_t)> g = ::vl_workflow_global::OrderedLambda::Instance().Adder(2);
-		return (((((([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(f(1), __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(f(2), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(g(1), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(g(2), __vwsn_temp__); return __vwsn_temp__; }());
+		return ((((((::vl::__vwsn::ToString(f(1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(2)));
 	}
 
 	OrderedLambda& OrderedLambda::Instance()

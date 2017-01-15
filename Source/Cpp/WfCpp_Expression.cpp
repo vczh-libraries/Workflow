@@ -90,23 +90,17 @@ namespace vl
 				{
 					if (fromTd == description::GetTypeDescriptor<WString>())
 					{
-						writer.WriteString(L"[&](){ ");
+						writer.WriteString(L"::vl::__vwsn::Parse<");
 						writer.WriteString(config->ConvertType(toTd));
-						writer.WriteString(L" __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
-						writer.WriteString(config->ConvertType(toTd));
-						writer.WriteString(L">::Deserialize(");
+						writer.WriteString(L">(");
 						writeExpression();
-						writer.WriteString(L", __vwsn_temp__); return __vwsn_temp__; }()");
+						writer.WriteString(L")");
 					}
 					else if (toTd == description::GetTypeDescriptor<WString>())
 					{
-						writer.WriteString(L"[&](){ ");
-						writer.WriteString(config->ConvertType(toTd));
-						writer.WriteString(L" __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<");
-						writer.WriteString(config->ConvertType(fromTd));
-						writer.WriteString(L">::Serialize(");
+						writer.WriteString(L"::vl::__vwsn::ToString(");
 						writeExpression();
-						writer.WriteString(L", __vwsn_temp__); return __vwsn_temp__; }()");
+						writer.WriteString(L")");
 					}
 					else
 					{

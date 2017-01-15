@@ -30,7 +30,7 @@ namespace vl_workflow_global
 		float f32 = static_cast<float>(1.5);
 		double f64 = static_cast<double>(3);
 		::vl::WString s = ::vl::WString(L"text", false);
-		return (((((([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint8_t>::Serialize((- i8), __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint16_t>::Serialize((- i16), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize((- i32), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint64_t>::Serialize((- i64), __vwsn_temp__); return __vwsn_temp__; }());
+		return ((((((::vl::__vwsn::ToString((- i8)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((- i16))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((- i32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((- i64)));
 	}
 
 	OpNegative& OpNegative::Instance()

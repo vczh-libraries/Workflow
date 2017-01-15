@@ -24,7 +24,7 @@ namespace vl_workflow_global
 		::vl::vint32_t s1 = get();
 		set(20);
 		::vl::vint32_t s2 = get();
-		return (([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(s1, __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(s2, __vwsn_temp__); return __vwsn_temp__; }());
+		return ((::vl::__vwsn::ToString(s1) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(s2));
 	}
 
 	MethodClosure& MethodClosure::Instance()

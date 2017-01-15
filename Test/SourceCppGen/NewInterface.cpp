@@ -50,11 +50,11 @@ namespace vl_workflow_global
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{
-				(s = (s + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
+				(s = (s + ::vl::__vwsn::ToString(x)));
 			}
 			else
 			{
-				(s = ((s + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
+				(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
 			}
 		}
 		return s;
@@ -68,11 +68,11 @@ namespace vl_workflow_global
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{
-				(s = (s + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
+				(s = (s + ::vl::__vwsn::ToString(x)));
 			}
 			else
 			{
-				(s = ((s + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
+				(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
 			}
 		}
 		return s;

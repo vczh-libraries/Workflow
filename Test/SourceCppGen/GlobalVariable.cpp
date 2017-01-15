@@ -29,7 +29,7 @@ namespace vl_workflow_global
 	{
 		(::vl_workflow_global::GlobalVariable::Instance().x = 10);
 		::vl::vint32_t y = ::vl_workflow_global::GlobalVariable::Instance().Add(20);
-		return (([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl_workflow_global::GlobalVariable::Instance().x, __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(y, __vwsn_temp__); return __vwsn_temp__; }());
+		return ((::vl::__vwsn::ToString(::vl_workflow_global::GlobalVariable::Instance().x) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(y));
 	}
 
 	GlobalVariable& GlobalVariable::Instance()

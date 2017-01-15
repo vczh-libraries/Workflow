@@ -27,7 +27,7 @@ namespace vl_workflow_global
 	::vl::WString NamedLambda::main()
 	{
 		::vl::Func<::vl::vint32_t(::vl::vint32_t)> fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
-		return (((((((([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(fib(1), __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(fib(2), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(fib(3), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(fib(4), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(fib(5), __vwsn_temp__); return __vwsn_temp__; }());
+		return ((((((((::vl::__vwsn::ToString(fib(1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(4))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(5)));
 	}
 
 	NamedLambda& NamedLambda::Instance()
