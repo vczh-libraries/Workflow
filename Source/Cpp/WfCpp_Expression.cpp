@@ -757,14 +757,17 @@ namespace vl
 					case WfLiteralValue::Null:
 						{
 							auto result = config->manager->expressionResolvings[node];
-							if (result.type->GetDecorator() == ITypeInfo::Nullable)
+							switch (result.type->GetDecorator())
 							{
+							case ITypeInfo::Nullable:
+							case ITypeInfo::SharedPtr:
 								writer.WriteString(config->ConvertType(result.type.Obj()));
 								writer.WriteString(L"()");
-							}
-							else
-							{
-								writer.WriteString(L"nullptr");
+								break;
+							default:
+								writer.WriteString(L"static_cast<");
+								writer.WriteString(config->ConvertType(result.type.Obj()));
+								writer.WriteString(L">(nullptr)");
 							}
 						}
 						break;

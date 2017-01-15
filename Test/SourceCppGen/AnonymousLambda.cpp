@@ -42,8 +42,8 @@ namespace vl_workflow_global
 
 	::vl::WString AnonymousLambda::main()
 	{
-		::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> f = ::vl_workflow_global::AnonymousLambda::Instance().Adder(1);
-		::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> g = ::vl_workflow_global::AnonymousLambda::Instance().Adder(2);
+		auto f = ::vl_workflow_global::AnonymousLambda::Instance().Adder(1);
+		auto g = ::vl_workflow_global::AnonymousLambda::Instance().Adder(2);
 		return ((((((::vl::__vwsn::ToString(f(1)()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(2)())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(1)())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(2)()));
 	}
 

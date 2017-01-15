@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString ForEach::Show1(::vl::Ptr<::vl::reflection::description::IValueList> xs)
 	{
-		::vl::WString s = ::vl::WString(L"", false);
+		auto s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::reflection::description::GetLazyList<::vl::vint32_t>(xs))
 		{
@@ -36,7 +36,7 @@ namespace vl_workflow_global
 
 	::vl::WString ForEach::Show2(::vl::Ptr<::vl::reflection::description::IValueList> xs)
 	{
-		::vl::WString s = ::vl::WString(L"", false);
+		auto s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::reflection::description::GetLazyList<::vl::vint32_t>(xs).Reverse())
 		{
@@ -54,7 +54,7 @@ namespace vl_workflow_global
 
 	::vl::WString ForEach::main()
 	{
-		::vl::Ptr<::vl::reflection::description::IValueList> xs = (::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list;
+		auto xs = (::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list;
 		return ((((::vl::WString(L"[", false) + ::vl_workflow_global::ForEach::Instance().Show1(xs)) + ::vl::WString(L"][", false)) + ::vl_workflow_global::ForEach::Instance().Show2(xs)) + ::vl::WString(L"]", false));
 	}
 

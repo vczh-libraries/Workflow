@@ -20,7 +20,7 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t GlobalVariable::Add(::vl::vint32_t y)
 	{
-		::vl::vint32_t z = ::vl_workflow_global::GlobalVariable::Instance().x;
+		auto z = ::vl_workflow_global::GlobalVariable::Instance().x;
 		(::vl_workflow_global::GlobalVariable::Instance().x = (::vl_workflow_global::GlobalVariable::Instance().x + y));
 		return z;
 	}
@@ -28,7 +28,7 @@ namespace vl_workflow_global
 	::vl::WString GlobalVariable::main()
 	{
 		(::vl_workflow_global::GlobalVariable::Instance().x = 10);
-		::vl::vint32_t y = ::vl_workflow_global::GlobalVariable::Instance().Add(20);
+		auto y = ::vl_workflow_global::GlobalVariable::Instance().Add(20);
 		return ((::vl::__vwsn::ToString(::vl_workflow_global::GlobalVariable::Instance().x) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(y));
 	}
 

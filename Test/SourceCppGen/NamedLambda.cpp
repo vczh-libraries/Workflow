@@ -26,7 +26,7 @@ namespace vl_workflow_global
 
 	::vl::WString NamedLambda::main()
 	{
-		::vl::Func<::vl::vint32_t(::vl::vint32_t)> fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		auto fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
 		return ((((((((::vl::__vwsn::ToString(fib(1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(4))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(5)));
 	}
 
@@ -41,7 +41,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
 	{
-		::vl::Func<::vl::vint32_t(::vl::vint32_t)> fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		auto fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
 		return ((n <= 2) ? 1 : ((*this)((n - 1)) + fib2((n - 2))));
 	}
 }

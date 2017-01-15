@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t ControlFlow::Sum1(::vl::vint32_t start, ::vl::vint32_t end)
 	{
-		::vl::vint32_t result = 0;
+		auto result = 0;
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(start, end + 1))
 		{
@@ -29,7 +29,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t ControlFlow::Sum2(::vl::vint32_t start, ::vl::vint32_t end)
 	{
-		::vl::vint32_t result = 0;
+		auto result = 0;
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(start, end + 1).Reverse())
 		{
@@ -40,8 +40,8 @@ namespace vl_workflow_global
 
 	::vl::vint32_t ControlFlow::Sum3(::vl::vint32_t start, ::vl::vint32_t end)
 	{
-		::vl::vint32_t result = 0;
-		::vl::vint32_t current = start;
+		auto result = 0;
+		auto current = start;
 		while ((current <= end))
 		{
 			(result = (result + current));
@@ -52,8 +52,8 @@ namespace vl_workflow_global
 
 	::vl::vint32_t ControlFlow::Sum4(::vl::vint32_t start, ::vl::vint32_t end)
 	{
-		::vl::vint32_t result = 0;
-		::vl::vint32_t current = start;
+		auto result = 0;
+		auto current = start;
 		while (true)
 		{
 			if ((current > end))
@@ -68,9 +68,9 @@ namespace vl_workflow_global
 
 	::vl::vint32_t ControlFlow::Sum5(::vl::vint32_t start, ::vl::vint32_t end)
 	{
-		::vl::vint32_t result = 0;
-		::vl::vint32_t current = start;
-		bool needToExit = false;
+		auto result = 0;
+		auto current = start;
+		auto needToExit = false;
 		while ((! needToExit))
 		{
 			{

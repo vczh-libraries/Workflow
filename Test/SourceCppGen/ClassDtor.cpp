@@ -20,11 +20,11 @@ namespace vl_workflow_global
 {
 	::vl::WString ClassDtor::main()
 	{
-		::Dtor* x = new ::Dtor();
+		auto x = new ::Dtor();
 		(::vl::__vwsn::This(x)->name = ::vl::WString(L"x", false));
-		::Dtor* y = new ::Dtor();
+		auto y = new ::Dtor();
 		(::vl::__vwsn::This(y)->name = ::vl::WString(L"y", false));
-		::Dtor* z = new ::Dtor();
+		auto z = new ::Dtor();
 		(::vl::__vwsn::This(z)->name = ::vl::WString(L"z", false));
 		(::vl::__vwsn::This(x)->next = y);
 		(::vl::__vwsn::This(y)->next = z);

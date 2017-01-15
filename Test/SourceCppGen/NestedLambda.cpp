@@ -255,10 +255,10 @@ namespace vl_workflow_global
 
 	::vl::WString __vwsnc1_NestedLambda_main__IA::Calculate()
 	{
-		::vl::Func<::vl::vint32_t()> f = LAMBDA(::vl_workflow_global::__vwsno6_NestedLambda_main_Calculate_(this));
-		::vl::Func<::vl::vint32_t()> g = LAMBDA(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
-		::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc1_NestedLambda_main__IA::H);
-		::vl::WString s = ::vl::WString(L"", false);
+		auto f = LAMBDA(::vl_workflow_global::__vwsno6_NestedLambda_main_Calculate_(this));
+		auto g = LAMBDA(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
+		auto h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc1_NestedLambda_main__IA::H);
+		auto s = ::vl::WString(L"", false);
 		(a = 1);
 		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(f())) + ::vl::WString(L"]", false))));
 		::vl::__vwsn::This(this)->SetA(2);
@@ -292,10 +292,10 @@ namespace vl_workflow_global
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::Calculate()
 	{
-		::vl::Func<::vl::vint32_t()> f = LAMBDA(::vl_workflow_global::__vwsno2_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
-		::vl::Func<::vl::vint32_t()> g = LAMBDA(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
-		::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc2_NestedLambda_main_H__IB::H);
-		::vl::WString s = ::vl::WString(L"", false);
+		auto f = LAMBDA(::vl_workflow_global::__vwsno2_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
+		auto g = LAMBDA(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
+		auto h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc2_NestedLambda_main_H__IB::H);
+		auto s = ::vl::WString(L"", false);
 		(b = 1);
 		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(f())) + ::vl::WString(L"]", false))));
 		::vl::__vwsn::This(this)->SetB(2);

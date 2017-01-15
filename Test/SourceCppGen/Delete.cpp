@@ -43,14 +43,14 @@ namespace vl_workflow_global
 
 	::vl::WString Delete::main()
 	{
-		::test::ObservableValue* raw1 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
-		::test::ObservableValue* raw2 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
-		::vl::Ptr<::test::ObservableValue> shared = ::vl::Ptr<::test::ObservableValue>(raw1);
-		bool a = (raw1 == nullptr);
-		bool b = (raw2 == nullptr);
-		bool c = (! static_cast<bool>(shared));
-		bool d = ::vl_workflow_global::Delete::Instance().DoDelete(raw1);
-		bool e = ::vl_workflow_global::Delete::Instance().DoDelete(raw2);
+		auto raw1 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
+		auto raw2 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
+		auto shared = ::vl::Ptr<::test::ObservableValue>(raw1);
+		auto a = (raw1 == nullptr);
+		auto b = (raw2 == nullptr);
+		auto c = (! static_cast<bool>(shared));
+		auto d = ::vl_workflow_global::Delete::Instance().DoDelete(raw1);
+		auto e = ::vl_workflow_global::Delete::Instance().DoDelete(raw2);
 		return ((((((((::vl::__vwsn::ToString(a) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(e));
 	}
 

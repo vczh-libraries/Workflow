@@ -21,19 +21,19 @@ namespace vl_workflow_global
 	::vl::WString ClassCtor::main()
 	{
 		{
-			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor());
+			auto a = ::vl::Ptr<::Ctor>(new ::Ctor());
 			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
-			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(1, true));
+			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(1, true));
 			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
-			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(true, 2));
+			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(true, 2));
 			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
-			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(1, 2));
+			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(1, 2));
 			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		return ::vl_workflow_global::ClassCtor::Instance().s;

@@ -59,8 +59,8 @@ namespace vl_workflow_global
 
 	::vl::WString BindFormat::main()
 	{
-		::vl::Ptr<::test::ObservableValue> x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(x));
+		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(x));
 		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(&::vl_workflow_global::BindFormat::Instance(), &::vl_workflow_global::BindFormat::Callback));
 		::vl::__vwsn::This(x.Obj())->SetValue(10);
 		::vl::__vwsn::This(x.Obj())->SetValue(20);
@@ -77,8 +77,8 @@ namespace vl_workflow_global
 	__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> __vwsnctor_x)
 		:x(__vwsnctor_x)
 	{
-		this->__vwsn_bind_cache_0 = nullptr;
-		this->__vwsn_bind_handler_0_0 = nullptr;
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::test::ObservableValue>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
@@ -86,7 +86,7 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue()));
+		auto __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue()));
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
@@ -112,8 +112,8 @@ namespace vl_workflow_global
 			(__vwsn_bind_opened_ = true);
 			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
 		}
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_ = this;
-		::vl::Ptr<::vl::reflection::description::IValueListener> __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this));
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this));
 		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
 		return __vwsn_listener_shared_;
 	}
@@ -134,8 +134,8 @@ namespace vl_workflow_global
 		{
 			(__vwsn_bind_closed_ = true);
 			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ValueChanged, __vwsn_bind_handler_0_0);
-			(__vwsn_bind_cache_0 = nullptr);
-			(__vwsn_bind_handler_0_0 = nullptr);
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::test::ObservableValue>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
 			return true;
 		}

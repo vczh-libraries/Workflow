@@ -44,7 +44,7 @@ namespace vl_workflow_global
 
 	::vl::WString NewInterface::Show1(const ::vl::collections::LazyList<::vl::vint32_t>& xs)
 	{
-		::vl::WString s = ::vl::WString(L"", false);
+		auto s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, xs)
 		{
@@ -62,7 +62,7 @@ namespace vl_workflow_global
 
 	::vl::WString NewInterface::Show2(const ::vl::collections::LazyList<::vl::vint32_t>& xs)
 	{
-		::vl::WString s = ::vl::WString(L"", false);
+		auto s = ::vl::WString(L"", false);
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, xs.Reverse())
 		{
@@ -80,9 +80,9 @@ namespace vl_workflow_global
 
 	::vl::WString NewInterface::main()
 	{
-		::vl::vint32_t begin = 1;
-		::vl::vint32_t end = 5;
-		::vl::collections::LazyList<::vl::vint32_t> xs = ::vl::reflection::description::GetLazyList<::vl::vint32_t>(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(new ::vl_workflow_global::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(begin, end)));
+		auto begin = 1;
+		auto end = 5;
+		auto xs = ::vl::reflection::description::GetLazyList<::vl::vint32_t>(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(new ::vl_workflow_global::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(begin, end)));
 		return ((((::vl::WString(L"[", false) + ::vl_workflow_global::NewInterface::Instance().Show1(xs)) + ::vl::WString(L"][", false)) + ::vl_workflow_global::NewInterface::Instance().Show2(xs)) + ::vl::WString(L"]", false));
 	}
 

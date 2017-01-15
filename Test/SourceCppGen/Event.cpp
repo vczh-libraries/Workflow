@@ -27,13 +27,13 @@ namespace vl_workflow_global
 
 	::vl::WString Event::main()
 	{
-		::vl::Ptr<::test::ObservableValue> o = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(10));
-		::vl::Ptr<::vl::reflection::description::IEventHandler> handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(o.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(&::vl_workflow_global::Event::Instance(), &::vl_workflow_global::Event::EventHandler));
+		auto o = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(10));
+		auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(o.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(&::vl_workflow_global::Event::Instance(), &::vl_workflow_global::Event::EventHandler));
 		::vl::__vwsn::This(o.Obj())->SetValue(20);
 		::vl::__vwsn::This(o.Obj())->SetValue(30);
-		bool b1 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o.Obj())->ValueChanged, handler);
+		auto b1 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o.Obj())->ValueChanged, handler);
 		::vl::__vwsn::This(o.Obj())->SetValue(40);
-		bool b2 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o.Obj())->ValueChanged, handler);
+		auto b2 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o.Obj())->ValueChanged, handler);
 		return ((((((((((((((::vl::__vwsn::ToString(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Get(0)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds.Obj())->Get(1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->GetCount())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Get(0)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news.Obj())->Get(1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b2));
 	}
 

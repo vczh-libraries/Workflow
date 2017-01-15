@@ -18,9 +18,9 @@ namespace vl_workflow_global
 {
 	::vl::WString ClassField::main()
 	{
-		::vl::WString s = ::vl::WString(L"", false);
-		::vl::Ptr<::test::PointClass> a = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
-		::vl::Ptr<::test::PointClass> b = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
+		auto s = ::vl::WString(L"", false);
+		auto a = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
+		auto b = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
 		(::vl::__vwsn::This(b.Obj())->x = 1);
 		(::vl::__vwsn::This(b.Obj())->y = 2);
 		return (((((((((((::vl::WString(L"", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->y)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(b.Obj())->x)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(b.Obj())->y)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() == a.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() == b.Obj())));

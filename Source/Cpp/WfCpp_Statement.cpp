@@ -326,7 +326,14 @@ namespace vl
 					auto symbol = scope->symbols[node->variable->name.value][0].Obj();
 
 					writer.WriteString(prefix);
-					writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
+					if (node->variable->expression)
+					{
+						writer.WriteString(L"auto");
+					}
+					else
+					{
+						writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
+					}
 					writer.WriteString(L" ");
 					writer.WriteString(config->ConvertName(node->variable->name.value));
 

@@ -18,11 +18,11 @@ namespace vl_workflow_global
 {
 	::vl::WString MapProcessing::main()
 	{
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> xs = (::vl::__vwsn::CreateDictionary().Add(::vl::WString(L"a", false), 1).Add(::vl::WString(L"b", false), 2).Add(::vl::WString(L"c", false), 3).Add(::vl::WString(L"d", false), 4).Add(::vl::WString(L"e", false), 5)).dictionary;
-		::vl::WString s1 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"a", false)))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"e", false))))));
+		auto xs = (::vl::__vwsn::CreateDictionary().Add(::vl::WString(L"a", false), 1).Add(::vl::WString(L"b", false), 2).Add(::vl::WString(L"c", false), 3).Add(::vl::WString(L"d", false), 4).Add(::vl::WString(L"e", false), 5)).dictionary;
+		auto s1 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"a", false)))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"e", false))))));
 		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(::vl::WString(L"e", false)), ::vl::__vwsn::Box(6));
 		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(::vl::WString(L"f", false)), ::vl::__vwsn::Box(7));
-		::vl::WString s2 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"a", false)))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"e", false))))));
+		auto s2 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"a", false)))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"e", false))))));
 		return ((s1 + ::vl::WString(L", ", false)) + s2);
 	}
 

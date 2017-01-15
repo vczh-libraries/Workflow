@@ -18,9 +18,9 @@ namespace vl_workflow_global
 {
 	::vl::WString OpCompareReference::main()
 	{
-		::vl::Ptr<::test::ObservableValue> a = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(1));
-		::vl::Ptr<::test::ObservableValue> b = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(2));
-		::vl::Ptr<::test::ObservableValue> c = nullptr;
+		auto a = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(1));
+		auto b = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(2));
+		auto c = ::vl::Ptr<::test::ObservableValue>();
 		return ((((((((((((((((((((::vl::__vwsn::ToString((! static_cast<bool>(a))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<bool>(a))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() == b.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! static_cast<bool>(b)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<bool>(b))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() != b.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() == c.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((b.Obj() == c.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() == a.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((b.Obj() == b.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((c.Obj() == c.Obj())));
 	}
 

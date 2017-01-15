@@ -23,7 +23,7 @@ namespace vl_workflow_global
 
 	::vl::WString FailedThen::main()
 	{
-		return (((::vl::WString(L"", false) + ::vl::__vwsn::ToString(::vl_workflow_global::FailedThen::Instance().GetValue(nullptr, 10, (- 1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
+		return (((::vl::WString(L"", false) + ::vl::__vwsn::ToString(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(), 10, (- 1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
 	}
 
 	FailedThen& FailedThen::Instance()

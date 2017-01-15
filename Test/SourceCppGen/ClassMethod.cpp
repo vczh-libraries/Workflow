@@ -30,16 +30,16 @@ namespace vl_workflow_global
 	::vl::WString ClassMethod::main()
 	{
 		{
-			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods());
+			auto a = ::vl::Ptr<::Methods>(new ::Methods());
 			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
 		}
 		{
-			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods(100));
+			auto a = ::vl::Ptr<::Methods>(new ::Methods(100));
 			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
 		}
 		{
-			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods(1));
-			::vl::Ptr<::vl::reflection::description::IEventHandler> handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(a.Obj())->XChanged, LAMBDA(::vl_workflow_global::__vwsnf1_ClassMethod_main_(a)));
+			auto a = ::vl::Ptr<::Methods>(new ::Methods(1));
+			auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(a.Obj())->XChanged, LAMBDA(::vl_workflow_global::__vwsnf1_ClassMethod_main_(a)));
 			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() + 1));
 			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() - 1));
 			::vl::__vwsn::This(a.Obj())->SetX(::vl::__vwsn::This(a.Obj())->GetX());

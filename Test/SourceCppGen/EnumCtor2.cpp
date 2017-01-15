@@ -23,10 +23,10 @@ namespace vl_workflow_global
 
 	::vl::WString EnumCtor2::main()
 	{
-		::Seasons a = ::Seasons::Spring;
-		::Seasons b = ::Seasons::Summer;
-		::Seasons c = ::vl_workflow_global::EnumCtor2::Instance().Id(::Seasons::Autumn);
-		::Seasons d = ::Seasons::Winter;
+		auto a = ::Seasons::Spring;
+		auto b = ::Seasons::Summer;
+		auto c = ::vl_workflow_global::EnumCtor2::Instance().Id(::Seasons::Autumn);
+		auto d = ::Seasons::Winter;
 		return ((((((((((((::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(a)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(b))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(c))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(d))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a | b)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::Seasons::Good)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::Seasons::Bad))));
 	}
 

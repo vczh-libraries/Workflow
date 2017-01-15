@@ -73,14 +73,14 @@ namespace vl_workflow_global
 
 	::vl::Ptr<::vl::reflection::description::IValueSubscription> BindCustomInterface2::Bind(::vl::Ptr<::ISummer> summer)
 	{
-		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(summer));
+		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(summer));
 		::vl::__vwsn::This(subscription.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf1_BindCustomInterface2_Bind_()));
 		return subscription;
 	}
 
 	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder> adder)
 	{
-		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl_workflow_global::BindCustomInterface2::Instance().Bind(adder.Cast<::ISummer>());
+		auto subscription = ::vl_workflow_global::BindCustomInterface2::Instance().Bind(adder.Cast<::ISummer>());
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
@@ -112,8 +112,8 @@ namespace vl_workflow_global
 	__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer)
 		:summer(__vwsnctor_summer)
 	{
-		this->__vwsn_bind_cache_0 = nullptr;
-		this->__vwsn_bind_handler_0_0 = nullptr;
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::ISummer>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
@@ -121,7 +121,7 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		::vl::vint32_t __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSum();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSum();
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
@@ -147,8 +147,8 @@ namespace vl_workflow_global
 			(__vwsn_bind_opened_ = true);
 			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
 		}
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_ = this;
-		::vl::Ptr<::vl::reflection::description::IValueListener> __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this));
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this));
 		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
 		return __vwsn_listener_shared_;
 	}
@@ -169,8 +169,8 @@ namespace vl_workflow_global
 		{
 			(__vwsn_bind_closed_ = true);
 			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SumChanged, __vwsn_bind_handler_0_0);
-			(__vwsn_bind_cache_0 = nullptr);
-			(__vwsn_bind_handler_0_0 = nullptr);
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::ISummer>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
 			return true;
 		}

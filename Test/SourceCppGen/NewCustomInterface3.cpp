@@ -43,8 +43,8 @@ namespace vl_workflow_global
 
 	::vl::WString NewCustomInterface3::main()
 	{
-		::vl::Ptr<::MyClass> x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
-		::vl::Ptr<::IMyInterface3> xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
+		auto x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
+		auto xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
 		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()))) + ::vl::WString(L"]", false));
 	}
 

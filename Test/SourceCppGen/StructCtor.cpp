@@ -23,8 +23,8 @@ namespace vl_workflow_global
 
 	::vl::WString StructCtor::main()
 	{
-		::test::Point a = [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = 1; __vwsn_temp__.y = 2; return __vwsn_temp__; }();
-		::test::Point b = [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = 3; __vwsn_temp__.y = 4; return __vwsn_temp__; }();
+		auto a = [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = 1; __vwsn_temp__.y = 2; return __vwsn_temp__; }();
+		auto b = [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = 3; __vwsn_temp__.y = 4; return __vwsn_temp__; }();
 		return ::vl::__vwsn::ToString(((::vl_workflow_global::StructCtor::Instance().Do(a) + ::vl_workflow_global::StructCtor::Instance().Do(b)) + ::vl_workflow_global::StructCtor::Instance().Do([&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = 5; __vwsn_temp__.y = 6; return __vwsn_temp__; }())));
 	}
 

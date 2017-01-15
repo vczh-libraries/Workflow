@@ -18,9 +18,9 @@ namespace vl_workflow_global
 {
 	::vl::WString IfNotNull::main()
 	{
-		::vl::reflection::description::Value x = ::vl::__vwsn::Box((::vl::__vwsn::CreateList().Add(1)).list);
-		::vl::reflection::description::Value y = ::vl::__vwsn::Box((::vl::__vwsn::CreateDictionary().Add(1, 2)).dictionary);
-		::vl::WString s = ::vl::WString(L"", false);
+		auto x = ::vl::__vwsn::Box((::vl::__vwsn::CreateList().Add(1)).list);
+		auto y = ::vl::__vwsn::Box((::vl::__vwsn::CreateDictionary().Add(1, 2)).dictionary);
+		auto s = ::vl::WString(L"", false);
 		if (::vl::__vwsn::Unbox<bool>(x))
 		{
 			(s = (s + ::vl::WString(L"{1} is a list", false)));

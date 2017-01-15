@@ -45,9 +45,9 @@ namespace vl_workflow_global
 
 	::vl::WString NewCustomInterface::main()
 	{
-		::vl::vint32_t begin = 1;
-		::vl::vint32_t end = 5;
-		::vl::Ptr<::IMyInterface> xs = ::vl::Ptr<::IMyInterface>(new ::vl_workflow_global::__vwsnc1_NewCustomInterface_main__IMyInterface(begin, end));
+		auto begin = 1;
+		auto end = 5;
+		auto xs = ::vl::Ptr<::IMyInterface>(new ::vl_workflow_global::__vwsnc1_NewCustomInterface_main__IMyInterface(begin, end));
 		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()))) + ::vl::WString(L"]", false));
 	}
 
