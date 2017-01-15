@@ -1939,43 +1939,47 @@ ExpandBindExpression
 						auto block = MakePtr<WfBlockStatement>();
 						func->statement = block;
 						{
-							Group<WfExpression*, WfExpression*> dependencies;
+							Group<WfExpression*, WfExpression*> reversedDependencies;
 							FOREACH_INDEXER(WfExpression*, key, index, dependency.dependencies.Keys())
 							{
 								FOREACH(WfExpression*, value, dependency.dependencies.GetByIndex(index))
 								{
 									if (value)
 									{
-										dependencies.Add(value, key);
+										reversedDependencies.Add(value, key);
 									}
 								}
 							}
-					
-							List<WfExpression*> sorted, all;
-							CopyFrom(all, dependency.dependencies.Keys());
-							all.Remove(0);
-							sorted.Add(0);
-							for (vint i = 0; i < sorted.Count(); i++)
-							{
-								auto observe = sorted[i];
-								for (vint j = dependencies.Count() - 1; j >= 0; j--)
-								{
-									auto key = dependencies.Keys()[j];
-									if (From(dependencies.GetByIndex(j))
-										.All([&all](WfExpression* value){return !all.Contains(value); })
-										)
-									{
-										all.Remove(key);
-										dependencies.Remove(key);
-										sorted.Add(key);
-									}
-								}
-							}
-							sorted.Remove(0);
 
-							FOREACH(WfExpression*, observe, sorted)
+							SortedList<WfExpression*> freeObserves;
+							while (reversedDependencies.Count() > 0)
 							{
-								CreateBindCacheAssignStatement(block, observe, bcInfo);
+								CopyFrom(
+									freeObserves,
+									From(reversedDependencies.Keys())
+										.Where([&](WfExpression* observe)
+										{
+											return From(reversedDependencies[observe])
+												.All([&](WfExpression* parent)
+											{
+												return !reversedDependencies.Contains(parent);
+											});
+										})
+									);
+
+								FOREACH(WfExpression*, observe, bcInfo.orderedObserves.Values())
+								{
+									if (freeObserves.Contains(observe))
+									{
+										CreateBindCacheAssignStatement(block, observe, bcInfo);
+									}
+								}
+
+								FOREACH(WfExpression*, observe, freeObserves)
+								{
+									reversedDependencies.Remove(observe);
+								}
+								freeObserves.Clear();
 							}
 						}
 						{
