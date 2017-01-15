@@ -764,12 +764,13 @@ namespace vl
 				void Visit(WfMemberExpression* node)override
 				{
 					auto result = config->manager->expressionResolvings[node];
+					auto parentResult = config->manager->expressionResolvings[node->parent.Obj()];
 					WriteReferenceTemplate(result,
 						[&](IMethodInfo* methodInfo)
 						{
 							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->parent);
-							if (result.type->GetDecorator() == ITypeInfo::SharedPtr)
+							if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
 							{
 								writer.WriteString(L".Obj()");
 							}
@@ -781,6 +782,10 @@ namespace vl
 							auto isRef = (propertyInfo->GetOwnerTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
 							if (isRef) writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->parent);
+							if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								writer.WriteString(L".Obj()");
+							}
 							if (isRef) writer.WriteString(L")");
 							return true;
 						});
@@ -948,6 +953,11 @@ namespace vl
 											if (member)
 											{
 												Call(member->parent);
+												auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
+												if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
+												{
+													writer.WriteString(L".Obj()");
+												}
 											}
 											else
 											{
@@ -974,6 +984,11 @@ namespace vl
 											if (member)
 											{
 												Call(member->parent);
+												auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
+												if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
+												{
+													writer.WriteString(L".Obj()");
+												}
 											}
 											else
 											{
@@ -999,7 +1014,7 @@ namespace vl
 							auto valueType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
 							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(binary->first);
-							writer.WriteString(L")->Set(");
+							writer.WriteString(L".Obj())->Set(");
 							if (containerType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
 							{
 								WriteBoxParameter(keyType, [&]() {Call(binary->second); });
@@ -1026,7 +1041,7 @@ namespace vl
 						{
 							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->first);
-							writer.WriteString(L")->Get(");
+							writer.WriteString(L".Obj())->Get(");
 							if (containerType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>()))
 							{
 								WriteBoxParameter(keyType, [&]() {Call(node->second); });
@@ -1481,16 +1496,9 @@ namespace vl
 									}
 								};
 
-								if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+								if (config->IsSpecialGenericType(result.type.Obj()))
 								{
-									writer.WriteString(L"/* NOT SUPPORTS: testing against enumerable type: ");
-									writer.WriteString(toCode());
-									writer.WriteString(L" */ __vwsn_not_exists__");
-									return;
-								}
-								else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
-								{
-									writer.WriteString(L"/* NOT SUPPORTS: testing against function type: ");
+									writer.WriteString(L"/* NOT SUPPORTS: testing against non-reference generic type: ");
 									writer.WriteString(toCode());
 									writer.WriteString(L" */ __vwsn_not_exists__");
 									return;
@@ -1640,6 +1648,11 @@ namespace vl
 								if (auto member = node->event.Cast<WfMemberExpression>())
 								{
 									Call(member->parent);
+									auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
+									if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
+									{
+										writer.WriteString(L".Obj()");
+									}
 								}
 								else
 								{
@@ -1672,6 +1685,11 @@ namespace vl
 								if (auto member = node->event.Cast<WfMemberExpression>())
 								{
 									Call(member->parent);
+									auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
+									if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
+									{
+										writer.WriteString(L".Obj()");
+									}
 								}
 								else
 								{
@@ -1709,6 +1727,11 @@ namespace vl
 						if (auto member = node->function.Cast<WfMemberExpression>())
 						{
 							Call(member->parent);
+							auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
+							if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								writer.WriteString(L".Obj()");
+							}
 						}
 						else
 						{

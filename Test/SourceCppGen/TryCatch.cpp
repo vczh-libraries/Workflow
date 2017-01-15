@@ -30,14 +30,14 @@ namespace vl_workflow_global
 		{
 			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
+				(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 			}
 		}
 		catch(const ::vl::Error& __vwsne_0)
 		{
 			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 			{
-				(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
+				(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 			}
 		}
 	}
@@ -61,7 +61,7 @@ namespace vl_workflow_global
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 				{
-					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
+					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 				}
 				__vwsnb_0();
 			}
@@ -69,7 +69,7 @@ namespace vl_workflow_global
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 				{
-					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"]", false)));
+					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 				}
 				__vwsnb_0();
 			}
@@ -109,7 +109,7 @@ namespace vl_workflow_global
 						{
 							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
 							{
-								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"1]", false)));
+								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
 							__vwsnb_1();
@@ -118,7 +118,7 @@ namespace vl_workflow_global
 						{
 							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Description());
 							{
-								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"1]", false)));
+								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
 							__vwsnb_1();
@@ -131,7 +131,7 @@ namespace vl_workflow_global
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 				{
-					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"2]", false)));
+					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
 				__vwsnb_0();
 			}
@@ -139,7 +139,7 @@ namespace vl_workflow_global
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 				{
-					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"2]", false)));
+					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
 				__vwsnb_0();
 			}
@@ -173,7 +173,7 @@ namespace vl_workflow_global
 						{
 							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
 							{
-								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"1]", false)));
+								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
 							__vwsnb_1();
@@ -182,7 +182,7 @@ namespace vl_workflow_global
 						{
 							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Description());
 							{
-								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"1]", false)));
+								(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
 							__vwsnb_1();
@@ -195,7 +195,7 @@ namespace vl_workflow_global
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 				{
-					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"2]", false)));
+					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
 				__vwsnb_0();
 			}
@@ -203,7 +203,7 @@ namespace vl_workflow_global
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 				{
-					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex)->GetMessage()) + ::vl::WString(L"2]", false)));
+					(::vl_workflow_global::TryCatch::Instance().log = (((::vl_workflow_global::TryCatch::Instance().log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
 				__vwsnb_0();
 			}

@@ -85,3 +85,16 @@ namespace vl
 		}
 	}
 }
+
+namespace vl
+{
+	namespace __vwsn
+	{
+		template<typename T>
+		T* This(T* thisValue)
+		{
+			CHECK_ERROR(thisValue != nullptr, L"The this pointer cannot be null.");
+			return thisValue;
+		}
+	}
+}

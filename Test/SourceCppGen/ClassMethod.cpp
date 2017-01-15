@@ -31,21 +31,21 @@ namespace vl_workflow_global
 	{
 		{
 			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods());
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->x, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a.Obj())->x, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		}
 		{
 			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods(100));
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->x, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a.Obj())->x, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		}
 		{
 			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods(1));
-			::vl::Ptr<::vl::reflection::description::IEventHandler> handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(a)->XChanged, LAMBDA(::vl_workflow_global::__vwsnf1_ClassMethod_main_(a)));
-			::vl::__vwsn::This(a)->SetX((::vl::__vwsn::This(a)->GetX() + 1));
-			::vl::__vwsn::This(a)->SetX((::vl::__vwsn::This(a)->GetX() - 1));
-			::vl::__vwsn::This(a)->SetX(::vl::__vwsn::This(a)->GetX());
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(a)->XChanged, handler);
-			::vl::__vwsn::This(a)->SetX(100);
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
+			::vl::Ptr<::vl::reflection::description::IEventHandler> handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(a.Obj())->XChanged, LAMBDA(::vl_workflow_global::__vwsnf1_ClassMethod_main_(a)));
+			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() + 1));
+			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() - 1));
+			::vl::__vwsn::This(a.Obj())->SetX(::vl::__vwsn::This(a.Obj())->GetX());
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(a.Obj())->XChanged, handler);
+			::vl::__vwsn::This(a.Obj())->SetX(100);
+			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a.Obj())->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		}
 		return ::vl_workflow_global::ClassMethod::Instance().s;
 	}
@@ -62,7 +62,7 @@ namespace vl_workflow_global
 
 	void __vwsnf1_ClassMethod_main_::operator()() const
 	{
-		(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(::vl::__vwsn::This(this)->a)->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
+		(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(::vl::__vwsn::This(this)->a.Obj())->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 	}
 }
 

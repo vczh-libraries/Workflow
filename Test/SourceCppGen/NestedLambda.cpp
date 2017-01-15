@@ -130,7 +130,7 @@ namespace vl_workflow_global
 
 	::vl::WString NestedLambda::main()
 	{
-		return ::vl::__vwsn::This(::vl::Ptr<::IA>(new ::vl_workflow_global::__vwsnc1_NestedLambda_main__IA()))->Calculate();
+		return ::vl::__vwsn::This(::vl::Ptr<::IA>(new ::vl_workflow_global::__vwsnc1_NestedLambda_main__IA()).Obj())->Calculate();
 	}
 
 	NestedLambda& NestedLambda::Instance()
@@ -187,7 +187,7 @@ namespace vl_workflow_global
 
 	::vl::WString __vwsno1_NestedLambda_main_H_::operator()() const
 	{
-		return ::vl::__vwsn::This(::vl::Ptr<::IB>(new ::vl_workflow_global::__vwsnc2_NestedLambda_main_H__IB(__vwsnthis_0)))->Calculate();
+		return ::vl::__vwsn::This(::vl::Ptr<::IB>(new ::vl_workflow_global::__vwsnc2_NestedLambda_main_H__IB(__vwsnthis_0)).Obj())->Calculate();
 	}
 
 	__vwsno2_NestedLambda_main_H_Calculate_::__vwsno2_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)

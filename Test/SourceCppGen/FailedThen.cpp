@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t FailedThen::GetValue(::vl::Ptr<::test::ObservableValue> value, ::vl::vint32_t increase, ::vl::vint32_t defaultValue)
 	{
-		return [&](){ try{ return (::vl::__vwsn::This(value)->GetValue() + increase); } catch(...){ return defaultValue; } }();
+		return [&](){ try{ return (::vl::__vwsn::This(value.Obj())->GetValue() + increase); } catch(...){ return defaultValue; } }();
 	}
 
 	::vl::WString FailedThen::main()

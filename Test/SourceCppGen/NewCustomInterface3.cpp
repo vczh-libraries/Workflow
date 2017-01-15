@@ -44,8 +44,8 @@ namespace vl_workflow_global
 	::vl::WString NewCustomInterface3::main()
 	{
 		::vl::Ptr<::MyClass> x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
-		::vl::Ptr<::IMyInterface3> xs = ::vl::__vwsn::This(x)->CreateMyInterface();
-		return ((((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(xs)->Get100(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false));
+		::vl::Ptr<::IMyInterface3> xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
+		return ((((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(xs.Obj())->Get100(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs.Cast<::vl::reflection::description::IValueEnumerable>()), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false));
 	}
 
 	NewCustomInterface3& NewCustomInterface3::Instance()
