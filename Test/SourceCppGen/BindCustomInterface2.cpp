@@ -106,7 +106,7 @@ namespace vl_workflow_global
 
 	void __vwsnf1_BindCustomInterface2_Bind_::operator()(::vl::reflection::description::Value value) const
 	{
-		(::vl_workflow_global::BindCustomInterface2::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindCustomInterface2::Instance().s) + ::vl::WString(L"[", false)) + static_cast<::vl::vint32_t>(::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(value))) + ::vl::WString(L"]", false)));
+		(::vl_workflow_global::BindCustomInterface2::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindCustomInterface2::Instance().s) + ::vl::WString(L"[", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::reflection::description::UnboxValue<::vl::vint32_t>(value), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false)));
 	}
 
 	__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer)
@@ -125,7 +125,7 @@ namespace vl_workflow_global
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()))
 		{
-			::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(__vwsn_bind_callback_)(__vwsn_bind_activator_result_);
+			[&](){ ::vl::Func<void(::vl::reflection::description::Value)> __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_, __vwsn_temp__); return __vwsn_temp__; }()(__vwsn_bind_activator_result_);
 		}
 	}
 

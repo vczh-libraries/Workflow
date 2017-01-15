@@ -23,11 +23,11 @@ namespace vl_workflow_global
 
 	::vl::WString StaticMethod::main()
 	{
-		::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, ::vl::WString)> create1 = ::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, const ::vl::WString&)>(&::test::ObservableValue::Create);
-		::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, ::vl::WString)> create2 = ::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, ::vl::WString)>(&::vl_workflow_global::StaticMethod::Instance(), &::vl_workflow_global::StaticMethod::Create2);
+		::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, const ::vl::WString&)> create1 = ::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, const ::vl::WString&)>(&::test::ObservableValue::Create);
+		::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, const ::vl::WString&)> create2 = ::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint32_t, const ::vl::WString&)>(&::vl_workflow_global::StaticMethod::Instance(), &::vl_workflow_global::StaticMethod::Create2);
 		::vl::Ptr<::test::ObservableValue> o1 = create1(1, ::vl::WString(L"one", false));
 		::vl::Ptr<::test::ObservableValue> o2 = ::vl_workflow_global::StaticMethod::Instance().Create2(2, ::vl::WString(L"two", false));
-		return ((((((static_cast<::vl::vint32_t>(::vl::__vwsn::This(o1)->GetValue()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(o1)->GetDisplayName()) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(o2)->GetValue())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(o2)->GetDisplayName());
+		return (((((([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(o1)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(o1)->GetDisplayName()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(o2)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(o2)->GetDisplayName());
 	}
 
 	StaticMethod& StaticMethod::Instance()

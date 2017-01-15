@@ -21,7 +21,7 @@ namespace vl_workflow_global
 		::vl::vint32_t begin = 1;
 		::vl::vint32_t end = 5;
 		::vl::Ptr<::IMyInterface> xs = ::vl::Ptr<::IMyInterface>(new ::vl_workflow_global::__vwsnc1_NewCustomInterface_main__IMyInterface(begin, end));
-		return ((((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(xs)->Get100())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::test::CustomInterfaceProcessor::Sum(xs))) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::test::CustomInterfaceProcessor::Sum(xs))) + ::vl::WString(L"]", false));
+		return ((((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(xs)->Get100(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::test::CustomInterfaceProcessor::Sum(xs), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false));
 	}
 
 	NewCustomInterface& NewCustomInterface::Instance()
@@ -82,7 +82,7 @@ namespace vl_workflow_global
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
-		return static_cast<::vl::vint32_t>((::vl::__vwsn::This(this)->begin + index));
+		return ::vl::reflection::description::BoxValue<::vl::vint32_t>((::vl::__vwsn::This(this)->begin + index));
 	}
 
 	::vl::vint32_t __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()

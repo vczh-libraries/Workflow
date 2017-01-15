@@ -20,7 +20,7 @@ namespace vl_workflow_global
 {
 	void BindSimple::Callback(::vl::reflection::description::Value value)
 	{
-		(::vl_workflow_global::BindSimple::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindSimple::Instance().s) + ::vl::WString(L"[", false)) + static_cast<::vl::vint32_t>(::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(value))) + ::vl::WString(L"]", false)));
+		(::vl_workflow_global::BindSimple::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindSimple::Instance().s) + ::vl::WString(L"[", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::reflection::description::UnboxValue<::vl::vint32_t>(value), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false)));
 	}
 
 	::vl::WString BindSimple::main()
@@ -102,11 +102,11 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		::vl::vint32_t __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue()) + ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetValue());
+		::vl::vint32_t __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetValue()) + ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetValue());
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()))
 		{
-			::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(__vwsn_bind_callback_)(__vwsn_bind_activator_result_);
+			[&](){ ::vl::Func<void(::vl::reflection::description::Value)> __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_, __vwsn_temp__); return __vwsn_temp__; }()(__vwsn_bind_activator_result_);
 		}
 	}
 
@@ -128,8 +128,8 @@ namespace vl_workflow_global
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
 		(__vwsn_bind_cache_3 = ::vl::__vwsn::This(this)->z);
-		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->x);
-		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->y);
+		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->y);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->x);
 		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
 		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 		(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));

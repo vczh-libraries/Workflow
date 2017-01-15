@@ -24,11 +24,11 @@ namespace vl_workflow_global
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{
-				(s = (s + static_cast<::vl::vint32_t>(x)));
+				(s = (s + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
 			}
 			else
 			{
-				(s = ((s + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(x)));
+				(s = ((s + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
 			}
 		}
 		return s;
@@ -42,11 +42,11 @@ namespace vl_workflow_global
 		{
 			if ((s == ::vl::WString(L"", false)))
 			{
-				(s = (s + static_cast<::vl::vint32_t>(x)));
+				(s = (s + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
 			}
 			else
 			{
-				(s = ((s + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(x)));
+				(s = ((s + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(x, __vwsn_temp__); return __vwsn_temp__; }()));
 			}
 		}
 		return s;
@@ -112,7 +112,7 @@ namespace vl_workflow_global
 
 	::vl::reflection::description::Value __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
-		return static_cast<::vl::vint32_t>((::vl::__vwsn::This(this)->begin + index));
+		return ::vl::reflection::description::BoxValue<::vl::vint32_t>((::vl::__vwsn::This(this)->begin + index));
 	}
 
 	::vl::vint32_t __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()

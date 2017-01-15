@@ -129,7 +129,7 @@ namespace vl
 						ConvertMultipleTypes(types + 1, typesLength - 1, [&]()
 						{
 							auto fromType = types[0];
-							auto toType = types[0];
+							auto toType = types[1];
 							if (fromType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{
 								if (config->IsSpecialGenericType(toType))
@@ -826,20 +826,20 @@ namespace vl
 					}
 				}
 
-				void VisitBinaryExpression(WfBinaryExpression* node, const wchar_t* op, ITypeDescriptor* type = nullptr)
+				void VisitBinaryExpression(WfBinaryExpression* node, const wchar_t* op, ITypeDescriptor* resultType, ITypeInfo* operandType)
 				{
-					if (type)
+					if (resultType)
 					{
 						writer.WriteString(L"static_cast<");
-						writer.WriteString(config->ConvertType(type));
+						writer.WriteString(config->ConvertType(resultType));
 						writer.WriteString(L">");
 					}
 					writer.WriteString(L"(");
-					Call(node->first);
+					Call(node->first, operandType);
 					writer.WriteString(L" ");
 					writer.WriteString(op);
 					writer.WriteString(L" ");
-					Call(node->second);
+					Call(node->second, operandType);
 					writer.WriteString(L")");
 				}
 
@@ -921,7 +921,7 @@ namespace vl
 						}
 						else
 						{
-							VisitBinaryExpression(node, L"=");
+							VisitBinaryExpression(node, L"=", nullptr, nullptr);
 						}
 					}
 					else if (node->op == WfBinaryOperator::Index)
@@ -950,16 +950,16 @@ namespace vl
 						auto type = config->manager->expressionResolvings[node].type;
 						if (type->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
 						{
-							VisitBinaryExpression(node, L"+");
+							VisitBinaryExpression(node, L"+", nullptr, type.Obj());
 						}
 						else
 						{
-							VisitBinaryExpression(node, L"&");
+							VisitBinaryExpression(node, L"&", nullptr, nullptr);
 						}
 					}
 					else if (node->op == WfBinaryOperator::Intersect)
 					{
-						VisitBinaryExpression(node, L"|");
+						VisitBinaryExpression(node, L"|", nullptr, nullptr);
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{
@@ -1003,7 +1003,7 @@ namespace vl
 								case WfBinaryOperator::Shr: op = L">>"; break;
 								default:;
 								}
-								VisitBinaryExpression(node, op, (BinaryNeedConvert(result.type->GetTypeDescriptor()) ? result.type->GetTypeDescriptor() : nullptr));
+								VisitBinaryExpression(node, op, (BinaryNeedConvert(result.type->GetTypeDescriptor()) ? result.type->GetTypeDescriptor() : nullptr), result.type.Obj());
 							}
 							return;
 						case WfBinaryOperator::EQ:
@@ -1083,7 +1083,7 @@ namespace vl
 								case WfBinaryOperator::NE: op = L"!="; break;
 								default:;
 								}
-								VisitBinaryExpression(node, op);
+								VisitBinaryExpression(node, op, nullptr, nullptr);
 							}
 							return;
 						case WfBinaryOperator::Xor:
@@ -1117,7 +1117,7 @@ namespace vl
 										td = nullptr;
 									}
 								}
-								VisitBinaryExpression(node, op, td);
+								VisitBinaryExpression(node, op, td, result.type.Obj());
 							}
 							return;
 						default:;

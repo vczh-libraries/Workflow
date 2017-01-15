@@ -178,7 +178,7 @@ namespace vl_workflow_global
 		::vl_workflow_global::TryFinally::Instance().test2();
 		::vl_workflow_global::TryFinally::Instance().test3();
 		::vl_workflow_global::TryFinally::Instance().test4();
-		return static_cast<::vl::vint32_t>(::vl_workflow_global::TryFinally::Instance().sum);
+		return [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl_workflow_global::TryFinally::Instance().sum, __vwsn_temp__); return __vwsn_temp__; }();
 	}
 
 	TryFinally& TryFinally::Instance()

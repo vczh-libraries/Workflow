@@ -22,19 +22,19 @@ namespace vl_workflow_global
 	{
 		{
 			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor());
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		}
 		{
 			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(1, true));
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		}
 		{
 			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(true, 2));
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		}
 		{
 			::vl::Ptr<::Ctor> a = ::vl::Ptr<::Ctor>(new ::Ctor(1, 2));
-			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetX())) + ::vl::WString(L"][", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->GetValue())) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassCtor::Instance().s = (::vl_workflow_global::ClassCtor::Instance().s + ((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetX(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"][", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(a)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		}
 		return ::vl_workflow_global::ClassCtor::Instance().s;
 	}

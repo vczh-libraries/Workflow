@@ -260,9 +260,9 @@ namespace vl_workflow_global
 		::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc1_NestedLambda_main__IA::H);
 		::vl::WString s = ::vl::WString(L"", false);
 		(a = 1);
-		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(f())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(f(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		(::vl::__vwsn::This(this)->GetA() = 2);
-		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(g())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(g(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		(::vl::__vwsn::This(this)->GetA() = (::vl::__vwsn::This(this)->GetA() + 1));
 		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
 		return s;
@@ -287,7 +287,7 @@ namespace vl_workflow_global
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::H()
 	{
-		return ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(__vwsnthis_0)->GetA())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(this)->GetB())) + ::vl::WString(L"]", false));
+		return ((((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(__vwsnthis_0)->GetA(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(this)->GetB(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false));
 	}
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::Calculate()
@@ -297,9 +297,9 @@ namespace vl_workflow_global
 		::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc2_NestedLambda_main_H__IB::H);
 		::vl::WString s = ::vl::WString(L"", false);
 		(b = 1);
-		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(f())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(f(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		(::vl::__vwsn::This(this)->GetB() = 2);
-		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(g())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString(L"[", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(g(), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L"]", false))));
 		(::vl::__vwsn::This(this)->GetB() = (::vl::__vwsn::This(this)->GetB() + 10));
 		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
 		return s;

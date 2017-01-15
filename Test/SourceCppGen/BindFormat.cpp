@@ -20,7 +20,7 @@ namespace vl_workflow_global
 {
 	void BindFormat::Callback(::vl::reflection::description::Value value)
 	{
-		(::vl_workflow_global::BindFormat::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindFormat::Instance().s) + ::vl::WString(L"[", false)) + ::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(value)) + ::vl::WString(L"]", false)));
+		(::vl_workflow_global::BindFormat::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindFormat::Instance().s) + ::vl::WString(L"[", false)) + ::vl::reflection::description::UnboxValue<::vl::WString>(value)) + ::vl::WString(L"]", false)));
 	}
 
 	::vl::WString BindFormat::main()
@@ -86,11 +86,11 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue()));
+		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }());
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()))
 		{
-			::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(__vwsn_bind_callback_)(__vwsn_bind_activator_result_);
+			[&](){ ::vl::Func<void(::vl::reflection::description::Value)> __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_, __vwsn_temp__); return __vwsn_temp__; }()(__vwsn_bind_activator_result_);
 		}
 	}
 

@@ -23,7 +23,7 @@ namespace vl_workflow_global
 
 	::vl::WString FailedThen::main()
 	{
-		return (((::vl::WString(L"", false) + static_cast<::vl::vint32_t>(::vl_workflow_global::FailedThen::Instance().GetValue(nullptr, 10, (- 1)))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
+		return (((::vl::WString(L"", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl_workflow_global::FailedThen::Instance().GetValue(nullptr, 10, (- 1)), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1)), __vwsn_temp__); return __vwsn_temp__; }());
 	}
 
 	FailedThen& FailedThen::Instance()

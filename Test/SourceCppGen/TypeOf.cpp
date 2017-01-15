@@ -22,7 +22,7 @@ namespace vl_workflow_global
 		::vl::reflection::description::ITypeDescriptor* b = /* NOT SUPPORTS: typeof() */ __vwsn_not_exists__;
 		::vl::reflection::description::ITypeDescriptor* c = /* NOT SUPPORTS: type() */ __vwsn_not_exists__;
 		::vl::reflection::description::ITypeDescriptor* d = /* NOT SUPPORTS: type() */ __vwsn_not_exists__;
-		return ((((((((((static_cast<bool>((a == c)) + ::vl::WString(L", ", false)) + static_cast<bool>((a == d))) + ::vl::WString(L", ", false)) + static_cast<bool>((b == c))) + ::vl::WString(L", ", false)) + static_cast<bool>((b == d))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(a)->GetTypeName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(b)->GetTypeName());
+		return (((((((((([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize((a == c), __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize((a == d), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize((b == c), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize((b == d), __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(a)->GetTypeName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(b)->GetTypeName());
 	}
 
 	TypeOf& TypeOf::Instance()

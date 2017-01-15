@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString CallStaticMethod::main()
 	{
-		return static_cast<::vl::vint32_t>(::Calculator::Internal::Sum(1, 10));
+		return [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::Calculator::Internal::Sum(1, 10), __vwsn_temp__); return __vwsn_temp__; }();
 	}
 
 	CallStaticMethod& CallStaticMethod::Instance()

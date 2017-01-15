@@ -45,13 +45,13 @@ namespace vl_workflow_global
 	{
 		::test::ObservableValue* raw1 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
 		::test::ObservableValue* raw2 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
-		::vl::Ptr<::test::ObservableValue> shared = dynamic_cast<::test::ObservableValue*>(raw1);
+		::vl::Ptr<::test::ObservableValue> shared = ::vl::Ptr<::vl::Ptr<::test::ObservableValue>>(raw1);
 		bool a = (raw1 == nullptr);
 		bool b = (raw2 == nullptr);
 		bool c = (! static_cast<bool>(shared));
 		bool d = ::vl_workflow_global::Delete::Instance().DoDelete(raw1);
 		bool e = ::vl_workflow_global::Delete::Instance().DoDelete(raw2);
-		return ((((((((static_cast<bool>(a) + ::vl::WString(L", ", false)) + static_cast<bool>(b)) + ::vl::WString(L", ", false)) + static_cast<bool>(c)) + ::vl::WString(L", ", false)) + static_cast<bool>(d)) + ::vl::WString(L", ", false)) + static_cast<bool>(e));
+		return (((((((([&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(a, __vwsn_temp__); return __vwsn_temp__; }() + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(b, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(c, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(d, __vwsn_temp__); return __vwsn_temp__; }()) + ::vl::WString(L", ", false)) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<bool>::Serialize(e, __vwsn_temp__); return __vwsn_temp__; }());
 	}
 
 	Delete& Delete::Instance()

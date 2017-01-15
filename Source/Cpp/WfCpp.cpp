@@ -190,7 +190,7 @@ WfCppConfig
 				for (vint i = 1; i < count; i++)
 				{
 					if (i > 1) type += L", ";
-					type += ConvertType(typeInfo->GetGenericArgument(i));
+					type += ConvertArgumentType(typeInfo->GetGenericArgument(i));
 				}
 				type += L")";
 				return type;
