@@ -82,9 +82,7 @@ namespace vl
 					writer.WriteString(L"\t");
 					auto returnType = WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
 					writer.WriteLine(L"");
-					writer.WriteLine(L"\t{");
-					WriteFunctionBody(writer, decl->statement, L"\t\t", returnType);
-					writer.WriteLine(L"\t}");
+					WriteFunctionBody(writer, decl->statement, L"\t", returnType);
 					writer.WriteLine(L"");
 				}
 				writer.WriteLine(L"\t" + assemblyName + L"& " + assemblyName + L"::Instance()");

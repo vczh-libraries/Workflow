@@ -192,10 +192,7 @@ WfGenerateClassMemberImplVisitor
 						writer.WriteString(prefix);
 						auto returnType = config->WriteFunctionHeader(writer, node, classBaseName + L"::" + config->ConvertName(node->name.value), true);
 						writer.WriteLine(L"");
-
-						writer.WriteLine(prefix + L"{");
-						config->WriteFunctionBody(writer, node->statement, prefix + L"\t", returnType);
-						writer.WriteLine(prefix + L"}");
+						config->WriteFunctionBody(writer, node->statement, prefix, returnType);
 					}
 				}
 
@@ -218,20 +215,14 @@ WfGenerateClassMemberImplVisitor
 					writer.WriteString(prefix);
 					config->WriteFunctionHeader(writer, methodInfo, classBaseName + L"::" + className, false);
 					writer.WriteLine(L"");
-
-					writer.WriteLine(prefix + L"{");
-					config->WriteFunctionBody(writer, node->statement, prefix + L"\t", nullptr);
-					writer.WriteLine(prefix + L"}");
+					config->WriteFunctionBody(writer, node->statement, prefix, nullptr);
 				}
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
 					printableMember = true;
 					writer.WriteLine(prefix + classBaseName + L"::~" + className + L"()");
-
-					writer.WriteLine(prefix + L"{");
-					config->WriteFunctionBody(writer, node->statement, prefix + L"\t", nullptr);
-					writer.WriteLine(prefix + L"}");
+					config->WriteFunctionBody(writer, node->statement, prefix, nullptr);
 				}
 
 				void Visit(WfClassDeclaration* node)override

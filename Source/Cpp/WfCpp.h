@@ -144,6 +144,8 @@ WfCppConfig::Write
 			{
 			public:
 				vint					typeCounter = 0;
+				vint					exprCounter = 0;
+				vint					blockCounter = 0;
 			};
 
 			extern void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType);

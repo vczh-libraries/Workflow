@@ -104,7 +104,45 @@ namespace vl
 
 				void Visit(WfSwitchStatement* node)override
 				{
-					throw 0;
+					auto exprName = L"__vwsne_" + itow(functionRecord->exprCounter++);
+					auto result = config->manager->expressionResolvings[node->expression.Obj()];
+
+					writer.WriteString(prefix);
+					writer.WriteLine(L"{");
+					writer.WriteString(prefix);
+					writer.WriteString(L"\t");
+					writer.WriteString(config->ConvertType(result.type.Obj()));
+					writer.WriteString(L" ");
+					writer.WriteString(exprName);
+					writer.WriteString(L" = ");
+					GenerateExpression(config, writer, node->expression, result.type.Obj());
+					writer.WriteLine(L";");
+
+					FOREACH_INDEXER(Ptr<WfSwitchCase>, switchCase, index, node->caseBranches)
+					{
+						writer.WriteString(prefix);
+						writer.WriteString(L"\t");
+						if (index > 0)
+						{
+							writer.WriteString(L"else ");
+						}
+						writer.WriteString(L"if (");
+						writer.WriteString(exprName);
+						writer.WriteString(L" == ");
+						GenerateExpression(config, writer, switchCase->expression, result.type.Obj());
+						writer.WriteLine(L")");
+						GenerateStatement(config, functionRecord, writer, switchCase->statement, prefix + L"\t", WString(L"\t", false), returnType);
+					}
+
+					if (node->defaultBranch)
+					{
+						writer.WriteString(prefix);
+						writer.WriteString(L"\telse ");
+						GenerateStatement(config, functionRecord, writer, node->defaultBranch, prefix + L"\t", WString(L"\t", false), returnType);
+					}
+
+					writer.WriteString(prefix);
+					writer.WriteLine(L"}");
 				}
 
 				void Visit(WfWhileStatement* node)override
@@ -157,7 +195,58 @@ namespace vl
 
 				void Visit(WfTryStatement* node)override
 				{
-					throw 0;
+					auto blockName = L"__vwsnb_" + itow(functionRecord->blockCounter++);
+					auto exName = L"__vwsne_" + itow(functionRecord->exprCounter++);
+
+					WString tryPrefix = prefix;
+					if (node->finallyStatement)
+					{
+						tryPrefix += L"\t";
+						writer.WriteString(prefix);
+						writer.WriteLine(L"{");
+						writer.WriteString(tryPrefix);
+						writer.WriteString(L"auto ");
+						writer.WriteString(blockName);
+						writer.WriteLine(L" = [&]()");
+						GenerateStatement(config, functionRecord, writer, node->finallyStatement, tryPrefix, WString(L"\t", false), returnType);
+						writer.WriteString(tryPrefix);
+						writer.WriteLine(L";");
+					}
+					WString bodyPrefix = tryPrefix + L"\t";
+
+					writer.WriteString(tryPrefix);
+					writer.WriteLine(L"try");
+					writer.WriteString(tryPrefix);
+					writer.WriteLine(L"{");
+					GenerateStatement(config, functionRecord, writer, node->protectedStatement, bodyPrefix, WString(L"\t", false), returnType);
+					writer.WriteString(bodyPrefix);
+					writer.WriteString(blockName);
+					writer.WriteLine(L"();");
+					writer.WriteString(tryPrefix);
+					writer.WriteLine(L"}");
+
+					writer.WriteString(tryPrefix);
+					writer.WriteString(L"catch(const ::vl::Exception& ");
+					writer.WriteString(exName);
+					writer.WriteLine(L")");
+					writer.WriteString(tryPrefix);
+					writer.WriteLine(L"{");
+					if (node->catchStatement)
+					{
+						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
+					}
+					writer.WriteString(bodyPrefix);
+					writer.WriteString(blockName);
+					writer.WriteLine(L"();");
+					writer.WriteString(tryPrefix);
+					writer.WriteLine(L"}");
+
+
+					if (node->finallyStatement)
+					{
+						writer.WriteString(prefix);
+						writer.WriteLine(L"}");
+					}
 				}
 
 				void Visit(WfBlockStatement* node)override

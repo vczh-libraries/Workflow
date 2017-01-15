@@ -339,9 +339,7 @@ WfCppConfig::WriteCpp
 					writer.WriteString(L"\t");
 					auto returnType = WriteFunctionHeader(writer, funcExpr, name + L"::operator()", true);
 					writer.WriteLine(L" const");
-					writer.WriteLine(L"\t{");
-					WriteFunctionBody(writer, funcExpr->function->statement, L"\t\t", returnType);
-					writer.WriteLine(L"\t}");
+					WriteFunctionBody(writer, funcExpr->function->statement, L"\t", returnType);
 				}
 			}
 

@@ -114,8 +114,7 @@ WfCppConfig
 
 			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType)
 			{
-				auto block = stat.Cast<WfBlockStatement>();
-				writer.WriteLine(prefix + L"throw 0;");
+				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString(L"\t", false), expectedType);
 			}
 
 			WString WfCppConfig::ConvertName(const WString& name)
