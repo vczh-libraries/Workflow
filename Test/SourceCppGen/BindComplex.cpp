@@ -102,9 +102,9 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		::vl::vint32_t __vwsn_bind_activator_result_ = [&](::vl::Ptr<::test::ObservableValue> _x){ return (::vl::__vwsn::This(_x)->GetValue() + [&](::vl::Ptr<::test::ObservableValue> _y){ return (::vl::__vwsn::This(_y)->GetValue() + [&](::vl::Ptr<::test::ObservableValue> _z){ return ::vl::__vwsn::This(_z)->GetValue(); }(__vwsn_bind_cache_2)); }(__vwsn_bind_cache_3)); }(__vwsn_bind_cache_1);
+		::vl::vint32_t __vwsn_bind_activator_result_ = [&](::vl::Ptr<::test::ObservableValue> _x){ return (::vl::__vwsn::This(_x)->GetValue() + [&](::vl::Ptr<::test::ObservableValue> _y){ return (::vl::__vwsn::This(_y)->GetValue() + [&](::vl::Ptr<::test::ObservableValue> _z){ return ::vl::__vwsn::This(_z)->GetValue(); }(__vwsn_bind_cache_1)); }(__vwsn_bind_cache_3)); }(__vwsn_bind_cache_2);
 		using __vwsnt_0 = ::vl::reflection::description::Value;
-		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()))
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
 			[&](){ ::vl::Func<void(::vl::reflection::description::Value)> __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_, __vwsn_temp__); return __vwsn_temp__; }()(::vl::reflection::description::BoxValue<::vl::vint32_t>(__vwsn_bind_activator_result_));
 		}
@@ -112,33 +112,33 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, __vwsn_bind_handler_2_0);
-		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, __vwsn_bind_handler_3_0);
-		(__vwsn_bind_cache_3 = ::vl::__vwsn::This(this)->y);
-		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->z);
-		(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));
-		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
+		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, __vwsn_bind_handler_1_0);
+		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, __vwsn_bind_handler_3_0);
+		(__vwsn_bind_cache_3 = ::vl::__vwsn::This(this)->y);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->z);
+		(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, __vwsn_bind_handler_2_0);
-		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->z);
-		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
+		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, __vwsn_bind_handler_1_0);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->z);
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
-		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->x);
+		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->x);
 		(__vwsn_bind_cache_3 = ::vl::__vwsn::This(this)->y);
-		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->z);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->z);
 		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
 		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 		(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));
@@ -201,12 +201,12 @@ namespace vl_workflow_global
 
 	bool __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
-		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)));
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)));
 	}
 
 	bool __vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)))
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)))
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->Remove(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this));
 			return true;

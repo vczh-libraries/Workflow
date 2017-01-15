@@ -123,7 +123,7 @@ namespace vl_workflow_global
 	{
 		::vl::vint32_t __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSum();
 		using __vwsnt_0 = ::vl::reflection::description::Value;
-		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()))
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
 			[&](){ ::vl::Func<void(::vl::reflection::description::Value)> __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_, __vwsn_temp__); return __vwsn_temp__; }()(::vl::reflection::description::BoxValue<::vl::vint32_t>(__vwsn_bind_activator_result_));
 		}
@@ -191,12 +191,12 @@ namespace vl_workflow_global
 
 	bool __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
-		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)));
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)));
 	}
 
 	bool __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)))
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys())->Contains(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this)))
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->Remove(::vl::reflection::description::BoxValue<::vl::reflection::description::IValueListener*>(this));
 			return true;
