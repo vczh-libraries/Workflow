@@ -46,11 +46,11 @@ namespace vl
 				CopyFrom(
 					arguments,
 					Range<vint>(0, scope->symbols.Count())
-					.Select([scope](vint index)
-				{
-					return scope->symbols.GetByIndex(index)[0]->name;
-				})
-					.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
+						.Select([scope](vint index)
+						{
+							return scope->symbols.GetByIndex(index)[0]->name;
+						})
+						.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
 					);
 
 				return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
@@ -65,11 +65,11 @@ namespace vl
 				CopyFrom(
 					arguments,
 					From(funcExpr->function->arguments)
-					.Select([](Ptr<WfFunctionArgument> argument)
-				{
-					return argument->name.value;
-				})
-				);
+						.Select([](Ptr<WfFunctionArgument> argument)
+						{
+							return argument->name.value;
+						})
+					);
 				return WriteFunctionHeader(writer, arguments, typeInfo, name, writeReturnType);
 			}
 

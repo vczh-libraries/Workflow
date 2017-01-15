@@ -93,6 +93,7 @@ WfCppConfig::CollectClosureInfo
 
 				if (auto ordered = closure.Cast<WfOrderedLambdaExpression>())
 				{
+					// stable symbol order by sorting them by name
 					CopyFrom(
 						info->symbols,
 						From(manager->lambdaCaptures[ordered.Obj()]->symbols)
@@ -105,6 +106,7 @@ WfCppConfig::CollectClosureInfo
 				}
 				else if (auto funcExpr = closure.Cast<WfFunctionExpression>())
 				{
+					// stable symbol order by sorting them by name
 					CopyFrom(
 						info->symbols,
 						From(manager->lambdaCaptures[funcExpr->function.Obj()]->symbols)
@@ -122,6 +124,7 @@ WfCppConfig::CollectClosureInfo
 
 					if (visitor.capture)
 					{
+						// stable symbol order by sorting them by name
 						CopyFrom(
 							info->symbols,
 							From(visitor.capture->symbols)

@@ -1724,9 +1724,30 @@ ExpandBindExpression
 					newSubscription->type = GetTypeFromTypeInfo(typeInfo.Obj());
 				}
 				{
+					// stable symbol order by sorting them by code
+					Dictionary<WString, WfExpression*> orderedObserves;
+
 					FOREACH_INDEXER(WfExpression*, observe, observeIndex, dependency.dependencies.Keys())
 					{
-						if (!observe) continue;
+						if (!observe)
+						{
+							continue;
+						}
+
+						stream::MemoryStream stream;
+						{
+							stream::StreamWriter writer(stream);
+							WfPrint(observe, WString::Empty, writer);
+						}
+						stream.SeekFromBegin(0);
+						{
+							stream::StreamReader reader(stream);
+							orderedObserves.Add(reader.ReadToEnd(), observe);
+						}
+					}
+
+					FOREACH_INDEXER(WfExpression*, observe, observeIndex, orderedObserves.Values())
+					{
 						List<IEventInfo*> events;
 						WfExpression* parent = 0;
 						DecodeObserveExpression(manager, observe, events, parent);

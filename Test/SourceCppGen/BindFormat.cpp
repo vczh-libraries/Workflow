@@ -26,13 +26,13 @@ namespace vl_workflow_global
 
 		__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> __vwsnctor_x);
 
-		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_1;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_initialize_();
 		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback) override;
 		bool Update() override;
@@ -77,8 +77,8 @@ namespace vl_workflow_global
 	__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> __vwsnctor_x)
 		:x(__vwsnctor_x)
 	{
-		this->__vwsn_bind_cache_1 = nullptr;
-		this->__vwsn_bind_handler_1_0 = nullptr;
+		this->__vwsn_bind_cache_0 = nullptr;
+		this->__vwsn_bind_handler_0_0 = nullptr;
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
@@ -86,7 +86,7 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }());
+		::vl::WString __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + [&](){ ::vl::WString __vwsn_temp__; ::vl::reflection::description::TypedValueSerializerProvider<::vl::vint32_t>::Serialize(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue(), __vwsn_temp__); return __vwsn_temp__; }());
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
@@ -94,15 +94,15 @@ namespace vl_workflow_global
 		}
 	}
 
-	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
+	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
-		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->x);
-		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(this)->x);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
@@ -133,9 +133,9 @@ namespace vl_workflow_global
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, __vwsn_bind_handler_1_0);
-			(__vwsn_bind_cache_1 = nullptr);
-			(__vwsn_bind_handler_1_0 = nullptr);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = nullptr);
+			(__vwsn_bind_handler_0_0 = nullptr);
 			::vl::__vwsn::This(__vwsn_bind_listeners_)->Clear();
 			return true;
 		}
