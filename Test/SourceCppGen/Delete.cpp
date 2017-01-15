@@ -45,7 +45,7 @@ namespace vl_workflow_global
 	{
 		::test::ObservableValue* raw1 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
 		::test::ObservableValue* raw2 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
-		::vl::Ptr<::test::ObservableValue> shared = ::vl::Ptr<::vl::Ptr<::test::ObservableValue>>(raw1);
+		::vl::Ptr<::test::ObservableValue> shared = ::vl::Ptr<::test::ObservableValue>(raw1);
 		bool a = (raw1 == nullptr);
 		bool b = (raw2 == nullptr);
 		bool c = (! static_cast<bool>(shared));

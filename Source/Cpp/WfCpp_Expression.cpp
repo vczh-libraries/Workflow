@@ -170,9 +170,8 @@ namespace vl
 											writer.WriteString(L")");
 											return;
 										case ITypeInfo::SharedPtr:
-											writer.WriteString(L"::vl::Ptr<");
 											writer.WriteString(config->ConvertType(toType));
-											writer.WriteString(L">(");
+											writer.WriteString(L"(");
 											writeExpression();
 											writer.WriteString(L")");
 											return;
