@@ -18,12 +18,12 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t FailedThen::GetValue(::vl::Ptr<::test::ObservableValue> value, ::vl::vint32_t increase, ::vl::vint32_t defaultValue)
 	{
-				return [&](){ try{ return (::vl::__vwsn::This(value)->GetValue() + increase); } catch(...){ return defaultValue; } }();
+		return [&](){ try{ return (::vl::__vwsn::This(value)->GetValue() + increase); } catch(...){ return defaultValue; } }();
 	}
 
 	::vl::WString FailedThen::main()
 	{
-				return (((::vl::WString(L"", false) + static_cast<::vl::vint32_t>(::vl_workflow_global::FailedThen::Instance().GetValue(nullptr, 10, (- 1)))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
+		return (((::vl::WString(L"", false) + static_cast<::vl::vint32_t>(::vl_workflow_global::FailedThen::Instance().GetValue(nullptr, 10, (- 1)))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl_workflow_global::FailedThen::Instance().GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
 	}
 
 	FailedThen& FailedThen::Instance()

@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString HelloWorld::main()
 	{
-				return ::vl::WString(L"Hello, world!", false);
+		return ::vl::WString(L"Hello, world!", false);
 	}
 
 	HelloWorld& HelloWorld::Instance()

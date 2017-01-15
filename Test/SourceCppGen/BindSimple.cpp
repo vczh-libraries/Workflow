@@ -20,21 +20,21 @@ namespace vl_workflow_global
 {
 	void BindSimple::Callback(::vl::reflection::description::Value value)
 	{
-				(::vl_workflow_global::BindSimple::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindSimple::Instance().s) + ::vl::WString(L"[", false)) + static_cast<::vl::vint32_t>(::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(value))) + ::vl::WString(L"]", false)));
+		(::vl_workflow_global::BindSimple::Instance().s = ((((::vl::WString(L"", false) + ::vl_workflow_global::BindSimple::Instance().s) + ::vl::WString(L"[", false)) + static_cast<::vl::vint32_t>(::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(value))) + ::vl::WString(L"]", false)));
 	}
 
 	::vl::WString BindSimple::main()
 	{
-				::vl::Ptr<::test::ObservableValue> x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-				::vl::Ptr<::test::ObservableValue> y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-				::vl::Ptr<::test::ObservableValue> z = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-				::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription(x, y, z));
-				::vl::__vwsn::This(subscription)->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(&::vl_workflow_global::BindSimple::Instance(), &::vl_workflow_global::BindSimple::Callback));
-				::vl::__vwsn::This(x)->SetValue(10);
-				::vl::__vwsn::This(y)->SetValue(20);
-				::vl::__vwsn::This(z)->SetValue(30);
-				::vl::__vwsn::This(subscription)->Close();
-				return ::vl_workflow_global::BindSimple::Instance().s;
+		::vl::Ptr<::test::ObservableValue> x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		::vl::Ptr<::test::ObservableValue> y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		::vl::Ptr<::test::ObservableValue> z = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription(x, y, z));
+		::vl::__vwsn::This(subscription)->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(&::vl_workflow_global::BindSimple::Instance(), &::vl_workflow_global::BindSimple::Callback));
+		::vl::__vwsn::This(x)->SetValue(10);
+		::vl::__vwsn::This(y)->SetValue(20);
+		::vl::__vwsn::This(z)->SetValue(30);
+		::vl::__vwsn::This(subscription)->Close();
+		return ::vl_workflow_global::BindSimple::Instance().s;
 	}
 
 	BindSimple& BindSimple::Instance()
@@ -102,80 +102,80 @@ namespace vl_workflow_global
 
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-				::vl::vint32_t __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetValue()) + ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetValue());
-				using __vwsnt_0 = ::vl::reflection::description::Value;
-				FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()));
-				{
-																		::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(__vwsn_bind_callback_)(__vwsn_bind_activator_result_);
-				}
+		::vl::vint32_t __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_3)->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetValue()) + ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue());
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_,  ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value<(::vl::__vwsn::This(__vwsn_bind_listeners_)->GetValues()));
+		{
+			::vl::reflection::description::UnboxValue<::vl::reflection::description::Value>(__vwsn_bind_callback_)(__vwsn_bind_activator_result_);
+		}
 	}
 
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-				::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-				::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-				::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
-				(__vwsn_bind_cache_3 = ::vl::__vwsn::This(this)->z);
-				(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->y);
-				(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->x);
-				(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
-				(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
-				(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));
+		(__vwsn_bind_cache_3 = ::vl::__vwsn::This(this)->x);
+		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(this)->y);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(this)->z);
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
+		(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& callback)
 	{
-				if ((! __vwsn_bind_opened_))
-				{
-																		(__vwsn_bind_opened_ = true);
-																		::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
-				}
-				::vl::reflection::description::IValueSubscription* __vwsn_subscription_ = this;
-				::vl::Ptr<::vl::reflection::description::IValueListener> __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindSimple_main_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this));
-				::vl::__vwsn::This(__vwsn_bind_listeners_)->Set(__vwsn_listener_shared_, __vwsn_bind_callback_);
-				return __vwsn_listener_shared_;
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_ = this;
+		::vl::Ptr<::vl::reflection::description::IValueListener> __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindSimple_main_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this));
+		::vl::__vwsn::This(__vwsn_bind_listeners_)->Set(__vwsn_listener_shared_, __vwsn_bind_callback_);
+		return __vwsn_listener_shared_;
 	}
 
 	bool __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::Update()
 	{
-				if ((! __vwsn_bind_closed_))
-				{
-																		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
-																		return true;
-				}
-				return false;
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
 	}
 
 	bool __vwsnc1_BindSimple_main__vl_reflection_description_IValueSubscription::Close()
 	{
-				if ((! __vwsn_bind_closed_))
-				{
-																		(__vwsn_bind_closed_ = true);
-																		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, __vwsn_bind_handler_1_0);
-																		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, __vwsn_bind_handler_2_0);
-																		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, __vwsn_bind_handler_3_0);
-																		(__vwsn_bind_cache_1 = nullptr);
-																		(__vwsn_bind_cache_2 = nullptr);
-																		(__vwsn_bind_cache_3 = nullptr);
-																		(__vwsn_bind_handler_1_0 = nullptr);
-																		(__vwsn_bind_handler_2_0 = nullptr);
-																		(__vwsn_bind_handler_3_0 = nullptr);
-																		::vl::__vwsn::This(__vwsn_bind_listeners_)->Clear();
-																		return true;
-				}
-				return false;
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, __vwsn_bind_handler_1_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, __vwsn_bind_handler_2_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, __vwsn_bind_handler_3_0);
+			(__vwsn_bind_cache_1 = nullptr);
+			(__vwsn_bind_cache_2 = nullptr);
+			(__vwsn_bind_cache_3 = nullptr);
+			(__vwsn_bind_handler_1_0 = nullptr);
+			(__vwsn_bind_handler_2_0 = nullptr);
+			(__vwsn_bind_handler_3_0 = nullptr);
+			::vl::__vwsn::This(__vwsn_bind_listeners_)->Clear();
+			return true;
+		}
+		return false;
 	}
 
 	__vwsnc2_BindSimple_main_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindSimple_main_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0)
@@ -187,22 +187,22 @@ namespace vl_workflow_global
 
 	::vl::reflection::description::IValueSubscription* __vwsnc2_BindSimple_main_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
-				return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
 	}
 
 	bool __vwsnc2_BindSimple_main_Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
-				return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(this));
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(this));
 	}
 
 	bool __vwsnc2_BindSimple_main_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
-				if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(this))
-				{
-																		::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->Remove(this);
-																		return true;
-				}
-				return false;
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->GetKeys())->Contains(this))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_)->Remove(this);
+			return true;
+		}
+		return false;
 	}
 
 }

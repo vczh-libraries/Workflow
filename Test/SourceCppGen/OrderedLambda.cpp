@@ -18,19 +18,19 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t OrderedLambda::Apply(const ::vl::Func<::vl::vint32_t(::vl::vint32_t)>& f, ::vl::vint32_t arg)
 	{
-				return f(arg);
+		return f(arg);
 	}
 
 	::vl::Func<::vl::vint32_t(::vl::vint32_t)> OrderedLambda::Adder(::vl::vint32_t x)
 	{
-				return LAMBDA(::vl_workflow_global::__vwsno1_OrderedLambda_Adder_(x));
+		return LAMBDA(::vl_workflow_global::__vwsno1_OrderedLambda_Adder_(x));
 	}
 
 	::vl::WString OrderedLambda::main()
 	{
-				::vl::Func<::vl::vint32_t(::vl::vint32_t)> f = ::vl_workflow_global::OrderedLambda::Instance().Adder(1);
-				::vl::Func<::vl::vint32_t(::vl::vint32_t)> g = ::vl_workflow_global::OrderedLambda::Instance().Adder(2);
-				return ((((((static_cast<::vl::vint32_t>(f(1)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(f(2))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(g(1))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(g(2)));
+		::vl::Func<::vl::vint32_t(::vl::vint32_t)> f = ::vl_workflow_global::OrderedLambda::Instance().Adder(1);
+		::vl::Func<::vl::vint32_t(::vl::vint32_t)> g = ::vl_workflow_global::OrderedLambda::Instance().Adder(2);
+		return ((((((static_cast<::vl::vint32_t>(f(1)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(f(2))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(g(1))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(g(2)));
 	}
 
 	OrderedLambda& OrderedLambda::Instance()

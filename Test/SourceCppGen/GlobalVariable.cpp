@@ -20,16 +20,16 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t GlobalVariable::Add(::vl::vint32_t y)
 	{
-				::vl::vint32_t z = ::vl_workflow_global::GlobalVariable::Instance().x;
-				(::vl_workflow_global::GlobalVariable::Instance().x = (::vl_workflow_global::GlobalVariable::Instance().x + y));
-				return z;
+		::vl::vint32_t z = ::vl_workflow_global::GlobalVariable::Instance().x;
+		(::vl_workflow_global::GlobalVariable::Instance().x = (::vl_workflow_global::GlobalVariable::Instance().x + y));
+		return z;
 	}
 
 	::vl::WString GlobalVariable::main()
 	{
-				(::vl_workflow_global::GlobalVariable::Instance().x = 10);
-				::vl::vint32_t y = ::vl_workflow_global::GlobalVariable::Instance().Add(20);
-				return ((static_cast<::vl::vint32_t>(::vl_workflow_global::GlobalVariable::Instance().x) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(y));
+		(::vl_workflow_global::GlobalVariable::Instance().x = 10);
+		::vl::vint32_t y = ::vl_workflow_global::GlobalVariable::Instance().Add(20);
+		return ((static_cast<::vl::vint32_t>(::vl_workflow_global::GlobalVariable::Instance().x) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(y));
 	}
 
 	GlobalVariable& GlobalVariable::Instance()

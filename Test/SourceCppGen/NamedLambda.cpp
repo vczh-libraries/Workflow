@@ -18,8 +18,8 @@ namespace vl_workflow_global
 {
 	::vl::WString NamedLambda::main()
 	{
-				::vl::Func<::vl::vint32_t(::vl::vint32_t)> fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
-				return ((((((((static_cast<::vl::vint32_t>(fib(1)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(2))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(3))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(4))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(5)));
+		::vl::Func<::vl::vint32_t(::vl::vint32_t)> fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		return ((((((((static_cast<::vl::vint32_t>(fib(1)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(2))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(3))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(4))) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(fib(5)));
 	}
 
 	NamedLambda& NamedLambda::Instance()
@@ -41,7 +41,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
 	{
-				return [&](){ if ((n <= 2)) return 1; else return (::vl_workflow_global::NamedLambda::Instance().Fib((n - 1)) + ::vl_workflow_global::NamedLambda::Instance().Fib((n - 2))); }();
+		return [&](){ if ((n <= 2)) return 1; else return (::vl_workflow_global::NamedLambda::Instance().Fib((n - 1)) + ::vl_workflow_global::NamedLambda::Instance().Fib((n - 2))); }();
 	}
 }
 

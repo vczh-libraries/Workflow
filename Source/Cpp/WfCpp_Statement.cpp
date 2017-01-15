@@ -33,7 +33,7 @@ namespace vl
 
 				void Call(Ptr<WfStatement> node, WString prefixDelta = WString(L"\t", false))
 				{
-					GenerateStatement(config, functionRecord, writer, node, prefix, prefix + prefixDelta, returnType);
+					GenerateStatement(config, functionRecord, writer, node, prefix, prefixDelta, returnType);
 				}
 
 				void Visit(WfBreakStatement* node)override

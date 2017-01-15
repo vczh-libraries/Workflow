@@ -21,20 +21,20 @@ namespace vl_workflow_global
 {
 	void Event::EventHandler(::vl::vint32_t oldValue, ::vl::vint32_t newValue)
 	{
-				::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Add(oldValue);
-				::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Add(newValue);
+		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Add(oldValue);
+		::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Add(newValue);
 	}
 
 	::vl::WString Event::main()
 	{
-				::vl::Ptr<::test::ObservableValue> o = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(10));
-				::vl::Ptr<::vl::reflection::description::IEventHandler> handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(o)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(&::vl_workflow_global::Event::Instance(), &::vl_workflow_global::Event::EventHandler));
-				::vl::__vwsn::This(o)->SetValue(20);
-				::vl::__vwsn::This(o)->SetValue(30);
-				bool b1 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o)->ValueChanged, handler);
-				::vl::__vwsn::This(o)->SetValue(40);
-				bool b2 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o)->ValueChanged, handler);
-				return ((((((((((((((static_cast<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->GetCount()) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Get(0), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Get(1), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->GetCount())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Get(0), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Get(1), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<bool>(b1)) + ::vl::WString(L", ", false)) + static_cast<bool>(b2));
+		::vl::Ptr<::test::ObservableValue> o = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(10));
+		::vl::Ptr<::vl::reflection::description::IEventHandler> handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(o)->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(&::vl_workflow_global::Event::Instance(), &::vl_workflow_global::Event::EventHandler));
+		::vl::__vwsn::This(o)->SetValue(20);
+		::vl::__vwsn::This(o)->SetValue(30);
+		bool b1 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o)->ValueChanged, handler);
+		::vl::__vwsn::This(o)->SetValue(40);
+		bool b2 = ::vl::__vwsn::EventDetach(::vl::__vwsn::This(o)->ValueChanged, handler);
+		return ((((((((((((((static_cast<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->GetCount()) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Get(0), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().olds)->Get(1), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->GetCount())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Get(0), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>([&](){ ::vl::vint32_t __vwsn_temp__; ::vl::reflection::description::UnboxParameter<::vl::vint32_t>(::vl::__vwsn::This(::vl_workflow_global::Event::Instance().news)->Get(1), __vwsn_temp__); return __vwsn_temp__; }())) + ::vl::WString(L", ", false)) + static_cast<bool>(b1)) + ::vl::WString(L", ", false)) + static_cast<bool>(b2));
 	}
 
 	Event& Event::Instance()

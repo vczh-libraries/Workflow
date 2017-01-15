@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString NestedLambda::main()
 	{
-				return ::vl::__vwsn::This(::vl::Ptr<::IA>(new ::vl_workflow_global::__vwsnc1_NestedLambda_main__IA()))->Calculate();
+		return ::vl::__vwsn::This(::vl::Ptr<::IA>(new ::vl_workflow_global::__vwsnc1_NestedLambda_main__IA()))->Calculate();
 	}
 
 	NestedLambda& NestedLambda::Instance()
@@ -146,7 +146,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf3_NestedLambda_main_H_Calculate_::operator()() const
 	{
-				return ::vl::__vwsn::This(__vwsnthis_1)->GetA();
+		return ::vl::__vwsn::This(__vwsnthis_1)->GetA();
 	}
 
 	__vwsnf4_NestedLambda_main_H_Calculate_::__vwsnf4_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
@@ -157,7 +157,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf4_NestedLambda_main_H_Calculate_::operator()() const
 	{
-				return (LAMBDA(::vl_workflow_global::__vwsno5_NestedLambda_main_H_Calculate__(__vwsnthis_0, __vwsnthis_1))() + ::vl::__vwsn::This(__vwsnthis_0)->GetB());
+		return (LAMBDA(::vl_workflow_global::__vwsno5_NestedLambda_main_H_Calculate__(__vwsnthis_0, __vwsnthis_1))() + ::vl::__vwsn::This(__vwsnthis_0)->GetB());
 	}
 
 	__vwsnf7_NestedLambda_main_Calculate_::__vwsnf7_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
@@ -167,7 +167,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf7_NestedLambda_main_Calculate_::operator()() const
 	{
-				return ::vl::__vwsn::This(__vwsnthis_0)->GetA();
+		return ::vl::__vwsn::This(__vwsnthis_0)->GetA();
 	}
 
 	__vwsnf8_NestedLambda_main_Calculate_::__vwsnf8_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
@@ -177,7 +177,7 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnf8_NestedLambda_main_Calculate_::operator()() const
 	{
-				return LAMBDA(::vl_workflow_global::__vwsno9_NestedLambda_main_Calculate__(__vwsnthis_0))();
+		return LAMBDA(::vl_workflow_global::__vwsno9_NestedLambda_main_Calculate__(__vwsnthis_0))();
 	}
 
 	__vwsno1_NestedLambda_main_H_::__vwsno1_NestedLambda_main_H_(::IA* __vwsnctorthis_0)
@@ -239,33 +239,33 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnc1_NestedLambda_main__IA::GetA()
 	{
-				return a;
+		return a;
 	}
 
 	void __vwsnc1_NestedLambda_main__IA::SetA(::vl::vint32_t value)
 	{
-				(a = value);
-				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->AChanged)();
+		(a = value);
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->AChanged)();
 	}
 
 	::vl::WString __vwsnc1_NestedLambda_main__IA::H()
 	{
-				return LAMBDA(::vl_workflow_global::__vwsno1_NestedLambda_main_H_(__vwsnthis_0))();
+		return LAMBDA(::vl_workflow_global::__vwsno1_NestedLambda_main_H_(__vwsnthis_0))();
 	}
 
 	::vl::WString __vwsnc1_NestedLambda_main__IA::Calculate()
 	{
-				::vl::Func<::vl::vint32_t()> f = LAMBDA(::vl_workflow_global::__vwsno6_NestedLambda_main_Calculate_(__vwsnthis_0));
-				::vl::Func<::vl::vint32_t()> g = LAMBDA(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
-				::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc1_NestedLambda_main__IA::H);
-				::vl::WString s = ::vl::WString(L"", false);
-				(a = 1);
-				(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(f())) + ::vl::WString(L"]", false))));
-				(::vl::__vwsn::This(this)->GetA() = 2);
-				(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(g())) + ::vl::WString(L"]", false))));
-				(::vl::__vwsn::This(this)->GetA() = (::vl::__vwsn::This(this)->GetA() + 1));
-				(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
-				return s;
+		::vl::Func<::vl::vint32_t()> f = LAMBDA(::vl_workflow_global::__vwsno6_NestedLambda_main_Calculate_(__vwsnthis_0));
+		::vl::Func<::vl::vint32_t()> g = LAMBDA(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
+		::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc1_NestedLambda_main__IA::H);
+		::vl::WString s = ::vl::WString(L"", false);
+		(a = 1);
+		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(f())) + ::vl::WString(L"]", false))));
+		(::vl::__vwsn::This(this)->GetA() = 2);
+		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(g())) + ::vl::WString(L"]", false))));
+		(::vl::__vwsn::This(this)->GetA() = (::vl::__vwsn::This(this)->GetA() + 1));
+		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
+		return s;
 	}
 
 	__vwsnc2_NestedLambda_main_H__IB::__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0)
@@ -276,33 +276,33 @@ namespace vl_workflow_global
 
 	::vl::vint32_t __vwsnc2_NestedLambda_main_H__IB::GetB()
 	{
-				return b;
+		return b;
 	}
 
 	void __vwsnc2_NestedLambda_main_H__IB::SetB(::vl::vint32_t value)
 	{
-				(b = value);
-				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->BChanged)();
+		(b = value);
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->BChanged)();
 	}
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::H()
 	{
-				return ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(__vwsnthis_0)->GetA())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(this)->GetB())) + ::vl::WString(L"]", false));
+		return ((((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(__vwsnthis_0)->GetA())) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(this)->GetB())) + ::vl::WString(L"]", false));
 	}
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::Calculate()
 	{
-				::vl::Func<::vl::vint32_t()> f = LAMBDA(::vl_workflow_global::__vwsno2_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1));
-				::vl::Func<::vl::vint32_t()> g = LAMBDA(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
-				::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc2_NestedLambda_main_H__IB::H);
-				::vl::WString s = ::vl::WString(L"", false);
-				(b = 1);
-				(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(f())) + ::vl::WString(L"]", false))));
-				(::vl::__vwsn::This(this)->GetB() = 2);
-				(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(g())) + ::vl::WString(L"]", false))));
-				(::vl::__vwsn::This(this)->GetB() = (::vl::__vwsn::This(this)->GetB() + 10));
-				(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
-				return s;
+		::vl::Func<::vl::vint32_t()> f = LAMBDA(::vl_workflow_global::__vwsno2_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1));
+		::vl::Func<::vl::vint32_t()> g = LAMBDA(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
+		::vl::Func<::vl::WString()> h = ::vl::Func<::vl::WString()>(::vl::__vwsn::This(this), &__vwsnc2_NestedLambda_main_H__IB::H);
+		::vl::WString s = ::vl::WString(L"", false);
+		(b = 1);
+		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(f())) + ::vl::WString(L"]", false))));
+		(::vl::__vwsn::This(this)->GetB() = 2);
+		(s = (s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(g())) + ::vl::WString(L"]", false))));
+		(::vl::__vwsn::This(this)->GetB() = (::vl::__vwsn::This(this)->GetB() + 10));
+		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
+		return s;
 	}
 
 }

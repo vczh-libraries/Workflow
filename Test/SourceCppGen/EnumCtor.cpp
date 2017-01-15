@@ -18,16 +18,16 @@ namespace vl_workflow_global
 {
 	::test::Seasons EnumCtor::Id(::test::Seasons s)
 	{
-				return s;
+		return s;
 	}
 
 	::vl::WString EnumCtor::main()
 	{
-				::test::Seasons a = ::test::Seasons::Spring;
-				::test::Seasons b = ::test::Seasons::Summer;
-				::test::Seasons c = ::vl_workflow_global::EnumCtor::Instance().Id(::test::Seasons::Autumn);
-				::test::Seasons d = ::test::Seasons::Winter;
-				return ((((((((((((static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(a)) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(b))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(c))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(d))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>((a | b)))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>((a & ::test::Seasons::Good)))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>((a & ::test::Seasons::Bad))));
+		::test::Seasons a = ::test::Seasons::Spring;
+		::test::Seasons b = ::test::Seasons::Summer;
+		::test::Seasons c = ::vl_workflow_global::EnumCtor::Instance().Id(::test::Seasons::Autumn);
+		::test::Seasons d = ::test::Seasons::Winter;
+		return ((((((((((((static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(a)) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(b))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(c))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>(d))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>((a | b)))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>((a & ::test::Seasons::Good)))) + ::vl::WString(L", ", false)) + static_cast<::vl::vuint64_t>(static_cast<::test::Seasons>((a & ::test::Seasons::Bad))));
 	}
 
 	EnumCtor& EnumCtor::Instance()
