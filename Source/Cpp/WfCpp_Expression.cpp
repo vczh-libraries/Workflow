@@ -1465,6 +1465,37 @@ namespace vl
 						break;
 					case ITypeInfo::SharedPtr:
 						{
+							if (result.type->GetElementType()->GetDecorator() == ITypeInfo::Generic)
+							{
+								auto toCode = [&]()
+								{
+									stream::MemoryStream stream;
+									{
+										stream::StreamWriter writer(stream);
+										WfPrint(node, WString::Empty, writer);
+									}
+									stream.SeekFromBegin(0);
+									{
+										stream::StreamReader reader(stream);
+										return reader.ReadToEnd();
+									}
+								};
+
+								if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+								{
+									writer.WriteString(L"/* NOT SUPPORTS: testing against enumerable type: ");
+									writer.WriteString(toCode());
+									writer.WriteString(L" */ __vwsn_not_exists__");
+									return;
+								}
+								else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+								{
+									writer.WriteString(L"/* NOT SUPPORTS: testing against function type: ");
+									writer.WriteString(toCode());
+									writer.WriteString(L" */ __vwsn_not_exists__");
+									return;
+								}
+							}
 							switch (node->test)
 							{
 							case WfTypeTesting::IsNull:
@@ -1476,7 +1507,6 @@ namespace vl
 								writer.WriteString(L"static_cast<bool>(");
 								Call(node->expression);
 								writer.WriteString(L")");
-								break;
 								break;
 							case WfTypeTesting::IsType:
 								writer.WriteString(L"static_cast<bool>(");
