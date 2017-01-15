@@ -82,7 +82,7 @@ namespace vl_workflow_global
 	{
 		::vl::vint32_t begin = 1;
 		::vl::vint32_t end = 5;
-		::vl::collections::LazyList<::vl::vint32_t> xs = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(new ::vl_workflow_global::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(begin, end)).Cast<::vl::reflection::description::IValueEnumerable>();
+		::vl::collections::LazyList<::vl::vint32_t> xs = ::vl::reflection::description::GetLazyList<::vl::vint32_t>(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(new ::vl_workflow_global::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(begin, end)));
 		return ((((::vl::WString(L"[", false) + ::vl_workflow_global::NewInterface::Instance().Show1(xs)) + ::vl::WString(L"][", false)) + ::vl_workflow_global::NewInterface::Instance().Show2(xs)) + ::vl::WString(L"]", false));
 	}
 

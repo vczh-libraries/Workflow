@@ -1334,8 +1334,29 @@ namespace vl
 				void Visit(WfTypeCastingExpression* node)override
 				{
 					auto scope = config->manager->nodeScopes[node].Obj();
-					auto typeInfo = CreateTypeInfoFromType(scope, node->type);
-					Call(node->expression, typeInfo.Obj());
+					auto fromType = config->manager->expressionResolvings[node->expression.Obj()].type;
+					auto toType = CreateTypeInfoFromType(scope, node->type);
+
+					auto tdVe = description::GetTypeDescriptor<IValueEnumerable>();
+					if (toType->GetTypeDescriptor() == tdVe)
+					{
+						if (toType->GetElementType()->GetDecorator() == ITypeInfo::Generic)
+						{
+							if ((fromType->GetTypeDescriptor() == tdVe && fromType->GetElementType()->GetDecorator() != ITypeInfo::Generic)
+								|| fromType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyList>())
+								|| fromType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>())
+								)
+							{
+								writer.WriteString(L"::vl::reflection::description::GetLazyList<");
+								writer.WriteString(config->ConvertType(toType->GetElementType()->GetGenericArgument(0)));
+								writer.WriteString(L">(");
+								Call(node->expression);
+								writer.WriteString(L")");
+								return;
+							}
+						}
+					}
+					Call(node->expression, toType.Obj());
 				}
 
 				void Visit(WfTypeTestingExpression* node)override
