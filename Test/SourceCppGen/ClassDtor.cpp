@@ -21,13 +21,13 @@ namespace vl_workflow_global
 	::vl::WString ClassDtor::main()
 	{
 		::Dtor* x = new ::Dtor();
-		(::vl::__vwsn::This(x)->name);
+		(::vl::__vwsn::This(x)->name = ::vl::WString(L"x", false));
 		::Dtor* y = new ::Dtor();
-		(::vl::__vwsn::This(y)->name);
+		(::vl::__vwsn::This(y)->name = ::vl::WString(L"y", false));
 		::Dtor* z = new ::Dtor();
-		(::vl::__vwsn::This(z)->name);
-		(::vl::__vwsn::This(x)->next);
-		(::vl::__vwsn::This(y)->next);
+		(::vl::__vwsn::This(z)->name = ::vl::WString(L"z", false));
+		(::vl::__vwsn::This(x)->next = y);
+		(::vl::__vwsn::This(y)->next = z);
 		::vl::__vwsn::This(x)->Dispose(true);
 		return ::vl_workflow_global::ClassDtor::Instance().s;
 	}

@@ -269,6 +269,11 @@ namespace vl
 					Ptr<WfCppConfig::ClosureInfo> closureInfo;
 					auto scope = config->manager->nodeScopes[node].Obj();
 
+					if (dynamic_cast<WfOrderedLambdaExpression*>(node))
+					{
+						scope = scope->parentScope.Obj();
+					}
+
 					while (scope)
 					{
 						if (scope->functionConfig && scope->functionConfig->lambda)
@@ -875,7 +880,68 @@ namespace vl
 				{
 					if (node->op == WfBinaryOperator::Assign)
 					{
-						if (auto binary = node->first.Cast<WfBinaryExpression>())
+						auto result = config->manager->expressionResolvings[node->first.Obj()];
+						if (result.propertyInfo)
+						{
+							auto propInfo = result.propertyInfo;
+							auto member = node->first.Cast<WfMemberExpression>();
+
+							if (CppExists(propInfo))
+							{
+								if (propInfo->GetCpp() == nullptr && propInfo->GetSetter() != nullptr)
+								{
+									WriteMethodTemplate(CppGetInvokeTemplate(propInfo->GetSetter()), propInfo->GetSetter(),
+										[&](IMethodInfo*)
+										{
+											writer.WriteString(L"::vl::__vwsn::This(");
+											if (member)
+											{
+												Call(member->parent);
+											}
+											else
+											{
+												VisitThisExpression(node->first.Obj(), propInfo->GetOwnerTypeDescriptor());
+											}
+											writer.WriteString(L")");
+											return true;
+										},
+										[&](IMethodInfo*, CommaPosition cp)
+										{
+											if (cp == CommaPosition::Left) writer.WriteString(L", ");
+											Call(node->second);
+											if (cp == CommaPosition::Right) writer.WriteString(L", ");
+											return true;
+										});
+								}
+								else
+								{
+									writer.WriteString(L"(");
+									WritePropertyTemplate(CppGetReferenceTemplate(propInfo), propInfo,
+										[&](IPropertyInfo*)
+										{
+											writer.WriteString(L"::vl::__vwsn::This(");
+											if (member)
+											{
+												Call(member->parent);
+											}
+											else
+											{
+												VisitThisExpression(node->first.Obj(), propInfo->GetOwnerTypeDescriptor());
+											}
+											writer.WriteString(L")");
+											return true;
+										});
+									writer.WriteString(L" = ");
+									Call(node->second, propInfo->GetReturn());
+									writer.WriteString(L")");
+								}
+							}
+							else
+							{
+								WriteNotExists(propInfo);
+							}
+						}
+						else if (auto binary = node->first.Cast<WfBinaryExpression>())
 						{
 							auto containerType = config->manager->expressionResolvings[binary->first.Obj()].type.Obj();
 							auto keyType = config->manager->expressionResolvings[binary->second.Obj()].type.Obj();
@@ -894,49 +960,6 @@ namespace vl
 							writer.WriteString(L", ");
 							WriteBoxParameter(valueType, [&]() {Call(node->second); });
 							writer.WriteString(L")");
-						}
-						else if (auto member = node->first.Cast<WfMemberExpression>())
-						{
-							auto result = config->manager->expressionResolvings[member.Obj()];
-							auto propInfo = result.propertyInfo;
-							if (CppExists(propInfo))
-							{
-								if (propInfo->GetCpp() == nullptr && propInfo->GetSetter() != nullptr)
-								{
-									WriteMethodTemplate(CppGetInvokeTemplate(propInfo->GetSetter()), propInfo->GetSetter(),
-										[&](IMethodInfo*)
-										{
-											writer.WriteString(L"::vl::__vwsn::This(");
-											Call(member->parent);
-											writer.WriteString(L")");
-											return true;
-										},
-										[&](IMethodInfo*, CommaPosition cp)
-										{
-											if (cp == CommaPosition::Left) writer.WriteString(L", ");
-											Call(node->second);
-											if (cp == CommaPosition::Right) writer.WriteString(L", ");
-											return true;
-										});
-								}
-								else
-								{
-									writer.WriteString(L"(");
-									WritePropertyTemplate(CppGetReferenceTemplate(propInfo), propInfo, 
-										[&](IPropertyInfo*)
-										{
-											writer.WriteString(L"::vl::__vwsn::This(");
-											Call(member->parent);
-											writer.WriteString(L")");
-											return true;
-										});
-									writer.WriteString(L")");
-								}
-							}
-							else
-							{
-								WriteNotExists(propInfo);
-							}
 						}
 						else
 						{
