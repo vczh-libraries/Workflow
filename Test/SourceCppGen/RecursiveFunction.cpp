@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t RecursiveFunction::Fib(::vl::vint32_t n)
 	{
-		return [&](){ if ((n <= 2)) return 1; else return (::vl_workflow_global::RecursiveFunction::Instance().Fib((n - 1)) + ::vl_workflow_global::RecursiveFunction::Instance().Fib((n - 2))); }();
+		return ((n <= 2) ? 1 : (::vl_workflow_global::RecursiveFunction::Instance().Fib((n - 1)) + ::vl_workflow_global::RecursiveFunction::Instance().Fib((n - 2))));
 	}
 
 	::vl::WString RecursiveFunction::main()

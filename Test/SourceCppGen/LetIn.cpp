@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::WString LetIn::main()
 	{
-		return [&](::vl::vint32_t x, ::vl::vint32_t y){ return ::vl::__vwsn::ToString((x + y)); }(10, 20);
+		return [&](auto x, auto y){ return ::vl::__vwsn::ToString((x + y)); }(10, 20);
 	}
 
 	LetIn& LetIn::Instance()

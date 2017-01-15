@@ -1197,9 +1197,7 @@ namespace vl
 						{
 							writer.WriteString(L", ");
 						}
-						auto symbol = scope->symbols[letVar->name.value][0];
-						writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
-						writer.WriteString(L" ");
+						writer.WriteString(L"auto ");
 						writer.WriteString(config->ConvertName(letVar->name.value));
 					}
 					writer.WriteString(L"){ return ");
@@ -1211,20 +1209,21 @@ namespace vl
 						{
 							writer.WriteString(L", ");
 						}
-						Call(letVar->value);
+						auto symbol = scope->symbols[letVar->name.value][0];
+						Call(letVar->value, symbol->typeInfo.Obj());
 					}
 					writer.WriteString(L")");
 				}
 
 				void Visit(WfIfExpression* node)override
 				{
-					writer.WriteString(L"[&](){ if (");
+					writer.WriteString(L"(");
 					Call(node->condition);
-					writer.WriteString(L") return ");
+					writer.WriteString(L" ? ");
 					Call(node->trueBranch);
-					writer.WriteString(L"; else return ");
+					writer.WriteString(L" : ");
 					Call(node->falseBranch);
-					writer.WriteString(L"; }()");
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfRangeExpression* node)override
@@ -1232,20 +1231,14 @@ namespace vl
 					auto result = config->manager->expressionResolvings[node];
 					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
 
-					writer.WriteString(L"[&](");
-					writer.WriteString(config->ConvertType(elementType));
-					writer.WriteString(L" __vwsn_1, ");
-					writer.WriteString(config->ConvertType(elementType));
-					writer.WriteString(L" __vwsn_2){ return ::vl::collections::Range<");
-					writer.WriteString(config->ConvertType(elementType));
-					writer.WriteString(L">(__vwsn_1, __vwsn_2 - __vwsn_1); }(");
-					Call(node->begin);
+					writer.WriteString(L"::vl::__vwsn::Range(");
+					Call(node->begin, elementType);
 					if (node->beginBoundary == WfRangeBoundary::Exclusive)
 					{
 						writer.WriteString(L" + 1");
 					}
 					writer.WriteString(L", ");
-					Call(node->end);
+					Call(node->end, elementType);
 					if (node->endBoundary == WfRangeBoundary::Inclusive)
 					{
 						writer.WriteString(L" + 1");
@@ -1261,9 +1254,12 @@ namespace vl
 						auto resultBegin = config->manager->expressionResolvings[range->begin.Obj()];
 						auto resultEnd = config->manager->expressionResolvings[range->end.Obj()];
 
-						writer.WriteString(L"[&](");
-						writer.WriteString(config->ConvertType(resultElement.type.Obj()));
-						writer.WriteString(L" __vwsn_1){ return ");
+						writer.WriteString(L"[&](auto __vwsn_1){ return ");
+						if (node->test == WfSetTesting::NotIn)
+						{
+							writer.WriteString(L"!");
+						}
+						writer.WriteString(L"(");
 
 						Call(range->begin);
 						writer.WriteString(range->beginBoundary == WfRangeBoundary::Inclusive ? L" <= " : L" < ");
@@ -1271,35 +1267,30 @@ namespace vl
 						writer.WriteString(range->endBoundary == WfRangeBoundary::Inclusive ? L" <= " : L" < ");
 						Call(range->end);
 
-						writer.WriteString(L"; }(");
-						Call(node->element);
+						writer.WriteString(L"); }(");
+						Call(node->element, resultElement.type.Obj());
 						writer.WriteString(L")");
 					}
 					else
 					{
 						auto result = config->manager->expressionResolvings[node->collection.Obj()];
 						auto elementType = result.type->GetElementType()->GetGenericArgument(0);
-						auto elementTypeCpp = elementType ? config->ConvertType(elementType) : config->ConvertType(description::GetTypeDescriptor<Value>());
 
-						writer.WriteString(L"[&](");
-						writer.WriteString(elementTypeCpp);
-						writer.WriteString(L" __vwsn_1){ return ");
-						if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+						if (node->test == WfSetTesting::NotIn)
 						{
-							writer.WriteString(L"::vl::reflection::description::GetLazyList<");
-							writer.WriteString(elementTypeCpp);
-							writer.WriteString(L">(");
+							writer.WriteString(L"(! ");
 						}
+
+						writer.WriteString(L"::vl::__vwsn::InSet(");
+						Call(node->element, elementType);
+						writer.WriteString(L", ");
 						Call(node->collection);
-						if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
+						writer.WriteString(L")");
+
+						if (node->test == WfSetTesting::NotIn)
 						{
 							writer.WriteString(L")");
 						}
-						writer.WriteString(L".Any([&](");
-						writer.WriteString(elementTypeCpp);
-						writer.WriteString(L" __vwsn_2){ return __vwsn_1 == __vwsn_2; }); }(");
-						Call(node->element);
-						writer.WriteString(L")");
 					}
 				}
 

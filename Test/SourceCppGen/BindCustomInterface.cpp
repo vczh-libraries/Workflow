@@ -82,7 +82,7 @@ namespace vl_workflow_global
 	{
 		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl_workflow_global::BindCustomInterface::Instance().Bind(adder.Cast<::ISummer>());
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, [&](::vl::vint32_t __vwsn_1, ::vl::vint32_t __vwsn_2){ return ::vl::collections::Range<::vl::vint32_t>(__vwsn_1, __vwsn_2 - __vwsn_1); }(1, 5 + 1))
+		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
 			::vl::__vwsn::This(adder.Obj())->Add(x);
 		}

@@ -130,5 +130,23 @@ namespace vl
 			reflection::description::UnboxParameter<Type>(value, result);
 			return result;
 		}
+
+		template<typename T>
+		collections::LazyList<T> Range(T begin, T end)
+		{
+			return collections::Range<T>(begin, end - begin);
+		}
+
+		template<typename T>
+		bool InSet(const T& value, const collections::LazyList<T>& collection)
+		{
+			return collection.Any([&](const T& element) {return element == value; });
+		}
+
+		template<typename T>
+		bool InSet(const T& value, Ptr<reflection::description::IValueReadonlyList> collection)
+		{
+			return InSet<T>(value, reflection::description::GetLazyList<T>(collection));
+		}
 	}
 }

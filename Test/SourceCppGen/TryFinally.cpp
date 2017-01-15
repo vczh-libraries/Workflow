@@ -21,7 +21,7 @@ namespace vl_workflow_global
 	void TryFinally::test1()
 	{
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, [&](::vl::vint32_t __vwsn_1, ::vl::vint32_t __vwsn_2){ return ::vl::collections::Range<::vl::vint32_t>(__vwsn_1, __vwsn_2 - __vwsn_1); }(1, 5 + 1))
+		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
 			{
 				auto __vwsnb_0 = [&]()
@@ -51,7 +51,7 @@ namespace vl_workflow_global
 	void TryFinally::test2()
 	{
 		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, [&](::vl::vint32_t __vwsn_1, ::vl::vint32_t __vwsn_2){ return ::vl::collections::Range<::vl::vint32_t>(__vwsn_1, __vwsn_2 - __vwsn_1); }(1, 5 + 1))
+		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
 			{
 				auto __vwsnb_0 = [&]()
