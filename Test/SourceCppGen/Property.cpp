@@ -20,7 +20,7 @@ namespace vl_workflow_global
 	{
 		::test::Point x = [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = 10; __vwsn_temp__.y = 20; return __vwsn_temp__; }();
 		::vl::Ptr<::test::ObservableValue> y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(10));
-		::vl::WString s1 = ((((((((::vl::__vwsn::This(x). + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(x).) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetValue()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetDisplayName());
+		::vl::WString s1 = ((((((((x.x + ::vl::WString(L", ", false)) + x.y) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetValue()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetDisplayName());
 		::vl::__vwsn::This(y)->SetValue(20);
 		::vl::__vwsn::This(y)->SetName(::vl::WString(L"Workflow", false));
 		::vl::WString s2 = ((((::vl::__vwsn::This(y)->GetValue() + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y)->GetDisplayName());

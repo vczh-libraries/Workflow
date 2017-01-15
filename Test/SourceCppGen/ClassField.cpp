@@ -21,9 +21,9 @@ namespace vl_workflow_global
 		::vl::WString s = ::vl::WString(L"", false);
 		::vl::Ptr<::test::PointClass> a = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
 		::vl::Ptr<::test::PointClass> b = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
-		(::vl::__vwsn::This(b)->);
-		(::vl::__vwsn::This(b)->);
-		return (((((((((((::vl::WString(L"", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(b)->)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(b)->)) + ::vl::WString(L", ", false)) + static_cast<bool>((a.Obj() == a.Obj()))) + ::vl::WString(L", ", false)) + static_cast<bool>((a.Obj() == b.Obj())));
+		(::vl::__vwsn::This(b)->x);
+		(::vl::__vwsn::This(b)->y);
+		return (((((((((((::vl::WString(L"", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->x)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->y)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(b)->x)) + ::vl::WString(L", ", false)) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(b)->y)) + ::vl::WString(L", ", false)) + static_cast<bool>((a.Obj() == a.Obj()))) + ::vl::WString(L", ", false)) + static_cast<bool>((a.Obj() == b.Obj())));
 	}
 
 	ClassField& ClassField::Instance()

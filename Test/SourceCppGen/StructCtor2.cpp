@@ -18,7 +18,7 @@ namespace vl_workflow_global
 {
 	::vl::vint32_t StructCtor2::Do(::Point p)
 	{
-		return (::vl::__vwsn::This(p). + ::vl::__vwsn::This(p).);
+		return (p.x + p.y);
 	}
 
 	::vl::WString StructCtor2::main()

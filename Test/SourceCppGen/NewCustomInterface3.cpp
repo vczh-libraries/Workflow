@@ -77,7 +77,7 @@ namespace vl_workflow_global
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
-		return static_cast<::vl::vint32_t>((::vl::__vwsn::This(__vwsnthis_1)-> + index));
+		return static_cast<::vl::vint32_t>((::vl::__vwsn::This(__vwsnthis_1)->begin + index));
 	}
 
 	::vl::vint32_t __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
@@ -87,7 +87,7 @@ namespace vl_workflow_global
 
 	bool __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
 	{
-		if ((index == (::vl::__vwsn::This(__vwsnthis_1)-> - ::vl::__vwsn::This(__vwsnthis_1)->)))
+		if ((index == (::vl::__vwsn::This(__vwsnthis_1)->end - ::vl::__vwsn::This(__vwsnthis_1)->begin)))
 		{
 			return false;
 		}
@@ -110,8 +110,8 @@ Class (::MyClass)
 
 MyClass::MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end)
 {
-	(::vl::__vwsn::This(this)-> = _begin);
-	(::vl::__vwsn::This(this)-> = _end);
+	(::vl::__vwsn::This(this)->begin = _begin);
+	(::vl::__vwsn::This(this)->end = _end);
 }
 
 ::vl::vint32_t MyClass::Get50()

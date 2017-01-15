@@ -22,11 +22,11 @@ namespace vl_workflow_global
 	{
 		{
 			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods());
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->)) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->x)) + ::vl::WString(L"]", false))));
 		}
 		{
 			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods(100));
-			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->)) + ::vl::WString(L"]", false))));
+			(::vl_workflow_global::ClassMethod::Instance().s = (::vl_workflow_global::ClassMethod::Instance().s + ((::vl::WString(L"[", false) + static_cast<::vl::vint32_t>(::vl::__vwsn::This(a)->x)) + ::vl::WString(L"]", false))));
 		}
 		{
 			::vl::Ptr<::Methods> a = ::vl::Ptr<::Methods>(new ::Methods(1));
@@ -76,8 +76,8 @@ Methods::Methods()
 
 Methods::Methods(::vl::vint32_t _x)
 {
-	(::vl::__vwsn::This(this)-> = _x);
-	if ((::vl::__vwsn::This(this)-> != ::vl::__vwsn::This(this)->))
+	(::vl::__vwsn::This(this)->x = _x);
+	if ((::vl::__vwsn::This(this)->x != ::vl::__vwsn::This(this)->x))
 	{
 		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
@@ -85,18 +85,18 @@ Methods::Methods(::vl::vint32_t _x)
 
 ::vl::vint32_t Methods::GetX()
 {
-	if ((::vl::__vwsn::This(this)-> != ::vl::__vwsn::This(this)->))
+	if ((::vl::__vwsn::This(this)->x != ::vl::__vwsn::This(this)->x))
 	{
 		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
-	return ::vl::__vwsn::This(this)->;
+	return ::vl::__vwsn::This(this)->x;
 }
 
 void Methods::SetX(::vl::vint32_t _x)
 {
-	if ((::vl::__vwsn::This(this)-> != _x))
+	if ((::vl::__vwsn::This(this)->x != _x))
 	{
-		(::vl::__vwsn::This(this)-> = _x);
+		(::vl::__vwsn::This(this)->x = _x);
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->XChanged)();
 	}
 }

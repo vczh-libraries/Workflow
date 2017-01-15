@@ -498,12 +498,12 @@ namespace vl
 					{
 						if (item == L"$Type")
 						{
-							config->ConvertType(propertyInfo->GetOwnerTypeDescriptor());
+							writer.WriteString(config->ConvertType(propertyInfo->GetOwnerTypeDescriptor()));
 							return true;
 						}
 						else if (item == L"$Name")
 						{
-							config->ConvertName(propertyInfo->GetName());
+							writer.WriteString(config->ConvertName(propertyInfo->GetName()));
 							return true;
 						}
 						else if (item == L"$This")
@@ -613,9 +613,10 @@ namespace vl
 						},
 						[&](IPropertyInfo* propertyInfo)
 						{
-							writer.WriteString(L"::vl::__vwsn::This(");
+							auto isRef = (propertyInfo->GetOwnerTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
+							if (isRef) writer.WriteString(L"::vl::__vwsn::This(");
 							VisitThisExpression(node, propertyInfo->GetOwnerTypeDescriptor());
-							writer.WriteString(L")");
+							if (isRef) writer.WriteString(L")");
 							return true;
 						});
 
@@ -713,9 +714,10 @@ namespace vl
 						},
 						[&](IPropertyInfo* propertyInfo)
 						{
-							writer.WriteString(L"::vl::__vwsn::This(");
+							auto isRef = (propertyInfo->GetOwnerTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
+							if (isRef) writer.WriteString(L"::vl::__vwsn::This(");
 							Call(node->parent);
-							writer.WriteString(L")");
+							if (isRef) writer.WriteString(L")");
 							return true;
 						});
 				}
