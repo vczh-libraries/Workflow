@@ -84,8 +84,8 @@ TEST_CASE(TestCodegen)
 			writer.WriteString(itemName);
 			writer.WriteLine(L"::Instance().main();");
 
-			writer.WriteLine(L"\tConsole::WriteLine(L\"    expected: \" + expected);");
-			writer.WriteLine(L"\tConsole::WriteLine(L\"    actual: \" + actual);");
+			writer.WriteLine(L"\tConsole::WriteLine(L\"    expected : \" + expected);");
+			writer.WriteLine(L"\tConsole::WriteLine(L\"    actual   : \" + actual);");
 			writer.WriteLine(L"\tTEST_ASSERT(actual == expected);");
 
 			writer.WriteLine(L"}");

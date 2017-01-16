@@ -34,7 +34,7 @@ namespace vl_workflow_global
 		auto f32 = static_cast<float>(1.5);
 		auto f64 = static_cast<double>(3);
 		auto s = ::vl::WString(L"text", false);
-		return ((((((((((((((((::vl::__vwsn::ToString((! b)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! i8))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! i16))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! i32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! i64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! u8))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! u16))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! u32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((! u64)));
+		return ((((((((((((((((::vl::__vwsn::ToString((! b)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vint8_t>(~ i8))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vint16_t>(~ i16))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((~ i32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((~ i64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint8_t>(~ u8))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint16_t>(~ u16))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((~ u32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((~ u64)));
 	}
 
 	OpNot& OpNot::Instance()

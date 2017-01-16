@@ -834,9 +834,24 @@ namespace vl
 						writer.WriteString(L")");
 						break;
 					case WfUnaryOperator::Not:
-						writer.WriteString(L"(! ");
-						Call(node->operand, result.type.Obj());
-						writer.WriteString(L")");
+						{
+							if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
+							{
+								writer.WriteString(L"(! ");
+							}
+							else
+							{
+								if (BinaryNeedConvert(result.type->GetTypeDescriptor()))
+								{
+									writer.WriteString(L"static_cast<");
+									writer.WriteString(config->ConvertType(result.type->GetTypeDescriptor()));
+									writer.WriteString(L">");
+								}
+								writer.WriteString(L"(~ ");
+							}
+							Call(node->operand, result.type.Obj());
+							writer.WriteString(L")");
+						}
 						break;
 					}
 				}
