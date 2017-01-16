@@ -90,6 +90,56 @@ CustomInterfaceProcessor
 		}
 		return sum;
 	}
+
+/***********************************************************************
+Hinters
+***********************************************************************/
+
+	List<int>& Hinters::GetList(List<int>& xs)
+	{
+		CopyFrom(list, xs);
+		return list;
+	}
+
+	const List<int>& Hinters::GetReadonlyList(const List<int>& xs)
+	{
+		CopyFrom(list, xs);
+		return list;
+	}
+
+	const Array<int>& Hinters::GetReadonlyArray(const Array<int>& xs)
+	{
+		CopyFrom(array, xs);
+		return array;
+	}
+
+	const SortedList<int>& Hinters::GetReadonlySL(const SortedList<int>& xs)
+	{
+		CopyFrom(sortedList, xs);
+		return sortedList;
+	}
+
+	Ptr<Hinters> CreateHinter()
+	{
+		return new Hinters();
+	}
+
+	Hinters* CreateHinter(int)
+	{
+		return new Hinters();
+	}
+
+	Dictionary<int, int>& GetDictionaryFromHinter(Hinters* hinter, Dictionary<int, int>& xs)
+	{
+		CopyFrom(hinter->dictionary, xs);
+		return hinter->dictionary;
+	}
+
+	const Dictionary<int, int>& GetReadonlyDictionaryFromHinter(Hinters* hinter, const Dictionary<int, int>& xs)
+	{
+		CopyFrom(hinter->dictionary, xs);
+		return hinter->dictionary;
+	}
 }
 
 /***********************************************************************
@@ -145,6 +195,20 @@ namespace vl
 			BEGIN_CLASS_MEMBER(CustomInterfaceProcessor)
 				CLASS_MEMBER_STATIC_METHOD(Sum, { L"values" })
 			END_CLASS_MEMBER(CustomInterfaceProcessor)
+
+			BEGIN_CLASS_MEMBER(Hinters)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<Hinters>(), NO_PARAMETER, test::CreateHinter)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateHinter, { L"x" }, Hinters*(*)(int), test::CreateHinter)
+				CLASS_MEMBER_METHOD(GetList, { L"xs" })
+				CLASS_MEMBER_METHOD(GetReadonlyList, { L"xs" })
+				CLASS_MEMBER_METHOD(GetReadonlyArray, { L"xs" })
+				CLASS_MEMBER_METHOD_RENAME(GetReadonlySortedList, GetReadonlySL, { L"xs" })
+
+				using T1 = Dictionary<int, int>&(Hinters::*)(Dictionary<int, int>&);
+				using T2 = const Dictionary<int, int>&(Hinters::*)(const Dictionary<int, int>&);
+				CLASS_MEMBER_EXTERNALMETHOD(GetDictionary, { L"xs" }, T1, test::GetDictionaryFromHinter)
+				CLASS_MEMBER_EXTERNALMETHOD(GetReadonlyDictionary, { L"xs" }, T2, test::GetReadonlyDictionaryFromHinter)
+			END_CLASS_MEMBER(Hinters)
 
 			class UnitTestTypeLoader : public Object, public ITypeLoader
 			{

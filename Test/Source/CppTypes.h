@@ -6,6 +6,7 @@
 namespace test
 {
 	using namespace vl;
+	using namespace vl::collections;
 	using namespace vl::reflection;
 	using namespace vl::reflection::description;
 
@@ -67,6 +68,25 @@ namespace test
 	public:
 		static vint							Sum(Ptr<IValueEnumerable> values);
 	};
+
+	class Hinters : public Object, public Description<Hinters>
+	{
+	public:
+		List<int>							list;
+		Array<int>							array;
+		SortedList<int>						sortedList;
+		Dictionary<int, int>				dictionary;
+
+		List<int>&							GetList(List<int>& xs);
+		const List<int>&					GetReadonlyList(const List<int>& xs);
+		const Array<int>&					GetReadonlyArray(const Array<int>& xs);
+		const SortedList<int>&				GetReadonlySL(const SortedList<int>& xs);
+
+	};
+	extern Ptr<Hinters>						CreateHinter();
+	extern Hinters*							CreateHinter(int);
+	extern Dictionary<int, int>&			GetDictionaryFromHinter(Hinters* hinter, Dictionary<int, int>& xs);
+	extern const Dictionary<int, int>&		GetReadonlyDictionaryFromHinter(Hinters* hinter, const Dictionary<int, int>& xs);
 }
 
 namespace vl
@@ -81,6 +101,7 @@ namespace vl
 			F(test::PointClass)\
 			F(test::ObservableValue)\
 			F(test::CustomInterfaceProcessor)\
+			F(test::Hinters)\
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
 

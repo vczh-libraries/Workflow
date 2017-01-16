@@ -120,19 +120,42 @@ Expression Helpers
 							{
 							case ITypeInfo::RawPtr:
 								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-								writer.WriteString(L"dynamic_cast<");
-								writer.WriteString(config->ConvertType(toType));
-								writer.WriteString(L">(");
-								writeExpression();
-								writer.WriteString(L")");
-								if (strongCast) writer.WriteString(L")");
+								if (fromType->GetTypeDescriptor()->CanConvertTo(toType->GetTypeDescriptor()))
+								{
+									writer.WriteString(L"static_cast<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L"*>(");
+									writeExpression();
+									writer.WriteString(L")");
+								}
+								else
+								{
+									writer.WriteString(L"::vl::__vwsn::RawPtrCast<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									writeExpression();
+									writer.WriteString(L")");
+									if (strongCast) writer.WriteString(L")");
+								}
 								return;
 							case ITypeInfo::SharedPtr:
 								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-								writer.WriteString(config->ConvertType(toType));
-								writer.WriteString(L"(");
-								writeExpression();
-								writer.WriteString(L")");
+								if (fromType->GetTypeDescriptor()->CanConvertTo(toType->GetTypeDescriptor()))
+								{
+									writer.WriteString(L"::vl::Ptr<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									writeExpression();
+									writer.WriteString(L")");
+								}
+								else
+								{
+									writer.WriteString(L"::vl::__vwsn::SharedPtrCast<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									writeExpression();
+									writer.WriteString(L")");
+								}
 								if (strongCast) writer.WriteString(L")");
 								return;
 							default:;
@@ -145,16 +168,42 @@ Expression Helpers
 							{
 							case ITypeInfo::RawPtr:
 								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-								writeExpression();
-								writer.WriteString(L".Obj()");
+								if (fromType->GetTypeDescriptor()->CanConvertTo(toType->GetTypeDescriptor()))
+								{
+									writer.WriteString(L"static_cast<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L"*>(");
+									writeExpression();
+									writer.WriteString(L".Obj())");
+								}
+								else
+								{
+									writer.WriteString(L"::vl::__vwsn::RawPtrCast<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									writeExpression();
+									writer.WriteString(L".Obj())");
+								}
 								if (strongCast) writer.WriteString(L")");
 								return;
 							case ITypeInfo::SharedPtr:
 								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-								writeExpression();
-								writer.WriteString(L".Cast<");
-								writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
-								writer.WriteString(L">()");
+								if (fromType->GetTypeDescriptor()->CanConvertTo(toType->GetTypeDescriptor()))
+								{
+									writer.WriteString(L"::vl::Ptr<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									writeExpression();
+									writer.WriteString(L")");
+								}
+								else
+								{
+									writer.WriteString(L"::vl::__vwsn::SharedPtrCast<");
+									writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									writeExpression();
+									writer.WriteString(L".Obj())");
+								}
 								if (strongCast) writer.WriteString(L")");
 								return;
 							default:;
@@ -1464,18 +1513,14 @@ WfGenerateExpressionVisitor
 								writer.WriteString(L" != nullptr)");
 								break;
 							case WfTypeTesting::IsType:
-								writer.WriteString(L"(dynamic_cast<");
-								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-								writer.WriteString(L"*>(");
-								Call(node->expression);
-								writer.WriteString(L") != nullptr)");
-								break;
 							case WfTypeTesting::IsNotType:
-								writer.WriteString(L"(dynamic_cast<");
+								writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
 								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-								writer.WriteString(L"*>(");
+								writer.WriteString(L">(");
 								Call(node->expression);
-								writer.WriteString(L") == nullptr)");
+								writer.WriteString(L") ");
+								writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
+								writer.WriteString(L" nullptr)");
 								break;
 							}
 						}
@@ -1519,18 +1564,14 @@ WfGenerateExpressionVisitor
 								writer.WriteString(L")");
 								break;
 							case WfTypeTesting::IsType:
-								writer.WriteString(L"static_cast<bool>(");
-								Call(node->expression);
-								writer.WriteString(L".Cast<");
-								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-								writer.WriteString(L">())");
-								break;
 							case WfTypeTesting::IsNotType:
-								writer.WriteString(L"(! static_cast<bool>(");
-								Call(node->expression);
-								writer.WriteString(L".Cast<");
+								writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
 								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-								writer.WriteString(L">()))");
+								writer.WriteString(L">(");
+								Call(node->expression);
+								writer.WriteString(L".Obj()) ");
+								writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
+								writer.WriteString(L" nullptr)");
 								break;
 							}
 						}
@@ -1593,9 +1634,9 @@ WfGenerateExpressionVisitor
 								case WfTypeTesting::IsNotType:
 									if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 									{
-										writer.WriteString(L"(dynamic_cast<");
+										writer.WriteString(L"(::vl::__vwsn__RawPtrCast<");
 										writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-										writer.WriteString(L"*>(");
+										writer.WriteString(L">(");
 										Call(node->expression);
 										writer.WriteString(L".GetRawPtr()) ");
 										writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");

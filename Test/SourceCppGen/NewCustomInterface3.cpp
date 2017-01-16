@@ -49,7 +49,7 @@ namespace vl_workflow_global
 	{
 		auto x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
 		auto xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
-		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(xs.Cast<::vl::reflection::description::IValueEnumerable>())))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(xs.Cast<::vl::reflection::description::IValueEnumerable>())))) + ::vl::WString(L"]", false));
+		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs))))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs))))) + ::vl::WString(L"]", false));
 	}
 
 	NewCustomInterface3& NewCustomInterface3::Instance()
