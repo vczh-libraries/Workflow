@@ -7,6 +7,8 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
 
 			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer)
 			{
@@ -92,6 +94,37 @@ namespace vl
 					}
 				}
 				writer.WriteLine(L"\tFINALIZE_GLOBAL_STORAGE_CLASS");
+				if (varDecls.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					{
+						auto scope = manager->nodeScopes[decl.Obj()].Obj();
+						auto symbol = scope->symbols[decl->name.value][0];
+						auto typeInfo = symbol->typeInfo;
+						switch (typeInfo->GetDecorator())
+						{
+						case ITypeInfo::RawPtr:
+						case ITypeInfo::SharedPtr:
+							writer.WriteLine(L"\t\tinstance." + ConvertName(decl->name.value) + L" = nullptr;");
+							break;
+						case ITypeInfo::Nullable:
+							writer.WriteString(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ");
+							ConvertType(typeInfo.Obj());
+							writer.WriteLine(L"();");
+							break;
+						default:
+							if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
+							{
+								writer.WriteLine(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ::vl::WString::Empty;");
+							}
+							else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
+							{
+								writer.WriteLine(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ::vl::reflection::description::Value();");
+							}
+						}
+					}
+				}
 				writer.WriteLine(L"END_GLOBAL_STORAGE_CLASS(" + storageName + L")");
 				writer.WriteLine(L"");
 

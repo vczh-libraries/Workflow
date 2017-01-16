@@ -18,6 +18,8 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_TryCatch)
 
 		instance.log = ::vl::WString(L"", false);
 	FINALIZE_GLOBAL_STORAGE_CLASS
+
+		instance.log = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_TryCatch)
 
 namespace vl_workflow_global

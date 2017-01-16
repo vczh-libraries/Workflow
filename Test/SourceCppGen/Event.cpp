@@ -19,6 +19,9 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Event)
 		instance.olds = ::vl::reflection::description::IValueList::Create();
 		instance.news = ::vl::reflection::description::IValueList::Create();
 	FINALIZE_GLOBAL_STORAGE_CLASS
+
+		instance.olds = nullptr;
+		instance.news = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Event)
 
 namespace vl_workflow_global

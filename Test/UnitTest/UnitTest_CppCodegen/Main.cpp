@@ -35,6 +35,7 @@ int main()
 	unittest::UnitTest::RunAndDisposeTests();
 	UnloadTypes();
 	ThreadLocalStorage::DisposeStorages();
+	FinalizeGlobalStorage();
 #if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif

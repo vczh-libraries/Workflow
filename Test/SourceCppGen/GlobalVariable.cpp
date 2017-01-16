@@ -18,6 +18,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_GlobalVariable)
 
 		instance.x = 0;
 	FINALIZE_GLOBAL_STORAGE_CLASS
+
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_GlobalVariable)
 
 namespace vl_workflow_global
