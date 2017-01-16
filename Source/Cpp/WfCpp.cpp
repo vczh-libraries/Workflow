@@ -555,8 +555,6 @@ WfCppConfig
 				}
 
 				WriteNamespaceEnd(writer, nss);
-
-				writer.WriteLine(L"");
 				writer.WriteLine(L"#undef GLOBAL_SYMBOL");
 				writer.WriteLine(L"#undef GLOBAL_NAME");
 				writer.WriteLine(L"#undef GLOBAL_OBJ");

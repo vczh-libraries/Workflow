@@ -110,7 +110,6 @@ Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
 {
 }
 
-
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

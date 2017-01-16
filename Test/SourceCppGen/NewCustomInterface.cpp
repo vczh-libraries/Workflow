@@ -118,7 +118,6 @@ Class (::IMyInterface)
 	return 50;
 }
 
-
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

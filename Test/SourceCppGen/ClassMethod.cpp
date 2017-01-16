@@ -107,7 +107,6 @@ void Methods::SetX(::vl::vint32_t _x)
 	}
 }
 
-
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

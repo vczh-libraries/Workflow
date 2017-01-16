@@ -236,7 +236,6 @@ Class (::ISummer2)
 Class (::IAdder2)
 ***********************************************************************/
 
-
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

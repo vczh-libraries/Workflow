@@ -78,7 +78,6 @@ namespace vl_workflow_global
 	}
 }
 
-
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

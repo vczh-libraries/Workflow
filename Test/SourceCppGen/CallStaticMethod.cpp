@@ -60,7 +60,6 @@ Class (::Calculator::Internal)
 	return ::Calculator::Sum2(begin, end, 0);
 }
 
-
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

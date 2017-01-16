@@ -119,7 +119,6 @@ namespace vl_workflow_global
 Class (::IMyInterface2)
 ***********************************************************************/
 
-
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
