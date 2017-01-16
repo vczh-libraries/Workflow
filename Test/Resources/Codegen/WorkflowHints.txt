@@ -1,0 +1,23 @@
+module test;
+using test::*;
+using system::*;
+
+func main():string
+{
+	var hinters = new Hinters^();
+	{
+		var hinters2 = Hinters::CreateHinter(0);
+		delete hinters2;
+	}
+
+	var a = hinters.GetList({1 2 3})[0];
+	var b = hinters.GetReadonlyList({10 20 30})[0];
+	var c = hinters.GetReadonlyArray({100 200 300})[0];
+	var d = hinters.GetReadonlySortedList({1000 2000 3000})[0];
+	var e = hinters.GetDictionary({1:2 3:4})[1];
+	var f = hinters.GetReadonlyDictionary({10:20 30:40})[10];
+	hinters.SetStorage({1 2 3 4 5});
+	var g = hinters.Storage[3];
+
+	return $"[$(a)][$(b)][$(c)][$(d)][$(e)][$(f)][$(g)]";
+}

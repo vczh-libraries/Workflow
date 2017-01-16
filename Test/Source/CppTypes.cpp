@@ -119,6 +119,16 @@ Hinters
 		return sortedList;
 	}
 
+	List<int>& Hinters::GetStorage()
+	{
+		return list;
+	}
+
+	void Hinters::SetStorage(List<int>& xs)
+	{
+		CopyFrom(list, xs);
+	}
+
 	Ptr<Hinters> CreateHinter()
 	{
 		return new Hinters();
@@ -208,6 +218,8 @@ namespace vl
 				using T2 = const Dictionary<int, int>&(Hinters::*)(const Dictionary<int, int>&);
 				CLASS_MEMBER_EXTERNALMETHOD(GetDictionary, { L"xs" }, T1, test::GetDictionaryFromHinter)
 				CLASS_MEMBER_EXTERNALMETHOD(GetReadonlyDictionary, { L"xs" }, T2, test::GetReadonlyDictionaryFromHinter)
+
+				CLASS_MEMBER_PROPERTY_FAST(Storage)
 			END_CLASS_MEMBER(Hinters)
 
 			class UnitTestTypeLoader : public Object, public ITypeLoader

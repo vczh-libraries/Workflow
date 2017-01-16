@@ -53,6 +53,7 @@
 #include "StructCtor2.h"
 #include "EnumCtor.h"
 #include "EnumCtor2.h"
+#include "WorkflowHints.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -547,6 +548,15 @@ TEST_CASE(EnumCtor2)
 {
 	WString expected = L"1, 2, 4, 8, 3, 1, 0";
 	WString actual = ::vl_workflow_global::EnumCtor2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(WorkflowHints)
+{
+	WString expected = L"[1][10][100][1000][2][20][4]";
+	WString actual = ::vl_workflow_global::WorkflowHints::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

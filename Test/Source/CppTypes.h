@@ -82,6 +82,8 @@ namespace test
 		const Array<int>&					GetReadonlyArray(const Array<int>& xs);
 		const SortedList<int>&				GetReadonlySL(const SortedList<int>& xs);
 
+		List<int>&							GetStorage();
+		void								SetStorage(List<int>& xs);
 	};
 	extern Ptr<Hinters>						CreateHinter();
 	extern Hinters*							CreateHinter(int);
