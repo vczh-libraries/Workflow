@@ -33,7 +33,7 @@ namespace vl
 				case WfClassKind::Class:
 				{
 					vint count = td->GetBaseTypeDescriptorCount();
-					bool hasClassBase = Range(0, count)
+					bool hasClassBase = Range<vint>(0, count)
 						.Any([=](vint index)
 					{
 						auto baseTd = td->GetBaseTypeDescriptor(index);
