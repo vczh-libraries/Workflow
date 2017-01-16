@@ -33,11 +33,11 @@ namespace vl_workflow_global
 	class __vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::vl::Ptr<::ISummer> summer;
+		::vl::Ptr<::ISummer2> summer;
 
-		__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer);
+		__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer2> __vwsnctor_summer);
 
-		::vl::Ptr<::ISummer> __vwsn_bind_cache_0;
+		::vl::Ptr<::ISummer2> __vwsn_bind_cache_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -64,27 +64,27 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
-	class __vwsnc3_BindCustomInterface2_main__IAdder : public ::vl::Object, public virtual ::IAdder
+	class __vwsnc3_BindCustomInterface2_main__IAdder2 : public ::vl::Object, public virtual ::IAdder2
 	{
 	public:
 
-		__vwsnc3_BindCustomInterface2_main__IAdder();
+		__vwsnc3_BindCustomInterface2_main__IAdder2();
 
 		::vl::vint32_t sum = 0;
 		::vl::vint32_t GetSum() override;
 		void Add(::vl::vint32_t value) override;
 	};
 
-	::vl::Ptr<::vl::reflection::description::IValueSubscription> BindCustomInterface2::Bind(::vl::Ptr<::ISummer> summer)
+	::vl::Ptr<::vl::reflection::description::IValueSubscription> BindCustomInterface2::Bind(::vl::Ptr<::ISummer2> summer)
 	{
 		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(summer));
 		::vl::__vwsn::This(subscription.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf1_BindCustomInterface2_Bind_()));
 		return subscription;
 	}
 
-	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder> adder)
+	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder2> adder)
 	{
-		auto subscription = GLOBAL_NAME Bind(adder.Cast<::ISummer>());
+		auto subscription = GLOBAL_NAME Bind(adder.Cast<::ISummer2>());
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
@@ -95,7 +95,7 @@ namespace vl_workflow_global
 
 	::vl::WString BindCustomInterface2::main()
 	{
-		GLOBAL_NAME Execute(::vl::Ptr<::IAdder>(new ::vl_workflow_global::__vwsnc3_BindCustomInterface2_main__IAdder()));
+		GLOBAL_NAME Execute(::vl::Ptr<::IAdder2>(new ::vl_workflow_global::__vwsnc3_BindCustomInterface2_main__IAdder2()));
 		return GLOBAL_NAME s;
 	}
 
@@ -113,10 +113,10 @@ namespace vl_workflow_global
 		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
 
-	__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer> __vwsnctor_summer)
+	__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer2> __vwsnctor_summer)
 		:summer(__vwsnctor_summer)
 	{
-		this->__vwsn_bind_cache_0 = ::vl::Ptr<::ISummer>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::ISummer2>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -173,7 +173,7 @@ namespace vl_workflow_global
 		{
 			(__vwsn_bind_closed_ = true);
 			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SumChanged, __vwsn_bind_handler_0_0);
-			(__vwsn_bind_cache_0 = ::vl::Ptr<::ISummer>());
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::ISummer2>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
 			return true;
@@ -208,17 +208,17 @@ namespace vl_workflow_global
 		return false;
 	}
 
-	__vwsnc3_BindCustomInterface2_main__IAdder::__vwsnc3_BindCustomInterface2_main__IAdder()
+	__vwsnc3_BindCustomInterface2_main__IAdder2::__vwsnc3_BindCustomInterface2_main__IAdder2()
 	{
 		this->sum = 0;
 	}
 
-	::vl::vint32_t __vwsnc3_BindCustomInterface2_main__IAdder::GetSum()
+	::vl::vint32_t __vwsnc3_BindCustomInterface2_main__IAdder2::GetSum()
 	{
 		return sum;
 	}
 
-	void __vwsnc3_BindCustomInterface2_main__IAdder::Add(::vl::vint32_t value)
+	void __vwsnc3_BindCustomInterface2_main__IAdder2::Add(::vl::vint32_t value)
 	{
 		(sum = (sum + value));
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->SumChanged)();
@@ -227,11 +227,11 @@ namespace vl_workflow_global
 }
 
 /***********************************************************************
-Class (::ISummer)
+Class (::ISummer2)
 ***********************************************************************/
 
 /***********************************************************************
-Class (::IAdder)
+Class (::IAdder2)
 ***********************************************************************/
 
 

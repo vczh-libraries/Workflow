@@ -1,3 +1,6 @@
+#ifndef VCZH_WORKFLOW_UNITTEST_CPPTYPES
+#define VCZH_WORKFLOW_UNITTEST_CPPTYPES
+
 #include "../../Import/Vlpp.h"
 
 namespace test
@@ -85,3 +88,5 @@ namespace vl
 		}
 	}
 }
+
+#endif

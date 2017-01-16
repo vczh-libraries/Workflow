@@ -4,19 +4,19 @@ using system::*;
 
 var s = "";
 
-interface ISummer
+interface ISummer2
 {
 	func GetSum() : int;
 	event SumChanged();
 	prop Sum : int {GetSum : SumChanged}
 }
 
-interface IAdder : ISummer
+interface IAdder2 : ISummer2
 {
 	func Add(value : int) : void;
 }
 
-func Bind(summer : ISummer^) : Subscription^
+func Bind(summer : ISummer2^) : Subscription^
 {
 	var subscription = bind(summer.Sum);
 	subscription.Subscribe(
@@ -28,7 +28,7 @@ func Bind(summer : ISummer^) : Subscription^
 	return subscription;
 }
 
-func Execute(adder : IAdder^) : void
+func Execute(adder : IAdder2^) : void
 {
 	var subscription = Bind(adder);
 	for(x in range [1, 5])
@@ -40,7 +40,7 @@ func Execute(adder : IAdder^) : void
 
 func main() : string
 {
-	Execute(new IAdder^
+	Execute(new IAdder2^
 	{
 		var sum = 0;
 

@@ -9,10 +9,10 @@ Generated from ../Resources/Codegen/BindCustomInterface2.txt
 
 #pragma warning(push)
 #pragma warning(disable:4250)
-class ISummer;
-class IAdder;
+class ISummer2;
+class IAdder2;
 
-class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ISummer>
+class ISummer2 : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ISummer2>
 {
 public:
 
@@ -20,7 +20,7 @@ public:
 	::vl::Event<void()> SumChanged;
 };
 
-class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>
+class IAdder2 : public virtual ::ISummer2, public ::vl::reflection::Description<IAdder2>
 {
 public:
 
@@ -40,8 +40,8 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 
-		::vl::Ptr<::vl::reflection::description::IValueSubscription> Bind(::vl::Ptr<::ISummer> summer);
-		void Execute(::vl::Ptr<::IAdder> adder);
+		::vl::Ptr<::vl::reflection::description::IValueSubscription> Bind(::vl::Ptr<::ISummer2> summer);
+		void Execute(::vl::Ptr<::IAdder2> adder);
 		::vl::WString main();
 
 		static BindCustomInterface2& Instance();
