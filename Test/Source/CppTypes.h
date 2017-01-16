@@ -20,8 +20,8 @@ namespace test
 		Good = Spring | Autumn,
 		Bad = Summer | Winter,
 	};
-	inline Seasons operator&(Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<vuint64_t>(a) & static_cast<vuint64_t>(a)); }
-	inline Seasons operator|(Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<vuint64_t>(a) | static_cast<vuint64_t>(a)); }
+	inline Seasons operator&(Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<vuint64_t>(a) & static_cast<vuint64_t>(b)); }
+	inline Seasons operator|(Seasons a, Seasons b) { return static_cast<Seasons>(static_cast<vuint64_t>(a) | static_cast<vuint64_t>(b)); }
 
 	struct Point
 	{
