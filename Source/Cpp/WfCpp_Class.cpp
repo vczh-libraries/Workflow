@@ -210,11 +210,37 @@ WfGenerateClassMemberImplVisitor
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
+					auto scope = config->manager->nodeScopes[node].Obj();
 					printableMember = true;
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
+
 					writer.WriteString(prefix);
 					config->WriteFunctionHeader(writer, methodInfo, classBaseName + L"::" + className, false);
 					writer.WriteLine(L"");
+					FOREACH_INDEXER(Ptr<WfBaseConstructorCall>, call, callIndex, node->baseConstructorCalls)
+					{
+						auto callType = CreateTypeInfoFromType(scope, call->type);
+						auto callCtor = config->manager->baseConstructorCallResolvings[{node, callType->GetTypeDescriptor()}].value;
+
+						writer.WriteString(prefix);
+						if (callIndex == 0)
+						{
+							writer.WriteString(L"\t: ");
+						}
+						else
+						{
+							writer.WriteString(L"\t, ");
+						}
+
+						writer.WriteString(config->ConvertType(callType->GetTypeDescriptor()));
+						writer.WriteString(L"(");
+						FOREACH_INDEXER(Ptr<WfExpression>, argument, argumentIndex, call->arguments)
+						{
+							if (argumentIndex) writer.WriteString(L", ");
+							GenerateExpression(config, writer, argument, callCtor->GetParameter(argumentIndex)->GetType());
+						}
+						writer.WriteLine(L")");
+					}
 					config->WriteFunctionBody(writer, node->statement, prefix, nullptr);
 				}
 

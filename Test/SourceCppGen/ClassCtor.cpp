@@ -93,14 +93,18 @@ Ctor::Ctor()
 }
 
 Ctor::Ctor(::vl::vint32_t y, bool b)
+	: ::Base(y)
 {
 }
 
 Ctor::Ctor(bool b, ::vl::vint32_t value)
+	: ::test::ObservableValue(value, ::vl::Nullable<bool>(static_cast<bool>(b)))
 {
 }
 
 Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
+	: ::Base(y)
+	, ::test::ObservableValue(value)
 {
 }
 
