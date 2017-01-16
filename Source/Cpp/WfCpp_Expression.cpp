@@ -1159,7 +1159,10 @@ namespace vl
 									case WfBinaryOperator::Or: op = L"||"; break;
 									default:;
 									}
-									td = nullptr;
+									if (node->op != WfBinaryOperator::Xor)
+									{
+										td = nullptr;
+									}
 								}
 								else
 								{
