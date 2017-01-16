@@ -12,12 +12,15 @@ func main():string
 
 	var a = hinters.GetList({1 2 3})[0];
 	var b = hinters.GetReadonlyList({10 20 30})[0];
-	var c = hinters.GetReadonlyArray({100 200 300})[0];
-	var d = hinters.GetReadonlySortedList({1000 2000 3000})[0];
+	var c = cast int hinters.GetReadonlyArray({100 200 300}).Get(0);
+	var d = cast int hinters.GetReadonlySortedList({1000 2000 3000}).Get(0);
 	var e = hinters.GetDictionary({1:2 3:4})[1];
 	var f = hinters.GetReadonlyDictionary({10:20 30:40})[10];
 	hinters.SetStorage({1 2 3 4 5});
-	var g = hinters.Storage[3];
+	var g1 = cast int hinters.Storage.Get(0);
+	var xs = {1 2 3 4 5};
+	hinters.SetStorage(xs);
+	var g2 = hinters.Storage[4];
 
-	return $"[$(a)][$(b)][$(c)][$(d)][$(e)][$(f)][$(g)]";
+	return $"[$(a)][$(b)][$(c)][$(d)][$(e)][$(f)][$(g1)][$(g2)]";
 }

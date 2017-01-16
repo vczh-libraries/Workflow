@@ -34,8 +34,11 @@ namespace vl_workflow_global
 		auto e = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::test::GetDictionaryFromHinter(::vl::__vwsn::This(hinters.Obj()), (::vl::__vwsn::CreateDictionary().Add(1, 2).Add(3, 4)).dictionary).Obj())->Get(::vl::__vwsn::Box(1)));
 		auto f = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::test::GetReadonlyDictionaryFromHinter(::vl::__vwsn::This(hinters.Obj()), ::vl::__vwsn::Ensure(::vl::Ptr<::vl::reflection::description::IValueReadonlyDictionary>((::vl::__vwsn::CreateDictionary().Add(10, 20).Add(30, 40)).dictionary))).Obj())->Get(::vl::__vwsn::Box(10)));
 		::vl::__vwsn::This(hinters.Obj())->SetStorage((::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list);
-		auto g = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::This(hinters.Obj())->GetStorage().Obj())->Get(3));
-		return ((((((((((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(a)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(e)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(f)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g)) + ::vl::WString(L"]", false));
+		auto g1 = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::This(hinters.Obj())->GetStorage().Obj())->Get(0));
+		auto xs = (::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list;
+		::vl::__vwsn::This(hinters.Obj())->SetStorage(xs);
+		auto g2 = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::This(hinters.Obj())->GetStorage().Obj())->Get(4));
+		return ((((((((((((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(a)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(e)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(f)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g1)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g2)) + ::vl::WString(L"]", false));
 	}
 
 	WorkflowHints& WorkflowHints::Instance()
