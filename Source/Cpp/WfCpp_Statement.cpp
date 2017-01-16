@@ -209,15 +209,17 @@ namespace vl
 
 				void Visit(WfTryStatement* node)override
 				{
-					auto blockName = L"__vwsnb_" + itow(functionRecord->blockCounter++);
 					auto exName = L"__vwsne_" + itow(functionRecord->exprCounter++);
 
 					WString tryPrefix = prefix;
 					if (node->finallyStatement)
 					{
+						auto blockName = L"__vwsnb_" + itow(functionRecord->blockCounter++);
 						tryPrefix += L"\t";
+
 						writer.WriteString(prefix);
 						writer.WriteLine(L"{");
+
 						writer.WriteString(tryPrefix);
 						writer.WriteString(L"auto ");
 						writer.WriteString(blockName);
@@ -225,6 +227,15 @@ namespace vl
 						GenerateStatement(config, functionRecord, writer, node->finallyStatement, tryPrefix, WString(L"\t", false), returnType);
 						writer.WriteString(tryPrefix);
 						writer.WriteLine(L";");
+
+						writer.WriteString(tryPrefix);
+						writer.WriteString(L"::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(");
+						writer.WriteString(blockName);
+						writer.WriteString(L")>::Type> ");
+						writer.WriteString(blockName);
+						writer.WriteString(L"_dtor(&");
+						writer.WriteString(blockName);
+						writer.WriteLine(L");");
 					}
 					WString bodyPrefix = tryPrefix + L"\t";
 
@@ -233,12 +244,6 @@ namespace vl
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"{");
 					GenerateStatement(config, functionRecord, writer, node->protectedStatement, bodyPrefix, WString(L"\t", false), returnType);
-					if (node->finallyStatement)
-					{
-						writer.WriteString(bodyPrefix);
-						writer.WriteString(blockName);
-						writer.WriteLine(L"();");
-					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
@@ -262,12 +267,6 @@ namespace vl
 						writer.WriteLine(L".Message());");
 						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
 					}
-					if (node->finallyStatement)
-					{
-						writer.WriteString(bodyPrefix);
-						writer.WriteString(blockName);
-						writer.WriteLine(L"();");
-					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
@@ -290,12 +289,6 @@ namespace vl
 						writer.WriteString(exName);
 						writer.WriteLine(L".Description());");
 						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
-					}
-					if (node->finallyStatement)
-					{
-						writer.WriteString(bodyPrefix);
-						writer.WriteString(blockName);
-						writer.WriteLine(L"();");
 					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");

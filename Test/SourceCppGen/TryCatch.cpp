@@ -54,12 +54,12 @@ namespace vl_workflow_global
 				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test2::finally]", false)));
 			}
 			;
+			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
 					throw ::vl::Exception(::vl::WString(L"Test2::catch", false));
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Exception& __vwsne_0)
 			{
@@ -67,7 +67,6 @@ namespace vl_workflow_global
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Error& __vwsne_0)
 			{
@@ -75,7 +74,6 @@ namespace vl_workflow_global
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 				}
-				__vwsnb_0();
 			}
 		}
 	}
@@ -93,6 +91,7 @@ namespace vl_workflow_global
 				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test3::finally2]", false)));
 			}
 			;
+			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
@@ -102,12 +101,12 @@ namespace vl_workflow_global
 							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test3::finally1]", false)));
 						}
 						;
+						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
 						try
 						{
 							{
 								GLOBAL_NAME Throw(::vl::WString(L"Test3::catch", false));
 							}
-							__vwsnb_1();
 						}
 						catch(const ::vl::Exception& __vwsne_1)
 						{
@@ -116,7 +115,6 @@ namespace vl_workflow_global
 								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
-							__vwsnb_1();
 						}
 						catch(const ::vl::Error& __vwsne_1)
 						{
@@ -125,11 +123,9 @@ namespace vl_workflow_global
 								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
-							__vwsnb_1();
 						}
 					}
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Exception& __vwsne_0)
 			{
@@ -137,7 +133,6 @@ namespace vl_workflow_global
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Error& __vwsne_0)
 			{
@@ -145,7 +140,6 @@ namespace vl_workflow_global
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
-				__vwsnb_0();
 			}
 		}
 	}
@@ -158,6 +152,7 @@ namespace vl_workflow_global
 				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test4::finally2]", false)));
 			}
 			;
+			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
@@ -167,11 +162,11 @@ namespace vl_workflow_global
 							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test4::finally1]", false)));
 						}
 						;
+						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
 						try
 						{
 							{
 							}
-							__vwsnb_1();
 						}
 						catch(const ::vl::Exception& __vwsne_1)
 						{
@@ -180,7 +175,6 @@ namespace vl_workflow_global
 								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
-							__vwsnb_1();
 						}
 						catch(const ::vl::Error& __vwsne_1)
 						{
@@ -189,11 +183,9 @@ namespace vl_workflow_global
 								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
 								throw;
 							}
-							__vwsnb_1();
 						}
 					}
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Exception& __vwsne_0)
 			{
@@ -201,7 +193,6 @@ namespace vl_workflow_global
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Error& __vwsne_0)
 			{
@@ -209,7 +200,6 @@ namespace vl_workflow_global
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
-				__vwsnb_0();
 			}
 		}
 	}

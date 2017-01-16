@@ -33,20 +33,18 @@ namespace vl_workflow_global
 					(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1));
 				}
 				;
+				::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 				try
 				{
 					{
 						continue;
 					}
-					__vwsnb_0();
 				}
 				catch(const ::vl::Exception&)
 				{
-					__vwsnb_0();
 				}
 				catch(const ::vl::Error&)
 				{
-					__vwsnb_0();
 				}
 			}
 		}
@@ -63,20 +61,18 @@ namespace vl_workflow_global
 					(GLOBAL_NAME sum = (GLOBAL_NAME sum + 10));
 				}
 				;
+				::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 				try
 				{
 					{
 						break;
 					}
-					__vwsnb_0();
 				}
 				catch(const ::vl::Exception&)
 				{
-					__vwsnb_0();
 				}
 				catch(const ::vl::Error&)
 				{
-					__vwsnb_0();
 				}
 			}
 		}
@@ -90,20 +86,18 @@ namespace vl_workflow_global
 				(GLOBAL_NAME sum = (GLOBAL_NAME sum + 100));
 			}
 			;
+			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
 					return;
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Exception&)
 			{
-				__vwsnb_0();
 			}
 			catch(const ::vl::Error&)
 			{
-				__vwsnb_0();
 			}
 		}
 	}
@@ -116,6 +110,7 @@ namespace vl_workflow_global
 				(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
 			}
 			;
+			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
@@ -125,6 +120,7 @@ namespace vl_workflow_global
 							(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
 						}
 						;
+						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
 						try
 						{
 							{
@@ -134,44 +130,36 @@ namespace vl_workflow_global
 										(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
 									}
 									;
+									::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_2)>::Type> __vwsnb_2_dtor(&__vwsnb_2);
 									try
 									{
 										{
 											return;
 										}
-										__vwsnb_2();
 									}
 									catch(const ::vl::Exception&)
 									{
-										__vwsnb_2();
 									}
 									catch(const ::vl::Error&)
 									{
-										__vwsnb_2();
 									}
 								}
 							}
-							__vwsnb_1();
 						}
 						catch(const ::vl::Exception&)
 						{
-							__vwsnb_1();
 						}
 						catch(const ::vl::Error&)
 						{
-							__vwsnb_1();
 						}
 					}
 				}
-				__vwsnb_0();
 			}
 			catch(const ::vl::Exception&)
 			{
-				__vwsnb_0();
 			}
 			catch(const ::vl::Error&)
 			{
-				__vwsnb_0();
 			}
 		}
 	}
