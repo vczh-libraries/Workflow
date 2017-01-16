@@ -59,6 +59,7 @@ namespace vl
 						case TypeDescriptorFlags::Interface:
 							writer.WriteString(L"public virtual " + ConvertType(baseTd) + L", ");
 							break;
+						default:;
 						}
 					}
 				}

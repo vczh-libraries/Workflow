@@ -115,89 +115,94 @@ Expression Helpers
 					switch (fromType->GetDecorator())
 					{
 					case ITypeInfo::RawPtr:
-					{
-						switch (toType->GetDecorator())
 						{
-						case ITypeInfo::RawPtr:
-							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-							writer.WriteString(L"dynamic_cast<");
-							writer.WriteString(config->ConvertType(toType));
-							writer.WriteString(L">(");
-							writeExpression();
-							writer.WriteString(L")");
-							if (strongCast) writer.WriteString(L")");
-							return;
-						case ITypeInfo::SharedPtr:
-							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-							writer.WriteString(config->ConvertType(toType));
-							writer.WriteString(L"(");
-							writeExpression();
-							writer.WriteString(L")");
-							if (strongCast) writer.WriteString(L")");
-							return;
-						}
-					}
-					break;
-					case ITypeInfo::SharedPtr:
-					{
-						switch (toType->GetDecorator())
-						{
-						case ITypeInfo::RawPtr:
-							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-							writeExpression();
-							writer.WriteString(L".Obj()");
-							if (strongCast) writer.WriteString(L")");
-							return;
-						case ITypeInfo::SharedPtr:
-							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-							writeExpression();
-							writer.WriteString(L".Cast<");
-							writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
-							writer.WriteString(L">()");
-							if (strongCast) writer.WriteString(L")");
-							return;
-						}
-					}
-					break;
-					case ITypeInfo::Nullable:
-					{
-						switch (toType->GetDecorator())
-						{
-						case ITypeInfo::Nullable:
-							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
-							writer.WriteString(L"::vl::__vwsn::NullableCast<");
-							writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
-							writer.WriteString(L">(");
-							writeExpression();
-							writer.WriteString(L")");
-							if (strongCast) writer.WriteString(L")");
-							return;
-						case ITypeInfo::TypeDescriptor:
-							ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
+							switch (toType->GetDecorator())
 							{
+							case ITypeInfo::RawPtr:
+								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+								writer.WriteString(L"dynamic_cast<");
+								writer.WriteString(config->ConvertType(toType));
+								writer.WriteString(L">(");
 								writeExpression();
-								writer.WriteString(L".Value()");
-							});
-							return;
+								writer.WriteString(L")");
+								if (strongCast) writer.WriteString(L")");
+								return;
+							case ITypeInfo::SharedPtr:
+								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+								writer.WriteString(config->ConvertType(toType));
+								writer.WriteString(L"(");
+								writeExpression();
+								writer.WriteString(L")");
+								if (strongCast) writer.WriteString(L")");
+								return;
+							default:;
+							}
 						}
-					}
-					break;
-					case ITypeInfo::TypeDescriptor:
-					{
-						switch (toType->GetDecorator())
+						break;
+					case ITypeInfo::SharedPtr:
 						{
-						case ITypeInfo::Nullable:
-							writer.WriteString(config->ConvertType(toType));
-							writer.WriteString(L"(");
-							ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
-							writer.WriteString(L")");
-							return;
-						case ITypeInfo::TypeDescriptor:
-							ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
-							return;
+							switch (toType->GetDecorator())
+							{
+							case ITypeInfo::RawPtr:
+								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+								writeExpression();
+								writer.WriteString(L".Obj()");
+								if (strongCast) writer.WriteString(L")");
+								return;
+							case ITypeInfo::SharedPtr:
+								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+								writeExpression();
+								writer.WriteString(L".Cast<");
+								writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+								writer.WriteString(L">()");
+								if (strongCast) writer.WriteString(L")");
+								return;
+							default:;
+							}
 						}
-					}
-					break;
+						break;
+					case ITypeInfo::Nullable:
+						{
+							switch (toType->GetDecorator())
+							{
+							case ITypeInfo::Nullable:
+								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+								writer.WriteString(L"::vl::__vwsn::NullableCast<");
+								writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+								writer.WriteString(L">(");
+								writeExpression();
+								writer.WriteString(L")");
+								if (strongCast) writer.WriteString(L")");
+								return;
+							case ITypeInfo::TypeDescriptor:
+								ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
+								{
+									writeExpression();
+									writer.WriteString(L".Value()");
+								});
+								return;
+							default:;
+							}
+						}
+						break;
+					case ITypeInfo::TypeDescriptor:
+						{
+							switch (toType->GetDecorator())
+							{
+							case ITypeInfo::Nullable:
+								writer.WriteString(config->ConvertType(toType));
+								writer.WriteString(L"(");
+								ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
+								writer.WriteString(L")");
+								return;
+							case ITypeInfo::TypeDescriptor:
+								ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
+								return;
+							default:;
+							}
+						}
+						break;
+					default:;
 					}
 				}
 				writer.WriteString(L"/* NOT EXISTS: convert (");

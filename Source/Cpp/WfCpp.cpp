@@ -257,6 +257,7 @@ WfCppConfig
 					{
 						return ConvertType(typeInfo->GetElementType());
 					}
+				default:;
 				}
 				return ConvertType(typeInfo->GetTypeDescriptor());
 			}
@@ -296,6 +297,7 @@ WfCppConfig
 					return L"";
 				case ITypeInfo::Generic:
 					return L"";
+				default:;
 				}
 				auto td = typeInfo->GetTypeDescriptor();
 				if ((td->GetTypeDescriptorFlags()&TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
