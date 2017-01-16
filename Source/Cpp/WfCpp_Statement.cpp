@@ -91,7 +91,20 @@ namespace vl
 				{
 					writer.WriteString(prefix);
 					writer.WriteString(L"if (");
-					GenerateExpression(config, writer, node->expression, TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+					if (node->type)
+					{
+						auto result = config->manager->expressionResolvings[node->expression.Obj()];
+						auto scope = config->manager->nodeScopes[node].Obj();
+						auto typeInfo = CreateTypeInfoFromType(scope, node->type);
+						writer.WriteString(L"auto ");
+						writer.WriteString(config->ConvertName(node->name.value));
+						writer.WriteString(L" = ");
+						ConvertType(config, writer, result.type.Obj(), typeInfo.Obj(), [&]() {GenerateExpression(config, writer, node->expression, nullptr); }, false);
+					}
+					else
+					{
+						GenerateExpression(config, writer, node->expression, TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+					}
 					writer.WriteLine(L")");
 					Call(node->trueBranch);
 					if (node->falseBranch)

@@ -12,6 +12,207 @@ namespace vl
 			using namespace reflection::description;
 			using namespace analyzer;
 
+/***********************************************************************
+Expression Helpers
+***********************************************************************/
+
+			template<typename T>
+			void WriteBoxValue(WfCppConfig* config, stream::StreamWriter& writer, ITypeInfo* type, const T& writeExpression)
+			{
+				writer.WriteString(L"::vl::__vwsn::Box(");
+				writeExpression();
+				writer.WriteString(L")");
+			}
+
+			template<typename T>
+			void WriteUnboxValue(WfCppConfig* config, stream::StreamWriter& writer, ITypeInfo* type, const T& writeExpression)
+			{
+				writer.WriteString(L"::vl::__vwsn::Unbox<");
+				writer.WriteString(config->ConvertType(type));
+				writer.WriteString(L">(");
+				writeExpression();
+				writer.WriteString(L")");
+			}
+
+			template<typename T>
+			void WriteUnboxWeakValue(WfCppConfig* config, stream::StreamWriter& writer, ITypeInfo* type, const T& writeExpression)
+			{
+				writer.WriteString(L"::vl::__vwsn::UnboxWeak<");
+				writer.WriteString(config->ConvertType(type));
+				writer.WriteString(L">(");
+				writeExpression();
+				writer.WriteString(L")");
+			}
+
+			template<typename T>
+			void ConvertValueType(WfCppConfig* config, stream::StreamWriter& writer, ITypeDescriptor* fromTd, ITypeDescriptor* toTd, const T& writeExpression)
+			{
+				if (fromTd == description::GetTypeDescriptor<WString>())
+				{
+					writer.WriteString(L"::vl::__vwsn::Parse<");
+					writer.WriteString(config->ConvertType(toTd));
+					writer.WriteString(L">(");
+					writeExpression();
+					writer.WriteString(L")");
+				}
+				else if (toTd == description::GetTypeDescriptor<WString>())
+				{
+					writer.WriteString(L"::vl::__vwsn::ToString(");
+					writeExpression();
+					writer.WriteString(L")");
+				}
+				else
+				{
+					writer.WriteString(L"static_cast<");
+					writer.WriteString(config->ConvertType(toTd));
+					writer.WriteString(L">(");
+					writeExpression();
+					writer.WriteString(L")");
+				}
+			}
+
+			void ConvertType(WfCppConfig* config, stream::StreamWriter& writer, ITypeInfo* fromType, ITypeInfo* toType, const Func<void()>& writeExpression, bool strongCast)
+			{
+				if (fromType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+				{
+					if (strongCast)
+					{
+						WriteUnboxValue(config, writer, toType, writeExpression);
+					}
+					else
+					{
+						WriteUnboxWeakValue(config, writer, toType, writeExpression);
+					}
+					return;
+				}
+				else if (toType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+				{
+					WriteBoxValue(config, writer, fromType, writeExpression);
+					return;
+				}
+				else
+				{
+					auto tdVe = description::GetTypeDescriptor<IValueEnumerable>();
+					if (toType->GetTypeDescriptor() == tdVe)
+					{
+						if (toType->GetElementType()->GetDecorator() == ITypeInfo::Generic)
+						{
+							if ((fromType->GetTypeDescriptor() == tdVe && fromType->GetElementType()->GetDecorator() != ITypeInfo::Generic)
+								|| fromType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyList>())
+								|| fromType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>())
+								)
+							{
+								writer.WriteString(L"::vl::reflection::description::GetLazyList<");
+								writer.WriteString(config->ConvertType(toType->GetElementType()->GetGenericArgument(0)));
+								writer.WriteString(L">(");
+								writeExpression();
+								writer.WriteString(L")");
+								return;
+							}
+						}
+					}
+
+					switch (fromType->GetDecorator())
+					{
+					case ITypeInfo::RawPtr:
+					{
+						switch (toType->GetDecorator())
+						{
+						case ITypeInfo::RawPtr:
+							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+							writer.WriteString(L"dynamic_cast<");
+							writer.WriteString(config->ConvertType(toType));
+							writer.WriteString(L">(");
+							writeExpression();
+							writer.WriteString(L")");
+							if (strongCast) writer.WriteString(L")");
+							return;
+						case ITypeInfo::SharedPtr:
+							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+							writer.WriteString(config->ConvertType(toType));
+							writer.WriteString(L"(");
+							writeExpression();
+							writer.WriteString(L")");
+							if (strongCast) writer.WriteString(L")");
+							return;
+						}
+					}
+					break;
+					case ITypeInfo::SharedPtr:
+					{
+						switch (toType->GetDecorator())
+						{
+						case ITypeInfo::RawPtr:
+							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+							writeExpression();
+							writer.WriteString(L".Obj()");
+							if (strongCast) writer.WriteString(L")");
+							return;
+						case ITypeInfo::SharedPtr:
+							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+							writeExpression();
+							writer.WriteString(L".Cast<");
+							writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+							writer.WriteString(L">()");
+							if (strongCast) writer.WriteString(L")");
+							return;
+						}
+					}
+					break;
+					case ITypeInfo::Nullable:
+					{
+						switch (toType->GetDecorator())
+						{
+						case ITypeInfo::Nullable:
+							if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
+							writer.WriteString(L"::vl::__vwsn::NullableCast<");
+							writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
+							writer.WriteString(L">(");
+							writeExpression();
+							writer.WriteString(L")");
+							if (strongCast) writer.WriteString(L")");
+							return;
+						case ITypeInfo::TypeDescriptor:
+							ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
+							{
+								writeExpression();
+								writer.WriteString(L".Value()");
+							});
+							return;
+						}
+					}
+					break;
+					case ITypeInfo::TypeDescriptor:
+					{
+						switch (toType->GetDecorator())
+						{
+						case ITypeInfo::Nullable:
+							writer.WriteString(config->ConvertType(toType));
+							writer.WriteString(L"(");
+							ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
+							writer.WriteString(L")");
+							return;
+						case ITypeInfo::TypeDescriptor:
+							ConvertValueType(config, writer, fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
+							return;
+						}
+					}
+					break;
+					}
+				}
+				writer.WriteString(L"/* NOT EXISTS: convert (");
+				writer.WriteString(config->ConvertType(fromType));
+				writer.WriteString(L") to (");
+				writer.WriteString(config->ConvertType(toType));
+				writer.WriteString(L") */ __vwsn_not_exists__(");
+				writeExpression();
+				writer.WriteString(L")");
+			}
+
+/***********************************************************************
+WfGenerateExpressionVisitor
+***********************************************************************/
+
 			class WfGenerateExpressionVisitor : public Object, public WfExpression::IVisitor
 			{
 			public:
@@ -44,46 +245,19 @@ namespace vl
 				template<typename T>
 				void WriteBoxValue(ITypeInfo* type, const T& writeExpression)
 				{
-					writer.WriteString(L"::vl::__vwsn::Box(");
-					writeExpression();
-					writer.WriteString(L")");
+					cppcodegen::WriteBoxValue(config, writer, type, writeExpression);
 				}
 
 				template<typename T>
 				void WriteUnboxValue(ITypeInfo* type, const T& writeExpression)
 				{
-					writer.WriteString(L"::vl::__vwsn::Unbox<");
-					writer.WriteString(config->ConvertType(type));
-					writer.WriteString(L">(");
-					writeExpression();
-					writer.WriteString(L")");
+					cppcodegen::WriteUnboxValue(config, writer, type, writeExpression);
 				}
 
 				template<typename T>
-				void ConvertValueType(ITypeDescriptor* fromTd, ITypeDescriptor* toTd, const T& writeExpression)
+				void WriteUnboxWeakValue(ITypeInfo* type, const T& writeExpression)
 				{
-					if (fromTd == description::GetTypeDescriptor<WString>())
-					{
-						writer.WriteString(L"::vl::__vwsn::Parse<");
-						writer.WriteString(config->ConvertType(toTd));
-						writer.WriteString(L">(");
-						writeExpression();
-						writer.WriteString(L")");
-					}
-					else if (toTd == description::GetTypeDescriptor<WString>())
-					{
-						writer.WriteString(L"::vl::__vwsn::ToString(");
-						writeExpression();
-						writer.WriteString(L")");
-					}
-					else
-					{
-						writer.WriteString(L"static_cast<");
-						writer.WriteString(config->ConvertType(toTd));
-						writer.WriteString(L">(");
-						writeExpression();
-						writer.WriteString(L")");
-					}
+					cppcodegen::WriteUnboxWeakValue(config, writer, type, writeExpression);
 				}
 
 				void ConvertMultipleTypes(ITypeInfo** types, vint typesLength, Func<void()> writeExpression)
@@ -98,132 +272,7 @@ namespace vl
 						{
 							auto fromType = types[0];
 							auto toType = types[1];
-							if (fromType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
-							{
-								WriteUnboxValue(toType, writeExpression);
-								return;
-							}
-							else if (toType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
-							{
-								WriteBoxValue(fromType, writeExpression);
-								return;
-							}
-							else
-							{
-								auto tdVe = description::GetTypeDescriptor<IValueEnumerable>();
-								if (toType->GetTypeDescriptor() == tdVe)
-								{
-									if (toType->GetElementType()->GetDecorator() == ITypeInfo::Generic)
-									{
-										if ((fromType->GetTypeDescriptor() == tdVe && fromType->GetElementType()->GetDecorator() != ITypeInfo::Generic)
-											|| fromType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyList>())
-											|| fromType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>())
-											)
-										{
-											writer.WriteString(L"::vl::reflection::description::GetLazyList<");
-											writer.WriteString(config->ConvertType(toType->GetElementType()->GetGenericArgument(0)));
-											writer.WriteString(L">(");
-											writeExpression();
-											writer.WriteString(L")");
-											return;
-										}
-									}
-								}
-
-								switch (fromType->GetDecorator())
-								{
-								case ITypeInfo::RawPtr:
-									{
-										switch (toType->GetDecorator())
-										{
-										case ITypeInfo::RawPtr:
-											writer.WriteString(L"dynamic_cast<");
-											writer.WriteString(config->ConvertType(toType));
-											writer.WriteString(L">(");
-											writeExpression();
-											writer.WriteString(L")");
-											return;
-										case ITypeInfo::SharedPtr:
-											writer.WriteString(config->ConvertType(toType));
-											writer.WriteString(L"(");
-											writeExpression();
-											writer.WriteString(L")");
-											return;
-										}
-									}
-									break;
-								case ITypeInfo::SharedPtr:
-									{
-										switch (toType->GetDecorator())
-										{
-										case ITypeInfo::RawPtr:
-											writeExpression();
-											writer.WriteString(L".Obj()");
-											return;
-										case ITypeInfo::SharedPtr:
-											writeExpression();
-											writer.WriteString(L".Cast<");
-											writer.WriteString(config->ConvertType(toType->GetTypeDescriptor()));
-											writer.WriteString(L">()");
-											return;
-										}
-									}
-									break;
-								case ITypeInfo::Nullable:
-									{
-										switch (toType->GetDecorator())
-										{
-										case ITypeInfo::Nullable:
-											writer.WriteString(L"[](");
-											writer.WriteString(config->ConvertType(fromType));
-											writer.WriteString(L" __vwsn_temp__){ if (__vwsn_temp__) return ");
-											writer.WriteString(config->ConvertType(toType));
-											writer.WriteString(L"(");
-											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
-											{
-												writer.WriteString(L"__vwsn__temp");
-											});
-											writer.WriteString(L"); else return ");
-											writer.WriteString(config->ConvertType(toType));
-											writer.WriteString(L"(); }(");
-											writeExpression();
-											writer.WriteString(L")");
-											return;
-										case ITypeInfo::TypeDescriptor:
-											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), [&]()
-											{
-												writeExpression();
-												writer.WriteString(L".Value()");
-											});
-											return;
-										}
-									}
-									break;
-								case ITypeInfo::TypeDescriptor:
-									{
-										switch (toType->GetDecorator())
-										{
-										case ITypeInfo::Nullable:
-											writer.WriteString(config->ConvertType(toType));
-											writer.WriteString(L"(");
-											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
-											writer.WriteString(L")");
-											return;
-										case ITypeInfo::TypeDescriptor:
-											ConvertValueType(fromType->GetTypeDescriptor(), toType->GetTypeDescriptor(), writeExpression);
-											return;
-										}
-									}
-									break;
-								}
-							}
-							writer.WriteString(L"/* NOT EXISTS: convert (");
-							writer.WriteString(config->ConvertType(fromType));
-							writer.WriteString(L") to (");
-							writer.WriteString(config->ConvertType(toType));
-							writer.WriteString(L") */ __vwsn_not_exists__(");
-							writeExpression();
-							writer.WriteString(L")");
+							ConvertType(config, writer, fromType, toType, writeExpression, true);
 						});
 					}
 					else
@@ -1372,7 +1421,15 @@ namespace vl
 				{
 					auto scope = config->manager->nodeScopes[node].Obj();
 					auto typeInfo = CreateTypeInfoFromType(scope, node->type);
-					Call(node->expression, typeInfo.Obj());
+					if (node->strategy == WfTypeCastingStrategy::Strong)
+					{
+						Call(node->expression, typeInfo.Obj());
+					}
+					else
+					{
+						auto result = config->manager->expressionResolvings[node->expression.Obj()];
+						ConvertType(config, writer, result.type.Obj(), typeInfo.Obj(), [&]() {Call(node->expression); }, false);
+					}
 				}
 
 				void Visit(WfTypeTestingExpression* node)override

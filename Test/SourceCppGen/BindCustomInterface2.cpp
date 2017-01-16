@@ -84,7 +84,7 @@ namespace vl_workflow_global
 
 	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder2> adder)
 	{
-		auto subscription = GLOBAL_NAME Bind(adder.Cast<::ISummer2>());
+		auto subscription = GLOBAL_NAME Bind(::vl::__vwsn::Ensure(adder.Cast<::ISummer2>()));
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{

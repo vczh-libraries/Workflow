@@ -156,6 +156,8 @@ WfCppConfig::Write
 			extern void GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
 			extern void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix, bool forClassExpr);
 			extern bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
+
+			extern void ConvertType(WfCppConfig* config, stream::StreamWriter& writer, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, const Func<void()>& writeExpression, bool strongCast);
 		}
 	}
 }

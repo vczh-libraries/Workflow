@@ -49,7 +49,7 @@ namespace vl_workflow_global
 	{
 		auto raw1 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
 		auto raw2 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
-		auto shared = ::vl::Ptr<::test::ObservableValue>(raw1);
+		auto shared = ::vl::__vwsn::Ensure(::vl::Ptr<::test::ObservableValue>(raw1));
 		auto a = (raw1 == nullptr);
 		auto b = (raw2 == nullptr);
 		auto c = (! static_cast<bool>(shared));

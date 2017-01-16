@@ -25,7 +25,7 @@ namespace vl_workflow_global
 		auto x = ::vl::__vwsn::Box((::vl::__vwsn::CreateList().Add(1)).list);
 		auto y = ::vl::__vwsn::Box((::vl::__vwsn::CreateDictionary().Add(1, 2)).dictionary);
 		auto s = ::vl::WString(L"", false);
-		if (::vl::__vwsn::Unbox<bool>(x))
+		if (auto z = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueList>>(x))
 		{
 			(s = (s + ::vl::WString(L"{1} is a list", false)));
 		}
@@ -34,7 +34,7 @@ namespace vl_workflow_global
 			(s = (s + ::vl::WString(L"{1} is not a list", false)));
 		}
 		(s = (s + ::vl::WString(L", ", false)));
-		if (::vl::__vwsn::Unbox<bool>(y))
+		if (auto z = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueList>>(y))
 		{
 			(s = (s + ::vl::WString(L"{1:2} is a list", false)));
 		}
