@@ -118,7 +118,7 @@ namespace vl
 							{
 								writer.WriteLine(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ::vl::WString::Empty;");
 							}
-							else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
+							else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
 							{
 								writer.WriteLine(L"\t\tinstance." + ConvertName(decl->name.value) + L" = ::vl::reflection::description::Value();");
 							}
