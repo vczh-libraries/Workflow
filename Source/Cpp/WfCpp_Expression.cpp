@@ -47,7 +47,11 @@ Expression Helpers
 			template<typename T>
 			void ConvertValueType(WfCppConfig* config, stream::StreamWriter& writer, ITypeDescriptor* fromTd, ITypeDescriptor* toTd, const T& writeExpression)
 			{
-				if (fromTd == description::GetTypeDescriptor<WString>())
+				if (fromTd == toTd)
+				{
+					writeExpression();
+				}
+				else if (fromTd == description::GetTypeDescriptor<WString>())
 				{
 					writer.WriteString(L"::vl::__vwsn::Parse<");
 					writer.WriteString(config->ConvertType(toTd));
@@ -1334,6 +1338,10 @@ WfGenerateExpressionVisitor
 					else
 					{
 						auto result = config->manager->expressionResolvings[node];
+						auto firstResult = config->manager->expressionResolvings[node->first.Obj()];
+						auto secondResult = config->manager->expressionResolvings[node->second.Obj()];
+						auto mergedType = GetMergedType(firstResult.type, secondResult.type);
+
 						switch (node->op)
 						{
 						case WfBinaryOperator::Exp:
@@ -1371,11 +1379,8 @@ WfGenerateExpressionVisitor
 						case WfBinaryOperator::EQ:
 						case WfBinaryOperator::NE:
 							{
-								auto firstResult = config->manager->expressionResolvings[node->first.Obj()];
-								auto secondResult = config->manager->expressionResolvings[node->second.Obj()];
 								if (firstResult.type->GetDecorator() == ITypeInfo::RawPtr || firstResult.type->GetDecorator() == ITypeInfo::SharedPtr)
 								{
-									auto mergedType = GetMergedType(firstResult.type, secondResult.type);
 									auto td = mergedType->GetTypeDescriptor();
 									auto tdFirst = firstResult.type->GetTypeDescriptor();
 									auto tdSecond = secondResult.type->GetTypeDescriptor();
@@ -1445,7 +1450,7 @@ WfGenerateExpressionVisitor
 								case WfBinaryOperator::NE: op = L"!="; break;
 								default:;
 								}
-								VisitBinaryExpression(node, op, nullptr, nullptr);
+								VisitBinaryExpression(node, op, nullptr, mergedType.Obj());
 							}
 							return;
 						case WfBinaryOperator::Xor:

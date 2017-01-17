@@ -107,7 +107,7 @@ Ctor::Ctor(::vl::vint32_t y, bool b)
 }
 
 Ctor::Ctor(bool b, ::vl::vint32_t value)
-	: ::test::ObservableValue(value, ::vl::Nullable<bool>(static_cast<bool>(b)))
+	: ::test::ObservableValue(value, ::vl::Nullable<bool>(b))
 {
 }
 
