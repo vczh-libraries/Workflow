@@ -337,9 +337,9 @@ WfGenerateExpressionVisitor
 					}
 				}
 
-				void Call(Ptr<WfExpression> node, ITypeInfo* expectedType = nullptr)
+				void Call(Ptr<WfExpression> node, ITypeInfo* expectedType = nullptr, bool useReturnValue = true)
 				{
-					GenerateExpression(config, writer, node, expectedType);
+					GenerateExpression(config, writer, node, expectedType, useReturnValue);
 				}
 
 				Ptr<WfCppConfig::ClosureInfo> GetClosureInfo(WfExpression* node)
@@ -541,16 +541,102 @@ WfGenerateExpressionVisitor
 					No,
 				};
 
+				bool IsCppRefGenericType(ITypeInfo* type)
+				{
+					switch (type->GetHint())
+					{
+					case TypeInfoHint::Array:
+					case TypeInfoHint::List:
+					case TypeInfoHint::SortedList:
+					case TypeInfoHint::Dictionary:
+						return true;
+					default:
+						return false;
+					}
+				}
+
 				template<typename TReturnValue>
 				void WriteReturnValue(ITypeInfo* type, const TReturnValue& returnValueCallback, bool castReturnValue)
 				{
-					returnValueCallback();
+					if (castReturnValue && IsCppRefGenericType(type))
+					{
+						writer.WriteString(L"[&](){ decltype(auto) __vwsn_temp__ = ");
+						returnValueCallback();
+						writer.WriteString(L"; return ::vl::__vwsn::Unbox<");
+						writer.WriteString(config->ConvertType(type));
+						writer.WriteString(L">(::vl::reflection::description::BoxParameter<decltype(__vwsn_temp__)>(__vwsn_temp__)); }()");
+					}
+					else
+					{
+						returnValueCallback();
+					}
 				}
 
-				template<typename TType, typename TInvoke>
-				void WriteInvokeTemplate(vint count, ITypeInfo* returnType, const TType& typeCallback, const TInvoke& invokeCallback, bool castReturnValue)
+				template<typename TType, typename TInvoke, typename TArgument, typename TInfo>
+				void WriteInvokeTemplate(vint count, ITypeInfo* returnType, const TType& typeCallback, const TInvoke& invokeCallback, const TArgument& argumentCallback, TInfo* info, bool castReturnValue)
 				{
-					invokeCallback(false);
+					if (Range<vint>(0, count).Any([&](vint index) {return IsCppRefGenericType(typeCallback(index)); }))
+					{
+						writer.WriteString(L"[&]()->decltype(auto){");
+						for (vint i = 0; i < count; i++)
+						{
+							auto type = typeCallback(i);
+							if (IsCppRefGenericType(type))
+							{
+								writer.WriteString(L" auto __vwsn_temp_x");
+								writer.WriteString(itow(i));
+								writer.WriteString(L" = ::vl::__vwsn::Box(");
+								argumentCallback(info, i);
+								writer.WriteString(L"); ");
+
+								switch (type->GetHint())
+								{
+								case TypeInfoHint::Array:
+									writer.WriteString(L"::vl::collections::Array<");
+									break;
+								case TypeInfoHint::List:
+									writer.WriteString(L"::vl::collections::List<");
+									break;
+								case TypeInfoHint::SortedList:
+									writer.WriteString(L"::vl::collections::SortedList<");
+									break;
+								case TypeInfoHint::Dictionary:
+									writer.WriteString(L"::vl::collections::Dictionary<");
+									break;
+								default:;
+								}
+
+								vint count = type->GetElementType()->GetGenericArgumentCount();
+								for (vint i = 0; i < count; i++)
+								{
+									if (i > 0) writer.WriteString(L", ");
+									writer.WriteString(config->ConvertType(type->GetElementType()->GetGenericArgument(i)));
+								}
+								writer.WriteString(L"> __vwsn_temp_");
+								writer.WriteString(itow(i));
+								writer.WriteString(L"; ::vl::reflection::description::UnboxParameter(__vwsn_temp_x");
+								writer.WriteString(itow(i));
+								writer.WriteString(L", __vwsn_temp_");
+								writer.WriteString(itow(i));
+								writer.WriteString(L");");
+							}
+							else
+							{
+								writer.WriteString(L" auto __vwsn_temp_");
+								writer.WriteString(itow(i));
+								writer.WriteString(L" = ");
+								argumentCallback(info, i);
+								writer.WriteString(L";");
+							}
+						}
+						writer.WriteString(L" return ");
+						WriteReturnValue(returnType, [&]() { invokeCallback(true); }, castReturnValue);
+						writer.WriteString(L"; }()");
+					}
+					else
+					{
+						WriteReturnValue(returnType, [&]() { invokeCallback(false); }, castReturnValue);
+					}
 				}
 
 				template<typename TThis, typename TArgument>
@@ -620,13 +706,21 @@ WfGenerateExpressionVisitor
 									for (vint i = 0; i < count; i++)
 									{
 										if (i > 0) writer.WriteString(L", ");
-										argumentCallback(methodInfo, i);
+										if (useTemporaryArgument)
+										{
+											writer.WriteString(L"__vwsn_temp_");
+											writer.WriteString(itow(i));
+										}
+										else
+										{
+											argumentCallback(methodInfo, i);
+										}
 									}
 									if (cp == CommaPosition::Right) writer.WriteString(L", ");
 								}
 								return true;
 							});
-						}, castReturnValue);
+						}, argumentCallback, methodInfo, castReturnValue);
 				}
 
 				template<typename TThis>
@@ -715,13 +809,21 @@ WfGenerateExpressionVisitor
 									for (vint i = 0; i < count; i++)
 									{
 										if (i > 0) writer.WriteString(L", ");
-										argumentCallback(eventInfo, i);
+										if (useTemporaryArgument)
+										{
+											writer.WriteString(L"__vwsn_temp_");
+											writer.WriteString(itow(i));
+										}
+										else
+										{
+											argumentCallback(eventInfo, i);
+										}
 									}
 									if (cp == CommaPosition::Right) writer.WriteString(L", ");
 								}
 								return true;
 							});
-						}, false);
+						}, argumentCallback, eventInfo, false);
 				}
 
 				template<typename TMethodThis, typename TPropertyThis>
@@ -1137,22 +1239,34 @@ WfGenerateExpressionVisitor
 						else if (auto binary = node->first.Cast<WfBinaryExpression>())
 						{
 							auto containerType = config->manager->expressionResolvings[binary->first.Obj()].type.Obj();
-							auto keyType = config->manager->expressionResolvings[binary->second.Obj()].type.Obj();
-							auto valueType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
-							writer.WriteString(L"::vl::__vwsn::This(");
-							Call(binary->first);
-							writer.WriteString(L".Obj())->Set(");
-							if (containerType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
+							if (IsCppRefGenericType(containerType))
 							{
-								WriteBoxValue(keyType, [&]() {Call(binary->second); });
+								Call(binary->first, nullptr, false);
+								writer.WriteString(L".Set(");
+								Call(binary->second);
+								writer.WriteString(L", ");
+								Call(node->second);
+								writer.WriteString(L")");
 							}
 							else
 							{
-								Call(binary->second);
+								auto keyType = config->manager->expressionResolvings[binary->second.Obj()].type.Obj();
+								auto valueType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
+								writer.WriteString(L"::vl::__vwsn::This(");
+								Call(binary->first);
+								writer.WriteString(L".Obj())->Set(");
+								if (containerType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
+								{
+									WriteBoxValue(keyType, [&]() {Call(binary->second); });
+								}
+								else
+								{
+									Call(binary->second);
+								}
+								writer.WriteString(L", ");
+								WriteBoxValue(valueType, [&]() {Call(node->second); });
+								writer.WriteString(L")");
 							}
-							writer.WriteString(L", ");
-							WriteBoxValue(valueType, [&]() {Call(node->second); });
-							writer.WriteString(L")");
 						}
 						else
 						{
@@ -1162,23 +1276,33 @@ WfGenerateExpressionVisitor
 					else if (node->op == WfBinaryOperator::Index)
 					{
 						auto containerType = config->manager->expressionResolvings[node->first.Obj()].type.Obj();
-						auto keyType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
-						auto valueType = config->manager->expressionResolvings[node].type.Obj();
-						WriteUnboxValue(valueType, [&]()
+						if (IsCppRefGenericType(containerType))
 						{
-							writer.WriteString(L"::vl::__vwsn::This(");
-							Call(node->first);
-							writer.WriteString(L".Obj())->Get(");
-							if (containerType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>()))
+							Call(node->first, nullptr, false);
+							writer.WriteString(L"[");
+							Call(node->second);
+							writer.WriteString(L"]");
+						}
+						else
+						{
+							auto keyType = config->manager->expressionResolvings[node->second.Obj()].type.Obj();
+							auto valueType = config->manager->expressionResolvings[node].type.Obj();
+							WriteUnboxValue(valueType, [&]()
 							{
-								WriteBoxValue(keyType, [&]() {Call(node->second); });
-							}
-							else
-							{
-								Call(node->second);
-							}
-							writer.WriteString(L")");
-						});
+								writer.WriteString(L"::vl::__vwsn::This(");
+								Call(node->first);
+								writer.WriteString(L".Obj())->Get(");
+								if (containerType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyDictionary>()))
+								{
+									WriteBoxValue(keyType, [&]() {Call(node->second); });
+								}
+								else
+								{
+									Call(node->second);
+								}
+								writer.WriteString(L")");
+							});
+						}
 					}
 					else if (node->op == WfBinaryOperator::Union)
 					{

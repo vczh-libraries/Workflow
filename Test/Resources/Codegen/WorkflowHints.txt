@@ -16,10 +16,11 @@ func main():string
 	var d = cast int hinters.GetReadonlySortedList({1000 2000 3000}).Get(0);
 	var e = hinters.GetDictionary({1:2 3:4})[1];
 	var f = hinters.GetReadonlyDictionary({10:20 30:40})[10];
-	hinters.SetStorage({1 2 3 4 5});
+	hinters.Storage = {1 2 3 4 5};
 	var g1 = cast int hinters.Storage.Get(0);
 	var xs = {1 2 3 4 5};
-	hinters.SetStorage(xs);
+	hinters.Storage = xs;
+	hinters.Storage[4] = 100;
 	var g2 = hinters.Storage[4];
 
 	return $"[$(a)][$(b)][$(c)][$(d)][$(e)][$(f)][$(g1)][$(g2)]";
