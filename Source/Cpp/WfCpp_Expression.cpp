@@ -1720,13 +1720,20 @@ WfGenerateExpressionVisitor
 								break;
 							case WfTypeTesting::IsType:
 							case WfTypeTesting::IsNotType:
-								writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
-								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-								writer.WriteString(L">(");
-								Call(node->expression);
-								writer.WriteString(L") ");
-								writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
-								writer.WriteString(L" nullptr)");
+								if (type->GetDecorator() != ITypeInfo::RawPtr)
+								{
+									writer.WriteString(node->test == WfTypeTesting::IsType ? L"false" : L"true");
+								}
+								else
+								{
+									writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
+									writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									Call(node->expression);
+									writer.WriteString(L") ");
+									writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
+									writer.WriteString(L" nullptr)");
+								}
 								break;
 							}
 						}
@@ -1771,13 +1778,20 @@ WfGenerateExpressionVisitor
 								break;
 							case WfTypeTesting::IsType:
 							case WfTypeTesting::IsNotType:
-								writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
-								writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-								writer.WriteString(L">(");
-								Call(node->expression);
-								writer.WriteString(L".Obj()) ");
-								writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
-								writer.WriteString(L" nullptr)");
+								if (type->GetDecorator() != ITypeInfo::SharedPtr)
+								{
+									writer.WriteString(node->test == WfTypeTesting::IsType ? L"false" : L"true");
+								}
+								else
+								{
+									writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
+									writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+									writer.WriteString(L">(");
+									Call(node->expression);
+									writer.WriteString(L".Obj()) ");
+									writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
+									writer.WriteString(L" nullptr)");
+								}
 								break;
 							}
 						}
@@ -1840,13 +1854,20 @@ WfGenerateExpressionVisitor
 								case WfTypeTesting::IsNotType:
 									if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 									{
-										writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
-										writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
-										writer.WriteString(L">(");
+										writer.WriteString(L"[&](){ auto __vwsn_temp__ = ");
 										Call(node->expression);
-										writer.WriteString(L".GetRawPtr()) ");
+										writer.WriteString(L"; return ");
+										if ((type->GetDecorator() == ITypeInfo::RawPtr) == (node->test == WfTypeTesting::IsType))
+										{
+											writer.WriteString(L"!");
+										}
+										writer.WriteString(L"__vwsn_temp__.GetSharedPtr() ");
+										writer.WriteString(node->test == WfTypeTesting::IsType ? L"&&" : L"||");
+										writer.WriteString(L" ::vl::__vwsn::RawPtrCast<");
+										writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+										writer.WriteString(L">(__vwsn_temp__.GetRawPtr()) ");
 										writer.WriteString(node->test == WfTypeTesting::IsType ? L"!=" : L"==");
-										writer.WriteString(L" nullptr)");
+										writer.WriteString(L" nullptr; }()");
 									}
 									else
 									{
