@@ -95,9 +95,10 @@ CustomInterfaceProcessor
 Hinters
 ***********************************************************************/
 
-	List<vint>& Hinters::GetList(List<vint>& xs)
+	List<vint>& Hinters::GetList(List<vint>& xs, vint y)
 	{
 		CopyFrom(list, xs);
+		list.Remove(y);
 		return list;
 	}
 
@@ -209,7 +210,7 @@ namespace vl
 			BEGIN_CLASS_MEMBER(Hinters)
 				CLASS_MEMBER_EXTERNALCTOR(Ptr<Hinters>(), NO_PARAMETER, test::CreateHinter)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateHinter, { L"x" }, Hinters*(*)(vint), test::CreateHinter)
-				CLASS_MEMBER_METHOD(GetList, { L"xs" })
+				CLASS_MEMBER_METHOD(GetList, { L"xs" _ L"y" })
 				CLASS_MEMBER_METHOD(GetReadonlyList, { L"xs" })
 				CLASS_MEMBER_METHOD(GetReadonlyArray, { L"xs" })
 				CLASS_MEMBER_METHOD_RENAME(GetReadonlySortedList, GetReadonlySL, { L"xs" })

@@ -759,6 +759,10 @@ GenerateInstructions(Expression)
 						}
 
 						INSTRUCTION(Ins::OpAnd(WfInsType::Bool));
+						if (node->test == WfSetTesting::NotIn)
+						{
+							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+						}
 						INSTRUCTION(Ins::LoadValue(Value()));
 						INSTRUCTION(Ins::StoreLocalVar(index));
 					}
@@ -779,6 +783,11 @@ GenerateInstructions(Expression)
 						else
 						{
 							INSTRUCTION(Ins::TestElementInSet());
+						}
+
+						if (node->test == WfSetTesting::NotIn)
+						{
+							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 						}
 					}
 				}

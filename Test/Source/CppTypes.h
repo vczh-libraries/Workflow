@@ -77,7 +77,7 @@ namespace test
 		SortedList<vint>					sortedList;
 		Dictionary<vint, vint>				dictionary;
 
-		List<vint>&							GetList(List<vint>& xs);
+		List<vint>&							GetList(List<vint>& xs, vint y);
 		const List<vint>&					GetReadonlyList(const List<vint>& xs);
 		const Array<vint>&					GetReadonlyArray(const Array<vint>& xs);
 		const SortedList<vint>&				GetReadonlySL(const SortedList<vint>& xs);

@@ -2,15 +2,113 @@ module test;
 using test::*;
 using system::*;
 
+func Ensure(condition : bool) : void
+{
+	if (not condition)
+	{
+		raise "Wrong!";
+	}
+}
+
+class Base
+{
+	new(){}
+	new*(x : int){}
+}
+
+class Derived : Base
+{
+	new(){}
+	new*(x : int){}
+}
+
+func ExtraTests() : void
+{
+	Ensure((cast string 123) == "123");
+	Ensure((cast int "123") == 123);
+
+	var sBase = new Base^();
+	var rBase = new Base*(0);
+	var sDerived = new Derived^();
+	var rDerived = new Derived*(0);
+
+	var srBase = cast (Base^) rBase;
+	var srDerived = cast (Derived^) rDerived;
+
+	Ensure((cast (Base*) sDerived) is not null);
+	Ensure((cast (Base^) sDerived) is not null);
+	Ensure((cast (Base*) rDerived) is not null);
+	Ensure((cast (Base^) rDerived) is not null);
+	Ensure((sBase as Derived*) is null);
+	Ensure((sBase as Derived^) is null);
+	Ensure((rBase as Derived*) is null);
+	Ensure((rBase as Derived^) is null);
+
+	Ensure(sBase is not Base*);
+	Ensure(sBase is Base^);
+	Ensure(sBase is not Derived*);
+	Ensure(sBase is not Derived^);
+	Ensure(rBase is Base*);
+	Ensure(rBase is not Base^);
+	Ensure(rBase is not Derived*);
+	Ensure(rBase is not Derived^);
+	
+	Ensure(sDerived is not Base*);
+	Ensure(sDerived is Base^);
+	Ensure(sDerived is not Derived*);
+	Ensure(not (sDerived is not Derived^));
+	Ensure(rDerived is Base*);
+	Ensure(rDerived is not Base^);
+	Ensure(not (rDerived is not Derived*));
+	Ensure(rDerived is not Derived^);
+
+	var iNull : int? = null;
+	var iValue : int? = 1;
+	var sNull : string? = null;
+	var sValue : string? = "2";
+
+	Ensure(iNull is null);
+	Ensure(iValue is not null);
+	Ensure(sNull is null);
+	Ensure(sValue is not null);
+
+	Ensure((iNull as string?) is null);
+	Ensure((iValue as string?) == "1");
+	Ensure((cast string iValue) == "1");
+	Ensure((sNull as int?) is null);
+	Ensure((sValue as int?) == 2);
+	Ensure((cast int sValue) == 2);
+
+	Ensure(not (iNull is int));
+	Ensure(iValue is int);
+	Ensure(not (sNull is string));
+	Ensure(sValue is string);
+
+	var x : object = null;
+	var y : object = 2;
+	Ensure(x is null);
+	Ensure(y is not null);
+	Ensure(x is not int);
+	Ensure(y is int);
+
+	var z : object = rBase;
+	Ensure(z is not null);
+	Ensure(z is Base*);
+	Ensure(z is not Base^);
+	Ensure(z is not Derived*);
+	Ensure(z is not Derived^);
+}
+
 func main():string
 {
+	ExtraTests();
 	var hinters = new Hinters^();
 	{
 		var hinters2 = Hinters::CreateHinter(0);
 		delete hinters2;
 	}
 
-	var a = hinters.GetList({1 2 3})[0];
+	var a = hinters.GetList({1 2 3}, 4)[0];
 	var b = hinters.GetReadonlyList({10 20 30})[0];
 	var c = cast int hinters.GetReadonlyArray({100 200 300}).Get(0);
 	var d = cast int hinters.GetReadonlySortedList({1000 2000 3000}).Get(0);

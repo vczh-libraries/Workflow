@@ -15,6 +15,27 @@ Generated from ../Resources/Codegen/WorkflowHints.txt
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+#pragma warning(push)
+#pragma warning(disable:4250)
+class Base;
+class Derived;
+
+class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
+{
+public:
+
+	Base();
+	Base(::vl::vint32_t x);
+};
+
+class Derived : public ::Base, public ::vl::reflection::Description<Derived>
+{
+public:
+
+	Derived();
+	Derived(::vl::vint32_t x);
+};
+#pragma warning(pop)
 
 /***********************************************************************
 Global Variables and Functions
@@ -26,6 +47,8 @@ namespace vl_workflow_global
 	{
 	public:
 
+		void Ensure(bool condition);
+		void ExtraTests();
 		::vl::WString main();
 
 		static WorkflowHints& Instance();
