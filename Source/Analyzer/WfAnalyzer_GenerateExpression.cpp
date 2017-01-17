@@ -339,6 +339,10 @@ GenerateInstructions(Expression)
 					{
 						INSTRUCTION(Ins::LoadValue(BoxValue((vint32_t)wtoi(node->value.value))));
 					}
+					else if (td == description::GetTypeDescriptor<vuint32_t>())
+					{
+						INSTRUCTION(Ins::LoadValue(BoxValue((vuint32_t)wtou(node->value.value))));
+					}
 					else if (td == description::GetTypeDescriptor<vint64_t>())
 					{
 						INSTRUCTION(Ins::LoadValue(BoxValue((vint64_t)wtoi64(node->value.value))));
