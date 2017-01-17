@@ -72,23 +72,23 @@ namespace test
 	class Hinters : public Object, public Description<Hinters>
 	{
 	public:
-		List<int>							list;
-		Array<int>							array;
-		SortedList<int>						sortedList;
-		Dictionary<int, int>				dictionary;
+		List<vint>							list;
+		Array<vint>							array;
+		SortedList<vint>					sortedList;
+		Dictionary<vint, vint>				dictionary;
 
-		List<int>&							GetList(List<int>& xs);
-		const List<int>&					GetReadonlyList(const List<int>& xs);
-		const Array<int>&					GetReadonlyArray(const Array<int>& xs);
-		const SortedList<int>&				GetReadonlySL(const SortedList<int>& xs);
+		List<vint>&							GetList(List<vint>& xs);
+		const List<vint>&					GetReadonlyList(const List<vint>& xs);
+		const Array<vint>&					GetReadonlyArray(const Array<vint>& xs);
+		const SortedList<vint>&				GetReadonlySL(const SortedList<vint>& xs);
 
-		List<int>&							GetStorage();
-		void								SetStorage(List<int>& xs);
+		List<vint>&							GetStorage();
+		void								SetStorage(List<vint>& xs);
 	};
 	extern Ptr<Hinters>						CreateHinter();
-	extern Hinters*							CreateHinter(int);
-	extern Dictionary<int, int>&			GetDictionaryFromHinter(Hinters* hinter, Dictionary<int, int>& xs);
-	extern const Dictionary<int, int>&		GetReadonlyDictionaryFromHinter(Hinters* hinter, const Dictionary<int, int>& xs);
+	extern Hinters*							CreateHinter(vint);
+	extern Dictionary<vint, vint>&			GetDictionaryFromHinter(Hinters* hinter, Dictionary<vint, vint>& xs);
+	extern const Dictionary<vint, vint>&	GetReadonlyDictionaryFromHinter(Hinters* hinter, const Dictionary<vint, vint>& xs);
 }
 
 namespace vl

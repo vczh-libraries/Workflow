@@ -95,36 +95,36 @@ CustomInterfaceProcessor
 Hinters
 ***********************************************************************/
 
-	List<int>& Hinters::GetList(List<int>& xs)
+	List<vint>& Hinters::GetList(List<vint>& xs)
 	{
 		CopyFrom(list, xs);
 		return list;
 	}
 
-	const List<int>& Hinters::GetReadonlyList(const List<int>& xs)
+	const List<vint>& Hinters::GetReadonlyList(const List<vint>& xs)
 	{
 		CopyFrom(list, xs);
 		return list;
 	}
 
-	const Array<int>& Hinters::GetReadonlyArray(const Array<int>& xs)
+	const Array<vint>& Hinters::GetReadonlyArray(const Array<vint>& xs)
 	{
 		CopyFrom(array, xs);
 		return array;
 	}
 
-	const SortedList<int>& Hinters::GetReadonlySL(const SortedList<int>& xs)
+	const SortedList<vint>& Hinters::GetReadonlySL(const SortedList<vint>& xs)
 	{
 		CopyFrom(sortedList, xs);
 		return sortedList;
 	}
 
-	List<int>& Hinters::GetStorage()
+	List<vint>& Hinters::GetStorage()
 	{
 		return list;
 	}
 
-	void Hinters::SetStorage(List<int>& xs)
+	void Hinters::SetStorage(List<vint>& xs)
 	{
 		CopyFrom(list, xs);
 	}
@@ -134,18 +134,18 @@ Hinters
 		return new Hinters();
 	}
 
-	Hinters* CreateHinter(int)
+	Hinters* CreateHinter(vint)
 	{
 		return new Hinters();
 	}
 
-	Dictionary<int, int>& GetDictionaryFromHinter(Hinters* hinter, Dictionary<int, int>& xs)
+	Dictionary<vint, vint>& GetDictionaryFromHinter(Hinters* hinter, Dictionary<vint, vint>& xs)
 	{
 		CopyFrom(hinter->dictionary, xs);
 		return hinter->dictionary;
 	}
 
-	const Dictionary<int, int>& GetReadonlyDictionaryFromHinter(Hinters* hinter, const Dictionary<int, int>& xs)
+	const Dictionary<vint, vint>& GetReadonlyDictionaryFromHinter(Hinters* hinter, const Dictionary<vint, vint>& xs)
 	{
 		CopyFrom(hinter->dictionary, xs);
 		return hinter->dictionary;
@@ -208,14 +208,14 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(Hinters)
 				CLASS_MEMBER_EXTERNALCTOR(Ptr<Hinters>(), NO_PARAMETER, test::CreateHinter)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateHinter, { L"x" }, Hinters*(*)(int), test::CreateHinter)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateHinter, { L"x" }, Hinters*(*)(vint), test::CreateHinter)
 				CLASS_MEMBER_METHOD(GetList, { L"xs" })
 				CLASS_MEMBER_METHOD(GetReadonlyList, { L"xs" })
 				CLASS_MEMBER_METHOD(GetReadonlyArray, { L"xs" })
 				CLASS_MEMBER_METHOD_RENAME(GetReadonlySortedList, GetReadonlySL, { L"xs" })
 
-				using T1 = Dictionary<int, int>&(Hinters::*)(Dictionary<int, int>&);
-				using T2 = const Dictionary<int, int>&(Hinters::*)(const Dictionary<int, int>&);
+				using T1 = Dictionary<vint, vint>&(Hinters::*)(Dictionary<vint, vint>&);
+				using T2 = const Dictionary<vint, vint>&(Hinters::*)(const Dictionary<vint, vint>&);
 				CLASS_MEMBER_EXTERNALMETHOD(GetDictionary, { L"xs" }, T1, test::GetDictionaryFromHinter)
 				CLASS_MEMBER_EXTERNALMETHOD(GetReadonlyDictionary, { L"xs" }, T2, test::GetReadonlyDictionaryFromHinter)
 
