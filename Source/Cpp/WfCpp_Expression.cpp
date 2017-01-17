@@ -541,162 +541,187 @@ WfGenerateExpressionVisitor
 					No,
 				};
 
+				template<typename TReturnValue>
+				void WriteReturnValue(ITypeInfo* type, const TReturnValue& returnValueCallback, bool castReturnValue)
+				{
+					returnValueCallback();
+				}
+
+				template<typename TType, typename TInvoke>
+				void WriteInvokeTemplate(vint count, ITypeInfo* returnType, const TType& typeCallback, const TInvoke& invokeCallback, bool castReturnValue)
+				{
+					invokeCallback(false);
+				}
+
 				template<typename TThis, typename TArgument>
 				void WriteMethodTemplate(const WString& templateValue, IMethodInfo* methodInfo, const TThis& thisCallback, const TArgument& argumentCallback, bool castReturnValue)
 				{
-					WriteTemplate(templateValue, [&](const WString& item)
-					{
-						auto cp = CommaPosition::No;
-						vint count = methodInfo->GetParameterCount();
+					WriteInvokeTemplate(methodInfo->GetParameterCount(), methodInfo->GetReturn(), [&](vint index) { return methodInfo->GetParameter(index)->GetType(); },
+						[&](bool useTemporaryArgument)
+						{
+							WriteTemplate(templateValue, [&](const WString& item)
+							{
+								auto cp = CommaPosition::No;
+								vint count = methodInfo->GetParameterCount();
 
-						if (item == L"$Type")
-						{
-							writer.WriteString(config->ConvertType(methodInfo->GetOwnerTypeDescriptor()));
-							return true;
-						}
-						else if (item == L"$Func")
-						{
-							writer.WriteString(config->ConvertFunctionType(methodInfo));
-							return true;
-						}
-						else if (item == L"$Name")
-						{
-							writer.WriteString(config->ConvertName(methodInfo->GetName()));
-							return true;
-						}
-						else if (item == L"$This")
-						{
-							if (!methodInfo->IsStatic())
-							{
-								return thisCallback(methodInfo);
-							}
-						}
-						else if (item == L"$Arguments")
-						{
-							if (count == 0)
-							{
-								return true;
-							}
-						}
-						else if (item == L", $Arguments")
-						{
-							if (count == 0)
-							{
-								return true;
-							}
-							cp = CommaPosition::Left;
-						}
-						else if (item == L"$Arguments, ")
-						{
-							if (count == 0)
-							{
-								return true;
-							}
-							cp = CommaPosition::Right;
-						}
-						else
-						{
-							return false;
-						}
+								if (item == L"$Type")
+								{
+									writer.WriteString(config->ConvertType(methodInfo->GetOwnerTypeDescriptor()));
+									return true;
+								}
+								else if (item == L"$Func")
+								{
+									writer.WriteString(config->ConvertFunctionType(methodInfo));
+									return true;
+								}
+								else if (item == L"$Name")
+								{
+									writer.WriteString(config->ConvertName(methodInfo->GetName()));
+									return true;
+								}
+								else if (item == L"$This")
+								{
+									if (!methodInfo->IsStatic())
+									{
+										return thisCallback(methodInfo);
+									}
+								}
+								else if (item == L"$Arguments")
+								{
+									if (count == 0)
+									{
+										return true;
+									}
+								}
+								else if (item == L", $Arguments")
+								{
+									if (count == 0)
+									{
+										return true;
+									}
+									cp = CommaPosition::Left;
+								}
+								else if (item == L"$Arguments, ")
+								{
+									if (count == 0)
+									{
+										return true;
+									}
+									cp = CommaPosition::Right;
+								}
+								else
+								{
+									return false;
+								}
 
-						if (count > 0)
-						{
-							if (cp == CommaPosition::Left) writer.WriteString(L", ");
-							for (vint i = 0; i < count; i++)
-							{
-								if (i > 0) writer.WriteString(L", ");
-								argumentCallback(methodInfo, i);
-							}
-							if (cp == CommaPosition::Right) writer.WriteString(L", ");
-						}
-						return true;
-					});
+								if (count > 0)
+								{
+									if (cp == CommaPosition::Left) writer.WriteString(L", ");
+									for (vint i = 0; i < count; i++)
+									{
+										if (i > 0) writer.WriteString(L", ");
+										argumentCallback(methodInfo, i);
+									}
+									if (cp == CommaPosition::Right) writer.WriteString(L", ");
+								}
+								return true;
+							});
+						}, castReturnValue);
 				}
 
 				template<typename TThis>
 				void WritePropertyTemplate(const WString& templateValue, IPropertyInfo* propertyInfo, const TThis& thisCallback, bool castReturnValue)
 				{
-					WriteTemplate(templateValue, [&](const WString& item)
-					{
-						if (item == L"$Type")
+					WriteReturnValue(propertyInfo->GetReturn(),
+						[&]()
 						{
-							writer.WriteString(config->ConvertType(propertyInfo->GetOwnerTypeDescriptor()));
-							return true;
-						}
-						else if (item == L"$Name")
-						{
-							writer.WriteString(config->ConvertName(propertyInfo->GetName()));
-							return true;
-						}
-						else if (item == L"$This")
-						{
-							return thisCallback(propertyInfo);
-						}
-						return false;
-					});
+							WriteTemplate(templateValue, [&](const WString& item)
+							{
+								if (item == L"$Type")
+								{
+									writer.WriteString(config->ConvertType(propertyInfo->GetOwnerTypeDescriptor()));
+									return true;
+								}
+								else if (item == L"$Name")
+								{
+									writer.WriteString(config->ConvertName(propertyInfo->GetName()));
+									return true;
+								}
+								else if (item == L"$This")
+								{
+									return thisCallback(propertyInfo);
+								}
+								return false;
+							});
+						}, castReturnValue);
 				}
 
 				template<typename TThis, typename THandler, typename TArgument>
 				void WriteEventTemplate(const WString& templateValue, IEventInfo* eventInfo, const TThis& thisCallback, const THandler& handlerCallback, const TArgument& argumentCallback)
 				{
-					WriteTemplate(templateValue, [&](const WString& item)
-					{
-						auto cp = CommaPosition::No;
-						vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
+					auto handlerType = eventInfo->GetHandlerType()->GetElementType();
+					WriteInvokeTemplate(handlerType->GetGenericArgumentCount() - 1, handlerType->GetGenericArgument(0), [&](vint index) { return handlerType->GetGenericArgument(index + 1); },
+						[&](bool useTemporaryArgument)
+						{
+							WriteTemplate(templateValue, [&](const WString& item)
+							{
+								auto cp = CommaPosition::No;
+								vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
 
-						if (item == L"$Name")
-						{
-							writer.WriteString(config->ConvertName(eventInfo->GetName()));
-							return true;
-						}
-						else if (item == L"$This")
-						{
-							return thisCallback(eventInfo);
-						}
-						else if (item == L"$Handler")
-						{
-							return handlerCallback(eventInfo);
-						}
-						else if (item == L"$Arguments")
-						{
-							if (count == 0)
-							{
-								return true;
-							}
-						}
-						else if (item == L", $Arguments")
-						{
-							if (count == 0)
-							{
-								return true;
-							}
-							cp = CommaPosition::Left;
-						}
-						else if (item == L"$Arguments, ")
-						{
-							if (count == 0)
-							{
-								return true;
-							}
-							cp = CommaPosition::Right;
-						}
-						else
-						{
-							return false;
-						}
+								if (item == L"$Name")
+								{
+									writer.WriteString(config->ConvertName(eventInfo->GetName()));
+									return true;
+								}
+								else if (item == L"$This")
+								{
+									return thisCallback(eventInfo);
+								}
+								else if (item == L"$Handler")
+								{
+									return handlerCallback(eventInfo);
+								}
+								else if (item == L"$Arguments")
+								{
+									if (count == 0)
+									{
+										return true;
+									}
+								}
+								else if (item == L", $Arguments")
+								{
+									if (count == 0)
+									{
+										return true;
+									}
+									cp = CommaPosition::Left;
+								}
+								else if (item == L"$Arguments, ")
+								{
+									if (count == 0)
+									{
+										return true;
+									}
+									cp = CommaPosition::Right;
+								}
+								else
+								{
+									return false;
+								}
 
-						if (count > 0)
-						{
-							if (cp == CommaPosition::Left) writer.WriteString(L", ");
-							for (vint i = 0; i < count; i++)
-							{
-								if (i > 0) writer.WriteString(L", ");
-								argumentCallback(eventInfo, i);
-							}
-							if (cp == CommaPosition::Right) writer.WriteString(L", ");
-						}
-						return true;
-					});
+								if (count > 0)
+								{
+									if (cp == CommaPosition::Left) writer.WriteString(L", ");
+									for (vint i = 0; i < count; i++)
+									{
+										if (i > 0) writer.WriteString(L", ");
+										argumentCallback(eventInfo, i);
+									}
+									if (cp == CommaPosition::Right) writer.WriteString(L", ");
+								}
+								return true;
+							});
+						}, false);
 				}
 
 				template<typename TMethodThis, typename TPropertyThis>
