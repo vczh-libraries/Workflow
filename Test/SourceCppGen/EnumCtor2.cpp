@@ -4,6 +4,13 @@ Generated from ../Resources/Codegen/EnumCtor2.txt
 
 #include "EnumCtor2.h"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses-equality"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#endif
 #define GLOBAL_SYMBOL ::vl_workflow_global::EnumCtor2::
 #define GLOBAL_NAME ::vl_workflow_global::EnumCtor2::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::EnumCtor2::Instance()
@@ -43,3 +50,9 @@ namespace vl_workflow_global
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif

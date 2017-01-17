@@ -4,6 +4,13 @@ Generated from ../Resources/Codegen/ClassCtor.txt
 
 #include "ClassCtor.h"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses-equality"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#endif
 #define GLOBAL_SYMBOL ::vl_workflow_global::ClassCtor::
 #define GLOBAL_NAME ::vl_workflow_global::ClassCtor::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::ClassCtor::Instance()
@@ -113,3 +120,9 @@ Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif

@@ -7,6 +7,14 @@ Generated from ../Resources/Codegen/NewCustomInterface3.txt
 
 #include "../Source/CppTypes.h"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses-equality"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#endif
+
 #pragma warning(push)
 #pragma warning(disable:4250)
 class IMyInterface3;
@@ -46,5 +54,11 @@ namespace vl_workflow_global
 		static NewCustomInterface3& Instance();
 	};
 }
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif

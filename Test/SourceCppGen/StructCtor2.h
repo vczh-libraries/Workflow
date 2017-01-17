@@ -7,6 +7,14 @@ Generated from ../Resources/Codegen/StructCtor2.txt
 
 #include "../Source/CppTypes.h"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses-equality"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#endif
+
 struct Point
 {
 	::vl::vint32_t x = 0;
@@ -45,5 +53,11 @@ namespace vl_workflow_global
 		static StructCtor2& Instance();
 	};
 }
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif

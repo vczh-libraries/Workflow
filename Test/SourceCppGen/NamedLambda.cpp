@@ -4,6 +4,13 @@ Generated from ../Resources/Codegen/NamedLambda.txt
 
 #include "NamedLambda.h"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses-equality"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#endif
 #define GLOBAL_SYMBOL ::vl_workflow_global::NamedLambda::
 #define GLOBAL_NAME ::vl_workflow_global::NamedLambda::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::NamedLambda::Instance()
@@ -53,3 +60,9 @@ namespace vl_workflow_global
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif

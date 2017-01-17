@@ -4,6 +4,13 @@ Generated from ../Resources/Codegen/BindCustomInterface.txt
 
 #include "BindCustomInterface.h"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses-equality"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#endif
 #define GLOBAL_SYMBOL ::vl_workflow_global::BindCustomInterface::
 #define GLOBAL_NAME ::vl_workflow_global::BindCustomInterface::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::BindCustomInterface::Instance()
@@ -239,3 +246,9 @@ Class (::IAdder)
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif
