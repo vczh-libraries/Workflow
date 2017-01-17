@@ -335,6 +335,33 @@ ResolveExpressionResult
 				return result;
 			}
 
+			bool IsSameTypeOrNull(ITypeInfo* fromType, ITypeInfo* toType)
+			{
+				if (fromType == toType) return true;
+				if ((fromType == nullptr) ^ (toType == nullptr)) return false;
+				return IsSameType(fromType, toType);
+			}
+
+			bool ResolveExpressionResult::operator==(const ResolveExpressionResult& result) const
+			{
+				if (scopeName != result.scopeName) return false;
+				if (symbol != result.symbol) return false;
+				if (propertyInfo != result.propertyInfo) return false;
+				if (methodInfo != result.methodInfo) return false;
+				if (constructorInfo != result.constructorInfo) return false;
+				if (eventInfo != result.eventInfo) return false;
+
+				if (!IsSameTypeOrNull(type.Obj(), result.type.Obj())) return false;
+				if (!IsSameTypeOrNull(writableType.Obj(), result.writableType.Obj())) return false;
+				if (!IsSameTypeOrNull(expectedType.Obj(), result.expectedType.Obj())) return false;
+				return true;
+			}
+
+			bool ResolveExpressionResult::operator!=(const ResolveExpressionResult& result) const
+			{
+				return !(*this == result);
+			}
+
 /***********************************************************************
 WfLexicalScopeManager
 ***********************************************************************/
@@ -615,13 +642,21 @@ WfLexicalScopeManager
 								{
 									if (symbol->creatorNode.Cast<WfVariableDeclaration>())
 									{
-										results.Add(ResolveExpressionResult::Symbol(symbol));
+										auto result = ResolveExpressionResult::Symbol(symbol);
+										if (!results.Contains(result))
+										{
+											results.Add(result);
+										}
 									}
 									else if (symbol->creatorClassMember->kind == WfClassMemberKind::Normal)
 									{
 										if (firstConfigScope->parentScope == scope)
 										{
-											results.Add(ResolveExpressionResult::Symbol(symbol));
+											auto result = ResolveExpressionResult::Symbol(symbol);
+											if (!results.Contains(result))
+											{
+												results.Add(result);
+											}
 										}
 									}
 								}
@@ -631,7 +666,11 @@ WfLexicalScopeManager
 						{
 							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
 							{
-								results.Add(ResolveExpressionResult::Symbol(symbol));
+								auto result = ResolveExpressionResult::Symbol(symbol);
+								if (!results.Contains(result))
+								{
+									results.Add(result);
+								}
 							}
 						}
 					}
@@ -654,7 +693,11 @@ WfLexicalScopeManager
 						if (index != -1)
 						{
 							auto subScopeName = scopeName->children.Values()[index];
-							results.Add(ResolveExpressionResult::ScopeName(subScopeName));
+							auto result = ResolveExpressionResult::ScopeName(subScopeName);
+							if (!results.Contains(result))
+							{
+								results.Add(result);
+							}
 						}
 						scope = scope->parentScope.Obj();
 					}
@@ -668,7 +711,11 @@ WfLexicalScopeManager
 				if (index != -1)
 				{
 					auto subScopeName = globalName->children.Values()[index];
-					results.Add(ResolveExpressionResult::ScopeName(subScopeName));
+					auto result = ResolveExpressionResult::ScopeName(subScopeName);
+					if (!results.Contains(result))
+					{
+						results.Add(result);
+					}
 				}
 
 				if (auto module = scope->ownerNode.Cast<WfModule>())
@@ -688,7 +735,13 @@ WfLexicalScopeManager
 							scopeName = scopeName->children.Values()[index];
 						}
 
-						results.Add(ResolveExpressionResult::ScopeName(scopeName));
+						{
+							auto result = ResolveExpressionResult::ScopeName(scopeName);
+							if (!results.Contains(result))
+							{
+								results.Add(result);
+							}
+						}
 					USING_PATH_MATCHING_FAILED:;
 					}
 				}

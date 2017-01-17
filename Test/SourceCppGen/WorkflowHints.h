@@ -17,25 +17,31 @@ Generated from ../Resources/Codegen/WorkflowHints.txt
 
 #pragma warning(push)
 #pragma warning(disable:4250)
-class Base;
-class Derived;
-
-class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
+namespace workflow
 {
-public:
+	namespace hints
+	{
+		class Base;
+		class Derived;
 
-	Base();
-	Base(::vl::vint32_t x);
-};
+		class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
+		{
+		public:
 
-class Derived : public ::Base, public ::vl::reflection::Description<Derived>
-{
-public:
+			Base();
+			Base(::vl::vint32_t x);
+		};
 
-	Derived();
-	Derived(::vl::vint32_t x);
-};
+		class Derived : public ::workflow::hints::Base, public ::vl::reflection::Description<Derived>
+		{
+		public:
+
+			Derived();
+			Derived(::vl::vint32_t x);
+		};
 #pragma warning(pop)
+	}
+}
 
 /***********************************************************************
 Global Variables and Functions

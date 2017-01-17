@@ -1,6 +1,7 @@
 module test;
 using test::*;
 using system::*;
+using workflow::hints::*;
 
 func Ensure(condition : bool) : void
 {
@@ -10,16 +11,22 @@ func Ensure(condition : bool) : void
 	}
 }
 
-class Base
+namespace workflow
 {
-	new(){}
-	new*(x : int){}
-}
+	namespace hints
+	{
+		class Base
+		{
+			new(){}
+			new*(x : int){}
+		}
 
-class Derived : Base
-{
-	new(){}
-	new*(x : int){}
+		class Derived : Base
+		{
+			new(){}
+			new*(x : int){}
+		}
+	}
 }
 
 func ExtraTests() : void

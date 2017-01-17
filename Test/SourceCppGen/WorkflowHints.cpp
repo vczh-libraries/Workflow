@@ -39,36 +39,36 @@ namespace vl_workflow_global
 	{
 		GLOBAL_NAME Ensure((::vl::__vwsn::ToString(123) == ::vl::WString(L"123", false)));
 		GLOBAL_NAME Ensure((::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"123", false)) == 123));
-		auto sBase = ::vl::Ptr<::Base>(new ::Base());
-		auto rBase = new ::Base(0);
-		auto sDerived = ::vl::Ptr<::Derived>(new ::Derived());
-		auto rDerived = new ::Derived(0);
-		auto srBase = ::vl::__vwsn::Ensure(::vl::Ptr<::Base>(rBase));
-		auto srDerived = ::vl::__vwsn::Ensure(::vl::Ptr<::Derived>(rDerived));
-		GLOBAL_NAME Ensure((::vl::__vwsn::Ensure(static_cast<::Base*>(sDerived.Obj())) != nullptr));
-		GLOBAL_NAME Ensure(static_cast<bool>(::vl::__vwsn::Ensure(::vl::Ptr<::Base>(sDerived))));
-		GLOBAL_NAME Ensure((::vl::__vwsn::Ensure(static_cast<::Base*>(rDerived)) != nullptr));
-		GLOBAL_NAME Ensure(static_cast<bool>(::vl::__vwsn::Ensure(::vl::Ptr<::Base>(rDerived))));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(sBase.Obj()) == nullptr));
-		GLOBAL_NAME Ensure((! static_cast<bool>(::vl::__vwsn::SharedPtrCast<::Derived>(sBase.Obj()))));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(rBase) == nullptr));
-		GLOBAL_NAME Ensure((! static_cast<bool>(::vl::__vwsn::SharedPtrCast<::Derived>(rBase))));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(sBase.Obj()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(sBase.Obj()) != nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(sBase.Obj()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(sBase.Obj()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(rBase) != nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(rBase) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(rBase) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(rBase) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(sDerived.Obj()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(sDerived.Obj()) != nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(sDerived.Obj()) == nullptr));
-		GLOBAL_NAME Ensure((! (::vl::__vwsn::RawPtrCast<::Derived>(sDerived.Obj()) == nullptr)));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(rDerived) != nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(rDerived) == nullptr));
-		GLOBAL_NAME Ensure((! (::vl::__vwsn::RawPtrCast<::Derived>(rDerived) == nullptr)));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(rDerived) == nullptr));
+		auto sBase = ::vl::Ptr<::workflow::hints::Base>(new ::workflow::hints::Base());
+		auto rBase = new ::workflow::hints::Base(0);
+		auto sDerived = ::vl::Ptr<::workflow::hints::Derived>(new ::workflow::hints::Derived());
+		auto rDerived = new ::workflow::hints::Derived(0);
+		auto srBase = ::vl::__vwsn::Ensure(::vl::Ptr<::workflow::hints::Base>(rBase));
+		auto srDerived = ::vl::__vwsn::Ensure(::vl::Ptr<::workflow::hints::Derived>(rDerived));
+		GLOBAL_NAME Ensure((::vl::__vwsn::Ensure(static_cast<::workflow::hints::Base*>(sDerived.Obj())) != nullptr));
+		GLOBAL_NAME Ensure(static_cast<bool>(::vl::__vwsn::Ensure(::vl::Ptr<::workflow::hints::Base>(sDerived))));
+		GLOBAL_NAME Ensure((::vl::__vwsn::Ensure(static_cast<::workflow::hints::Base*>(rDerived)) != nullptr));
+		GLOBAL_NAME Ensure(static_cast<bool>(::vl::__vwsn::Ensure(::vl::Ptr<::workflow::hints::Base>(rDerived))));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(sBase.Obj()) == nullptr));
+		GLOBAL_NAME Ensure((! static_cast<bool>(::vl::__vwsn::SharedPtrCast<::workflow::hints::Derived>(sBase.Obj()))));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(rBase) == nullptr));
+		GLOBAL_NAME Ensure((! static_cast<bool>(::vl::__vwsn::SharedPtrCast<::workflow::hints::Derived>(rBase))));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(sBase.Obj()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(sBase.Obj()) != nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(sBase.Obj()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(sBase.Obj()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(rBase) != nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(rBase) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(rBase) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(rBase) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(sDerived.Obj()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(sDerived.Obj()) != nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(sDerived.Obj()) == nullptr));
+		GLOBAL_NAME Ensure((! (::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(sDerived.Obj()) == nullptr)));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(rDerived) != nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(rDerived) == nullptr));
+		GLOBAL_NAME Ensure((! (::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(rDerived) == nullptr)));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(rDerived) == nullptr));
 		auto iNull = ::vl::Nullable<::vl::vint32_t>();
 		auto iValue = ::vl::Nullable<::vl::vint32_t>(1);
 		auto sNull = ::vl::Nullable<::vl::WString>();
@@ -95,10 +95,10 @@ namespace vl_workflow_global
 		GLOBAL_NAME Ensure((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::vl::vint32_t>*>(y.GetBoxedValue().Obj()) != nullptr));
 		auto z = ::vl::__vwsn::Box(rBase);
 		GLOBAL_NAME Ensure((! z.IsNull()));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(z.GetRawPtr()) != nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(z.GetRawPtr()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(z.GetRawPtr()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(z.GetRawPtr()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(z.GetRawPtr()) != nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Base>(z.GetRawPtr()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(z.GetRawPtr()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::workflow::hints::Derived>(z.GetRawPtr()) == nullptr));
 	}
 
 	::vl::WString WorkflowHints::main()
@@ -131,29 +131,35 @@ namespace vl_workflow_global
 }
 
 /***********************************************************************
-Class (::Base)
+Class (::workflow::hints::Base)
 ***********************************************************************/
 
-Base::Base()
+namespace workflow
 {
-}
+	namespace hints
+	{
+		Base::Base()
+		{
+		}
 
-Base::Base(::vl::vint32_t x)
-{
-}
+		Base::Base(::vl::vint32_t x)
+		{
+		}
 
 /***********************************************************************
-Class (::Derived)
+Class (::workflow::hints::Derived)
 ***********************************************************************/
 
-Derived::Derived()
-{
-}
+		Derived::Derived()
+		{
+		}
 
-Derived::Derived(::vl::vint32_t x)
-{
-}
+		Derived::Derived(::vl::vint32_t x)
+		{
+		}
 
+	}
+}
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

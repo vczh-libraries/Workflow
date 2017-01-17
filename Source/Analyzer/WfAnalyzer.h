@@ -123,6 +123,9 @@ Scope Manager
 				static ResolveExpressionResult				Method(reflection::description::IMethodInfo* _methodInfo);
 				static ResolveExpressionResult				Constructor(reflection::description::IMethodInfo* _constructorInfo);
 				static ResolveExpressionResult				Event(reflection::description::IEventInfo* _eventInfo);
+
+				bool										operator==(const ResolveExpressionResult& result) const;
+				bool										operator!=(const ResolveExpressionResult& result) const;
 			};
 
 			struct WfLexicalCapture

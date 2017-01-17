@@ -405,7 +405,7 @@ WfCppConfig
 					prefix += L'\t';
 				}
 
-				for (vint i = commonPrefix; i < nss2.Count() - 1; i++)
+				for (vint i = commonPrefix; i < nss2.Count(); i++)
 				{
 					writer.WriteString(prefix);
 					writer.WriteString(L"namespace ");
