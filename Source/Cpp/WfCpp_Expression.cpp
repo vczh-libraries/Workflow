@@ -135,8 +135,8 @@ Expression Helpers
 									writer.WriteString(L">(");
 									writeExpression();
 									writer.WriteString(L")");
-									if (strongCast) writer.WriteString(L")");
 								}
+								if (strongCast) writer.WriteString(L")");
 								return;
 							case ITypeInfo::SharedPtr:
 								if (strongCast) writer.WriteString(L"::vl::__vwsn::Ensure(");
@@ -1024,6 +1024,9 @@ WfGenerateExpressionVisitor
 								writer.WriteString(config->ConvertType(result.type.Obj()));
 								writer.WriteString(L"()");
 								break;
+							case ITypeInfo::TypeDescriptor:
+								writer.WriteString(L"::vl::reflection::description::Value()");
+								break;
 							default:
 								writer.WriteString(L"static_cast<");
 								writer.WriteString(config->ConvertType(result.type.Obj()));
@@ -1832,7 +1835,7 @@ WfGenerateExpressionVisitor
 								case WfTypeTesting::IsNotType:
 									if ((type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 									{
-										writer.WriteString(L"(::vl::__vwsn__RawPtrCast<");
+										writer.WriteString(L"(::vl::__vwsn::RawPtrCast<");
 										writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
 										writer.WriteString(L">(");
 										Call(node->expression);

@@ -47,7 +47,7 @@ namespace vl_workflow_global
 		auto srDerived = ::vl::__vwsn::Ensure(::vl::Ptr<::Derived>(rDerived));
 		GLOBAL_NAME Ensure((::vl::__vwsn::Ensure(static_cast<::Base*>(sDerived.Obj())) != nullptr));
 		GLOBAL_NAME Ensure(static_cast<bool>(::vl::__vwsn::Ensure(::vl::Ptr<::Base>(sDerived))));
-		GLOBAL_NAME Ensure((::vl::__vwsn::Ensure(static_cast<::Base*>(rDerived) != nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::Ensure(static_cast<::Base*>(rDerived)) != nullptr));
 		GLOBAL_NAME Ensure(static_cast<bool>(::vl::__vwsn::Ensure(::vl::Ptr<::Base>(rDerived))));
 		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(sBase.Obj()) == nullptr));
 		GLOBAL_NAME Ensure((! static_cast<bool>(::vl::__vwsn::SharedPtrCast<::Derived>(sBase.Obj()))));
@@ -87,7 +87,7 @@ namespace vl_workflow_global
 		GLOBAL_NAME Ensure(static_cast<bool>(iValue));
 		GLOBAL_NAME Ensure((! static_cast<bool>(sNull)));
 		GLOBAL_NAME Ensure(static_cast<bool>(sValue));
-		auto x = static_cast<::vl::reflection::description::Value>(nullptr);
+		auto x = ::vl::reflection::description::Value();
 		auto y = ::vl::__vwsn::Box(2);
 		GLOBAL_NAME Ensure(x.IsNull());
 		GLOBAL_NAME Ensure((! y.IsNull()));
@@ -95,10 +95,10 @@ namespace vl_workflow_global
 		GLOBAL_NAME Ensure((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::vl::vint32_t>*>(y.GetBoxedValue().Obj()) != nullptr));
 		auto z = ::vl::__vwsn::Box(rBase);
 		GLOBAL_NAME Ensure((! z.IsNull()));
-		GLOBAL_NAME Ensure((::vl::__vwsn__RawPtrCast<::Base>(z.GetRawPtr()) != nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn__RawPtrCast<::Base>(z.GetRawPtr()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn__RawPtrCast<::Derived>(z.GetRawPtr()) == nullptr));
-		GLOBAL_NAME Ensure((::vl::__vwsn__RawPtrCast<::Derived>(z.GetRawPtr()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(z.GetRawPtr()) != nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Base>(z.GetRawPtr()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(z.GetRawPtr()) == nullptr));
+		GLOBAL_NAME Ensure((::vl::__vwsn::RawPtrCast<::Derived>(z.GetRawPtr()) == nullptr));
 	}
 
 	::vl::WString WorkflowHints::main()
