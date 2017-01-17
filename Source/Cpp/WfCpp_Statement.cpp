@@ -322,7 +322,7 @@ namespace vl
 				void Visit(WfExpressionStatement* node)override
 				{
 					writer.WriteString(prefix);
-					GenerateExpression(config, writer, node->expression, nullptr);
+					GenerateExpression(config, writer, node->expression, nullptr, false);
 					writer.WriteLine(L";");
 				}
 

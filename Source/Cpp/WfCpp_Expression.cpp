@@ -272,10 +272,12 @@ WfGenerateExpressionVisitor
 			public:
 				WfCppConfig*				config;
 				stream::StreamWriter&		writer;
+				bool						useReturnValue;
 
-				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer)
+				WfGenerateExpressionVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, bool _useReturnValue)
 					:config(_config)
 					, writer(_writer)
+					, useReturnValue(_useReturnValue)
 				{
 				}
 
@@ -331,7 +333,7 @@ WfGenerateExpressionVisitor
 					}
 					else
 					{
-						ConvertMultipleTypes(types + 1, typesLength - 1, writeExpression);
+						return ConvertMultipleTypes(types + 1, typesLength - 1, writeExpression);
 					}
 				}
 
@@ -539,11 +541,14 @@ WfGenerateExpressionVisitor
 					No,
 				};
 
-				template<typename TThis, typename TArguments>
-				void WriteMethodTemplate(const WString& templateValue, IMethodInfo* methodInfo, const TThis& thisCallback, const TArguments& argumentsCallback)
+				template<typename TThis, typename TArgument>
+				void WriteMethodTemplate(const WString& templateValue, IMethodInfo* methodInfo, const TThis& thisCallback, const TArgument& argumentCallback, bool castReturnValue)
 				{
 					WriteTemplate(templateValue, [&](const WString& item)
 					{
+						auto cp = CommaPosition::No;
+						vint count = methodInfo->GetParameterCount();
+
 						if (item == L"$Type")
 						{
 							writer.WriteString(config->ConvertType(methodInfo->GetOwnerTypeDescriptor()));
@@ -568,22 +573,48 @@ WfGenerateExpressionVisitor
 						}
 						else if (item == L"$Arguments")
 						{
-							return argumentsCallback(methodInfo, CommaPosition::No);
+							if (count == 0)
+							{
+								return true;
+							}
 						}
 						else if (item == L", $Arguments")
 						{
-							return argumentsCallback(methodInfo, CommaPosition::Left);
+							if (count == 0)
+							{
+								return true;
+							}
+							cp = CommaPosition::Left;
 						}
 						else if (item == L"$Arguments, ")
 						{
-							return argumentsCallback(methodInfo, CommaPosition::Right);
+							if (count == 0)
+							{
+								return true;
+							}
+							cp = CommaPosition::Right;
 						}
-						return false;
+						else
+						{
+							return false;
+						}
+
+						if (count > 0)
+						{
+							if (cp == CommaPosition::Left) writer.WriteString(L", ");
+							for (vint i = 0; i < count; i++)
+							{
+								if (i > 0) writer.WriteString(L", ");
+								argumentCallback(methodInfo, i);
+							}
+							if (cp == CommaPosition::Right) writer.WriteString(L", ");
+						}
+						return true;
 					});
 				}
 
 				template<typename TThis>
-				void WritePropertyTemplate(const WString& templateValue, IPropertyInfo* propertyInfo, const TThis& thisCallback)
+				void WritePropertyTemplate(const WString& templateValue, IPropertyInfo* propertyInfo, const TThis& thisCallback, bool castReturnValue)
 				{
 					WriteTemplate(templateValue, [&](const WString& item)
 					{
@@ -605,11 +636,14 @@ WfGenerateExpressionVisitor
 					});
 				}
 
-				template<typename TThis, typename TArguments>
-				void WriteEventTemplate(const WString& templateValue, IEventInfo* eventInfo, const TThis& thisCallback, const TArguments& argumentsCallback)
+				template<typename TThis, typename THandler, typename TArgument>
+				void WriteEventTemplate(const WString& templateValue, IEventInfo* eventInfo, const TThis& thisCallback, const THandler& handlerCallback, const TArgument& argumentCallback)
 				{
 					WriteTemplate(templateValue, [&](const WString& item)
 					{
+						auto cp = CommaPosition::No;
+						vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
+
 						if (item == L"$Name")
 						{
 							writer.WriteString(config->ConvertName(eventInfo->GetName()));
@@ -621,37 +655,59 @@ WfGenerateExpressionVisitor
 						}
 						else if (item == L"$Handler")
 						{
-							return argumentsCallback(eventInfo, CommaPosition::No);
+							return handlerCallback(eventInfo);
 						}
 						else if (item == L"$Arguments")
 						{
-							return argumentsCallback(eventInfo, CommaPosition::No);
+							if (count == 0)
+							{
+								return true;
+							}
 						}
 						else if (item == L", $Arguments")
 						{
-							return argumentsCallback(eventInfo, CommaPosition::Left);
+							if (count == 0)
+							{
+								return true;
+							}
+							cp = CommaPosition::Left;
 						}
 						else if (item == L"$Arguments, ")
 						{
-							return argumentsCallback(eventInfo, CommaPosition::Right);
+							if (count == 0)
+							{
+								return true;
+							}
+							cp = CommaPosition::Right;
 						}
-						return false;
+						else
+						{
+							return false;
+						}
+
+						if (count > 0)
+						{
+							if (cp == CommaPosition::Left) writer.WriteString(L", ");
+							for (vint i = 0; i < count; i++)
+							{
+								if (i > 0) writer.WriteString(L", ");
+								argumentCallback(eventInfo, i);
+							}
+							if (cp == CommaPosition::Right) writer.WriteString(L", ");
+						}
+						return true;
 					});
 				}
 
 				template<typename TMethodThis, typename TPropertyThis>
-				bool WriteReferenceTemplate(ResolveExpressionResult& result, const TMethodThis& methodThis, const TPropertyThis& propertyThis)
+				bool WriteReferenceTemplate(ResolveExpressionResult& result, const TMethodThis& methodThis, const TPropertyThis& propertyThis, bool castReturnValue)
 				{
 					if (result.methodInfo)
 					{
 						if (CppExists(result.methodInfo))
 						{
 							auto methodInfo = result.methodInfo;
-							WriteMethodTemplate(CppGetClosureTemplate(methodInfo), methodInfo, methodThis,
-								[&](IMethodInfo*, CommaPosition)
-								{
-									return false;
-								});
+							WriteMethodTemplate(CppGetClosureTemplate(methodInfo), methodInfo, methodThis, [&](IMethodInfo*, vint){}, castReturnValue);
 						}
 						else
 						{
@@ -666,17 +722,13 @@ WfGenerateExpressionVisitor
 							if (result.propertyInfo->GetCpp() == nullptr && result.propertyInfo->GetGetter() != nullptr)
 							{
 								auto methodInfo = result.propertyInfo->GetGetter();
-								WriteMethodTemplate(CppGetInvokeTemplate(methodInfo), methodInfo, methodThis,
-									[&](IMethodInfo*, CommaPosition)
-									{
-										return true;
-									});
+								WriteMethodTemplate(CppGetInvokeTemplate(methodInfo), methodInfo, methodThis, [&](IMethodInfo*, vint){}, castReturnValue);
 							}
 							else
 							{
 								auto templateValue = CppGetReferenceTemplate(result.propertyInfo);
 								auto propertyInfo = result.propertyInfo;
-								WritePropertyTemplate(CppGetReferenceTemplate(propertyInfo), propertyInfo, propertyThis);
+								WritePropertyTemplate(CppGetReferenceTemplate(propertyInfo), propertyInfo, propertyThis, castReturnValue);
 							}
 						}
 						else
@@ -713,7 +765,7 @@ WfGenerateExpressionVisitor
 							VisitThisExpression(node, propertyInfo->GetOwnerTypeDescriptor());
 							if (isRef) writer.WriteString(L")");
 							return true;
-						});
+						}, useReturnValue);
 
 					if (!success)
 					{
@@ -823,7 +875,7 @@ WfGenerateExpressionVisitor
 							}
 							if (isRef) writer.WriteString(L")");
 							return true;
-						});
+						}, useReturnValue);
 				}
 
 				void Visit(WfChildExpression* node)override
@@ -1019,13 +1071,10 @@ WfGenerateExpressionVisitor
 											writer.WriteString(L")");
 											return true;
 										},
-										[&](IMethodInfo*, CommaPosition cp)
+										[&](IMethodInfo*, vint index)
 										{
-											if (cp == CommaPosition::Left) writer.WriteString(L", ");
 											Call(node->second);
-											if (cp == CommaPosition::Right) writer.WriteString(L", ");
-											return true;
-										});
+										}, useReturnValue);
 								}
 								else
 								{
@@ -1049,7 +1098,7 @@ WfGenerateExpressionVisitor
 											}
 											writer.WriteString(L")");
 											return true;
-										});
+										}, true);
 									writer.WriteString(L" = ");
 									Call(node->second, propInfo->GetReturn());
 									writer.WriteString(L")");
@@ -1704,11 +1753,12 @@ WfGenerateExpressionVisitor
 								writer.WriteString(L")");
 								return true;
 							},
-							[&](IEventInfo*, CommaPosition)
+							[&](IEventInfo*)
 							{
 								Call(node->function);
 								return true;
-							});
+							},
+							[&](IEventInfo*, vint) {});
 					}
 					else
 					{
@@ -1741,11 +1791,12 @@ WfGenerateExpressionVisitor
 								writer.WriteString(L")");
 								return true;
 							},
-							[&](IEventInfo*, CommaPosition)
+							[&](IEventInfo*)
 							{
 								Call(node->handler);
 								return true;
-							});
+							},
+							[&](IEventInfo*, vint) {});
 					}
 					else
 					{
@@ -1784,20 +1835,13 @@ WfGenerateExpressionVisitor
 						return true;
 					};
 
-					auto argumentsCallback = [&](IMethodInfo* methodInfo, ITypeInfo* typeInfo, CommaPosition cp)
+					auto argumentCallback = [&](IMethodInfo* methodInfo, ITypeInfo* typeInfo, vint index)
 					{
-						if (cp == CommaPosition::Left) writer.WriteString(L", ");
-						FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
-						{
-							if (index > 0) writer.WriteString(L", ");
-							auto type = methodInfo
-								? methodInfo->GetParameter(index)->GetType()
-								: typeInfo->GetElementType()->GetGenericArgument(index + 1)
-								;
-							Call(argument, type);
-						}
-						if (cp == CommaPosition::Right) writer.WriteString(L", ");
-						return true;
+						auto type = methodInfo
+							? methodInfo->GetParameter(index)->GetType()
+							: typeInfo->GetElementType()->GetGenericArgument(index + 1)
+							;
+						Call(node->arguments[index], type);
 					};
 
 					auto result = config->manager->expressionResolvings[node->function.Obj()];
@@ -1805,15 +1849,16 @@ WfGenerateExpressionVisitor
 					{
 						WriteMethodTemplate(CppGetInvokeTemplate(result.methodInfo), result.methodInfo,
 							[&](IMethodInfo* methodInfo) { return thisCallback(methodInfo->GetOwnerTypeDescriptor()); },
-							[&](IMethodInfo* methodInfo, CommaPosition cp) { return argumentsCallback(methodInfo, nullptr, cp); }
-							);
+							[&](IMethodInfo* methodInfo, vint index) { return argumentCallback(methodInfo, nullptr, index); },
+							useReturnValue);
 						return;
 					}
 					else if (result.eventInfo)
 					{
 						WriteEventTemplate(CppGetInvokeTemplate(result.eventInfo), result.eventInfo,
 							[&](IEventInfo* eventInfo) { return thisCallback(eventInfo->GetOwnerTypeDescriptor()); },
-							[&](IEventInfo* eventInfo, CommaPosition cp) { return argumentsCallback(nullptr, eventInfo->GetHandlerType(), cp); }
+							[&](IEventInfo*) { return false; },
+							[&](IEventInfo* eventInfo, vint index) { return argumentCallback(nullptr, eventInfo->GetHandlerType(), index); }
 							);
 						return;
 					}
@@ -1836,14 +1881,22 @@ WfGenerateExpressionVisitor
 								writer.WriteString(config->ConvertName(result.symbol->name));
 							}
 							writer.WriteString(L"(");
-							argumentsCallback(nullptr, result.symbol->typeInfo.Obj(), CommaPosition::No);
+							for (vint i = 0; i < node->arguments.Count(); i++)
+							{
+								if (i > 0) writer.WriteString(L", ");
+								argumentCallback(nullptr, result.symbol->typeInfo.Obj(), i);
+							}
 							writer.WriteString(L")");
 							return;
 						}
 					}
 					Call(node->function);
 					writer.WriteString(L"(");
-					argumentsCallback(nullptr, result.type.Obj(), CommaPosition::No);
+					for (vint i = 0; i < node->arguments.Count(); i++)
+					{
+						if (i > 0) writer.WriteString(L", ");
+						argumentCallback(nullptr, result.type.Obj(), i);
+					}
 					writer.WriteString(L")");
 				}
 
@@ -1874,20 +1927,10 @@ WfGenerateExpressionVisitor
 					}
 
 					WriteMethodTemplate(CppGetInvokeTemplate(ctor), ctor, [&](IMethodInfo*) { return false; },
-						[&](IMethodInfo*, CommaPosition cp)
+						[&](IMethodInfo*, vint index)
 						{
-							if (node->arguments.Count() > 0)
-							{
-								if (cp == CommaPosition::Left) writer.WriteString(L", ");
-								FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
-								{
-									if (index > 0) writer.WriteString(L", ");
-									Call(argument);
-								}
-								if (cp == CommaPosition::Right) writer.WriteString(L", ");
-							}
-							return true;
-						});
+							Call(node->arguments[index]);
+						}, useReturnValue);
 
 					if (ctor->GetReturn()->GetDecorator() == ITypeInfo::SharedPtr)
 					{
@@ -1926,16 +1969,22 @@ WfGenerateExpressionVisitor
 				}
 			};
 
-			void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType)
+			void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue)
 			{
-				auto result = config->manager->expressionResolvings[node.Obj()];
-				WfGenerateExpressionVisitor visitor(config, writer);
-
-				ITypeInfo* types[] = { result.type.Obj(), result.expectedType.Obj(), expectedType };
-				visitor.ConvertMultipleTypes(types, sizeof(types) / sizeof(*types), [&]()
+				WfGenerateExpressionVisitor visitor(config, writer, useReturnValue);
+				if (useReturnValue)
+				{
+					auto result = config->manager->expressionResolvings[node.Obj()];
+					ITypeInfo* types[] = { result.type.Obj(), result.expectedType.Obj(), expectedType };
+					visitor.ConvertMultipleTypes(types, sizeof(types) / sizeof(*types), [&]()
+					{
+						node->Accept(&visitor);
+					});
+				}
+				else
 				{
 					node->Accept(&visitor);
-				});
+				}
 			}
 		}
 	}
