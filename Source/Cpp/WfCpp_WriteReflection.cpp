@@ -46,6 +46,108 @@ namespace vl
 					writer.WriteLine(L")");
 				}
 
+				List<ITypeDescriptor*> tdInterfaces;
+				CopyFrom(
+					tdInterfaces,
+					From(tds)
+						.Where([](ITypeDescriptor* td)
+						{
+							return td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
+						})
+					);
+
+				if (tdInterfaces.Count() > 0)
+				{
+					writer.WriteLine(L"#pragma warning(push)");
+					writer.WriteLine(L"#pragma warning(disable:4250)");
+					FOREACH(ITypeDescriptor*, td, tdInterfaces)
+					{
+						List<ITypeDescriptor*> baseTds;
+						CopyFrom(
+							baseTds,
+							Range<vint>(0, td->GetBaseTypeDescriptorCount())
+							.Select([&](vint index)
+						{
+							return td->GetBaseTypeDescriptor(index);
+						})
+							.Where([&](ITypeDescriptor* baseTd)
+						{
+							return baseTd->GetTypeDescriptorFlags() != TypeDescriptorFlags::IDescriptable;
+						})
+							);
+
+						writer.WriteLine(L"");
+						if (baseTds.Count() > 0)
+						{
+							writer.WriteString(L"\t\t\tBEGIN_INTERFACE_PROXY_SHAREDPTR(");
+							writer.WriteString(ConvertType(td));
+							FOREACH(ITypeDescriptor*, baseTd, baseTds)
+							{
+								writer.WriteString(L", ");
+								writer.WriteString(ConvertType(baseTd));
+							}
+							writer.WriteLine(L")");
+						}
+						else
+						{
+							writer.WriteString(L"\t\t\tBEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(");
+							writer.WriteString(ConvertType(td));
+							writer.WriteLine(L")");
+						}
+
+						vint methodGroupCount = td->GetMethodGroupCount();
+						for (vint i = 0; i < methodGroupCount; i++)
+						{
+							auto methodGroup = td->GetMethodGroup(i);
+							vint methodCount = methodGroup->GetMethodCount();
+							for (vint j = 0; j < methodCount; j++)
+							{
+								auto methodInfo = methodGroup->GetMethod(j);
+
+								writer.WriteString(L"\t\t\t\t");
+								WriteFunctionHeader(writer, methodInfo, ConvertName(methodInfo->GetName()), true);
+								writer.WriteLine(L" override");
+								writer.WriteLine(L"\t\t\t\t{");
+
+								if (methodInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+								{
+									writer.WriteString(L"\t\t\t\t\tINVOKE_INTERFACE_PROXY");
+								}
+								else
+								{
+									writer.WriteString(L"\t\t\t\t\tINVOKEGET_INTERFACE_PROXY");
+								}
+
+								if (methodInfo->GetParameterCount() > 0)
+								{
+									writer.WriteString(L"(");
+									writer.WriteString(ConvertName(methodInfo->GetName()));
+									vint parameterCount = methodInfo->GetParameterCount();
+									for (vint k = 0; k < parameterCount; k++)
+									{
+										writer.WriteString(L", ");
+										writer.WriteString(methodInfo->GetParameter(k)->GetName());
+									}
+									writer.WriteLine(L");");
+								}
+								else
+								{
+									writer.WriteString(L"_NOPARAMS(");
+									writer.WriteString(ConvertName(methodInfo->GetName()));
+									writer.WriteLine(L");");
+								}
+
+								writer.WriteLine(L"\t\t\t\t}");
+							}
+						}
+
+						writer.WriteString(L"\t\t\tEND_INTERFACE_PROXY(");
+						writer.WriteString(ConvertType(td));
+						writer.WriteLine(L")");
+					}
+					writer.WriteLine(L"#pragma warning(pop)");
+				}
+
 				writer.WriteLine(L"#endif");
 				writer.WriteLine(L"");
 

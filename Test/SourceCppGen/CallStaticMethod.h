@@ -71,6 +71,16 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::Calculator)
 			DECL_TYPE_INFO(::Calculator::Internal)
+#pragma warning(push)
+#pragma warning(disable:4250)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::Calculator::Internal)
+				::vl::vint32_t Sum(::vl::vint32_t begin, ::vl::vint32_t end) override
+				{
+					INVOKEGET_INTERFACE_PROXY(Sum, begin, end);
+				}
+			END_INTERFACE_PROXY(::Calculator::Internal)
+#pragma warning(pop)
 #endif
 
 			extern bool LoadCallStaticMethodTypes();

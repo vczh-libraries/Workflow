@@ -75,6 +75,23 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::IAdder)
 			DECL_TYPE_INFO(::ISummer)
+#pragma warning(push)
+#pragma warning(disable:4250)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IAdder, ::ISummer)
+				void Add(::vl::vint32_t value) override
+				{
+					INVOKE_INTERFACE_PROXY(Add, value);
+				}
+			END_INTERFACE_PROXY(::IAdder)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::ISummer)
+				::vl::vint32_t GetSum() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSum);
+				}
+			END_INTERFACE_PROXY(::ISummer)
+#pragma warning(pop)
 #endif
 
 			extern bool LoadBindCustomInterfaceTypes();

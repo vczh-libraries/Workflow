@@ -62,6 +62,20 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::IMyInterface)
+#pragma warning(push)
+#pragma warning(disable:4250)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IMyInterface, ::vl::reflection::description::IValueEnumerable)
+				::vl::vint32_t Get100() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
+				}
+				::vl::vint32_t Get50() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get50);
+				}
+			END_INTERFACE_PROXY(::IMyInterface)
+#pragma warning(pop)
 #endif
 
 			extern bool LoadNewCustomInterfaceTypes();

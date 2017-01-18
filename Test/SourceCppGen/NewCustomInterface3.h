@@ -74,6 +74,16 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::IMyInterface3)
 			DECL_TYPE_INFO(::MyClass)
+#pragma warning(push)
+#pragma warning(disable:4250)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IMyInterface3, ::vl::reflection::description::IValueEnumerable)
+				::vl::vint32_t Get100() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
+				}
+			END_INTERFACE_PROXY(::IMyInterface3)
+#pragma warning(pop)
 #endif
 
 			extern bool LoadNewCustomInterface3Types();
