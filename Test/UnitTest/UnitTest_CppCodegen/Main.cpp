@@ -5,6 +5,8 @@ using namespace vl;
 using namespace vl::reflection::description;
 using namespace test;
 
+extern void LoadTestCaseTypes();
+
 void LoadTypes()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -13,6 +15,7 @@ void LoadTypes()
 	XmlLoadTypes();
 	JsonLoadTypes();
 	LoadCppTypes();
+	LoadTestCaseTypes();
 	TEST_ASSERT(GetGlobalTypeManager()->Load());
 #endif
 }

@@ -57,6 +57,24 @@
 
 using namespace vl;
 using namespace vl::console;
+using namespace vl::reflection::description;
+
+void LoadTestCaseTypes()
+{
+	 LoadNewCustomInterfaceTypes();
+	 LoadNewCustomInterface2Types();
+	 LoadNewCustomInterface3Types();
+	 LoadBindCustomInterfaceTypes();
+	 LoadBindCustomInterface2Types();
+	 LoadCallStaticMethodTypes();
+	 LoadNestedLambdaTypes();
+	 LoadClassMethodTypes();
+	 LoadClassCtorTypes();
+	 LoadClassDtorTypes();
+	 LoadStructCtor2Types();
+	 LoadEnumCtor2Types();
+	 LoadWorkflowHintsTypes();
+}
 
 TEST_CASE(HelloWorld)
 {
