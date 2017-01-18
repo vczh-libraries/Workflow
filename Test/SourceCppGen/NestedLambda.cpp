@@ -351,7 +351,11 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::IB)
 
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::IA)
+			END_INTERFACE_MEMBER(::IA)
 
+			BEGIN_INTERFACE_MEMBER(::IB)
+			END_INTERFACE_MEMBER(::IB)
 
 #undef _
 			class NestedLambdaTypeLoader : public Object, public ITypeLoader

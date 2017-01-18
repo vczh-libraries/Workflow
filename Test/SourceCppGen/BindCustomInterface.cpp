@@ -268,7 +268,11 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::ISummer)
 
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::IAdder)
+			END_INTERFACE_MEMBER(::IAdder)
 
+			BEGIN_INTERFACE_MEMBER(::ISummer)
+			END_INTERFACE_MEMBER(::ISummer)
 
 #undef _
 			class BindCustomInterfaceTypeLoader : public Object, public ITypeLoader

@@ -149,6 +149,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::IMyInterface)
 
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::IMyInterface)
+			END_INTERFACE_MEMBER(::IMyInterface)
 
 #undef _
 			class NewCustomInterfaceTypeLoader : public Object, public ITypeLoader

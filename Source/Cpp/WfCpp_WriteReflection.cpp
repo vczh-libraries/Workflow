@@ -103,41 +103,43 @@ namespace vl
 							for (vint j = 0; j < methodCount; j++)
 							{
 								auto methodInfo = methodGroup->GetMethod(j);
-
-								writer.WriteString(L"\t\t\t\t");
-								WriteFunctionHeader(writer, methodInfo, ConvertName(methodInfo->GetName()), true);
-								writer.WriteLine(L" override");
-								writer.WriteLine(L"\t\t\t\t{");
-
-								if (methodInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+								if (!methodInfo->IsStatic())
 								{
-									writer.WriteString(L"\t\t\t\t\tINVOKE_INTERFACE_PROXY");
-								}
-								else
-								{
-									writer.WriteString(L"\t\t\t\t\tINVOKEGET_INTERFACE_PROXY");
-								}
+									writer.WriteString(L"\t\t\t\t");
+									WriteFunctionHeader(writer, methodInfo, ConvertName(methodInfo->GetName()), true);
+									writer.WriteLine(L" override");
+									writer.WriteLine(L"\t\t\t\t{");
 
-								if (methodInfo->GetParameterCount() > 0)
-								{
-									writer.WriteString(L"(");
-									writer.WriteString(ConvertName(methodInfo->GetName()));
-									vint parameterCount = methodInfo->GetParameterCount();
-									for (vint k = 0; k < parameterCount; k++)
+									if (methodInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
 									{
-										writer.WriteString(L", ");
-										writer.WriteString(methodInfo->GetParameter(k)->GetName());
+										writer.WriteString(L"\t\t\t\t\tINVOKE_INTERFACE_PROXY");
 									}
-									writer.WriteLine(L");");
-								}
-								else
-								{
-									writer.WriteString(L"_NOPARAMS(");
-									writer.WriteString(ConvertName(methodInfo->GetName()));
-									writer.WriteLine(L");");
-								}
+									else
+									{
+										writer.WriteString(L"\t\t\t\t\tINVOKEGET_INTERFACE_PROXY");
+									}
 
-								writer.WriteLine(L"\t\t\t\t}");
+									if (methodInfo->GetParameterCount() > 0)
+									{
+										writer.WriteString(L"(");
+										writer.WriteString(ConvertName(methodInfo->GetName()));
+										vint parameterCount = methodInfo->GetParameterCount();
+										for (vint k = 0; k < parameterCount; k++)
+										{
+											writer.WriteString(L", ");
+											writer.WriteString(methodInfo->GetParameter(k)->GetName());
+										}
+										writer.WriteLine(L");");
+									}
+									else
+									{
+										writer.WriteString(L"_NOPARAMS(");
+										writer.WriteString(ConvertName(methodInfo->GetName()));
+										writer.WriteLine(L");");
+									}
+
+									writer.WriteLine(L"\t\t\t\t}");
+								}
 							}
 						}
 
@@ -231,11 +233,29 @@ namespace vl
 						}
 						break;
 					case TypeDescriptorFlags::Interface:
-						{
-						}
-						break;
 					case TypeDescriptorFlags::Class:
 						{
+							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface)
+							{
+								writer.WriteString(L"\t\t\tBEGIN_INTERFACE_MEMBER(");
+							}
+							else
+							{
+								writer.WriteString(L"\t\t\tBEGIN_CLASS_MEMBER(");
+							}
+							writer.WriteString(ConvertType(td));
+							writer.WriteLine(L")");
+
+							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface)
+							{
+								writer.WriteString(L"\t\t\tEND_INTERFACE_MEMBER(");
+							}
+							else
+							{
+								writer.WriteString(L"\t\t\tEND_CLASS_MEMBER(");
+							}
+							writer.WriteString(ConvertType(td));
+							writer.WriteLine(L")");
 						}
 						break;
 					default:;

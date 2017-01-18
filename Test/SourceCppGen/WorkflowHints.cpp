@@ -185,7 +185,11 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::workflow::hints::Derived)
 
 #define _ ,
+			BEGIN_CLASS_MEMBER(::workflow::hints::Base)
+			END_CLASS_MEMBER(::workflow::hints::Base)
 
+			BEGIN_CLASS_MEMBER(::workflow::hints::Derived)
+			END_CLASS_MEMBER(::workflow::hints::Derived)
 
 #undef _
 			class WorkflowHintsTypeLoader : public Object, public ITypeLoader

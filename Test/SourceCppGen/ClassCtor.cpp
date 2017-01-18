@@ -142,7 +142,11 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::Ctor)
 
 #define _ ,
+			BEGIN_CLASS_MEMBER(::Base)
+			END_CLASS_MEMBER(::Base)
 
+			BEGIN_CLASS_MEMBER(::Ctor)
+			END_CLASS_MEMBER(::Ctor)
 
 #undef _
 			class ClassCtorTypeLoader : public Object, public ITypeLoader

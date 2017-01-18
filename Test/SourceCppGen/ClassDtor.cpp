@@ -92,6 +92,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::Dtor)
 
 #define _ ,
+			BEGIN_CLASS_MEMBER(::Dtor)
+			END_CLASS_MEMBER(::Dtor)
 
 #undef _
 			class ClassDtorTypeLoader : public Object, public ITypeLoader

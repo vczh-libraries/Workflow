@@ -92,7 +92,11 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::Calculator::Internal)
 
 #define _ ,
+			BEGIN_CLASS_MEMBER(::Calculator)
+			END_CLASS_MEMBER(::Calculator)
 
+			BEGIN_INTERFACE_MEMBER(::Calculator::Internal)
+			END_INTERFACE_MEMBER(::Calculator::Internal)
 
 #undef _
 			class CallStaticMethodTypeLoader : public Object, public ITypeLoader

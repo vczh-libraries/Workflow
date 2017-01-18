@@ -70,10 +70,6 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
 				}
-				::vl::vint32_t Get50() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get50);
-				}
 			END_INTERFACE_PROXY(::IMyInterface)
 #pragma warning(pop)
 #endif

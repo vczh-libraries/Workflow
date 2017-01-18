@@ -138,6 +138,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::Methods)
 
 #define _ ,
+			BEGIN_CLASS_MEMBER(::Methods)
+			END_CLASS_MEMBER(::Methods)
 
 #undef _
 			class ClassMethodTypeLoader : public Object, public ITypeLoader

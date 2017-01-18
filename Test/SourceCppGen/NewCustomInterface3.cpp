@@ -160,7 +160,11 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::MyClass)
 
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::IMyInterface3)
+			END_INTERFACE_MEMBER(::IMyInterface3)
 
+			BEGIN_CLASS_MEMBER(::MyClass)
+			END_CLASS_MEMBER(::MyClass)
 
 #undef _
 			class NewCustomInterface3TypeLoader : public Object, public ITypeLoader
