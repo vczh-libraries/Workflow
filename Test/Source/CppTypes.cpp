@@ -165,6 +165,7 @@ namespace vl
 		{
 			using namespace test;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 #define _ ,
 			UNITTEST_TYPELIST(IMPL_CPP_TYPE_INFO)
 
@@ -235,15 +236,18 @@ namespace vl
 				{
 				}
 			};
+#endif
 
 			bool LoadCppTypes()
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				ITypeManager* manager = GetGlobalTypeManager();
 				if (manager)
 				{
 					Ptr<ITypeLoader> loader = new UnitTestTypeLoader;
 					return manager->AddTypeLoader(loader);
 				}
+#endif
 				return false;
 			}
 

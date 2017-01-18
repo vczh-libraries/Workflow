@@ -97,6 +97,7 @@ namespace vl
 	{
 		namespace description
 		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 #define UNITTEST_TYPELIST(F)\
 			F(test::Seasons)\
 			F(test::Point)\
@@ -107,6 +108,7 @@ namespace vl
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
 
+#endif
 			extern bool						LoadCppTypes();
 		}
 	}

@@ -175,7 +175,7 @@ TEST_CASE(TestCodegen)
 		FOREACH(WString, codegenName, codegenNames)
 		{
 			DECODE_CODEGEN_NAME
-				if (!cppCodegen) continue;
+			if (!cppCodegen) continue;
 
 			writer.WriteString(L"#include \"");
 			writer.WriteString(itemName);
