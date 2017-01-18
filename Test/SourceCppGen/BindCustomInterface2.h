@@ -78,19 +78,19 @@ namespace vl
 #pragma warning(push)
 #pragma warning(disable:4250)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IAdder2, ::ISummer2)
-				void Add(::vl::vint32_t value) override
-				{
-					INVOKE_INTERFACE_PROXY(Add, value);
-				}
-			END_INTERFACE_PROXY(::IAdder2)
-
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::ISummer2)
 				::vl::vint32_t GetSum() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSum);
 				}
 			END_INTERFACE_PROXY(::ISummer2)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IAdder2, ::ISummer2)
+				void Add(::vl::vint32_t value) override
+				{
+					INVOKE_INTERFACE_PROXY(Add, value);
+				}
+			END_INTERFACE_PROXY(::IAdder2)
 #pragma warning(pop)
 #endif
 

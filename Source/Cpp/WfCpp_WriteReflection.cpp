@@ -55,6 +55,26 @@ namespace vl
 							return td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
 						})
 					);
+				{
+					vint processed = 0;
+					while (processed < tdInterfaces.Count())
+					{
+						vint count = tdInterfaces.Count();
+						for (vint i = processed; i < count; i++)
+						{
+							auto td = tdInterfaces[i];
+							if (Range<vint>(0, td->GetBaseTypeDescriptorCount())
+								.All([&](vint baseIndex)
+								{
+									return tdInterfaces.IndexOf(td->GetBaseTypeDescriptor(baseIndex)) < processed;
+								}))
+							{
+								tdInterfaces.RemoveAt(i);
+								tdInterfaces.Insert(processed++, td);
+							}
+						}
+					}
+				}
 
 				if (tdInterfaces.Count() > 0)
 				{
