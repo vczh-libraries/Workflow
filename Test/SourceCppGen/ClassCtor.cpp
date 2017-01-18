@@ -143,6 +143,9 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Base)
+				CLASS_MEMBER_EVENT(XChanged)
+				CLASS_MEMBER_PROPERTY_EVENT(X, GetX, SetX, XChanged)
+				CLASS_MEMBER_FIELD(x)
 			END_CLASS_MEMBER(::Base)
 
 			BEGIN_CLASS_MEMBER(::Ctor)

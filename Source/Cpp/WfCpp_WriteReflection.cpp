@@ -66,14 +66,14 @@ namespace vl
 						CopyFrom(
 							baseTds,
 							Range<vint>(0, td->GetBaseTypeDescriptorCount())
-							.Select([&](vint index)
-						{
-							return td->GetBaseTypeDescriptor(index);
-						})
-							.Where([&](ITypeDescriptor* baseTd)
-						{
-							return baseTd->GetTypeDescriptorFlags() != TypeDescriptorFlags::IDescriptable;
-						})
+								.Select([&](vint index)
+								{
+									return td->GetBaseTypeDescriptor(index);
+								})
+								.Where([&](ITypeDescriptor* baseTd)
+								{
+									return baseTd->GetTypeDescriptorFlags() != TypeDescriptorFlags::IDescriptable;
+								})
 							);
 
 						writer.WriteLine(L"");
@@ -245,6 +245,87 @@ namespace vl
 							}
 							writer.WriteString(ConvertType(td));
 							writer.WriteLine(L")");
+
+							vint methodGroupCount = td->GetMethodGroupCount();
+							for (vint i = 0; i < methodGroupCount; i++)
+							{
+								auto methodGroup = td->GetMethodGroup(i);
+								vint methodCount = methodGroup->GetMethodCount();
+								for (vint j = 0; j < methodCount; j++)
+								{
+									auto methodInfo = methodGroup->GetMethod(j);
+								}
+							}
+
+							vint eventCount = td->GetEventCount();
+							for (vint i = 0; i < eventCount; i++)
+							{
+								auto eventInfo = td->GetEvent(i);
+								writer.WriteString(L"\t\t\t\tCLASS_MEMBER_EVENT(");
+								writer.WriteString(ConvertName(eventInfo->GetName()));
+								writer.WriteLine(L")");
+							}
+
+							vint propertyCount = td->GetPropertyCount();
+							for (vint i = 0; i < propertyCount; i++)
+							{
+								auto propertyInfo = td->GetProperty(i);
+								if (auto getter = propertyInfo->GetGetter())
+								{
+									if (auto eventInfo = propertyInfo->GetValueChangedEvent())
+									{
+										if (auto setter = propertyInfo->GetSetter())
+										{
+											writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY_EVENT(");
+											writer.WriteString(ConvertName(propertyInfo->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(getter->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(setter->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(eventInfo->GetName()));
+											writer.WriteLine(L")");
+										}
+										else
+										{
+											writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY_EVENT_READONLY(");
+											writer.WriteString(ConvertName(propertyInfo->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(getter->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(eventInfo->GetName()));
+											writer.WriteLine(L")");
+										}
+									}
+									else
+									{
+										if (auto setter = propertyInfo->GetSetter())
+										{
+											writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY(");
+											writer.WriteString(ConvertName(propertyInfo->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(getter->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(setter->GetName()));
+											writer.WriteLine(L")");
+										}
+										else
+										{
+											writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY_READONLY(");
+											writer.WriteString(ConvertName(propertyInfo->GetName()));
+											writer.WriteString(L", ");
+											writer.WriteString(ConvertName(getter->GetName()));
+											writer.WriteLine(L")");
+										}
+									}
+								}
+								else
+								{
+									writer.WriteString(L"\t\t\t\tCLASS_MEMBER_FIELD(");
+									writer.WriteString(ConvertName(propertyInfo->GetName()));
+									writer.WriteLine(L")");
+								}
+							}
 
 							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface)
 							{

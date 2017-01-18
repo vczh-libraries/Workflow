@@ -93,6 +93,8 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Dtor)
+				CLASS_MEMBER_FIELD(name)
+				CLASS_MEMBER_FIELD(next)
 			END_CLASS_MEMBER(::Dtor)
 
 #undef _

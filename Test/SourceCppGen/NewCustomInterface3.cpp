@@ -164,6 +164,8 @@ namespace vl
 			END_INTERFACE_MEMBER(::IMyInterface3)
 
 			BEGIN_CLASS_MEMBER(::MyClass)
+				CLASS_MEMBER_FIELD(begin)
+				CLASS_MEMBER_FIELD(end)
 			END_CLASS_MEMBER(::MyClass)
 
 #undef _

@@ -139,6 +139,9 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Methods)
+				CLASS_MEMBER_EVENT(XChanged)
+				CLASS_MEMBER_PROPERTY_EVENT(X, GetX, SetX, XChanged)
+				CLASS_MEMBER_FIELD(x)
 			END_CLASS_MEMBER(::Methods)
 
 #undef _

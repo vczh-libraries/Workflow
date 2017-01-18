@@ -272,6 +272,8 @@ namespace vl
 			END_INTERFACE_MEMBER(::IAdder)
 
 			BEGIN_INTERFACE_MEMBER(::ISummer)
+				CLASS_MEMBER_EVENT(SumChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Sum, GetSum, SumChanged)
 			END_INTERFACE_MEMBER(::ISummer)
 
 #undef _
