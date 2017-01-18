@@ -143,8 +143,8 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Base)
-				CLASS_MEMBER_METHOD_OVERLOAD(GetX, NO_PARAMETER, ::vl::vint32_t(::Base::*)())
-				CLASS_MEMBER_METHOD_OVERLOAD(SetX, { L"_x" }, void(::Base::*)(::vl::vint32_t))
+				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetX, { L"_x" })
 				CLASS_MEMBER_EVENT(XChanged)
 				CLASS_MEMBER_PROPERTY_EVENT(X, GetX, SetX, XChanged)
 				CLASS_MEMBER_FIELD(x)

@@ -256,12 +256,17 @@ namespace vl
 									auto methodInfo = methodGroup->GetMethod(j);
 									if (methodInfo->IsStatic())
 									{
-										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_STATIC_METHOD_OVERLOAD(");
+										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_STATIC_METHOD");
 									}
 									else
 									{
-										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_METHOD_OVERLOAD(");
+										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_METHOD");
 									}
+									if (methodCount > 1)
+									{
+										writer.WriteString(L"_OVERLOAD");
+									}
+									writer.WriteString(L"(");
 									writer.WriteString(ConvertName(methodInfo->GetName()));
 
 									vint parameterCount = methodInfo->GetParameterCount();
@@ -278,14 +283,18 @@ namespace vl
 											writer.WriteString(ConvertName(methodInfo->GetParameter(k)->GetName()));
 											writer.WriteString(L"\"");
 										}
-										writer.WriteString(L" }, ");
+										writer.WriteString(L" }");
 									}
 									else
 									{
-										writer.WriteString(L", NO_PARAMETER, ");
+										writer.WriteString(L", NO_PARAMETER");
 									}
-									auto typeDecorator = methodInfo->IsStatic() ? WString(L"(*)", false) : L"(" + ConvertType(td) + L"::*)";
-									writer.WriteString(ConvertFunctionType(methodInfo, typeDecorator));
+									if (methodCount > 1)
+									{
+										writer.WriteString(L", ");
+										auto typeDecorator = methodInfo->IsStatic() ? WString(L"(*)", false) : L"(" + ConvertType(td) + L"::*)";
+										writer.WriteString(ConvertFunctionType(methodInfo, typeDecorator));
+									}
 									writer.WriteLine(L")");
 								}
 							}
