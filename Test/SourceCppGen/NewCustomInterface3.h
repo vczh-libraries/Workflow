@@ -61,4 +61,24 @@ namespace vl_workflow_global
 #pragma clang diagnostic pop
 #endif
 
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::IMyInterface3)
+			DECL_TYPE_INFO(::MyClass)
+#endif
+
+			extern bool LoadNewCustomInterface3Types();
+		}
+	}
+}
+
 #endif

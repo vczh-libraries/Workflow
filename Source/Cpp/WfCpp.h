@@ -127,6 +127,9 @@ namespace vl
 				void					WriteHeader_Global(stream::StreamWriter& writer);
 				void					WriteCpp_Global(stream::StreamWriter& writer);
 
+				void					WriteHeader_Reflection(stream::StreamWriter& writer);
+				void					WriteCpp_Reflection(stream::StreamWriter& writer);
+
 				void					WriteHeader(stream::StreamWriter& writer);
 				void					WriteCpp(stream::StreamWriter& writer);
 			};

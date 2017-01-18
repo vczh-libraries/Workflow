@@ -335,3 +335,48 @@ Class (::IB)
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(::IA)
+			IMPL_CPP_TYPE_INFO(::IB)
+
+
+
+			class NestedLambdaTypeLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(::IA)
+					ADD_TYPE_INFO(::IB)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool LoadNestedLambdaTypes()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				if (auto manager = GetGlobalTypeManager())
+				{
+					return manager->AddTypeLoader(MakePtr<NestedLambdaTypeLoader>());
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}

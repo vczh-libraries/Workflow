@@ -144,3 +144,48 @@ MyClass::MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end)
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(::IMyInterface3)
+			IMPL_CPP_TYPE_INFO(::MyClass)
+
+
+
+			class NewCustomInterface3TypeLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(::IMyInterface3)
+					ADD_TYPE_INFO(::MyClass)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool LoadNewCustomInterface3Types()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				if (auto manager = GetGlobalTypeManager())
+				{
+					return manager->AddTypeLoader(MakePtr<NewCustomInterface3TypeLoader>());
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}

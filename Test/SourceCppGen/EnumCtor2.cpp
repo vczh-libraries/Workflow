@@ -56,3 +56,45 @@ namespace vl_workflow_global
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(::Seasons)
+
+
+			class EnumCtor2TypeLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(::Seasons)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool LoadEnumCtor2Types()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				if (auto manager = GetGlobalTypeManager())
+				{
+					return manager->AddTypeLoader(MakePtr<EnumCtor2TypeLoader>());
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}

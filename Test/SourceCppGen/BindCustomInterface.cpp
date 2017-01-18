@@ -252,3 +252,48 @@ Class (::IAdder)
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(::IAdder)
+			IMPL_CPP_TYPE_INFO(::ISummer)
+
+
+
+			class BindCustomInterfaceTypeLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(::IAdder)
+					ADD_TYPE_INFO(::ISummer)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool LoadBindCustomInterfaceTypes()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				if (auto manager = GetGlobalTypeManager())
+				{
+					return manager->AddTypeLoader(MakePtr<BindCustomInterfaceTypeLoader>());
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}

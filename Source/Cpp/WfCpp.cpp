@@ -513,6 +513,16 @@ WfCppConfig
 				writer.WriteLine(L"#elif defined(__clang__)");
 				writer.WriteLine(L"#pragma clang diagnostic pop");
 				writer.WriteLine(L"#endif");
+
+				if (manager->declarationTypes.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					writer.WriteLine(L"/***********************************************************************");
+					writer.WriteLine(L"Reflection");
+					writer.WriteLine(L"***********************************************************************/");
+					writer.WriteLine(L"");
+					WriteHeader_Reflection(writer);
+				}
 			}
 
 			void WfCppConfig::WriteCpp(stream::StreamWriter& writer)
@@ -585,6 +595,16 @@ WfCppConfig
 				writer.WriteLine(L"#elif defined(__clang__)");
 				writer.WriteLine(L"#pragma clang diagnostic pop");
 				writer.WriteLine(L"#endif");
+
+				if (manager->declarationTypes.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					writer.WriteLine(L"/***********************************************************************");
+					writer.WriteLine(L"Reflection");
+					writer.WriteLine(L"***********************************************************************/");
+					writer.WriteLine(L"");
+					WriteCpp_Reflection(writer);
+				}
 			}
 		}
 	}

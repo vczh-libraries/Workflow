@@ -134,3 +134,45 @@ Class (::IMyInterface)
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(::IMyInterface)
+
+
+			class NewCustomInterfaceTypeLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(::IMyInterface)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool LoadNewCustomInterfaceTypes()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				if (auto manager = GetGlobalTypeManager())
+				{
+					return manager->AddTypeLoader(MakePtr<NewCustomInterfaceTypeLoader>());
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}

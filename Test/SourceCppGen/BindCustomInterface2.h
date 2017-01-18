@@ -62,4 +62,24 @@ namespace vl_workflow_global
 #pragma clang diagnostic pop
 #endif
 
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::IAdder2)
+			DECL_TYPE_INFO(::ISummer2)
+#endif
+
+			extern bool LoadBindCustomInterface2Types();
+		}
+	}
+}
+
 #endif

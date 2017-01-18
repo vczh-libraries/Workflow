@@ -169,3 +169,48 @@ Class (::workflow::hints::Derived)
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(::workflow::hints::Base)
+			IMPL_CPP_TYPE_INFO(::workflow::hints::Derived)
+
+
+
+			class WorkflowHintsTypeLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(::workflow::hints::Base)
+					ADD_TYPE_INFO(::workflow::hints::Derived)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool LoadWorkflowHintsTypes()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				if (auto manager = GetGlobalTypeManager())
+				{
+					return manager->AddTypeLoader(MakePtr<WorkflowHintsTypeLoader>());
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}
