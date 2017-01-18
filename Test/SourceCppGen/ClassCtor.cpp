@@ -141,8 +141,10 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::Base)
 			IMPL_CPP_TYPE_INFO(::Ctor)
 
+#define _ ,
 
 
+#undef _
 			class ClassCtorTypeLoader : public Object, public ITypeLoader
 			{
 			public:

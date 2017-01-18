@@ -70,7 +70,18 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(::Seasons)
 
+#define _ ,
+			BEGIN_ENUM_ITEM_MERGABLE(::Seasons)
+				ENUM_CLASS_ITEM(Autumn)
+				ENUM_CLASS_ITEM(Bad)
+				ENUM_CLASS_ITEM(Good)
+				ENUM_CLASS_ITEM(None)
+				ENUM_CLASS_ITEM(Spring)
+				ENUM_CLASS_ITEM(Summer)
+				ENUM_CLASS_ITEM(Winter)
+			END_ENUM_ITEM(::Seasons)
 
+#undef _
 			class EnumCtor2TypeLoader : public Object, public ITypeLoader
 			{
 			public:

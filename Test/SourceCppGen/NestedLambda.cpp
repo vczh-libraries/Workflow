@@ -350,8 +350,10 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::IA)
 			IMPL_CPP_TYPE_INFO(::IB)
 
+#define _ ,
 
 
+#undef _
 			class NestedLambdaTypeLoader : public Object, public ITypeLoader
 			{
 			public:

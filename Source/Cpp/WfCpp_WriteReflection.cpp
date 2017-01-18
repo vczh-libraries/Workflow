@@ -180,10 +180,69 @@ namespace vl
 				}
 				writer.WriteLine(L"");
 
+				writer.WriteLine(L"#define _ ,");
 				FOREACH(ITypeDescriptor*, td, tds)
 				{
+					switch (td->GetTypeDescriptorFlags())
+					{
+					case TypeDescriptorFlags::NormalEnum:
+					case TypeDescriptorFlags::FlagEnum:
+						{
+							writer.WriteString(L"\t\t\tBEGIN_ENUM_ITEM");
+							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::FlagEnum)
+							{
+								writer.WriteString(L"_MERGABLE");
+							}
+							writer.WriteString(L"(");
+							writer.WriteString(ConvertType(td));
+							writer.WriteLine(L")");
+
+							auto enumType = td->GetEnumType();
+							vint count = enumType->GetItemCount();
+							for (vint i = 0; i < count; i++)
+							{
+								writer.WriteString(L"\t\t\t\tENUM_CLASS_ITEM(");
+								writer.WriteString(ConvertName(enumType->GetItemName(i)));
+								writer.WriteLine(L")");
+							}
+
+							writer.WriteString(L"\t\t\tEND_ENUM_ITEM(");
+							writer.WriteString(ConvertType(td));
+							writer.WriteLine(L")");
+						}
+						break;
+					case TypeDescriptorFlags::Struct:
+						{
+							writer.WriteString(L"\t\t\tBEGIN_STRUCT_MEMBER(");
+							writer.WriteString(ConvertType(td));
+							writer.WriteLine(L")");
+
+							vint count = td->GetPropertyCount();
+							for (vint i = 0; i < count; i++)
+							{
+								writer.WriteString(L"\t\t\t\tSTRUCT_MEMBER(");
+								writer.WriteString(ConvertName(td->GetProperty(i)->GetName()));
+								writer.WriteLine(L")");
+							}
+
+							writer.WriteString(L"\t\t\tEND_STRUCT_MEMBER(");
+							writer.WriteString(ConvertType(td));
+							writer.WriteLine(L")");
+						}
+						break;
+					case TypeDescriptorFlags::Interface:
+						{
+						}
+						break;
+					case TypeDescriptorFlags::Class:
+						{
+						}
+						break;
+					default:;
+					}
 					writer.WriteLine(L"");
 				}
+				writer.WriteLine(L"#undef _");
 
 				writer.WriteString(L"\t\t\tclass ");
 				writer.WriteString(assemblyName);

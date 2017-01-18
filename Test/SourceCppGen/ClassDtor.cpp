@@ -91,7 +91,9 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(::Dtor)
 
+#define _ ,
 
+#undef _
 			class ClassDtorTypeLoader : public Object, public ITypeLoader
 			{
 			public:

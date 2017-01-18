@@ -159,8 +159,10 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::IMyInterface3)
 			IMPL_CPP_TYPE_INFO(::MyClass)
 
+#define _ ,
 
 
+#undef _
 			class NewCustomInterface3TypeLoader : public Object, public ITypeLoader
 			{
 			public:

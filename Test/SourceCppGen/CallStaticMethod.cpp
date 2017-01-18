@@ -91,8 +91,10 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(::Calculator)
 			IMPL_CPP_TYPE_INFO(::Calculator::Internal)
 
+#define _ ,
 
 
+#undef _
 			class CallStaticMethodTypeLoader : public Object, public ITypeLoader
 			{
 			public:

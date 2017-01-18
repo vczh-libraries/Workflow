@@ -137,7 +137,9 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(::Methods)
 
+#define _ ,
 
+#undef _
 			class ClassMethodTypeLoader : public Object, public ITypeLoader
 			{
 			public:

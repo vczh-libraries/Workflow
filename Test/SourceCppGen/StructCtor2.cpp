@@ -68,7 +68,14 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(::Point)
 
+#define _ ,
+			BEGIN_STRUCT_MEMBER(::Point)
+				STRUCT_MEMBER(x)
+				STRUCT_MEMBER(y)
+				STRUCT_MEMBER(z)
+			END_STRUCT_MEMBER(::Point)
 
+#undef _
 			class StructCtor2TypeLoader : public Object, public ITypeLoader
 			{
 			public:
