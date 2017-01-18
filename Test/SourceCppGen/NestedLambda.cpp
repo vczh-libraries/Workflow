@@ -352,11 +352,17 @@ namespace vl
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IA)
+				CLASS_MEMBER_METHOD_OVERLOAD(Calculate, NO_PARAMETER, ::vl::WString(::IA::*)())
+				CLASS_MEMBER_METHOD_OVERLOAD(GetA, NO_PARAMETER, ::vl::vint32_t(::IA::*)())
+				CLASS_MEMBER_METHOD_OVERLOAD(SetA, { L"value" }, void(::IA::*)(::vl::vint32_t))
 				CLASS_MEMBER_EVENT(AChanged)
 				CLASS_MEMBER_PROPERTY_EVENT(A, GetA, SetA, AChanged)
 			END_INTERFACE_MEMBER(::IA)
 
 			BEGIN_INTERFACE_MEMBER(::IB)
+				CLASS_MEMBER_METHOD_OVERLOAD(Calculate, NO_PARAMETER, ::vl::WString(::IB::*)())
+				CLASS_MEMBER_METHOD_OVERLOAD(GetB, NO_PARAMETER, ::vl::vint32_t(::IB::*)())
+				CLASS_MEMBER_METHOD_OVERLOAD(SetB, { L"value" }, void(::IB::*)(::vl::vint32_t))
 				CLASS_MEMBER_EVENT(BChanged)
 				CLASS_MEMBER_PROPERTY_EVENT(B, GetB, SetB, BChanged)
 			END_INTERFACE_MEMBER(::IB)

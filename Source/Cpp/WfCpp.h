@@ -82,7 +82,7 @@ namespace vl
 
 				WString					ConvertName(const WString& name);
 				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
-				WString					ConvertFunctionType(IMethodInfo* methodInfo);
+				WString					ConvertFunctionType(IMethodInfo* methodInfo, WString name = WString::Empty);
 				WString					ConvertFunctionType(ITypeInfo* typeInfo);
 				bool					IsSpecialGenericType(ITypeInfo* typeInfo);
 				WString					ConvertType(ITypeDescriptor* typeInfo, WString delimiter = L"::");

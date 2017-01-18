@@ -160,9 +160,9 @@ WfCppConfig
 					});
 			}
 
-			WString WfCppConfig::ConvertFunctionType(IMethodInfo* methodInfo)
+			WString WfCppConfig::ConvertFunctionType(IMethodInfo* methodInfo, WString name)
 			{
-				WString type = ConvertType(methodInfo->GetReturn()) + L"(";
+				WString type = ConvertType(methodInfo->GetReturn()) + name + L"(";
 				vint count = methodInfo->GetParameterCount();
 				for (vint i = 0; i < count; i++)
 				{

@@ -269,9 +269,11 @@ namespace vl
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IAdder2)
+				CLASS_MEMBER_METHOD_OVERLOAD(Add, { L"value" }, void(::IAdder2::*)(::vl::vint32_t))
 			END_INTERFACE_MEMBER(::IAdder2)
 
 			BEGIN_INTERFACE_MEMBER(::ISummer2)
+				CLASS_MEMBER_METHOD_OVERLOAD(GetSum, NO_PARAMETER, ::vl::vint32_t(::ISummer2::*)())
 				CLASS_MEMBER_EVENT(SumChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Sum, GetSum, SumChanged)
 			END_INTERFACE_MEMBER(::ISummer2)

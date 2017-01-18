@@ -254,6 +254,38 @@ namespace vl
 								for (vint j = 0; j < methodCount; j++)
 								{
 									auto methodInfo = methodGroup->GetMethod(j);
+									if (methodInfo->IsStatic())
+									{
+										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_STATIC_METHOD_OVERLOAD(");
+									}
+									else
+									{
+										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_METHOD_OVERLOAD(");
+									}
+									writer.WriteString(ConvertName(methodInfo->GetName()));
+
+									vint parameterCount = methodInfo->GetParameterCount();
+									if (parameterCount > 0)
+									{
+										writer.WriteString(L", {");
+										for (vint k = 0; k < parameterCount; k++)
+										{
+											if (k > 0)
+											{
+												writer.WriteString(L" _");
+											}
+											writer.WriteString(L" L\"");
+											writer.WriteString(ConvertName(methodInfo->GetParameter(k)->GetName()));
+											writer.WriteString(L"\"");
+										}
+										writer.WriteString(L" }, ");
+									}
+									else
+									{
+										writer.WriteString(L", NO_PARAMETER, ");
+									}
+									writer.WriteString(ConvertFunctionType(methodInfo, L"(" + ConvertType(td) + L"::*)"));
+									writer.WriteLine(L")");
 								}
 							}
 

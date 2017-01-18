@@ -93,9 +93,11 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Calculator)
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Sum2, { L"begin" _ L"end" _ L"sum" }, ::vl::vint32_t(::Calculator::*)(::vl::vint32_t, ::vl::vint32_t, ::vl::vint32_t))
 			END_CLASS_MEMBER(::Calculator)
 
 			BEGIN_INTERFACE_MEMBER(::Calculator::Internal)
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Sum, { L"begin" _ L"end" }, ::vl::vint32_t(::Calculator::Internal::*)(::vl::vint32_t, ::vl::vint32_t))
 			END_INTERFACE_MEMBER(::Calculator::Internal)
 
 #undef _
