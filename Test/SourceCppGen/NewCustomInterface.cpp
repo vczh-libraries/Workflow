@@ -151,7 +151,7 @@ namespace vl
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IMyInterface)
 				CLASS_MEMBER_METHOD_OVERLOAD(Get100, NO_PARAMETER, ::vl::vint32_t(::IMyInterface::*)())
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Get50, NO_PARAMETER, ::vl::vint32_t(::IMyInterface::*)())
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Get50, NO_PARAMETER, ::vl::vint32_t(*)())
 			END_INTERFACE_MEMBER(::IMyInterface)
 
 #undef _

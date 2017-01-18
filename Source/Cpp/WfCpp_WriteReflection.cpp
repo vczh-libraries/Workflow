@@ -284,7 +284,8 @@ namespace vl
 									{
 										writer.WriteString(L", NO_PARAMETER, ");
 									}
-									writer.WriteString(ConvertFunctionType(methodInfo, L"(" + ConvertType(td) + L"::*)"));
+									auto typeDecorator = methodInfo->IsStatic() ? WString(L"(*)", false) : L"(" + ConvertType(td) + L"::*)";
+									writer.WriteString(ConvertFunctionType(methodInfo, typeDecorator));
 									writer.WriteLine(L")");
 								}
 							}

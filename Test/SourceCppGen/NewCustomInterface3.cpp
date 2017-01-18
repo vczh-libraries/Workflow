@@ -166,7 +166,7 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::MyClass)
 				CLASS_MEMBER_METHOD_OVERLOAD(CreateMyInterface, NO_PARAMETER, ::vl::Ptr<::IMyInterface3>(::MyClass::*)())
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Get50, NO_PARAMETER, ::vl::vint32_t(::MyClass::*)())
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Get50, NO_PARAMETER, ::vl::vint32_t(*)())
 				CLASS_MEMBER_FIELD(begin)
 				CLASS_MEMBER_FIELD(end)
 			END_CLASS_MEMBER(::MyClass)
