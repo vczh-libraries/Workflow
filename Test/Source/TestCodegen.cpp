@@ -61,16 +61,7 @@ TEST_CASE(TestCodegen)
 			Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
 			manager.AddModule(module);
 			manager.Rebuild(true);
-			MemoryStream stream;
-			{
-				StreamWriter writer(stream);
-				WfPrint(module, L"", writer);
-			}
-			{
-				stream.SeekFromBegin(0);
-				StreamReader reader(stream);
-				LogSampleParseResult(L"Codegen", itemName, reader.ReadToEnd(), node, module, &manager);
-			}
+			LogSampleParseResult(L"Codegen", itemName, sample, node, module, &manager);
 			TEST_ASSERT(manager.errors.Count() == 0);
 		}
 		Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
