@@ -1,16 +1,25 @@
 namespace test
 {
+    @cpp:HeaderFile("Test.h")
+    @cpp:ImplFile("Test.cpp")
     class Base {}
+
     class Derived : Base {}
+
     class Super : Base, Derived {}
 
     class Members
     {
-        static func Sum(begin : int, end : int) : int {}
-        func Product(begin : int, end : int) : int {}
+        static @cpp:Private
+        func Sum(begin : int, end : int) : int {}
+
+        @cpp:UserImpl("ABCDEFG")
+        func Product(@cpp:Smaller begin : int, @cpp:Larger end : int) : int {}
+
         var counter : int = 0;
 
         class NestedClass {}
-		interface NestedInterface {}
+
+        interface NestedInterface {}
     }
 }

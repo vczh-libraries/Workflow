@@ -436,8 +436,16 @@ class ExpressionStatement : Statement
 	Expression				expression;
 }
 
+class Attribute
+{
+	token					category;
+	token					name;
+	Expression				value;
+}
+
 class Declaration
 {
+	Attribute[]				attributes;
 	token					name;
 }
 
@@ -448,6 +456,7 @@ class NamespaceDeclaration : Declaration
 
 class FunctionArgument
 {
+	Attribute[]				attributes;
 	token					name;
 	Type					type;
 }
@@ -579,6 +588,7 @@ class EnumItemIntersection
 
 class EnumItem
 {
+	Attribute[]				attributes;
 	token					name;
 	EnumItemKind			kind;
 	token					number;
@@ -593,6 +603,7 @@ class EnumDeclaration : Declaration
 
 class StructMember
 {
+	Attribute[]				attributes;
 	token					name;
 	Type					type;
 }
@@ -667,6 +678,7 @@ token OPEN_BRACE = "/{";
 token CLOSE_BRACE = "/}";
 token OPEN_BRACKET = "/(";
 token CLOSE_BRACKET = "/)";
+token AT = "@";
 
 token TYPE_VOID = "void";
 token TYPE_OBJECT = "object";
@@ -744,6 +756,7 @@ token STRING = "'([^'\\]|\\\.)*'|""([^""\\]|\\\.)*""";
 token FORMATSTRING = "/$('([^'\\]|\\\.)*'|""([^""\\]|\\\.)*"")";
 
 discardtoken SPACE = "/s+";
+discardtoken COMMENT = "///*([^*]|/*+[^//])*/*+//";
 
 rule Type WorkflowType
 	= "void" as PredefinedType with {name="Void"}
@@ -940,12 +953,16 @@ rule Statement WorkflowStatement
 	= WorkflowExpression : expression ";" as ExpressionStatement
 	;
 
+rule Attribute WorkflowAttribute
+	= "@" NAME : category ":" NAME : name ["(" WorkflowExpression : value ")"] as Attribute
+	;
+
 rule NamespaceDeclaration Namespace
 	= "namespace" NAME : name "{" {WorkflowDeclaration : declarations} "}" as NamespaceDeclaration
 	;
 
 rule FunctionArgument FunctionArgumentFragment
-	= NAME : name ":" WorkflowType : type as FunctionArgument
+	= {WorkflowAttribute : attributes} NAME : name ":" WorkflowType : type as FunctionArgument
 	;
 rule FunctionDeclaration Function
 	= "func" 
@@ -968,12 +985,16 @@ rule PropertyDeclaration Property
 	= "prop" NAME : name ":" WorkflowType : type "{" NAME : getter ["," NAME : setter] [":" NAME : valueChangedEvent] "}" as PropertyDeclaration
 	;
 
+rule FunctionDeclaration ClassMethod
+	= {WorkflowAttribute : attributes} !Function
+	;
+
 rule ClassMember WorkflowClassMember
 	=	(
 			("static" with {kind = "Static"})
 			| ("override" with {kind = "Override"})
 		)
-		Function : declaration as ClassMember
+		ClassMethod : declaration as ClassMember
 	= WorkflowDeclaration : declaration as ClassMember with {kind = "Normal"}
 	;
 
@@ -1009,11 +1030,11 @@ rule EnumItemIntersection EnumItemInt
 	;
 
 rule EnumItem EnumItemA
-	= NAME : name "=" INTEGER : number "," as EnumItem with {kind = "Constant"}
+	= {WorkflowAttribute : attributes} NAME : name "=" INTEGER : number "," as EnumItem with {kind = "Constant"}
 	;
 
 rule EnumItem EnumItemB
-	= NAME : name "=" EnumItemInt : intersections {"|" EnumItemInt : intersections} "," as EnumItem with {kind = "Intersection"}
+	= {WorkflowAttribute : attributes} NAME : name "=" EnumItemInt : intersections {"|" EnumItemInt : intersections} "," as EnumItem with {kind = "Intersection"}
 	;
 
 rule EnumDeclaration Enum
@@ -1022,14 +1043,14 @@ rule EnumDeclaration Enum
 	;
 
 rule StructMember WorkflowStructMember
-	= NAME : name ":" WorkflowType : type ";" as StructMember
+	= {WorkflowAttribute : attributes} NAME : name ":" WorkflowType : type ";" as StructMember
 	;
 
 rule StructDeclaration Struct
 	= "struct" NAME : name "{" {WorkflowStructMember : members} "}" as StructDeclaration
 	;
 
-rule Declaration WorkflowDeclaration
+rule Declaration DeclarationBranch
 	= !Namespace
 	= !Function
 	= !Variable
@@ -1040,6 +1061,10 @@ rule Declaration WorkflowDeclaration
 	= !Class
 	= !Enum
 	= !Struct
+	;
+
+rule Declaration WorkflowDeclaration
+	= {WorkflowAttribute : attributes} !DeclarationBranch
 	;
 
 rule ModuleUsingFragment UsingFragment

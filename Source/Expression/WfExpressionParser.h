@@ -45,79 +45,81 @@ namespace vl
 			CLOSE_BRACE = 25,
 			OPEN_BRACKET = 26,
 			CLOSE_BRACKET = 27,
-			TYPE_VOID = 28,
-			TYPE_OBJECT = 29,
-			TYPE_INTERFACE = 30,
-			TYPE_INT = 31,
-			TYPE_UINT = 32,
-			TYPE_FLOAT = 33,
-			TYPE_DOUBLE = 34,
-			TYPE_STRING = 35,
-			TYPE_CHAR = 36,
-			TYPE_BOOL = 37,
-			KEYWORD_CONST = 38,
-			KEYWORD_SHL = 39,
-			KEYWORD_SHR = 40,
-			KEYWORD_XOR = 41,
-			KEYWORD_AND = 42,
-			KEYWORD_OR = 43,
-			KEYWORD_NOT = 44,
-			KEYWORD_NULL = 45,
-			KEYWORD_THIS = 46,
-			KEYWORD_TRUE = 47,
-			KEYWORD_FALSE = 48,
-			KEYWORD_LET = 49,
-			KEYWORD_IN = 50,
-			KEYWORD_RANGE = 51,
-			KEYWORD_NEW = 52,
-			KEYWORD_OF = 53,
-			KEYWORD_AS = 54,
-			KEYWORD_IS = 55,
-			KEYWORD_CAST = 56,
-			KEYWORD_FUNC = 57,
-			KEYWORD_TYPEOF = 58,
-			KEYWORD_TYPE = 59,
-			KEYWORD_BIND = 60,
-			KEYWORD_OBSERVE = 61,
-			KEYWORD_ON = 62,
-			KEYWORD_ATTACH = 63,
-			KEYWORD_DETACH = 64,
-			KEYWORD_VAR = 65,
-			KEYWORD_BREAK = 66,
-			KEYWORD_CONTINUE = 67,
-			KEYWORD_RETURN = 68,
-			KEYWORD_DELETE = 69,
-			KEYWORD_RAISE = 70,
-			KEYWORD_IF = 71,
-			KEYWORD_ELSE = 72,
-			KEYWORD_SWITCH = 73,
-			KEYWORD_CASE = 74,
-			KEYWORD_DEFAULT = 75,
-			KEYWORD_WHILE = 76,
-			KEYWORD_FOR = 77,
-			KEYWORD_REVERSED = 78,
-			KEYWORD_TRY = 79,
-			KEYWORD_CATCH = 80,
-			KEYWORD_FINALLY = 81,
-			KEYWORD_CLASS = 82,
-			KEYWORD_ENUM = 83,
-			KEYWORD_FLAGENUM = 84,
-			KEYWORD_STRUCT = 85,
-			KEYWORD_PROP = 86,
-			KEYWORD_EVENT = 87,
-			KEYWORD_STATIC = 88,
-			KEYWORD_OVERRIDE = 89,
-			KEYWORD_USING = 90,
-			KEYWORD_NAMESPACE = 91,
-			KEYWORD_MODULE = 92,
-			KEYWORD_UNIT = 93,
-			NAME = 94,
-			ORDERED_NAME = 95,
-			FLOAT = 96,
-			INTEGER = 97,
-			STRING = 98,
-			FORMATSTRING = 99,
-			SPACE = 100,
+			AT = 28,
+			TYPE_VOID = 29,
+			TYPE_OBJECT = 30,
+			TYPE_INTERFACE = 31,
+			TYPE_INT = 32,
+			TYPE_UINT = 33,
+			TYPE_FLOAT = 34,
+			TYPE_DOUBLE = 35,
+			TYPE_STRING = 36,
+			TYPE_CHAR = 37,
+			TYPE_BOOL = 38,
+			KEYWORD_CONST = 39,
+			KEYWORD_SHL = 40,
+			KEYWORD_SHR = 41,
+			KEYWORD_XOR = 42,
+			KEYWORD_AND = 43,
+			KEYWORD_OR = 44,
+			KEYWORD_NOT = 45,
+			KEYWORD_NULL = 46,
+			KEYWORD_THIS = 47,
+			KEYWORD_TRUE = 48,
+			KEYWORD_FALSE = 49,
+			KEYWORD_LET = 50,
+			KEYWORD_IN = 51,
+			KEYWORD_RANGE = 52,
+			KEYWORD_NEW = 53,
+			KEYWORD_OF = 54,
+			KEYWORD_AS = 55,
+			KEYWORD_IS = 56,
+			KEYWORD_CAST = 57,
+			KEYWORD_FUNC = 58,
+			KEYWORD_TYPEOF = 59,
+			KEYWORD_TYPE = 60,
+			KEYWORD_BIND = 61,
+			KEYWORD_OBSERVE = 62,
+			KEYWORD_ON = 63,
+			KEYWORD_ATTACH = 64,
+			KEYWORD_DETACH = 65,
+			KEYWORD_VAR = 66,
+			KEYWORD_BREAK = 67,
+			KEYWORD_CONTINUE = 68,
+			KEYWORD_RETURN = 69,
+			KEYWORD_DELETE = 70,
+			KEYWORD_RAISE = 71,
+			KEYWORD_IF = 72,
+			KEYWORD_ELSE = 73,
+			KEYWORD_SWITCH = 74,
+			KEYWORD_CASE = 75,
+			KEYWORD_DEFAULT = 76,
+			KEYWORD_WHILE = 77,
+			KEYWORD_FOR = 78,
+			KEYWORD_REVERSED = 79,
+			KEYWORD_TRY = 80,
+			KEYWORD_CATCH = 81,
+			KEYWORD_FINALLY = 82,
+			KEYWORD_CLASS = 83,
+			KEYWORD_ENUM = 84,
+			KEYWORD_FLAGENUM = 85,
+			KEYWORD_STRUCT = 86,
+			KEYWORD_PROP = 87,
+			KEYWORD_EVENT = 88,
+			KEYWORD_STATIC = 89,
+			KEYWORD_OVERRIDE = 90,
+			KEYWORD_USING = 91,
+			KEYWORD_NAMESPACE = 92,
+			KEYWORD_MODULE = 93,
+			KEYWORD_UNIT = 94,
+			NAME = 95,
+			ORDERED_NAME = 96,
+			FLOAT = 97,
+			INTEGER = 98,
+			STRING = 99,
+			FORMATSTRING = 100,
+			SPACE = 101,
+			COMMENT = 102,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -176,6 +178,7 @@ namespace vl
 		class WfTryStatement;
 		class WfBlockStatement;
 		class WfExpressionStatement;
+		class WfAttribute;
 		class WfDeclaration;
 		class WfNamespaceDeclaration;
 		class WfFunctionArgument;
@@ -971,6 +974,16 @@ namespace vl
 			static vl::Ptr<WfExpressionStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
+		class WfAttribute : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfAttribute>
+		{
+		public:
+			vl::parsing::ParsingToken category;
+			vl::parsing::ParsingToken name;
+			vl::Ptr<WfExpression> value;
+
+			static vl::Ptr<WfAttribute> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfDeclaration abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfDeclaration>
 		{
 		public:
@@ -991,6 +1004,7 @@ namespace vl
 
 			virtual void Accept(WfDeclaration::IVisitor* visitor)=0;
 
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 		};
 
@@ -1007,6 +1021,7 @@ namespace vl
 		class WfFunctionArgument : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfFunctionArgument>
 		{
 		public:
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 			vl::Ptr<WfType> type;
 
@@ -1205,6 +1220,7 @@ namespace vl
 		class WfEnumItem : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfEnumItem>
 		{
 		public:
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 			WfEnumItemKind kind;
 			vl::parsing::ParsingToken number;
@@ -1227,6 +1243,7 @@ namespace vl
 		class WfStructMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStructMember>
 		{
 		public:
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 			vl::Ptr<WfType> type;
 
@@ -1414,6 +1431,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfTryStatement)
 			DECL_TYPE_INFO(vl::workflow::WfBlockStatement)
 			DECL_TYPE_INFO(vl::workflow::WfExpressionStatement)
+			DECL_TYPE_INFO(vl::workflow::WfAttribute)
 			DECL_TYPE_INFO(vl::workflow::WfDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfNamespaceDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfFunctionArgument)
