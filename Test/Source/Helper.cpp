@@ -135,16 +135,45 @@ WString LoadSample(const WString& sampleName, const WString& itemName)
 	return reader.ReadToEnd();
 }
 
-void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, WfLexicalScopeManager* manager)
+void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, Ptr<ParsingTreeCustomBase> typedNode, WfLexicalScopeManager* manager)
 {
 	FileStream fileStream(GetTestOutputPath() + L"Parsing." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
 	BomEncoder encoder(BomEncoder::Utf16);
 	EncoderStream encoderStream(fileStream, encoder);
 	StreamWriter writer(encoderStream);
+
+	writer.WriteLine(L"========================================================");
+	writer.WriteLine(L"Original");
+	writer.WriteLine(L"========================================================");
 	writer.WriteLine(sample);
+
+	if (typedNode)
+	{
+		writer.WriteLine(L"========================================================");
+		writer.WriteLine(L"Printed");
+		writer.WriteLine(L"========================================================");
+		if (auto expr = typedNode.Cast<WfExpression>())
+		{
+			WfPrint(expr, L"", writer);
+		}
+		else if (auto stat = typedNode.Cast<WfStatement>())
+		{
+			WfPrint(stat, L"", writer);
+		}
+		else if (auto decl = typedNode.Cast<WfDeclaration>())
+		{
+			WfPrint(decl, L"", writer);
+		}
+		else if (auto module = typedNode.Cast<WfModule>())
+		{
+			WfPrint(module, L"", writer);
+		}
+	}
 
 	if (manager && manager->errors.Count() > 0)
 	{
+		writer.WriteLine(L"========================================================");
+		writer.WriteLine(L"Errors");
 		writer.WriteLine(L"========================================================");
 		FOREACH(Ptr<ParsingError>, error, manager->errors)
 		{
@@ -152,6 +181,8 @@ void LogSampleParseResult(const WString& sampleName, const WString& itemName, co
 		}
 	}
 
+	writer.WriteLine(L"========================================================");
+	writer.WriteLine(L"AST");
 	writer.WriteLine(L"========================================================");
 	Log(node.Obj(), L"", writer);
 }

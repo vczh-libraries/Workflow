@@ -19,6 +19,11 @@ namespace vl
 {
 	namespace workflow
 	{
+		/// <summary>Print a Workflow attribute.</summary>
+		/// <param name="attribute">The Workflow attribute.</param>
+		/// <param name="indent">The indentation.</param>
+		/// <param name="writer">The target writer.</param>
+		extern void			WfPrint(Ptr<WfAttribute> node, const WString& indent, parsing::ParsingWriter& writer);
 		/// <summary>Print a Workflow type.</summary>
 		/// <param name="node">The Workflow type.</param>
 		/// <param name="indent">The indentation.</param>
@@ -44,7 +49,12 @@ namespace vl
 		/// <param name="indent">The indentation.</param>
 		/// <param name="writer">The target writer.</param>
 		extern void			WfPrint(Ptr<WfModule> node, const WString& indent, parsing::ParsingWriter& writer);
-		
+
+		/// <summary>Print a Workflow attribute.</summary>
+		/// <param name="attribute">The Workflow attribute.</param>
+		/// <param name="indent">The indentation.</param>
+		/// <param name="writer">The target writer.</param>
+		extern void			WfPrint(Ptr<WfAttribute> node, const WString& indent, stream::TextWriter& writer);
 		/// <summary>Print a Workflow type.</summary>
 		/// <param name="node">The Workflow type.</param>
 		/// <param name="indent">The indentation.</param>

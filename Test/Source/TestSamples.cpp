@@ -12,7 +12,10 @@ TEST_CASE(TestSampleExpressions)
 		List<Ptr<ParsingError>> errors;
 		Ptr<ParsingTreeNode> node = WfParseExpressionAsParsingTreeNode(sample, table, errors);
 		TEST_ASSERT(node);
-		LogSampleParseResult(L"Expression", itemName, sample, node);
+
+		List<RegexToken> tokens;
+		auto typedNode = WfConvertParsingTreeNode(node, tokens);
+		LogSampleParseResult(L"Expression", itemName, sample, node, typedNode);
 	}
 }
 
@@ -28,7 +31,10 @@ TEST_CASE(TestSampleStatements)
 		List<Ptr<ParsingError>> errors;
 		Ptr<ParsingTreeNode> node = WfParseStatementAsParsingTreeNode(sample, table, errors);
 		TEST_ASSERT(node);
-		LogSampleParseResult(L"Statement", itemName, sample, node);
+
+		List<RegexToken> tokens;
+		auto typedNode = WfConvertParsingTreeNode(node, tokens);
+		LogSampleParseResult(L"Statement", itemName, sample, node, typedNode);
 	}
 }
 
@@ -44,7 +50,10 @@ TEST_CASE(TestSampleDeclarations)
 		List<Ptr<ParsingError>> errors;
 		Ptr<ParsingTreeNode> node = WfParseDeclarationAsParsingTreeNode(sample, table, errors);
 		TEST_ASSERT(node);
-		LogSampleParseResult(L"Declaration", itemName, sample, node);
+
+		List<RegexToken> tokens;
+		auto typedNode = WfConvertParsingTreeNode(node, tokens);
+		LogSampleParseResult(L"Declaration", itemName, sample, node, typedNode);
 	}
 }
 
@@ -60,6 +69,9 @@ TEST_CASE(TestSampleModules)
 		List<Ptr<ParsingError>> errors;
 		Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
 		TEST_ASSERT(node);
-		LogSampleParseResult(L"Module", itemName, sample, node);
+
+		List<RegexToken> tokens;
+		auto typedNode = WfConvertParsingTreeNode(node, tokens);
+		LogSampleParseResult(L"Module", itemName, sample, node, typedNode);
 	}
 }

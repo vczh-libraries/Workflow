@@ -1050,6 +1050,11 @@ Print (Declaration)
 					{
 						writer.WriteString(L", ");
 					}
+					FOREACH(Ptr<WfAttribute>, attribute, argument->attributes)
+					{
+						WfPrint(attribute, indent, writer);
+						writer.WriteString(L" ");
+					}
 					writer.WriteString(argument->name.value);
 					writer.WriteString(L" : ");
 					WfPrint(argument->type, indent, writer);
@@ -1241,11 +1246,24 @@ Print (Declaration)
 					case WfClassMemberKind::Normal:
 						break;
 					case WfClassMemberKind::Static:
-						writer.WriteString(L"static ");
+						writer.WriteString(L"static");
 						break;
 					case WfClassMemberKind::Override:
-						writer.WriteString(L"override ");
+						writer.WriteString(L"override");
 						break;
+					}
+
+					if (member->kind != WfClassMemberKind::Normal)
+					{
+						if (member->declaration->attributes.Count() == 0)
+						{
+							writer.WriteString(L" ");
+						}
+						else
+						{
+							writer.WriteLine(L"");
+							writer.WriteString(indent + L"    ");
+						}
 					}
 
 					WfPrint(member->declaration, indent + L"    ", writer);
@@ -1269,13 +1287,18 @@ Print (Declaration)
 					break;
 				}
 				writer.WriteLine(node->name.value);
-
-				writer.WriteLine(L"");
 				writer.WriteLine(indent + L"{");
 
+				auto newIndent = indent + L"    ";
 				FOREACH(Ptr<WfEnumItem>, item, node->items)
 				{
-					writer.WriteString(indent);
+					FOREACH(Ptr<WfAttribute>, attribute, item->attributes)
+					{
+						writer.WriteString(newIndent);
+						WfPrint(attribute, newIndent, writer);
+						writer.WriteLine(L"");
+					}
+					writer.WriteString(newIndent);
 					writer.WriteString(item->name.value);
 					writer.WriteString(L" = ");
 					switch (item->kind)
@@ -1303,12 +1326,17 @@ Print (Declaration)
 				writer.BeforePrint(node);
 				writer.WriteString(L"struct ");
 				writer.WriteLine(node->name.value);
-				writer.WriteLine(L"");
 				writer.WriteLine(indent + L"{");
 
 				auto newIndent = indent + L"    ";
 				FOREACH(Ptr<WfStructMember>, member, node->members)
 				{
+					FOREACH(Ptr<WfAttribute>, attribute, member->attributes)
+					{
+						writer.WriteString(newIndent);
+						WfPrint(attribute, newIndent, writer);
+						writer.WriteLine(L"");
+					}
 					writer.WriteString(newIndent);
 					writer.WriteString(member->name.value);
 					writer.WriteString(L" : ");
@@ -1324,6 +1352,22 @@ Print (Declaration)
 /***********************************************************************
 Print (Module)
 ***********************************************************************/
+
+		void WfPrint(Ptr<WfAttribute> node, const WString& indent, parsing::ParsingWriter& writer)
+		{
+			writer.BeforePrint(node.Obj());
+			writer.WriteString(L"@");
+			writer.WriteString(node->category.value);
+			writer.WriteString(L":");
+			writer.WriteString(node->name.value);
+			if (node->value)
+			{
+				writer.WriteString(L"(");
+				WfPrint(node->value, indent, writer);
+				writer.WriteString(L")");
+			}
+			writer.AfterPrint(node.Obj());
+		}
 
 		void WfPrint(Ptr<WfType> node, const WString& indent, parsing::ParsingWriter& writer)
 		{
@@ -1345,6 +1389,12 @@ Print (Module)
 
 		void WfPrint(Ptr<WfDeclaration> node, const WString& indent, parsing::ParsingWriter& writer)
 		{
+			FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
+			{
+				WfPrint(attribute, indent, writer);
+				writer.WriteLine(L"");
+				writer.WriteString(indent);
+			}
 			PrintDeclarationVisitor visitor(indent, writer);
 			node->Accept(&visitor);
 		}
@@ -1399,6 +1449,12 @@ Print (Module)
 /***********************************************************************
 Print (Module)
 ***********************************************************************/
+
+		void WfPrint(Ptr<WfAttribute> node, const WString& indent, stream::TextWriter& writer)
+		{
+			ParsingWriter parsingWriter(writer);
+			WfPrint(node, indent, parsingWriter);
+		}
 
 		void WfPrint(Ptr<WfType> node, const WString& indent, stream::TextWriter& writer)
 		{

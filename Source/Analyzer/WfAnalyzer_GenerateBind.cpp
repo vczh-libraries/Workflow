@@ -331,6 +331,27 @@ CreateReference
 			}
 
 /***********************************************************************
+CopyAttribute
+***********************************************************************/
+
+			Ptr<WfAttribute> CopyAttribute(Ptr<WfAttribute> attribute)
+			{
+				auto att = MakePtr<WfAttribute>();
+				att->category.value = attribute->category.value;
+				att->name.value = attribute->name.value;
+				att->value = CopyExpression(attribute->value);
+				return att;
+			}
+
+			void CopyAttributes(collections::List<Ptr<WfAttribute>>& dst, collections::List<Ptr<WfAttribute>>& src)
+			{
+				FOREACH(Ptr<WfAttribute>, attribute, src)
+				{
+					dst.Add(CopyAttribute(attribute));
+				}
+			}
+
+/***********************************************************************
 ExpandObserveExpression
 ***********************************************************************/
 
@@ -864,6 +885,7 @@ CopyDeclaration
 					FOREACH(Ptr<WfFunctionArgument>, arg, node->arguments)
 					{
 						auto newArg = MakePtr<WfFunctionArgument>();
+						CopyAttributes(newArg->attributes, arg->attributes);
 						newArg->type = CopyType(arg->type);
 						newArg->name.value = arg->name.value;
 						func->arguments.Add(newArg);
@@ -960,6 +982,7 @@ CopyDeclaration
 					FOREACH(Ptr<WfEnumItem>, item, node->items)
 					{
 						auto enumItem = MakePtr<WfEnumItem>();
+						CopyAttributes(enumItem->attributes, item->attributes);
 						enumItem->kind = item->kind;
 						enumItem->name.value = item->name.value;
 						enumItem->number.value = item->number.value;
@@ -980,6 +1003,7 @@ CopyDeclaration
 					FOREACH(Ptr<WfStructMember>, member, node->members)
 					{
 						auto structMember = MakePtr<WfStructMember>();
+						CopyAttributes(structMember->attributes, member->attributes);
 						structMember->name.value = member->name.value;
 						structMember->type = CopyType(member->type);
 						structDecl->members.Add(structMember);
@@ -996,6 +1020,7 @@ CopyDeclaration
 
 				CopyDeclarationVisitor visitor;
 				declaration->Accept(&visitor);
+				CopyAttributes(visitor.result->attributes, declaration->attributes);
 				return visitor.result;
 			}
 

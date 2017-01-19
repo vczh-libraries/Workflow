@@ -69,7 +69,7 @@ TEST_CASE(TestCodegen)
 			{
 				stream.SeekFromBegin(0);
 				StreamReader reader(stream);
-				LogSampleParseResult(L"Codegen", itemName, reader.ReadToEnd(), node, &manager);
+				LogSampleParseResult(L"Codegen", itemName, reader.ReadToEnd(), node, module, &manager);
 			}
 			TEST_ASSERT(manager.errors.Count() == 0);
 		}
