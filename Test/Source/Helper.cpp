@@ -168,6 +168,7 @@ void LogSampleParseResult(const WString& sampleName, const WString& itemName, co
 		{
 			WfPrint(module, L"", writer);
 		}
+		writer.WriteLine(L"");
 	}
 
 	if (manager && manager->errors.Count() > 0)

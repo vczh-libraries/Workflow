@@ -761,11 +761,24 @@ Print (Expression)
 					case WfClassMemberKind::Normal:
 						break;
 					case WfClassMemberKind::Static:
-						writer.WriteString(L"static ");
+						writer.WriteString(L"static");
 						break;
 					case WfClassMemberKind::Override:
-						writer.WriteString(L"override ");
+						writer.WriteString(L"override");
 						break;
+					}
+
+					if (member->kind != WfClassMemberKind::Normal)
+					{
+						if (member->declaration->attributes.Count() == 0)
+						{
+							writer.WriteString(L" ");
+						}
+						else
+						{
+							writer.WriteLine(L"");
+							writer.WriteString(indent + L"    ");
+						}
 					}
 
 					WfPrint(member->declaration, indent + L"    ", writer);
