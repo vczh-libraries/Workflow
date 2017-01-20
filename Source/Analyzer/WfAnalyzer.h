@@ -156,6 +156,9 @@ Scope Manager
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 
+				typedef collections::Pair<WString, WString>													AttributeKey;
+				typedef collections::Dictionary<AttributeKey, ITypeDescriptor*>								AttributeTypeMap;
+
 			protected:
 				ModuleList									modules;
 				ModuleCodeList								moduleCodes;
@@ -163,11 +166,13 @@ Scope Manager
 
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
-				ParsingErrorList							errors;
+				AttributeTypeMap							attributes;
 
-				Ptr<WfLexicalScopeName>						globalName;
-				NamespaceNameMap							namespaceNames;
-				TypeNameMap									typeNames;
+				ParsingErrorList							errors;							// compile errors
+
+				Ptr<WfLexicalScopeName>						globalName;						// root scope
+				NamespaceNameMap							namespaceNames;					// namespace to scope name map
+				TypeNameMap									typeNames;						// ITypeDescriptor* to scope name map
 
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
 				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
@@ -347,6 +352,7 @@ Semantic Analyzing
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										ValidateStatementSemantic(WfLexicalScopeManager* manager, Ptr<WfStatement> statement);
 			extern void										ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results);
+			extern void										ValidateConstantExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
 			extern void										GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency);
 			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
 			extern Ptr<WfAttribute>							CopyAttribute(Ptr<WfAttribute> attribute);
@@ -534,6 +540,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongThisExpression(WfExpression* node);
 				static Ptr<parsing::ParsingError>			IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			ExpressionIsNotConstant(WfExpression* node);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);

@@ -2396,6 +2396,212 @@ ValidateSemantic(Expression)
 			};
 
 /***********************************************************************
+IsConstantExpression
+***********************************************************************/
+
+			class ValidateConstantExpressionVisitor : public Object, public WfExpression::IVisitor
+			{
+			public:
+				WfLexicalScopeManager*				manager;
+				bool								isConstant = false;
+
+				ValidateConstantExpressionVisitor(WfLexicalScopeManager* _manager)
+					:manager(_manager)
+				{
+				}
+
+				bool Call(Ptr<WfExpression> node)
+				{
+					bool cache = isConstant;
+					isConstant = false;
+					node->Accept(this);
+					bool result = isConstant;
+					isConstant = cache;
+					return result;
+				}
+
+				void VisitReferenceExpression(WfExpression* node, const WString& name)
+				{
+					auto result = manager->expressionResolvings[node];
+					if (auto enumType = result.type->GetTypeDescriptor()->GetEnumType())
+					{
+						vint index = enumType->IndexOfItem(name);
+						if (index != -1)
+						{
+							isConstant = true;
+						}
+					}
+				}
+
+				void Visit(WfThisExpression* node)override
+				{
+				}
+
+				void Visit(WfTopQualifiedExpression* node)override
+				{
+				}
+
+				void Visit(WfReferenceExpression* node)override
+				{
+					VisitReferenceExpression(node, node->name.value);
+				}
+
+				void Visit(WfOrderedNameExpression* node)override
+				{
+				}
+
+				void Visit(WfOrderedLambdaExpression* node)override
+				{
+				}
+
+				void Visit(WfMemberExpression* node)override
+				{
+				}
+
+				void Visit(WfChildExpression* node)override
+				{
+					VisitReferenceExpression(node, node->name.value);
+				}
+
+				void Visit(WfLiteralExpression* node)override
+				{
+					isConstant = true;
+				}
+
+				void Visit(WfFloatingExpression* node)override
+				{
+					isConstant = true;
+				}
+
+				void Visit(WfIntegerExpression* node)override
+				{
+					isConstant = true;
+				}
+
+				void Visit(WfStringExpression* node)override
+				{
+					isConstant = true;
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					isConstant = Call(node->expandedExpression);
+				}
+
+				void Visit(WfUnaryExpression* node)override
+				{
+					isConstant = Call(node->operand);
+				}
+
+				void Visit(WfBinaryExpression* node)override
+				{
+				}
+
+				void Visit(WfLetExpression* node)override
+				{
+				}
+
+				void Visit(WfIfExpression* node)override
+				{
+				}
+
+				void Visit(WfRangeExpression* node)override
+				{
+					isConstant = Call(node->begin) && Call(node->end);
+				}
+
+				void Visit(WfSetTestingExpression* node)override
+				{
+				}
+
+				void Visit(WfConstructorExpression* node)override
+				{
+					auto result = manager->expressionResolvings[node];
+					bool isStruct = (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct);
+
+					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					{
+						if (argument->key && !isStruct)
+						{
+							if (!Call(argument->key)) return;
+						}
+						if (argument->value)
+						{
+							if (!Call(argument->value)) return;
+						}
+					}
+					isConstant = true;
+				}
+
+				void Visit(WfInferExpression* node)override
+				{
+				}
+
+				void Visit(WfTypeCastingExpression* node)override
+				{
+				}
+
+				void Visit(WfTypeTestingExpression* node)override
+				{
+				}
+
+				void Visit(WfTypeOfTypeExpression* node)override
+				{
+					isConstant = true;
+				}
+
+				void Visit(WfTypeOfExpressionExpression* node)override
+				{
+					isConstant = true;
+				}
+
+				void Visit(WfAttachEventExpression* node)override
+				{
+				}
+
+				void Visit(WfDetachEventExpression* node)override
+				{
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+				}
+
+				void Visit(WfObserveExpression* node)override
+				{
+				}
+
+				void Visit(WfCallExpression* node)override
+				{
+				}
+
+				void Visit(WfFunctionExpression* node)override
+				{
+				}
+
+				void Visit(WfNewClassExpression* node)override
+				{
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
+				{
+				}
+
+				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType)
+				{
+					if (GetExpressionType(manager, expression, expectedType))
+					{
+						ValidateConstantExpressionVisitor visitor(manager);
+						expression->Accept(&visitor);
+						if (!visitor.isConstant)
+						{
+							manager->errors.Add(WfErrors::ExpressionIsNotConstant(expression.Obj()));
+						}
+					}
+				}
+			};
+
+/***********************************************************************
 ValidateSemantic
 ***********************************************************************/
 
@@ -2462,6 +2668,11 @@ ValidateSemantic
 						}
 					}
 				}
+			}
+
+			void ValidateConstantExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
+			{
+				ValidateConstantExpressionVisitor::Execute(expression, manager, expectedType);
 			}
 
 /***********************************************************************

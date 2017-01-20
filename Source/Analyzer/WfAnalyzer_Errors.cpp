@@ -267,6 +267,17 @@ WfErrors
 				return new ParsingError(node, L"A30: Expression of type \"" + type->GetTypeFriendlyName() + L"\" cannot be used in intersect (|) expression because it is not flag enum.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::ExpressionIsNotConstant(WfExpression* node)
+			{
+				return new ParsingError(node, L"A30: Expression is not constant. A constant expression consists of:\r\n"
+					L"\tconstant primitive values\r\n"
+					L"\tenum items\r\n"
+					L"\tconstant unary operator expressions\r\n"
+					L"\tconstant range expressions\r\n"
+					L"\tconstant constructor expressions (to create values of structs, lists or dictionarys)\r\n"
+					L"\ttype() or typeof() expressions.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
 			{
 				return new ParsingError(node, L"B0: Void is not a type for a value.");
