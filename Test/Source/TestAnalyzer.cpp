@@ -1,4 +1,5 @@
 #include "Helper.h"
+#include "CppTypes.h"
 
 void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleName)
 {
@@ -95,6 +96,12 @@ TEST_CASE(TestAnalyzerError)
 	LoadSampleIndex(L"AnalyzerError", itemNames);
 
 	WfLexicalScopeManager manager(table);
+	manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint>::CreateTypeInfo());
+	manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint>>::CreateTypeInfo());
+	manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint>>::CreateTypeInfo());
+	manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint>>::CreateTypeInfo());
+	manager.attributes.Add({ L"test",L"Point" }, TypeInfoRetriver<test::Point>::CreateTypeInfo());
+
 	FOREACH(WString, itemName, itemNames)
 	{
 		UnitTest::PrintInfo(itemName);
