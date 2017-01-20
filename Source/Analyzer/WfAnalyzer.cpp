@@ -9,6 +9,7 @@ namespace vl
 			using namespace collections;
 			using namespace reflection;
 			using namespace reflection::description;
+			using namespace runtime;
 
 /***********************************************************************
 WfLexicalSymbol
@@ -369,6 +370,10 @@ WfLexicalScopeManager
 			WfLexicalScopeManager::WfLexicalScopeManager(Ptr<parsing::tabling::ParsingTable> _parsingTable)
 				:parsingTable(_parsingTable)
 			{
+				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
+				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<WString>::CreateTypeInfo());
+				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
+				attributes.Add({ L"cpp", L"Protected" }, TypeInfoRetriver<void>::CreateTypeInfo());
 			}
 
 			WfLexicalScopeManager::~WfLexicalScopeManager()
@@ -435,6 +440,8 @@ WfLexicalScopeManager
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();
 				baseConstructorCallResolvings.Clear();
+
+				attributeValues.Clear();
 			}
 
 			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames)
@@ -767,6 +774,61 @@ WfLexicalScopeManager
 					capture = MakePtr<WfLexicalCapture>();
 				}
 				lambdaCaptures.Add(node, capture);
+			}
+
+			Ptr<WfAttribute> WfLexicalScopeManager::GetAttribute(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name)
+			{
+				return From(GetAttributes(atts, category, name)).First(nullptr);
+			}
+
+			collections::LazyList<Ptr<WfAttribute>> WfLexicalScopeManager::GetAttributes(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name)
+			{
+				return From(atts)
+					.Where([=](Ptr<WfAttribute> att)
+					{
+						return att->category.value == category && att->name.value == name;
+					});
+			}
+
+			Value WfLexicalScopeManager::GetAttributeValue(Ptr<WfAttribute> att)
+			{
+				{
+					vint index = attributeValues.Keys().IndexOf(att.Obj());
+					if (index != -1)
+					{
+						return attributeValues.Values()[index];
+					}
+				}
+
+				if (!attributeAssembly)
+				{
+					attributeAssembly = MakePtr<WfAssembly>();
+
+					auto func = MakePtr<WfAssemblyFunction>();
+					func->name = L"<get-attribute-value>";
+					func->firstInstruction = 0;
+					
+					vint index = attributeAssembly->functions.Add(func);
+					attributeAssembly->functionByName.Add(func->name, index);
+				}
+
+				attributeAssembly->insBeforeCodegen = MakePtr<WfInstructionDebugInfo>();
+				attributeAssembly->insAfterCodegen = MakePtr<WfInstructionDebugInfo>();
+				attributeAssembly->instructions.Clear();
+
+				WfCodegenContext context(attributeAssembly, this);
+				auto typeInfo = attributes[{att->category.value, att->name.value}];
+				GenerateExpressionInstructions(context, att->value, typeInfo);
+				attributeAssembly->instructions.Add(WfInstruction::Return());
+
+				if (!attributeGlobalContext)
+				{
+					attributeGlobalContext = MakePtr<WfRuntimeGlobalContext>(attributeAssembly);
+				}
+				auto func = LoadFunction<Value()>(attributeGlobalContext, L"<get-attribute-value>");
+				auto value = func();
+				attributeValues.Add(att, value);
+				return func();
 			}
 
 /***********************************************************************

@@ -140,6 +140,7 @@ Scope Manager
 				typedef reflection::description::IMemberInfo												IMemberInfo;
 				typedef reflection::description::IMethodInfo												IMethodInfo;
 				typedef reflection::description::ITypeInfo													ITypeInfo;
+				typedef reflection::description::Value														Value;
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
@@ -159,11 +160,16 @@ Scope Manager
 
 				typedef collections::Pair<WString, WString>													AttributeKey;
 				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
+				typedef collections::Dictionary<Ptr<WfAttribute>, Value>									AttributeValueMap;
 
 			protected:
 				ModuleList									modules;
 				ModuleCodeList								moduleCodes;
 				vint										usedCodeIndex = 0;
+
+				AttributeValueMap							attributeValues;				// cached value for attribute
+				Ptr<runtime::WfAssembly>					attributeAssembly;				// shared assembly for evaluating attribute value
+				Ptr<runtime::WfRuntimeGlobalContext>		attributeGlobalContext;			// shared shared context for evaluating attribute value
 
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
@@ -215,6 +221,10 @@ Scope Manager
 				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
 				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);
 				void										CreateLambdaCapture(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalCapture> capture = nullptr);
+
+				Ptr<WfAttribute>							GetAttribute(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
+				collections::LazyList<Ptr<WfAttribute>>		GetAttributes(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
+				Value										GetAttributeValue(Ptr<WfAttribute> att);
 			};
 
 /***********************************************************************
