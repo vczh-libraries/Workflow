@@ -272,7 +272,8 @@ WfErrors
 				return new ParsingError(node, L"A31: Expression is not constant. A constant expression consists of:\r\n"
 					L"\tconstant primitive values\r\n"
 					L"\tenum items\r\n"
-					L"\tconstant unary operator expressions\r\n"
+					L"\tconstant unary (+, -, not) expressions\r\n"
+					L"\tconstant binary (|) expressions\r\n"
 					L"\tconstant range expressions\r\n"
 					L"\tconstant constructor expressions (to create values of structs, lists or dictionarys)\r\n"
 					L"\ttype() or typeof() expressions.");

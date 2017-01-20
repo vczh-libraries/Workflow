@@ -2533,6 +2533,10 @@ IsConstantExpression
 
 				void Visit(WfBinaryExpression* node)override
 				{
+					if (node->op == WfBinaryOperator::Intersect)
+					{
+						isConstant = Call(node->first) && Call(node->second);
+					}
 				}
 
 				void Visit(WfLetExpression* node)override
