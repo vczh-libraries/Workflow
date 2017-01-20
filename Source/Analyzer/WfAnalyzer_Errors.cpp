@@ -269,7 +269,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::ExpressionIsNotConstant(WfExpression* node)
 			{
-				return new ParsingError(node, L"A30: Expression is not constant. A constant expression consists of:\r\n"
+				return new ParsingError(node, L"A31: Expression is not constant. A constant expression consists of:\r\n"
 					L"\tconstant primitive values\r\n"
 					L"\tenum items\r\n"
 					L"\tconstant unary operator expressions\r\n"
@@ -483,6 +483,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner)
 			{
 				return new ParsingError(node, L"D14: Member \"" + node->name.value + L"\" already exists in struct \"" + owner->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::AttributeNotExists(WfAttribute* node)
+			{
+				return new ParsingError(node, L"D15: Attribute \"" + node->category.value + L":" + node->name.value + L"\" does not exist.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)

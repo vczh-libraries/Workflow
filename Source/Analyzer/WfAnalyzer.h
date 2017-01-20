@@ -139,6 +139,7 @@ Scope Manager
 				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
 				typedef reflection::description::IMemberInfo												IMemberInfo;
 				typedef reflection::description::IMethodInfo												IMethodInfo;
+				typedef reflection::description::ITypeInfo													ITypeInfo;
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
@@ -157,7 +158,7 @@ Scope Manager
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 
 				typedef collections::Pair<WString, WString>													AttributeKey;
-				typedef collections::Dictionary<AttributeKey, ITypeDescriptor*>								AttributeTypeMap;
+				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
 
 			protected:
 				ModuleList									modules;
@@ -587,6 +588,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path);
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
+				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

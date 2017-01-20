@@ -196,10 +196,7 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (node->statement)
-					{
-						ValidateDeclarationSemantic(manager, node);
-					}
+					ValidateDeclarationSemantic(manager, node);
 				}
 
 				void Visit(WfVariableDeclaration* node)override
@@ -209,10 +206,13 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfEventDeclaration* node)override
 				{
+					ValidateDeclarationSemantic(manager, node);
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
+					ValidateDeclarationSemantic(manager, node);
+
 					auto scope = manager->nodeScopes[node];
 					if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), node->type))
 					{
@@ -261,6 +261,8 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
+					ValidateDeclarationSemantic(manager, node);
+
 					auto scope = manager->nodeScopes[node].Obj();
 					auto classScope = scope->parentScope.Obj();
 					SortedList<ITypeDescriptor*> baseTypes, initTypes;
@@ -324,6 +326,7 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
+					ValidateDeclarationSemantic(manager, node);
 					ValidateStatementSemantic(manager, node->statement);
 				}
 
@@ -363,6 +366,24 @@ ValidateSemantic(Declaration)
 				{
 				}
 
+				void Visit(List<Ptr<WfAttribute>>& attributes)
+				{
+					FOREACH(Ptr<WfAttribute>, attribute, attributes)
+					{
+						auto key = Pair<WString, WString>(attribute->category.value, attribute->name.value);
+						vint index = manager->attributes.Keys().IndexOf(key);
+						if (index == -1)
+						{
+							manager->errors.Add(WfErrors::AttributeNotExists(attribute.Obj()));
+						}
+						else if(attribute->value)
+						{
+							auto expectedType = manager->attributes.Values()[index];
+							ValidateConstantExpression(manager, attribute->value, expectedType);
+						}
+					}
+				}
+
 				void Visit(WfNamespaceDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, declaration, node->declarations)
@@ -373,7 +394,14 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					ValidateStatementSemantic(manager, node->statement);
+					if (node->statement)
+					{
+						ValidateStatementSemantic(manager, node->statement);
+					}
+					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					{
+						Visit(argument->attributes);
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
@@ -430,6 +458,10 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfEnumDeclaration* node)override
 				{
+					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					{
+						Visit(item->attributes);
+					}
 				}
 
 				void SearchForItself(WfStructDeclaration* node, ITypeDescriptor* target, ITypeDescriptor* current, List<WString>& path)
@@ -478,12 +510,18 @@ ValidateSemantic(Declaration)
 					List<WString> path;
 					path.Add(td->GetTypeName());
 					SearchForItself(node, td.Obj(), nullptr, path);
+
+					FOREACH(Ptr<WfStructMember>, member, node->members)
+					{
+						Visit(member->attributes);
+					}
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
 				{
 					ValidateSemanticDeclarationVisitor visitor(manager);
 					declaration->Accept(&visitor);
+					visitor.Visit(declaration->attributes);
 				}
 			};
 

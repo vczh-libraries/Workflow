@@ -34,6 +34,17 @@ BuildScopeForDeclaration
 				{
 				}
 
+				void Visit(Ptr<WfLexicalScope> scope, List<Ptr<WfAttribute>>& attributes)
+				{
+					FOREACH(Ptr<WfAttribute>, attribute, attributes)
+					{
+						if (attribute->value)
+						{
+							BuildScopeForExpression(manager, scope, attribute->value);
+						}
+					}
+				}
+
 				void Visit(WfNamespaceDeclaration* node)override
 				{
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
@@ -110,6 +121,8 @@ BuildScopeForDeclaration
 							argumentSymbol->type = argument->type;
 							argumentSymbol->creatorNode = argument;
 							resultScope->symbols.Add(argumentSymbol->name, argumentSymbol);
+
+							Visit(parentScope, argument->attributes);
 						}
 
 						BuildScopeForStatement(manager, resultScope, node->statement);
@@ -218,6 +231,11 @@ BuildScopeForDeclaration
 					symbol->creatorNode = node;
 					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
+
+					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					{
+						Visit(parentScope, item->attributes);
+					}
 				}
 
 				void Visit(WfStructDeclaration* node)override
@@ -227,12 +245,18 @@ BuildScopeForDeclaration
 					symbol->creatorNode = node;
 					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
+
+					FOREACH(Ptr<WfStructMember>, member, node->members)
+					{
+						Visit(parentScope, member->attributes);
+					}
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfClassMember> member, Ptr<WfDeclaration> declaration)
 				{
 					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source, member);
 					declaration->Accept(&visitor);
+					visitor.Visit(parentScope, declaration->attributes);
 					if (visitor.resultScope)
 					{
 						manager->nodeScopes.Add(declaration.Obj(), visitor.resultScope);
