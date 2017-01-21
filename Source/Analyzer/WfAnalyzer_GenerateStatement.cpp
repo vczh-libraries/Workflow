@@ -166,6 +166,12 @@ GenerateInstructions(Statement)
 					auto function = context.functionContext->function;
 					vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<switch>");
 					GenerateExpressionInstructions(context, node->expression);
+					auto expressionResult = context.manager->expressionResolvings[node->expression.Obj()];
+					if ((expressionResult.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+					{
+						INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+					}
+
 					INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 					auto switchContext = context.functionContext->PushScopeContext(WfCodegenScopeType::Switch);
 					{
@@ -174,7 +180,6 @@ GenerateInstructions(Statement)
 					}
 
 					List<vint> caseInstructions, caseLabelIndices, breakInstructions;
-					auto expressionResult = context.manager->expressionResolvings[node->expression.Obj()];
 					auto expressionType = expressionResult.expectedType ? expressionResult.expectedType : expressionResult.type;
 					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
 					{
@@ -196,6 +201,12 @@ GenerateInstructions(Statement)
 						{
 							INSTRUCTION(Ins::CompareReference());
 							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+						}
+						else if ((mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+						{
+							INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
+							INSTRUCTION(Ins::CompareLiteral(WfInsType::U8));
+							INSTRUCTION(Ins::OpNE());
 						}
 						else
 						{

@@ -882,9 +882,17 @@ Print (Statement)
 				{
 					writer.WriteLine(L"");
 					writer.WriteString(indent);
-					writer.WriteLine(L"else");
-					writer.WriteString(indent);
-					WfPrint(node->falseBranch, indent, writer);
+					if (node->falseBranch.Cast<WfIfStatement>())
+					{
+						writer.WriteString(L"else ");
+						WfPrint(node->falseBranch, indent, writer);
+					}
+					else
+					{
+						writer.WriteLine(L"else");
+						writer.WriteString(indent);
+						WfPrint(node->falseBranch, indent, writer);
+					}
 				}
 				writer.AfterPrint(node);
 			}

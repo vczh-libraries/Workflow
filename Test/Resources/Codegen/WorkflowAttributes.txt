@@ -1,0 +1,114 @@
+module test;
+using test::*;
+using system::*;
+using calculator::*;
+
+namespace calculator
+{
+	@cpp:File("WorkflowAttributes_Expression")
+	class Expression
+	{
+	}
+	
+	@cpp:File("WorkflowAttributes_NumberExpression")
+	class NumberExpression : Expression
+	{
+		var value : int = 0;
+
+		new (_value : int)
+		{
+			value = _value;
+		}
+	}
+	
+	@cpp:File("WorkflowAttributes_BinaryExpression")
+	class BinaryExpression : Expression
+	{
+		enum BinaryOperator
+		{
+			Add = 0,
+			Sub = 1,
+			Mul = 2,
+			Div = 3,
+		}
+
+		var op : BinaryOperator = Add;
+		var left : Expression^ = null;
+		var right : Expression^ = null;
+
+		new (_left : Expression^, _op : BinaryOperator, _right : Expression^)
+		{
+			left = _left;
+			op = _op;
+			right = _right;
+		}
+	}
+}
+
+func Print(expr : Expression^) : string
+{
+	if (var ne : NumberExpression^ = expr)
+	{
+		return cast string ne.value;
+	}
+	else if (var be : BinaryExpression^ = expr)
+	{
+		var op = "";
+		switch(be.op)
+		{
+		case Add: { op = "+"; }
+		case Sub: { op = "-"; }
+		case Mul: { op = "*"; }
+		case Div: { op = "/"; }
+		}
+		return $"($(Print(be.left)) $(op) $(Print(be.right)))";
+	}
+	else
+	{
+		raise "Unrecognized expression type.";
+	}
+}
+
+func Evaluate(expr : Expression^) : int
+{
+	if (var ne : NumberExpression^ = expr)
+	{
+		return ne.value;
+	}
+	else if (var be : BinaryExpression^ = expr)
+	{
+		var left = Evaluate(be.left);
+		var right = Evaluate(be.right);
+		switch(be.op)
+		{
+		case Add: { return left + right; }
+		case Sub: { return left - right; }
+		case Mul: { return left * right; }
+		case Div: { return left / right; }
+		}
+		raise "Unrecognized binary operator.";
+	}
+	else
+	{
+		raise "Unrecognized expression type.";
+	}
+}
+
+func main():string
+{
+	var expr = new BinaryExpression^(
+		new BinaryExpression^(
+			new NumberExpression^(1),
+			Add,
+			new NumberExpression^(2)
+			),
+		Mul,
+		new BinaryExpression^(
+			new NumberExpression^(3),
+			Add,
+			new NumberExpression^(4)
+			)
+		);
+
+	return $"$(Print(expr)) = $(Evaluate(expr))";
+}

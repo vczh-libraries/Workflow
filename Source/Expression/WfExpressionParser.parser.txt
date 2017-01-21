@@ -935,6 +935,10 @@ rule Statement Block
 	= "{" {WorkflowStatement : statements} "}" as BlockStatement
 	;
 
+rule IfStatement If
+	= "if" "(" ["var" NAME : name ":" WorkflowType : type "="] WorkflowExpression : expression ")" Block : trueBranch ["else" (Block : falseBranch | If : falseBranch)] as IfStatement
+	;
+
 rule Statement WorkflowStatement
 	= !Block
 	= Variable : variable as VariableStatement
@@ -943,7 +947,7 @@ rule Statement WorkflowStatement
 	= "return" [WorkflowExpression : expression] ";" as ReturnStatement
 	= "delete" WorkflowExpression : expression ";" as DeleteStatement
 	= "raise" [WorkflowExpression : expression] ";" as RaiseExceptionStatement
-	= "if" "(" ["var" NAME : name ":" WorkflowType : type "="] WorkflowExpression : expression ")" Block : trueBranch ["else" Block : falseBranch] as IfStatement
+	= !If
 	= "switch" "(" WorkflowExpression : expression ")" "{" {SwitchCaseFragment : caseBranches} ["default" ":" Block : defaultBranch] "}" as SwitchStatement
 	= "while" "(" WorkflowExpression : condition ")" Block : statement as WhileStatement
 	= "for" "(" NAME : name 

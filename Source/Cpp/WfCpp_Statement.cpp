@@ -110,8 +110,16 @@ namespace vl
 					if (node->falseBranch)
 					{
 						writer.WriteString(prefix);
-						writer.WriteLine(L"else");
-						Call(node->falseBranch);
+						if (node->falseBranch.Cast<WfIfStatement>())
+						{
+							writer.WriteString(L"else ");
+							node->falseBranch->Accept(this);
+						}
+						else
+						{
+							writer.WriteLine(L"else");
+							Call(node->falseBranch);
+						}
 					}
 				}
 
