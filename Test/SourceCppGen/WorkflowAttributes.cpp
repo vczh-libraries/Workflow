@@ -40,13 +40,13 @@ namespace vl_workflow_global
 	{
 		if (auto ne = ::vl::__vwsn::SharedPtrCast<::calculator::NumberExpression>(expr.Obj()))
 		{
-			return ::vl::__vwsn::ToString(::vl::__vwsn::This(ne.Obj())->value);
+			return ::vl::__vwsn::ToString(::vl::__vwsn::This(ne.Obj())->GetValue());
 		}
 		else if (auto be = ::vl::__vwsn::SharedPtrCast<::calculator::BinaryExpression>(expr.Obj()))
 		{
 			auto op = ::vl::WString(L"", false);
 			{
-				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->op;
+				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOp();
 				if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Add)
 				{
 					(op = ::vl::WString(L"+", false));
@@ -64,7 +64,7 @@ namespace vl_workflow_global
 					(op = ::vl::WString(L"/", false));
 				}
 			}
-			return ((((((::vl::WString(L"(", false) + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->left)) + ::vl::WString(L" ", false)) + op) + ::vl::WString(L" ", false)) + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->right)) + ::vl::WString(L")", false));
+			return ((((((::vl::WString(L"(", false) + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->GetLeft())) + ::vl::WString(L" ", false)) + op) + ::vl::WString(L" ", false)) + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->GetRight())) + ::vl::WString(L")", false));
 		}
 		else
 		{
@@ -76,14 +76,14 @@ namespace vl_workflow_global
 	{
 		if (auto ne = ::vl::__vwsn::SharedPtrCast<::calculator::NumberExpression>(expr.Obj()))
 		{
-			return ::vl::__vwsn::This(ne.Obj())->value;
+			return ::vl::__vwsn::This(ne.Obj())->GetValue();
 		}
 		else if (auto be = ::vl::__vwsn::SharedPtrCast<::calculator::BinaryExpression>(expr.Obj()))
 		{
-			auto left = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->left);
-			auto right = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->right);
+			auto left = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->GetLeft());
+			auto right = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->GetRight());
 			{
-				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->op;
+				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOp();
 				if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Add)
 				{
 					return (left + right);
@@ -135,6 +135,16 @@ namespace calculator
 Class (::calculator::NumberExpression)
 ***********************************************************************/
 
+	::vl::vint32_t NumberExpression::GetValue()
+	{
+		return ::vl::__vwsn::This(this)->value;
+	}
+
+	void NumberExpression::SetValue(::vl::vint32_t _value)
+	{
+		(::vl::__vwsn::This(this)->value = _value);
+	}
+
 	NumberExpression::NumberExpression(::vl::vint32_t _value)
 	{
 		(::vl::__vwsn::This(this)->value = _value);
@@ -143,6 +153,36 @@ Class (::calculator::NumberExpression)
 /***********************************************************************
 Class (::calculator::BinaryExpression)
 ***********************************************************************/
+
+	::calculator::BinaryExpression::BinaryOperator BinaryExpression::GetOp()
+	{
+		return ::vl::__vwsn::This(this)->op;
+	}
+
+	void BinaryExpression::SetOp(::calculator::BinaryExpression::BinaryOperator _value)
+	{
+		(::vl::__vwsn::This(this)->op = _value);
+	}
+
+	::vl::Ptr<::calculator::Expression> BinaryExpression::GetLeft()
+	{
+		return ::vl::__vwsn::This(this)->left;
+	}
+
+	void BinaryExpression::SetLeft(::vl::Ptr<::calculator::Expression> _value)
+	{
+		(::vl::__vwsn::This(this)->left = _value);
+	}
+
+	::vl::Ptr<::calculator::Expression> BinaryExpression::GetRight()
+	{
+		return ::vl::__vwsn::This(this)->right;
+	}
+
+	void BinaryExpression::SetRight(::vl::Ptr<::calculator::Expression> _value)
+	{
+		(::vl::__vwsn::This(this)->right = _value);
+	}
 
 	BinaryExpression::BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right)
 	{
@@ -174,6 +214,15 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::calculator::BinaryExpression)
+				CLASS_MEMBER_METHOD(GetLeft, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetOp, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetRight, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetLeft, { L"_value" })
+				CLASS_MEMBER_METHOD(SetOp, { L"_value" })
+				CLASS_MEMBER_METHOD(SetRight, { L"_value" })
+				CLASS_MEMBER_PROPERTY(Left, GetLeft, SetLeft)
+				CLASS_MEMBER_PROPERTY(Operator, GetOp, SetOp)
+				CLASS_MEMBER_PROPERTY(Right, GetRight, SetRight)
 				CLASS_MEMBER_FIELD(left)
 				CLASS_MEMBER_FIELD(op)
 				CLASS_MEMBER_FIELD(right)
@@ -190,6 +239,9 @@ namespace vl
 			END_CLASS_MEMBER(::calculator::Expression)
 
 			BEGIN_CLASS_MEMBER(::calculator::NumberExpression)
+				CLASS_MEMBER_METHOD(GetValue, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetValue, { L"_value" })
+				CLASS_MEMBER_PROPERTY(Value, GetValue, SetValue)
 				CLASS_MEMBER_FIELD(value)
 			END_CLASS_MEMBER(::calculator::NumberExpression)
 

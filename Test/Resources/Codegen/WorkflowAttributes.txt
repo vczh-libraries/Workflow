@@ -13,7 +13,11 @@ namespace calculator
 	@cpp:File("WorkflowAttributes_NumberExpression")
 	class NumberExpression : Expression
 	{
+		@cpp:Private
 		var value : int = 0;
+		func GetValue() : int { return value; }
+		func SetValue(_value : int) : void { value = _value; }
+		prop Value : int {GetValue, SetValue}
 
 		new (_value : int)
 		{
@@ -31,10 +35,24 @@ namespace calculator
 			Mul = 2,
 			Div = 3,
 		}
-
+		
+		@cpp:Private
 		var op : BinaryOperator = Add;
+		func GetOp() : BinaryOperator { return op; }
+		func SetOp(_value : BinaryOperator) : void { op = _value; }
+		prop Operator : BinaryOperator {GetOp, SetOp}
+
+		@cpp:Private
 		var left : Expression^ = null;
+		func GetLeft() : Expression^ { return left; }
+		func SetLeft(_value : Expression^) : void { left = _value; }
+		prop Left : Expression^ {GetLeft, SetLeft}
+
+		@cpp:Private
 		var right : Expression^ = null;
+		func GetRight() : Expression^ { return right; }
+		func SetRight(_value : Expression^) : void { right = _value; }
+		prop Right : Expression^ {GetRight, SetRight}
 
 		new (_left : Expression^, _op : BinaryOperator, _right : Expression^)
 		{
@@ -49,19 +67,19 @@ func Print(expr : Expression^) : string
 {
 	if (var ne : NumberExpression^ = expr)
 	{
-		return cast string ne.value;
+		return cast string ne.Value;
 	}
 	else if (var be : BinaryExpression^ = expr)
 	{
 		var op = "";
-		switch(be.op)
+		switch(be.Operator)
 		{
 		case Add: { op = "+"; }
 		case Sub: { op = "-"; }
 		case Mul: { op = "*"; }
 		case Div: { op = "/"; }
 		}
-		return $"($(Print(be.left)) $(op) $(Print(be.right)))";
+		return $"($(Print(be.Left)) $(op) $(Print(be.Right)))";
 	}
 	else
 	{
@@ -73,13 +91,13 @@ func Evaluate(expr : Expression^) : int
 {
 	if (var ne : NumberExpression^ = expr)
 	{
-		return ne.value;
+		return ne.Value;
 	}
 	else if (var be : BinaryExpression^ = expr)
 	{
-		var left = Evaluate(be.left);
-		var right = Evaluate(be.right);
-		switch(be.op)
+		var left = Evaluate(be.Left);
+		var right = Evaluate(be.Right);
+		switch(be.Operator)
 		{
 		case Add: { return left + right; }
 		case Sub: { return left - right; }
