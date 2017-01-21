@@ -34,13 +34,13 @@ namespace calculator
 	USERIMPL(/* ::calculator::Expression */)
 	::vl::WString Expression::Print()
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		return GLOBAL_NAME Print(this);
 	}
 
 	USERIMPL(/* ::calculator::Expression */)
 	::vl::vint32_t Expression::Evaluate()
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		return GLOBAL_NAME Evaluate(this);
 	}
 
 	Expression::Expression()
