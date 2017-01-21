@@ -166,18 +166,30 @@ WfGenerateClassMemberImplVisitor
 				stream::StreamWriter&		writer;
 				WString						classBaseName;
 				WString						className;
+				WString						classFullName;
 				Ptr<WfClassMember>			classMember;
 				WString						prefix;
 				bool						printableMember = false;
 
-				WfGenerateClassMemberImplVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _classBaseName, const WString& _className, Ptr<WfClassMember> _classMember, const WString& _prefix)
+				WfGenerateClassMemberImplVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _classBaseName, const WString& _className, const WString& _classFullName, Ptr<WfClassMember> _classMember, const WString& _prefix)
 					:config(_config)
 					, writer(_writer)
 					, classBaseName(_classBaseName)
 					, className(_className)
+					, classFullName(_classFullName)
 					, classMember(_classMember)
 					, prefix(_prefix)
 				{
+				}
+
+				void WriteNotImplemented()
+				{
+					writer.WriteString(prefix);
+					writer.WriteLine(L"{");
+					writer.WriteString(prefix);
+					writer.WriteLine(L"\tthrow ::vl::Exception(L\"You should implement this function.\");");
+					writer.WriteString(prefix);
+					writer.WriteLine(L"}");
 				}
 
 				void Visit(WfNamespaceDeclaration* node)override
@@ -189,10 +201,28 @@ WfGenerateClassMemberImplVisitor
 					if (!IsVirtual(config, node))
 					{
 						printableMember = true;
+
+						bool userImpl = config->manager->GetAttribute(node->attributes, L"cpp", L"UserImpl");
+						if (userImpl)
+						{
+							writer.WriteString(prefix);
+							writer.WriteString(L"USERIMPL(");
+							config->WriteFunctionHeader(writer, node, classFullName + L"::" + config->ConvertName(node->name.value), false);
+							writer.WriteLine(L")");
+						}
+
 						writer.WriteString(prefix);
 						auto returnType = config->WriteFunctionHeader(writer, node, classBaseName + L"::" + config->ConvertName(node->name.value), true);
 						writer.WriteLine(L"");
-						config->WriteFunctionBody(writer, node->statement, prefix, returnType);
+
+						if (userImpl)
+						{
+							WriteNotImplemented();
+						}
+						else
+						{
+							config->WriteFunctionBody(writer, node->statement, prefix, returnType);
+						}
 					}
 				}
 
@@ -214,8 +244,23 @@ WfGenerateClassMemberImplVisitor
 					printableMember = true;
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
 
+					List<WString> arguments;
+					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					{
+						arguments.Add(config->ConvertName(argument->name.value));
+					}
+
+					bool userImpl = config->manager->GetAttribute(node->attributes, L"cpp", L"UserImpl");
+					if (userImpl)
+					{
+						writer.WriteString(prefix);
+						writer.WriteString(L"USERIMPL(");
+						config->WriteFunctionHeader(writer, methodInfo, arguments, classFullName + L"::" + className, false);
+						writer.WriteLine(L")");
+					}
+
 					writer.WriteString(prefix);
-					config->WriteFunctionHeader(writer, methodInfo, classBaseName + L"::" + className, false);
+					config->WriteFunctionHeader(writer, methodInfo, arguments, classBaseName + L"::" + className, false);
 					writer.WriteLine(L"");
 					FOREACH_INDEXER(Ptr<WfBaseConstructorCall>, call, callIndex, node->baseConstructorCalls)
 					{
@@ -241,14 +286,40 @@ WfGenerateClassMemberImplVisitor
 						}
 						writer.WriteLine(L")");
 					}
-					config->WriteFunctionBody(writer, node->statement, prefix, nullptr);
+
+					if (userImpl)
+					{
+						WriteNotImplemented();
+					}
+					else
+					{
+						config->WriteFunctionBody(writer, node->statement, prefix, nullptr);
+					}
 				}
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
 					printableMember = true;
+
+					bool userImpl = config->manager->GetAttribute(node->attributes, L"cpp", L"UserImpl");
+					if (userImpl)
+					{
+						writer.WriteString(prefix);
+						writer.WriteString(L"USERIMPL(");
+						writer.WriteLine(prefix + classFullName + L"::~" + className + L"()");
+						writer.WriteLine(L")");
+					}
+
 					writer.WriteLine(prefix + classBaseName + L"::~" + className + L"()");
-					config->WriteFunctionBody(writer, node->statement, prefix, nullptr);
+
+					if (userImpl)
+					{
+						WriteNotImplemented();
+					}
+					else
+					{
+						config->WriteFunctionBody(writer, node->statement, prefix, nullptr);
+					}
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -264,9 +335,9 @@ WfGenerateClassMemberImplVisitor
 				}
 			};
 
-			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, Ptr<WfClassMember> member, const WString& prefix)
+			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfClassMember> member, const WString& prefix)
 			{
-				WfGenerateClassMemberImplVisitor visitor(config, writer, classBaseName, className, member, prefix);
+				WfGenerateClassMemberImplVisitor visitor(config, writer, classBaseName, className, classFullName, member, prefix);
 				member->declaration->Accept(&visitor);
 				return visitor.printableMember;
 			}

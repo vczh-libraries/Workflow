@@ -23,6 +23,7 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::NestedLambda::
 #define GLOBAL_NAME ::vl_workflow_global::NestedLambda::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::NestedLambda::Instance()
+#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables and Functions
@@ -338,6 +339,7 @@ Class (::IB)
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+#undef USERIMPL
 
 /***********************************************************************
 Reflection

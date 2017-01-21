@@ -23,6 +23,7 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::WorkflowHints::
 #define GLOBAL_NAME ::vl_workflow_global::WorkflowHints::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::WorkflowHints::Instance()
+#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables and Functions
@@ -172,6 +173,7 @@ Class (::workflow::hints::Derived)
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+#undef USERIMPL
 
 /***********************************************************************
 Reflection

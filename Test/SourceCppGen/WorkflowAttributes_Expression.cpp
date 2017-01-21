@@ -23,6 +23,7 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::WorkflowAttributes::
 #define GLOBAL_NAME ::vl_workflow_global::WorkflowAttributes::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::WorkflowAttributes::Instance()
+#define USERIMPL(...)
 
 /***********************************************************************
 Class (::calculator::Expression)
@@ -30,14 +31,16 @@ Class (::calculator::Expression)
 
 namespace calculator
 {
+	USERIMPL(::calculator::Expression::Print())
 	::vl::WString Expression::Print()
 	{
-		return GLOBAL_NAME Print(::vl::__vwsn::Ensure(::vl::Ptr<::calculator::Expression>(this)));
+		throw ::vl::Exception(L"You should implement this function.");
 	}
 
+	USERIMPL(::calculator::Expression::Evaluate())
 	::vl::vint32_t Expression::Evaluate()
 	{
-		return GLOBAL_NAME Evaluate(::vl::__vwsn::Ensure(::vl::Ptr<::calculator::Expression>(this)));
+		throw ::vl::Exception(L"You should implement this function.");
 	}
 
 	Expression::Expression()
@@ -48,6 +51,7 @@ namespace calculator
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+#undef USERIMPL
 
 #if defined( _MSC_VER)
 #pragma warning(pop)

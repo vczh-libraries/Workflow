@@ -229,7 +229,10 @@ namespace vl
 				List<WString> nss2;
 				GetClassNamespace(decl, nss2);
 				auto prefix = WriteNamespace(writer, nss, nss2);
-				return GenerateClassMemberImpl(this, writer, GetClassBaseName(decl), ConvertName(decl->name.value), member, prefix);
+
+				auto td = manager->declarationTypes[decl.Obj()].Obj();
+				auto classFullName = CppGetFullName(td);
+				return GenerateClassMemberImpl(this, writer, GetClassBaseName(decl), ConvertName(decl->name.value), classFullName , member, prefix);
 			}
 
 			void WfCppConfig::WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)

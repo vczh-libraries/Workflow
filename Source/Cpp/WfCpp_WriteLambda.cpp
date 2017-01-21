@@ -400,9 +400,10 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"\t}");
 				writer.WriteLine(L"");
 
+				WString classFullName = L"::" + assemblyNamespace + L"::" + name;
 				FOREACH(Ptr<WfClassMember>, member, lambda->members)
 				{
-					if (GenerateClassMemberImpl(this, writer, name, name, member, L"\t"))
+					if (GenerateClassMemberImpl(this, writer, name, name, classFullName, member, L"\t"))
 					{
 						writer.WriteLine(L"");
 					}

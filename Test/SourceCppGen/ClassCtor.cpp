@@ -23,6 +23,7 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::ClassCtor::
 #define GLOBAL_NAME ::vl_workflow_global::ClassCtor::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::ClassCtor::Instance()
+#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables and Functions
@@ -129,6 +130,7 @@ Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
+#undef USERIMPL
 
 /***********************************************************************
 Reflection

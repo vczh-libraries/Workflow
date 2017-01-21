@@ -128,7 +128,8 @@ namespace vl
 				writer.WriteLine(L"END_GLOBAL_STORAGE_CLASS(" + storageName + L")");
 				writer.WriteLine(L"");
 
-				writer.WriteLine(L"namespace vl_workflow_global");
+				writer.WriteString(L"namespace ");
+				writer.WriteLine(assemblyNamespace);
 				writer.WriteLine(L"{");
 
 				FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
