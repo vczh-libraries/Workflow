@@ -12,7 +12,10 @@ https://github.com/vczh-libraries
 
 #include "../Source/CppTypes.h"
 
-#if defined(__GNUC__)
+#if defined( _MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#elif defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wparentheses-equality"
 #elif defined(__clang__)
@@ -40,7 +43,9 @@ namespace vl_workflow_global
 	};
 }
 
-#if defined(__GNUC__)
+#if defined( _MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #elif defined(__clang__)
 #pragma clang diagnostic pop

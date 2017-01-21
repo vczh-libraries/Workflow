@@ -12,7 +12,10 @@ https://github.com/vczh-libraries
 
 #include "../Source/CppTypes.h"
 
-#if defined(__GNUC__)
+#if defined( _MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#elif defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wparentheses-equality"
 #elif defined(__clang__)
@@ -20,8 +23,6 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
-#pragma warning(push)
-#pragma warning(disable:4250)
 class Dtor;
 
 class Dtor : public ::vl::Object, public ::vl::reflection::Description<Dtor>
@@ -33,7 +34,6 @@ public:
 	Dtor();
 	~Dtor();
 };
-#pragma warning(pop)
 
 /***********************************************************************
 Global Variables and Functions
@@ -53,12 +53,6 @@ namespace vl_workflow_global
 	};
 }
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#elif defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
 /***********************************************************************
 Reflection
 ***********************************************************************/
@@ -77,5 +71,13 @@ namespace vl
 		}
 	}
 }
+
+#if defined( _MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif

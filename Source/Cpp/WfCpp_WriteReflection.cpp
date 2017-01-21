@@ -78,8 +78,6 @@ namespace vl
 
 				if (tdInterfaces.Count() > 0)
 				{
-					writer.WriteLine(L"#pragma warning(push)");
-					writer.WriteLine(L"#pragma warning(disable:4250)");
 					FOREACH(ITypeDescriptor*, td, tdInterfaces)
 					{
 						List<ITypeDescriptor*> baseTds;
@@ -167,7 +165,6 @@ namespace vl
 						writer.WriteString(ConvertType(td));
 						writer.WriteLine(L")");
 					}
-					writer.WriteLine(L"#pragma warning(pop)");
 				}
 
 				writer.WriteLine(L"#endif");

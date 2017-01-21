@@ -130,6 +130,8 @@ namespace vl
 				void					WriteHeader_Reflection(stream::StreamWriter& writer);
 				void					WriteCpp_Reflection(stream::StreamWriter& writer);
 
+				void					WritePushCompileOptions(stream::StreamWriter& writer);
+				void					WritePopCompileOptions(stream::StreamWriter& writer);
 				void					WriteHeader(stream::StreamWriter& writer);
 				void					WriteCpp(stream::StreamWriter& writer);
 			};

@@ -9,13 +9,17 @@ https://github.com/vczh-libraries
 
 #include "CallStaticMethod.h"
 
-#if defined(__GNUC__)
+#if defined( _MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#elif defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wparentheses-equality"
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
+
 #define GLOBAL_SYMBOL ::vl_workflow_global::CallStaticMethod::
 #define GLOBAL_NAME ::vl_workflow_global::CallStaticMethod::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::CallStaticMethod::Instance()
@@ -76,12 +80,6 @@ Class (::Calculator::Internal)
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#elif defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
 /***********************************************************************
 Reflection
 ***********************************************************************/
@@ -134,3 +132,11 @@ namespace vl
 		}
 	}
 }
+
+#if defined( _MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif

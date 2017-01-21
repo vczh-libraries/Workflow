@@ -454,16 +454,35 @@ WfCppConfig
 					nss.RemoveAt(0);
 				}
 			}
-			
-			void WfCppConfig::WriteHeader(stream::StreamWriter& writer)
+
+			void WfCppConfig::WritePushCompileOptions(stream::StreamWriter& writer)
 			{
-				writer.WriteLine(L"#if defined(__GNUC__)");
+				writer.WriteLine(L"#if defined( _MSC_VER)");
+				writer.WriteLine(L"#pragma warning(push)");
+				writer.WriteLine(L"#pragma warning(disable:4250)");
+				writer.WriteLine(L"#elif defined(__GNUC__)");
 				writer.WriteLine(L"#pragma GCC diagnostic push");
 				writer.WriteLine(L"#pragma GCC diagnostic ignored \"-Wparentheses-equality\"");
 				writer.WriteLine(L"#elif defined(__clang__)");
 				writer.WriteLine(L"#pragma clang diagnostic push");
 				writer.WriteLine(L"#pragma clang diagnostic ignored \"-Wparentheses-equality\"");
 				writer.WriteLine(L"#endif");
+			}
+
+			void WfCppConfig::WritePopCompileOptions(stream::StreamWriter& writer)
+			{
+				writer.WriteLine(L"#if defined( _MSC_VER)");
+				writer.WriteLine(L"#pragma warning(pop)");
+				writer.WriteLine(L"#elif defined(__GNUC__)");
+				writer.WriteLine(L"#pragma GCC diagnostic pop");
+				writer.WriteLine(L"#elif defined(__clang__)");
+				writer.WriteLine(L"#pragma clang diagnostic pop");
+				writer.WriteLine(L"#endif");
+			}
+			
+			void WfCppConfig::WriteHeader(stream::StreamWriter& writer)
+			{
+				WritePushCompileOptions(writer);
 				writer.WriteLine(L"");
 				List<WString> nss;
 
@@ -487,8 +506,6 @@ WfCppConfig
 
 				if (classDecls.Keys().Contains(nullptr))
 				{
-					writer.WriteLine(L"#pragma warning(push)");
-					writer.WriteLine(L"#pragma warning(disable:4250)");
 					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
 					{
 						WriteHeader_ClassPreDecl(writer, decl, nss);
@@ -498,7 +515,6 @@ WfCppConfig
 						writer.WriteLine(L"");
 						WriteHeader_Class(writer, decl, nss);
 					}
-					writer.WriteLine(L"#pragma warning(pop)");
 				}
 				WriteNamespaceEnd(writer, nss);
 
@@ -508,12 +524,6 @@ WfCppConfig
 				writer.WriteLine(L"***********************************************************************/");
 				writer.WriteLine(L"");
 				WriteHeader_Global(writer);
-				writer.WriteLine(L"");
-				writer.WriteLine(L"#if defined(__GNUC__)");
-				writer.WriteLine(L"#pragma GCC diagnostic pop");
-				writer.WriteLine(L"#elif defined(__clang__)");
-				writer.WriteLine(L"#pragma clang diagnostic pop");
-				writer.WriteLine(L"#endif");
 
 				if (manager->declarationTypes.Count() > 0)
 				{
@@ -524,17 +534,15 @@ WfCppConfig
 					writer.WriteLine(L"");
 					WriteHeader_Reflection(writer);
 				}
+
+				writer.WriteLine(L"");
+				WritePopCompileOptions(writer);
 			}
 
 			void WfCppConfig::WriteCpp(stream::StreamWriter& writer)
 			{
-				writer.WriteLine(L"#if defined(__GNUC__)");
-				writer.WriteLine(L"#pragma GCC diagnostic push");
-				writer.WriteLine(L"#pragma GCC diagnostic ignored \"-Wparentheses-equality\"");
-				writer.WriteLine(L"#elif defined(__clang__)");
-				writer.WriteLine(L"#pragma clang diagnostic push");
-				writer.WriteLine(L"#pragma clang diagnostic ignored \"-Wparentheses-equality\"");
-				writer.WriteLine(L"#endif");
+				WritePushCompileOptions(writer);
+				writer.WriteLine(L"");
 
 				writer.WriteString(L"#define GLOBAL_SYMBOL ");
 				writer.WriteString(L"::");
@@ -590,12 +598,6 @@ WfCppConfig
 				writer.WriteLine(L"#undef GLOBAL_SYMBOL");
 				writer.WriteLine(L"#undef GLOBAL_NAME");
 				writer.WriteLine(L"#undef GLOBAL_OBJ");
-				writer.WriteLine(L"");
-				writer.WriteLine(L"#if defined(__GNUC__)");
-				writer.WriteLine(L"#pragma GCC diagnostic pop");
-				writer.WriteLine(L"#elif defined(__clang__)");
-				writer.WriteLine(L"#pragma clang diagnostic pop");
-				writer.WriteLine(L"#endif");
 
 				if (manager->declarationTypes.Count() > 0)
 				{
@@ -606,6 +608,9 @@ WfCppConfig
 					writer.WriteLine(L"");
 					WriteCpp_Reflection(writer);
 				}
+
+				writer.WriteLine(L"");
+				WritePopCompileOptions(writer);
 			}
 
 /***********************************************************************
