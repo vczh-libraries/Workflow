@@ -68,6 +68,7 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
+				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForFiles;
 				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
@@ -132,8 +133,8 @@ namespace vl
 
 				void					WritePushCompileOptions(stream::StreamWriter& writer);
 				void					WritePopCompileOptions(stream::StreamWriter& writer);
-				void					WriteHeader(stream::StreamWriter& writer);
-				void					WriteCpp(stream::StreamWriter& writer);
+				void					WriteHeader(stream::StreamWriter& writer, bool multiFile);
+				void					WriteCpp(stream::StreamWriter& writer, bool multiFile);
 			};
 
 /***********************************************************************
@@ -168,9 +169,17 @@ WfCppConfig::Write
 GenerateCppFiles
 ***********************************************************************/
 
+			enum class WfCppMultiFile
+			{
+				Enabled,
+				Disabled,
+				OnDemand,
+			};
+
 			class WfCppInput : public Object
 			{
 			public:
+				WfCppMultiFile									multiFile = WfCppMultiFile::Enabled;
 				WString											comment;
 				WString											headerGuardPrefix;
 				WString											assemblyName;

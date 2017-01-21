@@ -70,16 +70,13 @@ TEST_CASE(TestCodegen)
 		if (cppCodegen)
 		{
 			auto input = MakePtr<WfCppInput>(itemName);
+			input->multiFile = WfCppMultiFile::OnDemand;
 			input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";
 			input->extraIncludes.Add(L"../Source/CppTypes.h");
 			auto output = GenerateCppFiles(input, &manager);
+			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
-				auto fileName = input->defaultFileName + L".h";
-				File(GetCppOutputPath() + fileName).WriteAllText(output->cppFiles[fileName], false, BomEncoder::Utf8);
-			}
-			{
-				auto fileName = input->defaultFileName + L".cpp";
-				File(GetCppOutputPath() + fileName).WriteAllText(output->cppFiles[fileName], false, BomEncoder::Utf8);
+				File(GetCppOutputPath() + fileName).WriteAllText(output->cppFiles.Values()[index], false, BomEncoder::Utf8);
 			}
 		}
 		

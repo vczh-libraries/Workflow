@@ -480,7 +480,7 @@ WfCppConfig
 				writer.WriteLine(L"#endif");
 			}
 			
-			void WfCppConfig::WriteHeader(stream::StreamWriter& writer)
+			void WfCppConfig::WriteHeader(stream::StreamWriter& writer, bool multiFile)
 			{
 				WritePushCompileOptions(writer);
 				writer.WriteLine(L"");
@@ -539,7 +539,7 @@ WfCppConfig
 				WritePopCompileOptions(writer);
 			}
 
-			void WfCppConfig::WriteCpp(stream::StreamWriter& writer)
+			void WfCppConfig::WriteCpp(stream::StreamWriter& writer, bool multiFile)
 			{
 				WritePushCompileOptions(writer);
 				writer.WriteLine(L"");
@@ -655,36 +655,56 @@ WfCppConfig
 
 			Ptr<WfCppOutput> GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager)
 			{
-				auto output = MakePtr<WfCppOutput>();
 				WfCppConfig config(manager, input->assemblyName, input->assemblyNamespace);
+				auto output = MakePtr<WfCppOutput>();
+
+				bool multiFile = false;
+				switch (input->multiFile)
 				{
-					output->cppFiles.Add(input->defaultFileName + L".h", GenerateToStream([&](StreamWriter& writer)
-					{
-						GenerateCppComment(writer, input->comment);
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName));
-						writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName));
-						writer.WriteLine(L"");
-						FOREACH(WString, include, input->extraIncludes)
-						{
-							writer.WriteLine(L"#include \"" + include + L"\"");
-						}
-						writer.WriteLine(L"");
-						config.WriteHeader(writer);
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#endif");
-					}));
+				case WfCppMultiFile::Enabled:
+					multiFile = true;
+					break;
+				case WfCppMultiFile::Disabled:
+					multiFile = false;
+					break;
+				default:
+					multiFile = config.topLevelClassDeclsForFiles.Count() > 1;
 				}
+
+				output->cppFiles.Add(input->defaultFileName + L".h", GenerateToStream([&](StreamWriter& writer)
 				{
-					output->cppFiles.Add(input->defaultFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
+					GenerateCppComment(writer, input->comment);
+					writer.WriteLine(L"");
+					writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName));
+					writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName));
+					writer.WriteLine(L"");
+					FOREACH(WString, include, input->extraIncludes)
 					{
-						GenerateCppComment(writer, input->comment);
-						writer.WriteLine(L"");
+						writer.WriteLine(L"#include \"" + include + L"\"");
+					}
+					writer.WriteLine(L"");
+					config.WriteHeader(writer, multiFile);
+					writer.WriteLine(L"");
+					writer.WriteLine(L"#endif");
+				}));
+
+				output->cppFiles.Add(input->defaultFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
+				{
+					GenerateCppComment(writer, input->comment);
+					writer.WriteLine(L"");
+					if (multiFile)
+					{
+						writer.WriteLine(L"#include \"" + input->includeFileName + L".h\"");
+					}
+					else
+					{
 						writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-						writer.WriteLine(L"");
-						config.WriteCpp(writer);
-					}));
-				}
+					}
+					writer.WriteLine(L"");
+					config.WriteCpp(writer, multiFile);
+				}));
+
+				if(multiFile)
 				{
 					output->cppFiles.Add(input->includeFileName + L".h", GenerateToStream([&](StreamWriter& writer)
 					{
@@ -698,6 +718,7 @@ WfCppConfig
 						writer.WriteLine(L"#endif");
 					}));
 				}
+
 				return output;
 			}
 		}
