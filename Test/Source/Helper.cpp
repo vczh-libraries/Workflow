@@ -303,31 +303,38 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 		case Value::SharedPtr:
 			return L"<^>";
 		case Value::BoxedValue:
-		{
-			auto td = value.GetTypeDescriptor();
-			if (auto st = td->GetSerializableType())
 			{
-				WString output;
-				return st->Serialize(value, output);
-			}
-			else if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-			{
-				WString output = L"{";
-				vint count = td->GetPropertyCount();
-				for (vint i = 0; i < count; i++)
+				auto td = value.GetTypeDescriptor();
+				if (auto st = td->GetSerializableType())
 				{
-					if (i != 0) output += L" ";
-					auto prop = td->GetProperty(i);
-					output += prop->GetName() + L":" + serializeValue(prop->GetValue(value));
+					WString output;
+					st->Serialize(value, output);
+					return output;
 				}
-				return output;
+				else if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+				{
+					WString output = L"{";
+					vint count = td->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
+					{
+						if (i != 0) output += L" ";
+						auto prop = td->GetProperty(i);
+						output += prop->GetName() + L":" + serializeValue(prop->GetValue(value));
+					}
+					output += L"}";
+					return output;
+				}
+				else if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+				{
+					auto enumType = td->GetEnumType();
+					return L"<enum: " + u64tow(enumType->FromEnum(value)) + L">";
+				}
+				else
+				{
+					return L"<struct>";
+				}
 			}
-			else
-			{
-				return L"<struct>";
-			}
-		}
-		break;
+			break;
 		default:
 			return L"<null>";
 		}
