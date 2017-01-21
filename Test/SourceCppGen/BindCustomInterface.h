@@ -28,6 +28,9 @@ class IAdder;
 
 class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ISummer>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ISummer>;
+#endif
 public:
 	virtual ::vl::vint32_t GetSum() = 0;
 	::vl::Event<void()> SumChanged;
@@ -35,6 +38,9 @@ public:
 
 class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IAdder>;
+#endif
 public:
 	virtual void Add(::vl::vint32_t value) = 0;
 };

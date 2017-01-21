@@ -27,6 +27,9 @@ class Dtor;
 
 class Dtor : public ::vl::Object, public ::vl::reflection::Description<Dtor>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Dtor>;
+#endif
 public:
 	::vl::WString name = ::vl::WString(L"", false);
 	::Dtor* next = static_cast<::Dtor*>(nullptr);

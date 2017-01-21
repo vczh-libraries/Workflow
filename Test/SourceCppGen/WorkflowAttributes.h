@@ -31,12 +31,18 @@ namespace calculator
 
 	class Expression : public ::vl::Object, public ::vl::reflection::Description<Expression>
 	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Expression>;
+#endif
 	public:
 		Expression();
 	};
 
 	class NumberExpression : public ::calculator::Expression, public ::vl::reflection::Description<NumberExpression>
 	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<NumberExpression>;
+#endif
 	private:
 		::vl::vint32_t value = 0;
 	public:
@@ -47,6 +53,9 @@ namespace calculator
 
 	class BinaryExpression : public ::calculator::Expression, public ::vl::reflection::Description<BinaryExpression>
 	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BinaryExpression>;
+#endif
 	public:
 		enum class BinaryOperator : vl::vuint64_t
 		{

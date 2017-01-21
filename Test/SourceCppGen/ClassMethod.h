@@ -27,6 +27,9 @@ class Methods;
 
 class Methods : public ::vl::Object, public ::vl::reflection::Description<Methods>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Methods>;
+#endif
 public:
 	::vl::vint32_t x = 0;
 	Methods();

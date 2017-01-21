@@ -28,12 +28,18 @@ class MyClass;
 
 class IMyInterface3 : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface3>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IMyInterface3>;
+#endif
 public:
 	virtual ::vl::vint32_t Get100() = 0;
 };
 
 class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClass>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyClass>;
+#endif
 public:
 	::vl::vint32_t begin = (- 1);
 	::vl::vint32_t end = (- 1);

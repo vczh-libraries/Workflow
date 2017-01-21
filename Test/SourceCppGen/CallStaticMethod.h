@@ -27,11 +27,17 @@ class Calculator;
 
 class Calculator : public ::vl::Object, public ::vl::reflection::Description<Calculator>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Calculator>;
+#endif
 public:
 	class Internal;
 
 	class Internal : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<Internal>
 	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Internal>;
+#endif
 	public:
 		static ::vl::vint32_t Sum(::vl::vint32_t begin, ::vl::vint32_t end);
 	};

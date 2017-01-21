@@ -28,6 +28,9 @@ class IB;
 
 class IA : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IA>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IA>;
+#endif
 public:
 	virtual ::vl::vint32_t GetA() = 0;
 	virtual void SetA(::vl::vint32_t value) = 0;
@@ -37,6 +40,9 @@ public:
 
 class IB : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IB>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IB>;
+#endif
 public:
 	virtual ::vl::vint32_t GetB() = 0;
 	virtual void SetB(::vl::vint32_t value) = 0;

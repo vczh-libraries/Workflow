@@ -76,6 +76,9 @@ namespace vl
 				}
 				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
 				writer.WriteLine(prefix + L"{");
+				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+				writer.WriteLine(prefix + L"\tfriend struct ::vl::reflection::description::CustomTypeDescriptorSelector<" + name + L">;");
+				writer.WriteLine(L"#endif");
 
 				const vint PRIVATE = 0;
 				const vint PROTECTED = 1;

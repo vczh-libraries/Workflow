@@ -28,6 +28,9 @@ class Ctor;
 
 class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
+#endif
 public:
 	::vl::vint32_t x = 0;
 	Base();
@@ -39,6 +42,9 @@ public:
 
 class Ctor : public ::Base, public ::test::ObservableValue, public ::vl::reflection::Description<Ctor>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Ctor>;
+#endif
 public:
 	Ctor();
 	Ctor(::vl::vint32_t y, bool b);

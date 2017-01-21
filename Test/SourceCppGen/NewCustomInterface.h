@@ -27,6 +27,9 @@ class IMyInterface;
 
 class IMyInterface : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface>
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IMyInterface>;
+#endif
 public:
 	static ::vl::vint32_t Get50();
 	virtual ::vl::vint32_t Get100() = 0;

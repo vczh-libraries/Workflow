@@ -32,6 +32,9 @@ namespace workflow
 
 		class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
+#endif
 		public:
 			Base();
 			Base(::vl::vint32_t x);
@@ -39,6 +42,9 @@ namespace workflow
 
 		class Derived : public ::workflow::hints::Base, public ::vl::reflection::Description<Derived>
 		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Derived>;
+#endif
 		public:
 			Derived();
 			Derived(::vl::vint32_t x);
