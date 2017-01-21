@@ -24,12 +24,15 @@ namespace vl
 					writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn()) + L" " + ConvertName(member->name.value) + defaultValue + L";");
 				}
 				writer.WriteLine(prefix + L"};");
+			}
 
+			void WfCppConfig::WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix)
+			{
 				using opt = Tuple<const wchar_t*, const wchar_t*, const wchar_t*>;
 				opt ops[] = {
 					opt(L"==", L"false", L"true"),
 					opt(L"!=", L"true", L"false")
-					};
+				};
 				for (auto op : ops)
 				{
 					writer.WriteString(prefix);
@@ -71,6 +74,7 @@ namespace vl
 				WString name;
 				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
 				WriteHeader_Struct(writer, decl, name, prefix);
+				WriteHeader_StructOp(writer, decl, name, prefix);
 			}
 		}
 	}

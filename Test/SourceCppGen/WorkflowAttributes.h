@@ -54,8 +54,6 @@ namespace calculator
 			Mul = 2UL,
 			Div = 3UL,
 		};
-		inline BinaryOperator operator& (BinaryOperator a, BinaryOperator b) { return static_cast<BinaryOperator>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
-		inline BinaryOperator operator| (BinaryOperator a, BinaryOperator b) { return static_cast<BinaryOperator>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
 
 
 		::calculator::BinaryExpression::BinaryOperator op = ::calculator::BinaryExpression::BinaryOperator::Add;
@@ -63,6 +61,8 @@ namespace calculator
 		::vl::Ptr<::calculator::Expression> right = ::vl::Ptr<::calculator::Expression>();
 		BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right);
 	};
+	inline ::calculator::BinaryExpression::BinaryOperator operator& (::calculator::BinaryExpression::BinaryOperator a, ::calculator::BinaryExpression::BinaryOperator b) { return static_cast<::calculator::BinaryExpression::BinaryOperator>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
+	inline ::calculator::BinaryExpression::BinaryOperator operator| (::calculator::BinaryExpression::BinaryOperator a, ::calculator::BinaryExpression::BinaryOperator b) { return static_cast<::calculator::BinaryExpression::BinaryOperator>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
 }
 
 /***********************************************************************

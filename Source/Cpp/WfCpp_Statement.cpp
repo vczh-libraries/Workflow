@@ -90,36 +90,41 @@ namespace vl
 				void Visit(WfIfStatement* node)override
 				{
 					writer.WriteString(prefix);
-					writer.WriteString(L"if (");
-					if (node->type)
+					while (node)
 					{
-						auto result = config->manager->expressionResolvings[node->expression.Obj()];
-						auto scope = config->manager->nodeScopes[node].Obj();
-						auto typeInfo = CreateTypeInfoFromType(scope, node->type);
-						writer.WriteString(L"auto ");
-						writer.WriteString(config->ConvertName(node->name.value));
-						writer.WriteString(L" = ");
-						ConvertType(config, writer, result.type.Obj(), typeInfo.Obj(), [&]() {GenerateExpression(config, writer, node->expression, nullptr); }, false);
-					}
-					else
-					{
-						GenerateExpression(config, writer, node->expression, TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
-					}
-					writer.WriteLine(L")");
-					Call(node->trueBranch);
-					if (node->falseBranch)
-					{
-						writer.WriteString(prefix);
-						if (node->falseBranch.Cast<WfIfStatement>())
+						writer.WriteString(L"if (");
+						if (node->type)
 						{
-							writer.WriteString(L"else ");
-							node->falseBranch->Accept(this);
+							auto result = config->manager->expressionResolvings[node->expression.Obj()];
+							auto scope = config->manager->nodeScopes[node].Obj();
+							auto typeInfo = CreateTypeInfoFromType(scope, node->type);
+							writer.WriteString(L"auto ");
+							writer.WriteString(config->ConvertName(node->name.value));
+							writer.WriteString(L" = ");
+							ConvertType(config, writer, result.type.Obj(), typeInfo.Obj(), [&]() {GenerateExpression(config, writer, node->expression, nullptr); }, false);
 						}
 						else
 						{
-							writer.WriteLine(L"else");
-							Call(node->falseBranch);
+							GenerateExpression(config, writer, node->expression, TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
 						}
+						writer.WriteLine(L")");
+						Call(node->trueBranch);
+						if (node->falseBranch)
+						{
+							writer.WriteString(prefix);
+							if (auto ifStat = node->falseBranch.Cast<WfIfStatement>())
+							{
+								writer.WriteString(L"else ");
+								node = ifStat.Obj();
+								continue;
+							}
+							else
+							{
+								writer.WriteLine(L"else");
+								Call(node->falseBranch);
+							}
+						}
+						break;
 					}
 				}
 

@@ -127,12 +127,54 @@ namespace vl
 				writer.WriteLine(prefix + L"};");
 			}
 
-			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
+			WString WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				WString name;
 				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
 				WriteHeader_Class(writer, decl, name, prefix);
+				return prefix;
+			}
+
+			void WfCppConfig::WriteHeader_TopLevelClass(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
+			{
+				auto prefix = WriteHeader_Class(writer, decl, nss);
+				List<Ptr<WfClassDeclaration>> classes;
+				classes.Add(decl);
+				vint processed = 0;
+				while (processed < classes.Count())
+				{
+					auto current = classes[processed++];
+					{
+						vint index = enumDecls.Keys().IndexOf(current.Obj());
+						if (index != -1)
+						{
+							FOREACH(Ptr<WfEnumDeclaration>, enumDecl, enumDecls.GetByIndex(index))
+							{
+								auto td = manager->declarationTypes[enumDecl.Obj()].Obj();
+								WriteHeader_EnumOp(writer, enumDecl, ConvertType(td), prefix);
+							}
+						}
+					}
+					{
+						vint index = structDecls.Keys().IndexOf(current.Obj());
+						if (index != -1)
+						{
+							FOREACH(Ptr<WfStructDeclaration>, structDecl, structDecls.GetByIndex(index))
+							{
+								auto td = manager->declarationTypes[structDecl.Obj()].Obj();
+								WriteHeader_StructOp(writer, structDecl, ConvertType(td), prefix);
+							}
+						}
+					}
+					{
+						vint index = classDecls.Keys().IndexOf(current.Obj());
+						if (index != -1)
+						{
+							CopyFrom(classes, classDecls.GetByIndex(index), true);
+						}
+					}
+				}
 			}
 
 			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss)

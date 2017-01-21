@@ -34,7 +34,10 @@ namespace vl
 					}
 				}
 				writer.WriteLine(prefix + L"};");
+			}
 
+			void WfCppConfig::WriteHeader_EnumOp(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix)
+			{
 				const wchar_t* ops[] = { L"&", L"|" };
 				for (auto op : ops)
 				{
@@ -61,6 +64,7 @@ namespace vl
 				WString name;
 				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
 				WriteHeader_Enum(writer, decl, name, prefix);
+				WriteHeader_EnumOp(writer, decl, name, prefix);
 			}
 		}
 	}

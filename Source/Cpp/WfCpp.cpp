@@ -513,7 +513,7 @@ WfCppConfig
 					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
 					{
 						writer.WriteLine(L"");
-						WriteHeader_Class(writer, decl, nss);
+						WriteHeader_TopLevelClass(writer, decl, nss);
 					}
 				}
 				WriteNamespaceEnd(writer, nss);

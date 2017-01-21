@@ -42,7 +42,7 @@ namespace vl_workflow_global
 		{
 			return ::vl::__vwsn::ToString(::vl::__vwsn::This(ne.Obj())->value);
 		}
-		else 		if (auto be = ::vl::__vwsn::SharedPtrCast<::calculator::BinaryExpression>(expr.Obj()))
+		else if (auto be = ::vl::__vwsn::SharedPtrCast<::calculator::BinaryExpression>(expr.Obj()))
 		{
 			auto op = ::vl::WString(L"", false);
 			{
@@ -78,7 +78,7 @@ namespace vl_workflow_global
 		{
 			return ::vl::__vwsn::This(ne.Obj())->value;
 		}
-		else 		if (auto be = ::vl::__vwsn::SharedPtrCast<::calculator::BinaryExpression>(expr.Obj()))
+		else if (auto be = ::vl::__vwsn::SharedPtrCast<::calculator::BinaryExpression>(expr.Obj()))
 		{
 			auto left = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->left);
 			auto right = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->right);
