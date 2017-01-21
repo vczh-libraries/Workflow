@@ -8,9 +8,10 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace stream;
+			using namespace filesystem;
 
 /***********************************************************************
-GenerateCppFiles
+WfCppInput
 ***********************************************************************/
 
 			WfCppInput::WfCppInput(const WString& _assemblyName)
@@ -21,6 +22,10 @@ GenerateCppFiles
 				includeFileName = _assemblyName + L"Includes";
 				defaultFileName = _assemblyName;
 			}
+
+/***********************************************************************
+GenerateCppFiles
+***********************************************************************/
 
 			template<typename TCallback>
 			WString GenerateToStream(const TCallback& callback)
@@ -213,6 +218,15 @@ GenerateCppFiles
 				}
 
 				return output;
+			}
+
+/***********************************************************************
+MergeCppFile
+***********************************************************************/
+
+			WString MergeCppFileContent(const WString& dst, const WString& src)
+			{
+				return src;
 			}
 		}
 	}

@@ -76,7 +76,15 @@ TEST_CASE(TestCodegen)
 			auto output = GenerateCppFiles(input, &manager);
 			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
-				File(GetCppOutputPath() + fileName).WriteAllText(output->cppFiles.Values()[index], false, BomEncoder::Utf8);
+				WString code = output->cppFiles.Values()[index];
+				File file(GetCppOutputPath() + fileName);
+
+				if (file.Exists())
+				{
+					code = MergeCppFileContent(file.ReadAllText(), code);
+				}
+
+				file.WriteAllText(code, false, BomEncoder::Utf8);
 			}
 		}
 		
