@@ -8,6 +8,17 @@ namespace calculator
 	@cpp:File("WorkflowAttributes_Expression")
 	class Expression
 	{
+		@cpp:UserImpl
+		func Print() : string
+		{
+			return ::Print(cast Expression^ this);
+		}
+
+		@cpp:UserImpl
+		func Evaluate() : int
+		{
+			return ::Evaluate(cast Expression^ this);
+		}
 	}
 	
 	@cpp:File("WorkflowAttributes_NumberExpression")
@@ -124,5 +135,5 @@ func main():string
 			)
 		);
 
-	return $"$(Print(expr)) = $(Evaluate(expr))";
+	return $"$(expr.Print()) = $(expr.Evaluate())";
 }

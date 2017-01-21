@@ -112,7 +112,7 @@ namespace vl_workflow_global
 	::vl::WString WorkflowAttributes::main()
 	{
 		auto expr = ::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(1)), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(2)))), ::calculator::BinaryExpression::BinaryOperator::Mul, ::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(3)), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(4))))));
-		return (((::vl::WString(L"", false) + GLOBAL_NAME Print(::vl::__vwsn::Ensure(::vl::Ptr<::calculator::Expression>(expr)))) + ::vl::WString(L" = ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Evaluate(::vl::__vwsn::Ensure(::vl::Ptr<::calculator::Expression>(expr)))));
+		return (((::vl::WString(L"", false) + ::vl::__vwsn::This(expr.Obj())->Print()) + ::vl::WString(L" = ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(expr.Obj())->Evaluate()));
 	}
 
 	WorkflowAttributes& WorkflowAttributes::Instance()
@@ -162,6 +162,8 @@ namespace vl
 			END_ENUM_ITEM(::calculator::BinaryExpression::BinaryOperator)
 
 			BEGIN_CLASS_MEMBER(::calculator::Expression)
+				CLASS_MEMBER_METHOD(Evaluate, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Print, NO_PARAMETER)
 			END_CLASS_MEMBER(::calculator::Expression)
 
 			BEGIN_CLASS_MEMBER(::calculator::NumberExpression)

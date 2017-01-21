@@ -372,7 +372,7 @@ WfLexicalScopeManager
 				:parsingTable(_parsingTable)
 			{
 				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<WString>::CreateTypeInfo());
+				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Protected" }, TypeInfoRetriver<void>::CreateTypeInfo());
 			}

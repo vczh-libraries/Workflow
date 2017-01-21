@@ -31,6 +31,8 @@ namespace calculator
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Expression>;
 #endif
 	public:
+		::vl::WString Print();
+		::vl::vint32_t Evaluate();
 		Expression();
 	};
 

@@ -30,6 +30,16 @@ Class (::calculator::Expression)
 
 namespace calculator
 {
+	::vl::WString Expression::Print()
+	{
+		return GLOBAL_NAME Print(::vl::__vwsn::Ensure(::vl::Ptr<::calculator::Expression>(this)));
+	}
+
+	::vl::vint32_t Expression::Evaluate()
+	{
+		return GLOBAL_NAME Evaluate(::vl::__vwsn::Ensure(::vl::Ptr<::calculator::Expression>(this)));
+	}
+
 	Expression::Expression()
 	{
 	}
