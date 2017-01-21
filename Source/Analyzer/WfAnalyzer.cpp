@@ -7,6 +7,7 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
+			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace runtime;
@@ -792,6 +793,11 @@ WfLexicalScopeManager
 
 			Value WfLexicalScopeManager::GetAttributeValue(Ptr<WfAttribute> att)
 			{
+				if (!att->value)
+				{
+					return Value();
+				}
+
 				{
 					vint index = attributeValues.Keys().IndexOf(att.Obj());
 					if (index != -1)
@@ -817,6 +823,21 @@ WfLexicalScopeManager
 				attributeAssembly->instructions.Clear();
 
 				WfCodegenContext context(attributeAssembly, this);
+				{
+					auto recorderBefore = new ParsingGeneratedLocationRecorder(context.nodePositionsBeforeCodegen);
+					auto recorderAfter = new ParsingGeneratedLocationRecorder(context.nodePositionsAfterCodegen);
+					auto recorderOriginal = new ParsingOriginalLocationRecorder(recorderBefore);
+					auto recorderMultiple = new ParsingMultiplePrintNodeRecorder;
+					recorderMultiple->AddRecorder(recorderOriginal);
+					recorderMultiple->AddRecorder(recorderAfter);
+
+					stream::MemoryStream memoryStream;
+					{
+						stream::StreamWriter streamWriter(memoryStream);
+						ParsingWriter parsingWriter(streamWriter, recorderMultiple);
+						WfPrint(att->value, L"", parsingWriter);
+					}
+				}
 				auto typeInfo = attributes[{att->category.value, att->name.value}];
 				GenerateExpressionInstructions(context, att->value, typeInfo);
 				attributeAssembly->instructions.Add(WfInstruction::Return());

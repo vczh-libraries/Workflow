@@ -491,6 +491,11 @@ WfErrors
 				return new ParsingError(node, L"D15: Attribute \"" + node->category.value + L":" + node->name.value + L"\" does not exist.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::AttributeMissValue(WfAttribute* node)
+			{
+				return new ParsingError(node, L"D15: Value of attribute \"" + node->category.value + L":" + node->name.value + L"\" is missing.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
 			{
 				return new ParsingError(node, L"E0: Wild card \"*\" should only appear in the last item of the using path and should appear once.");

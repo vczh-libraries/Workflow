@@ -376,10 +376,17 @@ ValidateSemantic(Declaration)
 						{
 							manager->errors.Add(WfErrors::AttributeNotExists(attribute.Obj()));
 						}
-						else if(attribute->value)
+						else
 						{
 							auto expectedType = manager->attributes.Values()[index];
-							ValidateConstantExpression(manager, attribute->value, expectedType);
+							if (attribute->value)
+							{
+								ValidateConstantExpression(manager, attribute->value, expectedType);
+							}
+							else if (expectedType->GetTypeDescriptor() != description::GetTypeDescriptor<void>())
+							{
+								manager->errors.Add(WfErrors::AttributeMissValue(attribute.Obj()));
+							}
 						}
 					}
 				}
@@ -388,7 +395,7 @@ ValidateSemantic(Declaration)
 				{
 					FOREACH(Ptr<WfDeclaration>, declaration, node->declarations)
 					{
-						declaration->Accept(this);
+						ValidateDeclarationSemantic(manager, declaration);
 					}
 				}
 
@@ -691,7 +698,7 @@ ValidateSemantic(Statement)
 				{
 					FOREACH(Ptr<WfStatement>, statement, node->statements)
 					{
-						statement->Accept(this);
+						ValidateStatementSemantic(manager, statement);
 					}
 				}
 

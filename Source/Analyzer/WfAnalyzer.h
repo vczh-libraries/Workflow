@@ -599,6 +599,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path);
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
+				static Ptr<parsing::ParsingError>			AttributeMissValue(WfAttribute* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

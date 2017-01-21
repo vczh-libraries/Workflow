@@ -451,6 +451,17 @@ WfCollectDeclarationVisitor
 				void Visit(WfClassDeclaration* node)override
 				{
 					config->classDecls.Add(classDecl, node);
+
+					if (!classDecl)
+					{
+						WString file;
+						if (auto att = config->manager->GetAttribute(node->attributes, L"cpp", L"File"))
+						{
+							file = UnboxValue<WString>(config->manager->GetAttributeValue(att));
+						}
+						config->topLevelClassDeclsForFiles.Add(file, node);
+					}
+
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						CollectClassMember(config, member, node);
