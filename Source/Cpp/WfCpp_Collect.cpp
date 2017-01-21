@@ -448,11 +448,28 @@ WfCollectDeclarationVisitor
 				{
 				}
 
+				void AddDeclFile(WfDeclaration* node)
+				{
+					if (classDecl)
+					{
+						auto fileName = config->declFiles[classDecl.Obj()];
+						config->declFiles.Add(node, fileName);
+					}
+					else
+					{
+						config->declFiles.Add(node, L"");
+					}
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					config->classDecls.Add(classDecl, node);
 
-					if (!classDecl)
+					if (classDecl)
+					{
+						AddDeclFile(node);
+					}
+					else
 					{
 						WString file;
 						if (auto att = config->manager->GetAttribute(node->attributes, L"cpp", L"File"))
@@ -460,6 +477,19 @@ WfCollectDeclarationVisitor
 							file = UnboxValue<WString>(config->manager->GetAttributeValue(att));
 						}
 						config->topLevelClassDeclsForFiles.Add(file, node);
+						config->declFiles.Add(node, file);
+					}
+
+					auto td = config->manager->declarationTypes[node].Obj();
+					vint count = td->GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto baseTd = td->GetBaseTypeDescriptor(i);
+						auto scopeName = config->manager->typeNames[baseTd];
+						if (scopeName->declarations.Count() > 0)
+						{
+							config->declDependencies.Add(node, scopeName->declarations[0]);
+						}
 					}
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)
@@ -471,11 +501,25 @@ WfCollectDeclarationVisitor
 				void Visit(WfEnumDeclaration* node)override
 				{
 					config->enumDecls.Add(classDecl, node);
+					AddDeclFile(node);
 				}
 
 				void Visit(WfStructDeclaration* node)override
 				{
 					config->structDecls.Add(classDecl, node);
+					AddDeclFile(node);
+
+					auto td = config->manager->declarationTypes[node].Obj();
+					vint count = td->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto propTd = td->GetProperty(i)->GetReturn()->GetTypeDescriptor();
+						auto scopeName = config->manager->typeNames[propTd];
+						if (scopeName->declarations.Count() > 0)
+						{
+							config->declDependencies.Add(node, scopeName->declarations[0]);
+						}
+					}
 				}
 			};
 

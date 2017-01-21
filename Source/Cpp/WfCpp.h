@@ -68,7 +68,11 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
+
 				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForFiles;
+				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
+				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
+
 				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;

@@ -11,6 +11,7 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_WORKFLOWATTRIBUTES_NUMBEREXPRESSION
 
 #include "WorkflowAttributes.h"
+#include "WorkflowAttributes_Expression.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)

@@ -6,6 +6,7 @@ namespace vl
 	{
 		namespace cppcodegen
 		{
+			using namespace collections;
 			using namespace stream;
 
 /***********************************************************************
@@ -140,6 +141,59 @@ GenerateCppFiles
 								writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
 								writer.WriteLine(L"");
 								writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
+								{
+									List<Ptr<WfDeclaration>> decls;
+									CopyFrom(decls, config.topLevelClassDeclsForFiles[fileName]);
+									for (vint i = 0; i < decls.Count(); i++)
+									{
+										if (auto classDecl = decls[i].Cast<WfClassDeclaration>())
+										{
+											{
+												vint index = config.enumDecls.Keys().IndexOf(classDecl.Obj());
+												if (index != -1)
+												{
+													CopyFrom(decls, config.enumDecls.GetByIndex(index), true);
+												}
+											}
+											{
+												vint index = config.structDecls.Keys().IndexOf(classDecl.Obj());
+												if (index != -1)
+												{
+													CopyFrom(decls, config.structDecls.GetByIndex(index), true);
+												}
+											}
+											{
+												vint index = config.classDecls.Keys().IndexOf(classDecl.Obj());
+												if (index != -1)
+												{
+													CopyFrom(decls, config.classDecls.GetByIndex(index), true);
+												}
+											}
+										}
+									}
+
+									SortedList<WString> fileNames;
+									FOREACH(Ptr<WfDeclaration>, decl, decls)
+									{
+										vint index = config.declDependencies.Keys().IndexOf(decl.Obj());
+										if (index != -1)
+										{
+											FOREACH(Ptr<WfDeclaration>, declDep, config.declDependencies.GetByIndex(index))
+											{
+												WString fileName = config.declFiles[declDep.Obj()];
+												if (fileName != L"" && !fileNames.Contains(fileName))
+												{
+													fileNames.Add(fileName);
+												}
+											}
+										}
+									}
+
+									FOREACH(WString, fileName, fileNames)
+									{
+										writer.WriteLine(L"#include \"" + fileName + L".h\"");
+									}
+								}
 								writer.WriteLine(L"");
 								config.WriteSubHeader(writer, fileName);
 								writer.WriteLine(L"");
