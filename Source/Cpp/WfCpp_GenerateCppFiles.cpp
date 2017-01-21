@@ -240,6 +240,7 @@ MergeCppFile
 			const vint WAIT_HEADER = 1;
 			const vint WAIT_OPEN = 2;
 			const vint WAIT_CLOSE = 3;
+			const vint UNUSED_USER_CONTENT = 4;
 
 			template<typename TCallback>
 			void ProcessCppContent(const WString& code, const TCallback& callback)
@@ -254,64 +255,94 @@ MergeCppFile
 					{
 						break;
 					}
-					auto content = RemoveSpacePrefix(line);
 
-					auto previousState = state;
-					switch (state)
+					if (line == L"// UNUSED_USER_CONTENT:")
 					{
-					case NORMAL:
-						if (content.Length() > 9 && content.Sub(0, 9) == L"USERIMPL(")
-						{
-							state = WAIT_HEADER;
-						}
-						break;
-					case WAIT_HEADER:
-						state = WAIT_OPEN;
-						break;
-					case WAIT_OPEN:
-						if (content == L"{")
-						{
-							state = WAIT_CLOSE;
-						}
-						break;
-					case WAIT_CLOSE:
-						if (content == L"}")
-						{
-							state = NORMAL;
-						}
-						break;
+						state = UNUSED_USER_CONTENT;
 					}
-					callback(previousState, state, line, content);
+
+					if (state == UNUSED_USER_CONTENT)
+					{
+						callback(state, state, line, line);
+					}
+					else
+					{
+						auto content = RemoveSpacePrefix(line);
+						auto previousState = state;
+						switch (state)
+						{
+						case NORMAL:
+							if (content.Length() > 9 && content.Sub(0, 9) == L"USERIMPL(")
+							{
+								state = WAIT_HEADER;
+							}
+							break;
+						case WAIT_HEADER:
+							state = WAIT_OPEN;
+							break;
+						case WAIT_OPEN:
+							if (content == L"{")
+							{
+								state = WAIT_CLOSE;
+							}
+							break;
+						case WAIT_CLOSE:
+							if (content == L"}")
+							{
+								state = NORMAL;
+							}
+							break;
+						}
+						callback(previousState, state, line, content);
+					}
 				}
 			}
 
 			WString MergeCppFileContent(const WString& dst, const WString& src)
 			{
-				Dictionary<WString, WString> userContents;
+				Dictionary<WString, WString> userContents, userContentsFull;
+				WString unusedUserContent = GenerateToStream([&](StreamWriter& writer)
 				{
 					WString name;
 					WString userImpl;
+					WString userImplFull;
 					ProcessCppContent(dst, [&](vint previousState, vint state, const WString& line, const WString& content)
 					{
-						if (previousState == NORMAL && state == WAIT_HEADER)
+						if (state == UNUSED_USER_CONTENT)
 						{
-							name = content;
-							userImpl = L"";
+							writer.WriteLine(line);
 						}
-						else if (previousState == WAIT_HEADER)
+						else
 						{
-							name += content;
-						}
-						else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
-						{
-							userImpl += line + L"\r\n";
-						}
-						else if (previousState == WAIT_CLOSE && state == NORMAL)
-						{
-							userContents.Add(name, userImpl);
+							if (previousState == NORMAL && state == WAIT_HEADER)
+							{
+								name = content;
+								userImpl = L"";
+								userImplFull = L"";
+							}
+							else if (previousState == WAIT_HEADER)
+							{
+								name += content;
+							}
+							else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
+							{
+								userImpl += line + L"\r\n";
+							}
+							else if (previousState == WAIT_CLOSE && state == NORMAL)
+							{
+								userImplFull += L"//" + line + L"\r\n";
+								userContents.Add(name, userImpl);
+								userContentsFull.Add(name, userImplFull);
+								name = L"";
+							}
+
+							if (name != L"")
+							{
+								userImplFull += L"//" + line + L"\r\n";
+							}
 						}
 					});
-				}
+				});
 				
 				return GenerateToStream([&](StreamWriter& writer)
 				{
@@ -342,11 +373,24 @@ MergeCppFile
 							else
 							{
 								writer.WriteString(userContents.Values()[index]);
-								userContents.Remove(name);
+								userContentsFull.Remove(name);
 							}
 						}
 						writer.WriteLine(line);
 					});
+
+					writer.WriteString(unusedUserContent);
+					if (userContentsFull.Count() > 0)
+					{
+						if (unusedUserContent == L"")
+						{
+							writer.WriteLine(L"// UNUSED_USER_CONTENT:");
+						}
+						FOREACH(WString, content, userContentsFull.Values())
+						{
+							writer.WriteString(content);
+						}
+					}
 				});
 			}
 		}
