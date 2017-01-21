@@ -242,13 +242,13 @@ namespace vl
 					auto current = classes[processed++];
 
 					writer.WriteLine(L"/***********************************************************************");
-					writer.WriteLine(L"Class (" + CppGetFullName(manager->declarationTypes[decl.Obj()].Obj()) + L")");
+					writer.WriteLine(L"Class (" + CppGetFullName(manager->declarationTypes[current.Obj()].Obj()) + L")");
 					writer.WriteLine(L"***********************************************************************/");
 					writer.WriteLine(L"");
 
-					FOREACH(Ptr<WfClassMember>, member, decl->members)
+					FOREACH(Ptr<WfClassMember>, member, current->members)
 					{
-						if (WriteCpp_ClassMember(writer, decl, member, nss))
+						if (WriteCpp_ClassMember(writer, current, member, nss))
 						{
 							writer.WriteLine(L"");
 						}

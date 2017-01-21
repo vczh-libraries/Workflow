@@ -68,23 +68,12 @@ Calculator::Calculator()
 }
 
 /***********************************************************************
-Class (::Calculator)
+Class (::Calculator::Internal)
 ***********************************************************************/
 
-::vl::vint32_t Calculator::Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum)
+::vl::vint32_t Calculator::Internal::Sum(::vl::vint32_t begin, ::vl::vint32_t end)
 {
-	if ((begin > end))
-	{
-		return sum;
-	}
-	else
-	{
-		return ::Calculator::Sum2((begin + 1), end, (sum + begin));
-	}
-}
-
-Calculator::Calculator()
-{
+	return ::Calculator::Sum2(begin, end, 0);
 }
 
 #undef GLOBAL_SYMBOL
