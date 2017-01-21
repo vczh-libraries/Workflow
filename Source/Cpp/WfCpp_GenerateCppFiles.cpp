@@ -224,9 +224,130 @@ GenerateCppFiles
 MergeCppFile
 ***********************************************************************/
 
+			WString RemoveSpacePrefix(const WString& s)
+			{
+				for (vint i = 0; i < s.Length(); i++)
+				{
+					if (s[i] != L' '&&s[i] != L'\t')
+					{
+						return s.Sub(i, s.Length() - i);
+					}
+				}
+				return WString::Empty;
+			}
+
+			const vint NORMAL = 0;
+			const vint WAIT_HEADER = 1;
+			const vint WAIT_OPEN = 2;
+			const vint WAIT_CLOSE = 3;
+
+			template<typename TCallback>
+			void ProcessCppContent(const WString& code, const TCallback& callback)
+			{
+				vint state = NORMAL;
+
+				StringReader reader(code);
+				while (!reader.IsEnd())
+				{
+					auto line = reader.ReadLine();
+					if (reader.IsEnd() && line == L"")
+					{
+						break;
+					}
+					auto content = RemoveSpacePrefix(line);
+
+					auto previousState = state;
+					switch (state)
+					{
+					case NORMAL:
+						if (content.Length() > 9 && content.Sub(0, 9) == L"USERIMPL(")
+						{
+							state = WAIT_HEADER;
+						}
+						break;
+					case WAIT_HEADER:
+						state = WAIT_OPEN;
+						break;
+					case WAIT_OPEN:
+						if (content == L"{")
+						{
+							state = WAIT_CLOSE;
+						}
+						break;
+					case WAIT_CLOSE:
+						if (content == L"}")
+						{
+							state = NORMAL;
+						}
+						break;
+					}
+					callback(previousState, state, line, content);
+				}
+			}
+
 			WString MergeCppFileContent(const WString& dst, const WString& src)
 			{
-				return src;
+				Dictionary<WString, WString> userContents;
+				{
+					WString name;
+					WString userImpl;
+					ProcessCppContent(dst, [&](vint previousState, vint state, const WString& line, const WString& content)
+					{
+						if (previousState == NORMAL && state == WAIT_HEADER)
+						{
+							name = content;
+							userImpl = L"";
+						}
+						else if (previousState == WAIT_HEADER)
+						{
+							name += content;
+						}
+						else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
+						{
+							userImpl += line + L"\r\n";
+						}
+						else if (previousState == WAIT_CLOSE && state == NORMAL)
+						{
+							userContents.Add(name, userImpl);
+						}
+					});
+				}
+				
+				return GenerateToStream([&](StreamWriter& writer)
+				{
+					WString name;
+					WString userImpl;
+					ProcessCppContent(src, [&](vint previousState, vint state, const WString& line, const WString& content)
+					{
+						if (previousState == NORMAL && state == WAIT_HEADER)
+						{
+							name = content;
+							userImpl = L"";
+						}
+						else if (previousState == WAIT_HEADER)
+						{
+							name += content;
+						}
+						else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
+						{
+							return;
+						}
+						else if (previousState == WAIT_CLOSE && state == NORMAL)
+						{
+							vint index = userContents.Keys().IndexOf(name);
+							if (index == -1)
+							{
+								writer.WriteString(userImpl);
+							}
+							else
+							{
+								writer.WriteString(userContents.Values()[index]);
+								userContents.Remove(name);
+							}
+						}
+						writer.WriteLine(line);
+					});
+				});
 			}
 		}
 	}
