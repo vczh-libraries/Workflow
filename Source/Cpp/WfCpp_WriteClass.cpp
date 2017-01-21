@@ -231,6 +231,36 @@ namespace vl
 				auto prefix = WriteNamespace(writer, nss, nss2);
 				return GenerateClassMemberImpl(this, writer, GetClassBaseName(decl), ConvertName(decl->name.value), member, prefix);
 			}
+
+			void WfCppConfig::WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
+			{
+				List<Ptr<WfClassDeclaration>> classes;
+				classes.Add(decl);
+				vint processed = 0;
+				while (processed < classes.Count())
+				{
+					auto current = classes[processed++];
+
+					writer.WriteLine(L"/***********************************************************************");
+					writer.WriteLine(L"Class (" + CppGetFullName(manager->declarationTypes[decl.Obj()].Obj()) + L")");
+					writer.WriteLine(L"***********************************************************************/");
+					writer.WriteLine(L"");
+
+					FOREACH(Ptr<WfClassMember>, member, decl->members)
+					{
+						if (WriteCpp_ClassMember(writer, decl, member, nss))
+						{
+							writer.WriteLine(L"");
+						}
+					}
+
+					vint index = classDecls.Keys().IndexOf(current.Obj());
+					if (index != -1)
+					{
+						CopyFrom(classes, classDecls.GetByIndex(index), true);
+					}
+				}
+			}
 		}
 	}
 }

@@ -127,6 +127,7 @@ namespace vl
 				WString					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 				void					WriteHeader_TopLevelClass(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 				bool					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss);
+				void					WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 
 				void					WriteHeader_Global(stream::StreamWriter& writer);
 				void					WriteCpp_Global(stream::StreamWriter& writer);
@@ -136,8 +137,13 @@ namespace vl
 
 				void					WritePushCompileOptions(stream::StreamWriter& writer);
 				void					WritePopCompileOptions(stream::StreamWriter& writer);
+				void					WriteCpp_PushMacros(stream::StreamWriter& writer);
+				void					WriteCpp_PopMacros(stream::StreamWriter& writer);
+
 				void					WriteHeader(stream::StreamWriter& writer, bool multiFile);
 				void					WriteCpp(stream::StreamWriter& writer, bool multiFile);
+				void					WriteSubHeader(stream::StreamWriter& writer, const WString& fileName);
+				void					WriteSubCpp(stream::StreamWriter& writer, const WString& fileName);
 			};
 
 /***********************************************************************

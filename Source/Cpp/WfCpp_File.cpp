@@ -32,6 +32,37 @@ namespace vl
 				writer.WriteLine(L"#pragma clang diagnostic pop");
 				writer.WriteLine(L"#endif");
 			}
+			
+			void WfCppConfig::WriteCpp_PushMacros(stream::StreamWriter& writer)
+			{
+				writer.WriteString(L"#define GLOBAL_SYMBOL ");
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyNamespace);
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyName);
+				writer.WriteLine(L"::");
+
+				writer.WriteString(L"#define GLOBAL_NAME ");
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyNamespace);
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyName);
+				writer.WriteLine(L"::Instance().");
+
+				writer.WriteString(L"#define GLOBAL_OBJ ");
+				writer.WriteString(L"&::");
+				writer.WriteString(assemblyNamespace);
+				writer.WriteString(L"::");
+				writer.WriteString(assemblyName);
+				writer.WriteLine(L"::Instance()");
+			}
+
+			void WfCppConfig::WriteCpp_PopMacros(stream::StreamWriter& writer)
+			{
+				writer.WriteLine(L"#undef GLOBAL_SYMBOL");
+				writer.WriteLine(L"#undef GLOBAL_NAME");
+				writer.WriteLine(L"#undef GLOBAL_OBJ");
+			}
 
 			void WfCppConfig::WriteHeader(stream::StreamWriter& writer, bool multiFile)
 			{
@@ -64,11 +95,25 @@ namespace vl
 						WriteHeader_ClassPreDecl(writer, decl, nss);
 					}
 					writer.WriteLine(L"");
-					//FOREACH(Ptr<WfClassDeclaration>, decl, (multiFile ? topLevelClassDeclsForFiles[L""] : classDecls[nullptr]))
-					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+					if (multiFile)
 					{
-						WriteHeader_TopLevelClass(writer, decl, nss);
-						writer.WriteLine(L"");
+						vint index = topLevelClassDeclsForFiles.Keys().IndexOf(L"");
+						if (index != -1)
+						{
+							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForFiles.GetByIndex(index))
+							{
+								WriteHeader_TopLevelClass(writer, decl, nss);
+								writer.WriteLine(L"");
+							}
+						}
+					}
+					else
+					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+						{
+							WriteHeader_TopLevelClass(writer, decl, nss);
+							writer.WriteLine(L"");
+						}
 					}
 				}
 				WriteNamespaceEnd(writer, nss);
@@ -97,27 +142,7 @@ namespace vl
 			{
 				WritePushCompileOptions(writer);
 				writer.WriteLine(L"");
-
-				writer.WriteString(L"#define GLOBAL_SYMBOL ");
-				writer.WriteString(L"::");
-				writer.WriteString(assemblyNamespace);
-				writer.WriteString(L"::");
-				writer.WriteString(assemblyName);
-				writer.WriteLine(L"::");
-
-				writer.WriteString(L"#define GLOBAL_NAME ");
-				writer.WriteString(L"::");
-				writer.WriteString(assemblyNamespace);
-				writer.WriteString(L"::");
-				writer.WriteString(assemblyName);
-				writer.WriteLine(L"::Instance().");
-
-				writer.WriteString(L"#define GLOBAL_OBJ ");
-				writer.WriteString(L"&::");
-				writer.WriteString(assemblyNamespace);
-				writer.WriteString(L"::");
-				writer.WriteString(assemblyName);
-				writer.WriteLine(L"::Instance()");
+				WriteCpp_PushMacros(writer);
 
 				writer.WriteLine(L"");
 				writer.WriteLine(L"/***********************************************************************");
@@ -127,31 +152,33 @@ namespace vl
 				WriteCpp_Global(writer);
 				writer.WriteLine(L"");
 
-				List<WString> nss;
-
-				FOREACH(Ptr<WfClassDeclaration>, key, classDecls.Keys())
+				if (classDecls.Keys().Contains(nullptr))
 				{
-					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[key.Obj()])
-					{
-						writer.WriteLine(L"/***********************************************************************");
-						writer.WriteLine(L"Class (" + CppGetFullName(manager->declarationTypes[decl.Obj()].Obj()) + L")");
-						writer.WriteLine(L"***********************************************************************/");
-						writer.WriteLine(L"");
+					List<WString> nss;
 
-						FOREACH(Ptr<WfClassMember>, member, decl->members)
+					if (multiFile)
+					{
+						vint index = topLevelClassDeclsForFiles.Keys().IndexOf(L"");
+						if (index != -1)
 						{
-							if (WriteCpp_ClassMember(writer, decl, member, nss))
+							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForFiles.GetByIndex(index))
 							{
-								writer.WriteLine(L"");
+								WriteCpp_Class(writer, decl, nss);
 							}
 						}
 					}
+					else
+					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+						{
+							WriteCpp_Class(writer, decl, nss);
+						}
+					}
+
+					WriteNamespaceEnd(writer, nss);
 				}
 
-				WriteNamespaceEnd(writer, nss);
-				writer.WriteLine(L"#undef GLOBAL_SYMBOL");
-				writer.WriteLine(L"#undef GLOBAL_NAME");
-				writer.WriteLine(L"#undef GLOBAL_OBJ");
+				WriteCpp_PopMacros(writer);
 
 				if (manager->declarationTypes.Count() > 0)
 				{
@@ -163,6 +190,41 @@ namespace vl
 					WriteCpp_Reflection(writer);
 				}
 
+				writer.WriteLine(L"");
+				WritePopCompileOptions(writer);
+			}
+
+			void WfCppConfig::WriteSubHeader(stream::StreamWriter& writer, const WString& fileName)
+			{
+				WritePushCompileOptions(writer);
+				writer.WriteLine(L"");
+				List<WString> nss;
+
+				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForFiles.Get(fileName))
+				{
+					WriteHeader_TopLevelClass(writer, decl, nss);
+					writer.WriteLine(L"");
+				}
+
+				WriteNamespaceEnd(writer, nss);
+				WritePopCompileOptions(writer);
+			}
+
+			void WfCppConfig::WriteSubCpp(stream::StreamWriter& writer, const WString& fileName)
+			{
+				WritePushCompileOptions(writer);
+				writer.WriteLine(L"");
+				WriteCpp_PushMacros(writer);
+				writer.WriteLine(L"");
+				List<WString> nss;
+
+				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForFiles.Get(fileName))
+				{
+					WriteCpp_Class(writer, decl, nss);
+				}
+
+				WriteNamespaceEnd(writer, nss);
+				WriteCpp_PopMacros(writer);
 				writer.WriteLine(L"");
 				WritePopCompileOptions(writer);
 			}

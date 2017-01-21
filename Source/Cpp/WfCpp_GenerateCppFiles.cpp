@@ -109,9 +109,45 @@ GenerateCppFiles
 						writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->includeFileName));
 						writer.WriteLine(L"");
 						writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
+						FOREACH(WString, fileName, config.topLevelClassDeclsForFiles.Keys())
+						{
+							if (fileName != L"")
+							{
+								writer.WriteLine(L"#include \"" + fileName + L".h\"");
+							}
+						}
 						writer.WriteLine(L"");
 						writer.WriteLine(L"#endif");
 					}));
+
+					FOREACH(WString, fileName, config.topLevelClassDeclsForFiles.Keys())
+					{
+						if (fileName != L"")
+						{
+							output->cppFiles.Add(fileName + L".h", GenerateToStream([&](StreamWriter& writer)
+							{
+								GenerateCppComment(writer, input->comment);
+								writer.WriteLine(L"");
+								writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(fileName));
+								writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
+								writer.WriteLine(L"");
+								writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
+								writer.WriteLine(L"");
+								config.WriteSubHeader(writer, fileName);
+								writer.WriteLine(L"");
+								writer.WriteLine(L"#endif");
+							}));
+
+							output->cppFiles.Add(fileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
+							{
+								GenerateCppComment(writer, input->comment);
+								writer.WriteLine(L"");
+								writer.WriteLine(L"#include \"" + input->includeFileName + L".h\"");
+								writer.WriteLine(L"");
+								config.WriteSubCpp(writer, fileName);
+							}));
+						}
+					}
 				}
 
 				return output;
