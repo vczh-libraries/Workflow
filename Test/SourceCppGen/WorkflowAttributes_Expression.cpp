@@ -31,13 +31,13 @@ Class (::calculator::Expression)
 
 namespace calculator
 {
-	USERIMPL(::calculator::Expression::Print())
+	USERIMPL(/* ::calculator::Expression */)
 	::vl::WString Expression::Print()
 	{
 		throw ::vl::Exception(L"You should implement this function.");
 	}
 
-	USERIMPL(::calculator::Expression::Evaluate())
+	USERIMPL(/* ::calculator::Expression */)
 	::vl::vint32_t Expression::Evaluate()
 	{
 		throw ::vl::Exception(L"You should implement this function.");

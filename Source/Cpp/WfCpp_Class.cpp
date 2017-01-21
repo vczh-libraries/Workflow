@@ -206,9 +206,9 @@ WfGenerateClassMemberImplVisitor
 						if (userImpl)
 						{
 							writer.WriteString(prefix);
-							writer.WriteString(L"USERIMPL(");
-							config->WriteFunctionHeader(writer, node, classFullName + L"::" + config->ConvertName(node->name.value), false);
-							writer.WriteLine(L")");
+							writer.WriteString(L"USERIMPL(/* ");
+							writer.WriteString(classFullName);
+							writer.WriteLine(L" */)");
 						}
 
 						writer.WriteString(prefix);
@@ -254,9 +254,9 @@ WfGenerateClassMemberImplVisitor
 					if (userImpl)
 					{
 						writer.WriteString(prefix);
-						writer.WriteString(L"USERIMPL(");
-						config->WriteFunctionHeader(writer, methodInfo, arguments, classFullName + L"::" + className, false);
-						writer.WriteLine(L")");
+						writer.WriteString(L"USERIMPL(/* ");
+						writer.WriteString(classFullName);
+						writer.WriteLine(L" */)");
 					}
 
 					writer.WriteString(prefix);
@@ -305,9 +305,9 @@ WfGenerateClassMemberImplVisitor
 					if (userImpl)
 					{
 						writer.WriteString(prefix);
-						writer.WriteString(L"USERIMPL(");
-						writer.WriteLine(prefix + classFullName + L"::~" + className + L"()");
-						writer.WriteLine(L")");
+						writer.WriteString(L"USERIMPL(/* ");
+						writer.WriteString(classFullName);
+						writer.WriteLine(L" */)");
 					}
 
 					writer.WriteLine(prefix + classBaseName + L"::~" + className + L"()");
