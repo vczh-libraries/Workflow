@@ -28,7 +28,6 @@ class Dtor;
 class Dtor : public ::vl::Object, public ::vl::reflection::Description<Dtor>
 {
 public:
-
 	::vl::WString name = ::vl::WString(L"", false);
 	::Dtor* next = static_cast<::Dtor*>(nullptr);
 	Dtor();

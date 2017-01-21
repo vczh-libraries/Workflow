@@ -32,15 +32,14 @@ namespace calculator
 	class Expression : public ::vl::Object, public ::vl::reflection::Description<Expression>
 	{
 	public:
-
 		Expression();
 	};
 
 	class NumberExpression : public ::calculator::Expression, public ::vl::reflection::Description<NumberExpression>
 	{
-	public:
-
+	private:
 		::vl::vint32_t value = 0;
+	public:
 		::vl::vint32_t GetValue();
 		void SetValue(::vl::vint32_t _value);
 		NumberExpression(::vl::vint32_t _value);
@@ -57,22 +56,27 @@ namespace calculator
 			Div = 3UL,
 		};
 
-
+	private:
 		::calculator::BinaryExpression::BinaryOperator op = ::calculator::BinaryExpression::BinaryOperator::Add;
+	public:
 		::calculator::BinaryExpression::BinaryOperator GetOp();
 		void SetOp(::calculator::BinaryExpression::BinaryOperator _value);
+	private:
 		::vl::Ptr<::calculator::Expression> left = ::vl::Ptr<::calculator::Expression>();
+	public:
 		::vl::Ptr<::calculator::Expression> GetLeft();
 		void SetLeft(::vl::Ptr<::calculator::Expression> _value);
+	private:
 		::vl::Ptr<::calculator::Expression> right = ::vl::Ptr<::calculator::Expression>();
+	public:
 		::vl::Ptr<::calculator::Expression> GetRight();
 		void SetRight(::vl::Ptr<::calculator::Expression> _value);
 		BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right);
 	};
 	inline ::calculator::BinaryExpression::BinaryOperator operator& (::calculator::BinaryExpression::BinaryOperator a, ::calculator::BinaryExpression::BinaryOperator b) { return static_cast<::calculator::BinaryExpression::BinaryOperator>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
 	inline ::calculator::BinaryExpression::BinaryOperator operator| (::calculator::BinaryExpression::BinaryOperator a, ::calculator::BinaryExpression::BinaryOperator b) { return static_cast<::calculator::BinaryExpression::BinaryOperator>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
-}
 
+}
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

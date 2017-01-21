@@ -29,7 +29,6 @@ class IAdder;
 class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ISummer>
 {
 public:
-
 	virtual ::vl::vint32_t GetSum() = 0;
 	::vl::Event<void()> SumChanged;
 };
@@ -37,7 +36,6 @@ public:
 class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>
 {
 public:
-
 	virtual void Add(::vl::vint32_t value) = 0;
 };
 

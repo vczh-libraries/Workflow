@@ -33,7 +33,6 @@ namespace workflow
 		class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 		{
 		public:
-
 			Base();
 			Base(::vl::vint32_t x);
 		};
@@ -41,13 +40,12 @@ namespace workflow
 		class Derived : public ::workflow::hints::Base, public ::vl::reflection::Description<Derived>
 		{
 		public:
-
 			Derived();
 			Derived(::vl::vint32_t x);
 		};
+
 	}
 }
-
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

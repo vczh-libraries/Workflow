@@ -28,7 +28,6 @@ class Methods;
 class Methods : public ::vl::Object, public ::vl::reflection::Description<Methods>
 {
 public:
-
 	::vl::vint32_t x = 0;
 	Methods();
 	Methods(::vl::vint32_t _x);

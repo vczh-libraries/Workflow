@@ -44,7 +44,6 @@ inline bool operator!= (const Point& a, const Point& b)
 	return false;
 }
 
-
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

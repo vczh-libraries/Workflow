@@ -23,7 +23,6 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
-
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

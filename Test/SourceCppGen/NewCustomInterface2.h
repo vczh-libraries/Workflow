@@ -28,7 +28,6 @@ class IMyInterface2;
 class IMyInterface2 : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface2>
 {
 public:
-
 	virtual ::vl::vint32_t Get100() = 0;
 };
 

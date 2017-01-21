@@ -510,15 +510,15 @@ WfCppConfig
 					{
 						WriteHeader_ClassPreDecl(writer, decl, nss);
 					}
+					writer.WriteLine(L"");
 					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
 					{
-						writer.WriteLine(L"");
 						WriteHeader_TopLevelClass(writer, decl, nss);
+						writer.WriteLine(L"");
 					}
 				}
 				WriteNamespaceEnd(writer, nss);
 
-				writer.WriteLine(L"");
 				writer.WriteLine(L"/***********************************************************************");
 				writer.WriteLine(L"Global Variables and Functions");
 				writer.WriteLine(L"***********************************************************************/");

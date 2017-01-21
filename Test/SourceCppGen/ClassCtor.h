@@ -29,7 +29,6 @@ class Ctor;
 class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 {
 public:
-
 	::vl::vint32_t x = 0;
 	Base();
 	Base(::vl::vint32_t _x);
@@ -41,7 +40,6 @@ public:
 class Ctor : public ::Base, public ::test::ObservableValue, public ::vl::reflection::Description<Ctor>
 {
 public:
-
 	Ctor();
 	Ctor(::vl::vint32_t y, bool b);
 	Ctor(bool b, ::vl::vint32_t value);

@@ -76,12 +76,21 @@ namespace vl
 				}
 				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
 				writer.WriteLine(prefix + L"{");
-				writer.WriteLine(prefix + L"public:");
+
+				const vint PRIVATE = 0;
+				const vint PROTECTED = 1;
+				const vint PUBLIC = 2;
+				vint accessor = -1;
 
 				{
 					vint index = enumDecls.Keys().IndexOf(decl.Obj());
 					if (index != -1)
 					{
+						if (accessor != PUBLIC)
+						{
+							accessor = PUBLIC;
+							writer.WriteLine(prefix + L"public:");
+						}
 						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls.GetByIndex(index))
 						{
 							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
@@ -94,6 +103,11 @@ namespace vl
 					vint index = structDecls.Keys().IndexOf(decl.Obj());
 					if (index != -1)
 					{
+						if (accessor != PUBLIC)
+						{
+							accessor = PUBLIC;
+							writer.WriteLine(prefix + L"public:");
+						}
 						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls.GetByIndex(index))
 						{
 							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
@@ -106,21 +120,51 @@ namespace vl
 					vint index = classDecls.Keys().IndexOf(decl.Obj());
 					if (index != -1)
 					{
+						if (accessor != PUBLIC)
+						{
+							accessor = PUBLIC;
+							writer.WriteLine(prefix + L"public:");
+						}
 						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
 						{
 							WriteHeader_ClassPreDecl(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
 						}
+						writer.WriteLine(L"");
 						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
 						{
-							writer.WriteLine(L"");
 							WriteHeader_Class(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
 						}
 					}
 				}
 
-				writer.WriteLine(L"");
 				FOREACH(Ptr<WfClassMember>, member, decl->members)
 				{
+					vint memberAccessor = PUBLIC;
+					if (manager->GetAttribute(member->declaration->attributes, L"cpp", L"Private"))
+					{
+						memberAccessor = PRIVATE;
+					}
+					else if (manager->GetAttribute(member->declaration->attributes, L"cpp", L"Protected"))
+					{
+						memberAccessor = PROTECTED;
+					}
+
+					if (accessor != memberAccessor)
+					{
+						accessor = memberAccessor;
+						switch (accessor)
+						{
+						case PRIVATE:
+							writer.WriteLine(prefix + L"private:");
+							break;
+						case PROTECTED:
+							writer.WriteLine(prefix + L"protected:");
+							break;
+						case PUBLIC:
+							writer.WriteLine(prefix + L"public:");
+							break;
+						}
+					}
 					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), member, prefix + L"\t", false);
 				}
 
