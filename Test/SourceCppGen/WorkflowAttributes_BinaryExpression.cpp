@@ -35,29 +35,14 @@ namespace calculator
 		return ::vl::__vwsn::This(this)->op;
 	}
 
-	void BinaryExpression::SetOp(::calculator::BinaryExpression::BinaryOperator _value)
-	{
-		(::vl::__vwsn::This(this)->op = _value);
-	}
-
 	::vl::Ptr<::calculator::Expression> BinaryExpression::GetLeft()
 	{
 		return ::vl::__vwsn::This(this)->left;
 	}
 
-	void BinaryExpression::SetLeft(::vl::Ptr<::calculator::Expression> _value)
-	{
-		(::vl::__vwsn::This(this)->left = _value);
-	}
-
 	::vl::Ptr<::calculator::Expression> BinaryExpression::GetRight()
 	{
 		return ::vl::__vwsn::This(this)->right;
-	}
-
-	void BinaryExpression::SetRight(::vl::Ptr<::calculator::Expression> _value)
-	{
-		(::vl::__vwsn::This(this)->right = _value);
 	}
 
 	BinaryExpression::BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right)

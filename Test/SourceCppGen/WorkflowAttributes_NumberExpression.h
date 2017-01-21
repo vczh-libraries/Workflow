@@ -35,7 +35,6 @@ namespace calculator
 		::vl::vint32_t value = 0;
 	public:
 		::vl::vint32_t GetValue();
-		void SetValue(::vl::vint32_t _value);
 		NumberExpression(::vl::vint32_t _value);
 	};
 

@@ -35,11 +35,6 @@ namespace calculator
 		return ::vl::__vwsn::This(this)->value;
 	}
 
-	void NumberExpression::SetValue(::vl::vint32_t _value)
-	{
-		(::vl::__vwsn::This(this)->value = _value);
-	}
-
 	NumberExpression::NumberExpression(::vl::vint32_t _value)
 	{
 		(::vl::__vwsn::This(this)->value = _value);
