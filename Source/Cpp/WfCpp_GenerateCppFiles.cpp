@@ -361,6 +361,7 @@ MergeCppFile
 						}
 						else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
 						{
+							userImpl += line + L"\r\n";
 							return;
 						}
 						else if (previousState == WAIT_CLOSE && state == NORMAL)
