@@ -48,28 +48,6 @@ namespace vl_workflow_global
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::calculator::BinaryExpression)
-			DECL_TYPE_INFO(::calculator::BinaryExpression::BinaryOperator)
-			DECL_TYPE_INFO(::calculator::Expression)
-			DECL_TYPE_INFO(::calculator::NumberExpression)
-#endif
-
-			extern bool LoadWorkflowAttributesTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

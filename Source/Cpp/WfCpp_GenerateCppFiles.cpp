@@ -108,6 +108,7 @@ GenerateCppFiles
 						writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->includeFileName));
 						writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->includeFileName));
 						writer.WriteLine(L"");
+
 						writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
 						FOREACH(WString, fileName, config.topLevelClassDeclsForFiles.Keys())
 						{
@@ -116,6 +117,13 @@ GenerateCppFiles
 								writer.WriteLine(L"#include \"" + fileName + L".h\"");
 							}
 						}
+
+						if (config.manager->declarationTypes.Count() > 0)
+						{
+							writer.WriteLine(L"");
+							config.WriteHeader_Reflection(writer);
+						}
+
 						writer.WriteLine(L"");
 						writer.WriteLine(L"#endif");
 					}));

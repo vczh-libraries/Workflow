@@ -124,14 +124,13 @@ namespace vl
 				writer.WriteLine(L"");
 				WriteHeader_Global(writer);
 
-				if (manager->declarationTypes.Count() > 0)
+				if (!multiFile)
 				{
-					writer.WriteLine(L"");
-					writer.WriteLine(L"/***********************************************************************");
-					writer.WriteLine(L"Reflection");
-					writer.WriteLine(L"***********************************************************************/");
-					writer.WriteLine(L"");
-					WriteHeader_Reflection(writer);
+					if (manager->declarationTypes.Count() > 0)
+					{
+						writer.WriteLine(L"");
+						WriteHeader_Reflection(writer);
+					}
 				}
 
 				writer.WriteLine(L"");
@@ -182,10 +181,6 @@ namespace vl
 
 				if (manager->declarationTypes.Count() > 0)
 				{
-					writer.WriteLine(L"");
-					writer.WriteLine(L"/***********************************************************************");
-					writer.WriteLine(L"Reflection");
-					writer.WriteLine(L"***********************************************************************/");
 					writer.WriteLine(L"");
 					WriteCpp_Reflection(writer);
 				}

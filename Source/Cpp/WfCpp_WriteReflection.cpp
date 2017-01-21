@@ -28,6 +28,10 @@ namespace vl
 
 			void WfCppConfig::WriteHeader_Reflection(stream::StreamWriter& writer)
 			{
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Reflection");
+				writer.WriteLine(L"***********************************************************************/");
+				writer.WriteLine(L"");
 				List<ITypeDescriptor*> tds;
 				LoadTypes(this, tds);
 
@@ -180,6 +184,10 @@ namespace vl
 
 			void WfCppConfig::WriteCpp_Reflection(stream::StreamWriter& writer)
 			{
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Reflection");
+				writer.WriteLine(L"***********************************************************************/");
+				writer.WriteLine(L"");
 				List<ITypeDescriptor*> tds;
 				LoadTypes(this, tds);
 
