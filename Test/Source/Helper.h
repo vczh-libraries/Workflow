@@ -18,6 +18,7 @@ using namespace vl::workflow::cppcodegen;
 using namespace vl::workflow::runtime;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
+using namespace vl::filesystem;
 
 extern Ptr<ParsingTable>	GetWorkflowTable();
 extern void					ReleaseWorkflowTable();

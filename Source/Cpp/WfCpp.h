@@ -74,7 +74,7 @@ namespace vl
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
 				collections::Dictionary<Ptr<WfExpression>, Ptr<ClosureInfo>>				closureInfos;
 
-				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName);
+				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace);
 				~WfCppConfig();
 
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix, ITypeInfo* expectedType);
@@ -155,12 +155,38 @@ WfCppConfig::Write
 				vint					blockCounter = 0;
 			};
 
-			extern void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);
-			extern void GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
-			extern void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix, bool forClassExpr);
-			extern bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
+			extern void					GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);
+			extern void					GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
+			extern void					GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix, bool forClassExpr);
+			extern bool					GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
 
-			extern void ConvertType(WfCppConfig* config, stream::StreamWriter& writer, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, const Func<void()>& writeExpression, bool strongCast);
+			extern void					ConvertType(WfCppConfig* config, stream::StreamWriter& writer, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, const Func<void()>& writeExpression, bool strongCast);
+
+/***********************************************************************
+GenerateCppFiles
+***********************************************************************/
+
+			class WfCppInput : public Object
+			{
+			public:
+				WString											comment;
+				WString											headerGuardPrefix;
+				WString											assemblyName;
+				WString											assemblyNamespace;
+				WString											includeFileName;
+				WString											defaultFileName;
+				collections::List<WString>						extraIncludes;
+
+				WfCppInput(const WString& _assemblyName);
+			};
+
+			class WfCppOutput : public Object
+			{
+			public:
+				collections::Dictionary<WString, WString>		cppFiles;
+			};
+
+			extern Ptr<WfCppOutput>		GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager);
 		}
 	}
 }

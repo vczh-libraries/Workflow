@@ -69,45 +69,17 @@ TEST_CASE(TestCodegen)
 
 		if (cppCodegen)
 		{
-			WfCppConfig config(&manager, itemName);
-			if (manager.declarationTypes.Count() > 0)
+			auto input = MakePtr<WfCppInput>(itemName);
+			input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";
+			input->extraIncludes.Add(L"../Source/CppTypes.h");
+			auto output = GenerateCppFiles(input, &manager);
 			{
-				reflectableAssemblies.Add(itemName);
+				auto fileName = input->defaultFileName + L".h";
+				File(GetCppOutputPath() + fileName).WriteAllText(output->cppFiles[fileName], false, BomEncoder::Utf8);
 			}
-
 			{
-				FileStream headerFile(GetCppOutputPath() + config.assemblyName + L".h", FileStream::WriteOnly);
-				Utf8Encoder headerEncoder;
-				EncoderStream headerStream(headerFile, headerEncoder);
-				StreamWriter headerWriter(headerStream);
-
-				headerWriter.WriteLine(L"/***********************************************************************");
-				headerWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
-				headerWriter.WriteLine(L"***********************************************************************/");
-				headerWriter.WriteLine(L"");
-				headerWriter.WriteLine(L"#ifndef VCZH_WORKFLOW_CPP_GENERATED_" + wupper(config.assemblyName));
-				headerWriter.WriteLine(L"#define VCZH_WORKFLOW_CPP_GENERATED_" + wupper(config.assemblyName));
-				headerWriter.WriteLine(L"");
-				headerWriter.WriteLine(L"#include \"../Source/CppTypes.h\"");
-				headerWriter.WriteLine(L"");
-				config.WriteHeader(headerWriter);
-				headerWriter.WriteLine(L"");
-				headerWriter.WriteLine(L"#endif");
-			}
-
-			{
-				FileStream cppFile(GetCppOutputPath() + config.assemblyName + L".cpp", FileStream::WriteOnly);
-				Utf8Encoder cppEncoder;
-				EncoderStream cppStream(cppFile, cppEncoder);
-				StreamWriter cppWriter(cppStream);
-
-				cppWriter.WriteLine(L"/***********************************************************************");
-				cppWriter.WriteLine(L"Generated from ../Resources/Codegen/" + itemName + L".txt");
-				cppWriter.WriteLine(L"***********************************************************************/");
-				cppWriter.WriteLine(L"");
-				cppWriter.WriteLine(L"#include \"" + config.assemblyName + L".h\"");
-				cppWriter.WriteLine(L"");
-				config.WriteCpp(cppWriter);
+				auto fileName = input->defaultFileName + L".cpp";
+				File(GetCppOutputPath() + fileName).WriteAllText(output->cppFiles[fileName], false, BomEncoder::Utf8);
 			}
 		}
 		
