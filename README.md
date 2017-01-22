@@ -53,7 +53,7 @@ There are two important test that will help you build the concept:
   * In [this folder](https://github.com/vczh-libraries/Workflow/tree/master/Test/Resources/Codegen) you can find all script files to test.
   * In [this file](https://github.com/vczh-libraries/Workflow/blob/master/Test/Resources/IndexCodegen.txt) you can find all expected result for each Main function in all script files to test.
   * In [this file](https://github.com/vczh-libraries/Workflow/blob/master/Test/Source/TestCodegen.cpp) you can see how the C++ unit test load all script files, print all internal information during compiling, and run all test functions.
-  * Almost all test casses in **Codegen** generates C++ code while running the unit test, which can be executed in [the UnitTest_CppCodegen solution](https://github.com/vczh-libraries/Workflow/tree/master/Test/UnitTest/UnitTest_CppCodegen).
+  * Almost all test casses in **Codegen** generates C++ code while running the unit test to [this folder](https://github.com/vczh-libraries/Workflow/tree/master/Test/SourceCppGen), which can be executed in [the UnitTest_CppCodegen solution](https://github.com/vczh-libraries/Workflow/tree/master/Test/UnitTest/UnitTest_CppCodegen).
 * **Debugger** test.
   * In [this folder](https://github.com/vczh-libraries/Workflow/tree/master/Test/Resources/Debugger) you can find all script files to test the debugger.
   * In [this file](https://github.com/vczh-libraries/Workflow/blob/master/Test/Source/TestDebugger.cpp) you can see how the C++ unit test load all script files, set every kind of break points and print variable values during debugging.
