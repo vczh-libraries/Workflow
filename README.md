@@ -1,5 +1,5 @@
 # Workflow
-### Debuggable script language for interoperation with C++ using reflection.
+### Debuggable script language for interoperation with C++ using reflection, which can also generate C++ code.
 
 ### Notice
 
@@ -42,6 +42,10 @@ Here is a simple tutorial to integrate this scripting system to your C++ project
         * **OnStartExecution**. This function will be called before any execution. Nested script and C++ function call will not call this callback multiple times.
         * **OnStopExecution**. This function will be called after any execution. Nested script and C++ function call will not call this callback multiple times.
     * If the script function calls a C++ function which calls another script function (and nested multiple levels like this), the **WfDebugger** will correctly handle the call stack, and let you see all nested script function calls.
+    
+### Generating C++ Code from Scripts
+* Use `vl::workflow::cppcodegen::GenerateCppFiles` to generate C++ code from Workflow scripts. You have some options to choose some names and header comments.
+* Use `vl::workflow::cppcodegen::MergeCppFileContent` to merge the latest generated code with a modified old version of generated code, if you use `@cpp:UseImpl` on some functions to indicate that user should insert their implementation in C++. You are able to import their modification for those functions **only** to your new generated code.
 
 ### Leaning by Unit Test
 There are two important test that will help you build the concept:
@@ -49,6 +53,7 @@ There are two important test that will help you build the concept:
   * In [this folder](https://github.com/vczh-libraries/Workflow/tree/master/Test/Resources/Codegen) you can find all script files to test.
   * In [this file](https://github.com/vczh-libraries/Workflow/blob/master/Test/Resources/IndexCodegen.txt) you can find all expected result for each Main function in all script files to test.
   * In [this file](https://github.com/vczh-libraries/Workflow/blob/master/Test/Source/TestCodegen.cpp) you can see how the C++ unit test load all script files, print all internal information during compiling, and run all test functions.
+  * Almost all test casses in **Codegen** generates C++ code while running the unit test, which can be executed in [the UnitTest_CppCodegen solution](https://github.com/vczh-libraries/Workflow/tree/master/Test/UnitTest/UnitTest_CppCodegen).
 * **Debugger** test.
   * In [this folder](https://github.com/vczh-libraries/Workflow/tree/master/Test/Resources/Debugger) you can find all script files to test the debugger.
   * In [this file](https://github.com/vczh-libraries/Workflow/blob/master/Test/Source/TestDebugger.cpp) you can see how the C++ unit test load all script files, set every kind of break points and print variable values during debugging.
