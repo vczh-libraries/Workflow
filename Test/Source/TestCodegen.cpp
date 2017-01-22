@@ -72,7 +72,7 @@ TEST_CASE(TestCodegen)
 			auto input = MakePtr<WfCppInput>(itemName);
 			input->multiFile = WfCppMultiFile::OnDemand;
 			input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";
-			input->extraIncludes.Add(L"../Source/CppTypes.h");
+			input->normalIncludes.Add(L"../Source/CppTypes.h");
 			auto output = GenerateCppFiles(input, &manager);
 			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
