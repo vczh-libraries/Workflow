@@ -23,6 +23,12 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace vl_workflow_global
+{
+	class __vwsnc1_NewCustomInterface2_main__IMyInterface2;
+	class __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator;
+}
+
 class IMyInterface2;
 
 class IMyInterface2 : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface2>

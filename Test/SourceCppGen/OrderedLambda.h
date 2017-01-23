@@ -23,6 +23,12 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace vl_workflow_global
+{
+	struct __vwsno1_OrderedLambda_Adder_;
+	struct __vwsno2_OrderedLambda_Adder_;
+}
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

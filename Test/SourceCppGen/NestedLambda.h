@@ -23,6 +23,21 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace vl_workflow_global
+{
+	class __vwsnc1_NestedLambda_main__IA;
+	class __vwsnc2_NestedLambda_main_H__IB;
+	struct __vwsnf3_NestedLambda_main_H_Calculate_;
+	struct __vwsnf4_NestedLambda_main_H_Calculate_;
+	struct __vwsnf7_NestedLambda_main_Calculate_;
+	struct __vwsnf8_NestedLambda_main_Calculate_;
+	struct __vwsno1_NestedLambda_main_H_;
+	struct __vwsno2_NestedLambda_main_H_Calculate_;
+	struct __vwsno5_NestedLambda_main_H_Calculate__;
+	struct __vwsno6_NestedLambda_main_Calculate_;
+	struct __vwsno9_NestedLambda_main_Calculate__;
+}
+
 class IA;
 class IB;
 

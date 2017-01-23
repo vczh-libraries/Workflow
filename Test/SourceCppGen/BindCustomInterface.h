@@ -23,6 +23,14 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace vl_workflow_global
+{
+	class __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription;
+	class __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc3_BindCustomInterface_main__IAdder;
+	struct __vwsnf1_BindCustomInterface_Bind_;
+}
+
 class ISummer;
 class IAdder;
 

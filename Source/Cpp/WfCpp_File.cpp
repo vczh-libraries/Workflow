@@ -71,6 +71,30 @@ namespace vl
 			{
 				WritePushCompileOptions(writer);
 				writer.WriteLine(L"");
+
+				if (closureInfos.Count() > 0)
+				{
+					Dictionary<WString, Ptr<WfExpression>> reversedClosures;
+					CopyFrom(
+						reversedClosures,
+						From(closureInfos)
+							.Select([](Pair<Ptr<WfExpression>, Ptr<ClosureInfo>> pair)
+							{
+								return Pair<WString, Ptr<WfExpression>>(pair.value->lambdaClassName, pair.key);
+							})
+						);
+
+					writer.WriteString(L"namespace ");
+					writer.WriteLine(assemblyNamespace);
+					writer.WriteLine(L"{");
+					FOREACH(Ptr<WfExpression>, closure, reversedClosures.Values())
+					{
+						WriteHeader_ClosurePreDecl(writer, closure);
+					}
+					writer.WriteLine(L"}");
+					writer.WriteLine(L"");
+				}
+
 				List<WString> nss;
 
 				if (enumDecls.Keys().Contains(nullptr))

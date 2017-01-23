@@ -23,6 +23,13 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace vl_workflow_global
+{
+	class __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
+	struct __vwsnf1_BindSimple_Base_Initialize_;
+}
+
 class Base;
 class Derived;
 

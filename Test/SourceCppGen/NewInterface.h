@@ -23,6 +23,12 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace vl_workflow_global
+{
+	class __vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable;
+	class __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator;
+}
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

@@ -172,6 +172,22 @@ WfCppConfig::CollectClosureInfo
 WfCppConfig::WriteCpp
 ***********************************************************************/
 
+			void WfCppConfig::WriteHeader_ClosurePreDecl(stream::StreamWriter& writer, Ptr<WfExpression> closure)
+			{
+				auto info = closureInfos[closure.Obj()];
+				writer.WriteString(L"\t");
+				if (closure.Cast<WfNewInterfaceExpression>())
+				{
+					writer.WriteString(L"class ");
+				}
+				else
+				{
+					writer.WriteString(L"struct ");
+				}
+				writer.WriteString(info->lambdaClassName);
+				writer.WriteLine(L";");
+			}
+
 			void WfCppConfig::WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure)
 			{
 				auto info = closureInfos[closure.Obj()];

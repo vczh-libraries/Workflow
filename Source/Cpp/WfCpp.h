@@ -39,6 +39,7 @@ namespace vl
 				using ITypeInfo = reflection::description::ITypeInfo;
 				using IMethodInfo = reflection::description::IMethodInfo;
 				using ITypeDescriptor = reflection::description::ITypeDescriptor;
+				using ParsingTreeCustomBase = parsing::ParsingTreeCustomBase;
 
 			public:
 				class ClosureInfo : public Object
@@ -68,16 +69,18 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
+				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
+				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 
 				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForFiles;
 				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
 				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
 
-				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
-				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
 				collections::Dictionary<Ptr<WfExpression>, Ptr<ClosureInfo>>				closureInfos;
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classFriends;
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<ParsingTreeCustomBase>>		classClosures;
 
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace);
 				~WfCppConfig();
@@ -117,6 +120,7 @@ namespace vl
 				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
 
+				void					WriteHeader_ClosurePreDecl(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteCpp_ClosureCtor(stream::StreamWriter& writer, Ptr<WfExpression> closure, const WString& name);
 				void					WriteCpp_ClosureCtorInitList(stream::StreamWriter& writer, Ptr<WfExpression> closure);
