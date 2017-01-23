@@ -22,7 +22,7 @@ WfCppConfig
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
 					{
-						CollectDeclaration(this, decl, nullptr);
+						CollectDeclaration(this, decl, nullptr, nullptr);
 					}
 				}
 

@@ -19,10 +19,20 @@ WfCollectExpressionVisitor
 			{
 			public:
 				WfCppConfig*				config;
+				Ptr<WfClassDeclaration>		memberOfClass;
 
-				WfCollectExpressionVisitor(WfCppConfig* _config)
+				WfCollectExpressionVisitor(WfCppConfig* _config, Ptr<WfClassDeclaration> _memberOfClass)
 					:config(_config)
+					, memberOfClass(_memberOfClass)
 				{
+				}
+
+				void Call(Ptr<WfExpression> node)
+				{
+					if (node)
+					{
+						node->Accept(this);
+					}
 				}
 
 				WString GetScopePostfix(WfLexicalScope* scope)
@@ -62,17 +72,18 @@ WfCollectExpressionVisitor
 					WString name = prefix + postfix;
 
 					config->lambdaExprs.Add(node, name);
-					CollectExpression(config, node->body);
+					config->classClosures.Add(memberOfClass, node);
+					Call(node->body);
 				}
 
 				void Visit(WfMemberExpression* node)override
 				{
-					CollectExpression(config, node->parent);
+					Call(node->parent);
 				}
 
 				void Visit(WfChildExpression* node)override
 				{
-					CollectExpression(config, node->parent);
+					Call(node->parent);
 				}
 
 				void Visit(WfLiteralExpression* node)override
@@ -93,70 +104,70 @@ WfCollectExpressionVisitor
 
 				void Visit(WfFormatExpression* node)override
 				{
-					CollectExpression(config, node->expandedExpression);
+					Call(node->expandedExpression);
 				}
 
 				void Visit(WfUnaryExpression* node)override
 				{
-					CollectExpression(config, node->operand);
+					Call(node->operand);
 				}
 
 				void Visit(WfBinaryExpression* node)override
 				{
-					CollectExpression(config, node->first);
-					CollectExpression(config, node->second);
+					Call(node->first);
+					Call(node->second);
 				}
 
 				void Visit(WfLetExpression* node)override
 				{
 					FOREACH(Ptr<WfLetVariable>, var, node->variables)
 					{
-						CollectExpression(config, var->value);
+						Call(var->value);
 					}
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfIfExpression* node)override
 				{
-					CollectExpression(config, node->condition);
-					CollectExpression(config, node->trueBranch);
-					CollectExpression(config, node->falseBranch);
+					Call(node->condition);
+					Call(node->trueBranch);
+					Call(node->falseBranch);
 				}
 
 				void Visit(WfRangeExpression* node)override
 				{
-					CollectExpression(config, node->begin);
-					CollectExpression(config, node->end);
+					Call(node->begin);
+					Call(node->end);
 				}
 
 				void Visit(WfSetTestingExpression* node)override
 				{
-					CollectExpression(config, node->element);
-					CollectExpression(config, node->collection);
+					Call(node->element);
+					Call(node->collection);
 				}
 
 				void Visit(WfConstructorExpression* node)override
 				{
 					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 					{
-						CollectExpression(config, argument->key);
-						CollectExpression(config, argument->value);
+						Call(argument->key);
+						Call(argument->value);
 					}
 				}
 
 				void Visit(WfInferExpression* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfTypeCastingExpression* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfTypeTestingExpression* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfTypeOfTypeExpression* node)override
@@ -165,37 +176,37 @@ WfCollectExpressionVisitor
 
 				void Visit(WfTypeOfExpressionExpression* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfAttachEventExpression* node)override
 				{
-					CollectExpression(config, node->event);
-					CollectExpression(config, node->function);
+					Call(node->event);
+					Call(node->function);
 				}
 
 				void Visit(WfDetachEventExpression* node)override
 				{
-					CollectExpression(config, node->event);
-					CollectExpression(config, node->handler);
+					Call(node->event);
+					Call(node->handler);
 				}
 
 				void Visit(WfBindExpression* node)override
 				{
-					CollectExpression(config, node->expandedExpression);
+					Call(node->expandedExpression);
 				}
 
 				void Visit(WfObserveExpression* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfCallExpression* node)override
 				{
-					CollectExpression(config, node->function);
+					Call(node->function);
 					FOREACH(Ptr<WfExpression>, argument, node->arguments)
 					{
-						CollectExpression(config, argument);
+						Call(argument);
 					}
 				}
 
@@ -206,14 +217,15 @@ WfCollectExpressionVisitor
 					WString name = prefix + postfix;
 
 					config->lambdaExprs.Add(node, name);
-					CollectStatement(config, node->function->statement);
+					config->classClosures.Add(memberOfClass, node);
+					CollectStatement(config, node->function->statement, memberOfClass);
 				}
 
 				void Visit(WfNewClassExpression* node)override
 				{
 					FOREACH(Ptr<WfExpression>, argument, node->arguments)
 					{
-						CollectExpression(config, argument);
+						Call(argument);
 					}
 				}
 
@@ -227,9 +239,10 @@ WfCollectExpressionVisitor
 					WString name = prefix + postfix + config->ConvertType(td, L"_");
 
 					config->classExprs.Add(node, name);
+					config->classClosures.Add(memberOfClass, node);
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						CollectClassMember(config, member, nullptr);
+						CollectClassMember(config, member, nullptr, memberOfClass);
 					}
 				}
 			};
@@ -242,10 +255,25 @@ WfCollectStatementVisitor
 			{
 			public:
 				WfCppConfig*				config;
+				Ptr<WfClassDeclaration>		memberOfClass;
 
-				WfCollectStatementVisitor(WfCppConfig* _config)
+				WfCollectStatementVisitor(WfCppConfig* _config, Ptr<WfClassDeclaration> _memberOfClass)
 					:config(_config)
+					, memberOfClass(_memberOfClass)
 				{
+				}
+
+				void Call(Ptr<WfStatement> node)
+				{
+					if (node)
+					{
+						node->Accept(this);
+					}
+				}
+
+				void Call(Ptr<WfExpression> node)
+				{
+					CollectExpression(config, node, memberOfClass);
 				}
 
 				void Visit(WfBreakStatement* node)override
@@ -258,71 +286,71 @@ WfCollectStatementVisitor
 
 				void Visit(WfReturnStatement* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfDeleteStatement* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfRaiseExceptionStatement* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfIfStatement* node)override
 				{
-					CollectExpression(config, node->expression);
-					CollectStatement(config, node->trueBranch);
-					CollectStatement(config, node->falseBranch);
+					Call(node->expression);
+					Call(node->trueBranch);
+					Call(node->falseBranch);
 				}
 
 				void Visit(WfSwitchStatement* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 					FOREACH(Ptr<WfSwitchCase>, branch, node->caseBranches)
 					{
-						CollectExpression(config, branch->expression);
-						CollectStatement(config, branch->statement);
+						Call(branch->expression);
+						Call(branch->statement);
 					}
 				}
 
 				void Visit(WfWhileStatement* node)override
 				{
-					CollectExpression(config, node->condition);
-					CollectStatement(config, node->statement);
+					Call(node->condition);
+					Call(node->statement);
 				}
 
 				void Visit(WfForEachStatement* node)override
 				{
-					CollectExpression(config, node->collection);
-					CollectStatement(config, node->statement);
+					Call(node->collection);
+					Call(node->statement);
 				}
 
 				void Visit(WfTryStatement* node)override
 				{
-					CollectStatement(config, node->protectedStatement);
-					CollectStatement(config, node->catchStatement);
-					CollectStatement(config, node->finallyStatement);
+					Call(node->protectedStatement);
+					Call(node->catchStatement);
+					Call(node->finallyStatement);
 				}
 
 				void Visit(WfBlockStatement* node)override
 				{
 					FOREACH(Ptr<WfStatement>, stat, node->statements)
 					{
-						CollectStatement(config, stat);
+						Call(stat);
 					}
 				}
 
 				void Visit(WfExpressionStatement* node)override
 				{
-					CollectExpression(config, node->expression);
+					Call(node->expression);
 				}
 
 				void Visit(WfVariableStatement* node)override
 				{
-					CollectExpression(config, node->variable->expression);
+					Call(node->variable->expression);
 				}
 			};
 
@@ -335,10 +363,12 @@ WfCollectClassMemberVisitor
 			public:
 				WfCppConfig*				config;
 				Ptr<WfClassDeclaration>		classDecl;
+				Ptr<WfClassDeclaration>		memberOfClass;
 
-				WfCollectClassMemberVisitor(WfCppConfig* _config, Ptr<WfClassDeclaration> _classDecl)
+				WfCollectClassMemberVisitor(WfCppConfig* _config, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassDeclaration> _memberOfClass)
 					:config(_config)
 					, classDecl(_classDecl)
+					, memberOfClass(_memberOfClass)
 				{
 				}
 
@@ -348,12 +378,12 @@ WfCollectClassMemberVisitor
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					CollectStatement(config, node->statement);
+					CollectStatement(config, node->statement, memberOfClass);
 				}
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					CollectExpression(config, node->expression);
+					CollectExpression(config, node->expression, memberOfClass);
 				}
 
 				void Visit(WfEventDeclaration* node)override
@@ -366,27 +396,27 @@ WfCollectClassMemberVisitor
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					CollectStatement(config, node->statement);
+					CollectStatement(config, node->statement, memberOfClass);
 				}
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
-					CollectStatement(config, node->statement);
+					CollectStatement(config, node->statement, memberOfClass);
 				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					CollectDeclaration(config, node, classDecl);
+					CollectDeclaration(config, node, classDecl, memberOfClass);
 				}
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					CollectDeclaration(config, node, classDecl);
+					CollectDeclaration(config, node, classDecl, memberOfClass);
 				}
 
 				void Visit(WfStructDeclaration* node)override
 				{
-					CollectDeclaration(config, node, classDecl);
+					CollectDeclaration(config, node, classDecl, memberOfClass);
 				}
 			};
 
@@ -399,10 +429,12 @@ WfCollectDeclarationVisitor
 			public:
 				WfCppConfig*				config;
 				Ptr<WfClassDeclaration>		classDecl;
+				Ptr<WfClassDeclaration>		memberOfClass;
 
-				WfCollectDeclarationVisitor(WfCppConfig* _config, Ptr<WfClassDeclaration> _classDecl)
+				WfCollectDeclarationVisitor(WfCppConfig* _config, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassDeclaration> _memberOfClass)
 					:config(_config)
 					, classDecl(_classDecl)
+					, memberOfClass(_memberOfClass)
 				{
 				}
 
@@ -420,7 +452,7 @@ WfCollectDeclarationVisitor
 					{
 						config->funcDecls.Add(node);
 					}
-					CollectStatement(config, node->statement);
+					CollectStatement(config, node->statement, memberOfClass);
 				}
 
 				void Visit(WfVariableDeclaration* node)override
@@ -429,7 +461,7 @@ WfCollectDeclarationVisitor
 					{
 						config->varDecls.Add(node);
 					}
-					CollectExpression(config, node->expression);
+					CollectExpression(config, node->expression, memberOfClass);
 				}
 
 				void Visit(WfEventDeclaration* node)override
@@ -494,7 +526,7 @@ WfCollectDeclarationVisitor
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
-						CollectClassMember(config, member, node);
+						CollectClassMember(config, member, node, node);
 					}
 				}
 
@@ -527,38 +559,38 @@ WfCollectDeclarationVisitor
 WfCppConfig::Collect
 ***********************************************************************/
 
-			void CollectExpression(WfCppConfig* config, Ptr<WfExpression> node)
+			void CollectExpression(WfCppConfig* config, Ptr<WfExpression> node, Ptr<WfClassDeclaration> memberOfClass)
 			{
 				if (node)
 				{
-					WfCollectExpressionVisitor visitor(config);
+					WfCollectExpressionVisitor visitor(config, memberOfClass);
 					node->Accept(&visitor);
 				}
 			}
 
-			void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node)
+			void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node, Ptr<WfClassDeclaration> memberOfClass)
 			{
 				if (node)
 				{
-					WfCollectStatementVisitor visitor(config);
+					WfCollectStatementVisitor visitor(config, memberOfClass);
 					node->Accept(&visitor);
 				}
 			}
 
-			void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl)
+			void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass)
 			{
 				if (node)
 				{
-					WfCollectClassMemberVisitor visitor(config, classDecl);
+					WfCollectClassMemberVisitor visitor(config, classDecl, memberOfClass);
 					node->declaration->Accept(&visitor);
 				}
 			}
 
-			void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl)
+			void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass)
 			{
 				if (node)
 				{
-					WfCollectDeclarationVisitor visitor(config, classDecl);
+					WfCollectDeclarationVisitor visitor(config, classDecl, memberOfClass);
 					node->Accept(&visitor);
 				}
 			}

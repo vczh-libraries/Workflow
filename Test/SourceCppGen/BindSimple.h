@@ -25,27 +25,37 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	class __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
-	struct __vwsnf1_BindSimple_Base_Initialize_;
+	class __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
+	struct __vwsnf1_BindSimple_OuterClass_Base_Initialize_;
 }
 
-class Base;
+class OuterClass;
 class Derived;
 
-class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
+class OuterClass : public ::vl::Object, public ::vl::reflection::Description<OuterClass>
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
-	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<OuterClass>;
 #endif
 public:
-	::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>();
-	::vl::WString s = ::vl::WString(L"", false);
-	void Initialize(::Derived* derived);
-	Base();
+	class Base;
+
+	class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
+#endif
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>();
+		::vl::WString s = ::vl::WString(L"", false);
+		void Initialize(::Derived* derived);
+		Base();
+	};
+	OuterClass();
 };
 
-class Derived : public ::Base, public ::vl::reflection::Description<Derived>
+class Derived : public ::OuterClass::Base, public ::vl::reflection::Description<Derived>
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Derived>;
@@ -86,8 +96,9 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::Base)
 			DECL_TYPE_INFO(::Derived)
+			DECL_TYPE_INFO(::OuterClass)
+			DECL_TYPE_INFO(::OuterClass::Base)
 #endif
 
 			extern bool LoadBindSimpleTypes();

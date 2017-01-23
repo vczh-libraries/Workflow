@@ -39,7 +39,6 @@ namespace vl
 				using ITypeInfo = reflection::description::ITypeInfo;
 				using IMethodInfo = reflection::description::IMethodInfo;
 				using ITypeDescriptor = reflection::description::ITypeDescriptor;
-				using ParsingTreeCustomBase = parsing::ParsingTreeCustomBase;
 
 			public:
 				class ClosureInfo : public Object
@@ -79,8 +78,7 @@ namespace vl
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
 				collections::Dictionary<Ptr<WfExpression>, Ptr<ClosureInfo>>				closureInfos;
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classFriends;
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<ParsingTreeCustomBase>>		classClosures;
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfExpression>>				classClosures;
 
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace);
 				~WfCppConfig();
@@ -158,10 +156,10 @@ namespace vl
 WfCppConfig::Collect
 ***********************************************************************/
 
-			extern void CollectExpression(WfCppConfig* config, Ptr<WfExpression> node);
-			extern void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node);
-			extern void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl);
-			extern void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl);
+			extern void CollectExpression(WfCppConfig* config, Ptr<WfExpression> node, Ptr<WfClassDeclaration> memberOfClass);
+			extern void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node, Ptr<WfClassDeclaration> memberOfClass);
+			extern void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass);
+			extern void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass);
 
 /***********************************************************************
 WfCppConfig::Write

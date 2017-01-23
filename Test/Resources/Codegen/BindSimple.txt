@@ -2,24 +2,27 @@ module test;
 using test::*;
 using system::*;
 
-class Base
+class OuterClass
 {
-	var subscription : Subscription^ = null;
-	var s : string = "";
-
-	func Initialize(derived : Derived*) : void
+	class Base
 	{
-		subscription = bind(derived.x.Value + derived.y.Value + derived.z.Value);
-		subscription.Subscribe(
-			func (value : object) : void
-			{
-				s = $"$(s)[$(cast int value)]";
-			});
+		var subscription : Subscription^ = null;
+		var s : string = "";
+
+		func Initialize(derived : Derived*) : void
+		{
+			subscription = bind(derived.x.Value + derived.y.Value + derived.z.Value);
+			subscription.Subscribe(
+				func (value : object) : void
+				{
+					s = $"$(s)[$(cast int value)]";
+				});
+		}
 	}
 }
 
-@cpp:Friend(typeof(Base))
-class Derived : Base
+@cpp:Friend(typeof(OuterClass))
+class Derived : OuterClass::Base
 {
 	@cpp:Protected
 	var x : ObservableValue^ = new ObservableValue^();

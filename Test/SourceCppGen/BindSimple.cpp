@@ -37,22 +37,22 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindSimple)
 
 namespace vl_workflow_global
 {
-	struct __vwsnf1_BindSimple_Base_Initialize_
+	struct __vwsnf1_BindSimple_OuterClass_Base_Initialize_
 	{
-		::Base* __vwsnthis_0;
+		::OuterClass::Base* __vwsnthis_0;
 
-		__vwsnf1_BindSimple_Base_Initialize_(::Base* __vwsnctorthis_0);
+		__vwsnf1_BindSimple_OuterClass_Base_Initialize_(::OuterClass::Base* __vwsnctorthis_0);
 
 		void operator()(::vl::reflection::description::Value value) const;
 	};
 
-	class __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::Derived* derived;
-		::Base* __vwsnthis_0;
+		::OuterClass::Base* __vwsnthis_0;
 
-		__vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription(::Derived* __vwsnctor_derived, ::Base* __vwsnctorthis_0);
+		__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(::Derived* __vwsnctor_derived, ::OuterClass::Base* __vwsnctorthis_0);
 
 		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -73,15 +73,15 @@ namespace vl_workflow_global
 		bool Close() override;
 	};
 
-	class __vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	class __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
 		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
 		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
-		::Base* __vwsnthis_1;
+		::OuterClass::Base* __vwsnthis_1;
 
-		__vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::Base* __vwsnctorthis_1);
+		__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::OuterClass::Base* __vwsnctorthis_1);
 
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
 		bool GetStopped() override;
@@ -100,17 +100,17 @@ namespace vl_workflow_global
 		return Getvl_workflow_global_BindSimple().instance;
 	}
 
-	__vwsnf1_BindSimple_Base_Initialize_::__vwsnf1_BindSimple_Base_Initialize_(::Base* __vwsnctorthis_0)
+	__vwsnf1_BindSimple_OuterClass_Base_Initialize_::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(::OuterClass::Base* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf1_BindSimple_Base_Initialize_::operator()(::vl::reflection::description::Value value) const
+	void __vwsnf1_BindSimple_OuterClass_Base_Initialize_::operator()(::vl::reflection::description::Value value) const
 	{
 		(::vl::__vwsn::This(__vwsnthis_0)->s = ((((::vl::WString(L"", false) + ::vl::__vwsn::This(__vwsnthis_0)->s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
 
-	__vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription(::Derived* __vwsnctor_derived, ::Base* __vwsnctorthis_0)
+	__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(::Derived* __vwsnctor_derived, ::OuterClass::Base* __vwsnctorthis_0)
 		:derived(__vwsnctor_derived)
 		, __vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -125,7 +125,7 @@ namespace vl_workflow_global
 		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
-	void __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetValue()) + ::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->GetValue());
 		using __vwsnt_0 = ::vl::reflection::description::Value;
@@ -135,32 +135,32 @@ namespace vl_workflow_global
 		}
 	}
 
-	void __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
+	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
+	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
+	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
 		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(derived)->x);
 		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(derived)->y);
 		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(derived)->z);
-		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
-		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
-		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_)
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -168,12 +168,12 @@ namespace vl_workflow_global
 			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
 		}
 		auto __vwsn_subscription_ = this;
-		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
 		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
 		return __vwsn_listener_shared_;
 	}
 
-	bool __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -183,7 +183,7 @@ namespace vl_workflow_global
 		return false;
 	}
 
-	bool __vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -203,7 +203,7 @@ namespace vl_workflow_global
 		return false;
 	}
 
-	__vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::Base* __vwsnctorthis_1)
+	__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::OuterClass::Base* __vwsnctorthis_1)
 		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
 		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
 		, __vwsnthis_0(__vwsnctorthis_0)
@@ -211,17 +211,17 @@ namespace vl_workflow_global
 	{
 	}
 
-	::vl::reflection::description::IValueSubscription* __vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	::vl::reflection::description::IValueSubscription* __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
 		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
 	}
 
-	bool __vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	bool __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
 		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
 	}
 
-	bool __vwsnc2_BindSimple_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::StopListening()
+	bool __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
 		{
@@ -234,16 +234,24 @@ namespace vl_workflow_global
 }
 
 /***********************************************************************
-Class (::Base)
+Class (::OuterClass)
 ***********************************************************************/
 
-void Base::Initialize(::Derived* derived)
+OuterClass::OuterClass()
 {
-	(::vl::__vwsn::This(this)->subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindSimple_Base_Initialize__vl_reflection_description_IValueSubscription(derived, this)));
-	::vl::__vwsn::This(::vl::__vwsn::This(this)->subscription.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf1_BindSimple_Base_Initialize_(this)));
 }
 
-Base::Base()
+/***********************************************************************
+Class (::OuterClass::Base)
+***********************************************************************/
+
+void OuterClass::Base::Initialize(::Derived* derived)
+{
+	(::vl::__vwsn::This(this)->subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(derived, this)));
+	::vl::__vwsn::This(::vl::__vwsn::This(this)->subscription.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(this)));
+}
+
+OuterClass::Base::Base()
 {
 }
 
@@ -280,16 +288,11 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::Base)
 			IMPL_CPP_TYPE_INFO(::Derived)
+			IMPL_CPP_TYPE_INFO(::OuterClass)
+			IMPL_CPP_TYPE_INFO(::OuterClass::Base)
 
 #define _ ,
-			BEGIN_CLASS_MEMBER(::Base)
-				CLASS_MEMBER_METHOD(Initialize, { L"derived" })
-				CLASS_MEMBER_FIELD(s)
-				CLASS_MEMBER_FIELD(subscription)
-			END_CLASS_MEMBER(::Base)
-
 			BEGIN_CLASS_MEMBER(::Derived)
 				CLASS_MEMBER_METHOD(Execute, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(x)
@@ -297,14 +300,24 @@ namespace vl
 				CLASS_MEMBER_FIELD(z)
 			END_CLASS_MEMBER(::Derived)
 
+			BEGIN_CLASS_MEMBER(::OuterClass)
+			END_CLASS_MEMBER(::OuterClass)
+
+			BEGIN_CLASS_MEMBER(::OuterClass::Base)
+				CLASS_MEMBER_METHOD(Initialize, { L"derived" })
+				CLASS_MEMBER_FIELD(s)
+				CLASS_MEMBER_FIELD(subscription)
+			END_CLASS_MEMBER(::OuterClass::Base)
+
 #undef _
 			class BindSimpleTypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(::Base)
 					ADD_TYPE_INFO(::Derived)
+					ADD_TYPE_INFO(::OuterClass)
+					ADD_TYPE_INFO(::OuterClass::Base)
 				}
 
 				void Unload(ITypeManager* manager)
