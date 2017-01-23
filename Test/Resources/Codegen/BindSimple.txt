@@ -2,25 +2,48 @@ module test;
 using test::*;
 using system::*;
 
-var s = "";
-
-func Callback(value : object) : void
+class Base
 {
-	s = $"$(s)[$(cast int value)]";
+	var subscription : Subscription^ = null;
+	var s : string = "";
+
+	func Initialize(derived : Derived*) : void
+	{
+		subscription = bind(derived.x.Value + derived.y.Value + derived.z.Value);
+		subscription.Subscribe(
+			func (value : object) : void
+			{
+				s = $"$(s)[$(cast int value)]";
+			});
+	}
+}
+
+class Derived : Base
+{
+	@cpp:Protected
+	var x : ObservableValue^ = new ObservableValue^();
+	@cpp:Protected
+	var y : ObservableValue^ = new ObservableValue^();
+	@cpp:Protected
+	var z : ObservableValue^ = new ObservableValue^();
+
+	new()
+	{
+		Initialize(this);
+	}
+
+	func Execute() : void
+	{
+		x.Value = 10;
+		y.Value = 20;
+		z.Value = 30;
+		subscription.Close();
+	}
 }
 
 func main() : string
 {
-	var x = new ObservableValue^();
-	var y = new ObservableValue^();
-	var z = new ObservableValue^();
-	var subscription = bind(x.Value + y.Value + z.Value);
-	subscription.Subscribe(Callback);
-
-	x.Value = 10;
-	y.Value = 20;
-	z.Value = 30;
-	
-	subscription.Close();
-	return s;
+	var derived = new Derived^();
+	derived.Execute();
+	return derived.s;
 }
