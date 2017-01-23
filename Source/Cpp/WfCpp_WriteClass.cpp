@@ -76,6 +76,57 @@ namespace vl
 				}
 				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
 				writer.WriteLine(prefix + L"{");
+				FOREACH(Ptr<WfAttribute>, attribute, manager->GetAttributes(decl->attributes, L"cpp", L"Friend"))
+				{
+					auto td = UnboxValue<ITypeDescriptor*>(manager->GetAttributeValue(attribute));
+
+					auto scopeName = manager->typeNames[td];
+					if (scopeName->declarations.Count() == 0)
+					{
+						writer.WriteLine(prefix + L"\tfriend class " + ConvertType(td) + L";");
+					}
+					else
+					{
+						auto friendDecl = scopeName->declarations[0].Cast<WfClassDeclaration>();
+						List<Ptr<WfClassDeclaration>> unprocessed;
+						unprocessed.Add(friendDecl);
+
+						for (vint i = 0; i < unprocessed.Count(); i++)
+						{
+							auto current = unprocessed[i];
+							writer.WriteLine(prefix + L"\tfriend class " + ConvertType(manager->declarationTypes[current.Obj()].Obj()) + L";");
+
+							vint index = classClosures.Keys().IndexOf(current.Obj());
+							if (index != -1)
+							{
+								SortedList<WString> closureNames;
+								CopyFrom(
+									closureNames,
+									From(classClosures.GetByIndex(index))
+										.Select([&](Ptr<WfExpression> closure)
+										{
+											return (closure.Cast<WfNewInterfaceExpression>() ? L"class ::" : L"struct ::") +
+												assemblyNamespace +
+												L"::" +
+												closureInfos[closure.Obj()]->lambdaClassName;
+										})
+									);
+								FOREACH(WString, closureName, closureNames)
+								{
+									writer.WriteLine(prefix + L"\tfriend " + closureName + L";");
+								}
+							}
+
+							FOREACH(Ptr<WfClassMember>, member, current->members)
+							{
+								if (auto classDecl = member->declaration.Cast<WfClassDeclaration>())
+								{
+									unprocessed.Add(classDecl);
+								}
+							}
+						}
+					}
+				}
 				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
 				writer.WriteLine(prefix + L"\tfriend struct ::vl::reflection::description::CustomTypeDescriptorSelector<" + name + L">;");
 				writer.WriteLine(L"#endif");
