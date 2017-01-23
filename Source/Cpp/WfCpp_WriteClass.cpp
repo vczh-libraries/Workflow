@@ -76,6 +76,10 @@ namespace vl
 				}
 				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
 				writer.WriteLine(prefix + L"{");
+
+				List<Ptr<WfClassDeclaration>> unprocessed;
+				unprocessed.Add(decl);
+
 				FOREACH(Ptr<WfAttribute>, attribute, manager->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 				{
 					auto td = UnboxValue<ITypeDescriptor*>(manager->GetAttributeValue(attribute));
@@ -88,42 +92,58 @@ namespace vl
 					else
 					{
 						auto friendDecl = scopeName->declarations[0].Cast<WfClassDeclaration>();
-						List<Ptr<WfClassDeclaration>> unprocessed;
 						unprocessed.Add(friendDecl);
+					}
+				}
 
-						for (vint i = 0; i < unprocessed.Count(); i++)
+				auto declTypeName = ConvertType(manager->declarationTypes[decl.Obj()].Obj());
+				for (vint i = 0; i < unprocessed.Count(); i++)
+				{
+					auto current = unprocessed[i];
+					if (current != decl)
+					{
+						auto currentTypeName = ConvertType(manager->declarationTypes[current.Obj()].Obj());
+
+						bool isInternalClass = false;
+						if (currentTypeName.Length() > declTypeName.Length() + 2)
 						{
-							auto current = unprocessed[i];
-							writer.WriteLine(prefix + L"\tfriend class " + ConvertType(manager->declarationTypes[current.Obj()].Obj()) + L";");
-
-							vint index = classClosures.Keys().IndexOf(current.Obj());
-							if (index != -1)
+							if (currentTypeName.Left(declTypeName.Length() + 2) == declTypeName + L"::")
 							{
-								SortedList<WString> closureNames;
-								CopyFrom(
-									closureNames,
-									From(classClosures.GetByIndex(index))
-										.Select([&](Ptr<WfExpression> closure)
-										{
-											return (closure.Cast<WfNewInterfaceExpression>() ? L"class ::" : L"struct ::") +
-												assemblyNamespace +
-												L"::" +
-												closureInfos[closure.Obj()]->lambdaClassName;
-										})
-									);
-								FOREACH(WString, closureName, closureNames)
-								{
-									writer.WriteLine(prefix + L"\tfriend " + closureName + L";");
-								}
+								isInternalClass = true;
 							}
+						}
+						if (!isInternalClass)
+						{
+							writer.WriteLine(prefix + L"\tfriend class " + currentTypeName + L";");
+						}
+					}
 
-							FOREACH(Ptr<WfClassMember>, member, current->members)
-							{
-								if (auto classDecl = member->declaration.Cast<WfClassDeclaration>())
-								{
-									unprocessed.Add(classDecl);
-								}
-							}
+					vint index = classClosures.Keys().IndexOf(current.Obj());
+					if (index != -1)
+					{
+						SortedList<WString> closureNames;
+						CopyFrom(
+							closureNames,
+							From(classClosures.GetByIndex(index))
+							.Select([&](Ptr<WfExpression> closure)
+						{
+							return (closure.Cast<WfNewInterfaceExpression>() ? L"class ::" : L"struct ::") +
+								assemblyNamespace +
+								L"::" +
+								closureInfos[closure.Obj()]->lambdaClassName;
+						})
+						);
+						FOREACH(WString, closureName, closureNames)
+						{
+							writer.WriteLine(prefix + L"\tfriend " + closureName + L";");
+						}
+					}
+
+					FOREACH(Ptr<WfClassMember>, member, current->members)
+					{
+						if (auto classDecl = member->declaration.Cast<WfClassDeclaration>())
+						{
+							unprocessed.Add(classDecl);
 						}
 					}
 				}

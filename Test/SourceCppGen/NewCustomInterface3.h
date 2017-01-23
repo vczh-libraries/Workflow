@@ -43,6 +43,8 @@ public:
 
 class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClass>
 {
+	friend class ::vl_workflow_global::__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3;
+	friend class ::vl_workflow_global::__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyClass>;
 #endif

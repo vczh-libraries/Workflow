@@ -35,6 +35,9 @@ class Derived;
 
 class OuterClass : public ::vl::Object, public ::vl::reflection::Description<OuterClass>
 {
+	friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
+	friend class ::vl_workflow_global::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
+	friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<OuterClass>;
 #endif
@@ -43,6 +46,9 @@ public:
 
 	class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 	{
+		friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
 #endif
