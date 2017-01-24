@@ -47,7 +47,7 @@ Closure Definitions
 
 		__vwsnf1_BindSimple_OuterClass_Base_Initialize_(::OuterClass::Base* __vwsnctorthis_0);
 
-		void operator()(::vl::reflection::description::Value value) const;
+		void operator()(const ::vl::reflection::description::Value& value) const;
 	};
 
 	class __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
@@ -72,7 +72,7 @@ Closure Definitions
 		void __vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_) override;
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
 		bool Update() override;
 		bool Close() override;
 	};
@@ -99,7 +99,7 @@ Closure Definitions
 	{
 	}
 
-	void __vwsnf1_BindSimple_OuterClass_Base_Initialize_::operator()(::vl::reflection::description::Value value) const
+	void __vwsnf1_BindSimple_OuterClass_Base_Initialize_::operator()(const ::vl::reflection::description::Value& value) const
 	{
 		(::vl::__vwsn::This(__vwsnthis_0)->s = ((((::vl::WString(L"", false) + ::vl::__vwsn::This(__vwsnthis_0)->s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
@@ -127,7 +127,7 @@ Closure Definitions
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
-			::vl::__vwsn::Unbox<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 		}
 	}
 
@@ -156,7 +156,7 @@ Closure Definitions
 		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
 	{
 		if ((! __vwsn_bind_opened_))
 		{

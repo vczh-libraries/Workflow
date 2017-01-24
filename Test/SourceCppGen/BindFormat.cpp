@@ -60,7 +60,7 @@ Closure Definitions
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_) override;
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
 		bool Update() override;
 		bool Close() override;
 	};
@@ -97,7 +97,7 @@ Closure Definitions
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
-			::vl::__vwsn::Unbox<::vl::Func<void(::vl::reflection::description::Value)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 		}
 	}
 
@@ -112,7 +112,7 @@ Closure Definitions
 		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(::vl::reflection::description::Value)>& __vwsn_bind_callback_)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -182,7 +182,7 @@ Closure Definitions
 Global Functions
 ***********************************************************************/
 
-	void BindFormat::Callback(::vl::reflection::description::Value value)
+	void BindFormat::Callback(const ::vl::reflection::description::Value& value)
 	{
 		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false)));
 	}
@@ -191,7 +191,7 @@ Global Functions
 	{
 		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
 		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(x));
-		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
+		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
 		::vl::__vwsn::This(x.Obj())->SetValue(10);
 		::vl::__vwsn::This(x.Obj())->SetValue(20);
 		::vl::__vwsn::This(x.Obj())->SetValue(30);

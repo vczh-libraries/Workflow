@@ -41,7 +41,7 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 
-		void Callback(::vl::reflection::description::Value value);
+		void Callback(const ::vl::reflection::description::Value& value);
 		::vl::WString main();
 
 		static BindComplex& Instance();
