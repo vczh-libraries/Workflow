@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_EnumCtor2)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_EnumCtor2)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	::Seasons EnumCtor2::Id(::Seasons s)
 	{
 		return s;

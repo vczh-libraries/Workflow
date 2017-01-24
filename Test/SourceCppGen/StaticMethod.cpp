@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_StaticMethod)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_StaticMethod)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	::vl::Ptr<::test::ObservableValue> StaticMethod::Create2(::vl::vint32_t value, const ::vl::WString& name)
 	{
 		return ::test::ObservableValue::Create(value, name);

@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_MapProcessing)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_MapProcessing)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	::vl::WString MapProcessing::main()
 	{
 		auto xs = (::vl::__vwsn::CreateDictionary().Add(::vl::WString(L"a", false), 1).Add(::vl::WString(L"b", false), 2).Add(::vl::WString(L"c", false), 3).Add(::vl::WString(L"d", false), 4).Add(::vl::WString(L"e", false), 5)).dictionary;

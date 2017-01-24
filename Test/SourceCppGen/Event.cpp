@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Event)
@@ -43,6 +43,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Event)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	void Event::EventHandler(::vl::vint32_t oldValue, ::vl::vint32_t newValue)
 	{
 		::vl::__vwsn::This(GLOBAL_NAME olds.Obj())->Add(::vl::__vwsn::Box(oldValue));

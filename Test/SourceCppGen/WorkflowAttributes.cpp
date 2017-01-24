@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_WorkflowAttributes)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_WorkflowAttributes)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	::vl::WString WorkflowAttributes::Print(::vl::Ptr<::calculator::Expression> expr)
 	{
 		if (auto ne = ::vl::__vwsn::SharedPtrCast<::calculator::NumberExpression>(expr.Obj()))

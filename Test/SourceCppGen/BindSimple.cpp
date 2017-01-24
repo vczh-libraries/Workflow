@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindSimple)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindSimple)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	struct __vwsnf1_BindSimple_OuterClass_Base_Initialize_
 	{
 		::OuterClass::Base* __vwsnthis_0;
@@ -88,17 +92,7 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
-	::vl::WString BindSimple::main()
-	{
-		auto derived = ::vl::Ptr<::Derived>(new ::Derived());
-		::vl::__vwsn::This(derived.Obj())->Execute();
-		return ::vl::__vwsn::This(derived.Obj())->s;
-	}
-
-	BindSimple& BindSimple::Instance()
-	{
-		return Getvl_workflow_global_BindSimple().instance;
-	}
+	//-------------------------------------------------------------------
 
 	__vwsnf1_BindSimple_OuterClass_Base_Initialize_::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(::OuterClass::Base* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -109,6 +103,8 @@ namespace vl_workflow_global
 	{
 		(::vl::__vwsn::This(__vwsnthis_0)->s = ((((::vl::WString(L"", false) + ::vl::__vwsn::This(__vwsnthis_0)->s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(::Derived* __vwsnctor_derived, ::OuterClass::Base* __vwsnctorthis_0)
 		:derived(__vwsnctor_derived)
@@ -203,6 +199,8 @@ namespace vl_workflow_global
 		return false;
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::OuterClass::Base* __vwsnctorthis_1)
 		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
 		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
@@ -231,6 +229,21 @@ namespace vl_workflow_global
 		return false;
 	}
 
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	::vl::WString BindSimple::main()
+	{
+		auto derived = ::vl::Ptr<::Derived>(new ::Derived());
+		::vl::__vwsn::This(derived.Obj())->Execute();
+		return ::vl::__vwsn::This(derived.Obj())->s;
+	}
+
+	BindSimple& BindSimple::Instance()
+	{
+		return Getvl_workflow_global_BindSimple().instance;
+	}
 }
 
 /***********************************************************************

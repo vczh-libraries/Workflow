@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_OrderedLambda)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_OrderedLambda)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	struct __vwsno1_OrderedLambda_Adder_
 	{
 		::vl::vint32_t x;
@@ -54,6 +58,33 @@ namespace vl_workflow_global
 
 		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
 	};
+
+	//-------------------------------------------------------------------
+
+	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x)
+		:x(__vwsnctor_x)
+	{
+	}
+
+	::vl::vint32_t __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_1) const
+	{
+		return ((__vwsno_1 * 0) + GLOBAL_NAME Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1)
+		:__vwsno_1(__vwsnctor___vwsno_1)
+	{
+	}
+
+	::vl::vint32_t __vwsno2_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_2) const
+	{
+		return (__vwsno_1 + __vwsno_2);
+	}
+/***********************************************************************
+Global Functions
+***********************************************************************/
 
 	::vl::vint32_t OrderedLambda::Apply(const ::vl::Func<::vl::vint32_t(::vl::vint32_t)>& f, ::vl::vint32_t arg)
 	{
@@ -75,26 +106,6 @@ namespace vl_workflow_global
 	OrderedLambda& OrderedLambda::Instance()
 	{
 		return Getvl_workflow_global_OrderedLambda().instance;
-	}
-
-	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x)
-		:x(__vwsnctor_x)
-	{
-	}
-
-	::vl::vint32_t __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_1) const
-	{
-		return ((__vwsno_1 * 0) + GLOBAL_NAME Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
-	}
-
-	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1)
-		:__vwsno_1(__vwsnctor___vwsno_1)
-	{
-	}
-
-	::vl::vint32_t __vwsno2_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_2) const
-	{
-		return (__vwsno_1 + __vwsno_2);
 	}
 }
 

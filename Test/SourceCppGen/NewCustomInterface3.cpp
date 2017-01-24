@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewCustomInterface3)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewCustomInterface3)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	class __vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3 : public ::vl::Object, public virtual ::IMyInterface3
 	{
 	public:
@@ -62,17 +66,7 @@ namespace vl_workflow_global
 		bool Next() override;
 	};
 
-	::vl::WString NewCustomInterface3::main()
-	{
-		auto x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
-		auto xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
-		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs))))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs))))) + ::vl::WString(L"]", false));
-	}
-
-	NewCustomInterface3& NewCustomInterface3::Instance()
-	{
-		return Getvl_workflow_global_NewCustomInterface3().instance;
-	}
+	//-------------------------------------------------------------------
 
 	__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3::__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3(::MyClass* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -88,6 +82,8 @@ namespace vl_workflow_global
 	{
 		return (::MyClass::Get50() * 2);
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator(::IMyInterface3* __vwsnctorthis_0, ::MyClass* __vwsnctorthis_1)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -119,6 +115,21 @@ namespace vl_workflow_global
 		}
 	}
 
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	::vl::WString NewCustomInterface3::main()
+	{
+		auto x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
+		auto xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
+		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs))))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::__vwsn::Ensure(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs))))) + ::vl::WString(L"]", false));
+	}
+
+	NewCustomInterface3& NewCustomInterface3::Instance()
+	{
+		return Getvl_workflow_global_NewCustomInterface3().instance;
+	}
 }
 
 /***********************************************************************

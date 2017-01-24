@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_ClassMethod)
@@ -41,6 +41,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_ClassMethod)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	struct __vwsnf1_ClassMethod_main_
 	{
 		::vl::Ptr<::Methods> a;
@@ -49,6 +53,21 @@ namespace vl_workflow_global
 
 		void operator()() const;
 	};
+
+	//-------------------------------------------------------------------
+
+	__vwsnf1_ClassMethod_main_::__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a)
+		:a(__vwsnctor_a)
+	{
+	}
+
+	void __vwsnf1_ClassMethod_main_::operator()() const
+	{
+		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl::__vwsn::This(this)->a.Obj())->GetX())) + ::vl::WString(L"]", false))));
+	}
+/***********************************************************************
+Global Functions
+***********************************************************************/
 
 	::vl::WString ClassMethod::main()
 	{
@@ -76,16 +95,6 @@ namespace vl_workflow_global
 	ClassMethod& ClassMethod::Instance()
 	{
 		return Getvl_workflow_global_ClassMethod().instance;
-	}
-
-	__vwsnf1_ClassMethod_main_::__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a)
-		:a(__vwsnctor_a)
-	{
-	}
-
-	void __vwsnf1_ClassMethod_main_::operator()() const
-	{
-		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl::__vwsn::This(this)->a.Obj())->GetX())) + ::vl::WString(L"]", false))));
 	}
 }
 

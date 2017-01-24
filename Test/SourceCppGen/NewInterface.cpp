@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewInterface)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewInterface)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	class __vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerable
 	{
 	public:
@@ -62,6 +66,56 @@ namespace vl_workflow_global
 		::vl::vint32_t GetIndex() override;
 		bool Next() override;
 	};
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end)
+		:begin(__vwsnctor_begin)
+		, end(__vwsnctor_end)
+	{
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable::CreateEnumerator()
+	{
+		return ::vl::Ptr<::vl::reflection::description::IValueEnumerator>(new ::vl_workflow_global::__vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::__vwsn::This(this)->begin, ::vl::__vwsn::This(this)->end, this));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::vl::reflection::description::IValueEnumerable* __vwsnctorthis_0)
+		:begin(__vwsnctor_begin)
+		, end(__vwsnctor_end)
+		, __vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->index = (- 1);
+	}
+
+	::vl::reflection::description::Value __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
+	{
+		return ::vl::__vwsn::Box((::vl::__vwsn::This(this)->begin + index));
+	}
+
+	::vl::vint32_t __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
+	{
+		return index;
+	}
+
+	bool __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
+	{
+		if ((index == (::vl::__vwsn::This(this)->end - ::vl::__vwsn::This(this)->begin)))
+		{
+			return false;
+		}
+		else
+		{
+			(index = (index + 1));
+			return true;
+		}
+	}
+
+/***********************************************************************
+Global Functions
+***********************************************************************/
 
 	::vl::WString NewInterface::Show1(const ::vl::collections::LazyList<::vl::vint32_t>& xs)
 	{
@@ -111,49 +165,6 @@ namespace vl_workflow_global
 	{
 		return Getvl_workflow_global_NewInterface().instance;
 	}
-
-	__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end)
-		:begin(__vwsnctor_begin)
-		, end(__vwsnctor_end)
-	{
-	}
-
-	::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable::CreateEnumerator()
-	{
-		return ::vl::Ptr<::vl::reflection::description::IValueEnumerator>(new ::vl_workflow_global::__vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::__vwsn::This(this)->begin, ::vl::__vwsn::This(this)->end, this));
-	}
-
-	__vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::vl::reflection::description::IValueEnumerable* __vwsnctorthis_0)
-		:begin(__vwsnctor_begin)
-		, end(__vwsnctor_end)
-		, __vwsnthis_0(__vwsnctorthis_0)
-	{
-		this->index = (- 1);
-	}
-
-	::vl::reflection::description::Value __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
-	{
-		return ::vl::__vwsn::Box((::vl::__vwsn::This(this)->begin + index));
-	}
-
-	::vl::vint32_t __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
-	{
-		return index;
-	}
-
-	bool __vwsnc2_NewInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
-	{
-		if ((index == (::vl::__vwsn::This(this)->end - ::vl::__vwsn::This(this)->begin)))
-		{
-			return false;
-		}
-		else
-		{
-			(index = (index + 1));
-			return true;
-		}
-	}
-
 }
 
 #undef GLOBAL_SYMBOL

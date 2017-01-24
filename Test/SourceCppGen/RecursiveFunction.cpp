@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_RecursiveFunction)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_RecursiveFunction)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	::vl::vint32_t RecursiveFunction::Fib(::vl::vint32_t n)
 	{
 		return ((n <= 2) ? 1 : (GLOBAL_NAME Fib((n - 1)) + GLOBAL_NAME Fib((n - 2))));

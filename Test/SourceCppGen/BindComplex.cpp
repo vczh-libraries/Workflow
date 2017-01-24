@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindComplex)
@@ -41,6 +41,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindComplex)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	class __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
@@ -83,29 +87,7 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
-	void BindComplex::Callback(::vl::reflection::description::Value value)
-	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
-	}
-
-	::vl::WString BindComplex::main()
-	{
-		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-		auto y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-		auto z = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(x, y, z));
-		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
-		::vl::__vwsn::This(x.Obj())->SetValue(10);
-		::vl::__vwsn::This(y.Obj())->SetValue(20);
-		::vl::__vwsn::This(z.Obj())->SetValue(30);
-		::vl::__vwsn::This(subscription.Obj())->Close();
-		return GLOBAL_NAME s;
-	}
-
-	BindComplex& BindComplex::Instance()
-	{
-		return Getvl_workflow_global_BindComplex().instance;
-	}
+	//-------------------------------------------------------------------
 
 	__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> __vwsnctor_x, ::vl::Ptr<::test::ObservableValue> __vwsnctor_y, ::vl::Ptr<::test::ObservableValue> __vwsnctor_z)
 		:x(__vwsnctor_x)
@@ -210,6 +192,8 @@ namespace vl_workflow_global
 		return false;
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindComplex_main_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0)
 		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
 		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
@@ -237,6 +221,33 @@ namespace vl_workflow_global
 		return false;
 	}
 
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	void BindComplex::Callback(::vl::reflection::description::Value value)
+	{
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
+	}
+
+	::vl::WString BindComplex::main()
+	{
+		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		auto y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		auto z = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription(x, y, z));
+		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(::vl::reflection::description::Value)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
+		::vl::__vwsn::This(x.Obj())->SetValue(10);
+		::vl::__vwsn::This(y.Obj())->SetValue(20);
+		::vl::__vwsn::This(z.Obj())->SetValue(30);
+		::vl::__vwsn::This(subscription.Obj())->Close();
+		return GLOBAL_NAME s;
+	}
+
+	BindComplex& BindComplex::Instance()
+	{
+		return Getvl_workflow_global_BindComplex().instance;
+	}
 }
 
 #undef GLOBAL_SYMBOL

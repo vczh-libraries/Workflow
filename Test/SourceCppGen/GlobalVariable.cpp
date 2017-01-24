@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_GlobalVariable)
@@ -40,6 +40,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_GlobalVariable)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	::vl::vint32_t GlobalVariable::Add(::vl::vint32_t y)
 	{
 		auto z = GLOBAL_NAME x;

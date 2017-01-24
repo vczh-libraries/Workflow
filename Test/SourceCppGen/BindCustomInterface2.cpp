@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindCustomInterface2)
@@ -41,6 +41,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindCustomInterface2)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	struct __vwsnf1_BindCustomInterface2_Bind_
 	{
 
@@ -94,34 +98,7 @@ namespace vl_workflow_global
 		void Add(::vl::vint32_t value) override;
 	};
 
-	::vl::Ptr<::vl::reflection::description::IValueSubscription> BindCustomInterface2::Bind(::vl::Ptr<::ISummer2> summer)
-	{
-		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(summer));
-		::vl::__vwsn::This(subscription.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf1_BindCustomInterface2_Bind_()));
-		return subscription;
-	}
-
-	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder2> adder)
-	{
-		auto subscription = GLOBAL_NAME Bind(::vl::__vwsn::Ensure(::vl::Ptr<::ISummer2>(adder)));
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
-		{
-			::vl::__vwsn::This(adder.Obj())->Add(x);
-		}
-		::vl::__vwsn::This(subscription.Obj())->Close();
-	}
-
-	::vl::WString BindCustomInterface2::main()
-	{
-		GLOBAL_NAME Execute(::vl::Ptr<::IAdder2>(new ::vl_workflow_global::__vwsnc3_BindCustomInterface2_main__IAdder2()));
-		return GLOBAL_NAME s;
-	}
-
-	BindCustomInterface2& BindCustomInterface2::Instance()
-	{
-		return Getvl_workflow_global_BindCustomInterface2().instance;
-	}
+	//-------------------------------------------------------------------
 
 	__vwsnf1_BindCustomInterface2_Bind_::__vwsnf1_BindCustomInterface2_Bind_()
 	{
@@ -131,6 +108,8 @@ namespace vl_workflow_global
 	{
 		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer2> __vwsnctor_summer)
 		:summer(__vwsnctor_summer)
@@ -200,6 +179,8 @@ namespace vl_workflow_global
 		return false;
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener::__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0)
 		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
 		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
@@ -227,6 +208,8 @@ namespace vl_workflow_global
 		return false;
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnc3_BindCustomInterface2_main__IAdder2::__vwsnc3_BindCustomInterface2_main__IAdder2()
 	{
 		this->sum = 0;
@@ -243,6 +226,38 @@ namespace vl_workflow_global
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->SumChanged)();
 	}
 
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	::vl::Ptr<::vl::reflection::description::IValueSubscription> BindCustomInterface2::Bind(::vl::Ptr<::ISummer2> summer)
+	{
+		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(summer));
+		::vl::__vwsn::This(subscription.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf1_BindCustomInterface2_Bind_()));
+		return subscription;
+	}
+
+	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder2> adder)
+	{
+		auto subscription = GLOBAL_NAME Bind(::vl::__vwsn::Ensure(::vl::Ptr<::ISummer2>(adder)));
+		using __vwsnt_0 = ::vl::vint32_t;
+		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
+		{
+			::vl::__vwsn::This(adder.Obj())->Add(x);
+		}
+		::vl::__vwsn::This(subscription.Obj())->Close();
+	}
+
+	::vl::WString BindCustomInterface2::main()
+	{
+		GLOBAL_NAME Execute(::vl::Ptr<::IAdder2>(new ::vl_workflow_global::__vwsnc3_BindCustomInterface2_main__IAdder2()));
+		return GLOBAL_NAME s;
+	}
+
+	BindCustomInterface2& BindCustomInterface2::Instance()
+	{
+		return Getvl_workflow_global_BindCustomInterface2().instance;
+	}
 }
 
 /***********************************************************************

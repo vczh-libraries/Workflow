@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_TryCatch)
@@ -41,6 +41,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_TryCatch)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	void TryCatch::Test1()
 	{
 		try

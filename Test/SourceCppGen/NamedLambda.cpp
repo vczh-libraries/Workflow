@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_NamedLambda)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NamedLambda)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	struct __vwsnf1_NamedLambda_main_
 	{
 
@@ -44,6 +48,21 @@ namespace vl_workflow_global
 
 		::vl::vint32_t operator()(::vl::vint32_t n) const;
 	};
+
+	//-------------------------------------------------------------------
+
+	__vwsnf1_NamedLambda_main_::__vwsnf1_NamedLambda_main_()
+	{
+	}
+
+	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
+	{
+		auto fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		return ((n <= 2) ? 1 : ((*this)((n - 1)) + fib2((n - 2))));
+	}
+/***********************************************************************
+Global Functions
+***********************************************************************/
 
 	::vl::WString NamedLambda::main()
 	{
@@ -54,16 +73,6 @@ namespace vl_workflow_global
 	NamedLambda& NamedLambda::Instance()
 	{
 		return Getvl_workflow_global_NamedLambda().instance;
-	}
-
-	__vwsnf1_NamedLambda_main_::__vwsnf1_NamedLambda_main_()
-	{
-	}
-
-	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
-	{
-		auto fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
-		return ((n <= 2) ? 1 : ((*this)((n - 1)) + fib2((n - 2))));
 	}
 }
 

@@ -145,10 +145,6 @@ namespace vl
 				}
 				WriteNamespaceEnd(writer, nss);
 
-				writer.WriteLine(L"/***********************************************************************");
-				writer.WriteLine(L"Global Variables and Functions");
-				writer.WriteLine(L"***********************************************************************/");
-				writer.WriteLine(L"");
 				WriteHeader_Global(writer);
 
 				if (!multiFile)
@@ -170,10 +166,6 @@ namespace vl
 				writer.WriteLine(L"");
 				WriteCpp_PushMacros(writer);
 
-				writer.WriteLine(L"");
-				writer.WriteLine(L"/***********************************************************************");
-				writer.WriteLine(L"Global Variables and Functions");
-				writer.WriteLine(L"***********************************************************************/");
 				writer.WriteLine(L"");
 				WriteCpp_Global(writer);
 				writer.WriteLine(L"");

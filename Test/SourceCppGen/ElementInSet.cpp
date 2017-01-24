@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_ElementInSet)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_ElementInSet)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
 	::vl::WString ElementInSet::main()
 	{
 		auto xs = ::vl::reflection::description::GetLazyList<::vl::vint32_t>((::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list);

@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_NestedLambda)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NestedLambda)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	struct __vwsnf3_NestedLambda_main_H_Calculate_
 	{
 		::IB* __vwsnthis_0;
@@ -149,15 +153,7 @@ namespace vl_workflow_global
 		::vl::WString Calculate() override;
 	};
 
-	::vl::WString NestedLambda::main()
-	{
-		return ::vl::__vwsn::This(::vl::Ptr<::IA>(new ::vl_workflow_global::__vwsnc1_NestedLambda_main__IA()).Obj())->Calculate();
-	}
-
-	NestedLambda& NestedLambda::Instance()
-	{
-		return Getvl_workflow_global_NestedLambda().instance;
-	}
+	//-------------------------------------------------------------------
 
 	__vwsnf3_NestedLambda_main_H_Calculate_::__vwsnf3_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -170,6 +166,8 @@ namespace vl_workflow_global
 		return ::vl::__vwsn::This(__vwsnthis_1)->GetA();
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnf4_NestedLambda_main_H_Calculate_::__vwsnf4_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
 		:__vwsnthis_0(__vwsnctorthis_0)
 		, __vwsnthis_1(__vwsnctorthis_1)
@@ -181,6 +179,8 @@ namespace vl_workflow_global
 		return (LAMBDA(::vl_workflow_global::__vwsno5_NestedLambda_main_H_Calculate__(__vwsnthis_0, __vwsnthis_1))() + ::vl::__vwsn::This(__vwsnthis_0)->GetB());
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnf7_NestedLambda_main_Calculate_::__vwsnf7_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -190,6 +190,8 @@ namespace vl_workflow_global
 	{
 		return ::vl::__vwsn::This(__vwsnthis_0)->GetA();
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnf8_NestedLambda_main_Calculate_::__vwsnf8_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -201,6 +203,8 @@ namespace vl_workflow_global
 		return LAMBDA(::vl_workflow_global::__vwsno9_NestedLambda_main_Calculate__(__vwsnthis_0))();
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsno1_NestedLambda_main_H_::__vwsno1_NestedLambda_main_H_(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -210,6 +214,8 @@ namespace vl_workflow_global
 	{
 		return ::vl::__vwsn::This(::vl::Ptr<::IB>(new ::vl_workflow_global::__vwsnc2_NestedLambda_main_H__IB(__vwsnthis_0)).Obj())->Calculate();
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsno2_NestedLambda_main_H_Calculate_::__vwsno2_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -222,6 +228,8 @@ namespace vl_workflow_global
 		return (LAMBDA(::vl_workflow_global::__vwsnf3_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1))() + ::vl::__vwsn::This(__vwsnthis_0)->GetB());
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsno5_NestedLambda_main_H_Calculate__::__vwsno5_NestedLambda_main_H_Calculate__(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1)
 		:__vwsnthis_0(__vwsnctorthis_0)
 		, __vwsnthis_1(__vwsnctorthis_1)
@@ -233,6 +241,8 @@ namespace vl_workflow_global
 		return ::vl::__vwsn::This(__vwsnthis_1)->GetA();
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsno6_NestedLambda_main_Calculate_::__vwsno6_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -243,6 +253,8 @@ namespace vl_workflow_global
 		return LAMBDA(::vl_workflow_global::__vwsnf7_NestedLambda_main_Calculate_(__vwsnthis_0))();
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsno9_NestedLambda_main_Calculate__::__vwsno9_NestedLambda_main_Calculate__(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -252,6 +264,8 @@ namespace vl_workflow_global
 	{
 		return ::vl::__vwsn::This(__vwsnthis_0)->GetA();
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnc1_NestedLambda_main__IA::__vwsnc1_NestedLambda_main__IA()
 	{
@@ -288,6 +302,8 @@ namespace vl_workflow_global
 		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
 		return s;
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnc2_NestedLambda_main_H__IB::__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -326,6 +342,19 @@ namespace vl_workflow_global
 		return s;
 	}
 
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	::vl::WString NestedLambda::main()
+	{
+		return ::vl::__vwsn::This(::vl::Ptr<::IA>(new ::vl_workflow_global::__vwsnc1_NestedLambda_main__IA()).Obj())->Calculate();
+	}
+
+	NestedLambda& NestedLambda::Instance()
+	{
+		return Getvl_workflow_global_NestedLambda().instance;
+	}
 }
 
 /***********************************************************************
