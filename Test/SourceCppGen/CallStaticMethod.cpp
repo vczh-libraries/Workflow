@@ -102,6 +102,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Calculator)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Calculator>(), NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(Sum2, { L"begin" _ L"end" _ L"sum" })
 			END_CLASS_MEMBER(::Calculator)
 

@@ -307,6 +307,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Derived)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Derived>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Execute, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(x)
 				CLASS_MEMBER_FIELD(y)
@@ -314,9 +315,11 @@ namespace vl
 			END_CLASS_MEMBER(::Derived)
 
 			BEGIN_CLASS_MEMBER(::OuterClass)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::OuterClass>(), NO_PARAMETER)
 			END_CLASS_MEMBER(::OuterClass)
 
 			BEGIN_CLASS_MEMBER(::OuterClass::Base)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::OuterClass::Base>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Initialize, { L"derived" })
 				CLASS_MEMBER_FIELD(s)
 				CLASS_MEMBER_FIELD(subscription)

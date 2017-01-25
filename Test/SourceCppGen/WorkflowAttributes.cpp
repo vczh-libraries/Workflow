@@ -149,6 +149,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::calculator::BinaryExpression)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::calculator::BinaryExpression>(::vl::Ptr<::calculator::Expression>, ::calculator::BinaryExpression::BinaryOperator, ::vl::Ptr<::calculator::Expression>), { L"_left" _ L"_op" _ L"_right" })
 				CLASS_MEMBER_METHOD(GetLeft, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetOp, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetRight, NO_PARAMETER)
@@ -168,11 +169,13 @@ namespace vl
 			END_ENUM_ITEM(::calculator::BinaryExpression::BinaryOperator)
 
 			BEGIN_CLASS_MEMBER(::calculator::Expression)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::calculator::Expression>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Evaluate, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Print, NO_PARAMETER)
 			END_CLASS_MEMBER(::calculator::Expression)
 
 			BEGIN_CLASS_MEMBER(::calculator::NumberExpression)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::calculator::NumberExpression>(::vl::vint32_t), { L"_value" })
 				CLASS_MEMBER_METHOD(GetValue, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Value, GetValue)
 				CLASS_MEMBER_FIELD(value)

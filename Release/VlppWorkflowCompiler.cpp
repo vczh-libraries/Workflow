@@ -20648,6 +20648,50 @@ namespace vl
 							writer.WriteString(ConvertType(td));
 							writer.WriteLine(L")");
 
+							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
+							{
+								auto methodGroup = td->GetConstructorGroup();
+								vint methodCount = methodGroup->GetMethodCount();
+								for (vint j = 0; j < methodCount; j++)
+								{
+									auto methodInfo = methodGroup->GetMethod(j);
+									vint parameterCount = methodInfo->GetParameterCount();
+
+									writer.WriteString(L"\t\t\t\tCLASS_MEMBER_CONSTRUCTOR(");
+									writer.WriteString(ConvertType(methodInfo->GetReturn()));
+									writer.WriteString(L"(");
+									for (vint k = 0; k < parameterCount; k++)
+									{
+										if (k > 0)
+										{
+											writer.WriteString(L", ");
+										}
+										writer.WriteString(ConvertArgumentType(methodInfo->GetParameter(k)->GetType()));
+									}
+									writer.WriteString(L")");
+
+									if (parameterCount > 0)
+									{
+										writer.WriteString(L", {");
+										for (vint k = 0; k < parameterCount; k++)
+										{
+											if (k > 0)
+											{
+												writer.WriteString(L" _");
+											}
+											writer.WriteString(L" L\"");
+											writer.WriteString(ConvertName(methodInfo->GetParameter(k)->GetName()));
+											writer.WriteString(L"\"");
+										}
+										writer.WriteLine(L" })");
+									}
+									else
+									{
+										writer.WriteLine(L", NO_PARAMETER)");
+									}
+								}
+							}
+
 							vint methodGroupCount = td->GetMethodGroupCount();
 							for (vint i = 0; i < methodGroupCount; i++)
 							{

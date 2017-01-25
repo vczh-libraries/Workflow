@@ -153,6 +153,8 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Methods)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Methods>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Methods>(::vl::vint32_t), { L"_x" })
 				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetX, { L"_x" })
 				CLASS_MEMBER_EVENT(XChanged)

@@ -200,9 +200,13 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::workflow::hints::Base)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::workflow::hints::Base>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::workflow::hints::Base*(::vl::vint32_t), { L"x" })
 			END_CLASS_MEMBER(::workflow::hints::Base)
 
 			BEGIN_CLASS_MEMBER(::workflow::hints::Derived)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::workflow::hints::Derived>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::workflow::hints::Derived*(::vl::vint32_t), { L"x" })
 			END_CLASS_MEMBER(::workflow::hints::Derived)
 
 #undef _

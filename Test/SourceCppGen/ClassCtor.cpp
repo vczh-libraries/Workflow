@@ -152,6 +152,8 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Base)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Base>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Base>(::vl::vint32_t), { L"_x" })
 				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetX, { L"_x" })
 				CLASS_MEMBER_EVENT(XChanged)
@@ -160,6 +162,10 @@ namespace vl
 			END_CLASS_MEMBER(::Base)
 
 			BEGIN_CLASS_MEMBER(::Ctor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(::vl::vint32_t, bool), { L"y" _ L"b" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(bool, ::vl::vint32_t), { L"b" _ L"value" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(::vl::vint32_t, ::vl::vint32_t), { L"y" _ L"value" })
 			END_CLASS_MEMBER(::Ctor)
 
 #undef _
