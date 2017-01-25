@@ -1529,12 +1529,16 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfIfExpression* node)override
 				{
+					auto firstResult = config->manager->expressionResolvings[node->trueBranch.Obj()];
+					auto secondResult = config->manager->expressionResolvings[node->falseBranch.Obj()];
+					auto mergedType = GetMergedType(firstResult.type, secondResult.type);
+
 					writer.WriteString(L"(");
 					Call(node->condition);
 					writer.WriteString(L" ? ");
-					Call(node->trueBranch);
+					Call(node->trueBranch, mergedType.Obj());
 					writer.WriteString(L" : ");
-					Call(node->falseBranch);
+					Call(node->falseBranch, mergedType.Obj());
 					writer.WriteString(L")");
 				}
 

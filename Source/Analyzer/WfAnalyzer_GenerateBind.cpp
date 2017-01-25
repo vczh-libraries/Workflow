@@ -1762,15 +1762,10 @@ ExpandBindExpression
 				}
 				{
 					// stable symbol order by sorting them by code
-					Dictionary<WString, WfExpression*> orderedObserves;
+					List<WfExpression*> orderedObserves;
 
-					FOREACH_INDEXER(WfExpression*, observe, observeIndex, dependency.dependencies.Keys())
+					auto printExpression = [](WfExpression* observe)
 					{
-						if (!observe)
-						{
-							continue;
-						}
-
 						stream::MemoryStream stream;
 						{
 							stream::StreamWriter writer(stream);
@@ -1779,11 +1774,28 @@ ExpandBindExpression
 						stream.SeekFromBegin(0);
 						{
 							stream::StreamReader reader(stream);
-							orderedObserves.Add(reader.ReadToEnd(), observe);
+							return reader.ReadToEnd();
 						}
-					}
+					};
 
-					FOREACH_INDEXER(WfExpression*, observe, observeIndex, orderedObserves.Values())
+					CopyFrom(
+						orderedObserves,
+						From(dependency.dependencies.Keys())
+							.Where([](WfExpression* expr)
+							{
+								return expr != nullptr;
+							})
+							.OrderBy([&](WfExpression* a, WfExpression* b)
+							{
+								auto codeA = printExpression(a);
+								auto codeB = printExpression(b);
+								auto compare = WString::Compare(codeA, codeB);
+								if (compare) return compare;
+								return a->codeRange.start.index - b->codeRange.start.index;
+							})
+						);
+
+					FOREACH_INDEXER(WfExpression*, observe, observeIndex, orderedObserves)
 					{
 						List<IEventInfo*> events;
 						WfExpression* parent = 0;
