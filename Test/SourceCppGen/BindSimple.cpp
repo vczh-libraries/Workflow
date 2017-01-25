@@ -301,9 +301,9 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::Derived)
-			IMPL_CPP_TYPE_INFO(::OuterClass)
-			IMPL_CPP_TYPE_INFO(::OuterClass::Base)
+			IMPL_CPP_TYPE_INFO(Derived)
+			IMPL_CPP_TYPE_INFO(OuterClass)
+			IMPL_CPP_TYPE_INFO(OuterClass::Base)
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Derived)

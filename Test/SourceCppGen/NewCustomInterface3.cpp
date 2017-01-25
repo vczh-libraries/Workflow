@@ -172,8 +172,8 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::IMyInterface3)
-			IMPL_CPP_TYPE_INFO(::MyClass)
+			IMPL_CPP_TYPE_INFO(IMyInterface3)
+			IMPL_CPP_TYPE_INFO(MyClass)
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IMyInterface3)

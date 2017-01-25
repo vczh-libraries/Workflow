@@ -98,7 +98,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::Dtor)
+			IMPL_CPP_TYPE_INFO(Dtor)
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Dtor)

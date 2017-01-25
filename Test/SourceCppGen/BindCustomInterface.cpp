@@ -284,8 +284,8 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::IAdder)
-			IMPL_CPP_TYPE_INFO(::ISummer)
+			IMPL_CPP_TYPE_INFO(IAdder)
+			IMPL_CPP_TYPE_INFO(ISummer)
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IAdder)

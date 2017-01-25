@@ -142,10 +142,10 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::calculator::BinaryExpression)
-			IMPL_CPP_TYPE_INFO(::calculator::BinaryExpression::BinaryOperator)
-			IMPL_CPP_TYPE_INFO(::calculator::Expression)
-			IMPL_CPP_TYPE_INFO(::calculator::NumberExpression)
+			IMPL_CPP_TYPE_INFO(calculator::BinaryExpression)
+			IMPL_CPP_TYPE_INFO(calculator::BinaryExpression::BinaryOperator)
+			IMPL_CPP_TYPE_INFO(calculator::Expression)
+			IMPL_CPP_TYPE_INFO(calculator::NumberExpression)
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::calculator::BinaryExpression)

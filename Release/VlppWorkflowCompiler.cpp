@@ -20579,7 +20579,12 @@ namespace vl
 				FOREACH(ITypeDescriptor*, td, tds)
 				{
 					writer.WriteString(L"\t\t\tIMPL_CPP_TYPE_INFO(");
-					writer.WriteString(ConvertType(td));
+					WString type = ConvertType(td);
+					if (type.Length() > 2 && type.Sub(0, 2) == L"::")
+					{
+						type = type.Sub(2, type.Length() - 2);
+					}
+					writer.WriteString(type);
 					writer.WriteLine(L")");
 				}
 				writer.WriteLine(L"");

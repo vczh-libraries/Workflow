@@ -77,7 +77,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::Seasons)
+			IMPL_CPP_TYPE_INFO(Seasons)
 
 #define _ ,
 			BEGIN_ENUM_ITEM_MERGABLE(::Seasons)

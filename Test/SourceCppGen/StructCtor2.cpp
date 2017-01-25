@@ -75,7 +75,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::Point)
+			IMPL_CPP_TYPE_INFO(Point)
 
 #define _ ,
 			BEGIN_STRUCT_MEMBER(::Point)

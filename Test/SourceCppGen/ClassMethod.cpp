@@ -149,7 +149,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::Methods)
+			IMPL_CPP_TYPE_INFO(Methods)
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Methods)
