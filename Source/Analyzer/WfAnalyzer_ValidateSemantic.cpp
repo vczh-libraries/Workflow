@@ -1729,7 +1729,7 @@ ValidateSemantic(Expression)
 							manager->errors.Add(WfErrors::RangeShouldBeInteger(node, elementType.Obj()));
 						}
 
-						auto enumerableType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Unknown);
+						auto enumerableType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Normal);
 						auto genericType = MakePtr<GenericTypeInfo>(enumerableType);
 						genericType->AddGenericArgument(elementType);
 
@@ -1874,7 +1874,7 @@ ValidateSemantic(Expression)
 						{
 							if (keyType && valueType)
 							{
-								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueDictionary>(), TypeInfoHint::Unknown);
+								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueDictionary>(), TypeInfoHint::Normal);
 								auto genericType = MakePtr<GenericTypeInfo>(classType);
 								genericType->AddGenericArgument(keyType);
 								genericType->AddGenericArgument(valueType);
@@ -1887,7 +1887,7 @@ ValidateSemantic(Expression)
 						{
 							if (keyType)
 							{
-								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), TypeInfoHint::Unknown);
+								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), TypeInfoHint::Normal);
 								auto genericType = MakePtr<GenericTypeInfo>(classType);
 								genericType->AddGenericArgument(keyType);
 

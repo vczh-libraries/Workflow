@@ -101,6 +101,11 @@ Hinters
 		list.Remove(y);
 		return list;
 	}
+	
+	MyList& Hinters::GetMyList()
+	{
+		return myList;
+	}
 
 	const List<vint>& Hinters::GetReadonlyList(const List<vint>& xs)
 	{
@@ -222,6 +227,7 @@ namespace vl
 				CLASS_MEMBER_EXTERNALMETHOD(GetReadonlyDictionary, { L"xs" }, T2, test::GetReadonlyDictionaryFromHinter)
 
 				CLASS_MEMBER_PROPERTY_FAST(Storage)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(MyList)
 			END_CLASS_MEMBER(Hinters)
 
 			class UnitTestTypeLoader : public Object, public ITypeLoader

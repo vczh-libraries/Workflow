@@ -69,6 +69,10 @@ namespace test
 		static vint							Sum(Ptr<IValueEnumerable> values);
 	};
 
+	class MyList : public List<int>
+	{
+	};
+
 	class Hinters : public Object, public Description<Hinters>
 	{
 	public:
@@ -76,8 +80,10 @@ namespace test
 		Array<vint>							array;
 		SortedList<vint>					sortedList;
 		Dictionary<vint, vint>				dictionary;
+		MyList								myList;
 
 		List<vint>&							GetList(List<vint>& xs, vint y);
+		MyList&								GetMyList();
 		const List<vint>&					GetReadonlyList(const List<vint>& xs);
 		const Array<vint>&					GetReadonlyArray(const Array<vint>& xs);
 		const SortedList<vint>&				GetReadonlySL(const SortedList<vint>& xs);

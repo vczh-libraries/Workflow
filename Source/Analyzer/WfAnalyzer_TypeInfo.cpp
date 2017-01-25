@@ -528,15 +528,7 @@ CreateTypeInfoFromType
 					{
 						if (scopeName->typeDescriptor)
 						{
-							auto hint = TypeInfoHint::Normal;
-							if (scopeName->typeDescriptor == description::GetTypeDescriptor<IValueReadonlyList>() ||
-								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueList>() || 
-								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueReadonlyDictionary>() || 
-								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueDictionary>())
-							{
-								hint = TypeInfoHint::Unknown;
-							}
-							result = MakePtr<TypeDescriptorTypeInfo>(scopeName->typeDescriptor, hint);
+							result = MakePtr<TypeDescriptorTypeInfo>(scopeName->typeDescriptor, TypeInfoHint::Normal);
 						}
 						else
 						{
