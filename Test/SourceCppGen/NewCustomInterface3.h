@@ -70,6 +70,35 @@ namespace vl_workflow_global
 
 		static NewCustomInterface3& Instance();
 	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	class __vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3 : public ::vl::Object, public virtual ::IMyInterface3
+	{
+	public:
+		::MyClass* __vwsnthis_0;
+
+		__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3(::MyClass* __vwsnctorthis_0);
+
+		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
+		::vl::vint32_t Get100() override;
+	};
+
+	class __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
+	{
+	public:
+		::IMyInterface3* __vwsnthis_0;
+		::MyClass* __vwsnthis_1;
+
+		__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator(::IMyInterface3* __vwsnctorthis_0, ::MyClass* __vwsnctorthis_1);
+
+		::vl::vint32_t index = 0;
+		::vl::reflection::description::Value GetCurrent() override;
+		::vl::vint32_t GetIndex() override;
+		bool Next() override;
+	};
 }
 
 /***********************************************************************

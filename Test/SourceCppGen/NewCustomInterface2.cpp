@@ -38,36 +38,25 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewCustomInterface2)
 namespace vl_workflow_global
 {
 /***********************************************************************
-Closure Definitions
+Global Functions
 ***********************************************************************/
 
-	class __vwsnc1_NewCustomInterface2_main__IMyInterface2 : public ::vl::Object, public virtual ::IMyInterface2
+	::vl::WString NewCustomInterface2::main()
 	{
-	public:
-		::vl::vint32_t begin;
-		::vl::vint32_t end;
+		auto begin = 1;
+		auto end = 5;
+		auto xs = ::vl::Ptr<::IMyInterface2>(new ::vl_workflow_global::__vwsnc1_NewCustomInterface2_main__IMyInterface2(begin, end));
+		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"]", false));
+	}
 
-		__vwsnc1_NewCustomInterface2_main__IMyInterface2(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end);
-
-		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
-		::vl::vint32_t Get50();
-		::vl::vint32_t Get100() override;
-	};
-
-	class __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
+	NewCustomInterface2& NewCustomInterface2::Instance()
 	{
-	public:
-		::vl::vint32_t begin;
-		::vl::vint32_t end;
-		::IMyInterface2* __vwsnthis_0;
+		return Getvl_workflow_global_NewCustomInterface2().instance;
+	}
 
-		__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::IMyInterface2* __vwsnctorthis_0);
-
-		::vl::vint32_t index = 0;
-		::vl::reflection::description::Value GetCurrent() override;
-		::vl::vint32_t GetIndex() override;
-		bool Next() override;
-	};
+/***********************************************************************
+Closures
+***********************************************************************/
 
 	//-------------------------------------------------------------------
 
@@ -125,22 +114,6 @@ Closure Definitions
 		}
 	}
 
-/***********************************************************************
-Global Functions
-***********************************************************************/
-
-	::vl::WString NewCustomInterface2::main()
-	{
-		auto begin = 1;
-		auto end = 5;
-		auto xs = ::vl::Ptr<::IMyInterface2>(new ::vl_workflow_global::__vwsnc1_NewCustomInterface2_main__IMyInterface2(begin, end));
-		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"]", false));
-	}
-
-	NewCustomInterface2& NewCustomInterface2::Instance()
-	{
-		return Getvl_workflow_global_NewCustomInterface2().instance;
-	}
 }
 
 /***********************************************************************

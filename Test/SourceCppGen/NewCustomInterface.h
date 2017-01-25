@@ -55,6 +55,37 @@ namespace vl_workflow_global
 
 		static NewCustomInterface& Instance();
 	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	class __vwsnc1_NewCustomInterface_main__IMyInterface : public ::vl::Object, public virtual ::IMyInterface
+	{
+	public:
+		::vl::vint32_t begin;
+		::vl::vint32_t end;
+
+		__vwsnc1_NewCustomInterface_main__IMyInterface(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end);
+
+		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
+		::vl::vint32_t Get100() override;
+	};
+
+	class __vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
+	{
+	public:
+		::vl::vint32_t begin;
+		::vl::vint32_t end;
+		::IMyInterface* __vwsnthis_0;
+
+		__vwsnc2_NewCustomInterface_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::IMyInterface* __vwsnctorthis_0);
+
+		::vl::vint32_t index = 0;
+		::vl::reflection::description::Value GetCurrent() override;
+		::vl::vint32_t GetIndex() override;
+		bool Next() override;
+	};
 }
 
 /***********************************************************************

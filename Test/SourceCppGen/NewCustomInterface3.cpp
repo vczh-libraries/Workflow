@@ -38,33 +38,24 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NewCustomInterface3)
 namespace vl_workflow_global
 {
 /***********************************************************************
-Closure Definitions
+Global Functions
 ***********************************************************************/
 
-	class __vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3 : public ::vl::Object, public virtual ::IMyInterface3
+	::vl::WString NewCustomInterface3::main()
 	{
-	public:
-		::MyClass* __vwsnthis_0;
+		auto x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
+		auto xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
+		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"]", false));
+	}
 
-		__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3(::MyClass* __vwsnctorthis_0);
-
-		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
-		::vl::vint32_t Get100() override;
-	};
-
-	class __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
+	NewCustomInterface3& NewCustomInterface3::Instance()
 	{
-	public:
-		::IMyInterface3* __vwsnthis_0;
-		::MyClass* __vwsnthis_1;
+		return Getvl_workflow_global_NewCustomInterface3().instance;
+	}
 
-		__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator(::IMyInterface3* __vwsnctorthis_0, ::MyClass* __vwsnctorthis_1);
-
-		::vl::vint32_t index = 0;
-		::vl::reflection::description::Value GetCurrent() override;
-		::vl::vint32_t GetIndex() override;
-		bool Next() override;
-	};
+/***********************************************************************
+Closures
+***********************************************************************/
 
 	//-------------------------------------------------------------------
 
@@ -115,21 +106,6 @@ Closure Definitions
 		}
 	}
 
-/***********************************************************************
-Global Functions
-***********************************************************************/
-
-	::vl::WString NewCustomInterface3::main()
-	{
-		auto x = ::vl::Ptr<::MyClass>(new ::MyClass(1, 5));
-		auto xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
-		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"]", false));
-	}
-
-	NewCustomInterface3& NewCustomInterface3::Instance()
-	{
-		return Getvl_workflow_global_NewCustomInterface3().instance;
-	}
 }
 
 /***********************************************************************

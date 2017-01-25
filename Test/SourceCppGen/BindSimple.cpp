@@ -38,59 +38,24 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindSimple)
 namespace vl_workflow_global
 {
 /***********************************************************************
-Closure Definitions
+Global Functions
 ***********************************************************************/
 
-	struct __vwsnf1_BindSimple_OuterClass_Base_Initialize_
+	::vl::WString BindSimple::main()
 	{
-		::OuterClass::Base* __vwsnthis_0;
+		auto derived = ::vl::Ptr<::Derived>(new ::Derived());
+		::vl::__vwsn::This(derived.Obj())->Execute();
+		return ::vl::__vwsn::This(derived.Obj())->s;
+	}
 
-		__vwsnf1_BindSimple_OuterClass_Base_Initialize_(::OuterClass::Base* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& value) const;
-	};
-
-	class __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	BindSimple& BindSimple::Instance()
 	{
-	public:
-		::Derived* derived;
-		::OuterClass::Base* __vwsnthis_0;
+		return Getvl_workflow_global_BindSimple().instance;
+	}
 
-		__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(::Derived* __vwsnctor_derived, ::OuterClass::Base* __vwsnctorthis_0);
-
-		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_1;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
-		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_2;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
-	{
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
-		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
-		::OuterClass::Base* __vwsnthis_1;
-
-		__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::OuterClass::Base* __vwsnctorthis_1);
-
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
-	};
+/***********************************************************************
+Closures
+***********************************************************************/
 
 	//-------------------------------------------------------------------
 
@@ -229,21 +194,6 @@ Closure Definitions
 		return false;
 	}
 
-/***********************************************************************
-Global Functions
-***********************************************************************/
-
-	::vl::WString BindSimple::main()
-	{
-		auto derived = ::vl::Ptr<::Derived>(new ::Derived());
-		::vl::__vwsn::This(derived.Obj())->Execute();
-		return ::vl::__vwsn::This(derived.Obj())->s;
-	}
-
-	BindSimple& BindSimple::Instance()
-	{
-		return Getvl_workflow_global_BindSimple().instance;
-	}
 }
 
 /***********************************************************************

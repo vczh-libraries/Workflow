@@ -45,6 +45,28 @@ namespace vl_workflow_global
 
 		static OrderedLambda& Instance();
 	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsno1_OrderedLambda_Adder_
+	{
+		::vl::vint32_t x;
+
+		__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x);
+
+		::vl::vint32_t operator()(::vl::vint32_t __vwsno_1) const;
+	};
+
+	struct __vwsno2_OrderedLambda_Adder_
+	{
+		::vl::vint32_t __vwsno_1;
+
+		__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1);
+
+		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
+	};
 }
 
 #if defined( _MSC_VER)

@@ -25,10 +25,10 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
+	struct __vwsnf1_BindCustomInterface2_Bind_;
 	class __vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription;
 	class __vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener;
 	class __vwsnc3_BindCustomInterface2_main__IAdder2;
-	struct __vwsnf1_BindCustomInterface2_Bind_;
 }
 
 class ISummer2;
@@ -70,6 +70,61 @@ namespace vl_workflow_global
 		::vl::WString main();
 
 		static BindCustomInterface2& Instance();
+	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsnf1_BindCustomInterface2_Bind_
+	{
+		__vwsnf1_BindCustomInterface2_Bind_();
+
+		void operator()(const ::vl::reflection::description::Value& value) const;
+	};
+
+	class __vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::vl::Ptr<::ISummer2> summer;
+
+		__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(::vl::Ptr<::ISummer2> __vwsnctor_summer);
+
+		::vl::Ptr<::ISummer2> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+
+		__vwsnc2_BindCustomInterface2_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc3_BindCustomInterface2_main__IAdder2 : public ::vl::Object, public virtual ::IAdder2
+	{
+	public:
+		__vwsnc3_BindCustomInterface2_main__IAdder2();
+
+		::vl::vint32_t sum = 0;
+		::vl::vint32_t GetSum() override;
+		void Add(::vl::vint32_t value) override;
 	};
 }
 

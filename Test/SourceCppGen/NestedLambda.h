@@ -25,8 +25,6 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	class __vwsnc1_NestedLambda_main__IA;
-	class __vwsnc2_NestedLambda_main_H__IB;
 	struct __vwsnf3_NestedLambda_main_H_Calculate_;
 	struct __vwsnf4_NestedLambda_main_H_Calculate_;
 	struct __vwsnf7_NestedLambda_main_Calculate_;
@@ -36,6 +34,8 @@ namespace vl_workflow_global
 	struct __vwsno5_NestedLambda_main_H_Calculate__;
 	struct __vwsno6_NestedLambda_main_Calculate_;
 	struct __vwsno9_NestedLambda_main_Calculate__;
+	class __vwsnc1_NestedLambda_main__IA;
+	class __vwsnc2_NestedLambda_main_H__IB;
 }
 
 class IA;
@@ -78,6 +78,121 @@ namespace vl_workflow_global
 		::vl::WString main();
 
 		static NestedLambda& Instance();
+	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsnf3_NestedLambda_main_H_Calculate_
+	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
+
+		__vwsnf3_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	struct __vwsnf4_NestedLambda_main_H_Calculate_
+	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
+
+		__vwsnf4_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	struct __vwsnf7_NestedLambda_main_Calculate_
+	{
+		::IA* __vwsnthis_0;
+
+		__vwsnf7_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	struct __vwsnf8_NestedLambda_main_Calculate_
+	{
+		::IA* __vwsnthis_0;
+
+		__vwsnf8_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	struct __vwsno1_NestedLambda_main_H_
+	{
+		::IA* __vwsnthis_0;
+
+		__vwsno1_NestedLambda_main_H_(::IA* __vwsnctorthis_0);
+
+		::vl::WString operator()() const;
+	};
+
+	struct __vwsno2_NestedLambda_main_H_Calculate_
+	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
+
+		__vwsno2_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	struct __vwsno5_NestedLambda_main_H_Calculate__
+	{
+		::IB* __vwsnthis_0;
+		::IA* __vwsnthis_1;
+
+		__vwsno5_NestedLambda_main_H_Calculate__(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	struct __vwsno6_NestedLambda_main_Calculate_
+	{
+		::IA* __vwsnthis_0;
+
+		__vwsno6_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	struct __vwsno9_NestedLambda_main_Calculate__
+	{
+		::IA* __vwsnthis_0;
+
+		__vwsno9_NestedLambda_main_Calculate__(::IA* __vwsnctorthis_0);
+
+		::vl::vint32_t operator()() const;
+	};
+
+	class __vwsnc1_NestedLambda_main__IA : public ::vl::Object, public virtual ::IA
+	{
+	public:
+		__vwsnc1_NestedLambda_main__IA();
+
+		::vl::vint32_t a = 0;
+		::vl::vint32_t GetA() override;
+		void SetA(::vl::vint32_t value) override;
+		::vl::WString H();
+		::vl::WString Calculate() override;
+	};
+
+	class __vwsnc2_NestedLambda_main_H__IB : public ::vl::Object, public virtual ::IB
+	{
+	public:
+		::IA* __vwsnthis_0;
+
+		__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0);
+
+		::vl::vint32_t b = 0;
+		::vl::vint32_t GetB() override;
+		void SetB(::vl::vint32_t value) override;
+		::vl::WString H();
+		::vl::WString Calculate() override;
 	};
 }
 

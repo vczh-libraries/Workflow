@@ -42,6 +42,17 @@ namespace vl_workflow_global
 
 		static NamedLambda& Instance();
 	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsnf1_NamedLambda_main_
+	{
+		__vwsnf1_NamedLambda_main_();
+
+		::vl::vint32_t operator()(::vl::vint32_t n) const;
+	};
 }
 
 #if defined( _MSC_VER)

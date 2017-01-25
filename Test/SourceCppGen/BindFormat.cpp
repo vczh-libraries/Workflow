@@ -42,42 +42,34 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindFormat)
 namespace vl_workflow_global
 {
 /***********************************************************************
-Closure Definitions
+Global Functions
 ***********************************************************************/
 
-	class __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	void BindFormat::Callback(const ::vl::reflection::description::Value& value)
 	{
-	public:
-		::vl::Ptr<::test::ObservableValue> x;
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false)));
+	}
 
-		__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(::vl::Ptr<::test::ObservableValue> __vwsnctor_x);
-
-		::vl::Ptr<::test::ObservableValue> __vwsn_bind_cache_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	::vl::WString BindFormat::main()
 	{
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
-		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(x));
+		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
+		::vl::__vwsn::This(x.Obj())->SetValue(10);
+		::vl::__vwsn::This(x.Obj())->SetValue(20);
+		::vl::__vwsn::This(x.Obj())->SetValue(30);
+		::vl::__vwsn::This(subscription.Obj())->Close();
+		return GLOBAL_NAME s;
+	}
 
-		__vwsnc2_BindFormat_main_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0);
+	BindFormat& BindFormat::Instance()
+	{
+		return Getvl_workflow_global_BindFormat().instance;
+	}
 
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
-	};
+/***********************************************************************
+Closures
+***********************************************************************/
 
 	//-------------------------------------------------------------------
 
@@ -178,31 +170,6 @@ Closure Definitions
 		return false;
 	}
 
-/***********************************************************************
-Global Functions
-***********************************************************************/
-
-	void BindFormat::Callback(const ::vl::reflection::description::Value& value)
-	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false)));
-	}
-
-	::vl::WString BindFormat::main()
-	{
-		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription(x));
-		::vl::__vwsn::This(subscription.Obj())->Subscribe(::vl::Func<void(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
-		::vl::__vwsn::This(x.Obj())->SetValue(10);
-		::vl::__vwsn::This(x.Obj())->SetValue(20);
-		::vl::__vwsn::This(x.Obj())->SetValue(30);
-		::vl::__vwsn::This(subscription.Obj())->Close();
-		return GLOBAL_NAME s;
-	}
-
-	BindFormat& BindFormat::Instance()
-	{
-		return Getvl_workflow_global_BindFormat().instance;
-	}
 }
 
 #undef GLOBAL_SYMBOL

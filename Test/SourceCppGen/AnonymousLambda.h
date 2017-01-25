@@ -44,6 +44,29 @@ namespace vl_workflow_global
 
 		static AnonymousLambda& Instance();
 	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsnf1_AnonymousLambda_Adder_
+	{
+		::vl::vint32_t x;
+
+		__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t __vwsnctor_x);
+
+		::vl::Func<::vl::vint32_t()> operator()(::vl::vint32_t y) const;
+	};
+
+	struct __vwsnf2_AnonymousLambda_Adder__
+	{
+		::vl::vint32_t x;
+		::vl::vint32_t y;
+
+		__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t __vwsnctor_x, ::vl::vint32_t __vwsnctor_y);
+
+		::vl::vint32_t operator()() const;
+	};
 }
 
 #if defined( _MSC_VER)

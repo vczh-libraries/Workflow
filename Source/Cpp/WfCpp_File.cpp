@@ -72,27 +72,30 @@ namespace vl
 				WritePushCompileOptions(writer);
 				writer.WriteLine(L"");
 
-				if (closureInfos.Count() > 0)
 				{
-					Dictionary<WString, Ptr<WfExpression>> reversedClosures;
-					CopyFrom(
-						reversedClosures,
-						From(closureInfos)
-							.Select([](Pair<Ptr<WfExpression>, Ptr<ClosureInfo>> pair)
-							{
-								return Pair<WString, Ptr<WfExpression>>(pair.value->lambdaClassName, pair.key);
-							})
-						);
-
-					writer.WriteString(L"namespace ");
-					writer.WriteLine(assemblyNamespace);
-					writer.WriteLine(L"{");
-					FOREACH(Ptr<WfExpression>, closure, reversedClosures.Values())
+					Dictionary<WString, Ptr<WfExpression>> reversedLambdaExprs;
+					Dictionary<WString, Ptr<WfNewInterfaceExpression>> reversedClassExprs;
+					SortClosure(reversedLambdaExprs, reversedClassExprs);
+					
+					if (reversedLambdaExprs.Count() + reversedClassExprs.Count() > 0)
 					{
-						WriteHeader_ClosurePreDecl(writer, closure);
+						writer.WriteString(L"namespace ");
+						writer.WriteLine(assemblyNamespace);
+						writer.WriteLine(L"{");
+
+						FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+						{
+							WriteHeader_ClosurePreDecl(writer, expr);
+						}
+
+						FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+						{
+							WriteHeader_ClosurePreDecl(writer, expr);
+						}
+
+						writer.WriteLine(L"}");
+						writer.WriteLine(L"");
 					}
-					writer.WriteLine(L"}");
-					writer.WriteLine(L"");
 				}
 
 				List<WString> nss;

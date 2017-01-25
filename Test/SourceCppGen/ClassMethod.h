@@ -60,6 +60,19 @@ namespace vl_workflow_global
 
 		static ClassMethod& Instance();
 	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsnf1_ClassMethod_main_
+	{
+		::vl::Ptr<::Methods> a;
+
+		__vwsnf1_ClassMethod_main_(::vl::Ptr<::Methods> __vwsnctor_a);
+
+		void operator()() const;
+	};
 }
 
 /***********************************************************************

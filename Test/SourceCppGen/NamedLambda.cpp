@@ -38,29 +38,6 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_NamedLambda)
 namespace vl_workflow_global
 {
 /***********************************************************************
-Closure Definitions
-***********************************************************************/
-
-	struct __vwsnf1_NamedLambda_main_
-	{
-
-		__vwsnf1_NamedLambda_main_();
-
-		::vl::vint32_t operator()(::vl::vint32_t n) const;
-	};
-
-	//-------------------------------------------------------------------
-
-	__vwsnf1_NamedLambda_main_::__vwsnf1_NamedLambda_main_()
-	{
-	}
-
-	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
-	{
-		auto fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
-		return ((n <= 2) ? 1 : ((*this)((n - 1)) + fib2((n - 2))));
-	}
-/***********************************************************************
 Global Functions
 ***********************************************************************/
 
@@ -73,6 +50,22 @@ Global Functions
 	NamedLambda& NamedLambda::Instance()
 	{
 		return Getvl_workflow_global_NamedLambda().instance;
+	}
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	//-------------------------------------------------------------------
+
+	__vwsnf1_NamedLambda_main_::__vwsnf1_NamedLambda_main_()
+	{
+	}
+
+	::vl::vint32_t __vwsnf1_NamedLambda_main_::operator()(::vl::vint32_t n) const
+	{
+		auto fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		return ((n <= 2) ? 1 : ((*this)((n - 1)) + fib2((n - 2))));
 	}
 }
 
