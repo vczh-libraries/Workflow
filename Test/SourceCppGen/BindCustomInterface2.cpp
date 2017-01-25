@@ -239,7 +239,7 @@ Global Functions
 
 	void BindCustomInterface2::Execute(::vl::Ptr<::IAdder2> adder)
 	{
-		auto subscription = GLOBAL_NAME Bind(::vl::__vwsn::Ensure(::vl::Ptr<::ISummer2>(adder)));
+		auto subscription = GLOBAL_NAME Bind(::vl::Ptr<::ISummer2>(adder));
 		using __vwsnt_0 = ::vl::vint32_t;
 		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{

@@ -346,7 +346,7 @@ WfGenerateExpressionVisitor
 						{
 							auto fromType = types[0];
 							auto toType = types[1];
-							ConvertType(config, writer, fromType, toType, writeExpression, true);
+							ConvertType(config, writer, fromType, toType, writeExpression, false);
 						});
 					}
 					else
@@ -1699,24 +1699,16 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfInferExpression* node)override
 				{
-					auto scope = config->manager->nodeScopes[node].Obj();
-					auto typeInfo = CreateTypeInfoFromType(scope, node->type);
-					Call(node->expression, typeInfo.Obj());
+					Call(node->expression);
 				}
 
 				void Visit(WfTypeCastingExpression* node)override
 				{
 					auto scope = config->manager->nodeScopes[node].Obj();
 					auto typeInfo = CreateTypeInfoFromType(scope, node->type);
-					if (node->strategy == WfTypeCastingStrategy::Strong)
-					{
-						Call(node->expression, typeInfo.Obj());
-					}
-					else
-					{
-						auto result = config->manager->expressionResolvings[node->expression.Obj()];
-						ConvertType(config, writer, result.type.Obj(), typeInfo.Obj(), [&]() {Call(node->expression); }, false);
-					}
+					bool strongCast = node->strategy == WfTypeCastingStrategy::Strong;
+					auto result = config->manager->expressionResolvings[node->expression.Obj()];
+					ConvertType(config, writer, result.type.Obj(), typeInfo.Obj(), [&]() {Call(node->expression); }, strongCast);
 				}
 
 				void Visit(WfTypeTestingExpression* node)override

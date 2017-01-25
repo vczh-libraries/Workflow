@@ -231,18 +231,18 @@ WfCppConfig
 				case ITypeInfo::RawPtr:
 					return ConvertType(typeInfo->GetElementType()) + L"*";
 				case ITypeInfo::SharedPtr:
-					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+					if (typeInfo->GetElementType()->GetDecorator() == ITypeInfo::Generic)
 					{
-						return ConvertType(typeInfo->GetElementType());
+						if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							return ConvertType(typeInfo->GetElementType());
+						}
+						else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+						{
+							return ConvertType(typeInfo->GetElementType());
+						}
 					}
-					else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
-					{
-						return ConvertType(typeInfo->GetElementType());
-					}
-					else
-					{
-						return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType()) + L">";
-					}
+					return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType()) + L">";
 				case ITypeInfo::Nullable:
 					return L"::vl::Nullable<" + ConvertType(typeInfo->GetElementType()) + L">";
 				case ITypeInfo::Generic:
