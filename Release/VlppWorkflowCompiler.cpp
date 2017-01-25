@@ -18626,6 +18626,7 @@ MergeCppFile
 			void ProcessCppContent(const WString& code, const TCallback& callback)
 			{
 				vint state = NORMAL;
+				vint counter = 0;
 
 				StringReader reader(code);
 				while (!reader.IsEnd())
@@ -18667,9 +18668,20 @@ MergeCppFile
 							}
 							break;
 						case WAIT_CLOSE:
-							if (content == L"}")
+							if (content == L"{")
 							{
-								state = NORMAL;
+								counter++;
+							}
+							else if (content == L"}")
+							{
+								if (counter == 0)
+								{
+									state = NORMAL;
+								}
+								else
+								{
+									counter--;
+								}
 							}
 							break;
 						}

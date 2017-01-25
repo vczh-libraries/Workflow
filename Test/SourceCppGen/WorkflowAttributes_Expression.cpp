@@ -34,13 +34,17 @@ namespace calculator
 	USERIMPL(/* ::calculator::Expression */)
 	::vl::WString Expression::Print()
 	{
-		return GLOBAL_NAME Print(this);
+		{
+			return GLOBAL_NAME Print(this);
+		}
 	}
 
 	USERIMPL(/* ::calculator::Expression */)
 	::vl::vint32_t Expression::Evaluate()
 	{
-		return GLOBAL_NAME Evaluate(this);
+		{
+			return GLOBAL_NAME Evaluate(this);
+		}
 	}
 
 	Expression::Expression()
