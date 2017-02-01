@@ -69,7 +69,7 @@ namespace test
 		static vint							Sum(Ptr<IValueEnumerable> values);
 	};
 
-	class MyList : public List<int>
+	class MyList : public List<vint>
 	{
 	};
 
