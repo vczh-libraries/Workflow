@@ -13,7 +13,8 @@ static_assert(false, "Don't use VlppWorkflow.(h|cpp) or VlppWorkflowCompiler.(h|
 #ifndef VCZH_WORKFLOW_EXPRESSION_WFEXPRESSION
 #define VCZH_WORKFLOW_EXPRESSION_WFEXPRESSION
 
-#include "WfExpressionParser.h"
+#include "WfExpression_Ast.h"
+#include "WfExpression_Parser.h"
 
 namespace vl
 {

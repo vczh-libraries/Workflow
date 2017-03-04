@@ -84,6 +84,14 @@ TEST_CASE(TestCodegen)
 					code = MergeCppFileContent(file.ReadAllText(), code);
 				}
 
+				if (file.Exists())
+				{
+					auto originalCode = file.ReadAllText();
+					if (originalCode == code)
+					{
+						continue;
+					}
+				}
 				file.WriteAllText(code, false, BomEncoder::Utf8);
 			}
 		}
