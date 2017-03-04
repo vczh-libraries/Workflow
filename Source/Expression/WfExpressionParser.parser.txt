@@ -157,12 +157,6 @@ class StringExpression : Expression
 	token					value(UnescapeString);
 }
 
-class FormatExpression : Expression
-{
-	token					value(UnescapeFormatString);
-	Expression				expandedExpression;
-}
-
 enum UnaryOperator
 {
 	Positive,
@@ -322,12 +316,6 @@ class DetachEventExpression : Expression
 	Expression				handler;
 }
 
-class BindExpression : Expression
-{
-	Expression				expression;
-	Expression				expandedExpression;
-}
-
 enum ObserveType
 {
 	SimpleObserve,
@@ -347,6 +335,21 @@ class CallExpression : Expression
 {
 	Expression				function;
 	Expression[]			arguments;
+}
+
+class VirtualExpression : Expression
+{
+	Expression				expandedExpression;
+}
+
+class BindExpression : VirtualExpression
+{
+	Expression				expression;
+}
+
+class FormatExpression : VirtualExpression
+{
+	token					value(UnescapeFormatString);
 }
 
 class Statement

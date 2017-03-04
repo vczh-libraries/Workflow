@@ -15,7 +15,10 @@ namespace vl
 WfCollectExpressionVisitor
 ***********************************************************************/
 
-			class WfCollectExpressionVisitor : public Object, public WfExpression::IVisitor
+			class WfCollectExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfCppConfig*				config;
@@ -102,11 +105,6 @@ WfCollectExpressionVisitor
 				{
 				}
 
-				void Visit(WfFormatExpression* node)override
-				{
-					Call(node->expandedExpression);
-				}
-
 				void Visit(WfUnaryExpression* node)override
 				{
 					Call(node->operand);
@@ -191,11 +189,6 @@ WfCollectExpressionVisitor
 					Call(node->handler);
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					Call(node->expandedExpression);
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 					Call(node->expression);
@@ -244,6 +237,21 @@ WfCollectExpressionVisitor
 					{
 						CollectClassMember(config, member, nullptr, memberOfClass);
 					}
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					Call(node->expandedExpression);
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					Call(node->expandedExpression);
 				}
 			};
 

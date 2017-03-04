@@ -107,7 +107,10 @@ WfObservingDependency
 GetObservingDependency
 ***********************************************************************/
 
-			class GetObservingDependencyVisitor : public Object, public WfExpression::IVisitor
+			class GetObservingDependencyVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -182,11 +185,6 @@ GetObservingDependency
 
 				void Visit(WfStringExpression* node)override
 				{
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					GetObservingDependency(manager, node->expandedExpression, dependency);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -272,10 +270,6 @@ GetObservingDependency
 				{
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 					WfObservingDependency parent(dependency);
@@ -310,6 +304,20 @@ GetObservingDependency
 
 				void Visit(WfNewInterfaceExpression* node)override
 				{
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					GetObservingDependency(manager, node->expandedExpression, dependency);
 				}
 			};
 
@@ -355,7 +363,10 @@ CopyAttribute
 ExpandObserveExpression
 ***********************************************************************/
 
-			class ExpandObserveExpressionVisitor : public Object, public WfExpression::IVisitor
+			class ExpandObserveExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				Dictionary<WfExpression*, WString>&		cacheNames;
@@ -454,14 +465,6 @@ ExpandObserveExpression
 				{
 					auto expr = MakePtr<WfStringExpression>();
 					expr->value.value = node->value.value;
-					result = expr;
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					auto expr = MakePtr<WfFormatExpression>();
-					expr->value.value = node->value.value;
-					expr->expandedExpression = Expand(node->expandedExpression);
 					result = expr;
 				}
 
@@ -605,14 +608,6 @@ ExpandObserveExpression
 					result = expr;
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					auto expr = MakePtr<WfBindExpression>();
-					expr->expression = CopyExpression(node->expression);
-					expr->expandedExpression = CopyExpression(node->expandedExpression);
-					result = expr;
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 					if (cacheNames.Count() == 0)
@@ -688,6 +683,27 @@ ExpandObserveExpression
 						classMember->declaration = CopyDeclaration(member->declaration);
 						expr->members.Add(classMember);
 					}
+					result = expr;
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					auto expr = MakePtr<WfBindExpression>();
+					expr->expression = CopyExpression(node->expression);
+					expr->expandedExpression = CopyExpression(node->expandedExpression);
+					result = expr;
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					auto expr = MakePtr<WfFormatExpression>();
+					expr->value.value = node->value.value;
+					expr->expandedExpression = Expand(node->expandedExpression);
 					result = expr;
 				}
 			};

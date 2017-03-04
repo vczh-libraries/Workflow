@@ -285,7 +285,10 @@ Expression Helpers
 WfGenerateExpressionVisitor
 ***********************************************************************/
 
-			class WfGenerateExpressionVisitor : public Object, public WfExpression::IVisitor
+			class WfGenerateExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfCppConfig*				config;
@@ -1115,11 +1118,6 @@ WfGenerateExpressionVisitor
 						}
 					}
 					writer.WriteString(L"\", false)");
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					Call(node->expandedExpression);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -1997,11 +1995,6 @@ WfGenerateExpressionVisitor
 					}
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					Call(node->expandedExpression);
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 				}
@@ -2159,6 +2152,21 @@ WfGenerateExpressionVisitor
 					WriteClosureArguments(closureInfo, node);
 
 					writer.WriteString(L"))");
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					Call(node->expandedExpression);
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					Call(node->expandedExpression);
 				}
 			};
 

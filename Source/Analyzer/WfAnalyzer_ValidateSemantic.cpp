@@ -723,7 +723,10 @@ ValidateSemantic(Statement)
 ValidateSemantic(Expression)
 ***********************************************************************/
 
-			class ValidateSemanticExpressionVisitor : public Object, public WfExpression::IVisitor
+			class ValidateSemanticExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -1224,13 +1227,6 @@ ValidateSemantic(Expression)
 				void Visit(WfStringExpression* node)override
 				{
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<WString>::CreateTypeInfo()));
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					Ptr<ITypeInfo> typeInfo = TypeInfoRetriver<WString>::CreateTypeInfo();
-					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
-					GetExpressionType(manager, node->expandedExpression, typeInfo);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -1988,24 +1984,6 @@ ValidateSemantic(Expression)
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					vint errorCount = manager->errors.Count();
-					GetExpressionType(manager, node->expression, 0);
-					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo()));
-
-					if (manager->errors.Count() == errorCount)
-					{
-						ExpandBindExpression(manager, node);
-						auto parentScope = manager->nodeScopes[node];
-						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-						if (CheckScopes_DuplicatedSymbol(manager) && CheckScopes_SymbolType(manager))
-						{
-							GetExpressionType(manager, node->expandedExpression, 0);
-						}
-					}
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 					Ptr<ITypeInfo> parentType = GetExpressionType(manager, node->parent, 0);
@@ -2433,6 +2411,36 @@ ValidateSemantic(Expression)
 					}
 				}
 
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					vint errorCount = manager->errors.Count();
+					GetExpressionType(manager, node->expression, 0);
+					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo()));
+
+					if (manager->errors.Count() == errorCount)
+					{
+						ExpandBindExpression(manager, node);
+						auto parentScope = manager->nodeScopes[node];
+						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
+						if (CheckScopes_DuplicatedSymbol(manager) && CheckScopes_SymbolType(manager))
+						{
+							GetExpressionType(manager, node->expandedExpression, 0);
+						}
+					}
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					Ptr<ITypeInfo> typeInfo = TypeInfoRetriver<WString>::CreateTypeInfo();
+					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
+					GetExpressionType(manager, node->expandedExpression, typeInfo);
+				}
+
 				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType, List<ResolveExpressionResult>& results)
 				{
 					ValidateSemanticExpressionVisitor visitor(manager, expectedType, results);
@@ -2444,7 +2452,10 @@ ValidateSemantic(Expression)
 IsConstantExpression
 ***********************************************************************/
 
-			class ValidateConstantExpressionVisitor : public Object, public WfExpression::IVisitor
+			class ValidateConstantExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -2528,11 +2539,6 @@ IsConstantExpression
 					isConstant = true;
 				}
 
-				void Visit(WfFormatExpression* node)override
-				{
-					isConstant = Call(node->expandedExpression);
-				}
-
 				void Visit(WfUnaryExpression* node)override
 				{
 					isConstant = Call(node->operand);
@@ -2612,10 +2618,6 @@ IsConstantExpression
 				{
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 				}
@@ -2633,6 +2635,20 @@ IsConstantExpression
 				}
 
 				void Visit(WfNewInterfaceExpression* node)override
+				{
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					isConstant = Call(node->expandedExpression);
+				}
+
+				void Visit(WfBindExpression* node)override
 				{
 				}
 

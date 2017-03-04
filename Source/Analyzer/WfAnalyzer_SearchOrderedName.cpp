@@ -213,7 +213,10 @@ SearchOrderedName(Statement)
 SearchOrderedName(Expression)
 ***********************************************************************/
 
-			class SearchOrderedNameExpressionVisitor : public Object, public WfExpression::IVisitor
+			class SearchOrderedNameExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfLexicalScope*							scope;
@@ -284,14 +287,6 @@ SearchOrderedName(Expression)
 
 				void Visit(WfStringExpression* node)override
 				{
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					if (node->expandedExpression)
-					{
-						node->expandedExpression->Accept(this);
-					}
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -381,11 +376,6 @@ SearchOrderedName(Expression)
 					node->handler->Accept(this);
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					node->expression->Accept(this);
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 					node->parent->Accept(this);
@@ -423,6 +413,24 @@ SearchOrderedName(Expression)
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						SearchOrderedName(scope, member->declaration, names);
+					}
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					node->expression->Accept(this);
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					if (node->expandedExpression)
+					{
+						node->expandedExpression->Accept(this);
 					}
 				}
 

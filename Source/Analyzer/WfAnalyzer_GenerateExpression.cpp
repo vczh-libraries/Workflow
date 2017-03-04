@@ -21,7 +21,10 @@ namespace vl
 GenerateInstructions(Expression)
 ***********************************************************************/
 
-			class GenerateExpressionInstructionsVisitor : public Object, public WfExpression::IVisitor
+			class GenerateExpressionInstructionsVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfCodegenContext&						context;
@@ -360,11 +363,6 @@ GenerateInstructions(Expression)
 				void Visit(WfStringExpression* node)override
 				{
 					INSTRUCTION(Ins::LoadValue(BoxValue(node->value.value)));
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					GenerateExpressionInstructions(context, node->expandedExpression);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -936,11 +934,6 @@ GenerateInstructions(Expression)
 					INSTRUCTION(Ins::DetachEvent(result.eventInfo));
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					GenerateExpressionInstructions(context, node->expandedExpression);
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 				}
@@ -1194,6 +1187,21 @@ GenerateInstructions(Expression)
 					}
 
 					INSTRUCTION(Ins::CreateInterface(result.constructorInfo, declVisitor.overrideFunctions.Count() * 2));
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					GenerateExpressionInstructions(context, node->expandedExpression);
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					GenerateExpressionInstructions(context, node->expandedExpression);
 				}
 			};
 

@@ -14,7 +14,10 @@ namespace vl
 IsExpressionDependOnExpectedType(Expression)
 ***********************************************************************/
 
-			class IsExpressionDependOnExpectedTypeVisitor : public Object, public WfExpression::IVisitor
+			class IsExpressionDependOnExpectedTypeVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -87,10 +90,6 @@ IsExpressionDependOnExpectedType(Expression)
 				}
 
 				void Visit(WfStringExpression* node)override
-				{
-				}
-
-				void Visit(WfFormatExpression* node)override
 				{
 				}
 
@@ -180,10 +179,6 @@ IsExpressionDependOnExpectedType(Expression)
 				{
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 				}
@@ -203,6 +198,19 @@ IsExpressionDependOnExpectedType(Expression)
 				void Visit(WfNewInterfaceExpression* node)override
 				{
 				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+				}
 			};
 
 			bool IsExpressionDependOnExpectedType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
@@ -216,7 +224,10 @@ IsExpressionDependOnExpectedType(Expression)
 GetExpressionName(Expression)
 ***********************************************************************/
 
-			class GetExpressionNameVisitor : public Object, public WfExpression::IVisitor
+			class GetExpressionNameVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WString								result;
@@ -267,10 +278,6 @@ GetExpressionName(Expression)
 				}
 
 				void Visit(WfStringExpression* node)override
-				{
-				}
-
-				void Visit(WfFormatExpression* node)override
 				{
 				}
 
@@ -330,10 +337,6 @@ GetExpressionName(Expression)
 				{
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 				}
@@ -351,6 +354,19 @@ GetExpressionName(Expression)
 				}
 
 				void Visit(WfNewInterfaceExpression* node)override
+				{
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+				}
+
+				void Visit(WfFormatExpression* node)override
 				{
 				}
 			};

@@ -245,7 +245,10 @@ Print (Type)
 Print (Expression)
 ***********************************************************************/
 
-		class PrintExpressionVisitor : public Object, public WfExpression::IVisitor
+		class PrintExpressionVisitor
+			: public Object
+			, public WfExpression::IVisitor
+			, public WfVirtualExpression::IVisitor
 		{
 		public:
 			WString								indent;
@@ -348,21 +351,6 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				EscapeString(node->value.value, writer);
-				writer.AfterPrint(node);
-			}
-
-			void Visit(WfFormatExpression* node)override
-			{
-				writer.BeforePrint(node);
-				if (node->expandedExpression)
-				{
-					WfPrint(node->expandedExpression, indent, writer);
-				}
-				else
-				{
-					writer.WriteString(L"$");
-					EscapeString(node->value.value, writer);
-				}
 				writer.AfterPrint(node);
 			}
 
@@ -649,22 +637,6 @@ Print (Expression)
 				writer.AfterPrint(node);
 			}
 
-			void Visit(WfBindExpression* node)override
-			{
-				writer.BeforePrint(node);
-				if (node->expandedExpression)
-				{
-					WfPrint(node->expandedExpression, indent, writer);
-				}
-				else
-				{
-					writer.WriteString(L"bind(");
-					WfPrint(node->expression, indent, writer);
-					writer.WriteString(L")");
-				}
-				writer.AfterPrint(node);
-			}
-
 			void Visit(WfObserveExpression* node)override
 			{
 				writer.BeforePrint(node);
@@ -787,6 +759,42 @@ Print (Expression)
 				writer.WriteString(indent);
 				writer.WriteString(L"}");
 
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfVirtualExpression* node)override
+			{
+				node->Accept((WfVirtualExpression::IVisitor*)this);
+			}
+
+			void Visit(WfBindExpression* node)override
+			{
+				writer.BeforePrint(node);
+				if (node->expandedExpression)
+				{
+					WfPrint(node->expandedExpression, indent, writer);
+				}
+				else
+				{
+					writer.WriteString(L"bind(");
+					WfPrint(node->expression, indent, writer);
+					writer.WriteString(L")");
+				}
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfFormatExpression* node)override
+			{
+				writer.BeforePrint(node);
+				if (node->expandedExpression)
+				{
+					WfPrint(node->expandedExpression, indent, writer);
+				}
+				else
+				{
+					writer.WriteString(L"$");
+					EscapeString(node->value.value, writer);
+				}
 				writer.AfterPrint(node);
 			}
 		};

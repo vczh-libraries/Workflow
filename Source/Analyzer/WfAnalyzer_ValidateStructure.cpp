@@ -899,7 +899,10 @@ ValidateStructure(Statement)
 ValidateStructure(Expression)
 ***********************************************************************/
 
-			class ValidateStructureExpressionVisitor : public Object, public WfExpression::IVisitor
+			class ValidateStructureExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -964,102 +967,6 @@ ValidateStructure(Expression)
 
 				void Visit(WfStringExpression* node)override
 				{
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					if (!node->expandedExpression)
-					{
-						List<Ptr<WfExpression>> expressions;
-						const wchar_t* reading = node->value.value.Buffer();
-
-						while (*reading)
-						{
-							const wchar_t* begin = wcsstr(reading, L"$(");
-							if (begin)
-							{
-								Ptr<WfStringExpression> expression = new WfStringExpression;
-								expression->codeRange = node->codeRange;
-								expression->value.value = WString(reading, vint(begin - reading));
-								expressions.Add(expression);
-							}
-							else
-							{
-								break;
-							}
-
-							const wchar_t* end = begin + 2;
-							vint counter = 1;
-							while (wchar_t c = *end++)
-							{
-								switch (c)
-								{
-								case L'(':
-									counter++;
-									break;
-								case L')':
-									counter--;
-									break;
-								}
-								if (counter == 0)
-								{
-									break;
-								}
-							}
-
-							if (counter != 0)
-							{
-								auto error = WfErrors::WrongFormatStringSyntax(node);
-								error->errorMessage += L" (Does not find matched close bracket.)";
-								manager->errors.Add(error);
-								return;
-							}
-							else
-							{
-								WString input(begin + 2, vint(end - begin - 3));
-								List<Ptr<ParsingError>> errors;
-								if (auto expression = WfParseExpression(input, manager->parsingTable, errors))
-								{
-									expressions.Add(expression);
-								}
-								FOREACH(Ptr<ParsingError>, originalError, errors)
-								{
-									auto error = WfErrors::WrongFormatStringSyntax(node);
-									error->errorMessage += L" (" + originalError->errorMessage + L")";
-									manager->errors.Add(error);
-								}
-								reading = end;
-							}
-						}
-						if (*reading || expressions.Count() == 0)
-						{
-							Ptr<WfStringExpression> expression = new WfStringExpression;
-							expression->codeRange = node->codeRange;
-							expression->value.value = reading;
-							expressions.Add(expression);
-						}
-
-						if (expressions.Count() > 0)
-						{
-							Ptr<WfExpression> current = expressions[0];
-							FOREACH(Ptr<WfExpression>, expression, From(expressions).Skip(1))
-							{
-								Ptr<WfBinaryExpression> binary = new WfBinaryExpression;
-								binary->codeRange = node->codeRange;
-								binary->first = current;
-								binary->second = expression;
-								binary->op = WfBinaryOperator::Union;
-								current = binary;
-							}
-
-							node->expandedExpression = current;
-						}
-					}
-
-					if (node->expandedExpression)
-					{
-						ValidateExpressionStructure(manager, context, node->expandedExpression);
-					}
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -1176,19 +1083,6 @@ ValidateStructure(Expression)
 					ValidateExpressionStructure(manager, context, node->handler);
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					if (context->currentBindExpression)
-					{
-						manager->errors.Add(WfErrors::BindInBind(node));
-					}
-
-					auto bind = context->currentBindExpression;
-					context->currentBindExpression = node;
-					ValidateExpressionStructure(manager, context, node->expression);
-					context->currentBindExpression = bind;
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 					if (!context->currentBindExpression)
@@ -1282,6 +1176,120 @@ ValidateStructure(Expression)
 							}
 						}
 						ValidateDeclarationStructure(manager, member->declaration, nullptr, node);
+					}
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					if (context->currentBindExpression)
+					{
+						manager->errors.Add(WfErrors::BindInBind(node));
+					}
+
+					auto bind = context->currentBindExpression;
+					context->currentBindExpression = node;
+					ValidateExpressionStructure(manager, context, node->expression);
+					context->currentBindExpression = bind;
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					if (!node->expandedExpression)
+					{
+						List<Ptr<WfExpression>> expressions;
+						const wchar_t* reading = node->value.value.Buffer();
+
+						while (*reading)
+						{
+							const wchar_t* begin = wcsstr(reading, L"$(");
+							if (begin)
+							{
+								Ptr<WfStringExpression> expression = new WfStringExpression;
+								expression->codeRange = node->codeRange;
+								expression->value.value = WString(reading, vint(begin - reading));
+								expressions.Add(expression);
+							}
+							else
+							{
+								break;
+							}
+
+							const wchar_t* end = begin + 2;
+							vint counter = 1;
+							while (wchar_t c = *end++)
+							{
+								switch (c)
+								{
+								case L'(':
+									counter++;
+									break;
+								case L')':
+									counter--;
+									break;
+								}
+								if (counter == 0)
+								{
+									break;
+								}
+							}
+
+							if (counter != 0)
+							{
+								auto error = WfErrors::WrongFormatStringSyntax(node);
+								error->errorMessage += L" (Does not find matched close bracket.)";
+								manager->errors.Add(error);
+								return;
+							}
+							else
+							{
+								WString input(begin + 2, vint(end - begin - 3));
+								List<Ptr<ParsingError>> errors;
+								if (auto expression = WfParseExpression(input, manager->parsingTable, errors))
+								{
+									expressions.Add(expression);
+								}
+								FOREACH(Ptr<ParsingError>, originalError, errors)
+								{
+									auto error = WfErrors::WrongFormatStringSyntax(node);
+									error->errorMessage += L" (" + originalError->errorMessage + L")";
+									manager->errors.Add(error);
+								}
+								reading = end;
+							}
+						}
+						if (*reading || expressions.Count() == 0)
+						{
+							Ptr<WfStringExpression> expression = new WfStringExpression;
+							expression->codeRange = node->codeRange;
+							expression->value.value = reading;
+							expressions.Add(expression);
+						}
+
+						if (expressions.Count() > 0)
+						{
+							Ptr<WfExpression> current = expressions[0];
+							FOREACH(Ptr<WfExpression>, expression, From(expressions).Skip(1))
+							{
+								Ptr<WfBinaryExpression> binary = new WfBinaryExpression;
+								binary->codeRange = node->codeRange;
+								binary->first = current;
+								binary->second = expression;
+								binary->op = WfBinaryOperator::Union;
+								current = binary;
+							}
+
+							node->expandedExpression = current;
+						}
+					}
+
+					if (node->expandedExpression)
+					{
+						ValidateExpressionStructure(manager, context, node->expandedExpression);
 					}
 				}
 

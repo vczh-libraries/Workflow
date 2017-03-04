@@ -444,7 +444,10 @@ BuildScopeForStatement
 BuildScopeForExpression
 ***********************************************************************/
 
-			class BuildScopeForExpressionVisitor : public Object, public WfExpression::IVisitor
+			class BuildScopeForExpressionVisitor
+				: public Object
+				, public WfExpression::IVisitor
+				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -523,14 +526,6 @@ BuildScopeForExpression
 
 				void Visit(WfStringExpression* node)override
 				{
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					if (node->expandedExpression)
-					{
-						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-					}
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -629,11 +624,6 @@ BuildScopeForExpression
 					BuildScopeForExpression(manager, parentScope, node->handler);
 				}
 
-				void Visit(WfBindExpression* node)override
-				{
-					BuildScopeForExpression(manager, parentScope, node->expression);
-				}
-
 				void Visit(WfObserveExpression* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->parent);
@@ -697,6 +687,24 @@ BuildScopeForExpression
 							manager->CreateLambdaCapture(member->declaration.Obj(), capture);
 						}
 						BuildScopeForDeclaration(manager, resultScope, member->declaration, node, member);
+					}
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					BuildScopeForExpression(manager, parentScope, node->expression);
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+					if (node->expandedExpression)
+					{
+						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
 					}
 				}
 

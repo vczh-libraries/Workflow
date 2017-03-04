@@ -144,7 +144,6 @@ namespace vl
 		class WfFloatingExpression;
 		class WfIntegerExpression;
 		class WfStringExpression;
-		class WfFormatExpression;
 		class WfUnaryExpression;
 		class WfBinaryExpression;
 		class WfLetVariable;
@@ -161,9 +160,11 @@ namespace vl
 		class WfTypeOfExpressionExpression;
 		class WfAttachEventExpression;
 		class WfDetachEventExpression;
-		class WfBindExpression;
 		class WfObserveExpression;
 		class WfCallExpression;
+		class WfVirtualExpression;
+		class WfBindExpression;
+		class WfFormatExpression;
 		class WfStatement;
 		class WfBreakStatement;
 		class WfContinueStatement;
@@ -370,7 +371,6 @@ namespace vl
 				virtual void Visit(WfFloatingExpression* node)=0;
 				virtual void Visit(WfIntegerExpression* node)=0;
 				virtual void Visit(WfStringExpression* node)=0;
-				virtual void Visit(WfFormatExpression* node)=0;
 				virtual void Visit(WfUnaryExpression* node)=0;
 				virtual void Visit(WfBinaryExpression* node)=0;
 				virtual void Visit(WfLetExpression* node)=0;
@@ -385,9 +385,9 @@ namespace vl
 				virtual void Visit(WfTypeOfExpressionExpression* node)=0;
 				virtual void Visit(WfAttachEventExpression* node)=0;
 				virtual void Visit(WfDetachEventExpression* node)=0;
-				virtual void Visit(WfBindExpression* node)=0;
 				virtual void Visit(WfObserveExpression* node)=0;
 				virtual void Visit(WfCallExpression* node)=0;
+				virtual void Visit(WfVirtualExpression* node)=0;
 				virtual void Visit(WfFunctionExpression* node)=0;
 				virtual void Visit(WfNewClassExpression* node)=0;
 				virtual void Visit(WfNewInterfaceExpression* node)=0;
@@ -513,17 +513,6 @@ namespace vl
 			void Accept(WfExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfStringExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
-		class WfFormatExpression : public WfExpression, vl::reflection::Description<WfFormatExpression>
-		{
-		public:
-			vl::parsing::ParsingToken value;
-			vl::Ptr<WfExpression> expandedExpression;
-
-			void Accept(WfExpression::IVisitor* visitor)override;
-
-			static vl::Ptr<WfFormatExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		enum class WfUnaryOperator
@@ -761,17 +750,6 @@ namespace vl
 			static vl::Ptr<WfDetachEventExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfBindExpression : public WfExpression, vl::reflection::Description<WfBindExpression>
-		{
-		public:
-			vl::Ptr<WfExpression> expression;
-			vl::Ptr<WfExpression> expandedExpression;
-
-			void Accept(WfExpression::IVisitor* visitor)override;
-
-			static vl::Ptr<WfBindExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
 		enum class WfObserveType
 		{
 			SimpleObserve,
@@ -801,6 +779,43 @@ namespace vl
 			void Accept(WfExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfCallExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfVirtualExpression abstract : public WfExpression, vl::reflection::Description<WfVirtualExpression>
+		{
+		public:
+			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+			{
+			public:
+				virtual void Visit(WfBindExpression* node)=0;
+				virtual void Visit(WfFormatExpression* node)=0;
+			};
+
+			virtual void Accept(WfVirtualExpression::IVisitor* visitor)=0;
+
+			vl::Ptr<WfExpression> expandedExpression;
+
+			void Accept(WfExpression::IVisitor* visitor)override;
+		};
+
+		class WfBindExpression : public WfVirtualExpression, vl::reflection::Description<WfBindExpression>
+		{
+		public:
+			vl::Ptr<WfExpression> expression;
+
+			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfBindExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfFormatExpression : public WfVirtualExpression, vl::reflection::Description<WfFormatExpression>
+		{
+		public:
+			vl::parsing::ParsingToken value;
+
+			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfFormatExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfStatement abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStatement>
@@ -1389,7 +1404,6 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfFloatingExpression)
 			DECL_TYPE_INFO(vl::workflow::WfIntegerExpression)
 			DECL_TYPE_INFO(vl::workflow::WfStringExpression)
-			DECL_TYPE_INFO(vl::workflow::WfFormatExpression)
 			DECL_TYPE_INFO(vl::workflow::WfUnaryOperator)
 			DECL_TYPE_INFO(vl::workflow::WfUnaryExpression)
 			DECL_TYPE_INFO(vl::workflow::WfBinaryOperator)
@@ -1412,10 +1426,12 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfTypeOfExpressionExpression)
 			DECL_TYPE_INFO(vl::workflow::WfAttachEventExpression)
 			DECL_TYPE_INFO(vl::workflow::WfDetachEventExpression)
-			DECL_TYPE_INFO(vl::workflow::WfBindExpression)
 			DECL_TYPE_INFO(vl::workflow::WfObserveType)
 			DECL_TYPE_INFO(vl::workflow::WfObserveExpression)
 			DECL_TYPE_INFO(vl::workflow::WfCallExpression)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualExpression)
+			DECL_TYPE_INFO(vl::workflow::WfBindExpression)
+			DECL_TYPE_INFO(vl::workflow::WfFormatExpression)
 			DECL_TYPE_INFO(vl::workflow::WfStatement)
 			DECL_TYPE_INFO(vl::workflow::WfBreakStatement)
 			DECL_TYPE_INFO(vl::workflow::WfContinueStatement)
@@ -1468,6 +1484,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfModule)
 			DECL_TYPE_INFO(vl::workflow::WfType::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfExpression::IVisitor)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualExpression::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfStatement::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfDeclaration::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
@@ -1581,11 +1598,6 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::workflow::WfFormatExpression* node)override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
 				void Visit(vl::workflow::WfUnaryExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
@@ -1656,17 +1668,17 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::workflow::WfBindExpression* node)override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
 				void Visit(vl::workflow::WfObserveExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
 				void Visit(vl::workflow::WfCallExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfVirtualExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -1687,6 +1699,19 @@ namespace vl
 				}
 
 			END_INTERFACE_PROXY(vl::workflow::WfExpression::IVisitor)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualExpression::IVisitor)
+				void Visit(vl::workflow::WfBindExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfFormatExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+			END_INTERFACE_PROXY(vl::workflow::WfVirtualExpression::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfStatement::IVisitor)
 				void Visit(vl::workflow::WfBreakStatement* node)override
