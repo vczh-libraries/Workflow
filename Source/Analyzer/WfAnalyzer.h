@@ -365,12 +365,11 @@ Semantic Analyzing
 			extern void										ValidateConstantExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
 			extern void										GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency);
 			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
-			extern Ptr<WfAttribute>							CopyAttribute(Ptr<WfAttribute> attribute);
-			extern void										CopyAttributes(collections::List<Ptr<WfAttribute>>& dst, collections::List<Ptr<WfAttribute>>& src);
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
 			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration);
+			extern Ptr<WfExpression>						CreateDefaultValue(reflection::description::ITypeInfo* elementType);
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 
 			extern Ptr<WfLexicalScopeName>					GetExpressionScopeName(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
