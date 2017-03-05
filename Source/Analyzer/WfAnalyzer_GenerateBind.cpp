@@ -360,6 +360,32 @@ CopyAttribute
 			}
 
 /***********************************************************************
+CopyType
+***********************************************************************/
+
+			class CopyTypeVisitor : public copy_visitor::TypeVisitor
+			{
+			public:
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
+				{
+					from->Accept(this);
+					return result.Cast<WfType>();
+				}
+			};
+
+			Ptr<WfType> CopyType(Ptr<WfType> type)
+			{
+				if (!type)
+				{
+					return nullptr;
+				}
+
+				CopyTypeVisitor visitor;
+				type->Accept(&visitor);
+				return visitor.result.Cast<WfType>();
+			}
+
+/***********************************************************************
 ExpandObserveExpression
 ***********************************************************************/
 
@@ -747,118 +773,24 @@ ExpandObserveExpression
 CopyStatement
 ***********************************************************************/
 
-			class CopyStatementVisitor : public Object, public WfStatement::IVisitor
+			class CopyStatementVisitor : public copy_visitor::StatementVisitor
 			{
 			public:
-				Ptr<WfStatement>						result;
-
-				void Visit(WfBreakStatement* node)override
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
 				{
-					auto stat = MakePtr<WfBreakStatement>();
-					result = stat;
+					return CopyExpression(from);
 				}
 
-				void Visit(WfContinueStatement* node)override
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
 				{
-					auto stat = MakePtr<WfContinueStatement>();
-					result = stat;
+					return CopyType(from);
 				}
 
-				void Visit(WfReturnStatement* node)override
+				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
 				{
-					auto stat = MakePtr<WfReturnStatement>();
-					stat->expression = CopyExpression(node->expression);
-					result = stat;
+					from->Accept(this);
+					return result.Cast<WfStatement>();
 				}
-
-				void Visit(WfDeleteStatement* node)override
-				{
-					auto stat = MakePtr<WfDeleteStatement>();
-					stat->expression = CopyExpression(node->expression);
-					result = stat;
-				}
-
-				void Visit(WfRaiseExceptionStatement* node)override
-				{
-					auto stat = MakePtr<WfRaiseExceptionStatement>();
-					stat->expression = CopyExpression(node->expression);
-					result = stat;
-				}
-
-				void Visit(WfIfStatement* node)override
-				{
-					auto stat = MakePtr<WfIfStatement>();
-					stat->name.value = node->name.value;
-					stat->type = CopyType(node->type);
-					stat->expression = CopyExpression(node->expression);
-					stat->trueBranch = CopyStatement(node->trueBranch);
-					stat->falseBranch = CopyStatement(node->falseBranch);
-					result = stat;
-				}
-
-				void Visit(WfSwitchStatement* node)override
-				{
-					auto stat = MakePtr<WfSwitchStatement>();
-					stat->expression = CopyExpression(node->expression);
-					stat->defaultBranch = CopyStatement(node->defaultBranch);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
-					{
-						auto newCase = MakePtr<WfSwitchCase>();
-						newCase->expression = CopyExpression(switchCase->expression);
-						newCase->statement = CopyStatement(switchCase->statement);
-						stat->caseBranches.Add(newCase);
-					}
-					result = stat;
-				}
-
-				void Visit(WfWhileStatement* node)override
-				{
-					auto stat = MakePtr<WfWhileStatement>();
-					stat->condition = CopyExpression(node->condition);
-					stat->statement = CopyStatement(node->statement);
-					result = stat;
-				}
-
-				void Visit(WfForEachStatement* node)override
-				{
-					auto stat = MakePtr<WfForEachStatement>();
-					stat->name.value = node->name.value;
-					stat->direction = node->direction;
-					stat->collection = CopyExpression(node->collection);
-					stat->statement = CopyStatement(node->statement);
-					result = stat;
-				}
-
-				void Visit(WfTryStatement* node)override
-				{
-					auto stat = MakePtr<WfTryStatement>();
-					stat->name.value = node->name.value;
-					stat->protectedStatement = CopyStatement(node->protectedStatement);
-					stat->catchStatement = CopyStatement(node->catchStatement);
-					stat->finallyStatement = CopyStatement(node->finallyStatement);
-					result = stat;
-				}
-
-				void Visit(WfBlockStatement* node)override
-				{
-					auto stat = MakePtr<WfBlockStatement>();
-					result = stat;
-				}
-
-				void Visit(WfExpressionStatement* node)override
-				{
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = CopyExpression(node->expression);
-					result = stat;
-				}
-
-				void Visit(WfVariableStatement* node)override
-				{
-					auto stat = MakePtr<WfVariableStatement>();
-					stat->variable = CopyDeclaration(node->variable).Cast<WfVariableDeclaration>();
-					result = stat;
-				}
-
 			};
 
 			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement)
@@ -870,160 +802,35 @@ CopyStatement
 
 				CopyStatementVisitor visitor;
 				statement->Accept(&visitor);
-				return visitor.result;
+				return visitor.result.Cast<WfStatement>();
 			}
 
 /***********************************************************************
 CopyDeclaration
 ***********************************************************************/
 
-			class CopyDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			class CopyDeclarationVisitor : public copy_visitor::DeclarationVisitor
 			{
 			public:
-				Ptr<WfDeclaration>			result;
-
-				void Visit(WfNamespaceDeclaration* node)override
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
 				{
-					auto ns = MakePtr<WfNamespaceDeclaration>();
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
-					{
-						ns->declarations.Add(CopyDeclaration(decl));
-					}
-					result = ns;
+					return CopyExpression(from);
 				}
 
-				void Visit(WfFunctionDeclaration* node)override
+				vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from)override
 				{
-					auto func = MakePtr<WfFunctionDeclaration>();
-					func->name.value = node->name.value;
-					func->anonymity = node->anonymity;
-					func->returnType = CopyType(node->returnType);
-					FOREACH(Ptr<WfFunctionArgument>, arg, node->arguments)
-					{
-						auto newArg = MakePtr<WfFunctionArgument>();
-						CopyAttributes(newArg->attributes, arg->attributes);
-						newArg->type = CopyType(arg->type);
-						newArg->name.value = arg->name.value;
-						func->arguments.Add(newArg);
-					}
-					func->statement = CopyStatement(node->statement);
-					result = func;
+					from->Accept(this);
+					return result.Cast<WfDeclaration>();
 				}
 
-				void Visit(WfVariableDeclaration* node)override
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
 				{
-					auto var = MakePtr<WfVariableDeclaration>();
-					var->name.value = node->name.value;
-					var->type = CopyType(node->type);
-					var->expression = CopyExpression(node->expression);
-					result = var;
+					return CopyType(from);
 				}
 
-				void Visit(WfEventDeclaration* node)override
+				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
 				{
-					auto ev = MakePtr<WfEventDeclaration>();
-					FOREACH(Ptr<WfType>, type, node->arguments)
-					{
-						ev->arguments.Add(CopyType(type));
-					}
-					result = ev;
-				}
-
-				void Visit(WfPropertyDeclaration* node)override
-				{
-					auto prop = MakePtr<WfPropertyDeclaration>();
-					prop->type = CopyType(node->type);
-					prop->getter.value = node->getter.value;
-					prop->setter.value = node->setter.value;
-					prop->valueChangedEvent.value = node->valueChangedEvent.value;
-					result = prop;
-				}
-
-				void Visit(WfConstructorDeclaration* node)override
-				{
-					auto ctor = MakePtr<WfConstructorDeclaration>();
-					ctor->constructorType = node->constructorType;
-					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
-					{
-						auto newCall = MakePtr<WfBaseConstructorCall>();
-						newCall->type = CopyType(newCall->type);
-						FOREACH(Ptr<WfExpression>, argument, call->arguments)
-						{
-							newCall->arguments.Add(CopyExpression(argument));
-						}
-						ctor->baseConstructorCalls.Add(newCall);
-					}
-					FOREACH(Ptr<WfFunctionArgument>, arg, node->arguments)
-					{
-						auto newArg = MakePtr<WfFunctionArgument>();
-						newArg->type = CopyType(arg->type);
-						newArg->name.value = arg->name.value;
-						ctor->arguments.Add(newArg);
-					}
-					ctor->statement = CopyStatement(node->statement);
-					result = ctor;
-				}
-
-				void Visit(WfDestructorDeclaration* node)override
-				{
-					auto dtor = MakePtr<WfDestructorDeclaration>();
-					dtor->statement = CopyStatement(node->statement);
-					result = dtor;
-				}
-
-				void Visit(WfClassDeclaration* node)override
-				{
-					auto classDecl = MakePtr<WfClassDeclaration>();
-					classDecl->kind = node->kind;
-					classDecl->constructorType = node->constructorType;
-					FOREACH(Ptr<WfType>, type, node->baseTypes)
-					{
-						classDecl->baseTypes.Add(CopyType(type));
-					}
-					FOREACH(Ptr<WfClassMember>, member, node->members)
-					{
-						auto classMember = MakePtr<WfClassMember>();
-						classMember->kind = member->kind;
-						classMember->declaration = CopyDeclaration(member->declaration);
-						classDecl->members.Add(classMember);
-					}
-					result = classDecl;
-				}
-
-				void Visit(WfEnumDeclaration* node)override
-				{
-					auto enumDecl = MakePtr<WfEnumDeclaration>();
-					enumDecl->kind = node->kind;
-					enumDecl->name.value = node->name.value;
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
-					{
-						auto enumItem = MakePtr<WfEnumItem>();
-						CopyAttributes(enumItem->attributes, item->attributes);
-						enumItem->kind = item->kind;
-						enumItem->name.value = item->name.value;
-						enumItem->number.value = item->number.value;
-						FOREACH(Ptr<WfEnumItemIntersection>, itemInt, item->intersections)
-						{
-							auto enumItemInt = MakePtr<WfEnumItemIntersection>();
-							enumItemInt->name.value = itemInt->name.value;
-							enumItem->intersections.Add(enumItemInt);
-						}
-						enumDecl->items.Add(enumItem);
-					}
-				}
-
-				void Visit(WfStructDeclaration* node)override
-				{
-					auto structDecl = MakePtr<WfStructDeclaration>();
-					structDecl->name.value = node->name.value;
-					FOREACH(Ptr<WfStructMember>, member, node->members)
-					{
-						auto structMember = MakePtr<WfStructMember>();
-						CopyAttributes(structMember->attributes, member->attributes);
-						structMember->name.value = member->name.value;
-						structMember->type = CopyType(member->type);
-						structDecl->members.Add(structMember);
-					}
+					return CopyStatement(from);
 				}
 			};
 
@@ -1036,8 +843,7 @@ CopyDeclaration
 
 				CopyDeclarationVisitor visitor;
 				declaration->Accept(&visitor);
-				CopyAttributes(visitor.result->attributes, declaration->attributes);
-				return visitor.result;
+				return visitor.result.Cast<WfDeclaration>();
 			}
 
 /***********************************************************************

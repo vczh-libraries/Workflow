@@ -267,7 +267,6 @@ Type Analyzing
 			extern Ptr<WfLexicalScopeName>					GetScopeNameFromReferenceType(WfLexicalScope* scope, Ptr<WfType> type);
 			extern Ptr<reflection::description::ITypeInfo>	CreateTypeInfoFromType(WfLexicalScope* scope, Ptr<WfType> type);
 
-			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
 			extern Ptr<reflection::description::ITypeInfo>	CopyTypeInfo(reflection::description::ITypeInfo* typeInfo);
 			extern bool										CanConvertToType(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, bool explicitly);
 			extern bool										IsSameType(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
@@ -368,6 +367,7 @@ Semantic Analyzing
 			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
 			extern Ptr<WfAttribute>							CopyAttribute(Ptr<WfAttribute> attribute);
 			extern void										CopyAttributes(collections::List<Ptr<WfAttribute>>& dst, collections::List<Ptr<WfAttribute>>& src);
+			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
 			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration);
