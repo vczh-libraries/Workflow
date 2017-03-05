@@ -389,6 +389,37 @@ CopyType
 ExpandObserveExpression
 ***********************************************************************/
 
+			class CopyExpressionVisitor : public copy_visitor::ExpressionVisitor, public copy_visitor::VirtualExpressionVisitor
+			{
+			public:
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				{
+					from->Accept(this);
+					return result.Cast<WfExpression>();
+				}
+
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
+				{
+					return CopyType(from);
+				}
+
+				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
+				{
+					return CopyStatement(from);
+				}
+
+				vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from)override
+				{
+					return CopyDeclaration(from);
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node)override
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+					return result;
+				}
+			};
+
 			class ExpandObserveExpressionVisitor
 				: public Object
 				, public WfExpression::IVisitor
@@ -764,9 +795,9 @@ ExpandObserveExpression
 					return nullptr;
 				}
 
-				Dictionary<WfExpression*, WString> cacheNames;
-				Dictionary<WString, WString> referenceReplacement;
-				return ExpandObserveExpression(expression.Obj(), cacheNames, referenceReplacement);
+				CopyExpressionVisitor visitor;
+				expression->Accept(&visitor);
+				return visitor.result.Cast<WfExpression>();
 			}
 
 /***********************************************************************

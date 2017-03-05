@@ -18,10 +18,15 @@ namespace vl
 	{
 		namespace copy_visitor
 		{
-			class TypeVisitor : public Object, public WfType::IVisitor
+			class VisitorBase : public Object
 			{
 			public:
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> result;
+			};
+
+			class TypeVisitor : public virtual VisitorBase, public WfType::IVisitor
+			{
+			public:
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfPredefinedType* from, WfPredefinedType* to);
@@ -56,10 +61,9 @@ namespace vl
 				void Visit(WfChildType* node)override;
 			};
 
-			class ExpressionVisitor : public Object, public WfExpression::IVisitor
+			class ExpressionVisitor : public virtual VisitorBase, public WfExpression::IVisitor
 			{
 			public:
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> result;
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfThisExpression* from, WfThisExpression* to);
@@ -152,10 +156,9 @@ namespace vl
 				void Visit(WfNewInterfaceExpression* node)override;
 			};
 
-			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
+			class VirtualExpressionVisitor : public virtual VisitorBase, public WfVirtualExpression::IVisitor
 			{
 			public:
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> result;
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfBindExpression* from, WfBindExpression* to);
@@ -175,10 +178,9 @@ namespace vl
 				void Visit(WfFormatExpression* node)override;
 			};
 
-			class StatementVisitor : public Object, public WfStatement::IVisitor
+			class StatementVisitor : public virtual VisitorBase, public WfStatement::IVisitor
 			{
 			public:
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> result;
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfBreakStatement* from, WfBreakStatement* to);
@@ -228,10 +230,9 @@ namespace vl
 				void Visit(WfVariableStatement* node)override;
 			};
 
-			class DeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			class DeclarationVisitor : public virtual VisitorBase, public WfDeclaration::IVisitor
 			{
 			public:
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> result;
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfNamespaceDeclaration* from, WfNamespaceDeclaration* to);
@@ -283,10 +284,9 @@ namespace vl
 				void Visit(WfStructDeclaration* node)override;
 			};
 
-			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor
+			class ModuleUsingFragmentVisitor : public virtual VisitorBase, public WfModuleUsingFragment::IVisitor
 			{
 			public:
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> result;
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfModuleUsingNameFragment* from, WfModuleUsingNameFragment* to);
