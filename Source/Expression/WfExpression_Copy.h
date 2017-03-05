@@ -77,10 +77,12 @@ namespace vl
 				void CopyFields(WfUnaryExpression* from, WfUnaryExpression* to);
 				void CopyFields(WfBinaryExpression* from, WfBinaryExpression* to);
 				void CopyFields(WfLetExpression* from, WfLetExpression* to);
+				void CopyFields(WfLetVariable* from, WfLetVariable* to);
 				void CopyFields(WfIfExpression* from, WfIfExpression* to);
 				void CopyFields(WfRangeExpression* from, WfRangeExpression* to);
 				void CopyFields(WfSetTestingExpression* from, WfSetTestingExpression* to);
 				void CopyFields(WfConstructorExpression* from, WfConstructorExpression* to);
+				void CopyFields(WfConstructorArgument* from, WfConstructorArgument* to);
 				void CopyFields(WfInferExpression* from, WfInferExpression* to);
 				void CopyFields(WfTypeCastingExpression* from, WfTypeCastingExpression* to);
 				void CopyFields(WfTypeTestingExpression* from, WfTypeTestingExpression* to);
@@ -91,18 +93,27 @@ namespace vl
 				void CopyFields(WfObserveExpression* from, WfObserveExpression* to);
 				void CopyFields(WfCallExpression* from, WfCallExpression* to);
 				void CopyFields(WfFunctionExpression* from, WfFunctionExpression* to);
+				void CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to);
+				void CopyFields(WfDeclaration* from, WfDeclaration* to);
+				void CopyFields(WfAttribute* from, WfAttribute* to);
+				void CopyFields(WfFunctionArgument* from, WfFunctionArgument* to);
 				void CopyFields(WfNewClassExpression* from, WfNewClassExpression* to);
 				void CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to);
+				void CopyFields(WfClassMember* from, WfClassMember* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfLetVariable> CreateField(vl::Ptr<WfLetVariable> from);
 				vl::Ptr<WfConstructorArgument> CreateField(vl::Ptr<WfConstructorArgument> from);
 				vl::Ptr<WfFunctionDeclaration> CreateField(vl::Ptr<WfFunctionDeclaration> from);
+				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
+				vl::Ptr<WfFunctionArgument> CreateField(vl::Ptr<WfFunctionArgument> from);
 				vl::Ptr<WfClassMember> CreateField(vl::Ptr<WfClassMember> from);
 
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
 				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
+				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
+				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
 				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node) = 0;
@@ -178,16 +189,21 @@ namespace vl
 				void CopyFields(WfRaiseExceptionStatement* from, WfRaiseExceptionStatement* to);
 				void CopyFields(WfIfStatement* from, WfIfStatement* to);
 				void CopyFields(WfSwitchStatement* from, WfSwitchStatement* to);
+				void CopyFields(WfSwitchCase* from, WfSwitchCase* to);
 				void CopyFields(WfWhileStatement* from, WfWhileStatement* to);
 				void CopyFields(WfForEachStatement* from, WfForEachStatement* to);
 				void CopyFields(WfTryStatement* from, WfTryStatement* to);
 				void CopyFields(WfBlockStatement* from, WfBlockStatement* to);
 				void CopyFields(WfExpressionStatement* from, WfExpressionStatement* to);
 				void CopyFields(WfVariableStatement* from, WfVariableStatement* to);
+				void CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to);
+				void CopyFields(WfDeclaration* from, WfDeclaration* to);
+				void CopyFields(WfAttribute* from, WfAttribute* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfSwitchCase> CreateField(vl::Ptr<WfSwitchCase> from);
 				vl::Ptr<WfVariableDeclaration> CreateField(vl::Ptr<WfVariableDeclaration> from);
+				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
 
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
@@ -220,15 +236,22 @@ namespace vl
 				// CopyFields ----------------------------------------
 				void CopyFields(WfNamespaceDeclaration* from, WfNamespaceDeclaration* to);
 				void CopyFields(WfDeclaration* from, WfDeclaration* to);
+				void CopyFields(WfAttribute* from, WfAttribute* to);
 				void CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to);
+				void CopyFields(WfFunctionArgument* from, WfFunctionArgument* to);
 				void CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to);
 				void CopyFields(WfEventDeclaration* from, WfEventDeclaration* to);
 				void CopyFields(WfPropertyDeclaration* from, WfPropertyDeclaration* to);
 				void CopyFields(WfConstructorDeclaration* from, WfConstructorDeclaration* to);
+				void CopyFields(WfBaseConstructorCall* from, WfBaseConstructorCall* to);
 				void CopyFields(WfDestructorDeclaration* from, WfDestructorDeclaration* to);
 				void CopyFields(WfClassDeclaration* from, WfClassDeclaration* to);
+				void CopyFields(WfClassMember* from, WfClassMember* to);
 				void CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to);
+				void CopyFields(WfEnumItem* from, WfEnumItem* to);
+				void CopyFields(WfEnumItemIntersection* from, WfEnumItemIntersection* to);
 				void CopyFields(WfStructDeclaration* from, WfStructDeclaration* to);
+				void CopyFields(WfStructMember* from, WfStructMember* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
@@ -236,13 +259,14 @@ namespace vl
 				vl::Ptr<WfBaseConstructorCall> CreateField(vl::Ptr<WfBaseConstructorCall> from);
 				vl::Ptr<WfClassMember> CreateField(vl::Ptr<WfClassMember> from);
 				vl::Ptr<WfEnumItem> CreateField(vl::Ptr<WfEnumItem> from);
+				vl::Ptr<WfEnumItemIntersection> CreateField(vl::Ptr<WfEnumItemIntersection> from);
 				vl::Ptr<WfStructMember> CreateField(vl::Ptr<WfStructMember> from);
 
 				// CreateField (virtual) -----------------------------
+				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
 				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
 				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
-				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
 
