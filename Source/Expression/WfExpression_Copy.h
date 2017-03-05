@@ -120,7 +120,7 @@ namespace vl
 				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
-				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node) = 0;
+				virtual 	vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfThisExpression* node)override;
@@ -304,6 +304,36 @@ namespace vl
 				void Visit(WfModuleUsingWildCardFragment* node)override;
 			};
 
+			class ModuleVisitor
+				: public TypeVisitor
+				, public ExpressionVisitor
+				, public VirtualExpressionVisitor
+				, public StatementVisitor
+				, public DeclarationVisitor
+				, public ModuleUsingFragmentVisitor
+			{
+			public:
+				vl::Ptr<WfModule> CreateField(vl::Ptr<WfModule> from);
+
+				// CopyFields ----------------------------------------
+				void CopyFields(WfModule* from, WfModule* to);
+				void CopyFields(WfModuleUsingPath* from, WfModuleUsingPath* to);
+				void CopyFields(WfModuleUsingItem* from, WfModuleUsingItem* to);
+
+				// CreateField ---------------------------------------
+				vl::Ptr<WfModuleUsingPath> CreateField(vl::Ptr<WfModuleUsingPath> from);
+				vl::Ptr<WfModuleUsingItem> CreateField(vl::Ptr<WfModuleUsingItem> from);
+
+				// CreateField (virtual) -----------------------------
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from);
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from);
+				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from);
+				vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from);
+				vl::Ptr<WfModuleUsingFragment> CreateField(vl::Ptr<WfModuleUsingFragment> from);
+
+				// Dispatch (virtual) --------------------------------
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node);
+			};
 		}
 	}
 }

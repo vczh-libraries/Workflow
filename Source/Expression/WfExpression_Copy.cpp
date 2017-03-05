@@ -503,6 +503,7 @@ ExpressionVisitor
 
 			vl::Ptr<WfLetVariable> ExpressionVisitor::CreateField(vl::Ptr<WfLetVariable> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfLetVariable>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -510,6 +511,7 @@ ExpressionVisitor
 
 			vl::Ptr<WfConstructorArgument> ExpressionVisitor::CreateField(vl::Ptr<WfConstructorArgument> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfConstructorArgument>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -517,6 +519,7 @@ ExpressionVisitor
 
 			vl::Ptr<WfFunctionDeclaration> ExpressionVisitor::CreateField(vl::Ptr<WfFunctionDeclaration> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfFunctionDeclaration>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -524,6 +527,7 @@ ExpressionVisitor
 
 			vl::Ptr<WfAttribute> ExpressionVisitor::CreateField(vl::Ptr<WfAttribute> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfAttribute>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -531,6 +535,7 @@ ExpressionVisitor
 
 			vl::Ptr<WfFunctionArgument> ExpressionVisitor::CreateField(vl::Ptr<WfFunctionArgument> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfFunctionArgument>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -538,6 +543,7 @@ ExpressionVisitor
 
 			vl::Ptr<WfClassMember> ExpressionVisitor::CreateField(vl::Ptr<WfClassMember> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfClassMember>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -963,6 +969,7 @@ StatementVisitor
 
 			vl::Ptr<WfSwitchCase> StatementVisitor::CreateField(vl::Ptr<WfSwitchCase> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfSwitchCase>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -970,6 +977,7 @@ StatementVisitor
 
 			vl::Ptr<WfVariableDeclaration> StatementVisitor::CreateField(vl::Ptr<WfVariableDeclaration> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfVariableDeclaration>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -977,6 +985,7 @@ StatementVisitor
 
 			vl::Ptr<WfAttribute> StatementVisitor::CreateField(vl::Ptr<WfAttribute> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfAttribute>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1287,6 +1296,7 @@ DeclarationVisitor
 
 			vl::Ptr<WfAttribute> DeclarationVisitor::CreateField(vl::Ptr<WfAttribute> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfAttribute>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1294,6 +1304,7 @@ DeclarationVisitor
 
 			vl::Ptr<WfFunctionArgument> DeclarationVisitor::CreateField(vl::Ptr<WfFunctionArgument> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfFunctionArgument>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1301,6 +1312,7 @@ DeclarationVisitor
 
 			vl::Ptr<WfBaseConstructorCall> DeclarationVisitor::CreateField(vl::Ptr<WfBaseConstructorCall> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfBaseConstructorCall>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1308,6 +1320,7 @@ DeclarationVisitor
 
 			vl::Ptr<WfClassMember> DeclarationVisitor::CreateField(vl::Ptr<WfClassMember> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfClassMember>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1315,6 +1328,7 @@ DeclarationVisitor
 
 			vl::Ptr<WfEnumItem> DeclarationVisitor::CreateField(vl::Ptr<WfEnumItem> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfEnumItem>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1322,6 +1336,7 @@ DeclarationVisitor
 
 			vl::Ptr<WfEnumItemIntersection> DeclarationVisitor::CreateField(vl::Ptr<WfEnumItemIntersection> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfEnumItemIntersection>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1329,6 +1344,7 @@ DeclarationVisitor
 
 			vl::Ptr<WfStructMember> DeclarationVisitor::CreateField(vl::Ptr<WfStructMember> from)
 			{
+				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfStructMember>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
@@ -1446,6 +1462,117 @@ ModuleUsingFragmentVisitor
 				auto newNode = vl::MakePtr<WfModuleUsingWildCardFragment>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
+			}
+
+/***********************************************************************
+ModuleVisitor
+***********************************************************************/
+
+			vl::Ptr<WfModule> ModuleVisitor::CreateField(vl::Ptr<WfModule> from)
+			{
+				auto to = vl::MakePtr<WfModule>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			// CopyFields ----------------------------------------
+
+			void ModuleVisitor::CopyFields(WfModule* from, WfModule* to)
+			{
+				to->moduleType = from->moduleType;
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				FOREACH(vl::Ptr<WfModuleUsingPath>, listItem, from->paths)
+				{
+					to->paths.Add(CreateField(listItem));
+				}
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
+				{
+					to->declarations.Add(CreateField(listItem));
+				}
+				to->codeRange = from->codeRange;
+			}
+
+			void ModuleVisitor::CopyFields(WfModuleUsingPath* from, WfModuleUsingPath* to)
+			{
+				FOREACH(vl::Ptr<WfModuleUsingItem>, listItem, from->items)
+				{
+					to->items.Add(CreateField(listItem));
+				}
+				to->codeRange = from->codeRange;
+			}
+
+			void ModuleVisitor::CopyFields(WfModuleUsingItem* from, WfModuleUsingItem* to)
+			{
+				FOREACH(vl::Ptr<WfModuleUsingFragment>, listItem, from->fragments)
+				{
+					to->fragments.Add(CreateField(listItem));
+				}
+				to->codeRange = from->codeRange;
+			}
+
+			// CreateField ---------------------------------------
+
+			vl::Ptr<WfModuleUsingPath> ModuleVisitor::CreateField(vl::Ptr<WfModuleUsingPath> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfModuleUsingPath>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			vl::Ptr<WfModuleUsingItem> ModuleVisitor::CreateField(vl::Ptr<WfModuleUsingItem> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfModuleUsingItem>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			// CreateField (virtual) -----------------------------
+
+			vl::Ptr<WfType> ModuleVisitor::CreateField(vl::Ptr<WfType> from)
+			{
+				if (!from) return nullptr;
+				from->Accept(static_cast<TypeVisitor*>(this));
+				return this->result.Cast<WfType>();
+			}
+
+			vl::Ptr<WfExpression> ModuleVisitor::CreateField(vl::Ptr<WfExpression> from)
+			{
+				if (!from) return nullptr;
+				from->Accept(static_cast<ExpressionVisitor*>(this));
+				return this->result.Cast<WfExpression>();
+			}
+
+			vl::Ptr<WfStatement> ModuleVisitor::CreateField(vl::Ptr<WfStatement> from)
+			{
+				if (!from) return nullptr;
+				from->Accept(static_cast<StatementVisitor*>(this));
+				return this->result.Cast<WfStatement>();
+			}
+
+			vl::Ptr<WfDeclaration> ModuleVisitor::CreateField(vl::Ptr<WfDeclaration> from)
+			{
+				if (!from) return nullptr;
+				from->Accept(static_cast<DeclarationVisitor*>(this));
+				return this->result.Cast<WfDeclaration>();
+			}
+
+			vl::Ptr<WfModuleUsingFragment> ModuleVisitor::CreateField(vl::Ptr<WfModuleUsingFragment> from)
+			{
+				if (!from) return nullptr;
+				from->Accept(static_cast<ModuleUsingFragmentVisitor*>(this));
+				return this->result.Cast<WfModuleUsingFragment>();
+			}
+
+			// Dispatch (virtual) --------------------------------
+
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualExpression* node)
+			{
+				node->Accept(static_cast<VirtualExpressionVisitor*>(this));
+				return this->result;
 			}
 		}
 	}

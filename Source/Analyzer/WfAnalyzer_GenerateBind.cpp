@@ -328,42 +328,57 @@ GetObservingDependency
 			}
 
 /***********************************************************************
-CopyType
+Copy(Type|Expression|Statement|Declaration)
 ***********************************************************************/
-
-			class CopyTypeVisitor : public copy_visitor::TypeVisitor
-			{
-			public:
-				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
-				{
-					from->Accept(this);
-					return result.Cast<WfType>();
-				}
-			};
 
 			Ptr<WfType> CopyType(Ptr<WfType> type)
 			{
-				if (!type)
-				{
-					return nullptr;
-				}
+				return copy_visitor::ModuleVisitor().CreateField(type);
+			}
 
-				CopyTypeVisitor visitor;
-				type->Accept(&visitor);
-				return visitor.result.Cast<WfType>();
+			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression)
+			{
+				return copy_visitor::ModuleVisitor().CreateField(expression);
+			}
+
+			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement)
+			{
+				return copy_visitor::ModuleVisitor().CreateField(statement);
+			}
+
+			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration)
+			{
+				return copy_visitor::ModuleVisitor().CreateField(declaration);
 			}
 
 /***********************************************************************
-CopyExpression
+ExpandObserveExpression
 ***********************************************************************/
 
-			class CopyExpressionVisitor : public copy_visitor::ExpressionVisitor, public copy_visitor::VirtualExpressionVisitor
+			Ptr<WfExpression> CreateReference(const WString& name)
+			{
+				auto ref = MakePtr<WfReferenceExpression>();
+				ref->name.value = name;
+				return ref;
+			}
+
+			class ExpandObserveExpressionVisitor
+				: public copy_visitor::ExpressionVisitor
+				, public copy_visitor::VirtualExpressionVisitor
 			{
 			public:
+				Dictionary<WfExpression*, WString>&		cacheNames;
+				Dictionary<WString, WString>&			referenceReplacement;
+
+				ExpandObserveExpressionVisitor(Dictionary<WfExpression*, WString>& _cacheNames, collections::Dictionary<WString, WString>& _referenceReplacement)
+					:cacheNames(_cacheNames)
+					, referenceReplacement(_referenceReplacement)
+				{
+				}
+
 				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
 				{
-					from->Accept(this);
-					return result.Cast<WfExpression>();
+					return ExpandObserveExpression(from.Obj(), cacheNames, referenceReplacement);
 				}
 
 				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
@@ -385,124 +400,6 @@ CopyExpression
 				{
 					node->Accept((WfVirtualExpression::IVisitor*)this);
 					return result;
-				}
-			};
-
-			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression)
-			{
-				if (!expression)
-				{
-					return nullptr;
-				}
-
-				CopyExpressionVisitor visitor;
-				expression->Accept(&visitor);
-				return visitor.result.Cast<WfExpression>();
-			}
-
-/***********************************************************************
-CopyStatement
-***********************************************************************/
-
-			class CopyStatementVisitor : public copy_visitor::StatementVisitor
-			{
-			public:
-				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
-				{
-					return CopyExpression(from);
-				}
-
-				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
-				{
-					return CopyType(from);
-				}
-
-				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
-				{
-					from->Accept(this);
-					return result.Cast<WfStatement>();
-				}
-			};
-
-			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement)
-			{
-				if (!statement)
-				{
-					return nullptr;
-				}
-
-				CopyStatementVisitor visitor;
-				statement->Accept(&visitor);
-				return visitor.result.Cast<WfStatement>();
-			}
-
-/***********************************************************************
-CopyDeclaration
-***********************************************************************/
-
-			class CopyDeclarationVisitor : public copy_visitor::DeclarationVisitor
-			{
-			public:
-				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
-				{
-					return CopyExpression(from);
-				}
-
-				vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from)override
-				{
-					from->Accept(this);
-					return result.Cast<WfDeclaration>();
-				}
-
-				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
-				{
-					return CopyType(from);
-				}
-
-				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
-				{
-					return CopyStatement(from);
-				}
-			};
-
-			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration)
-			{
-				if (!declaration)
-				{
-					return nullptr;
-				}
-
-				CopyDeclarationVisitor visitor;
-				declaration->Accept(&visitor);
-				return visitor.result.Cast<WfDeclaration>();
-			}
-
-/***********************************************************************
-ExpandObserveExpression
-***********************************************************************/
-
-			Ptr<WfExpression> CreateReference(const WString& name)
-			{
-				auto ref = MakePtr<WfReferenceExpression>();
-				ref->name.value = name;
-				return ref;
-			}
-
-			class ExpandObserveExpressionVisitor : public CopyExpressionVisitor
-			{
-			public:
-				Dictionary<WfExpression*, WString>&		cacheNames;
-				Dictionary<WString, WString>&			referenceReplacement;
-
-				ExpandObserveExpressionVisitor(Dictionary<WfExpression*, WString>& _cacheNames, collections::Dictionary<WString, WString>& _referenceReplacement)
-					:cacheNames(_cacheNames)
-					, referenceReplacement(_referenceReplacement)
-				{
-				}
-
-				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
-				{
-					return ExpandObserveExpression(from.Obj(), cacheNames, referenceReplacement);
 				}
 
 				void Visit(WfReferenceExpression* node)override
