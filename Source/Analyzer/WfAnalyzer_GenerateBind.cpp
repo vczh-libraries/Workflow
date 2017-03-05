@@ -420,15 +420,11 @@ ExpandObserveExpression
 				}
 			};
 
-			class ExpandObserveExpressionVisitor
-				: public Object
-				, public WfExpression::IVisitor
-				, public WfVirtualExpression::IVisitor
+			class ExpandObserveExpressionVisitor : public CopyExpressionVisitor
 			{
 			public:
 				Dictionary<WfExpression*, WString>&		cacheNames;
 				Dictionary<WString, WString>&			referenceReplacement;
-				Ptr<WfExpression>						result;
 
 				ExpandObserveExpressionVisitor(Dictionary<WfExpression*, WString>& _cacheNames, collections::Dictionary<WString, WString>& _referenceReplacement)
 					:cacheNames(_cacheNames)
@@ -436,22 +432,9 @@ ExpandObserveExpression
 				{
 				}
 
-				Ptr<WfExpression> Expand(Ptr<WfExpression> expr)
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
 				{
-					return ExpandObserveExpression(expr.Obj(), cacheNames, referenceReplacement);
-				}
-
-				void Visit(WfThisExpression* node)override
-				{
-					auto expr = MakePtr<WfThisExpression>();
-					result = expr;
-				}
-
-				void Visit(WfTopQualifiedExpression* node)override
-				{
-					auto expr = MakePtr<WfTopQualifiedExpression>();
-					expr->name.value = node->name.value;
-					result = expr;
+					return ExpandObserveExpression(from.Obj(), cacheNames, referenceReplacement);
 				}
 
 				void Visit(WfReferenceExpression* node)override
@@ -459,7 +442,7 @@ ExpandObserveExpression
 					vint index = referenceReplacement.Keys().IndexOf(node->name.value);
 					if (index == -1)
 					{
-						result = CreateReference(node->name.value);
+						result = CopyExpression(node);
 					}
 					else
 					{
@@ -467,79 +450,9 @@ ExpandObserveExpression
 					}
 				}
 
-				void Visit(WfOrderedNameExpression* node)override
-				{
-					auto expr = MakePtr<WfOrderedNameExpression>();
-					expr->name.value = node->name.value;
-					result = expr;
-				}
-
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					auto expr = MakePtr<WfOrderedLambdaExpression>();
-					expr->body = CopyExpression(node->body);
-					result = expr;
-				}
-
-				void Visit(WfMemberExpression* node)override
-				{
-					auto expr = MakePtr<WfMemberExpression>();
-					expr->parent = Expand(node->parent);
-					expr->name.value = node->name.value;
-					result = expr;
-				}
-
-				void Visit(WfChildExpression* node)override
-				{
-					auto expr = MakePtr<WfChildExpression>();
-					expr->parent = Expand(node->parent);
-					expr->name.value = node->name.value;
-					result = expr;
-				}
-
-				void Visit(WfLiteralExpression* node)override
-				{
-					auto expr = MakePtr<WfLiteralExpression>();
-					expr->value = node->value;
-					result = expr;
-				}
-
-				void Visit(WfFloatingExpression* node)override
-				{
-					auto expr = MakePtr<WfFloatingExpression>();
-					expr->value.value = node->value.value;
-					result = expr;
-				}
-
-				void Visit(WfIntegerExpression* node)override
-				{
-					auto expr = MakePtr<WfIntegerExpression>();
-					expr->value.value = node->value.value;
-					result = expr;
-				}
-
-				void Visit(WfStringExpression* node)override
-				{
-					auto expr = MakePtr<WfStringExpression>();
-					expr->value.value = node->value.value;
-					result = expr;
-				}
-
-				void Visit(WfUnaryExpression* node)override
-				{
-					auto expr = MakePtr<WfUnaryExpression>();
-					expr->op = node->op;
-					expr->operand = Expand(node->operand);
-					result = expr;
-				}
-
-				void Visit(WfBinaryExpression* node)override
-				{
-					auto expr = MakePtr<WfBinaryExpression>();
-					expr->op = node->op;
-					expr->first = Expand(node->first);
-					expr->second = Expand(node->second);
-					result = expr;
+					result = CopyExpression(node);
 				}
 
 				void Visit(WfLetExpression* node)override
@@ -557,133 +470,22 @@ ExpandObserveExpression
 							referenceReplacement.Remove(key);
 							overrided.Add(key, value);
 						}
-
-						auto newVar = MakePtr<WfLetVariable>();
-						newVar->name.value = key;
-						newVar->value = Expand(var->value);
-						expr->variables.Add(newVar);
 					}
-					expr->expression = Expand(node->expression);
 
+					result = CreateField(node);
 					CopyFrom(referenceReplacement, overrided, true);
-					result = expr;
-				}
-
-				void Visit(WfIfExpression* node)override
-				{
-					auto expr = MakePtr<WfIfExpression>();
-					expr->condition = Expand(node->condition);
-					expr->trueBranch = Expand(node->trueBranch);
-					expr->falseBranch = Expand(node->falseBranch);
-					result = expr;
-				}
-
-				void Visit(WfRangeExpression* node)override
-				{
-					auto expr = MakePtr<WfRangeExpression>();
-					expr->begin = Expand(node->begin);
-					expr->end = Expand(node->end);
-					expr->beginBoundary = node->beginBoundary;
-					expr->endBoundary = node->endBoundary;
-					result = expr;
-				}
-
-				void Visit(WfSetTestingExpression* node)override
-				{
-					auto expr = MakePtr<WfSetTestingExpression>();
-					expr->element = Expand(node->element);
-					expr->collection = Expand(node->collection);
-					result = expr;
-				}
-
-				void Visit(WfConstructorExpression* node)override
-				{
-					auto expr = MakePtr<WfConstructorExpression>();
-					FOREACH(Ptr<WfConstructorArgument>, arg, node->arguments)
-					{
-						auto newArg = MakePtr<WfConstructorArgument>();
-						newArg->key = Expand(arg->key);
-						newArg->value = Expand(arg->value);
-						expr->arguments.Add(newArg);
-					}
-					result = expr;
-				}
-
-				void Visit(WfInferExpression* node)override
-				{
-					auto expr = MakePtr<WfInferExpression>();
-					expr->expression = Expand(node->expression);
-					expr->type = CopyType(node->type);
-					result = expr;
-				}
-
-				void Visit(WfTypeCastingExpression* node)override
-				{
-					auto expr = MakePtr<WfTypeCastingExpression>();
-					expr->expression = Expand(node->expression);
-					expr->type = CopyType(node->type);
-					expr->strategy = node->strategy;
-					result = expr;
-				}
-
-				void Visit(WfTypeTestingExpression* node)override
-				{
-					auto expr = MakePtr<WfTypeTestingExpression>();
-					expr->expression = Expand(node->expression);
-					expr->type = CopyType(node->type);
-					expr->test = node->test;
-					result = expr;
-				}
-
-				void Visit(WfTypeOfTypeExpression* node)override
-				{
-					auto expr = MakePtr<WfTypeOfTypeExpression>();
-					expr->type = CopyType(node->type);
-					result = expr;
-				}
-
-				void Visit(WfTypeOfExpressionExpression* node)override
-				{
-					auto expr = MakePtr<WfTypeOfExpressionExpression>();
-					expr->expression = Expand(node->expression);
-					result = expr;
-				}
-
-				void Visit(WfAttachEventExpression* node)override
-				{
-					auto expr = MakePtr<WfAttachEventExpression>();
-					expr->event = Expand(node->event);
-					expr->function = Expand(node->function);
-					result = expr;
-				}
-
-				void Visit(WfDetachEventExpression* node)override
-				{
-					auto expr = MakePtr<WfDetachEventExpression>();
-					expr->event = Expand(node->event);
-					expr->handler = Expand(node->handler);
-					result = expr;
 				}
 
 				void Visit(WfObserveExpression* node)override
 				{
 					if (cacheNames.Count() == 0)
 					{
-						auto expr = MakePtr<WfObserveExpression>();
-						expr->parent = CopyExpression(node->parent);
-						expr->name.value = node->name.value;
-						expr->observeType = node->observeType;
-						expr->expression = node->expression;
-						FOREACH(Ptr<WfExpression>, ev, node->events)
-						{
-							expr->events.Add(CopyExpression(ev));
-						}
-						result = expr;
+						result = CopyExpression(node);
 					}
 					else if (node->observeType == WfObserveType::SimpleObserve)
 					{
 						auto expr = MakePtr<WfMemberExpression>();
-						expr->parent = Expand(node->parent);
+						expr->parent = CreateField(node->parent);
 						expr->name.value = node->expression.Cast<WfReferenceExpression>()->name.value;
 						result = expr;
 					}
@@ -691,101 +493,40 @@ ExpandObserveExpression
 					{
 						auto var = MakePtr<WfLetVariable>();
 						var->name.value = node->name.value;
-						var->value = Expand(node->parent);
+						var->value = CreateField(node->parent);
 
 						auto expr = MakePtr<WfLetExpression>();
 						expr->variables.Add(var);
-						expr->expression = Expand(node->expression);
+						expr->expression = CreateField(node->expression);
 						result = expr;
 					}
 				}
 
-				void Visit(WfCallExpression* node)override
-				{
-					auto expr = MakePtr<WfCallExpression>();
-					expr->function = Expand(node->function);
-					FOREACH(Ptr<WfExpression>, arg, node->arguments)
-					{
-						expr->arguments.Add(Expand(arg));
-					}
-					result = expr;
-				}
-
-				void Visit(WfFunctionExpression* node)override
-				{
-					auto expr = MakePtr<WfFunctionExpression>();
-					expr->function = CopyDeclaration(node->function).Cast<WfFunctionDeclaration>();
-					result = expr;
-				}
-
-				void Visit(WfNewClassExpression* node)override
-				{
-					auto expr = MakePtr<WfNewClassExpression>();
-					expr->type = CopyType(node->type);
-					FOREACH(Ptr<WfExpression>, arg, node->arguments)
-					{
-						expr->arguments.Add(Expand(arg));
-					}
-					result = expr;
-				}
-
-				void Visit(WfNewInterfaceExpression* node)override
-				{
-					auto expr = MakePtr<WfNewInterfaceExpression>();
-					expr->type = CopyType(node->type);
-					FOREACH(Ptr<WfClassMember>, member, node->members)
-					{
-						auto classMember = MakePtr<WfClassMember>();
-						classMember->kind = member->kind;
-						classMember->declaration = CopyDeclaration(member->declaration);
-						expr->members.Add(classMember);
-					}
-					result = expr;
-				}
-
-				void Visit(WfVirtualExpression* node)override
-				{
-					node->Accept((WfVirtualExpression::IVisitor*)this);
-				}
-
 				void Visit(WfBindExpression* node)override
 				{
-					auto expr = MakePtr<WfBindExpression>();
-					expr->expression = CopyExpression(node->expression);
-					expr->expandedExpression = CopyExpression(node->expandedExpression);
-					result = expr;
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					auto expr = MakePtr<WfFormatExpression>();
-					expr->value.value = node->value.value;
-					expr->expandedExpression = Expand(node->expandedExpression);
-					result = expr;
+					result = CopyExpression(node);
 				}
 			};
 
 			Ptr<WfExpression> ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache)
 			{
-				if (expression)
+				if (!expression)
 				{
-					if (useCache)
-					{
-						vint index = cacheNames.Keys().IndexOf(expression);
-						if (index != -1)
-						{
-							return CreateReference(cacheNames.Values()[index]);
-						}
-					}
+					return nullptr;
+				}
 
-					ExpandObserveExpressionVisitor visitor(cacheNames, referenceReplacement);
-					expression->Accept(&visitor);
-					return visitor.result;
-				}
-				else
+				if (useCache)
 				{
-					return 0;
+					vint index = cacheNames.Keys().IndexOf(expression);
+					if (index != -1)
+					{
+						return CreateReference(cacheNames.Values()[index]);
+					}
 				}
+
+				ExpandObserveExpressionVisitor visitor(cacheNames, referenceReplacement);
+				expression->Accept(&visitor);
+				return visitor.result.Cast<WfExpression>();
 			}
 
 			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression)
