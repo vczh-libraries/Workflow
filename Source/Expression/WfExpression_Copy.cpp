@@ -100,8 +100,6 @@ TypeVisitor
 				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
 			}
 
-			// CreateField ---------------------------------------
-
 			// Visitor Members -----------------------------------
 
 			void TypeVisitor::Visit(WfPredefinedType* node)
@@ -797,8 +795,6 @@ VirtualExpressionVisitor
 				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
 			}
 
-			// CreateField ---------------------------------------
-
 			// Visitor Members -----------------------------------
 
 			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
@@ -1445,8 +1441,6 @@ ModuleUsingFragmentVisitor
 			{
 				CopyFields(static_cast<WfModuleUsingFragment*>(from), static_cast<WfModuleUsingFragment*>(to));
 			}
-
-			// CreateField ---------------------------------------
 
 			// Visitor Members -----------------------------------
 

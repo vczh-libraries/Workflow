@@ -41,12 +41,8 @@ namespace vl
 				void CopyFields(WfFunctionType* from, WfFunctionType* to);
 				void CopyFields(WfChildType* from, WfChildType* to);
 
-				// CreateField ---------------------------------------
-
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
-
-				// Dispatch (virtual) --------------------------------
 
 				// Visitor Members -----------------------------------
 				void Visit(WfPredefinedType* node)override;
@@ -120,7 +116,7 @@ namespace vl
 				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
-				virtual 	vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node) = 0;
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfThisExpression* node)override;
@@ -166,12 +162,8 @@ namespace vl
 				void CopyFields(WfExpression* from, WfExpression* to);
 				void CopyFields(WfFormatExpression* from, WfFormatExpression* to);
 
-				// CreateField ---------------------------------------
-
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
-
-				// Dispatch (virtual) --------------------------------
 
 				// Visitor Members -----------------------------------
 				void Visit(WfBindExpression* node)override;
@@ -211,8 +203,6 @@ namespace vl
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
 				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
-
-				// Dispatch (virtual) --------------------------------
 
 				// Visitor Members -----------------------------------
 				void Visit(WfBreakStatement* node)override;
@@ -269,8 +259,6 @@ namespace vl
 				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
 
-				// Dispatch (virtual) --------------------------------
-
 				// Visitor Members -----------------------------------
 				void Visit(WfNamespaceDeclaration* node)override;
 				void Visit(WfFunctionDeclaration* node)override;
@@ -292,12 +280,6 @@ namespace vl
 				void CopyFields(WfModuleUsingNameFragment* from, WfModuleUsingNameFragment* to);
 				void CopyFields(WfModuleUsingFragment* from, WfModuleUsingFragment* to);
 				void CopyFields(WfModuleUsingWildCardFragment* from, WfModuleUsingWildCardFragment* to);
-
-				// CreateField ---------------------------------------
-
-				// CreateField (virtual) -----------------------------
-
-				// Dispatch (virtual) --------------------------------
 
 				// Visitor Members -----------------------------------
 				void Visit(WfModuleUsingNameFragment* node)override;
