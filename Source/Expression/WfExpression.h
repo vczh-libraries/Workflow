@@ -16,6 +16,7 @@ static_assert(false, "Don't use VlppWorkflow.(h|cpp) or VlppWorkflowCompiler.(h|
 #include "WfExpression_Ast.h"
 #include "WfExpression_Parser.h"
 #include "WfExpression_Copy.h"
+#include "WfExpression_Traverse.h"
 #include "WfExpression_Empty.h"
 
 namespace vl
