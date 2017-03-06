@@ -331,6 +331,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::VisitField(WfLetVariable* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfLetVariable*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
@@ -339,6 +340,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::VisitField(WfConstructorArgument* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfConstructorArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->key.Obj());
@@ -347,6 +349,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::VisitField(WfFunctionDeclaration* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfFunctionDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
@@ -365,6 +368,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::VisitField(WfAttribute* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfAttribute*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->category);
@@ -374,6 +378,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::VisitField(WfFunctionArgument* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
@@ -386,6 +391,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::VisitField(WfClassMember* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfClassMember*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->declaration.Obj());
@@ -815,6 +821,7 @@ StatementVisitor
 
 			void StatementVisitor::VisitField(WfSwitchCase* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfSwitchCase*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->expression.Obj());
@@ -823,6 +830,7 @@ StatementVisitor
 
 			void StatementVisitor::VisitField(WfVariableDeclaration* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfVariableDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
@@ -837,6 +845,7 @@ StatementVisitor
 
 			void StatementVisitor::VisitField(WfAttribute* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfAttribute*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->category);
@@ -1056,6 +1065,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::VisitField(WfAttribute* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfAttribute*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->category);
@@ -1065,6 +1075,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::VisitField(WfFunctionArgument* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
@@ -1077,6 +1088,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::VisitField(WfBaseConstructorCall* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfBaseConstructorCall*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
@@ -1088,6 +1100,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::VisitField(WfClassMember* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfClassMember*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->declaration.Obj());
@@ -1095,6 +1108,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::VisitField(WfEnumItem* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfEnumItem*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
@@ -1111,6 +1125,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::VisitField(WfEnumItemIntersection* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfEnumItemIntersection*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
@@ -1118,6 +1133,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::VisitField(WfStructMember* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfStructMember*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
@@ -1384,6 +1400,7 @@ ModuleVisitor
 
 			void ModuleVisitor::VisitField(WfModuleUsingPath* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfModuleUsingPath*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				FOREACH(vl::Ptr<WfModuleUsingItem>, listItem, node->items)
@@ -1394,6 +1411,7 @@ ModuleVisitor
 
 			void ModuleVisitor::VisitField(WfModuleUsingItem* node)
 			{
+				if (!node) return;
 				Traverse(static_cast<WfModuleUsingItem*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				FOREACH(vl::Ptr<WfModuleUsingFragment>, listItem, node->fragments)
@@ -1406,31 +1424,31 @@ ModuleVisitor
 
 			void ModuleVisitor::VisitField(WfType* node)
 			{
-				if (!node) return
+				if (!node) return;
 				node->Accept(static_cast<TypeVisitor*>(this));
 			}
 
 			void ModuleVisitor::VisitField(WfExpression* node)
 			{
-				if (!node) return
+				if (!node) return;
 				node->Accept(static_cast<ExpressionVisitor*>(this));
 			}
 
 			void ModuleVisitor::VisitField(WfStatement* node)
 			{
-				if (!node) return
+				if (!node) return;
 				node->Accept(static_cast<StatementVisitor*>(this));
 			}
 
 			void ModuleVisitor::VisitField(WfDeclaration* node)
 			{
-				if (!node) return
+				if (!node) return;
 				node->Accept(static_cast<DeclarationVisitor*>(this));
 			}
 
 			void ModuleVisitor::VisitField(WfModuleUsingFragment* node)
 			{
-				if (!node) return
+				if (!node) return;
 				node->Accept(static_cast<ModuleUsingFragmentVisitor*>(this));
 			}
 

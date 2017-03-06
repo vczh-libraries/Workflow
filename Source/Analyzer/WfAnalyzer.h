@@ -277,8 +277,6 @@ Type Analyzing
 
 			extern bool										IsExpressionDependOnExpectedType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
 			extern WString									GetExpressionName(Ptr<WfExpression> expression);
-			extern void										SearchOrderedName(WfLexicalScope* scope, Ptr<WfDeclaration> declaration, collections::SortedList<vint>& names);
-			extern void										SearchOrderedName(WfLexicalScope* scope, Ptr<WfStatement> statement, collections::SortedList<vint>& names);
 			extern void										SearchOrderedName(WfLexicalScope* scope, Ptr<WfExpression> expression, collections::SortedList<vint>& names);
 
 /***********************************************************************
