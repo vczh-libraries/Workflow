@@ -37,15 +37,13 @@ WfGenerateClassMemberDeclVisitor
 				WfCppConfig*				config;
 				stream::StreamWriter&		writer;
 				WString						className;
-				Ptr<WfClassMember>			classMember;
 				WString						prefix;
 				bool						forClassExpr;
 
-				WfGenerateClassMemberDeclVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _className, Ptr<WfClassMember> _classMember, const WString& _prefix, bool _forClassExpr)
+				WfGenerateClassMemberDeclVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _className, const WString& _prefix, bool _forClassExpr)
 					:config(_config)
 					, writer(_writer)
 					, className(_className)
-					, classMember(_classMember)
 					, prefix(_prefix)
 					, forClassExpr(_forClassExpr)
 				{
@@ -64,7 +62,7 @@ WfGenerateClassMemberDeclVisitor
 					{
 						writer.WriteString(L"virtual ");
 					}
-					else if (classMember->kind == WfClassMemberKind::Static)
+					else if (node->classMember->kind == WfClassMemberKind::Static)
 					{
 						writer.WriteString(L"static ");
 					}
@@ -73,7 +71,7 @@ WfGenerateClassMemberDeclVisitor
 					{
 						writer.WriteString(L" = 0");
 					}
-					else if (classMember->kind == WfClassMemberKind::Override)
+					else if (node->classMember->kind == WfClassMemberKind::Override)
 					{
 						writer.WriteString(L" override");
 					}
@@ -149,10 +147,10 @@ WfGenerateClassMemberDeclVisitor
 				}
 			};
 
-			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix, bool forClassExpr)
+			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> decl, const WString& prefix, bool forClassExpr)
 			{
-				WfGenerateClassMemberDeclVisitor visitor(config, writer, className, member, prefix, forClassExpr);
-				member->declaration->Accept(&visitor);
+				WfGenerateClassMemberDeclVisitor visitor(config, writer, className, prefix, forClassExpr);
+				decl->Accept(&visitor);
 			}
 
 /***********************************************************************
@@ -167,17 +165,15 @@ WfGenerateClassMemberImplVisitor
 				WString						classBaseName;
 				WString						className;
 				WString						classFullName;
-				Ptr<WfClassMember>			classMember;
 				WString						prefix;
 				bool						printableMember = false;
 
-				WfGenerateClassMemberImplVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _classBaseName, const WString& _className, const WString& _classFullName, Ptr<WfClassMember> _classMember, const WString& _prefix)
+				WfGenerateClassMemberImplVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _classBaseName, const WString& _className, const WString& _classFullName, const WString& _prefix)
 					:config(_config)
 					, writer(_writer)
 					, classBaseName(_classBaseName)
 					, className(_className)
 					, classFullName(_classFullName)
-					, classMember(_classMember)
 					, prefix(_prefix)
 				{
 				}
@@ -335,10 +331,10 @@ WfGenerateClassMemberImplVisitor
 				}
 			};
 
-			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfClassMember> member, const WString& prefix)
+			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> decl, const WString& prefix)
 			{
-				WfGenerateClassMemberImplVisitor visitor(config, writer, classBaseName, className, classFullName, member, prefix);
-				member->declaration->Accept(&visitor);
+				WfGenerateClassMemberImplVisitor visitor(config, writer, classBaseName, className, classFullName, prefix);
+				decl->Accept(&visitor);
 				return visitor.printableMember;
 			}
 		}

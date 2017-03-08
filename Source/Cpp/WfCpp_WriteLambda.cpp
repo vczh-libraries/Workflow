@@ -77,9 +77,9 @@ WfCppConfig::CollectClosureInfo
 
 				void Execute(WfNewInterfaceExpression* node)
 				{
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
 					{
-						member->declaration->Accept(this);
+						decl->Accept(this);
 					}
 				}
 			};
@@ -250,9 +250,9 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L";");
 				writer.WriteLine(L"");
 
-				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				FOREACH(Ptr<WfDeclaration>, decl, lambda->declarations)
 				{
-					GenerateClassMemberDecl(this, writer, name, member, L"\t\t", true);
+					GenerateClassMemberDecl(this, writer, name, decl, L"\t\t", true);
 				}
 				writer.WriteLine(L"\t};");
 			}
@@ -393,6 +393,35 @@ WfCppConfig::WriteCpp
 				}
 			}
 
+			class WriteCpp_ClassExprImpl_InitFieldVisitor
+				: public empty_visitor::DeclarationVisitor
+			{
+			public:
+				WfCppConfig*						config;
+				stream::StreamWriter&				writer;
+
+				WriteCpp_ClassExprImpl_InitFieldVisitor(WfCppConfig* _config, stream::StreamWriter& _writer)
+					:config(_config)
+					, writer(_writer)
+				{
+				}
+
+				virtual void Visit(WfVariableDeclaration* node)override
+				{
+					if (node->expression)
+					{
+						auto scope = config->manager->nodeScopes[node].Obj();
+						auto symbol = scope->symbols[node->name.value][0];
+						auto typeInfo = symbol->typeInfo;
+						writer.WriteString(L"\t\tthis->");
+						writer.WriteString(config->ConvertName(node->name.value));
+						writer.WriteString(L" = ");
+						GenerateExpression(config, writer, node->expression, typeInfo.Obj());
+						writer.WriteLine(L";");
+					}
+				}
+			};
+
 			void WfCppConfig::WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
 			{
 				auto name = classExprs[lambda.Obj()];
@@ -403,21 +432,11 @@ WfCppConfig::WriteCpp
 				WriteCpp_ClosureCtorInitList(writer, lambda);
 				writer.WriteLine(L"\t{");
 
-				FOREACH(Ptr<WfClassMember>, member, lambda->members)
 				{
-					if (auto varDecl = member->declaration.Cast<WfVariableDeclaration>())
+					WriteCpp_ClassExprImpl_InitFieldVisitor visitor(this, writer);
+					FOREACH(Ptr<WfDeclaration>, decl, lambda->declarations)
 					{
-						if (varDecl->expression)
-						{
-							auto scope = manager->nodeScopes[varDecl.Obj()].Obj();
-							auto symbol = scope->symbols[varDecl->name.value][0];
-							auto typeInfo = symbol->typeInfo;
-							writer.WriteString(L"\t\tthis->");
-							writer.WriteString(ConvertName(varDecl->name.value));
-							writer.WriteString(L" = ");
-							GenerateExpression(this, writer, varDecl->expression, typeInfo.Obj());
-							writer.WriteLine(L";");
-						}
+						decl->Accept(&visitor);
 					}
 				}
 
@@ -425,9 +444,9 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"");
 
 				WString classFullName = L"::" + assemblyNamespace + L"::" + name;
-				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				FOREACH(Ptr<WfDeclaration>, decl, lambda->declarations)
 				{
-					if (GenerateClassMemberImpl(this, writer, name, name, classFullName, member, L"\t"))
+					if (GenerateClassMemberImpl(this, writer, name, name, classFullName, decl, L"\t"))
 					{
 						writer.WriteLine(L"");
 					}
