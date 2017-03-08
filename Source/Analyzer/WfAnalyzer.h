@@ -33,7 +33,6 @@ Scope
 				WString										name;				// name of this symbol
 				Ptr<WfType>									type;				// type of this symbol
 				Ptr<reflection::description::ITypeInfo>		typeInfo;			// reflection type info of this symbol, nullable
-				Ptr<WfClassMember>							creatorClassMember;	// nullable
 				Ptr<parsing::ParsingTreeCustomBase>			creatorNode;		// nullable
 				WfLexicalScope*								ownerScope;			// scope that contains this symbol
 
@@ -56,7 +55,6 @@ Scope
 				typedef collections::Group<WString, Ptr<WfLexicalSymbol>>		TypeGroup;
 			public:
 				WfLexicalScopeManager*						ownerManager;				// nullable
-				Ptr<WfClassMember>							ownerClassMember;			// nullable
 				Ptr<parsing::ParsingTreeCustomBase>			ownerNode;					// nullable
 				parsing::ParsingTreeCustomBase*				ownerNodeSource = nullptr;	// nullable
 
@@ -318,12 +316,12 @@ Global Name
 Scope Analyzing
 ***********************************************************************/
 			
-			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member);
+			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl);
 			extern void										CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source, Ptr<WfClassMember> member);
+			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
 			extern bool										CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager);
@@ -610,8 +608,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			EnumItemNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
 
 				// G: Class error
-				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node);
-				static Ptr<parsing::ParsingError>			FunctionInNewTypeExpressionCannotBeStatic(WfClassMember* node);
+				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStaticOrOverride(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			FunctionInNewTypeExpressionCannotBeStatic(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
 				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);

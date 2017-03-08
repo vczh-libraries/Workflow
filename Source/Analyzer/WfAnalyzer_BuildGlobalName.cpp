@@ -60,14 +60,12 @@ BuildGlobalNameFromModules
 				Ptr<WfLexicalScopeName>			scopeName;
 				Ptr<WfClassDeclaration>			classDecl;
 				Ptr<WfCustomType>				td;
-				Ptr<WfClassMember>				member;
 
-				BuildClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName, Ptr<WfClassDeclaration> _classDecl, Ptr<WfCustomType> _td, Ptr<WfClassMember> _member)
+				BuildClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName, Ptr<WfClassDeclaration> _classDecl, Ptr<WfCustomType> _td)
 					:manager(_manager)
 					, scopeName(_scopeName)
 					, classDecl(_classDecl)
 					, td(_td)
-					, member(_member)
 				{
 				}
 
@@ -111,10 +109,10 @@ BuildGlobalNameFromModules
 					}
 					AddCustomType(manager, scopeName, declaration, td);
 
-					FOREACH(Ptr<WfClassMember>, member, declaration->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, declaration->declarations)
 					{
-						BuildClassMemberVisitor visitor(manager, scopeName, declaration, td, member);
-						member->declaration->Accept(&visitor);
+						BuildClassMemberVisitor visitor(manager, scopeName, declaration, td);
+						memberDecl->Accept(&visitor);
 					}
 				}
 
@@ -124,7 +122,7 @@ BuildGlobalNameFromModules
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (member->kind == WfClassMemberKind::Static)
+					if (node->classMember->kind == WfClassMemberKind::Static)
 					{
 						auto info = MakePtr<WfStaticMethod>();
 						td->AddMember(node->name.value, info);

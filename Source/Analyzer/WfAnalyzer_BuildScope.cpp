@@ -21,15 +21,13 @@ BuildScopeForDeclaration
 			public:
 				WfLexicalScopeManager*					manager;
 				ParsingTreeCustomBase*					source;
-				Ptr<WfClassMember>						member;
 				Ptr<WfLexicalScope>						parentScope;
 
 				Ptr<WfLexicalScope>						resultScope;
 
-				BuildScopeForDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScope> _parentScope, ParsingTreeCustomBase* _source, Ptr<WfClassMember> _member)
+				BuildScopeForDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScope> _parentScope, ParsingTreeCustomBase* _source)
 					:manager(_manager)
 					, source(_source)
-					, member(_member)
 					, parentScope(_parentScope)
 				{
 				}
@@ -55,7 +53,7 @@ BuildScopeForDeclaration
 					resultScope = new WfLexicalScope(parentScope);
 					FOREACH(Ptr<WfDeclaration>, declaration, node->declarations)
 					{
-						BuildScopeForDeclaration(manager, resultScope, declaration, node, nullptr);
+						BuildScopeForDeclaration(manager, resultScope, declaration, node);
 					}
 				}
 
@@ -83,7 +81,7 @@ BuildScopeForDeclaration
 						else if (dynamic_cast<WfClassDeclaration*>(source))
 						{
 							config->lambda = false;
-							config->thisAccessable = member->kind != WfClassMemberKind::Static;
+							config->thisAccessable = node->classMember->kind != WfClassMemberKind::Static;
 							config->parentThisAccessable = false;
 						}
 					}
@@ -99,7 +97,6 @@ BuildScopeForDeclaration
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(functionNameScope.Obj());
 						symbol->name = node->name.value;
 						symbol->creatorNode = node;
-						symbol->creatorClassMember = member;
 						{
 							Ptr<WfFunctionType> type = new WfFunctionType;
 							type->result = node->returnType;
@@ -134,7 +131,6 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
-					symbol->creatorClassMember = member;
 					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
 
@@ -146,7 +142,6 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
-					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
 
@@ -155,7 +150,6 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
-					symbol->creatorClassMember = member;
 					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
@@ -212,15 +206,14 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
-					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
 					
 					auto td = manager->declarationTypes[node];
 					resultScope = new WfLexicalScope(parentScope);
 					resultScope->typeOfThisExpr = td.Obj();
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						BuildScopeForDeclaration(manager, resultScope, member->declaration, node, member);
+						BuildScopeForDeclaration(manager, resultScope, memberDecl, node);
 					}
 				}
 
@@ -229,7 +222,6 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
-					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
 
 					FOREACH(Ptr<WfEnumItem>, item, node->items)
@@ -243,7 +235,6 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
-					symbol->creatorClassMember = member;
 					parentScope->symbols.Add(symbol->name, symbol);
 
 					FOREACH(Ptr<WfStructMember>, member, node->members)
@@ -252,16 +243,15 @@ BuildScopeForDeclaration
 					}
 				}
 
-				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfClassMember> member, Ptr<WfDeclaration> declaration)
+				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)
 				{
-					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source, member);
+					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source);
 					declaration->Accept(&visitor);
 					visitor.Visit(parentScope, declaration->attributes);
 					if (visitor.resultScope)
 					{
 						manager->nodeScopes.Add(declaration.Obj(), visitor.resultScope);
 						visitor.resultScope->ownerNode = declaration;
-						visitor.resultScope->ownerClassMember = member;
 					}
 					else
 					{
@@ -420,7 +410,7 @@ BuildScopeForStatement
 
 				void Visit(WfVariableStatement* node)override
 				{
-					BuildScopeForDeclaration(manager, parentScope, node->variable, node, nullptr);
+					BuildScopeForDeclaration(manager, parentScope, node->variable, node);
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
@@ -665,7 +655,7 @@ BuildScopeForExpression
 				void Visit(WfFunctionExpression* node)override
 				{
 					manager->CreateLambdaCapture(node->function.Obj());
-					BuildScopeForDeclaration(manager, parentScope, node->function, node, nullptr);
+					BuildScopeForDeclaration(manager, parentScope, node->function, node);
 				}
 
 				void Visit(WfNewClassExpression* node)override
@@ -676,17 +666,34 @@ BuildScopeForExpression
 					}
 				}
 
+				class CreateLambdaCaptureVisitor
+					: public empty_visitor::DeclarationVisitor
+				{
+				public:
+					WfLexicalScopeManager*				manager;
+					Ptr<WfLexicalCapture>				capture;
+
+					CreateLambdaCaptureVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalCapture> _capture)
+						:manager(_manager)
+						, capture(_capture)
+					{
+					}
+
+					void Visit(WfFunctionDeclaration* node)override
+					{
+					}
+				};
+
 				void Visit(WfNewInterfaceExpression* node)override
 				{
 					resultScope = new WfLexicalScope(parentScope);
 					auto capture = MakePtr<WfLexicalCapture>();
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+
+					CreateLambdaCaptureVisitor visitor(manager, capture);
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						if (member->declaration.Cast<WfFunctionDeclaration>())
-						{
-							manager->CreateLambdaCapture(member->declaration.Obj(), capture);
-						}
-						BuildScopeForDeclaration(manager, resultScope, member->declaration, node, member);
+						memberDecl->Accept(&visitor);
+						BuildScopeForDeclaration(manager, resultScope, memberDecl, node);
 					}
 				}
 
@@ -737,13 +744,13 @@ BuildScope
 
 				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
 				{
-					BuildScopeForDeclaration(manager, scope, declaration, module.Obj(), nullptr);
+					BuildScopeForDeclaration(manager, scope, declaration, module.Obj());
 				}
 			}
 
-			void BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source, Ptr<WfClassMember> member)
+			void BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source)
 			{
-				BuildScopeForDeclarationVisitor::Execute(manager, parentScope, source, member, declaration);
+				BuildScopeForDeclarationVisitor::Execute(manager, parentScope, source, declaration);
 			}
 
 			void BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)

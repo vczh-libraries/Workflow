@@ -22,12 +22,10 @@ CompleteScopeForClassMember
 				WfLexicalScopeManager*					manager;
 				Ptr<WfCustomType>						td;
 				Ptr<WfClassDeclaration>					classDecl;
-				Ptr<WfClassMember>						member;
 
-				CompleteScopeForClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member)
+				CompleteScopeForClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl)
 					:manager(_manager)
 					, td(_td)
-					, member(_member)
 				{
 				}
 
@@ -141,10 +139,10 @@ CompleteScopeForClassMember
 					CompleteScopeForDeclaration(manager, node);
 				}
 
-				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member)
+				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
 				{
-					CompleteScopeForClassMemberVisitor visitor(manager, td, classDecl, member);
-					member->declaration->Accept(&visitor);
+					CompleteScopeForClassMemberVisitor visitor(manager, td, classDecl);
+					memberDecl->Accept(&visitor);
 				}
 			};
 
@@ -249,9 +247,9 @@ CompleteScopeForDeclaration
 						}
 					}
 
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						CompleteScopeForClassMember(manager, td, node, member);
+						CompleteScopeForClassMember(manager, td, node, memberDecl);
 					}
 				}
 
@@ -454,9 +452,9 @@ CheckBaseClass
 						CheckDuplicatedBaseInterface(node, td);
 					}
 
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						member->declaration->Accept(this);
+						memberDecl->Accept(this);
 					}
 				}
 
@@ -479,9 +477,9 @@ CheckBaseClass
 CompleteScope
 ***********************************************************************/
 
-			void CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member)
+			void CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
 			{
-				CompleteScopeForClassMemberVisitor::Execute(manager, td, classDecl, member);
+				CompleteScopeForClassMemberVisitor::Execute(manager, td, classDecl, memberDecl);
 			}
 
 			void CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)

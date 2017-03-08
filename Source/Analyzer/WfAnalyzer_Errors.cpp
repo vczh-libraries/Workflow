@@ -537,14 +537,14 @@ WfErrors
 				return new ParsingError(node, L"F2: Enum item \"" + name + L"\" does not exist in enum type \"" + typeDescriptor->GetTypeName() + L"\".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node)
+			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(WfDeclaration* node)
 			{
-				return new ParsingError(node, L"G1: Class member \"" + node->declaration->name.value + L"\" cannot be static or override because it is not a function.");
+				return new ParsingError(node, L"G1: Class member \"" + node->name.value + L"\" cannot be static or override because it is not a function.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::FunctionInNewTypeExpressionCannotBeStatic(WfClassMember* node)
+			Ptr<parsing::ParsingError> WfErrors::FunctionInNewTypeExpressionCannotBeStatic(WfDeclaration* node)
 			{
-				return new ParsingError(node, L"G1: Class member \"" + node->declaration->name.value + L"\" cannot be static because it is in a new interface expression.");
+				return new ParsingError(node, L"G1: Class member \"" + node->name.value + L"\" cannot be static because it is in a new interface expression.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongClassMember(WfNamespaceDeclaration* node)
