@@ -20,10 +20,7 @@ WfCppConfig
 			{
 				FOREACH(Ptr<WfModule>, module, manager->GetModules())
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
-					{
-						CollectDeclaration(this, decl, nullptr, nullptr);
-					}
+					CollectModule(this, module);
 				}
 
 				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())

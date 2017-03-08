@@ -132,7 +132,7 @@ namespace vl
 				void					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix);
 				WString					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 				void					WriteHeader_TopLevelClass(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
-				bool					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss);
+				bool					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfDeclaration> memberDecl, collections::List<WString>& nss);
 				void					WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 
 				void					SortClosure(collections::Dictionary<WString, Ptr<WfExpression>>& reversedLambdaExprs, collections::Dictionary<WString, Ptr<WfNewInterfaceExpression>>& reversedClassExprs);
@@ -157,10 +157,7 @@ namespace vl
 WfCppConfig::Collect
 ***********************************************************************/
 
-			extern void CollectExpression(WfCppConfig* config, Ptr<WfExpression> node, Ptr<WfClassDeclaration> memberOfClass);
-			extern void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node, Ptr<WfClassDeclaration> memberOfClass);
-			extern void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass);
-			extern void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass);
+			extern void CollectModule(WfCppConfig* config, Ptr<WfModule> module);
 
 /***********************************************************************
 WfCppConfig::Write
@@ -176,8 +173,8 @@ WfCppConfig::Write
 
 			extern void					GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);
 			extern void					GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
-			extern void					GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> decl, const WString& prefix, bool forClassExpr);
-			extern bool					GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> decl, const WString& prefix);
+			extern void					GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> memberDecl, const WString& prefix, bool forClassExpr);
+			extern bool					GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> memberDecl, const WString& prefix);
 
 			extern void					ConvertType(WfCppConfig* config, stream::StreamWriter& writer, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, const Func<void()>& writeExpression, bool strongCast);
 

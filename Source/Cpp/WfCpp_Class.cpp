@@ -147,10 +147,10 @@ WfGenerateClassMemberDeclVisitor
 				}
 			};
 
-			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> decl, const WString& prefix, bool forClassExpr)
+			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> memberDecl, const WString& prefix, bool forClassExpr)
 			{
 				WfGenerateClassMemberDeclVisitor visitor(config, writer, className, prefix, forClassExpr);
-				decl->Accept(&visitor);
+				memberDecl->Accept(&visitor);
 			}
 
 /***********************************************************************
@@ -331,10 +331,10 @@ WfGenerateClassMemberImplVisitor
 				}
 			};
 
-			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> decl, const WString& prefix)
+			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> memberDecl, const WString& prefix)
 			{
 				WfGenerateClassMemberImplVisitor visitor(config, writer, classBaseName, className, classFullName, prefix);
-				decl->Accept(&visitor);
+				memberDecl->Accept(&visitor);
 				return visitor.printableMember;
 			}
 		}

@@ -77,9 +77,9 @@ WfCppConfig::CollectClosureInfo
 
 				void Execute(WfNewInterfaceExpression* node)
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						decl->Accept(this);
+						memberDecl->Accept(this);
 					}
 				}
 			};
@@ -250,9 +250,9 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L";");
 				writer.WriteLine(L"");
 
-				FOREACH(Ptr<WfDeclaration>, decl, lambda->declarations)
+				FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
 				{
-					GenerateClassMemberDecl(this, writer, name, decl, L"\t\t", true);
+					GenerateClassMemberDecl(this, writer, name, memberDecl, L"\t\t", true);
 				}
 				writer.WriteLine(L"\t};");
 			}
@@ -406,7 +406,7 @@ WfCppConfig::WriteCpp
 				{
 				}
 
-				virtual void Visit(WfVariableDeclaration* node)override
+				void Visit(WfVariableDeclaration* node)override
 				{
 					if (node->expression)
 					{
@@ -434,9 +434,9 @@ WfCppConfig::WriteCpp
 
 				{
 					WriteCpp_ClassExprImpl_InitFieldVisitor visitor(this, writer);
-					FOREACH(Ptr<WfDeclaration>, decl, lambda->declarations)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
 					{
-						decl->Accept(&visitor);
+						memberDecl->Accept(&visitor);
 					}
 				}
 
@@ -444,9 +444,9 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"");
 
 				WString classFullName = L"::" + assemblyNamespace + L"::" + name;
-				FOREACH(Ptr<WfDeclaration>, decl, lambda->declarations)
+				FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
 				{
-					if (GenerateClassMemberImpl(this, writer, name, name, classFullName, decl, L"\t"))
+					if (GenerateClassMemberImpl(this, writer, name, name, classFullName, memberDecl, L"\t"))
 					{
 						writer.WriteLine(L"");
 					}

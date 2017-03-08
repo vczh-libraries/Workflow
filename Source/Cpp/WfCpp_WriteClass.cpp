@@ -23,6 +23,23 @@ namespace vl
 				WriteHeader_ClassPreDecl(writer, decl, name, prefix);
 			}
 
+			class WriteHeader_Class_FindClassDeclVisitor
+				: public empty_visitor::DeclarationVisitor
+			{
+			public:
+				List<Ptr<WfClassDeclaration>>&		unprocessed;
+
+				WriteHeader_Class_FindClassDeclVisitor(List<Ptr<WfClassDeclaration>>& _unprocessed)
+					:unprocessed(_unprocessed)
+				{
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					unprocessed.Add(node);
+				}
+			};
+
 			void WfCppConfig::WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
@@ -139,12 +156,10 @@ namespace vl
 						}
 					}
 
-					FOREACH(Ptr<WfClassMember>, member, current->members)
+					WriteHeader_Class_FindClassDeclVisitor visitor(unprocessed);
+					FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
 					{
-						if (auto classDecl = member->declaration.Cast<WfClassDeclaration>())
-						{
-							unprocessed.Add(classDecl);
-						}
+						memberDecl->Accept(&visitor);
 					}
 				}
 				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
@@ -211,14 +226,14 @@ namespace vl
 					}
 				}
 
-				FOREACH(Ptr<WfClassMember>, member, decl->members)
+				FOREACH(Ptr<WfDeclaration>, memberDecl, decl->declarations)
 				{
 					vint memberAccessor = PUBLIC;
-					if (manager->GetAttribute(member->declaration->attributes, L"cpp", L"Private"))
+					if (manager->GetAttribute(memberDecl->attributes, L"cpp", L"Private"))
 					{
 						memberAccessor = PRIVATE;
 					}
-					else if (manager->GetAttribute(member->declaration->attributes, L"cpp", L"Protected"))
+					else if (manager->GetAttribute(memberDecl->attributes, L"cpp", L"Protected"))
 					{
 						memberAccessor = PROTECTED;
 					}
@@ -239,7 +254,7 @@ namespace vl
 							break;
 						}
 					}
-					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), member, prefix + L"\t", false);
+					GenerateClassMemberDecl(this, writer, ConvertName(memberDecl->name.value), memberDecl, prefix + L"\t", false);
 				}
 
 				writer.WriteLine(prefix + L"};");
@@ -295,7 +310,7 @@ namespace vl
 				}
 			}
 
-			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss)
+			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfDeclaration> memberDecl, collections::List<WString>& nss)
 			{
 				List<WString> nss2;
 				GetClassNamespace(decl, nss2);
@@ -303,7 +318,7 @@ namespace vl
 
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				auto classFullName = CppGetFullName(td);
-				return GenerateClassMemberImpl(this, writer, GetClassBaseName(decl), ConvertName(decl->name.value), classFullName , member, prefix);
+				return GenerateClassMemberImpl(this, writer, GetClassBaseName(decl), ConvertName(decl->name.value), classFullName , memberDecl, prefix);
 			}
 
 			void WfCppConfig::WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
@@ -320,9 +335,9 @@ namespace vl
 					writer.WriteLine(L"***********************************************************************/");
 					writer.WriteLine(L"");
 
-					FOREACH(Ptr<WfClassMember>, member, current->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
 					{
-						if (WriteCpp_ClassMember(writer, current, member, nss))
+						if (WriteCpp_ClassMember(writer, current, memberDecl, nss))
 						{
 							writer.WriteLine(L"");
 						}
