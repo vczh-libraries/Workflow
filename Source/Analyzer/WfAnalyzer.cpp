@@ -116,6 +116,15 @@ WfLexicalScope
 				}
 			}
 
+			Ptr<WfClassMember> WfLexicalScope::GetOwnerClassMember()
+			{
+				if (auto decl = ownerNode.Cast<WfDeclaration>())
+				{
+					return decl->classMember;
+				}
+				return nullptr;
+			}
+
 /***********************************************************************
 WfLexicalScopeName
 ***********************************************************************/
@@ -657,7 +666,7 @@ WfLexicalScopeManager
 											results.Add(result);
 										}
 									}
-									else if (symbol->creatorClassMember->kind == WfClassMemberKind::Normal)
+									else if (symbol->creatorNode.Cast<WfDeclaration>()->classMember->kind == WfClassMemberKind::Normal)
 									{
 										if (firstConfigScope->parentScope == scope)
 										{

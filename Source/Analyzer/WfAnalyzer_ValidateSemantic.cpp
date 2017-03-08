@@ -180,12 +180,10 @@ ValidateSemantic(ClassMember)
 				WfLexicalScopeManager*				manager;
 				Ptr<WfCustomType>					td;
 				Ptr<WfClassDeclaration>				classDecl;
-				Ptr<WfClassMember>					member;
 
-				ValidateSemanticClassMemberVisitor(Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member, WfLexicalScopeManager* _manager)
+				ValidateSemanticClassMemberVisitor(Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl, WfLexicalScopeManager* _manager)
 					:td(_td)
 					, classDecl(_classDecl)
-					, member(_member)
 					, manager(_manager)
 				{
 				}
@@ -345,10 +343,10 @@ ValidateSemantic(ClassMember)
 					ValidateDeclarationSemantic(manager, node);
 				}
 
-				static void Execute(Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, WfLexicalScopeManager* manager)
+				static void Execute(Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl, WfLexicalScopeManager* manager)
 				{
-					ValidateSemanticClassMemberVisitor visitor(td, classDecl, member, manager);
-					member->declaration->Accept(&visitor);
+					ValidateSemanticClassMemberVisitor visitor(td, classDecl, manager);
+					memberDecl->Accept(&visitor);
 				}
 			};
 
@@ -457,9 +455,9 @@ ValidateSemantic(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						ValidateClassMemberSemantic(manager, td, node, member);
+						ValidateClassMemberSemantic(manager, td, node, memberDecl);
 					}
 				}
 
@@ -836,7 +834,8 @@ ValidateSemantic(Expression)
 												if (firstConfigScope)
 												{
 													readonlyCaptured = firstConfigScope != lastConfigScope;
-													if (!lastConfigScope->ownerClassMember)
+
+													if (!lastConfigScope->GetOwnerClassMember())
 													{
 														manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 													}
@@ -900,9 +899,9 @@ ValidateSemantic(Expression)
 									{
 										if (firstConfigScope)
 										{
-											bool inMethodBody = lastConfigScope->ownerClassMember && lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
-											bool inDtorBody = lastConfigScope->ownerClassMember && lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
-											bool inCtorBody = lastConfigScope->parentScope->ownerClassMember && lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
+											bool inMethodBody = lastConfigScope->GetOwnerClassMember() && lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
+											bool inDtorBody = lastConfigScope->GetOwnerClassMember() && lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
+											bool inCtorBody = lastConfigScope->parentScope->GetOwnerClassMember() && lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
 
 											if (!inMethodBody && !inDtorBody && !inCtorBody)
 											{
@@ -2102,7 +2101,6 @@ ValidateSemantic(Expression)
 				{
 				public:
 					WfLexicalScopeManager*							manager;
-					Ptr<WfClassMember>								currentMember;
 					List<Ptr<WfFunctionDeclaration>>				overrideFunctions;
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
 					WfFunctionDeclaration*							lastFunction = nullptr;
@@ -2119,7 +2117,7 @@ ValidateSemantic(Expression)
 					void Visit(WfFunctionDeclaration* node)override
 					{
 						lastFunction = node;
-						if (currentMember->kind == WfClassMemberKind::Override)
+						if (node->classMember->kind == WfClassMemberKind::Override)
 						{
 							overrideFunctions.Add(node);
 						}
@@ -2159,11 +2157,10 @@ ValidateSemantic(Expression)
 
 					void Execute(WfNewInterfaceExpression* node)
 					{
-						FOREACH(Ptr<WfClassMember>, member, node->members)
+						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 						{
-							currentMember = member;
-							member->declaration->Accept(this);
-							ValidateDeclarationSemantic(manager, member->declaration);
+							memberDecl->Accept(this);
+							ValidateDeclarationSemantic(manager, memberDecl);
 						}
 					}
 
@@ -2678,9 +2675,9 @@ ValidateSemantic
 				}
 			}
 
-			void ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member)
+			void ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
 			{
-				return ValidateSemanticClassMemberVisitor::Execute(td, classDecl, member, manager);
+				return ValidateSemanticClassMemberVisitor::Execute(td, classDecl, memberDecl, manager);
 			}
 
 			void ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
