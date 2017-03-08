@@ -94,18 +94,18 @@ namespace vl
 				virtual void Traverse(WfFunctionDeclaration* node);
 				virtual void Traverse(WfDeclaration* node);
 				virtual void Traverse(WfAttribute* node);
+				virtual void Traverse(WfClassMember* node);
 				virtual void Traverse(WfFunctionArgument* node);
 				virtual void Traverse(WfNewClassExpression* node);
 				virtual void Traverse(WfNewInterfaceExpression* node);
-				virtual void Traverse(WfClassMember* node);
 
 				// VisitField ----------------------------------------
 				void VisitField(WfLetVariable* node);
 				void VisitField(WfConstructorArgument* node);
 				void VisitField(WfFunctionDeclaration* node);
 				void VisitField(WfAttribute* node);
-				void VisitField(WfFunctionArgument* node);
 				void VisitField(WfClassMember* node);
+				void VisitField(WfFunctionArgument* node);
 
 				// VisitField (virtual) ------------------------------
 				virtual void VisitField(WfExpression* node) = 0;
@@ -195,11 +195,13 @@ namespace vl
 				virtual void Traverse(WfVariableDeclaration* node);
 				virtual void Traverse(WfDeclaration* node);
 				virtual void Traverse(WfAttribute* node);
+				virtual void Traverse(WfClassMember* node);
 
 				// VisitField ----------------------------------------
 				void VisitField(WfSwitchCase* node);
 				void VisitField(WfVariableDeclaration* node);
 				void VisitField(WfAttribute* node);
+				void VisitField(WfClassMember* node);
 
 				// VisitField (virtual) ------------------------------
 				virtual void VisitField(WfExpression* node) = 0;
@@ -232,6 +234,7 @@ namespace vl
 				virtual void Traverse(WfNamespaceDeclaration* node);
 				virtual void Traverse(WfDeclaration* node);
 				virtual void Traverse(WfAttribute* node);
+				virtual void Traverse(WfClassMember* node);
 				virtual void Traverse(WfFunctionDeclaration* node);
 				virtual void Traverse(WfFunctionArgument* node);
 				virtual void Traverse(WfVariableDeclaration* node);
@@ -241,7 +244,6 @@ namespace vl
 				virtual void Traverse(WfBaseConstructorCall* node);
 				virtual void Traverse(WfDestructorDeclaration* node);
 				virtual void Traverse(WfClassDeclaration* node);
-				virtual void Traverse(WfClassMember* node);
 				virtual void Traverse(WfEnumDeclaration* node);
 				virtual void Traverse(WfEnumItem* node);
 				virtual void Traverse(WfEnumItemIntersection* node);
@@ -250,9 +252,9 @@ namespace vl
 
 				// VisitField ----------------------------------------
 				void VisitField(WfAttribute* node);
+				void VisitField(WfClassMember* node);
 				void VisitField(WfFunctionArgument* node);
 				void VisitField(WfBaseConstructorCall* node);
-				void VisitField(WfClassMember* node);
 				void VisitField(WfEnumItem* node);
 				void VisitField(WfEnumItemIntersection* node);
 				void VisitField(WfStructMember* node);

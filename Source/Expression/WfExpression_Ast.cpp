@@ -443,6 +443,8 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfBlockStatement, workflow::WfBlockStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfExpressionStatement, workflow::WfExpressionStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfAttribute, workflow::WfAttribute)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfClassMemberKind, workflow::WfClassMemberKind)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfClassMember, workflow::WfClassMember)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfDeclaration, workflow::WfDeclaration)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfNamespaceDeclaration, workflow::WfNamespaceDeclaration)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfFunctionArgument, workflow::WfFunctionArgument)
@@ -453,8 +455,6 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVariableStatement, workflow::WfVariableStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfEventDeclaration, workflow::WfEventDeclaration)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfPropertyDeclaration, workflow::WfPropertyDeclaration)
-			IMPL_TYPE_INFO_RENAME(vl::workflow::WfClassMemberKind, workflow::WfClassMemberKind)
-			IMPL_TYPE_INFO_RENAME(vl::workflow::WfClassMember, workflow::WfClassMember)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfNewClassExpression, workflow::WfNewClassExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfNewInterfaceExpression, workflow::WfNewInterfaceExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfClassKind, workflow::WfClassKind)
@@ -1077,10 +1077,24 @@ namespace vl
 				CLASS_MEMBER_FIELD(value)
 			END_CLASS_MEMBER(WfAttribute)
 
+			BEGIN_ENUM_ITEM(WfClassMemberKind)
+				ENUM_ITEM_NAMESPACE(WfClassMemberKind)
+				ENUM_NAMESPACE_ITEM(Static)
+				ENUM_NAMESPACE_ITEM(Override)
+				ENUM_NAMESPACE_ITEM(Normal)
+			END_ENUM_ITEM(WfClassMemberKind)
+
+			BEGIN_CLASS_MEMBER(WfClassMember)
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfClassMember>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(kind)
+			END_CLASS_MEMBER(WfClassMember)
+
 			BEGIN_CLASS_MEMBER(WfDeclaration)
 				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(WfDeclaration::*)(WfDeclaration::IVisitor* visitor))
 				CLASS_MEMBER_FIELD(attributes)
 				PARSING_TOKEN_FIELD(name)
+				CLASS_MEMBER_FIELD(classMember)
 			END_CLASS_MEMBER(WfDeclaration)
 
 			BEGIN_CLASS_MEMBER(WfNamespaceDeclaration)
@@ -1160,20 +1174,6 @@ namespace vl
 				PARSING_TOKEN_FIELD(valueChangedEvent)
 			END_CLASS_MEMBER(WfPropertyDeclaration)
 
-			BEGIN_ENUM_ITEM(WfClassMemberKind)
-				ENUM_ITEM_NAMESPACE(WfClassMemberKind)
-				ENUM_NAMESPACE_ITEM(Static)
-				ENUM_NAMESPACE_ITEM(Override)
-				ENUM_NAMESPACE_ITEM(Normal)
-			END_ENUM_ITEM(WfClassMemberKind)
-
-			BEGIN_CLASS_MEMBER(WfClassMember)
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfClassMember>(), NO_PARAMETER)
-
-				CLASS_MEMBER_FIELD(kind)
-				CLASS_MEMBER_FIELD(declaration)
-			END_CLASS_MEMBER(WfClassMember)
-
 			BEGIN_CLASS_MEMBER(WfNewClassExpression)
 				CLASS_MEMBER_BASE(WfExpression)
 
@@ -1189,7 +1189,7 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfNewInterfaceExpression>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(type)
-				CLASS_MEMBER_FIELD(members)
+				CLASS_MEMBER_FIELD(declarations)
 			END_CLASS_MEMBER(WfNewInterfaceExpression)
 
 			BEGIN_ENUM_ITEM(WfClassKind)
@@ -1239,7 +1239,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(kind)
 				CLASS_MEMBER_FIELD(constructorType)
 				CLASS_MEMBER_FIELD(baseTypes)
-				CLASS_MEMBER_FIELD(members)
+				CLASS_MEMBER_FIELD(declarations)
 			END_CLASS_MEMBER(WfClassDeclaration)
 
 			BEGIN_ENUM_ITEM(WfEnumKind)
@@ -1504,6 +1504,8 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfBlockStatement)
 					ADD_TYPE_INFO(vl::workflow::WfExpressionStatement)
 					ADD_TYPE_INFO(vl::workflow::WfAttribute)
+					ADD_TYPE_INFO(vl::workflow::WfClassMemberKind)
+					ADD_TYPE_INFO(vl::workflow::WfClassMember)
 					ADD_TYPE_INFO(vl::workflow::WfDeclaration)
 					ADD_TYPE_INFO(vl::workflow::WfNamespaceDeclaration)
 					ADD_TYPE_INFO(vl::workflow::WfFunctionArgument)
@@ -1514,8 +1516,6 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfVariableStatement)
 					ADD_TYPE_INFO(vl::workflow::WfEventDeclaration)
 					ADD_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
-					ADD_TYPE_INFO(vl::workflow::WfClassMemberKind)
-					ADD_TYPE_INFO(vl::workflow::WfClassMember)
 					ADD_TYPE_INFO(vl::workflow::WfNewClassExpression)
 					ADD_TYPE_INFO(vl::workflow::WfNewInterfaceExpression)
 					ADD_TYPE_INFO(vl::workflow::WfClassKind)

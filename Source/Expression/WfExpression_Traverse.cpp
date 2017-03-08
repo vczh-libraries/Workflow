@@ -311,6 +311,10 @@ ExpressionVisitor
 			{
 			}
 
+			void ExpressionVisitor::Traverse(WfClassMember* node)
+			{
+			}
+
 			void ExpressionVisitor::Traverse(WfFunctionArgument* node)
 			{
 			}
@@ -320,10 +324,6 @@ ExpressionVisitor
 			}
 
 			void ExpressionVisitor::Traverse(WfNewInterfaceExpression* node)
-			{
-			}
-
-			void ExpressionVisitor::Traverse(WfClassMember* node)
 			{
 			}
 
@@ -364,6 +364,7 @@ ExpressionVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void ExpressionVisitor::VisitField(WfAttribute* node)
@@ -374,6 +375,13 @@ ExpressionVisitor
 				Traverse(node->category);
 				Traverse(node->name);
 				VisitField(node->value.Obj());
+			}
+
+			void ExpressionVisitor::VisitField(WfClassMember* node)
+			{
+				if (!node) return;
+				Traverse(static_cast<WfClassMember*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 			}
 
 			void ExpressionVisitor::VisitField(WfFunctionArgument* node)
@@ -387,14 +395,6 @@ ExpressionVisitor
 				}
 				Traverse(node->name);
 				VisitField(node->type.Obj());
-			}
-
-			void ExpressionVisitor::VisitField(WfClassMember* node)
-			{
-				if (!node) return;
-				Traverse(static_cast<WfClassMember*>(node));
-				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				VisitField(node->declaration.Obj());
 			}
 
 			// Visitor Members -----------------------------------
@@ -673,7 +673,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
-				FOREACH(vl::Ptr<WfClassMember>, listItem, node->members)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -817,6 +817,10 @@ StatementVisitor
 			{
 			}
 
+			void StatementVisitor::Traverse(WfClassMember* node)
+			{
+			}
+
 			// VisitField ----------------------------------------
 
 			void StatementVisitor::VisitField(WfSwitchCase* node)
@@ -841,6 +845,7 @@ StatementVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void StatementVisitor::VisitField(WfAttribute* node)
@@ -851,6 +856,13 @@ StatementVisitor
 				Traverse(node->category);
 				Traverse(node->name);
 				VisitField(node->value.Obj());
+			}
+
+			void StatementVisitor::VisitField(WfClassMember* node)
+			{
+				if (!node) return;
+				Traverse(static_cast<WfClassMember*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 			}
 
 			// Visitor Members -----------------------------------
@@ -1001,6 +1013,10 @@ DeclarationVisitor
 			{
 			}
 
+			void DeclarationVisitor::Traverse(WfClassMember* node)
+			{
+			}
+
 			void DeclarationVisitor::Traverse(WfFunctionDeclaration* node)
 			{
 			}
@@ -1037,10 +1053,6 @@ DeclarationVisitor
 			{
 			}
 
-			void DeclarationVisitor::Traverse(WfClassMember* node)
-			{
-			}
-
 			void DeclarationVisitor::Traverse(WfEnumDeclaration* node)
 			{
 			}
@@ -1073,6 +1085,13 @@ DeclarationVisitor
 				VisitField(node->value.Obj());
 			}
 
+			void DeclarationVisitor::VisitField(WfClassMember* node)
+			{
+				if (!node) return;
+				Traverse(static_cast<WfClassMember*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+			}
+
 			void DeclarationVisitor::VisitField(WfFunctionArgument* node)
 			{
 				if (!node) return;
@@ -1096,14 +1115,6 @@ DeclarationVisitor
 				{
 					VisitField(listItem.Obj());
 				}
-			}
-
-			void DeclarationVisitor::VisitField(WfClassMember* node)
-			{
-				if (!node) return;
-				Traverse(static_cast<WfClassMember*>(node));
-				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				VisitField(node->declaration.Obj());
 			}
 
 			void DeclarationVisitor::VisitField(WfEnumItem* node)
@@ -1160,6 +1171,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfFunctionDeclaration* node)
@@ -1178,6 +1190,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfVariableDeclaration* node)
@@ -1192,6 +1205,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfEventDeclaration* node)
@@ -1208,6 +1222,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfPropertyDeclaration* node)
@@ -1224,6 +1239,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfConstructorDeclaration* node)
@@ -1245,6 +1261,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfDestructorDeclaration* node)
@@ -1258,6 +1275,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfClassDeclaration* node)
@@ -1269,7 +1287,7 @@ DeclarationVisitor
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfClassMember>, listItem, node->members)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -1278,6 +1296,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfEnumDeclaration* node)
@@ -1294,6 +1313,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 			void DeclarationVisitor::Visit(WfStructDeclaration* node)
@@ -1310,6 +1330,7 @@ DeclarationVisitor
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
+				VisitField(node->classMember.Obj());
 			}
 
 /***********************************************************************

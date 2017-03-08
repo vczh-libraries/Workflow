@@ -180,6 +180,7 @@ namespace vl
 		class WfBlockStatement;
 		class WfExpressionStatement;
 		class WfAttribute;
+		class WfClassMember;
 		class WfDeclaration;
 		class WfNamespaceDeclaration;
 		class WfFunctionArgument;
@@ -189,7 +190,6 @@ namespace vl
 		class WfVariableStatement;
 		class WfEventDeclaration;
 		class WfPropertyDeclaration;
-		class WfClassMember;
 		class WfNewClassExpression;
 		class WfNewInterfaceExpression;
 		class WfBaseConstructorCall;
@@ -999,6 +999,21 @@ namespace vl
 			static vl::Ptr<WfAttribute> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
+		enum class WfClassMemberKind
+		{
+			Static,
+			Override,
+			Normal,
+		};
+
+		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
+		{
+		public:
+			WfClassMemberKind kind;
+
+			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfDeclaration abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfDeclaration>
 		{
 		public:
@@ -1021,6 +1036,7 @@ namespace vl
 
 			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
+			vl::Ptr<WfClassMember> classMember;
 		};
 
 		class WfNamespaceDeclaration : public WfDeclaration, vl::reflection::Description<WfNamespaceDeclaration>
@@ -1116,22 +1132,6 @@ namespace vl
 			static vl::Ptr<WfPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		enum class WfClassMemberKind
-		{
-			Static,
-			Override,
-			Normal,
-		};
-
-		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
-		{
-		public:
-			WfClassMemberKind kind;
-			vl::Ptr<WfDeclaration> declaration;
-
-			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
 		class WfNewClassExpression : public WfExpression, vl::reflection::Description<WfNewClassExpression>
 		{
 		public:
@@ -1147,7 +1147,7 @@ namespace vl
 		{
 		public:
 			vl::Ptr<WfType> type;
-			vl::collections::List<vl::Ptr<WfClassMember>> members;
+			vl::collections::List<vl::Ptr<WfDeclaration>> declarations;
 
 			void Accept(WfExpression::IVisitor* visitor)override;
 
@@ -1205,7 +1205,7 @@ namespace vl
 			WfClassKind kind;
 			WfConstructorType constructorType;
 			vl::collections::List<vl::Ptr<WfType>> baseTypes;
-			vl::collections::List<vl::Ptr<WfClassMember>> members;
+			vl::collections::List<vl::Ptr<WfDeclaration>> declarations;
 
 			void Accept(WfDeclaration::IVisitor* visitor)override;
 
@@ -1420,6 +1420,8 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfBlockStatement)
 			DECL_TYPE_INFO(vl::workflow::WfExpressionStatement)
 			DECL_TYPE_INFO(vl::workflow::WfAttribute)
+			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
+			DECL_TYPE_INFO(vl::workflow::WfClassMember)
 			DECL_TYPE_INFO(vl::workflow::WfDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfNamespaceDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfFunctionArgument)
@@ -1430,8 +1432,6 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
 			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
-			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
-			DECL_TYPE_INFO(vl::workflow::WfClassMember)
 			DECL_TYPE_INFO(vl::workflow::WfNewClassExpression)
 			DECL_TYPE_INFO(vl::workflow::WfNewInterfaceExpression)
 			DECL_TYPE_INFO(vl::workflow::WfClassKind)

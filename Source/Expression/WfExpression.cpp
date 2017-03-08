@@ -12,6 +12,19 @@ namespace vl
 Unescaping Functions
 ***********************************************************************/
 
+		void SetDefaultClassMember(vl::collections::List<vl::Ptr<WfDeclaration>>& value, const vl::collections::List<vl::regex::RegexToken>& tokens)
+		{
+			FOREACH(Ptr<WfDeclaration>, decl, value)
+			{
+				if (!decl->classMember)
+				{
+					decl->classMember = MakePtr<WfClassMember>();
+					decl->classMember->codeRange = decl->codeRange;
+					decl->classMember->kind = WfClassMemberKind::Normal;
+				}
+			}
+		}
+
 		void UnescapeStringInternal(vl::parsing::ParsingToken& value, bool formatString)
 		{
 			MemoryStream memoryStream;
@@ -720,40 +733,34 @@ Print (Expression)
 				writer.WriteLine(L"");
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
-				FOREACH_INDEXER(Ptr<WfClassMember>, member, index, node->members)
+				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
 				{
 					if (index > 0)
 					{
 						writer.WriteLine(L"");
 					}
 
+					FOREACH(Ptr<WfAttribute>, attribute, decl->attributes)
+					{
+						writer.WriteString(indent + L"    ");
+						WfPrint(attribute, indent, writer);
+						writer.WriteLine(L"");
+					}
+
 					writer.WriteString(indent + L"    ");
-					switch (member->kind)
+					switch (decl->classMember->kind)
 					{
 					case WfClassMemberKind::Normal:
 						break;
 					case WfClassMemberKind::Static:
-						writer.WriteString(L"static");
+						writer.WriteString(L"static ");
 						break;
 					case WfClassMemberKind::Override:
-						writer.WriteString(L"override");
+						writer.WriteString(L"override ");
 						break;
 					}
 
-					if (member->kind != WfClassMemberKind::Normal)
-					{
-						if (member->declaration->attributes.Count() == 0)
-						{
-							writer.WriteString(L" ");
-						}
-						else
-						{
-							writer.WriteLine(L"");
-							writer.WriteString(indent + L"    ");
-						}
-					}
-
-					WfPrint(member->declaration, indent + L"    ", writer);
+					WfPrint(decl, indent + L"    ", writer);
 					writer.WriteLine(L"");
 				}
 				writer.WriteString(indent);
@@ -1262,40 +1269,34 @@ Print (Declaration)
 				writer.WriteLine(L"");
 				writer.WriteLine(indent + L"{");
 
-				FOREACH_INDEXER(Ptr<WfClassMember>, member, index, node->members)
+				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
 				{
-					if (index != 0)
+					if (index > 0)
 					{
 						writer.WriteLine(L"");
 					}
 
+					FOREACH(Ptr<WfAttribute>, attribute, decl->attributes)
+					{
+						writer.WriteString(indent + L"    ");
+						WfPrint(attribute, indent, writer);
+						writer.WriteLine(L"");
+					}
+
 					writer.WriteString(indent + L"    ");
-					switch (member->kind)
+					switch (decl->classMember->kind)
 					{
 					case WfClassMemberKind::Normal:
 						break;
 					case WfClassMemberKind::Static:
-						writer.WriteString(L"static");
+						writer.WriteString(L"static ");
 						break;
 					case WfClassMemberKind::Override:
-						writer.WriteString(L"override");
+						writer.WriteString(L"override ");
 						break;
 					}
 
-					if (member->kind != WfClassMemberKind::Normal)
-					{
-						if (member->declaration->attributes.Count() == 0)
-						{
-							writer.WriteString(L" ");
-						}
-						else
-						{
-							writer.WriteLine(L"");
-							writer.WriteString(indent + L"    ");
-						}
-					}
-
-					WfPrint(member->declaration, indent + L"    ", writer);
+					WfPrint(decl, indent + L"    ", writer);
 					writer.WriteLine(L"");
 				}
 
@@ -1418,11 +1419,14 @@ Print (Module)
 
 		void WfPrint(Ptr<WfDeclaration> node, const WString& indent, parsing::ParsingWriter& writer)
 		{
-			FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
+			if (!node->classMember)
 			{
-				WfPrint(attribute, indent, writer);
-				writer.WriteLine(L"");
-				writer.WriteString(indent);
+				FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
+				{
+					writer.WriteString(indent);
+					WfPrint(attribute, indent, writer);
+					writer.WriteLine(L"");
+				}
 			}
 			PrintDeclarationVisitor visitor(indent, writer);
 			node->Accept(&visitor);

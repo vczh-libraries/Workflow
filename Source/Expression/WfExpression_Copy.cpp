@@ -442,6 +442,7 @@ ExpressionVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
+				to->classMember = CreateField(from->classMember);
 				to->codeRange = from->codeRange;
 			}
 
@@ -454,6 +455,12 @@ ExpressionVisitor
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
 				to->value = CreateField(from->value);
+				to->codeRange = from->codeRange;
+			}
+
+			void ExpressionVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
+			{
+				to->kind = from->kind;
 				to->codeRange = from->codeRange;
 			}
 
@@ -483,18 +490,11 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to)
 			{
 				to->type = CreateField(from->type);
-				FOREACH(vl::Ptr<WfClassMember>, listItem, from->members)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
 				{
-					to->members.Add(CreateField(listItem));
+					to->declarations.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-			}
-
-			void ExpressionVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
-			{
-				to->kind = from->kind;
-				to->declaration = CreateField(from->declaration);
-				to->codeRange = from->codeRange;
 			}
 
 			// CreateField ---------------------------------------
@@ -531,18 +531,18 @@ ExpressionVisitor
 				return to;
 			}
 
-			vl::Ptr<WfFunctionArgument> ExpressionVisitor::CreateField(vl::Ptr<WfFunctionArgument> from)
-			{
-				if (!from) return nullptr;
-				auto to = vl::MakePtr<WfFunctionArgument>();
-				CopyFields(from.Obj(), to.Obj());
-				return to;
-			}
-
 			vl::Ptr<WfClassMember> ExpressionVisitor::CreateField(vl::Ptr<WfClassMember> from)
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfClassMember>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			vl::Ptr<WfFunctionArgument> ExpressionVisitor::CreateField(vl::Ptr<WfFunctionArgument> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfFunctionArgument>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
 			}
@@ -946,6 +946,7 @@ StatementVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
+				to->classMember = CreateField(from->classMember);
 				to->codeRange = from->codeRange;
 			}
 
@@ -958,6 +959,12 @@ StatementVisitor
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
 				to->value = CreateField(from->value);
+				to->codeRange = from->codeRange;
+			}
+
+			void StatementVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
+			{
+				to->kind = from->kind;
 				to->codeRange = from->codeRange;
 			}
 
@@ -983,6 +990,14 @@ StatementVisitor
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfAttribute>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			vl::Ptr<WfClassMember> StatementVisitor::CreateField(vl::Ptr<WfClassMember> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfClassMember>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
 			}
@@ -1104,6 +1119,7 @@ DeclarationVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
+				to->classMember = CreateField(from->classMember);
 				to->codeRange = from->codeRange;
 			}
 
@@ -1116,6 +1132,12 @@ DeclarationVisitor
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
 				to->value = CreateField(from->value);
+				to->codeRange = from->codeRange;
+			}
+
+			void DeclarationVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
+			{
+				to->kind = from->kind;
 				to->codeRange = from->codeRange;
 			}
 
@@ -1214,18 +1236,11 @@ DeclarationVisitor
 				{
 					to->baseTypes.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfClassMember>, listItem, from->members)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
 				{
-					to->members.Add(CreateField(listItem));
+					to->declarations.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-			}
-
-			void DeclarationVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
-			{
-				to->kind = from->kind;
-				to->declaration = CreateField(from->declaration);
-				to->codeRange = from->codeRange;
 			}
 
 			void DeclarationVisitor::CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to)
@@ -1298,6 +1313,14 @@ DeclarationVisitor
 				return to;
 			}
 
+			vl::Ptr<WfClassMember> DeclarationVisitor::CreateField(vl::Ptr<WfClassMember> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfClassMember>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
 			vl::Ptr<WfFunctionArgument> DeclarationVisitor::CreateField(vl::Ptr<WfFunctionArgument> from)
 			{
 				if (!from) return nullptr;
@@ -1310,14 +1333,6 @@ DeclarationVisitor
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfBaseConstructorCall>();
-				CopyFields(from.Obj(), to.Obj());
-				return to;
-			}
-
-			vl::Ptr<WfClassMember> DeclarationVisitor::CreateField(vl::Ptr<WfClassMember> from)
-			{
-				if (!from) return nullptr;
-				auto to = vl::MakePtr<WfClassMember>();
 				CopyFields(from.Obj(), to.Obj());
 				return to;
 			}

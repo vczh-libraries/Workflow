@@ -453,10 +453,23 @@ class Attribute
 	Expression				value;
 }
 
+enum ClassMemberKind
+{
+	Static,
+	Override,
+	Normal,
+}
+
+class ClassMember
+{
+	ClassMemberKind			kind;
+}
+
 class Declaration
 {
 	Attribute[]				attributes;
 	token					name;
+	ClassMember				classMember;
 }
 
 class NamespaceDeclaration : Declaration
@@ -514,19 +527,6 @@ class PropertyDeclaration : Declaration
 	token					valueChangedEvent;
 }
 
-enum ClassMemberKind
-{
-	Static,
-	Override,
-	Normal,
-}
-
-class ClassMember
-{
-	ClassMemberKind			kind;
-	Declaration				declaration;
-}
-
 class NewClassExpression : Expression
 {
 	Type					type;
@@ -536,7 +536,7 @@ class NewClassExpression : Expression
 class NewInterfaceExpression : Expression
 {
 	Type					type;
-	ClassMember[]			members;
+	Declaration[]			declarations (SetDefaultClassMember);
 }
 
 enum ClassKind
@@ -576,7 +576,7 @@ class ClassDeclaration : Declaration
 	ClassKind				kind;
 	ConstructorType			constructorType;
 	Type[]					baseTypes;
-	ClassMember[]			members;
+	Declaration[]			declarations (SetDefaultClassMember);
 }
 
 enum EnumKind
@@ -838,7 +838,7 @@ rule Expression _ExpPrimitive
 		as RangeExpression
 	= "{" {_CtorFragment : arguments} "}" as ConstructorExpression
 	= "new" _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as NewClassExpression
-	= "new" _Type : type "{" {_ClassMember : members} "}" as NewInterfaceExpression
+	= "new" _Type : type "{" {_MemberDeclaration : declarations} "}" as NewInterfaceExpression
 	= "bind" "(" _Expression : expression ")" as BindExpression
 	= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
 	= _ExpPrimitive : parent "." "observe" "as" NAME : name "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "ExtendedObserve"}
@@ -999,19 +999,6 @@ rule PropertyDeclaration _Property
 	= "prop" NAME : name ":" _Type : type "{" NAME : getter ["," NAME : setter] [":" NAME : valueChangedEvent] "}" as PropertyDeclaration
 	;
 
-rule FunctionDeclaration _ClassMethod
-	= {_Attribute : attributes} !_Function
-	;
-
-rule ClassMember _ClassMember
-	=	(
-			("static" with {kind = "Static"})
-			| ("override" with {kind = "Override"})
-		)
-		_ClassMethod : declaration as ClassMember
-	= _Declaration : declaration as ClassMember with {kind = "Normal"}
-	;
-
 rule BaseConstructorCall _BaseConstructorCall
 	= _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as BaseConstructorCall
 	;
@@ -1030,7 +1017,7 @@ rule DestructorDeclaration _Destructor
 	;
 
 rule ClassDeclaration _ClassBody
-	= [":" _Type : baseTypes {"," _Type : baseTypes}] "{" {_ClassMember : members} "}" as ClassDeclaration
+	= [":" _Type : baseTypes {"," _Type : baseTypes}] "{" {_MemberDeclaration : declarations} "}" as ClassDeclaration
 	;
 
 rule ClassDeclaration _Class
@@ -1064,9 +1051,8 @@ rule StructDeclaration _Struct
 	= "struct" NAME : name "{" {_StructMember : members} "}" as StructDeclaration
 	;
 
-rule Declaration _DeclarationBranch
+rule Declaration _SharedDeclarationBranch
 	= !_Namespace
-	= !_Function
 	= !_Variable
 	= !_Event
 	= !_Property
@@ -1078,7 +1064,18 @@ rule Declaration _DeclarationBranch
 	;
 
 rule Declaration _Declaration
-	= {_Attribute : attributes} !_DeclarationBranch
+	= {_Attribute : attributes} !_SharedDeclarationBranch
+	= {_Attribute : attributes} !_Function
+	;
+
+rule ClassMember _ClassMember
+	=	"static" as ClassMember with {kind = "Static"}
+	=	"override" as ClassMember with {kind = "Override"}
+	;
+
+rule Declaration _MemberDeclaration
+	= {_Attribute : attributes} !_SharedDeclarationBranch
+	= {_Attribute : attributes} [_ClassMember : classMember] !_Function
 	;
 
 rule ModuleUsingFragment _UsingFragment
