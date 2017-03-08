@@ -681,6 +681,7 @@ BuildScopeForExpression
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
+						manager->CreateLambdaCapture(node, capture);
 					}
 				};
 

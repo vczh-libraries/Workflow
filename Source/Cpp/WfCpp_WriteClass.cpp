@@ -254,7 +254,7 @@ namespace vl
 							break;
 						}
 					}
-					GenerateClassMemberDecl(this, writer, ConvertName(memberDecl->name.value), memberDecl, prefix + L"\t", false);
+					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), memberDecl, prefix + L"\t", false);
 				}
 
 				writer.WriteLine(prefix + L"};");
