@@ -186,12 +186,10 @@ GenerateInstructions(Declaration)
 			public:
 				WfCodegenContext&						context;
 				Ptr<WfClassDeclaration>					classDecl;
-				Ptr<WfClassMember>						member;
 
-				GenerateClassMemberInstructionsVisitor(WfCodegenContext& _context, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member)
+				GenerateClassMemberInstructionsVisitor(WfCodegenContext& _context, Ptr<WfClassDeclaration> _classDecl)
 					:context(_context)
 					, classDecl(_classDecl)
-					, member(_member)
 				{
 				}
 
@@ -201,7 +199,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (member->kind == WfClassMemberKind::Static)
+					if (node->classMember->kind == WfClassMemberKind::Static)
 					{
 						GenerateDeclarationInstructions(context, node);
 					}
@@ -222,6 +220,26 @@ GenerateInstructions(Declaration)
 				void Visit(WfPropertyDeclaration* node)override
 				{
 				}
+
+				class InitializeFieldVisitor
+					: public empty_visitor::DeclarationVisitor
+				{
+				public:
+					WfCodegenContext&					context;
+
+					InitializeFieldVisitor(WfCodegenContext& _context)
+						:context(_context)
+					{
+					}
+
+					void Visit(WfVariableDeclaration* node)override
+					{
+						auto info = context.manager->declarationMemberInfos[node].Cast<WfField>().Obj();
+						GenerateExpressionInstructions(context, node->expression);
+						INSTRUCTION(Ins::LoadCapturedVar(0));
+						INSTRUCTION(Ins::SetProperty(info));
+					}
+				};
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
@@ -266,15 +284,11 @@ GenerateInstructions(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfClassMember>, member, From(classDecl->members))
 					{
-						if (auto varDecl = member->declaration.Cast<WfVariableDeclaration>())
+						InitializeFieldVisitor visitor(context);
+						FOREACH(Ptr<WfDeclaration>, memberDecl, classDecl->declarations)
 						{
-							auto node = varDecl.Obj();
-							auto info = context.manager->declarationMemberInfos[varDecl.Obj()].Cast<WfField>().Obj();
-							GenerateExpressionInstructions(context, varDecl->expression);
-							INSTRUCTION(Ins::LoadCapturedVar(0));
-							INSTRUCTION(Ins::SetProperty(info));
+							memberDecl->Accept(&visitor);
 						}
 					}
 					GenerateStatementInstructions(context, node->statement);
@@ -366,10 +380,10 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						GenerateClassMemberInstructionsVisitor visitor(context, node, member);
-						member->declaration->Accept(&visitor);
+						GenerateClassMemberInstructionsVisitor visitor(context, node);
+						memberDecl->Accept(&visitor);
 					}
 				}
 

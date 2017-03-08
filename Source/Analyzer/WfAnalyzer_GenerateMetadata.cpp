@@ -48,13 +48,11 @@ GenerateGlobalDeclarationMetadata
 				WfCodegenContext&						context;
 				WString									namePrefix;
 				Ptr<WfClassDeclaration>					classDecl;
-				Ptr<WfClassMember>						member;
 
-				GenerateGlobalClassMemberMetadataVisitor(WfCodegenContext& _context, const WString& _namePrefix, Ptr<WfClassDeclaration> _classDecl, Ptr<WfClassMember> _member)
+				GenerateGlobalClassMemberMetadataVisitor(WfCodegenContext& _context, const WString& _namePrefix, Ptr<WfClassDeclaration> _classDecl)
 					:context(_context)
 					, namePrefix(_namePrefix)
 					, classDecl(_classDecl)
-					, member(_member)
 				{
 				}
 
@@ -64,7 +62,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (member->kind == WfClassMemberKind::Static)
+					if (node->classMember->kind == WfClassMemberKind::Static)
 					{
 						GenerateGlobalDeclarationMetadata(context, node, namePrefix);
 						auto scope = context.manager->nodeScopes[node].Obj();
@@ -203,10 +201,10 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfClassMember>, member, node->members)
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
-						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", node, member);
-						member->declaration->Accept(&visitor);
+						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", node);
+						memberDecl->Accept(&visitor);
 					}
 				}
 

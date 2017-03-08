@@ -1038,11 +1038,10 @@ GenerateInstructions(Expression)
 					});
 				}
 
-				class NewInterfaceExpressionVisitor : public Object, public WfDeclaration::IVisitor
+				class NewInterfaceExpressionVisitor : public empty_visitor::DeclarationVisitor
 				{
 				public:
 					WfCodegenContext&						context;
-					Ptr<WfClassMember>						currentMember;
 					vint									variableCount = 0;
 					List<Ptr<WfLexicalSymbol>>				variableSymbols;
 					List<Ptr<WfFunctionDeclaration>>		closureFunctions;
@@ -1054,10 +1053,6 @@ GenerateInstructions(Expression)
 					{
 					}
 
-					void Visit(WfNamespaceDeclaration* node)override
-					{
-					}
-
 					void Visit(WfFunctionDeclaration* node)override
 					{
 						if (!firstFunction)
@@ -1065,7 +1060,7 @@ GenerateInstructions(Expression)
 							firstFunction = node;
 						}
 
-						if (currentMember->kind == WfClassMemberKind::Normal)
+						if (node->classMember->kind == WfClassMemberKind::Normal)
 						{
 							closureFunctions.Add(node);
 						}
@@ -1080,40 +1075,11 @@ GenerateInstructions(Expression)
 						variableCount++;
 					}
 
-					void Visit(WfEventDeclaration* node)override
-					{
-					}
-
-					void Visit(WfPropertyDeclaration* node)override
-					{
-					}
-
-					void Visit(WfClassDeclaration* node)override
-					{
-					}
-
-					void Visit(WfConstructorDeclaration* node)override
-					{
-					}
-
-					void Visit(WfDestructorDeclaration* node)override
-					{
-					}
-
-					void Visit(WfEnumDeclaration* node)override
-					{
-					}
-
-					void Visit(WfStructDeclaration* node)override
-					{
-					}
-
 					void Execute(WfNewInterfaceExpression* node)
 					{
-						FOREACH(Ptr<WfClassMember>, member, node->members)
+						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 						{
-							currentMember = member;
-							member->declaration->Accept(this);
+							memberDecl->Accept(this);
 						}
 
 						if (firstFunction != nullptr && variableCount > 0)

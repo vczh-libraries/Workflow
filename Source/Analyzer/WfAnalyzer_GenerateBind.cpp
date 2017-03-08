@@ -662,20 +662,18 @@ IValueListener::StopListening
 IValueSubscription::Subscribe
 ***********************************************************************/
 
-			Ptr<WfClassMember> CreateNormalMember(Ptr<WfDeclaration> decl)
+			Ptr<WfDeclaration> AssignNormalMember(Ptr<WfDeclaration> decl)
 			{
-				auto member = MakePtr<WfClassMember>();
-				member->kind = WfClassMemberKind::Normal;
-				member->declaration = decl;
-				return member;
+				decl->classMember = MakePtr<WfClassMember>();
+				decl->classMember->kind = WfClassMemberKind::Normal;
+				return decl;
 			}
 
-			Ptr<WfClassMember> CreateOverrideMember(Ptr<WfDeclaration> decl)
+			Ptr<WfDeclaration> AssignOverrideMember(Ptr<WfDeclaration> decl)
 			{
-				auto member = MakePtr<WfClassMember>();
-				member->kind = WfClassMemberKind::Override;
-				member->declaration = decl;
-				return member;
+				decl->classMember = MakePtr<WfClassMember>();
+				decl->classMember->kind = WfClassMemberKind::Override;
+				return decl;
 			}
 
 			Ptr<WfFunctionDeclaration> CreateBindSubscribeFunction()
@@ -741,9 +739,9 @@ IValueSubscription::Subscribe
 						auto typeInfo = TypeInfoRetriver<Ptr<IValueListener>>::CreateTypeInfo();
 						newListener->type = GetTypeFromTypeInfo(typeInfo.Obj());
 					}
-					newListener->members.Add(CreateOverrideMember(CreateListenerGetSubscriptionFunction()));
-					newListener->members.Add(CreateOverrideMember(CreateListenerGetStoppedFunction()));
-					newListener->members.Add(CreateOverrideMember(CreateListenerStopListeningFunction()));
+					newListener->declarations.Add(AssignOverrideMember(CreateListenerGetSubscriptionFunction()));
+					newListener->declarations.Add(AssignOverrideMember(CreateListenerGetStoppedFunction()));
+					newListener->declarations.Add(AssignOverrideMember(CreateListenerStopListeningFunction()));
 
 					auto variable = MakePtr<WfVariableDeclaration>();
 					variable->name.value = L"<listener-shared>";
@@ -1140,7 +1138,7 @@ ExpandBindExpression
 						{
 							auto elementType = manager->expressionResolvings[parent].type;
 							bcInfo.variableTypes.Add(cacheName, elementType);
-							newSubscription->members.Add(CreateNormalMember(CreateWritableVariable(cacheName, elementType.Obj())));
+							newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(cacheName, elementType.Obj())));
 						}
 
 						FOREACH_INDEXER(IEventInfo*, ev, eventIndex, events)
@@ -1149,7 +1147,7 @@ ExpandBindExpression
 							{
 								auto elementType = TypeInfoRetriver<Ptr<IEventHandler>>::CreateTypeInfo();
 								bcInfo.variableTypes.Add(handlerName, elementType);
-								newSubscription->members.Add(CreateNormalMember(CreateWritableVariable(handlerName, elementType.Obj())));
+								newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(handlerName, elementType.Obj())));
 							}
 						
 							WString callbackName = L"<bind-callback>" + itow(observeIndex) + L"_" + itow(eventIndex);
@@ -1167,15 +1165,15 @@ ExpandBindExpression
 							bcInfo.observeCallbackInfos.Add(observe, callbackInfo);
 						}
 					}
-					newSubscription->members.Add(CreateNormalMember(CreateWritableVariable(L"<bind-opened>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
-					newSubscription->members.Add(CreateNormalMember(CreateWritableVariable(L"<bind-closed>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
+					newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(L"<bind-opened>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
+					newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(L"<bind-closed>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
 					{
 						auto typeInfo = TypeInfoRetriver<Dictionary<Ptr<IValueListener>, Func<void(Value)>>>::CreateTypeInfo();
 						auto decl = MakePtr<WfVariableDeclaration>();
 						decl->name.value = L"<bind-listeners>";
 						decl->type = GetTypeFromTypeInfo(typeInfo.Obj());
 						decl->expression = MakePtr<WfConstructorExpression>();
-						newSubscription->members.Add(CreateNormalMember(decl));
+						newSubscription->declarations.Add(AssignNormalMember(decl));
 					}
 					{
 						auto func = MakePtr<WfFunctionDeclaration>();
@@ -1229,7 +1227,7 @@ ExpandBindExpression
 							forBlock->statements.Add(stat);
 						}
 					
-						newSubscription->members.Add(CreateNormalMember(func));
+						newSubscription->declarations.Add(AssignNormalMember(func));
 					}
 					FOREACH(WfExpression*, observe, bcInfo.orderedObserves.Values())
 					{
@@ -1296,7 +1294,7 @@ ExpandBindExpression
 								block->statements.Add(stat);
 							}
 
-							newSubscription->members.Add(CreateNormalMember(func));
+							newSubscription->declarations.Add(AssignNormalMember(func));
 						}
 					}
 					{
@@ -1358,12 +1356,12 @@ ExpandBindExpression
 							}
 						}
 					
-						newSubscription->members.Add(CreateNormalMember(func));
+						newSubscription->declarations.Add(AssignNormalMember(func));
 					}
 				}
-				newSubscription->members.Add(CreateOverrideMember(CreateBindSubscribeFunction()));
-				newSubscription->members.Add(CreateOverrideMember(CreateBindUpdateFunction(bcInfo)));
-				newSubscription->members.Add(CreateOverrideMember(CreateBindCloseFunction(manager, bcInfo)));
+				newSubscription->declarations.Add(AssignOverrideMember(CreateBindSubscribeFunction()));
+				newSubscription->declarations.Add(AssignOverrideMember(CreateBindUpdateFunction(bcInfo)));
+				newSubscription->declarations.Add(AssignOverrideMember(CreateBindCloseFunction(manager, bcInfo)));
 				node->expandedExpression = newSubscription;
 			}
 		}
