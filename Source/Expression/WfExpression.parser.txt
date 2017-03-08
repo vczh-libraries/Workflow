@@ -19,9 +19,51 @@ ambiguity:enabled
 serialization:enabled
 grammar:
 
+//////////////////////////////////////////////////////////////////
+// AST (Root Types)
+//////////////////////////////////////////////////////////////////
+
+enum ClassMemberKind
+{
+	Static,
+	Override,
+	Normal,
+}
+
+class ClassMember
+{
+	ClassMemberKind			kind;
+}
+
 class Type
 {
 }
+
+class Expression
+{
+}
+
+class Statement
+{
+}
+
+class Attribute
+{
+	token					category;
+	token					name;
+	Expression				value;
+}
+
+class Declaration
+{
+	Attribute[]				attributes;
+	token					name;
+	ClassMember				classMember;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Types)
+//////////////////////////////////////////////////////////////////
 
 enum PredefinedTypeName
 {
@@ -97,9 +139,234 @@ class ChildType : Type
 	token					name;
 }
 
-class Expression
+//////////////////////////////////////////////////////////////////
+// AST (Declarations)
+//////////////////////////////////////////////////////////////////
+
+class NamespaceDeclaration : Declaration
+{
+	Declaration[]			declarations;
+}
+
+class FunctionArgument
+{
+	Attribute[]				attributes;
+	token					name;
+	Type					type;
+}
+
+enum FunctionAnonymity
+{
+	Named,
+	Anonymous,
+}
+
+class FunctionDeclaration : Declaration
+{
+	FunctionAnonymity		anonymity;
+	FunctionArgument[]		arguments;
+	Type					returnType;
+	Statement				statement;
+}
+
+class VariableDeclaration : Declaration
+{
+	Type					type;
+	Expression				expression;
+}
+
+class EventDeclaration : Declaration
+{
+	Type[]					arguments;
+}
+
+class PropertyDeclaration : Declaration
+{
+	Type					type;
+	token					getter;
+	token					setter;
+	token					valueChangedEvent;
+}
+
+enum ClassKind
+{
+	Class,
+	Interface,
+}
+
+enum ConstructorType
+{
+	Undefined,
+	SharedPtr,
+	RawPtr,
+}
+
+class BaseConstructorCall
+{
+	Type					type;
+	Expression[]			arguments;
+}
+
+class ConstructorDeclaration : Declaration
+{
+	ConstructorType			constructorType;
+	BaseConstructorCall[]	baseConstructorCalls;
+	FunctionArgument[]		arguments;
+	Statement				statement;
+}
+
+class DestructorDeclaration : Declaration
+{
+	Statement				statement;
+}
+
+class ClassDeclaration : Declaration
+{
+	ClassKind				kind;
+	ConstructorType			constructorType;
+	Type[]					baseTypes;
+	Declaration[]			declarations (SetDefaultClassMember);
+}
+
+enum EnumKind
+{
+	Normal,
+	Flag,
+}
+
+enum EnumItemKind
+{
+	Constant,
+	Intersection,
+}
+
+class EnumItemIntersection
+{
+	token					name;
+}
+
+class EnumItem
+{
+	Attribute[]				attributes;
+	token					name;
+	EnumItemKind			kind;
+	token					number;
+	EnumItemIntersection[]	intersections;
+}
+
+class EnumDeclaration : Declaration
+{
+	EnumKind				kind;
+	EnumItem[]				items;
+}
+
+class StructMember
+{
+	Attribute[]				attributes;
+	token					name;
+	Type					type;
+}
+
+class StructDeclaration : Declaration
+{
+	StructMember[]			members;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Statements)
+//////////////////////////////////////////////////////////////////
+
+class BreakStatement : Statement
 {
 }
+
+class ContinueStatement : Statement
+{
+}
+
+class ReturnStatement : Statement
+{
+	Expression				expression;
+}
+
+class DeleteStatement : Statement
+{
+	Expression				expression;
+}
+
+class RaiseExceptionStatement : Statement
+{
+	Expression				expression;
+}
+
+class IfStatement : Statement
+{
+	Type					type;
+	token					name;
+	Expression				expression;
+	Statement				trueBranch;
+	Statement				falseBranch;
+}
+
+class SwitchCase
+{
+	Expression				expression;
+	Statement				statement;
+}
+
+class SwitchStatement : Statement
+{
+	Expression				expression;
+	SwitchCase[]			caseBranches;
+	Statement				defaultBranch;
+}
+
+class WhileStatement : Statement
+{
+	Expression				condition;
+	Statement				statement;
+}
+
+enum ForEachDirection
+{
+	Normal,
+	Reversed,
+}
+
+class ForEachStatement : Statement
+{
+	token					name;
+	ForEachDirection		direction;
+	Expression				collection;
+	Statement				statement;
+}
+
+class TryStatement : Statement
+{
+	Statement				protectedStatement;
+	token					name;
+	Statement				catchStatement;
+	Statement				finallyStatement;
+}
+
+class BlockStatement : Statement
+{
+	Statement[]				statements;
+}
+
+class VariableStatement : Statement
+{
+	VariableDeclaration		variable;
+}
+
+class ExpressionStatement : Statement
+{
+	Expression				expression;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Expressions)
+//////////////////////////////////////////////////////////////////
 
 class ThisExpression : Expression
 {
@@ -344,6 +611,27 @@ class CallExpression : Expression
 	Expression[]			arguments;
 }
 
+class FunctionExpression : Expression
+{
+	FunctionDeclaration		function;
+}
+
+class NewClassExpression : Expression
+{
+	Type					type;
+	Expression[]			arguments;
+}
+
+class NewInterfaceExpression : Expression
+{
+	Type					type;
+	Declaration[]			declarations (SetDefaultClassMember);
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (VirtualExpressions)
+//////////////////////////////////////////////////////////////////
+
 class VirtualExpression : Expression
 {
 	Expression				expandedExpression;
@@ -359,269 +647,9 @@ class FormatExpression : VirtualExpression
 	token					value(UnescapeFormatString);
 }
 
-class Statement
-{
-}
-
-class BreakStatement : Statement
-{
-}
-
-class ContinueStatement : Statement
-{
-}
-
-class ReturnStatement : Statement
-{
-	Expression				expression;
-}
-
-class DeleteStatement : Statement
-{
-	Expression				expression;
-}
-
-class RaiseExceptionStatement : Statement
-{
-	Expression				expression;
-}
-
-class IfStatement : Statement
-{
-	Type					type;
-	token					name;
-	Expression				expression;
-	Statement				trueBranch;
-	Statement				falseBranch;
-}
-
-class SwitchCase
-{
-	Expression				expression;
-	Statement				statement;
-}
-
-class SwitchStatement : Statement
-{
-	Expression				expression;
-	SwitchCase[]			caseBranches;
-	Statement				defaultBranch;
-}
-
-class WhileStatement : Statement
-{
-	Expression				condition;
-	Statement				statement;
-}
-
-enum ForEachDirection
-{
-	Normal,
-	Reversed,
-}
-
-class ForEachStatement : Statement
-{
-	token					name;
-	ForEachDirection		direction;
-	Expression				collection;
-	Statement				statement;
-}
-
-class TryStatement : Statement
-{
-	Statement				protectedStatement;
-	token					name;
-	Statement				catchStatement;
-	Statement				finallyStatement;
-}
-
-class BlockStatement : Statement
-{
-	Statement[]				statements;
-}
-
-class ExpressionStatement : Statement
-{
-	Expression				expression;
-}
-
-class Attribute
-{
-	token					category;
-	token					name;
-	Expression				value;
-}
-
-enum ClassMemberKind
-{
-	Static,
-	Override,
-	Normal,
-}
-
-class ClassMember
-{
-	ClassMemberKind			kind;
-}
-
-class Declaration
-{
-	Attribute[]				attributes;
-	token					name;
-	ClassMember				classMember;
-}
-
-class NamespaceDeclaration : Declaration
-{
-	Declaration[]			declarations;
-}
-
-class FunctionArgument
-{
-	Attribute[]				attributes;
-	token					name;
-	Type					type;
-}
-
-enum FunctionAnonymity
-{
-	Named,
-	Anonymous,
-}
-
-class FunctionDeclaration : Declaration
-{
-	FunctionAnonymity		anonymity;
-	FunctionArgument[]		arguments;
-	Type					returnType;
-	Statement				statement;
-}
-
-class FunctionExpression : Expression
-{
-	FunctionDeclaration		function;
-}
-
-class VariableDeclaration : Declaration
-{
-	Type					type;
-	Expression				expression;
-}
-
-class VariableStatement : Statement
-{
-	VariableDeclaration		variable;
-}
-
-class EventDeclaration : Declaration
-{
-	Type[]					arguments;
-}
-
-class PropertyDeclaration : Declaration
-{
-	Type					type;
-	token					getter;
-	token					setter;
-	token					valueChangedEvent;
-}
-
-class NewClassExpression : Expression
-{
-	Type					type;
-	Expression[]			arguments;
-}
-
-class NewInterfaceExpression : Expression
-{
-	Type					type;
-	Declaration[]			declarations (SetDefaultClassMember);
-}
-
-enum ClassKind
-{
-	Class,
-	Interface,
-}
-
-enum ConstructorType
-{
-	Undefined,
-	SharedPtr,
-	RawPtr,
-}
-
-class BaseConstructorCall
-{
-	Type					type;
-	Expression[]			arguments;
-}
-
-class ConstructorDeclaration : Declaration
-{
-	ConstructorType			constructorType;
-	BaseConstructorCall[]	baseConstructorCalls;
-	FunctionArgument[]		arguments;
-	Statement				statement;
-}
-
-class DestructorDeclaration : Declaration
-{
-	Statement				statement;
-}
-
-class ClassDeclaration : Declaration
-{
-	ClassKind				kind;
-	ConstructorType			constructorType;
-	Type[]					baseTypes;
-	Declaration[]			declarations (SetDefaultClassMember);
-}
-
-enum EnumKind
-{
-	Normal,
-	Flag,
-}
-
-enum EnumItemKind
-{
-	Constant,
-	Intersection,
-}
-
-class EnumItemIntersection
-{
-	token					name;
-}
-
-class EnumItem
-{
-	Attribute[]				attributes;
-	token					name;
-	EnumItemKind			kind;
-	token					number;
-	EnumItemIntersection[]	intersections;
-}
-
-class EnumDeclaration : Declaration
-{
-	EnumKind				kind;
-	EnumItem[]				items;
-}
-
-class StructMember
-{
-	Attribute[]				attributes;
-	token					name;
-	Type					type;
-}
-
-class StructDeclaration : Declaration
-{
-	StructMember[]			members;
-}
+//////////////////////////////////////////////////////////////////
+// AST (Module)
+//////////////////////////////////////////////////////////////////
 
 class ModuleUsingFragment
 {
@@ -659,6 +687,10 @@ class Module
 	ModuleUsingPath[]		paths;
 	Declaration[]			declarations;
 }
+
+//////////////////////////////////////////////////////////////////
+// Lexer
+//////////////////////////////////////////////////////////////////
 
 token EXP = "/^";
 token ADD = "/+";
@@ -768,6 +800,10 @@ token FORMATSTRING = "/$('([^'\\]|\\\.)*'|""([^""\\]|\\\.)*"")";
 discardtoken SPACE = "/s+";
 discardtoken COMMENT = "///*([^*]|/*+[^//])*/*+//";
 
+//////////////////////////////////////////////////////////////////
+// Rule (Type)
+//////////////////////////////////////////////////////////////////
+
 rule Type _Type
 	= "void" as PredefinedType with {name="Void"}
 	= "object" as PredefinedType with {name="Object"}
@@ -791,6 +827,10 @@ rule Type _Type
 	= "::" NAME : name as TopQualifiedType
 	= "(" !_Type ")"
 	;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Expression)
+//////////////////////////////////////////////////////////////////
 
 rule LiteralExpression _Literal
 	= "null" as LiteralExpression with {value = "Null"}
@@ -937,6 +977,10 @@ rule Expression _Expression
 	= !_Exp11
 	;
 
+//////////////////////////////////////////////////////////////////
+// Rule (Statement)
+//////////////////////////////////////////////////////////////////
+
 rule SwitchCase _SwitchCase
 	= "case" _Expression : expression ":" _Block : statement as SwitchCase
 	;
@@ -966,6 +1010,10 @@ rule Statement _Statement
 	= "try" _Block : protectedStatement ["catch" "(" NAME : name ")" _Block : catchStatement] ["finally" _Block : finallyStatement] as TryStatement
 	= _Expression : expression ";" as ExpressionStatement
 	;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- Basic)
+//////////////////////////////////////////////////////////////////
 
 rule Attribute _Attribute
 	= "@" NAME : category ":" NAME : name ["(" _Expression : value ")"] as Attribute
@@ -1051,6 +1099,10 @@ rule StructDeclaration _Struct
 	= "struct" NAME : name "{" {_StructMember : members} "}" as StructDeclaration
 	;
 
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- Branches)
+//////////////////////////////////////////////////////////////////
+
 rule Declaration _SharedDeclarationBranch
 	= !_Namespace
 	= !_Variable
@@ -1077,6 +1129,10 @@ rule Declaration _MemberDeclaration
 	= {_Attribute : attributes} !_SharedDeclarationBranch
 	= {_Attribute : attributes} [_ClassMember : classMember] !_Function
 	;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Module)
+//////////////////////////////////////////////////////////////////
 
 rule ModuleUsingFragment _UsingFragment
 	= NAME : name as ModuleUsingNameFragment

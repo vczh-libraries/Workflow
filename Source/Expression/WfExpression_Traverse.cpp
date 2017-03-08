@@ -642,11 +642,6 @@ ExpressionVisitor
 				}
 			}
 
-			void ExpressionVisitor::Visit(WfVirtualExpression* node)
-			{
-				Dispatch(node);
-			}
-
 			void ExpressionVisitor::Visit(WfFunctionExpression* node)
 			{
 				Traverse(static_cast<WfFunctionExpression*>(node));
@@ -679,56 +674,9 @@ ExpressionVisitor
 				}
 			}
 
-/***********************************************************************
-VirtualExpressionVisitor
-***********************************************************************/
-
-			// Traverse ------------------------------------------
-
-			void VirtualExpressionVisitor::Traverse(vl::parsing::ParsingToken& token)
+			void ExpressionVisitor::Visit(WfVirtualExpression* node)
 			{
-			}
-
-			void VirtualExpressionVisitor::Traverse(vl::parsing::ParsingTreeCustomBase* node)
-			{
-			}
-
-			void VirtualExpressionVisitor::Traverse(WfBindExpression* node)
-			{
-			}
-
-			void VirtualExpressionVisitor::Traverse(WfVirtualExpression* node)
-			{
-			}
-
-			void VirtualExpressionVisitor::Traverse(WfExpression* node)
-			{
-			}
-
-			void VirtualExpressionVisitor::Traverse(WfFormatExpression* node)
-			{
-			}
-
-			// Visitor Members -----------------------------------
-
-			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
-			{
-				Traverse(static_cast<WfBindExpression*>(node));
-				Traverse(static_cast<WfVirtualExpression*>(node));
-				Traverse(static_cast<WfExpression*>(node));
-				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				VisitField(node->expression.Obj());
-				VisitField(node->expandedExpression.Obj());
-			}
-
-			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
-			{
-				Traverse(static_cast<WfFormatExpression*>(node));
-				Traverse(static_cast<WfVirtualExpression*>(node));
-				Traverse(static_cast<WfExpression*>(node));
-				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				Traverse(node->value);
-				VisitField(node->expandedExpression.Obj());
+				Dispatch(node);
 			}
 
 /***********************************************************************
@@ -797,10 +745,6 @@ StatementVisitor
 			{
 			}
 
-			void StatementVisitor::Traverse(WfExpressionStatement* node)
-			{
-			}
-
 			void StatementVisitor::Traverse(WfVariableStatement* node)
 			{
 			}
@@ -818,6 +762,10 @@ StatementVisitor
 			}
 
 			void StatementVisitor::Traverse(WfClassMember* node)
+			{
+			}
+
+			void StatementVisitor::Traverse(WfExpressionStatement* node)
 			{
 			}
 
@@ -971,20 +919,20 @@ StatementVisitor
 				}
 			}
 
-			void StatementVisitor::Visit(WfExpressionStatement* node)
-			{
-				Traverse(static_cast<WfExpressionStatement*>(node));
-				Traverse(static_cast<WfStatement*>(node));
-				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				VisitField(node->expression.Obj());
-			}
-
 			void StatementVisitor::Visit(WfVariableStatement* node)
 			{
 				Traverse(static_cast<WfVariableStatement*>(node));
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->variable.Obj());
+			}
+
+			void StatementVisitor::Visit(WfExpressionStatement* node)
+			{
+				Traverse(static_cast<WfExpressionStatement*>(node));
+				Traverse(static_cast<WfStatement*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->expression.Obj());
 			}
 
 /***********************************************************************
@@ -1331,6 +1279,58 @@ DeclarationVisitor
 				}
 				Traverse(node->name);
 				VisitField(node->classMember.Obj());
+			}
+
+/***********************************************************************
+VirtualExpressionVisitor
+***********************************************************************/
+
+			// Traverse ------------------------------------------
+
+			void VirtualExpressionVisitor::Traverse(vl::parsing::ParsingToken& token)
+			{
+			}
+
+			void VirtualExpressionVisitor::Traverse(vl::parsing::ParsingTreeCustomBase* node)
+			{
+			}
+
+			void VirtualExpressionVisitor::Traverse(WfBindExpression* node)
+			{
+			}
+
+			void VirtualExpressionVisitor::Traverse(WfVirtualExpression* node)
+			{
+			}
+
+			void VirtualExpressionVisitor::Traverse(WfExpression* node)
+			{
+			}
+
+			void VirtualExpressionVisitor::Traverse(WfFormatExpression* node)
+			{
+			}
+
+			// Visitor Members -----------------------------------
+
+			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
+			{
+				Traverse(static_cast<WfBindExpression*>(node));
+				Traverse(static_cast<WfVirtualExpression*>(node));
+				Traverse(static_cast<WfExpression*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->expression.Obj());
+				VisitField(node->expandedExpression.Obj());
+			}
+
+			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
+			{
+				Traverse(static_cast<WfFormatExpression*>(node));
+				Traverse(static_cast<WfVirtualExpression*>(node));
+				Traverse(static_cast<WfExpression*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->value);
+				VisitField(node->expandedExpression.Obj());
 			}
 
 /***********************************************************************

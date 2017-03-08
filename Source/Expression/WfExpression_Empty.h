@@ -70,19 +70,10 @@ namespace vl
 				void Visit(WfDetachEventExpression* node)override;
 				void Visit(WfObserveExpression* node)override;
 				void Visit(WfCallExpression* node)override;
-				void Visit(WfVirtualExpression* node)override;
 				void Visit(WfFunctionExpression* node)override;
 				void Visit(WfNewClassExpression* node)override;
 				void Visit(WfNewInterfaceExpression* node)override;
-			};
-
-			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
-			{
-			public:
-
-				// Visitor Members -----------------------------------
-				void Visit(WfBindExpression* node)override;
-				void Visit(WfFormatExpression* node)override;
+				void Visit(WfVirtualExpression* node)override;
 			};
 
 			class StatementVisitor : public Object, public WfStatement::IVisitor
@@ -101,8 +92,8 @@ namespace vl
 				void Visit(WfForEachStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
-				void Visit(WfExpressionStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
+				void Visit(WfExpressionStatement* node)override;
 			};
 
 			class DeclarationVisitor : public Object, public WfDeclaration::IVisitor
@@ -120,6 +111,15 @@ namespace vl
 				void Visit(WfClassDeclaration* node)override;
 				void Visit(WfEnumDeclaration* node)override;
 				void Visit(WfStructDeclaration* node)override;
+			};
+
+			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
+			{
+			public:
+
+				// Visitor Members -----------------------------------
+				void Visit(WfBindExpression* node)override;
+				void Visit(WfFormatExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor

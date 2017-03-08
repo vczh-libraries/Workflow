@@ -146,28 +146,10 @@ namespace vl
 				void Visit(WfDetachEventExpression* node)override;
 				void Visit(WfObserveExpression* node)override;
 				void Visit(WfCallExpression* node)override;
-				void Visit(WfVirtualExpression* node)override;
 				void Visit(WfFunctionExpression* node)override;
 				void Visit(WfNewClassExpression* node)override;
 				void Visit(WfNewInterfaceExpression* node)override;
-			};
-
-			class VirtualExpressionVisitor : public virtual VisitorBase, public WfVirtualExpression::IVisitor
-			{
-			public:
-
-				// CopyFields ----------------------------------------
-				void CopyFields(WfBindExpression* from, WfBindExpression* to);
-				void CopyFields(WfVirtualExpression* from, WfVirtualExpression* to);
-				void CopyFields(WfExpression* from, WfExpression* to);
-				void CopyFields(WfFormatExpression* from, WfFormatExpression* to);
-
-				// CreateField (virtual) -----------------------------
-				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
-
-				// Visitor Members -----------------------------------
-				void Visit(WfBindExpression* node)override;
-				void Visit(WfFormatExpression* node)override;
+				void Visit(WfVirtualExpression* node)override;
 			};
 
 			class StatementVisitor : public virtual VisitorBase, public WfStatement::IVisitor
@@ -188,12 +170,12 @@ namespace vl
 				void CopyFields(WfForEachStatement* from, WfForEachStatement* to);
 				void CopyFields(WfTryStatement* from, WfTryStatement* to);
 				void CopyFields(WfBlockStatement* from, WfBlockStatement* to);
-				void CopyFields(WfExpressionStatement* from, WfExpressionStatement* to);
 				void CopyFields(WfVariableStatement* from, WfVariableStatement* to);
 				void CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to);
 				void CopyFields(WfDeclaration* from, WfDeclaration* to);
 				void CopyFields(WfAttribute* from, WfAttribute* to);
 				void CopyFields(WfClassMember* from, WfClassMember* to);
+				void CopyFields(WfExpressionStatement* from, WfExpressionStatement* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfSwitchCase> CreateField(vl::Ptr<WfSwitchCase> from);
@@ -218,8 +200,8 @@ namespace vl
 				void Visit(WfForEachStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
-				void Visit(WfExpressionStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
+				void Visit(WfExpressionStatement* node)override;
 			};
 
 			class DeclarationVisitor : public virtual VisitorBase, public WfDeclaration::IVisitor
@@ -274,6 +256,24 @@ namespace vl
 				void Visit(WfStructDeclaration* node)override;
 			};
 
+			class VirtualExpressionVisitor : public virtual VisitorBase, public WfVirtualExpression::IVisitor
+			{
+			public:
+
+				// CopyFields ----------------------------------------
+				void CopyFields(WfBindExpression* from, WfBindExpression* to);
+				void CopyFields(WfVirtualExpression* from, WfVirtualExpression* to);
+				void CopyFields(WfExpression* from, WfExpression* to);
+				void CopyFields(WfFormatExpression* from, WfFormatExpression* to);
+
+				// CreateField (virtual) -----------------------------
+				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfBindExpression* node)override;
+				void Visit(WfFormatExpression* node)override;
+			};
+
 			class ModuleUsingFragmentVisitor : public virtual VisitorBase, public WfModuleUsingFragment::IVisitor
 			{
 			public:
@@ -291,9 +291,9 @@ namespace vl
 			class ModuleVisitor
 				: public TypeVisitor
 				, public ExpressionVisitor
-				, public VirtualExpressionVisitor
 				, public StatementVisitor
 				, public DeclarationVisitor
+				, public VirtualExpressionVisitor
 				, public ModuleUsingFragmentVisitor
 			{
 			public:

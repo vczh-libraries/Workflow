@@ -176,11 +176,6 @@ ExpressionVisitor
 			{
 			}
 
-			void ExpressionVisitor::Visit(WfVirtualExpression* node)
-			{
-				Dispatch(node);
-			}
-
 			void ExpressionVisitor::Visit(WfFunctionExpression* node)
 			{
 			}
@@ -193,18 +188,9 @@ ExpressionVisitor
 			{
 			}
 
-/***********************************************************************
-VirtualExpressionVisitor
-***********************************************************************/
-
-			// Visitor Members -----------------------------------
-
-			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
+			void ExpressionVisitor::Visit(WfVirtualExpression* node)
 			{
-			}
-
-			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
-			{
+				Dispatch(node);
 			}
 
 /***********************************************************************
@@ -257,11 +243,11 @@ StatementVisitor
 			{
 			}
 
-			void StatementVisitor::Visit(WfExpressionStatement* node)
+			void StatementVisitor::Visit(WfVariableStatement* node)
 			{
 			}
 
-			void StatementVisitor::Visit(WfVariableStatement* node)
+			void StatementVisitor::Visit(WfExpressionStatement* node)
 			{
 			}
 
@@ -308,6 +294,20 @@ DeclarationVisitor
 			}
 
 			void DeclarationVisitor::Visit(WfStructDeclaration* node)
+			{
+			}
+
+/***********************************************************************
+VirtualExpressionVisitor
+***********************************************************************/
+
+			// Visitor Members -----------------------------------
+
+			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
+			{
+			}
+
+			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
 			{
 			}
 

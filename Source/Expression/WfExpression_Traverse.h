@@ -144,30 +144,10 @@ namespace vl
 				void Visit(WfDetachEventExpression* node)override;
 				void Visit(WfObserveExpression* node)override;
 				void Visit(WfCallExpression* node)override;
-				void Visit(WfVirtualExpression* node)override;
 				void Visit(WfFunctionExpression* node)override;
 				void Visit(WfNewClassExpression* node)override;
 				void Visit(WfNewInterfaceExpression* node)override;
-			};
-
-			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
-			{
-			public:
-
-				// Traverse ------------------------------------------
-				virtual void Traverse(vl::parsing::ParsingToken& token);
-				virtual void Traverse(vl::parsing::ParsingTreeCustomBase* node);
-				virtual void Traverse(WfBindExpression* node);
-				virtual void Traverse(WfVirtualExpression* node);
-				virtual void Traverse(WfExpression* node);
-				virtual void Traverse(WfFormatExpression* node);
-
-				// VisitField (virtual) ------------------------------
-				virtual void VisitField(WfExpression* node) = 0;
-
-				// Visitor Members -----------------------------------
-				void Visit(WfBindExpression* node)override;
-				void Visit(WfFormatExpression* node)override;
+				void Visit(WfVirtualExpression* node)override;
 			};
 
 			class StatementVisitor : public Object, public WfStatement::IVisitor
@@ -190,12 +170,12 @@ namespace vl
 				virtual void Traverse(WfForEachStatement* node);
 				virtual void Traverse(WfTryStatement* node);
 				virtual void Traverse(WfBlockStatement* node);
-				virtual void Traverse(WfExpressionStatement* node);
 				virtual void Traverse(WfVariableStatement* node);
 				virtual void Traverse(WfVariableDeclaration* node);
 				virtual void Traverse(WfDeclaration* node);
 				virtual void Traverse(WfAttribute* node);
 				virtual void Traverse(WfClassMember* node);
+				virtual void Traverse(WfExpressionStatement* node);
 
 				// VisitField ----------------------------------------
 				void VisitField(WfSwitchCase* node);
@@ -220,8 +200,8 @@ namespace vl
 				void Visit(WfForEachStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
-				void Visit(WfExpressionStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
+				void Visit(WfExpressionStatement* node)override;
 			};
 
 			class DeclarationVisitor : public Object, public WfDeclaration::IVisitor
@@ -278,6 +258,26 @@ namespace vl
 				void Visit(WfStructDeclaration* node)override;
 			};
 
+			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
+			{
+			public:
+
+				// Traverse ------------------------------------------
+				virtual void Traverse(vl::parsing::ParsingToken& token);
+				virtual void Traverse(vl::parsing::ParsingTreeCustomBase* node);
+				virtual void Traverse(WfBindExpression* node);
+				virtual void Traverse(WfVirtualExpression* node);
+				virtual void Traverse(WfExpression* node);
+				virtual void Traverse(WfFormatExpression* node);
+
+				// VisitField (virtual) ------------------------------
+				virtual void VisitField(WfExpression* node) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfBindExpression* node)override;
+				void Visit(WfFormatExpression* node)override;
+			};
+
 			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor
 			{
 			public:
@@ -297,9 +297,9 @@ namespace vl
 			class ModuleVisitor
 				: public TypeVisitor
 				, public ExpressionVisitor
-				, public VirtualExpressionVisitor
 				, public StatementVisitor
 				, public DeclarationVisitor
+				, public VirtualExpressionVisitor
 				, public ModuleUsingFragmentVisitor
 			{
 			public:
