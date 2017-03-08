@@ -1423,9 +1423,9 @@ Print (Module)
 			{
 				FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
 				{
-					writer.WriteString(indent);
 					WfPrint(attribute, indent, writer);
 					writer.WriteLine(L"");
+					writer.WriteString(indent);
 				}
 			}
 			PrintDeclarationVisitor visitor(indent, writer);
