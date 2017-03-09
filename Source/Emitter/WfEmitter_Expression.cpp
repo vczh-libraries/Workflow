@@ -1052,6 +1052,14 @@ GenerateInstructions(Expression)
 					{
 					}
 
+					void Dispatch(WfVirtualDeclaration* node)override
+					{
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							decl->Accept(this);
+						}
+					}
+
 					void Visit(WfFunctionDeclaration* node)override
 					{
 						if (!firstFunction)

@@ -79,6 +79,14 @@ GenerateInstructions(Initialize)
 				void Visit(WfStructDeclaration* node)override
 				{
 				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
 			};
 
 			void GenerateInitializeInstructions(WfCodegenContext& context, Ptr<WfDeclaration> declaration)
@@ -232,6 +240,14 @@ GenerateInstructions(Declaration)
 					{
 					}
 
+					void Dispatch(WfVirtualDeclaration* node)override
+					{
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							decl->Accept(this);
+						}
+					}
+
 					void Visit(WfVariableDeclaration* node)override
 					{
 						auto info = context.manager->declarationMemberInfos[node].Cast<WfField>().Obj();
@@ -330,6 +346,14 @@ GenerateInstructions(Declaration)
 				void Visit(WfStructDeclaration* node)override
 				{
 				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
 			};
 
 			class GenerateDeclarationInstructionsVisitor : public Object, public WfDeclaration::IVisitor
@@ -393,6 +417,14 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfStructDeclaration* node)override
 				{
+				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
 				}
 			};
 

@@ -145,6 +145,14 @@ WfGenerateClassMemberDeclVisitor
 				void Visit(WfStructDeclaration* node)override
 				{
 				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
 			};
 
 			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> memberDecl, const WString& prefix, bool forClassExpr)
@@ -328,6 +336,14 @@ WfGenerateClassMemberImplVisitor
 
 				void Visit(WfStructDeclaration* node)override
 				{
+				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
 				}
 			};
 

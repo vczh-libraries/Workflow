@@ -1038,7 +1038,10 @@ Print (Statement)
 Print (Declaration)
 ***********************************************************************/
 
-		class PrintDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+		class PrintDeclarationVisitor
+			: public Object
+			, public WfDeclaration::IVisitor
+			, public WfVirtualDeclaration::IVisitor
 		{
 		public:
 			WString								indent;
@@ -1375,6 +1378,56 @@ Print (Declaration)
 				}
 
 				writer.WriteString(indent + L"}");
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfVirtualDeclaration* node)override
+			{
+				if (node->expandedDeclarations.Count() > 0)
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+				else
+				{
+					node->Accept(static_cast<WfVirtualDeclaration::IVisitor*>(this));
+				}
+			}
+
+			void Visit(WfAutoPropertyDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"prop ");
+				writer.WriteString(node->name.value);
+				writer.WriteString(L" : ");
+				WfPrint(node->type, indent, writer);
+				if (node->expression)
+				{
+					writer.WriteString(L" = ");
+					WfPrint(node->expression, indent, writer);
+				}
+				writer.WriteString(L" {");
+				if (node->configConst == WfAPConst::Readonly)
+				{
+					if (node->configObserve == WfAPObserve::NotObservable)
+					{
+						writer.WriteString(L"const, not observe");
+					}
+					else
+					{
+						writer.WriteString(L"const");
+					}
+				}
+				else
+				{
+					if (node->configObserve == WfAPObserve::NotObservable)
+					{
+						writer.WriteString(L"not observe");
+					}
+				}
+				writer.WriteString(L"}");
 				writer.AfterPrint(node);
 			}
 		};

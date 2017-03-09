@@ -138,6 +138,14 @@ GenerateGlobalDeclarationMetadata
 				void Visit(WfStructDeclaration* node)override
 				{
 				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
 			};
 
 			class GenerateGlobalDeclarationMetadataVisitor : public Object, public WfDeclaration::IVisitor
@@ -214,6 +222,14 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfStructDeclaration* node)override
 				{
+				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
 				}
 			};
 

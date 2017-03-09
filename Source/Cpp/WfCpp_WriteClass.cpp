@@ -34,6 +34,14 @@ namespace vl
 				{
 				}
 
+				void Dispatch(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					unprocessed.Add(node);

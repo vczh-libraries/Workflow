@@ -75,6 +75,14 @@ WfCppConfig::CollectClosureInfo
 				{
 				}
 
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
 				void Execute(WfNewInterfaceExpression* node)
 				{
 					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
@@ -404,6 +412,14 @@ WfCppConfig::WriteCpp
 					:config(_config)
 					, writer(_writer)
 				{
+				}
+
+				void Dispatch(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
 				}
 
 				void Visit(WfVariableDeclaration* node)override
