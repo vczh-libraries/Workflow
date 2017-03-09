@@ -1,16 +1,15 @@
-#include "WfAnalyzer.h"
+#include "WfEmitter.h"
 
 namespace vl
 {
 	namespace workflow
 	{
-		namespace analyzer
+		namespace emitter
 		{
 			using namespace collections;
-			using namespace regex;
-			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
+			using namespace analyzer;
 			using namespace runtime;
 
 			typedef WfInstruction Ins;

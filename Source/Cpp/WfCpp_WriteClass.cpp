@@ -97,9 +97,9 @@ namespace vl
 				List<Ptr<WfClassDeclaration>> unprocessed;
 				unprocessed.Add(decl);
 
-				FOREACH(Ptr<WfAttribute>, attribute, manager->GetAttributes(decl->attributes, L"cpp", L"Friend"))
+				FOREACH(Ptr<WfAttribute>, attribute, attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 				{
-					auto td = UnboxValue<ITypeDescriptor*>(manager->GetAttributeValue(attribute));
+					auto td = UnboxValue<ITypeDescriptor*>(attributeEvaluator->GetAttributeValue(attribute));
 
 					auto scopeName = manager->typeNames[td];
 					if (scopeName->declarations.Count() == 0)
@@ -229,11 +229,11 @@ namespace vl
 				FOREACH(Ptr<WfDeclaration>, memberDecl, decl->declarations)
 				{
 					vint memberAccessor = PUBLIC;
-					if (manager->GetAttribute(memberDecl->attributes, L"cpp", L"Private"))
+					if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"Private"))
 					{
 						memberAccessor = PRIVATE;
 					}
-					else if (manager->GetAttribute(memberDecl->attributes, L"cpp", L"Protected"))
+					else if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"Protected"))
 					{
 						memberAccessor = PROTECTED;
 					}

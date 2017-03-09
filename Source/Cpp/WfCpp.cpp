@@ -11,6 +11,7 @@ namespace vl
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace stream;
+			using namespace emitter;
 
 /***********************************************************************
 WfCppConfig
@@ -90,6 +91,7 @@ WfCppConfig
 				, assemblyName(_assemblyName)
 				, assemblyNamespace(_assemblyNamespace)
 			{
+				attributeEvaluator = MakePtr<WfAttributeEvaluator>(manager);
 				Collect();
 				for (vint i = 0; i < structDecls.Count(); i++)
 				{

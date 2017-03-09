@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_CPP_WFCPP
 #define VCZH_WORKFLOW_CPP_WFCPP
 
-#include "../Analyzer/WfAnalyzer.h"
+#include "../Emitter/WfEmitter.h"
 
 namespace vl
 {
@@ -62,6 +62,7 @@ namespace vl
 
 			public:
 				analyzer::WfLexicalScopeManager*											manager;
+				Ptr<emitter::WfAttributeEvaluator>											attributeEvaluator;
 				WString																		assemblyNamespace;
 				WString																		assemblyName;
 

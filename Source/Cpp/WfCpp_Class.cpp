@@ -198,7 +198,7 @@ WfGenerateClassMemberImplVisitor
 					{
 						printableMember = true;
 
-						bool userImpl = config->manager->GetAttribute(node->attributes, L"cpp", L"UserImpl");
+						bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
 						if (userImpl)
 						{
 							writer.WriteString(prefix);
@@ -246,7 +246,7 @@ WfGenerateClassMemberImplVisitor
 						arguments.Add(config->ConvertName(argument->name.value));
 					}
 
-					bool userImpl = config->manager->GetAttribute(node->attributes, L"cpp", L"UserImpl");
+					bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
 					if (userImpl)
 					{
 						writer.WriteString(prefix);
@@ -297,7 +297,7 @@ WfGenerateClassMemberImplVisitor
 				{
 					printableMember = true;
 
-					bool userImpl = config->manager->GetAttribute(node->attributes, L"cpp", L"UserImpl");
+					bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
 					if (userImpl)
 					{
 						writer.WriteString(prefix);

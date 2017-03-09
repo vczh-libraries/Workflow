@@ -115,9 +115,9 @@ CollectModule
 					else
 					{
 						WString file;
-						if (auto att = config->manager->GetAttribute(node->attributes, L"cpp", L"File"))
+						if (auto att = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"File"))
 						{
-							file = UnboxValue<WString>(config->manager->GetAttributeValue(att));
+							file = UnboxValue<WString>(config->attributeEvaluator->GetAttributeValue(att));
 						}
 						config->topLevelClassDeclsForFiles.Add(file, node);
 						config->declFiles.Add(node, file);

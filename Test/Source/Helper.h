@@ -1,9 +1,7 @@
 #ifndef WORKFLOW_UNITTEST_TESTFUNCTIONS
 #define WORKFLOW_UNITTEST_TESTFUNCTIONS
 
-#include "../../Source/Analyzer/WfAnalyzer.h"
 #include "../../Source/Cpp/WfCpp.h"
-#include "../../Source/Runtime/WfRuntime.h"
 
 using namespace vl;
 using namespace vl::unittest;
@@ -14,6 +12,7 @@ using namespace vl::parsing;
 using namespace vl::parsing::tabling;
 using namespace vl::workflow;
 using namespace vl::workflow::analyzer;
+using namespace vl::workflow::emitter;
 using namespace vl::workflow::cppcodegen;
 using namespace vl::workflow::runtime;
 using namespace vl::reflection;

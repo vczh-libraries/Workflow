@@ -1,16 +1,14 @@
-#include "WfAnalyzer.h"
+#include "WfEmitter.h"
 
 namespace vl
 {
 	namespace workflow
 	{
-		namespace analyzer
+		namespace emitter
 		{
-			using namespace collections;
-			using namespace regex;
 			using namespace parsing;
-			using namespace reflection;
 			using namespace reflection::description;
+			using namespace analyzer;
 			using namespace runtime;
 			using namespace typeimpl;
 
@@ -119,7 +117,7 @@ GenerateTypeCastInstructions
 GenerateAssembly
 ***********************************************************************/
 
-			Ptr<runtime::WfAssembly> GenerateAssembly(WfLexicalScopeManager* manager)
+			Ptr<runtime::WfAssembly> GenerateAssembly(analyzer::WfLexicalScopeManager* manager)
 			{
 				auto assembly = MakePtr<WfAssembly>();
 				assembly->insBeforeCodegen = new WfInstructionDebugInfo;
@@ -231,7 +229,7 @@ GenerateAssembly
 Compile
 ***********************************************************************/
 
-			Ptr<runtime::WfAssembly> Compile(Ptr<parsing::tabling::ParsingTable> table, WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors)
+			Ptr<runtime::WfAssembly> Compile(Ptr<parsing::tabling::ParsingTable> table, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors)
 			{
 				manager->Clear(true, true);
 				FOREACH(WString, code, moduleCodes)

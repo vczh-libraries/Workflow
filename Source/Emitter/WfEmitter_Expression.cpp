@@ -1,16 +1,16 @@
-#include "WfAnalyzer.h"
+#include "WfEmitter.h"
 
 namespace vl
 {
 	namespace workflow
 	{
-		namespace analyzer
+		namespace emitter
 		{
 			using namespace collections;
-			using namespace regex;
 			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
+			using namespace analyzer;
 			using namespace runtime;
 
 			typedef WfInstruction Ins;
@@ -24,7 +24,6 @@ GenerateInstructions(Expression)
 			class GenerateExpressionInstructionsVisitor
 				: public Object
 				, public WfExpression::IVisitor
-				, public WfVirtualExpression::IVisitor
 			{
 			public:
 				WfCodegenContext&						context;
@@ -1156,16 +1155,6 @@ GenerateInstructions(Expression)
 				}
 
 				void Visit(WfVirtualExpression* node)override
-				{
-					node->Accept((WfVirtualExpression::IVisitor*)this);
-				}
-
-				void Visit(WfBindExpression* node)override
-				{
-					GenerateExpressionInstructions(context, node->expandedExpression);
-				}
-
-				void Visit(WfFormatExpression* node)override
 				{
 					GenerateExpressionInstructions(context, node->expandedExpression);
 				}
