@@ -1386,6 +1386,93 @@ DeclarationVisitor
 				this->result = newNode;
 			}
 
+			void DeclarationVisitor::Visit(WfVirtualDeclaration* node)
+			{
+				this->result = Dispatch(node);
+			}
+
+/***********************************************************************
+VirtualDeclarationVisitor
+***********************************************************************/
+
+			// CopyFields ----------------------------------------
+
+			void VirtualDeclarationVisitor::CopyFields(WfAutoPropertyDeclaration* from, WfAutoPropertyDeclaration* to)
+			{
+				to->type = CreateField(from->type);
+				to->configConst = from->configConst;
+				to->configObserve = from->configObserve;
+				to->expression = CreateField(from->expression);
+				CopyFields(static_cast<WfVirtualDeclaration*>(from), static_cast<WfVirtualDeclaration*>(to));
+			}
+
+			void VirtualDeclarationVisitor::CopyFields(WfVirtualDeclaration* from, WfVirtualDeclaration* to)
+			{
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
+				{
+					to->expandedDeclarations.Add(CreateField(listItem));
+				}
+				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+			}
+
+			void VirtualDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
+			{
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				{
+					to->attributes.Add(CreateField(listItem));
+				}
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				to->classMember = CreateField(from->classMember);
+				to->codeRange = from->codeRange;
+			}
+
+			void VirtualDeclarationVisitor::CopyFields(WfAttribute* from, WfAttribute* to)
+			{
+				to->category.codeRange = from->category.codeRange;
+				to->category.tokenIndex = from->category.tokenIndex;
+				to->category.value = from->category.value;
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				to->value = CreateField(from->value);
+				to->codeRange = from->codeRange;
+			}
+
+			void VirtualDeclarationVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
+			{
+				to->kind = from->kind;
+				to->codeRange = from->codeRange;
+			}
+
+			// CreateField ---------------------------------------
+
+			vl::Ptr<WfAttribute> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfAttribute> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfAttribute>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			vl::Ptr<WfClassMember> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfClassMember> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfClassMember>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			// Visitor Members -----------------------------------
+
+			void VirtualDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
+			{
+				auto newNode = vl::MakePtr<WfAutoPropertyDeclaration>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
 /***********************************************************************
 VirtualExpressionVisitor
 ***********************************************************************/
@@ -1581,6 +1668,12 @@ ModuleVisitor
 			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualExpression* node)
 			{
 				node->Accept(static_cast<VirtualExpressionVisitor*>(this));
+				return this->result;
+			}
+
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualDeclaration* node)
+			{
+				node->Accept(static_cast<VirtualDeclarationVisitor*>(this));
 				return this->result;
 			}
 		}

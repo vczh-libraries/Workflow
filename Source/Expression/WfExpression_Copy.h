@@ -243,6 +243,9 @@ namespace vl
 				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
 
+				// Dispatch (virtual) --------------------------------
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualDeclaration* node) = 0;
+
 				// Visitor Members -----------------------------------
 				void Visit(WfNamespaceDeclaration* node)override;
 				void Visit(WfFunctionDeclaration* node)override;
@@ -254,6 +257,31 @@ namespace vl
 				void Visit(WfClassDeclaration* node)override;
 				void Visit(WfEnumDeclaration* node)override;
 				void Visit(WfStructDeclaration* node)override;
+				void Visit(WfVirtualDeclaration* node)override;
+			};
+
+			class VirtualDeclarationVisitor : public virtual VisitorBase, public WfVirtualDeclaration::IVisitor
+			{
+			public:
+
+				// CopyFields ----------------------------------------
+				void CopyFields(WfAutoPropertyDeclaration* from, WfAutoPropertyDeclaration* to);
+				void CopyFields(WfVirtualDeclaration* from, WfVirtualDeclaration* to);
+				void CopyFields(WfDeclaration* from, WfDeclaration* to);
+				void CopyFields(WfAttribute* from, WfAttribute* to);
+				void CopyFields(WfClassMember* from, WfClassMember* to);
+
+				// CreateField ---------------------------------------
+				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
+				vl::Ptr<WfClassMember> CreateField(vl::Ptr<WfClassMember> from);
+
+				// CreateField (virtual) -----------------------------
+				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
+				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
+				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfAutoPropertyDeclaration* node)override;
 			};
 
 			class VirtualExpressionVisitor : public virtual VisitorBase, public WfVirtualExpression::IVisitor
@@ -293,6 +321,7 @@ namespace vl
 				, public ExpressionVisitor
 				, public StatementVisitor
 				, public DeclarationVisitor
+				, public VirtualDeclarationVisitor
 				, public VirtualExpressionVisitor
 				, public ModuleUsingFragmentVisitor
 			{
@@ -317,6 +346,7 @@ namespace vl
 
 				// Dispatch (virtual) --------------------------------
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node);
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualDeclaration* node);
 			};
 		}
 	}

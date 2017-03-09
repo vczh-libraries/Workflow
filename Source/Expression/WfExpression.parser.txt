@@ -273,6 +273,35 @@ class StructDeclaration : Declaration
 }
 
 //////////////////////////////////////////////////////////////////
+// AST (VirtualDeclarations)
+//////////////////////////////////////////////////////////////////
+
+class VirtualDeclaration : Declaration
+{
+	Declaration[]			expandedDeclarations;
+}
+
+enum APConst
+{
+	Readonly,
+	Writable,
+}
+
+enum APObserve
+{
+	Observable,
+	NotObservable,
+}
+
+class AutoPropertyDeclaration : VirtualDeclaration
+{
+	Type					type;
+	APConst					configConst;
+	APObserve				configObserve;
+	Expression				expression;
+}
+
+//////////////////////////////////////////////////////////////////
 // AST (Statements)
 //////////////////////////////////////////////////////////////////
 
@@ -1099,6 +1128,25 @@ rule StructDeclaration _Struct
 	= "struct" NAME : name "{" {_StructMember : members} "}" as StructDeclaration
 	;
 
+rule AutoPropertyDeclaration _APConfig
+	= "{" "}"
+			as AutoPropertyDeclaration
+			with {configConst="Writable"} with {configObserve="Observable"}
+	= "{" "const" "}"
+			as AutoPropertyDeclaration
+			with {configConst="Readonly"} with {configObserve="Observable"}
+	= "{" "not" "observe" "}"
+			as AutoPropertyDeclaration
+			with {configConst="Writable"} with {configObserve="NotObservable"}
+	= "{" "const" "," "not" "observe" "}"
+			as AutoPropertyDeclaration
+			with {configConst="Readonly"} with {configObserve="NotObservable"}
+	;
+
+rule AutoPropertyDeclaration _AutoProperty
+	= "prop" NAME : name ":" _Type : type ["=" _Expression : expression] !_APConfig
+	;
+
 //////////////////////////////////////////////////////////////////
 // Rule (Declaration -- Branches)
 //////////////////////////////////////////////////////////////////
@@ -1113,11 +1161,17 @@ rule Declaration _SharedDeclarationBranch
 	= !_Class
 	= !_Enum
 	= !_Struct
+	= !_AutoProperty
+	;
+
+rule Declaration _MemberDeclarationBranch
+	= !_Function
+	= !_AutoProperty
 	;
 
 rule Declaration _Declaration
 	= {_Attribute : attributes} !_SharedDeclarationBranch
-	= {_Attribute : attributes} !_Function
+	= {_Attribute : attributes} !_MemberDeclarationBranch
 	;
 
 rule ClassMember _ClassMember
@@ -1127,7 +1181,7 @@ rule ClassMember _ClassMember
 
 rule Declaration _MemberDeclaration
 	= {_Attribute : attributes} !_SharedDeclarationBranch
-	= {_Attribute : attributes} [_ClassMember : classMember] !_Function
+	= {_Attribute : attributes} [_ClassMember : classMember] !_MemberDeclarationBranch
 	;
 
 //////////////////////////////////////////////////////////////////

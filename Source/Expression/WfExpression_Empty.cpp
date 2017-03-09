@@ -297,6 +297,21 @@ DeclarationVisitor
 			{
 			}
 
+			void DeclarationVisitor::Visit(WfVirtualDeclaration* node)
+			{
+				Dispatch(node);
+			}
+
+/***********************************************************************
+VirtualDeclarationVisitor
+***********************************************************************/
+
+			// Visitor Members -----------------------------------
+
+			void VirtualDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
+			{
+			}
+
 /***********************************************************************
 VirtualExpressionVisitor
 ***********************************************************************/

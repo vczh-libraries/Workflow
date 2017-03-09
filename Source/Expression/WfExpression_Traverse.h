@@ -245,6 +245,9 @@ namespace vl
 				virtual void VisitField(WfType* node) = 0;
 				virtual void VisitField(WfStatement* node) = 0;
 
+				// Dispatch (virtual) --------------------------------
+				virtual void Dispatch(WfVirtualDeclaration* node) = 0;
+
 				// Visitor Members -----------------------------------
 				void Visit(WfNamespaceDeclaration* node)override;
 				void Visit(WfFunctionDeclaration* node)override;
@@ -256,6 +259,33 @@ namespace vl
 				void Visit(WfClassDeclaration* node)override;
 				void Visit(WfEnumDeclaration* node)override;
 				void Visit(WfStructDeclaration* node)override;
+				void Visit(WfVirtualDeclaration* node)override;
+			};
+
+			class VirtualDeclarationVisitor : public Object, public WfVirtualDeclaration::IVisitor
+			{
+			public:
+
+				// Traverse ------------------------------------------
+				virtual void Traverse(vl::parsing::ParsingToken& token);
+				virtual void Traverse(vl::parsing::ParsingTreeCustomBase* node);
+				virtual void Traverse(WfAutoPropertyDeclaration* node);
+				virtual void Traverse(WfVirtualDeclaration* node);
+				virtual void Traverse(WfDeclaration* node);
+				virtual void Traverse(WfAttribute* node);
+				virtual void Traverse(WfClassMember* node);
+
+				// VisitField ----------------------------------------
+				void VisitField(WfAttribute* node);
+				void VisitField(WfClassMember* node);
+
+				// VisitField (virtual) ------------------------------
+				virtual void VisitField(WfExpression* node) = 0;
+				virtual void VisitField(WfDeclaration* node) = 0;
+				virtual void VisitField(WfType* node) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfAutoPropertyDeclaration* node)override;
 			};
 
 			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
@@ -299,6 +329,7 @@ namespace vl
 				, public ExpressionVisitor
 				, public StatementVisitor
 				, public DeclarationVisitor
+				, public VirtualDeclarationVisitor
 				, public VirtualExpressionVisitor
 				, public ModuleUsingFragmentVisitor
 			{
@@ -325,6 +356,7 @@ namespace vl
 
 				// Dispatch (virtual) --------------------------------
 				void Dispatch(WfVirtualExpression* node);
+				void Dispatch(WfVirtualDeclaration* node);
 			};
 		}
 	}

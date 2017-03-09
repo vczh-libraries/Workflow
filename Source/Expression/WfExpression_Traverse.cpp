@@ -1281,6 +1281,86 @@ DeclarationVisitor
 				VisitField(node->classMember.Obj());
 			}
 
+			void DeclarationVisitor::Visit(WfVirtualDeclaration* node)
+			{
+				Dispatch(node);
+			}
+
+/***********************************************************************
+VirtualDeclarationVisitor
+***********************************************************************/
+
+			// Traverse ------------------------------------------
+
+			void VirtualDeclarationVisitor::Traverse(vl::parsing::ParsingToken& token)
+			{
+			}
+
+			void VirtualDeclarationVisitor::Traverse(vl::parsing::ParsingTreeCustomBase* node)
+			{
+			}
+
+			void VirtualDeclarationVisitor::Traverse(WfAutoPropertyDeclaration* node)
+			{
+			}
+
+			void VirtualDeclarationVisitor::Traverse(WfVirtualDeclaration* node)
+			{
+			}
+
+			void VirtualDeclarationVisitor::Traverse(WfDeclaration* node)
+			{
+			}
+
+			void VirtualDeclarationVisitor::Traverse(WfAttribute* node)
+			{
+			}
+
+			void VirtualDeclarationVisitor::Traverse(WfClassMember* node)
+			{
+			}
+
+			// VisitField ----------------------------------------
+
+			void VirtualDeclarationVisitor::VisitField(WfAttribute* node)
+			{
+				if (!node) return;
+				Traverse(static_cast<WfAttribute*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->category);
+				Traverse(node->name);
+				VisitField(node->value.Obj());
+			}
+
+			void VirtualDeclarationVisitor::VisitField(WfClassMember* node)
+			{
+				if (!node) return;
+				Traverse(static_cast<WfClassMember*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+			}
+
+			// Visitor Members -----------------------------------
+
+			void VirtualDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
+			{
+				Traverse(static_cast<WfAutoPropertyDeclaration*>(node));
+				Traverse(static_cast<WfVirtualDeclaration*>(node));
+				Traverse(static_cast<WfDeclaration*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->type.Obj());
+				VisitField(node->expression.Obj());
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
+				{
+					VisitField(listItem.Obj());
+				}
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				{
+					VisitField(listItem.Obj());
+				}
+				Traverse(node->name);
+				VisitField(node->classMember.Obj());
+			}
+
 /***********************************************************************
 VirtualExpressionVisitor
 ***********************************************************************/
@@ -1478,6 +1558,11 @@ ModuleVisitor
 			void ModuleVisitor::Dispatch(WfVirtualExpression* node)
 			{
 				node->Accept(static_cast<VirtualExpressionVisitor*>(this));
+			}
+
+			void ModuleVisitor::Dispatch(WfVirtualDeclaration* node)
+			{
+				node->Accept(static_cast<VirtualDeclarationVisitor*>(this));
 			}
 		}
 	}

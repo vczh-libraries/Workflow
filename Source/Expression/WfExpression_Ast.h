@@ -152,6 +152,8 @@ namespace vl
 		class WfEnumDeclaration;
 		class WfStructMember;
 		class WfStructDeclaration;
+		class WfVirtualDeclaration;
+		class WfAutoPropertyDeclaration;
 		class WfBreakStatement;
 		class WfContinueStatement;
 		class WfReturnStatement;
@@ -339,6 +341,7 @@ namespace vl
 				virtual void Visit(WfClassDeclaration* node)=0;
 				virtual void Visit(WfEnumDeclaration* node)=0;
 				virtual void Visit(WfStructDeclaration* node)=0;
+				virtual void Visit(WfVirtualDeclaration* node)=0;
 			};
 
 			virtual void Accept(WfDeclaration::IVisitor* visitor)=0;
@@ -664,6 +667,47 @@ namespace vl
 			void Accept(WfDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfStructDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfVirtualDeclaration abstract : public WfDeclaration, vl::reflection::Description<WfVirtualDeclaration>
+		{
+		public:
+			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+			{
+			public:
+				virtual void Visit(WfAutoPropertyDeclaration* node)=0;
+			};
+
+			virtual void Accept(WfVirtualDeclaration::IVisitor* visitor)=0;
+
+			vl::collections::List<vl::Ptr<WfDeclaration>> expandedDeclarations;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+		};
+
+		enum class WfAPConst
+		{
+			Readonly,
+			Writable,
+		};
+
+		enum class WfAPObserve
+		{
+			Observable,
+			NotObservable,
+		};
+
+		class WfAutoPropertyDeclaration : public WfVirtualDeclaration, vl::reflection::Description<WfAutoPropertyDeclaration>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			WfAPConst configConst;
+			WfAPObserve configObserve;
+			vl::Ptr<WfExpression> expression;
+
+			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfAutoPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfBreakStatement : public WfStatement, vl::reflection::Description<WfBreakStatement>
@@ -1389,6 +1433,10 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfEnumDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfStructMember)
 			DECL_TYPE_INFO(vl::workflow::WfStructDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfAPConst)
+			DECL_TYPE_INFO(vl::workflow::WfAPObserve)
+			DECL_TYPE_INFO(vl::workflow::WfAutoPropertyDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfBreakStatement)
 			DECL_TYPE_INFO(vl::workflow::WfContinueStatement)
 			DECL_TYPE_INFO(vl::workflow::WfReturnStatement)
@@ -1458,6 +1506,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfExpression::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfStatement::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfDeclaration::IVisitor)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualDeclaration::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfVirtualExpression::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
 
@@ -1791,7 +1840,20 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
+				void Visit(vl::workflow::WfVirtualDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
 			END_INTERFACE_PROXY(vl::workflow::WfDeclaration::IVisitor)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualDeclaration::IVisitor)
+				void Visit(vl::workflow::WfAutoPropertyDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+			END_INTERFACE_PROXY(vl::workflow::WfVirtualDeclaration::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualExpression::IVisitor)
 				void Visit(vl::workflow::WfBindExpression* node)override

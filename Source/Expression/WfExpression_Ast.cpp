@@ -117,6 +117,16 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
+		void WfVirtualDeclaration::Accept(WfDeclaration::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
+		void WfAutoPropertyDeclaration::Accept(WfVirtualDeclaration::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
 		void WfBreakStatement::Accept(WfStatement::IVisitor* visitor)
 		{
 			visitor->Visit(this);
@@ -412,6 +422,10 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfEnumDeclaration, workflow::WfEnumDeclaration)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfStructMember, workflow::WfStructMember)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfStructDeclaration, workflow::WfStructDeclaration)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualDeclaration, workflow::WfVirtualDeclaration)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfAPConst, workflow::WfAPConst)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfAPObserve, workflow::WfAPObserve)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfAutoPropertyDeclaration, workflow::WfAutoPropertyDeclaration)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfBreakStatement, workflow::WfBreakStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfContinueStatement, workflow::WfContinueStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfReturnStatement, workflow::WfReturnStatement)
@@ -481,6 +495,7 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfExpression::IVisitor, workflow::WfExpression::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfStatement::IVisitor, workflow::WfStatement::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfDeclaration::IVisitor, workflow::WfDeclaration::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualDeclaration::IVisitor, workflow::WfVirtualDeclaration::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualExpression::IVisitor, workflow::WfVirtualExpression::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingFragment::IVisitor, workflow::WfModuleUsingFragment::IVisitor)
 
@@ -791,6 +806,36 @@ namespace vl
 
 				CLASS_MEMBER_FIELD(members)
 			END_CLASS_MEMBER(WfStructDeclaration)
+
+			BEGIN_CLASS_MEMBER(WfVirtualDeclaration)
+				CLASS_MEMBER_BASE(WfDeclaration)
+
+				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(WfVirtualDeclaration::*)(WfVirtualDeclaration::IVisitor* visitor))
+				CLASS_MEMBER_FIELD(expandedDeclarations)
+			END_CLASS_MEMBER(WfVirtualDeclaration)
+
+			BEGIN_ENUM_ITEM(WfAPConst)
+				ENUM_ITEM_NAMESPACE(WfAPConst)
+				ENUM_NAMESPACE_ITEM(Readonly)
+				ENUM_NAMESPACE_ITEM(Writable)
+			END_ENUM_ITEM(WfAPConst)
+
+			BEGIN_ENUM_ITEM(WfAPObserve)
+				ENUM_ITEM_NAMESPACE(WfAPObserve)
+				ENUM_NAMESPACE_ITEM(Observable)
+				ENUM_NAMESPACE_ITEM(NotObservable)
+			END_ENUM_ITEM(WfAPObserve)
+
+			BEGIN_CLASS_MEMBER(WfAutoPropertyDeclaration)
+				CLASS_MEMBER_BASE(WfVirtualDeclaration)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfAutoPropertyDeclaration>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(type)
+				CLASS_MEMBER_FIELD(configConst)
+				CLASS_MEMBER_FIELD(configObserve)
+				CLASS_MEMBER_FIELD(expression)
+			END_CLASS_MEMBER(WfAutoPropertyDeclaration)
 
 			BEGIN_CLASS_MEMBER(WfBreakStatement)
 				CLASS_MEMBER_BASE(WfStatement)
@@ -1415,7 +1460,12 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfDeclaration::IVisitor::*)(WfClassDeclaration* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfDeclaration::IVisitor::*)(WfEnumDeclaration* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfDeclaration::IVisitor::*)(WfStructDeclaration* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfDeclaration::IVisitor::*)(WfVirtualDeclaration* node))
 			END_INTERFACE_MEMBER(WfDeclaration)
+
+			BEGIN_INTERFACE_MEMBER(WfVirtualDeclaration::IVisitor)
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualDeclaration::IVisitor::*)(WfAutoPropertyDeclaration* node))
+			END_INTERFACE_MEMBER(WfVirtualDeclaration)
 
 			BEGIN_INTERFACE_MEMBER(WfVirtualExpression::IVisitor)
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfBindExpression* node))
@@ -1473,6 +1523,10 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfEnumDeclaration)
 					ADD_TYPE_INFO(vl::workflow::WfStructMember)
 					ADD_TYPE_INFO(vl::workflow::WfStructDeclaration)
+					ADD_TYPE_INFO(vl::workflow::WfVirtualDeclaration)
+					ADD_TYPE_INFO(vl::workflow::WfAPConst)
+					ADD_TYPE_INFO(vl::workflow::WfAPObserve)
+					ADD_TYPE_INFO(vl::workflow::WfAutoPropertyDeclaration)
 					ADD_TYPE_INFO(vl::workflow::WfBreakStatement)
 					ADD_TYPE_INFO(vl::workflow::WfContinueStatement)
 					ADD_TYPE_INFO(vl::workflow::WfReturnStatement)
@@ -1542,6 +1596,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfExpression::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfStatement::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfDeclaration::IVisitor)
+					ADD_TYPE_INFO(vl::workflow::WfVirtualDeclaration::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfVirtualExpression::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
 				}
