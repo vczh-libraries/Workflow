@@ -26,7 +26,7 @@ ContextFreeModuleDesugar
 
 				void Traverse(ParsingTreeCustomBase* node)override
 				{
-					if (node->codeRange != ParsingTextRange())
+					if (node->codeRange == ParsingTextRange())
 					{
 						node->codeRange = range;
 					}
@@ -34,7 +34,7 @@ ContextFreeModuleDesugar
 
 				void Traverse(ParsingToken& token)override
 				{
-					if (token.codeRange != ParsingTextRange())
+					if (token.codeRange == ParsingTextRange())
 					{
 						token.codeRange = range;
 					}
@@ -219,12 +219,22 @@ ContextFreeModuleDesugar
 							decl->statement = block;
 						}
 					}
+
+					if (!needVirtual || node->configConst == WfAPConst::Writable)
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
 						node->expandedDeclarations.Add(decl);
 
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = setterName;
+
+						if (node->configConst == WfAPConst::Readonly)
+						{
+							auto att = MakePtr<WfAttribute>();
+							att->category.value = L"cpp";
+							att->name.value = L"Protected";
+							decl->attributes.Add(att);
+						}
 
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
@@ -262,7 +272,7 @@ ContextFreeModuleDesugar
 							if (node->configObserve == WfAPObserve::Observable)
 							{
 								auto ifStat = MakePtr<WfIfStatement>();
-								ifStat->expression = createBinaryExpr(WfBinaryOperator::EQ);
+								ifStat->expression = createBinaryExpr(WfBinaryOperator::NE);
 
 								auto trueBlock = MakePtr<WfBlockStatement>();
 								ifStat->trueBranch = trueBlock;
@@ -328,7 +338,7 @@ ContextFreeModuleDesugar
 						decl->classMember = classMember;
 
 						classMember->kind = WfClassMemberKind::Normal;
-						if (surroundingClassDecl)
+						if (surroundingLambda)
 						{
 							if (decl->name.value == getterName)
 							{

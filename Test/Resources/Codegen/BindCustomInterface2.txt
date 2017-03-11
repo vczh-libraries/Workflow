@@ -6,9 +6,7 @@ var s = "";
 
 interface ISummer2
 {
-	func GetSum() : int;
-	event SumChanged();
-	prop Sum : int {GetSum : SumChanged}
+	prop Sum : int {const}
 }
 
 interface IAdder2 : ISummer2
@@ -42,17 +40,11 @@ func main() : string
 {
 	Execute(new IAdder2^
 	{
-		var sum = 0;
-
-		override func GetSum() : int
-		{
-			return sum;
-		}
+		override prop Sum : int = 0 {const}
 
 		override func Add(value : int) : void
 		{
-			sum = sum + value;
-			this.SumChanged();
+			SetSum(Sum + value);
 		}
 	});
 	return s;

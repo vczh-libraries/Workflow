@@ -122,8 +122,9 @@ Closures
 	public:
 		__vwsnc3_BindCustomInterface2_main__IAdder2();
 
-		::vl::vint32_t sum = 0;
+		::vl::vint32_t __vwsn_prop_Sum = 0;
 		::vl::vint32_t GetSum() override;
+		void SetSum(::vl::vint32_t __vwsn_value_);
 		void Add(::vl::vint32_t value) override;
 	};
 }

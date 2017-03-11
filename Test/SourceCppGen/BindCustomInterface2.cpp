@@ -192,18 +192,25 @@ Closures
 
 	__vwsnc3_BindCustomInterface2_main__IAdder2::__vwsnc3_BindCustomInterface2_main__IAdder2()
 	{
-		this->sum = 0;
+		this->__vwsn_prop_Sum = 0;
 	}
 
 	::vl::vint32_t __vwsnc3_BindCustomInterface2_main__IAdder2::GetSum()
 	{
-		return sum;
+		return __vwsn_prop_Sum;
+	}
+	void __vwsnc3_BindCustomInterface2_main__IAdder2::SetSum(::vl::vint32_t __vwsn_value_)
+	{
+		if ((__vwsn_prop_Sum != __vwsn_value_))
+		{
+			(__vwsn_prop_Sum = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->SumChanged)();
+		}
 	}
 
 	void __vwsnc3_BindCustomInterface2_main__IAdder2::Add(::vl::vint32_t value)
 	{
-		(sum = (sum + value));
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->SumChanged)();
+		::vl::__vwsn::This(this)->SetSum((::vl::__vwsn::This(this)->GetSum() + value));
 	}
 
 }

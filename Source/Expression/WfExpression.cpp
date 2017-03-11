@@ -740,26 +740,7 @@ Print (Expression)
 						writer.WriteLine(L"");
 					}
 
-					FOREACH(Ptr<WfAttribute>, attribute, decl->attributes)
-					{
-						writer.WriteString(indent + L"    ");
-						WfPrint(attribute, indent, writer);
-						writer.WriteLine(L"");
-					}
-
 					writer.WriteString(indent + L"    ");
-					switch (decl->classMember->kind)
-					{
-					case WfClassMemberKind::Normal:
-						break;
-					case WfClassMemberKind::Static:
-						writer.WriteString(L"static ");
-						break;
-					case WfClassMemberKind::Override:
-						writer.WriteString(L"override ");
-						break;
-					}
-
 					WfPrint(decl, indent + L"    ", writer);
 					writer.WriteLine(L"");
 				}
@@ -1279,26 +1260,7 @@ Print (Declaration)
 						writer.WriteLine(L"");
 					}
 
-					FOREACH(Ptr<WfAttribute>, attribute, decl->attributes)
-					{
-						writer.WriteString(indent + L"    ");
-						WfPrint(attribute, indent, writer);
-						writer.WriteLine(L"");
-					}
-
 					writer.WriteString(indent + L"    ");
-					switch (decl->classMember->kind)
-					{
-					case WfClassMemberKind::Normal:
-						break;
-					case WfClassMemberKind::Static:
-						writer.WriteString(L"static ");
-						break;
-					case WfClassMemberKind::Override:
-						writer.WriteString(L"override ");
-						break;
-					}
-
 					WfPrint(decl, indent + L"    ", writer);
 					writer.WriteLine(L"");
 				}
@@ -1385,9 +1347,18 @@ Print (Declaration)
 			{
 				if (node->expandedDeclarations.Count() > 0)
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->expandedDeclarations)
 					{
-						decl->Accept(this);
+						if (index > 0)
+						{
+							writer.WriteLine(L"");
+							writer.WriteString(indent);
+						}
+						WfPrint(decl, indent, writer);
+						if (index < node->expandedDeclarations.Count() - 1)
+						{
+							writer.WriteLine(L"");
+						}
 					}
 				}
 				else
@@ -1472,15 +1443,28 @@ Print (Module)
 
 		void WfPrint(Ptr<WfDeclaration> node, const WString& indent, parsing::ParsingWriter& writer)
 		{
-			if (!node->classMember)
+			FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
 			{
-				FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
+				WfPrint(attribute, indent, writer);
+				writer.WriteLine(L"");
+				writer.WriteString(indent);
+			}
+
+			if (node->classMember)
+			{
+				switch (node->classMember->kind)
 				{
-					WfPrint(attribute, indent, writer);
-					writer.WriteLine(L"");
-					writer.WriteString(indent);
+				case WfClassMemberKind::Normal:
+					break;
+				case WfClassMemberKind::Static:
+					writer.WriteString(L"static ");
+					break;
+				case WfClassMemberKind::Override:
+					writer.WriteString(L"override ");
+					break;
 				}
 			}
+
 			PrintDeclarationVisitor visitor(indent, writer);
 			node->Accept(&visitor);
 		}

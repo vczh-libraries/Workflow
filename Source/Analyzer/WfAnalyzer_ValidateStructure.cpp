@@ -470,7 +470,7 @@ ValidateStructure(Declaration)
 					{
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
-							decl->Accept(this);
+							Execute(decl);
 						}
 					}
 

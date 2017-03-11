@@ -247,7 +247,7 @@ BuildScopeForDeclaration
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
-						decl->Accept(this);
+						Execute(manager, parentScope, source, decl);
 					}
 				}
 

@@ -579,7 +579,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::PropertyEventNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
 			{
-				return new ParsingError(node, L"G3: Cannot find the event \"" + node->valueChangedEvent.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should be an event in the same type.");
+				return new ParsingError(node, L"G3: Cannot find the event \"" + node->valueChangedEvent.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
