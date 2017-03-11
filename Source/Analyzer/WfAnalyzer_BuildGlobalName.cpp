@@ -213,7 +213,8 @@ BuildGlobalNameFromModules
 				}
 			};
 
-			class BuildNameDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			class BuildNameDeclarationVisitor
+				: public empty_visitor::DeclarationVisitor
 			{
 			public:
 				WfLexicalScopeManager*			manager;
@@ -225,6 +226,10 @@ BuildGlobalNameFromModules
 				{
 				}
 
+				void Dispatch(WfVirtualDeclaration* node)override
+				{
+				}
+
 				void Visit(WfNamespaceDeclaration* node)override
 				{
 					manager->namespaceNames.Add(node, scopeName);
@@ -232,30 +237,6 @@ BuildGlobalNameFromModules
 					{
 						BuildNameForDeclaration(manager, scopeName, subDecl.Obj());
 					}
-				}
-
-				void Visit(WfFunctionDeclaration* node)override
-				{
-				}
-
-				void Visit(WfVariableDeclaration* node)override
-				{
-				}
-
-				void Visit(WfEventDeclaration* node)override
-				{
-				}
-
-				void Visit(WfPropertyDeclaration* node)override
-				{
-				}
-
-				void Visit(WfConstructorDeclaration* node)override
-				{
-				}
-				
-				void Visit(WfDestructorDeclaration* node)override
-				{
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -300,7 +281,9 @@ BuildGlobalNameFromModules
 ValidateScopeName
 ***********************************************************************/
 
-			class ValidateScopeNameDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			class ValidateScopeNameDeclarationVisitor
+				: public Object
+				, public WfDeclaration::IVisitor
 			{
 			public:
 				enum Category
@@ -455,6 +438,14 @@ ValidateScopeName
 					else
 					{
 						AddError(node);
+					}
+				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
 					}
 				}
 			};

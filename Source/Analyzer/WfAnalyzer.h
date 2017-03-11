@@ -461,6 +461,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfAutoPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
 				static Ptr<parsing::ParsingError>			FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);

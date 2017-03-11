@@ -891,12 +891,16 @@ ValidateStructure(Declaration)
 						break;
 					}
 
-					if (classDecl && classDecl->kind == WfClassKind::Interface)
+					if (classDecl)
 					{
-						if (node->expression)
+						if (classDecl->kind == WfClassKind::Interface && node->expression)
 						{
 							manager->errors.Add(WfErrors::AutoPropertyCannotBeInitializedInInterface(node, classDecl));
 						}
+					}
+					else if(!dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					{
+						manager->errors.Add(WfErrors::WrongDeclaration(node));
 					}
 
 					ValidateTypeStructure(manager, node->type);

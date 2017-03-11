@@ -446,6 +446,11 @@ WfErrors
 				return new ParsingError(node, L"D7: Destructor cannot be defined outside of classes.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfAutoPropertyDeclaration* node)
+			{
+				return new ParsingError(node, L"D7: Auto-property cannot be defined outside of classes.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions, variables and auto-properties are allowed.");
