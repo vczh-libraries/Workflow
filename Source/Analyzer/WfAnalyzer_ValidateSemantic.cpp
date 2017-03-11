@@ -343,6 +343,14 @@ ValidateSemantic(ClassMember)
 					ValidateDeclarationSemantic(manager, node);
 				}
 
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
 				static void Execute(Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl, WfLexicalScopeManager* manager)
 				{
 					ValidateSemanticClassMemberVisitor visitor(td, classDecl, manager);
@@ -519,6 +527,14 @@ ValidateSemantic(Declaration)
 					FOREACH(Ptr<WfStructMember>, member, node->members)
 					{
 						Visit(member->attributes);
+					}
+				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
 					}
 				}
 
@@ -2097,7 +2113,7 @@ ValidateSemantic(Expression)
 					return symbol->typeInfo;
 				}
 
-				class NewInterfaceExpressionVisitor : public Object, public WfDeclaration::IVisitor
+				class NewInterfaceExpressionVisitor : public empty_visitor::DeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*							manager;
@@ -2110,8 +2126,12 @@ ValidateSemantic(Expression)
 					{
 					}
 
-					void Visit(WfNamespaceDeclaration* node)override
+					void Dispatch(WfVirtualDeclaration* node)override
 					{
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							decl->Accept(this);
+						}
 					}
 
 					void Visit(WfFunctionDeclaration* node)override
@@ -2135,26 +2155,6 @@ ValidateSemantic(Expression)
 							);
 					}
 
-					void Visit(WfEventDeclaration* node)override
-					{
-					}
-
-					void Visit(WfPropertyDeclaration* node)override
-					{
-					}
-
-					void Visit(WfClassDeclaration* node)override
-					{
-					}
-
-					void Visit(WfConstructorDeclaration* node)override
-					{
-					}
-
-					void Visit(WfDestructorDeclaration* node)override
-					{
-					}
-
 					void Execute(WfNewInterfaceExpression* node)
 					{
 						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
@@ -2162,14 +2162,6 @@ ValidateSemantic(Expression)
 							memberDecl->Accept(this);
 							ValidateDeclarationSemantic(manager, memberDecl);
 						}
-					}
-
-					void Visit(WfEnumDeclaration* node)override
-					{
-					}
-
-					void Visit(WfStructDeclaration* node)override
-					{
 					}
 				};
 
