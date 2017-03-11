@@ -31,10 +31,10 @@ namespace calculator
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<NumberExpression>;
 #endif
-	private:
-		::vl::vint32_t value = 0;
 	public:
+		::vl::vint32_t __vwsn_prop_Value = 0;
 		::vl::vint32_t GetValue();
+		void SetValue(::vl::vint32_t __vwsn_value_);
 		NumberExpression(::vl::vint32_t _value);
 	};
 

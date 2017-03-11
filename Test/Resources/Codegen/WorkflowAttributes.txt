@@ -24,14 +24,11 @@ namespace calculator
 	@cpp:File("WorkflowAttributes_NumberExpression")
 	class NumberExpression : Expression
 	{
-		@cpp:Private
-		var value : int = 0;
-		func GetValue() : int { return value; }
-		prop Value : int {GetValue}
+		prop Value : int = 0 {const, not observe}
 
 		new (_value : int)
 		{
-			value = _value;
+			SetValue(_value);
 		}
 	}
 	
@@ -46,26 +43,15 @@ namespace calculator
 			Div = 3,
 		}
 		
-		@cpp:Private
-		var op : BinaryOperator = Add;
-		func GetOp() : BinaryOperator { return op; }
-		prop Operator : BinaryOperator {GetOp}
-
-		@cpp:Private
-		var left : Expression^ = null;
-		func GetLeft() : Expression^ { return left; }
-		prop Left : Expression^ {GetLeft}
-
-		@cpp:Private
-		var right : Expression^ = null;
-		func GetRight() : Expression^ { return right; }
-		prop Right : Expression^ {GetRight}
+		prop Operator : BinaryOperator	= Add	{const, not observe}
+		prop Left : Expression^			= null	{const, not observe}
+		prop Right : Expression^		= null	{const, not observe}
 
 		new (_left : Expression^, _op : BinaryOperator, _right : Expression^)
 		{
-			left = _left;
-			op = _op;
-			right = _right;
+			SetLeft(_left);
+			SetOperator(_op);
+			SetRight(_right);
 		}
 	}
 }

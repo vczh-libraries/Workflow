@@ -31,26 +31,38 @@ Class (::calculator::BinaryExpression)
 
 namespace calculator
 {
-	::calculator::BinaryExpression::BinaryOperator BinaryExpression::GetOp()
+	::calculator::BinaryExpression::BinaryOperator BinaryExpression::GetOperator()
 	{
-		return ::vl::__vwsn::This(this)->op;
+		return ::vl::__vwsn::This(this)->__vwsn_prop_Operator;
+	}
+	void BinaryExpression::SetOperator(::calculator::BinaryExpression::BinaryOperator __vwsn_value_)
+	{
+		(::vl::__vwsn::This(this)->__vwsn_prop_Operator = __vwsn_value_);
 	}
 
 	::vl::Ptr<::calculator::Expression> BinaryExpression::GetLeft()
 	{
-		return ::vl::__vwsn::This(this)->left;
+		return ::vl::__vwsn::This(this)->__vwsn_prop_Left;
+	}
+	void BinaryExpression::SetLeft(::vl::Ptr<::calculator::Expression> __vwsn_value_)
+	{
+		(::vl::__vwsn::This(this)->__vwsn_prop_Left = __vwsn_value_);
 	}
 
 	::vl::Ptr<::calculator::Expression> BinaryExpression::GetRight()
 	{
-		return ::vl::__vwsn::This(this)->right;
+		return ::vl::__vwsn::This(this)->__vwsn_prop_Right;
+	}
+	void BinaryExpression::SetRight(::vl::Ptr<::calculator::Expression> __vwsn_value_)
+	{
+		(::vl::__vwsn::This(this)->__vwsn_prop_Right = __vwsn_value_);
 	}
 
 	BinaryExpression::BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right)
 	{
-		(::vl::__vwsn::This(this)->left = _left);
-		(::vl::__vwsn::This(this)->op = _op);
-		(::vl::__vwsn::This(this)->right = _right);
+		::vl::__vwsn::This(this)->SetLeft(_left);
+		::vl::__vwsn::This(this)->SetOperator(_op);
+		::vl::__vwsn::This(this)->SetRight(_right);
 	}
 
 }

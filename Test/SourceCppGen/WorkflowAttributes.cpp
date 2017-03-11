@@ -51,7 +51,7 @@ Global Functions
 		{
 			auto op = ::vl::WString(L"", false);
 			{
-				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOp();
+				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOperator();
 				if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Add)
 				{
 					(op = ::vl::WString(L"+", false));
@@ -88,7 +88,7 @@ Global Functions
 			auto left = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->GetLeft());
 			auto right = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->GetRight());
 			{
-				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOp();
+				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOperator();
 				if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Add)
 				{
 					return (left + right);
@@ -151,14 +151,17 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::calculator::BinaryExpression)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::calculator::BinaryExpression>(::vl::Ptr<::calculator::Expression>, ::calculator::BinaryExpression::BinaryOperator, ::vl::Ptr<::calculator::Expression>), { L"_left" _ L"_op" _ L"_right" })
 				CLASS_MEMBER_METHOD(GetLeft, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetOp, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetOperator, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetRight, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetLeft, { L"__vwsn_value_" })
+				CLASS_MEMBER_METHOD(SetOperator, { L"__vwsn_value_" })
+				CLASS_MEMBER_METHOD(SetRight, { L"__vwsn_value_" })
+				CLASS_MEMBER_FIELD(__vwsn_prop_Left)
+				CLASS_MEMBER_FIELD(__vwsn_prop_Operator)
+				CLASS_MEMBER_FIELD(__vwsn_prop_Right)
 				CLASS_MEMBER_PROPERTY_READONLY(Left, GetLeft)
-				CLASS_MEMBER_PROPERTY_READONLY(Operator, GetOp)
+				CLASS_MEMBER_PROPERTY_READONLY(Operator, GetOperator)
 				CLASS_MEMBER_PROPERTY_READONLY(Right, GetRight)
-				CLASS_MEMBER_FIELD(left)
-				CLASS_MEMBER_FIELD(op)
-				CLASS_MEMBER_FIELD(right)
 			END_CLASS_MEMBER(::calculator::BinaryExpression)
 
 			BEGIN_ENUM_ITEM(::calculator::BinaryExpression::BinaryOperator)
@@ -177,8 +180,9 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::calculator::NumberExpression)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::calculator::NumberExpression>(::vl::vint32_t), { L"_value" })
 				CLASS_MEMBER_METHOD(GetValue, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetValue, { L"__vwsn_value_" })
+				CLASS_MEMBER_FIELD(__vwsn_prop_Value)
 				CLASS_MEMBER_PROPERTY_READONLY(Value, GetValue)
-				CLASS_MEMBER_FIELD(value)
 			END_CLASS_MEMBER(::calculator::NumberExpression)
 
 #undef _
