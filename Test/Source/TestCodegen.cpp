@@ -92,7 +92,7 @@ TEST_CASE(TestCodegen)
 						continue;
 					}
 				}
-				file.WriteAllText(code, false, BomEncoder::Utf8);
+				file.WriteAllText(code, false, BomEncoder::Mbcs);
 			}
 		}
 		
