@@ -288,6 +288,9 @@ Structure Analyzing
 				ReturnType,
 				BaseType,
 			};
+
+			extern void										ContextFreeModuleDesugar(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+
 			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, ValidateTypeStragety strategy = ValidateTypeStragety::Value, WfClassDeclaration* classDecl = nullptr);
 			extern void										ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, WfClassDeclaration* classDecl = 0 , WfExpression* surroundingLambda = 0);

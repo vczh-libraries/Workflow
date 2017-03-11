@@ -470,6 +470,7 @@ WfLexicalScopeManager
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)
 				{
+					ContextFreeModuleDesugar(this, module);
 					ValidateModuleStructure(this, module);
 				}
 				

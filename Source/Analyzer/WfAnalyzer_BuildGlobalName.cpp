@@ -211,6 +211,14 @@ BuildGlobalNameFromModules
 				{
 					BuildNameForDeclaration(manager, scopeName, node);
 				}
+
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
 			};
 
 			class BuildNameDeclarationVisitor

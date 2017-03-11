@@ -139,6 +139,14 @@ CompleteScopeForClassMember
 					CompleteScopeForDeclaration(manager, node);
 				}
 
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
 				{
 					CompleteScopeForClassMemberVisitor visitor(manager, td, classDecl);
@@ -292,6 +300,14 @@ CompleteScopeForDeclaration
 					}
 				}
 
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
 				{
 					CompleteScopeForDeclarationVisitor visitor(manager, declaration);
@@ -303,7 +319,7 @@ CompleteScopeForDeclaration
 CheckBaseClass
 ***********************************************************************/
 
-			class CheckBaseClassDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			class CheckBaseClassDeclarationVisitor : public empty_visitor::DeclarationVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -315,36 +331,20 @@ CheckBaseClass
 				{
 				}
 
+				void Dispatch(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
 				void Visit(WfNamespaceDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
 					{
 						decl->Accept(this);
 					}
-				}
-
-				void Visit(WfFunctionDeclaration* node)override
-				{
-				}
-
-				void Visit(WfVariableDeclaration* node)override
-				{
-				}
-
-				void Visit(WfEventDeclaration* node)override
-				{
-				}
-
-				void Visit(WfPropertyDeclaration* node)override
-				{
-				}
-
-				void Visit(WfConstructorDeclaration* node)override
-				{
-				}
-
-				void Visit(WfDestructorDeclaration* node)override
-				{
 				}
 
 				void CheckDuplicatedBaseClass(WfClassDeclaration* node, ITypeDescriptor* td)

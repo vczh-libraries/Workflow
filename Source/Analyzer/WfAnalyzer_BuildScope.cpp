@@ -243,6 +243,14 @@ BuildScopeForDeclaration
 					}
 				}
 
+				void Visit(WfVirtualDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)
 				{
 					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source);
@@ -677,6 +685,14 @@ BuildScopeForExpression
 						:manager(_manager)
 						, capture(_capture)
 					{
+					}
+
+					void Dispatch(WfVirtualDeclaration* node)override
+					{
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							decl->Accept(this);
+						}
 					}
 
 					void Visit(WfFunctionDeclaration* node)override
