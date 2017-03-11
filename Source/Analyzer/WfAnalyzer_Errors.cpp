@@ -448,7 +448,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
 			{
-				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions and variables are allowed.");
+				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions, variables and auto-properties are allowed.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node)
@@ -537,14 +537,24 @@ WfErrors
 				return new ParsingError(node, L"F2: Enum item \"" + name + L"\" does not exist in enum type \"" + typeDescriptor->GetTypeName() + L"\".");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::NonFunctionClassMemberCannotBeStaticOrOverride(WfDeclaration* node)
+			Ptr<parsing::ParsingError> WfErrors::WrongClassMemberConfig(WfDeclaration* node)
 			{
-				return new ParsingError(node, L"G1: Class member \"" + node->name.value + L"\" cannot be static or override because it is not a function.");
+				return new ParsingError(node, L"G1: Class member \"" + node->name.value + L"\" cannot be static or override because it is not a function or a auto-property.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::FunctionInNewTypeExpressionCannotBeStatic(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"G1: Class member \"" + node->name.value + L"\" cannot be static because it is in a new interface expression.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::AutoPropertyCannotBeNormalOutsideOfClass(WfDeclaration* node)
+			{
+				return new ParsingError(node, L"G1: Auto property \"" + node->name.value + L"\" cannot be override outside of classes or interfaces.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::AutoPropertyCannotBeStatic(WfDeclaration* node)
+			{
+				return new ParsingError(node, L"G1: Auto property \"" + node->name.value + L"\" cannot be static  .");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongClassMember(WfNamespaceDeclaration* node)
@@ -623,6 +633,11 @@ WfErrors
 				return new ParsingError(node, L"G8: Function \"" + node->name.value + L"\" cannot be override because it doesn't implement any interface methods.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::OverrideShouldImplementInterfaceMethod(WfAutoPropertyDeclaration* node)
+			{
+				return new ParsingError(node, L"G8: Auto-property \"" + node->name.value + L"\" cannot be override because it doesn't implement any interface methods.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::MissingFieldType(WfVariableDeclaration* node)
 			{
 				return new ParsingError(node, L"G9: Type of field \"" + node->name.value + L"\" is missing.");
@@ -651,6 +666,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl)
 			{
 				return new ParsingError(node, L"G13: Class \"" + classDecl->name.value + L"\" has too many destructors.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl)
+			{
+				return new ParsingError(node, L"G13: Auto property \"" + node->name.value + L"\" cannot be initialized in interface \"" + classDecl->name.value + L"\".");
 			}
 		}
 	}

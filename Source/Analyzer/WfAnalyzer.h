@@ -484,8 +484,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			EnumItemNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
 
 				// G: Class error
-				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStaticOrOverride(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongClassMemberConfig(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			FunctionInNewTypeExpressionCannotBeStatic(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeNormalOutsideOfClass(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeStatic(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
 				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
@@ -501,12 +503,14 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
 				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
+				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfAutoPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			MissingFieldType(WfVariableDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
 			};
 		}
 	}
