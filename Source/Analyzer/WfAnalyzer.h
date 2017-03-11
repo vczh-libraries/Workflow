@@ -514,6 +514,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
 			};
 		}

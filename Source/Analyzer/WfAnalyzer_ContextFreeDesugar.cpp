@@ -183,7 +183,7 @@ ContextFreeModuleDesugar
 					auto setterName = L"Set" + node->name.value;
 					auto eventName = node->name.value + L"Changed";
 
-					if (needVariable)
+					if (needVariable && node->expression)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
 						node->expandedDeclarations.Add(decl);
@@ -309,6 +309,7 @@ ContextFreeModuleDesugar
 						auto decl = MakePtr<WfPropertyDeclaration>();
 						node->expandedDeclarations.Add(decl);
 
+						decl->type = CopyType(node->type);
 						decl->name.value = node->name.value;
 						decl->getter.value = getterName;
 						if (node->configConst == WfAPConst::Writable)

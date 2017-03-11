@@ -897,12 +897,30 @@ ValidateStructure(Declaration)
 
 					if (classDecl)
 					{
-						if (classDecl->kind == WfClassKind::Interface && node->expression)
+						switch (classDecl->kind)
 						{
-							manager->errors.Add(WfErrors::AutoPropertyCannotBeInitializedInInterface(node, classDecl));
+						case WfClassKind::Class:
+							if (!node->expression)
+							{
+								manager->errors.Add(WfErrors::AutoPropertyShouldBeInitialized(node));
+							}
+							break;
+						case WfClassKind::Interface:
+							if (node->expression)
+							{
+								manager->errors.Add(WfErrors::AutoPropertyCannotBeInitializedInInterface(node, classDecl));
+							}
+							break;
 						}
 					}
-					else if(!dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					{
+						if (!node->expression)
+						{
+							manager->errors.Add(WfErrors::AutoPropertyShouldBeInitialized(node));
+						}
+					}
+					else
 					{
 						manager->errors.Add(WfErrors::WrongDeclaration(node));
 					}

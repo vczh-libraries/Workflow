@@ -554,7 +554,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::AutoPropertyCannotBeNormalOutsideOfClass(WfDeclaration* node)
 			{
-				return new ParsingError(node, L"G1: Auto property \"" + node->name.value + L"\" cannot be override outside of classes or interfaces.");
+				return new ParsingError(node, L"G1: Auto property \"" + node->name.value + L"\" cannot be normal outside of classes or interfaces.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::AutoPropertyCannotBeStatic(WfDeclaration* node)
@@ -671,6 +671,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl)
 			{
 				return new ParsingError(node, L"G13: Class \"" + classDecl->name.value + L"\" has too many destructors.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node)
+			{
+				return new ParsingError(node, L"G13: Auto property \"" + node->name.value + L"\" should be initialized.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl)
