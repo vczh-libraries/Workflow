@@ -18,7 +18,7 @@ The documentation for this library has not been done yet. Currently you can refe
 ### Getting Started
 Here is a simple tutorial to integrate this scripting system to your C++ project:
 
-* Call `vl::workflow::analyzer::Compile` to compile multiple script files in memory to a `Ptr<vl::workflow::runtime::WfAssembly>`.
+* Call `vl::workflow::emitter::Compile` to compile multiple script files in memory to a `Ptr<vl::workflow::runtime::WfAssembly>`.
     * Call `WfAssembly::Serialize` to serialize the compiled assembly to a stream in binary format. If you provide a `vl::stream::FileStream` you can write the assembly to a file.
     * Call the constructor `WfAssembly::WfAssembly` to load a previous compiled assembly from a stream. If you provide a `vl::stream::FileStream` you can read the assembly from a file.
 * Create a `vl::workflow::runtime::WfRuntimeGlobalContext` from the assembly before running script functions. This context class act as the execution environment for the script to share the global variables. If you create multiple context instances, you will get multiple separated environments for global variables.
@@ -60,7 +60,7 @@ There are two important test that will help you build the concept:
 
 ### Content
 This scripting system provide the following features:
-* **Interoperability with C++ classes** if you write your C++ classes using [vczh-libraries/Vlpp](https://github.com/vczh-libraries/Vlpp) following the [tutorial in comment](https://github.com/vczh-libraries/Vlpp/blob/master/Source/Parsing/ParsingTable.h).
+* **Interoperability with C++ classes** if you write your C++ classes using [vczh-libraries/Vlpp](https://github.com/vczh-libraries/Vlpp) following the [tutorial in comment](http://www.gaclib.net/Document.html#~/index/vl.reflection.Description`1/symbol/::vl::reflection::Description`1).
 * **Serializing compiled script to binary** to increase the loading performance if the script is large.
 * **Data Binding** infrastructure. The script language provide a special bind and observe syntax, to create a event object, which will fire if the value of the expression to observe is changed.
 * **Debugger** infrastructure.
