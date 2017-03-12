@@ -149,7 +149,7 @@ namespace vl
 										for (vint k = 0; k < parameterCount; k++)
 										{
 											writer.WriteString(L", ");
-											writer.WriteString(methodInfo->GetParameter(k)->GetName());
+											writer.WriteString(ConvertName(methodInfo->GetParameter(k)->GetName()));
 										}
 										writer.WriteLine(L");");
 									}
