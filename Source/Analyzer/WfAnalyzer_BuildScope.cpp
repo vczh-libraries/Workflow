@@ -733,6 +733,10 @@ BuildScopeForExpression
 				void Visit(WfVirtualExpression* node)override
 				{
 					node->Accept((WfVirtualExpression::IVisitor*)this);
+					if (node->expandedExpression)
+					{
+						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
+					}
 				}
 
 				void Visit(WfBindExpression* node)override
@@ -742,14 +746,18 @@ BuildScopeForExpression
 
 				void Visit(WfFormatExpression* node)override
 				{
-					if (node->expandedExpression)
-					{
-						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-					}
 				}
 
 				void Visit(WfNewCoroutineExpression* node)
 				{
+					resultScope = new WfLexicalScope(parentScope);
+					auto config = MakePtr<WfLexicalFunctionConfig>();
+					resultScope->functionConfig = config;
+
+					config->lambda = true;
+					config->thisAccessable = false;
+					config->parentThisAccessable = true;
+
 					BuildScopeForStatement(manager, parentScope, node->statement);
 				}
 

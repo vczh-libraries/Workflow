@@ -1373,6 +1373,10 @@ ValidateStructure(Expression)
 				void Visit(WfVirtualExpression* node)override
 				{
 					node->Accept((WfVirtualExpression::IVisitor*)this);
+					if (node->expandedExpression)
+					{
+						ValidateExpressionStructure(manager, context, node->expandedExpression);
+					}
 				}
 
 				void Visit(WfBindExpression* node)override
@@ -1390,7 +1394,6 @@ ValidateStructure(Expression)
 
 				void Visit(WfFormatExpression* node)override
 				{
-					ValidateExpressionStructure(manager, context, node->expandedExpression);
 				}
 
 				void Visit(WfNewCoroutineExpression* node)override
