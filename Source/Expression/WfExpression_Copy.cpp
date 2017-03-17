@@ -1048,6 +1048,11 @@ StatementVisitor
 				this->result = newNode;
 			}
 
+			void StatementVisitor::Visit(WfCoroutineStatement* node)
+			{
+				this->result = Dispatch(node);
+			}
+
 /***********************************************************************
 DeclarationVisitor
 ***********************************************************************/
@@ -1474,6 +1479,37 @@ VirtualDeclarationVisitor
 			}
 
 /***********************************************************************
+CoroutineStatementVisitor
+***********************************************************************/
+
+			// CopyFields ----------------------------------------
+
+			void CoroutineStatementVisitor::CopyFields(WfCoPauseStatement* from, WfCoPauseStatement* to)
+			{
+				to->statement = CreateField(from->statement);
+				CopyFields(static_cast<WfCoroutineStatement*>(from), static_cast<WfCoroutineStatement*>(to));
+			}
+
+			void CoroutineStatementVisitor::CopyFields(WfCoroutineStatement* from, WfCoroutineStatement* to)
+			{
+				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+			}
+
+			void CoroutineStatementVisitor::CopyFields(WfStatement* from, WfStatement* to)
+			{
+				to->codeRange = from->codeRange;
+			}
+
+			// Visitor Members -----------------------------------
+
+			void CoroutineStatementVisitor::Visit(WfCoPauseStatement* node)
+			{
+				auto newNode = vl::MakePtr<WfCoPauseStatement>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+/***********************************************************************
 VirtualExpressionVisitor
 ***********************************************************************/
 
@@ -1504,6 +1540,12 @@ VirtualExpressionVisitor
 				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
 			}
 
+			void VirtualExpressionVisitor::CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to)
+			{
+				to->statement = CreateField(from->statement);
+				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
+			}
+
 			// Visitor Members -----------------------------------
 
 			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
@@ -1516,6 +1558,13 @@ VirtualExpressionVisitor
 			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
 			{
 				auto newNode = vl::MakePtr<WfFormatExpression>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualExpressionVisitor::Visit(WfNewCoroutineExpression* node)
+			{
+				auto newNode = vl::MakePtr<WfNewCoroutineExpression>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
@@ -1668,6 +1717,12 @@ ModuleVisitor
 			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualExpression* node)
 			{
 				node->Accept(static_cast<VirtualExpressionVisitor*>(this));
+				return this->result;
+			}
+
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfCoroutineStatement* node)
+			{
+				node->Accept(static_cast<CoroutineStatementVisitor*>(this));
 				return this->result;
 			}
 

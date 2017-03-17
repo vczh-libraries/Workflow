@@ -509,6 +509,11 @@ GenerateInstructions(Statement)
 					GenerateExpressionInstructions(context, node->variable->expression);
 					INSTRUCTION(Ins::StoreLocalVar(index));
 				}
+
+				void Visit(WfCoroutineStatement* node)override
+				{
+					CHECK_FAIL(L"GenerateStatementInstructionsVisitor::Visit(WfCoroutineStatement*)#Internal error, All coroutine statements do not emit instructions.");
+				}
 			};
 
 #undef EXIT_CODE

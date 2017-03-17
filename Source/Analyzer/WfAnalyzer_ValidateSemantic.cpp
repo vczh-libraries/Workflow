@@ -550,7 +550,10 @@ ValidateSemantic(Declaration)
 ValidateSemantic(Statement)
 ***********************************************************************/
 
-			class ValidateSemanticStatementVisitor : public Object, public WfStatement::IVisitor
+			class ValidateSemanticStatementVisitor
+				: public Object
+				, public WfStatement::IVisitor
+				, public WfCoroutineStatement::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -724,6 +727,20 @@ ValidateSemantic(Statement)
 				void Visit(WfVariableStatement* node)override
 				{
 					ValidateDeclarationSemantic(manager, node->variable);
+				}
+
+				void Visit(WfCoroutineStatement* node)override
+				{
+					node->Accept((WfCoroutineStatement::IVisitor*)this);
+				}
+
+				void Visit(WfCoPauseStatement* node)override
+				{
+					throw 0;
+					if (node->statement)
+					{
+						ValidateStatementSemantic(manager, node->statement);
+					}
 				}
 
 				static void Execute(Ptr<WfStatement> statement, WfLexicalScopeManager* manager)
@@ -2430,6 +2447,14 @@ ValidateSemantic(Expression)
 					GetExpressionType(manager, node->expandedExpression, typeInfo);
 				}
 
+				void Visit(WfNewCoroutineExpression* node)override
+				{
+					Ptr<ITypeInfo> typeInfo = TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo();
+					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
+					throw 0;
+					ValidateStatementSemantic(manager, node->statement);
+				}
+
 				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType, List<ResolveExpressionResult>& results)
 				{
 					ValidateSemanticExpressionVisitor visitor(manager, expectedType, results);
@@ -2638,6 +2663,10 @@ IsConstantExpression
 				}
 
 				void Visit(WfBindExpression* node)override
+				{
+				}
+
+				void Visit(WfNewCoroutineExpression* node)override
 				{
 				}
 

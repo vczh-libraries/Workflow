@@ -935,6 +935,11 @@ StatementVisitor
 				VisitField(node->expression.Obj());
 			}
 
+			void StatementVisitor::Visit(WfCoroutineStatement* node)
+			{
+				Dispatch(node);
+			}
+
 /***********************************************************************
 DeclarationVisitor
 ***********************************************************************/
@@ -1362,6 +1367,43 @@ VirtualDeclarationVisitor
 			}
 
 /***********************************************************************
+CoroutineStatementVisitor
+***********************************************************************/
+
+			// Traverse ------------------------------------------
+
+			void CoroutineStatementVisitor::Traverse(vl::parsing::ParsingToken& token)
+			{
+			}
+
+			void CoroutineStatementVisitor::Traverse(vl::parsing::ParsingTreeCustomBase* node)
+			{
+			}
+
+			void CoroutineStatementVisitor::Traverse(WfCoPauseStatement* node)
+			{
+			}
+
+			void CoroutineStatementVisitor::Traverse(WfCoroutineStatement* node)
+			{
+			}
+
+			void CoroutineStatementVisitor::Traverse(WfStatement* node)
+			{
+			}
+
+			// Visitor Members -----------------------------------
+
+			void CoroutineStatementVisitor::Visit(WfCoPauseStatement* node)
+			{
+				Traverse(static_cast<WfCoPauseStatement*>(node));
+				Traverse(static_cast<WfCoroutineStatement*>(node));
+				Traverse(static_cast<WfStatement*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->statement.Obj());
+			}
+
+/***********************************************************************
 VirtualExpressionVisitor
 ***********************************************************************/
 
@@ -1391,6 +1433,10 @@ VirtualExpressionVisitor
 			{
 			}
 
+			void VirtualExpressionVisitor::Traverse(WfNewCoroutineExpression* node)
+			{
+			}
+
 			// Visitor Members -----------------------------------
 
 			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
@@ -1410,6 +1456,16 @@ VirtualExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->value);
+				VisitField(node->expandedExpression.Obj());
+			}
+
+			void VirtualExpressionVisitor::Visit(WfNewCoroutineExpression* node)
+			{
+				Traverse(static_cast<WfNewCoroutineExpression*>(node));
+				Traverse(static_cast<WfVirtualExpression*>(node));
+				Traverse(static_cast<WfExpression*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->statement.Obj());
 				VisitField(node->expandedExpression.Obj());
 			}
 
@@ -1558,6 +1614,11 @@ ModuleVisitor
 			void ModuleVisitor::Dispatch(WfVirtualExpression* node)
 			{
 				node->Accept(static_cast<VirtualExpressionVisitor*>(this));
+			}
+
+			void ModuleVisitor::Dispatch(WfCoroutineStatement* node)
+			{
+				node->Accept(static_cast<CoroutineStatementVisitor*>(this));
 			}
 
 			void ModuleVisitor::Dispatch(WfVirtualDeclaration* node)

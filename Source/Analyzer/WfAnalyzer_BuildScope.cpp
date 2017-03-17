@@ -273,7 +273,10 @@ BuildScopeForDeclaration
 BuildScopeForStatement
 ***********************************************************************/
 
-			class BuildScopeForStatementVisitor : public Object, public WfStatement::IVisitor
+			class BuildScopeForStatementVisitor
+				: public Object
+				, public WfStatement::IVisitor
+				, public WfCoroutineStatement::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -435,6 +438,19 @@ BuildScopeForStatement
 						manager->nodeScopes.Add(statement.Obj(), parentScope);
 					}
 					return visitor.resultScope;
+				}
+
+				void Visit(WfCoroutineStatement* node)override
+				{
+					node->Accept((WfCoroutineStatement::IVisitor*)this);
+				}
+
+				void Visit(WfCoPauseStatement* node)override
+				{
+					if (node->statement)
+					{
+						BuildScopeForStatement(manager, parentScope, node->statement);
+					}
 				}
 			};
 
@@ -730,6 +746,11 @@ BuildScopeForExpression
 					{
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
 					}
+				}
+
+				void Visit(WfNewCoroutineExpression* node)
+				{
+					BuildScopeForStatement(manager, parentScope, node->statement);
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression)

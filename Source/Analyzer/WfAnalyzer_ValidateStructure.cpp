@@ -944,7 +944,10 @@ ValidateStructure(Declaration)
 ValidateStructure(Statement)
 ***********************************************************************/
 
-			class ValidateStructureStatementVisitor : public Object, public WfStatement::IVisitor
+			class ValidateStructureStatementVisitor
+				: public Object
+				, public WfStatement::IVisitor
+				, public WfCoroutineStatement::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -1080,6 +1083,20 @@ ValidateStructure(Statement)
 				void Visit(WfVariableStatement* node)override
 				{
 					ValidateDeclarationStructure(manager, node->variable);
+				}
+
+				void Visit(WfCoroutineStatement* node)override
+				{
+					node->Accept((WfCoroutineStatement::IVisitor*)this);
+				}
+
+				void Visit(WfCoPauseStatement* node)override
+				{
+					throw 0;
+					if (node->statement)
+					{
+						ValidateStatementStructure(manager, context, node->statement);
+					}
 				}
 
 				static void Execute(Ptr<WfStatement>& statement, WfLexicalScopeManager* manager, ValidateStructureContext* context)
@@ -1374,6 +1391,12 @@ ValidateStructure(Expression)
 				void Visit(WfFormatExpression* node)override
 				{
 					ValidateExpressionStructure(manager, context, node->expandedExpression);
+				}
+
+				void Visit(WfNewCoroutineExpression* node)override
+				{
+					throw 0;
+					ValidateStatementStructure(manager, context, node->statement);
 				}
 
 				static void Execute(Ptr<WfExpression>& expression, WfLexicalScopeManager* manager, ValidateStructureContext* context)

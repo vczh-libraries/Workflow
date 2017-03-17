@@ -394,6 +394,19 @@ class ExpressionStatement : Statement
 }
 
 //////////////////////////////////////////////////////////////////
+// AST (CoroutineStatements)
+//////////////////////////////////////////////////////////////////
+
+class CoroutineStatement : Statement
+{
+}
+
+class CoPauseStatement : CoroutineStatement
+{
+	Statement				statement;
+}
+
+//////////////////////////////////////////////////////////////////
 // AST (Expressions)
 //////////////////////////////////////////////////////////////////
 
@@ -676,6 +689,11 @@ class FormatExpression : VirtualExpression
 	token					value(UnescapeFormatString);
 }
 
+class NewCoroutineExpression : VirtualExpression
+{
+	Statement				statement;
+}
+
 //////////////////////////////////////////////////////////////////
 // AST (Module)
 //////////////////////////////////////////////////////////////////
@@ -819,6 +837,9 @@ token KEYWORD_NAMESPACE = "namespace";
 token KEYWORD_MODULE = "module";
 token KEYWORD_UNIT = "unit";
 
+token COROUTINE_COROUTINE = "/$coroutine";
+token COROUTINE_PAUSE = "/$pause";
+
 token NAME = "[a-zA-Z_]/w*";
 token ORDERED_NAME = "/$[0-9]*";
 token FLOAT = "/d+./d+";
@@ -861,24 +882,6 @@ rule Type _Type
 // Rule (Expression)
 //////////////////////////////////////////////////////////////////
 
-rule LiteralExpression _Literal
-	= "null" as LiteralExpression with {value = "Null"}
-	= "true" as LiteralExpression with {value = "True"}
-	= "false" as LiteralExpression with {value = "False"}
-	;
-rule IntegerExpression _Integer
-	= INTEGER : value as IntegerExpression
-	;
-rule FloatingExpression _Floating
-	= FLOAT : value as FloatingExpression
-	;
-rule StringExpression _String
-	= STRING : value as StringExpression
-	;
-rule FormatExpression _Format
-	= FORMATSTRING : value as FormatExpression
-	;
-
 rule ConstructorArgument _CtorFragment
 	= _Expression : key [ ":" _Expression : value] as ConstructorArgument
 	;
@@ -887,12 +890,19 @@ rule LetVariable _LetVariable
 	= NAME : name "=" _Expression : value as LetVariable
 	;
 
+rule Expression _VirtualExpression
+	= FORMATSTRING : value as FormatExpression
+	= "bind" "(" _Expression : expression ")" as BindExpression
+	= "$coroutine" _Block : statement as NewCoroutineExpression
+	;
+
 rule Expression _ExpPrimitive
-	= !_Literal
-	= !_Integer
-	= !_Floating
-	= !_String
-	= !_Format
+	= "null" as LiteralExpression with {value = "Null"}
+	= "true" as LiteralExpression with {value = "True"}
+	= "false" as LiteralExpression with {value = "False"}
+	= INTEGER : value as IntegerExpression
+	= FLOAT : value as FloatingExpression
+	= STRING : value as StringExpression
 	= "this" as ThisExpression
 	= NAME : name as ReferenceExpression
 	= ORDERED_NAME : name as OrderedNameExpression
@@ -908,7 +918,6 @@ rule Expression _ExpPrimitive
 	= "{" {_CtorFragment : arguments} "}" as ConstructorExpression
 	= "new" _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as NewClassExpression
 	= "new" _Type : type "{" {_MemberDeclaration : declarations} "}" as NewInterfaceExpression
-	= "bind" "(" _Expression : expression ")" as BindExpression
 	= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
 	= _ExpPrimitive : parent "." "observe" "as" NAME : name "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "ExtendedObserve"}
 	= _ExpPrimitive : function "(" [_Expression : arguments {"," _Expression : arguments}] ")" as CallExpression
@@ -936,6 +945,7 @@ rule Expression _ExpPrimitive
 	= "attach" "(" _Expression : event "," _Expression : function ")" as AttachEventExpression
 	= "detach" "(" _Expression : event "," _Expression : handler ")" as DetachEventExpression
 	= "::" NAME : name as TopQualifiedExpression
+	= !_VirtualExpression
 	;
 
 rule Expression _Exp0
@@ -1022,6 +1032,10 @@ rule IfStatement _If
 	= "if" "(" ["var" NAME : name ":" _Type : type "="] _Expression : expression ")" _Block : trueBranch ["else" (_Block : falseBranch | _If : falseBranch)] as IfStatement
 	;
 
+rule Statement _CoStatement
+	= "$pause" (";" | _Block : statement) as CoPauseStatement
+	;
+
 rule Statement _Statement
 	= !_Block
 	= _Variable : variable as VariableStatement
@@ -1038,6 +1052,7 @@ rule Statement _Statement
 		_Expression : collection ")" _Block : statement as ForEachStatement
 	= "try" _Block : protectedStatement ["catch" "(" NAME : name ")" _Block : catchStatement] ["finally" _Block : finallyStatement] as TryStatement
 	= _Expression : expression ";" as ExpressionStatement
+	= !_CoStatement
 	;
 
 //////////////////////////////////////////////////////////////////

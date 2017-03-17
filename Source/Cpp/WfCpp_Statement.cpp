@@ -363,6 +363,11 @@ namespace vl
 					}
 					writer.WriteLine(L";");
 				}
+
+				void Visit(WfCoroutineStatement* node)override
+				{
+					CHECK_FAIL(L"WfGenerateStatementVisitor::Visit(WfCoroutineStatement*)#Internal error, All coroutine statements do not generate C++ code.");
+				}
 			};
 
 			void GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType)

@@ -80,6 +80,9 @@ namespace vl
 			{
 			public:
 
+				// Dispatch (virtual) --------------------------------
+				virtual void Dispatch(WfCoroutineStatement* node) = 0;
+
 				// Visitor Members -----------------------------------
 				void Visit(WfBreakStatement* node)override;
 				void Visit(WfContinueStatement* node)override;
@@ -94,6 +97,7 @@ namespace vl
 				void Visit(WfBlockStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
+				void Visit(WfCoroutineStatement* node)override;
 			};
 
 			class DeclarationVisitor : public Object, public WfDeclaration::IVisitor
@@ -125,6 +129,14 @@ namespace vl
 				void Visit(WfAutoPropertyDeclaration* node)override;
 			};
 
+			class CoroutineStatementVisitor : public Object, public WfCoroutineStatement::IVisitor
+			{
+			public:
+
+				// Visitor Members -----------------------------------
+				void Visit(WfCoPauseStatement* node)override;
+			};
+
 			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
 			{
 			public:
@@ -132,6 +144,7 @@ namespace vl
 				// Visitor Members -----------------------------------
 				void Visit(WfBindExpression* node)override;
 				void Visit(WfFormatExpression* node)override;
+				void Visit(WfNewCoroutineExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor

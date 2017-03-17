@@ -251,6 +251,11 @@ StatementVisitor
 			{
 			}
 
+			void StatementVisitor::Visit(WfCoroutineStatement* node)
+			{
+				Dispatch(node);
+			}
+
 /***********************************************************************
 DeclarationVisitor
 ***********************************************************************/
@@ -313,6 +318,16 @@ VirtualDeclarationVisitor
 			}
 
 /***********************************************************************
+CoroutineStatementVisitor
+***********************************************************************/
+
+			// Visitor Members -----------------------------------
+
+			void CoroutineStatementVisitor::Visit(WfCoPauseStatement* node)
+			{
+			}
+
+/***********************************************************************
 VirtualExpressionVisitor
 ***********************************************************************/
 
@@ -323,6 +338,10 @@ VirtualExpressionVisitor
 			}
 
 			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
+			{
+			}
+
+			void VirtualExpressionVisitor::Visit(WfNewCoroutineExpression* node)
 			{
 			}
 

@@ -785,13 +785,25 @@ Print (Expression)
 				}
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfNewCoroutineExpression* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteLine(L"$coroutine");
+				writer.WriteString(indent);
+				WfPrint(node->statement, indent, writer);
+				writer.AfterPrint(node);
+			}
 		};
 
 /***********************************************************************
 Print (Statement)
 ***********************************************************************/
 
-		class PrintStatementVisitor : public Object, public WfStatement::IVisitor
+		class PrintStatementVisitor
+			: public Object
+			, public WfStatement::IVisitor
+			, public WfCoroutineStatement::IVisitor
 		{
 		public:
 			WString								indent;
@@ -1011,6 +1023,27 @@ Print (Statement)
 			{
 				writer.BeforePrint(node);
 				WfPrint(Ptr<WfDeclaration>(node->variable), indent, writer);
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfCoroutineStatement* node)override
+			{
+				node->Accept((WfCoroutineStatement::IVisitor*)this);
+			}
+
+			void Visit(WfCoPauseStatement* node)override
+			{
+				writer.BeforePrint(node);
+				if (node->statement)
+				{
+					writer.WriteLine(L"$pause");
+					writer.WriteString(indent);
+					WfPrint(node->statement, indent, writer);
+				}
+				else
+				{
+					writer.WriteString(L"$pause;");
+				}
 				writer.AfterPrint(node);
 			}
 		};

@@ -192,6 +192,16 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
+		void WfCoroutineStatement::Accept(WfStatement::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
+		void WfCoPauseStatement::Accept(WfCoroutineStatement::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
 		void WfThisExpression::Accept(WfExpression::IVisitor* visitor)
 		{
 			visitor->Visit(this);
@@ -357,6 +367,11 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
+		void WfNewCoroutineExpression::Accept(WfVirtualExpression::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
 		void WfModuleUsingNameFragment::Accept(WfModuleUsingFragment::IVisitor* visitor)
 		{
 			visitor->Visit(this);
@@ -441,6 +456,8 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfBlockStatement, workflow::WfBlockStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVariableStatement, workflow::WfVariableStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfExpressionStatement, workflow::WfExpressionStatement)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoroutineStatement, workflow::WfCoroutineStatement)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoPauseStatement, workflow::WfCoPauseStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfThisExpression, workflow::WfThisExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfTopQualifiedExpression, workflow::WfTopQualifiedExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfReferenceExpression, workflow::WfReferenceExpression)
@@ -484,6 +501,7 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualExpression, workflow::WfVirtualExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfBindExpression, workflow::WfBindExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfFormatExpression, workflow::WfFormatExpression)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfNewCoroutineExpression, workflow::WfNewCoroutineExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingFragment, workflow::WfModuleUsingFragment)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingNameFragment, workflow::WfModuleUsingNameFragment)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingWildCardFragment, workflow::WfModuleUsingWildCardFragment)
@@ -496,6 +514,7 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfStatement::IVisitor, workflow::WfStatement::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfDeclaration::IVisitor, workflow::WfDeclaration::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualDeclaration::IVisitor, workflow::WfVirtualDeclaration::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoroutineStatement::IVisitor, workflow::WfCoroutineStatement::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualExpression::IVisitor, workflow::WfVirtualExpression::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingFragment::IVisitor, workflow::WfModuleUsingFragment::IVisitor)
 
@@ -965,6 +984,20 @@ namespace vl
 				CLASS_MEMBER_FIELD(expression)
 			END_CLASS_MEMBER(WfExpressionStatement)
 
+			BEGIN_CLASS_MEMBER(WfCoroutineStatement)
+				CLASS_MEMBER_BASE(WfStatement)
+
+				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(WfCoroutineStatement::*)(WfCoroutineStatement::IVisitor* visitor))
+			END_CLASS_MEMBER(WfCoroutineStatement)
+
+			BEGIN_CLASS_MEMBER(WfCoPauseStatement)
+				CLASS_MEMBER_BASE(WfCoroutineStatement)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfCoPauseStatement>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(statement)
+			END_CLASS_MEMBER(WfCoPauseStatement)
+
 			BEGIN_CLASS_MEMBER(WfThisExpression)
 				CLASS_MEMBER_BASE(WfExpression)
 
@@ -1340,6 +1373,14 @@ namespace vl
 				PARSING_TOKEN_FIELD(value)
 			END_CLASS_MEMBER(WfFormatExpression)
 
+			BEGIN_CLASS_MEMBER(WfNewCoroutineExpression)
+				CLASS_MEMBER_BASE(WfVirtualExpression)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfNewCoroutineExpression>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(statement)
+			END_CLASS_MEMBER(WfNewCoroutineExpression)
+
 			BEGIN_CLASS_MEMBER(WfModuleUsingFragment)
 				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(WfModuleUsingFragment::*)(WfModuleUsingFragment::IVisitor* visitor))
 			END_CLASS_MEMBER(WfModuleUsingFragment)
@@ -1447,6 +1488,7 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfBlockStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfVariableStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfExpressionStatement* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfCoroutineStatement* node))
 			END_INTERFACE_MEMBER(WfStatement)
 
 			BEGIN_INTERFACE_MEMBER(WfDeclaration::IVisitor)
@@ -1467,9 +1509,14 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualDeclaration::IVisitor::*)(WfAutoPropertyDeclaration* node))
 			END_INTERFACE_MEMBER(WfVirtualDeclaration)
 
+			BEGIN_INTERFACE_MEMBER(WfCoroutineStatement::IVisitor)
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfCoroutineStatement::IVisitor::*)(WfCoPauseStatement* node))
+			END_INTERFACE_MEMBER(WfCoroutineStatement)
+
 			BEGIN_INTERFACE_MEMBER(WfVirtualExpression::IVisitor)
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfBindExpression* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfFormatExpression* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfNewCoroutineExpression* node))
 			END_INTERFACE_MEMBER(WfVirtualExpression)
 
 			BEGIN_INTERFACE_MEMBER(WfModuleUsingFragment::IVisitor)
@@ -1542,6 +1589,8 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfBlockStatement)
 					ADD_TYPE_INFO(vl::workflow::WfVariableStatement)
 					ADD_TYPE_INFO(vl::workflow::WfExpressionStatement)
+					ADD_TYPE_INFO(vl::workflow::WfCoroutineStatement)
+					ADD_TYPE_INFO(vl::workflow::WfCoPauseStatement)
 					ADD_TYPE_INFO(vl::workflow::WfThisExpression)
 					ADD_TYPE_INFO(vl::workflow::WfTopQualifiedExpression)
 					ADD_TYPE_INFO(vl::workflow::WfReferenceExpression)
@@ -1585,6 +1634,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfVirtualExpression)
 					ADD_TYPE_INFO(vl::workflow::WfBindExpression)
 					ADD_TYPE_INFO(vl::workflow::WfFormatExpression)
+					ADD_TYPE_INFO(vl::workflow::WfNewCoroutineExpression)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingWildCardFragment)
@@ -1597,6 +1647,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfStatement::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfDeclaration::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfVirtualDeclaration::IVisitor)
+					ADD_TYPE_INFO(vl::workflow::WfCoroutineStatement::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfVirtualExpression::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
 				}
