@@ -753,6 +753,31 @@ ValidateSemantic(Statement)
 ValidateSemantic(Expression)
 ***********************************************************************/
 
+			class ExpandVirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
+			{
+			public:
+				WfLexicalScopeManager*				manager;
+
+				ExpandVirtualExpressionVisitor(WfLexicalScopeManager* _manager)
+					:manager(_manager)
+				{
+				}
+
+				void Visit(WfBindExpression* node)override
+				{
+					ExpandBindExpression(manager, node);
+				}
+
+				void Visit(WfFormatExpression* node)override
+				{
+				}
+
+				void Visit(WfNewCoroutineExpression* node)override
+				{
+					ExpandNewCoroutineExpression(manager, node);
+				}
+			};
+
 			class ValidateSemanticExpressionVisitor
 				: public Object
 				, public WfExpression::IVisitor
@@ -2422,18 +2447,21 @@ ValidateSemantic(Expression)
 					vint errorCount = manager->errors.Count();
 					node->Accept((WfVirtualExpression::IVisitor*)this);
 
+					if (!expanded && manager->errors.Count() == errorCount)
+					{
+						ExpandVirtualExpressionVisitor visitor(manager);
+						node->Accept(&visitor);
+
+						auto parentScope = manager->nodeScopes[node];
+						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
+						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
+						{
+							return;
+						}
+					}
+
 					if (node->expandedExpression)
 					{
-						if (!expanded && manager->errors.Count() == errorCount)
-						{
-							auto parentScope = manager->nodeScopes[node];
-							BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-							if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
-							{
-								return;
-							}
-						}
-
 						if (results.Count() == 1)
 						{
 							GetExpressionType(manager, node->expandedExpression, results[0].type);
@@ -2447,14 +2475,8 @@ ValidateSemantic(Expression)
 
 				void Visit(WfBindExpression* node)override
 				{
-					vint errorCount = manager->errors.Count();
 					GetExpressionType(manager, node->expression, 0);
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo()));
-
-					if (manager->errors.Count() == errorCount)
-					{
-						ExpandBindExpression(manager, node);
-					}
 				}
 
 				void Visit(WfFormatExpression* node)override
