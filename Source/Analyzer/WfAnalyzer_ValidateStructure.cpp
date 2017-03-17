@@ -1092,9 +1092,16 @@ ValidateStructure(Statement)
 
 				void Visit(WfCoPauseStatement* node)override
 				{
+					if (!context->currentNewCoroutineExpression || context->currentCoPauseStatement)
+					{
+						manager->errors.Add(WfErrors::WrongCoPause(node));
+					}
 					if (node->statement)
 					{
+						auto oldCpPause = context->currentCoPauseStatement;
+						context->currentCoPauseStatement = node;
 						ValidateStatementStructure(manager, context, node->statement);
+						context->currentCoPauseStatement = oldCpPause;
 					}
 				}
 
@@ -1397,7 +1404,9 @@ ValidateStructure(Expression)
 
 				void Visit(WfNewCoroutineExpression* node)override
 				{
-					ValidateStatementStructure(manager, context, node->statement);
+					ValidateStructureContext context;
+					context.currentNewCoroutineExpression = node;
+					ValidateStatementStructure(manager, &context, node->statement);
 				}
 
 				static void Execute(Ptr<WfExpression>& expression, WfLexicalScopeManager* manager, ValidateStructureContext* context)

@@ -278,6 +278,8 @@ Structure Analyzing
 				WfObserveExpression*						currentObserveExpression = nullptr;
 				WfStatement*								currentLoopStatement = nullptr;
 				WfStatement*								currentCatchStatement = nullptr;
+				WfNewCoroutineExpression*					currentNewCoroutineExpression = nullptr;
+				WfStatement*								currentCoPauseStatement = nullptr;
 
 				ValidateStructureContext();
 			};
@@ -446,6 +448,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			ReturnMissExpression(WfStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			DeleteNonRawPointer(WfStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			CannotReturnExpression(WfStatement* node);
+				static Ptr<parsing::ParsingError>			WrongCoPause(WfStatement* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);

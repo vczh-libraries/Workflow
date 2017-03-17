@@ -359,6 +359,11 @@ WfErrors
 				return new ParsingError(node, L"C6: Return statement cannot have a value inside void functions, constructors, destructors or $coroutine expressions.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongCoPause(WfStatement* node)
+			{
+				return new ParsingError(node, L"C7: $pause statement should appear inside a $coroutine expression. But it is not allowed if the $pause statement appears inside another $pause statement or any kind of lambda expression that is contained in the $coroutine expression.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
