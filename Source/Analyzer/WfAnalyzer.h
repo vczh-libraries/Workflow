@@ -70,7 +70,7 @@ Scope
 
 				WfLexicalScopeManager*						FindManager();
 				Ptr<WfModule>								FindModule();
-				Ptr<WfDeclaration>							FindDeclaration();
+				WfLexicalScope*								FindFunctionScope();
 				WString										GetFriendlyName();
 				Ptr<WfClassMember>							GetOwnerClassMember();
 			};

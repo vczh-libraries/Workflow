@@ -1092,7 +1092,6 @@ ValidateStructure(Statement)
 
 				void Visit(WfCoPauseStatement* node)override
 				{
-					throw 0;
 					if (node->statement)
 					{
 						ValidateStatementStructure(manager, context, node->statement);
@@ -1398,7 +1397,6 @@ ValidateStructure(Expression)
 
 				void Visit(WfNewCoroutineExpression* node)override
 				{
-					throw 0;
 					ValidateStatementStructure(manager, context, node->statement);
 				}
 

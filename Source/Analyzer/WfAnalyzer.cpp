@@ -74,18 +74,18 @@ WfLexicalScope
 				return 0;
 			}
 
-			Ptr<WfDeclaration> WfLexicalScope::FindDeclaration()
+			WfLexicalScope* WfLexicalScope::FindFunctionScope()
 			{
-				WfLexicalScope* scope = this;
+				auto scope = this;
 				while (scope)
 				{
-					if (auto decl = scope->ownerNode.Cast<WfDeclaration>())
+					if (scope->functionConfig)
 					{
-						return decl;
+						return scope;
 					}
 					scope = scope->parentScope.Obj();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			WString WfLexicalScope::GetFriendlyName()

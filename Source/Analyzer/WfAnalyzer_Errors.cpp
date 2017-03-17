@@ -356,7 +356,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::CannotReturnExpression(WfStatement* node)
 			{
-				return new ParsingError(node, L"C6: Return statement cannot have a value in void functions or constructors.");
+				return new ParsingError(node, L"C6: Return statement cannot have a value inside void functions, constructors, destructors or $coroutine expressions.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)

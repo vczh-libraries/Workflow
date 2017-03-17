@@ -574,8 +574,8 @@ ValidateSemantic(Statement)
 				void Visit(WfReturnStatement* node)override
 				{
 					auto scope = manager->nodeScopes[node].Obj();
-					auto decl = scope->FindDeclaration();
-					if (auto funcDecl = decl.Cast<WfFunctionDeclaration>())
+					auto functionScope = scope->FindFunctionScope();
+					if (auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>())
 					{
 						auto returnType = CreateTypeInfoFromType(scope, funcDecl->returnType);
 						if (node->expression)
@@ -736,7 +736,6 @@ ValidateSemantic(Statement)
 
 				void Visit(WfCoPauseStatement* node)override
 				{
-					throw 0;
 					if (node->statement)
 					{
 						ValidateStatementSemantic(manager, node->statement);
@@ -2468,7 +2467,6 @@ ValidateSemantic(Expression)
 				{
 					Ptr<ITypeInfo> typeInfo = TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo();
 					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
-					throw 0;
 					ValidateStatementSemantic(manager, node->statement);
 				}
 

@@ -135,8 +135,8 @@ TEST_CASE(TestCodegen)
 			WString actual;
 			TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
 			result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
-			UnitTest::PrintInfo(L"    expected: " + itemResult);
-			UnitTest::PrintInfo(L"    actual: " + actual);
+			UnitTest::PrintInfo(L"    expected  : " + itemResult);
+			UnitTest::PrintInfo(L"    actual    : " + actual);
 			TEST_ASSERT(actual == itemResult);
 			TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
 		}

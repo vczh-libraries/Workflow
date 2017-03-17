@@ -758,7 +758,7 @@ BuildScopeForExpression
 					config->thisAccessable = false;
 					config->parentThisAccessable = true;
 
-					BuildScopeForStatement(manager, parentScope, node->statement);
+					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression)
