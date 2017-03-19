@@ -752,37 +752,32 @@ Print (Expression)
 
 			void Visit(WfVirtualExpression* node)override
 			{
-				node->Accept((WfVirtualExpression::IVisitor*)this);
+				if (node->expandedExpression)
+				{
+					writer.BeforePrint(node);
+					WfPrint(node->expandedExpression, indent, writer);
+					writer.AfterPrint(node);
+				}
+				else
+				{
+					node->Accept((WfVirtualExpression::IVisitor*)this);
+				}
 			}
 
 			void Visit(WfBindExpression* node)override
 			{
 				writer.BeforePrint(node);
-				if (node->expandedExpression)
-				{
-					WfPrint(node->expandedExpression, indent, writer);
-				}
-				else
-				{
-					writer.WriteString(L"bind(");
-					WfPrint(node->expression, indent, writer);
-					writer.WriteString(L")");
-				}
+				writer.WriteString(L"bind(");
+				WfPrint(node->expression, indent, writer);
+				writer.WriteString(L")");
 				writer.AfterPrint(node);
 			}
 
 			void Visit(WfFormatExpression* node)override
 			{
 				writer.BeforePrint(node);
-				if (node->expandedExpression)
-				{
-					WfPrint(node->expandedExpression, indent, writer);
-				}
-				else
-				{
-					writer.WriteString(L"$");
-					EscapeString(node->value.value, writer);
-				}
+				writer.WriteString(L"$");
+				EscapeString(node->value.value, writer);
 				writer.AfterPrint(node);
 			}
 
@@ -978,7 +973,16 @@ Print (Statement)
 
 			void Visit(WfVirtualStatement* node)override
 			{
-				node->Accept((WfVirtualStatement::IVisitor*)this);
+				if (node->expandedStatement)
+				{
+					writer.BeforePrint(node);
+					WfPrint(node->expandedStatement, indent, writer);
+					writer.AfterPrint(node);
+				}
+				else
+				{
+					node->Accept((WfVirtualStatement::IVisitor*)this);
+				}
 			}
 
 			void Visit(WfSwitchStatement* node)override
@@ -1386,6 +1390,7 @@ Print (Declaration)
 			{
 				if (node->expandedDeclarations.Count() > 0)
 				{
+					writer.BeforePrint(node);
 					FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->expandedDeclarations)
 					{
 						if (index > 0)
@@ -1399,6 +1404,7 @@ Print (Declaration)
 							writer.WriteLine(L"");
 						}
 					}
+					writer.AfterPrint(node);
 				}
 				else
 				{

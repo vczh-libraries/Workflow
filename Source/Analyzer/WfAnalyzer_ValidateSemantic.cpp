@@ -718,8 +718,14 @@ ValidateSemantic(Statement)
 					{
 						ExpandVirtualStatementVisitor visitor(manager);
 						node->Accept(&visitor);
+						SetCodeRange(node->expandedStatement, node->codeRange);
 
 						auto parentScope = manager->nodeScopes[node];
+						if (parentScope->ownerNode == node)
+						{
+							parentScope = parentScope->parentScope;
+						}
+
 						BuildScopeForStatement(manager, parentScope, node->expandedStatement);
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
@@ -2498,8 +2504,14 @@ ValidateSemantic(Expression)
 					{
 						ExpandVirtualExpressionVisitor visitor(manager);
 						node->Accept(&visitor);
+						SetCodeRange(node->expandedExpression, node->codeRange);
 
 						auto parentScope = manager->nodeScopes[node];
+						if (parentScope->ownerNode == node)
+						{
+							parentScope = parentScope->parentScope;
+						}
+
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{

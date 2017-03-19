@@ -167,7 +167,6 @@ WfCppConfig::Write
 			class FunctionRecord : public Object
 			{
 			public:
-				vint					typeCounter = 0;
 				vint					exprCounter = 0;
 				vint					blockCounter = 0;
 			};

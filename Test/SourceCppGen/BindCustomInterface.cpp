@@ -55,10 +55,17 @@ Global Functions
 	void BindCustomInterface::Execute(::vl::Ptr<::IAdder> adder)
 	{
 		auto subscription = GLOBAL_NAME Bind(::vl::Ptr<::ISummer>(adder));
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
-			::vl::__vwsn::This(adder.Obj())->Add(x);
+			auto __vwsn_for_begin_x = 1;
+			auto __vwsn_for_end_x = 5;
+			auto x = __vwsn_for_begin_x;
+			while ((x <= __vwsn_for_end_x))
+			{
+				{
+					::vl::__vwsn::This(adder.Obj())->Add(x);
+				}
+				(x = (x + 1));
+			}
 		}
 		::vl::__vwsn::This(subscription.Obj())->Close();
 	}
@@ -104,10 +111,16 @@ Closures
 	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSum();
-		using __vwsnt_0 = ::vl::reflection::description::Value;
-		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
-			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+			auto __vwsn_for_enumerable_ = ::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues();
+			auto __vwsn_for_enumerator_ = ::vl::__vwsn::This(__vwsn_for_enumerable_.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->Next())
+			{
+				auto __vwsn_bind_callback_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->GetCurrent());
+				{
+					::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+				}
+			}
 		}
 	}
 

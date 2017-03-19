@@ -46,56 +46,73 @@ Global Functions
 
 	void TryFinally::test1()
 	{
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
+			auto __vwsn_for_begin_x = 1;
+			auto __vwsn_for_end_x = 5;
+			auto x = __vwsn_for_begin_x;
+			while ((x <= __vwsn_for_end_x))
 			{
-				auto __vwsnb_0 = [&]()
-				{
-					(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1));
-				}
-				;
-				::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
-				try
 				{
 					{
-						continue;
+						auto __vwsnb_0 = [&]()
+						{
+							(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1));
+						}
+						;
+						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+						try
+						{
+							{
+								{
+									(x = (x + 1));
+									continue;
+								}
+							}
+						}
+						catch(const ::vl::Exception&)
+						{
+						}
+						catch(const ::vl::Error&)
+						{
+						}
 					}
 				}
-				catch(const ::vl::Exception&)
-				{
-				}
-				catch(const ::vl::Error&)
-				{
-				}
+				(x = (x + 1));
 			}
 		}
 	}
 
 	void TryFinally::test2()
 	{
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
+			auto __vwsn_for_begin_x = 1;
+			auto __vwsn_for_end_x = 5;
+			auto x = __vwsn_for_begin_x;
+			while ((x <= __vwsn_for_end_x))
 			{
-				auto __vwsnb_0 = [&]()
-				{
-					(GLOBAL_NAME sum = (GLOBAL_NAME sum + 10));
-				}
-				;
-				::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
-				try
 				{
 					{
-						break;
+						auto __vwsnb_0 = [&]()
+						{
+							(GLOBAL_NAME sum = (GLOBAL_NAME sum + 10));
+						}
+						;
+						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+						try
+						{
+							{
+								break;
+							}
+						}
+						catch(const ::vl::Exception&)
+						{
+						}
+						catch(const ::vl::Error&)
+						{
+						}
 					}
 				}
-				catch(const ::vl::Exception&)
-				{
-				}
-				catch(const ::vl::Error&)
-				{
-				}
+				(x = (x + 1));
 			}
 		}
 	}

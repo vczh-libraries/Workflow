@@ -45,9 +45,16 @@ ExpandSwitchStatement
 						auto refExpr = MakePtr<WfReferenceExpression>();
 						refExpr->name.value = varName;
 
+						auto inferExpr = MakePtr<WfInferExpression>();
+						inferExpr->expression= CopyExpression(switchCase->expression);
+						{
+							auto result = manager->expressionResolvings[switchCase->expression.Obj()];
+							inferExpr->type = GetTypeFromTypeInfo(result.type.Obj());
+						}
+
 						auto compare = MakePtr<WfBinaryExpression>();
 						compare->first = refExpr;
-						compare->second = CopyExpression(switchCase->expression);
+						compare->second = inferExpr;
 						compare->op = WfBinaryOperator::EQ;
 
 						ifStat->expression = compare;
@@ -69,6 +76,111 @@ ExpandSwitchStatement
 /***********************************************************************
 ExpandForEachStatement
 ***********************************************************************/
+
+			Ptr<WfStatement> GenerateForEachStepStatement(WfForEachStatement* node)
+			{
+				auto refVar1 = MakePtr<WfReferenceExpression>();
+				refVar1->name.value = node->name.value;
+
+				auto refVar2 = MakePtr<WfReferenceExpression>();
+				refVar2->name.value = node->name.value;
+
+				auto one = MakePtr<WfIntegerExpression>();
+				one->value.value = L"1";
+
+				auto stepExpr = MakePtr<WfBinaryExpression>();
+				stepExpr->first = refVar2;
+				stepExpr->second = one;
+				stepExpr->op = node->direction == WfForEachDirection::Normal ? WfBinaryOperator::Add : WfBinaryOperator::Sub;
+
+				auto assignExpr = MakePtr<WfBinaryExpression>();
+				assignExpr->first = refVar1;
+				assignExpr->second = stepExpr;
+				assignExpr->op = WfBinaryOperator::Assign;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = assignExpr;
+				return stat;
+			}
+
+			class CopyForEachRangeBodyVisitor
+				: public copy_visitor::StatementVisitor
+				, public copy_visitor::CoroutineStatementVisitor
+			{
+			public:
+				WfLexicalScopeManager*						manager;
+				WfForEachStatement*							forEach;
+
+				CopyForEachRangeBodyVisitor(WfLexicalScopeManager* _manager, WfForEachStatement* _forEach)
+					:manager(_manager)
+					, forEach(_forEach)
+				{
+				}
+
+				// CreateField (virtual) -----------------------------
+
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				{
+					return CopyExpression(from);
+				}
+
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
+				{
+					return CopyType(from);
+				}
+
+				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
+				{
+					if (!from) return nullptr;
+					from->Accept(static_cast<StatementVisitor*>(this));
+					return this->result.Cast<WfStatement>();
+				}
+
+				// Dspatch (virtual) --------------------------------
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node)override
+				{
+					return CreateField(node->expandedStatement);
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node)override
+				{
+					node->Accept(static_cast<CoroutineStatementVisitor*>(this));
+					return this->result;
+				}
+
+				// Visitor Members -----------------------------------
+
+				void Visit(WfContinueStatement* node)
+				{
+					auto scope = manager->nodeScopes[node];
+					while (scope)
+					{
+						if (scope->ownerNode.Cast<WfWhileStatement>())
+						{
+							break;
+						}
+						else if (scope->ownerNode.Cast<WfForEachStatement>())
+						{
+							if (scope->ownerNode != forEach)
+							{
+								break;
+							}
+							else
+							{
+								auto block = MakePtr<WfBlockStatement>();
+								block->statements.Add(GenerateForEachStepStatement(forEach));
+								block->statements.Add(MakePtr<WfContinueStatement>());
+								SetCodeRange((Ptr<WfStatement>)block, node->codeRange);
+								result = block;
+								return;
+							}
+						}
+						scope = scope->parentScope;
+					}
+					copy_visitor::StatementVisitor::Visit(node);
+				}
+			};
 
 			void ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node)
 			{
@@ -157,31 +269,12 @@ ExpandForEachStatement
 							auto whileBlock = MakePtr<WfBlockStatement>();
 							whileStat->statement = whileBlock;
 
-							whileBlock->statements.Add(CopyStatement(node->statement));
 							{
-								auto refVar1 = MakePtr<WfReferenceExpression>();
-								refVar1->name.value = node->name.value;
-
-								auto refVar2 = MakePtr<WfReferenceExpression>();
-								refVar2->name.value = node->name.value;
-
-								auto one = MakePtr<WfIntegerExpression>();
-								one->value.value = L"1";
-
-								auto stepExpr = MakePtr<WfBinaryExpression>();
-								stepExpr->first = refVar2;
-								stepExpr->second = one;
-								stepExpr->op = node->direction == WfForEachDirection::Normal ? WfBinaryOperator::Add : WfBinaryOperator::Sub;
-
-								auto assignExpr = MakePtr<WfBinaryExpression>();
-								assignExpr->first = refVar1;
-								assignExpr->second = stepExpr;
-								assignExpr->op = WfBinaryOperator::Assign;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assignExpr;
-								whileBlock->statements.Add(stat);
+								CopyForEachRangeBodyVisitor visitor(manager, node);
+								node->statement->Accept(&visitor);
+								whileBlock->statements.Add(visitor.result.Cast<WfStatement>());
 							}
+							whileBlock->statements.Add(GenerateForEachStepStatement(node));
 						}
 						block->statements.Add(whileStat);
 					}
@@ -267,13 +360,22 @@ ExpandForEachStatement
 								auto callExpr = MakePtr<WfCallExpression>();
 								callExpr->function = refMethod;
 
+								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								castExpr->expression = callExpr;
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+								{
+									auto parentScope = manager->nodeScopes[node];
+									auto symbol = parentScope->symbols[node->name.value][0];
+									castExpr->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
+								}
+
 								auto decl = MakePtr<WfVariableDeclaration>();
 								decl->name.value = node->name.value;
-								decl->expression = callExpr;
+								decl->expression = castExpr;
 
 								auto stat = MakePtr<WfVariableStatement>();
 								stat->variable = decl;
-								block->statements.Add(stat);
+								whileBlock->statements.Add(stat);
 							}
 							whileBlock->statements.Add(CopyStatement(node->statement));
 						}

@@ -11,7 +11,7 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
-ContextFreeModuleDesugar
+SetCodeRange
 ***********************************************************************/
 
 			class SetCodeRangeVisitor : public traverse_visitor::ModuleVisitor
@@ -40,6 +40,35 @@ ContextFreeModuleDesugar
 					}
 				}
 			};
+
+			void SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange)
+			{
+				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+			}
+
+			void SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange)
+			{
+				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+			}
+
+			void SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange)
+			{
+				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+			}
+
+			void SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange)
+			{
+				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+			}
+
+			void SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange)
+			{
+				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+			}
+
+/***********************************************************************
+ContextFreeModuleDesugar
+***********************************************************************/
 
 			class ContextFreeDesugarVisitor : public traverse_visitor::ModuleVisitor
 			{
@@ -138,6 +167,7 @@ ContextFreeModuleDesugar
 						}
 
 						node->expandedExpression = current;
+						SetCodeRange(node->expandedExpression, node->codeRange);
 					}
 				}
 
@@ -353,7 +383,7 @@ ContextFreeModuleDesugar
 							}
 						}
 
-						SetCodeRangeVisitor(node->codeRange).VisitField(decl.Obj());
+						SetCodeRange(decl, node->codeRange);
 					}
 				}
 

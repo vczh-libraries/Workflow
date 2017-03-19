@@ -292,6 +292,11 @@ Structure Analyzing
 				BaseType,
 			};
 
+			extern void										SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange);
+			extern void										SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange);
+			extern void										SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange);
+			extern void										SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange);
+			extern void										SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange);
 			extern void										ContextFreeModuleDesugar(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, ValidateTypeStragety strategy = ValidateTypeStragety::Value, WfClassDeclaration* classDecl = nullptr);

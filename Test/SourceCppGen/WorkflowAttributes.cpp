@@ -51,20 +51,20 @@ Global Functions
 		{
 			auto op = ::vl::WString(L"", false);
 			{
-				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOperator();
-				if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Add)
+				auto __vwsn_switch_0 = ::vl::__vwsn::This(be.Obj())->GetOperator();
+				if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Add))
 				{
 					(op = ::vl::WString(L"+", false));
 				}
-				else if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Sub)
+				else if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Sub))
 				{
 					(op = ::vl::WString(L"-", false));
 				}
-				else if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Mul)
+				else if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Mul))
 				{
 					(op = ::vl::WString(L"*", false));
 				}
-				else if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Div)
+				else if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Div))
 				{
 					(op = ::vl::WString(L"/", false));
 				}
@@ -88,20 +88,20 @@ Global Functions
 			auto left = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->GetLeft());
 			auto right = GLOBAL_NAME Evaluate(::vl::__vwsn::This(be.Obj())->GetRight());
 			{
-				::calculator::BinaryExpression::BinaryOperator __vwsne_0 = ::vl::__vwsn::This(be.Obj())->GetOperator();
-				if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Add)
+				auto __vwsn_switch_1 = ::vl::__vwsn::This(be.Obj())->GetOperator();
+				if ((__vwsn_switch_1 == ::calculator::BinaryExpression::BinaryOperator::Add))
 				{
 					return (left + right);
 				}
-				else if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Sub)
+				else if ((__vwsn_switch_1 == ::calculator::BinaryExpression::BinaryOperator::Sub))
 				{
 					return (left - right);
 				}
-				else if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Mul)
+				else if ((__vwsn_switch_1 == ::calculator::BinaryExpression::BinaryOperator::Mul))
 				{
 					return (left * right);
 				}
-				else if (__vwsne_0 == ::calculator::BinaryExpression::BinaryOperator::Div)
+				else if ((__vwsn_switch_1 == ::calculator::BinaryExpression::BinaryOperator::Div))
 				{
 					return (left / right);
 				}

@@ -135,10 +135,17 @@ Global Functions
 		[&]()->decltype(auto){ auto __vwsn_temp_x0 = ::vl::__vwsn::Box(xs); ::vl::collections::List<::vl::vint32_t> __vwsn_temp_0; ::vl::reflection::description::UnboxParameter(__vwsn_temp_x0, __vwsn_temp_0); return ::vl::__vwsn::This(hinters.Obj())->SetStorage(__vwsn_temp_0); }();
 		::vl::__vwsn::This(hinters.Obj())->GetStorage().Set(4, 100);
 		auto g2 = ::vl::__vwsn::This(hinters.Obj())->GetStorage()[4];
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(1, 5 + 1))
 		{
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(hinters.Obj())->GetMyList()).Obj())->Add(::vl::__vwsn::Box(x));
+			auto __vwsn_for_begin_x = 1;
+			auto __vwsn_for_end_x = 5;
+			auto x = __vwsn_for_begin_x;
+			while ((x <= __vwsn_for_end_x))
+			{
+				{
+					::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(hinters.Obj())->GetMyList()).Obj())->Add(::vl::__vwsn::Box(x));
+				}
+				(x = (x + 1));
+			}
 		}
 		return ((((((((((((((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(a)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(e)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(f)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g1)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g2)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(hinters.Obj())->GetMyList()).Obj())->Get(2)))) + ::vl::WString(L"]", false));
 	}

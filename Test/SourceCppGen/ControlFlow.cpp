@@ -44,10 +44,17 @@ Global Functions
 	::vl::vint32_t ControlFlow::Sum1(::vl::vint32_t start, ::vl::vint32_t end)
 	{
 		auto result = 0;
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(start, end + 1))
 		{
-			(result = (result + x));
+			auto __vwsn_for_begin_x = start;
+			auto __vwsn_for_end_x = end;
+			auto x = __vwsn_for_begin_x;
+			while ((x <= __vwsn_for_end_x))
+			{
+				{
+					(result = (result + x));
+				}
+				(x = (x + 1));
+			}
 		}
 		return result;
 	}
@@ -55,10 +62,17 @@ Global Functions
 	::vl::vint32_t ControlFlow::Sum2(::vl::vint32_t start, ::vl::vint32_t end)
 	{
 		auto result = 0;
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::__vwsn::Range(start, end + 1).Reverse())
 		{
-			(result = (result + x));
+			auto __vwsn_for_begin_x = start;
+			auto __vwsn_for_end_x = end;
+			auto x = __vwsn_for_end_x;
+			while ((x >= __vwsn_for_begin_x))
+			{
+				{
+					(result = (result + x));
+				}
+				(x = (x - 1));
+			}
 		}
 		return result;
 	}
@@ -99,12 +113,13 @@ Global Functions
 		while ((! needToExit))
 		{
 			{
-				::vl::vint32_t __vwsne_0 = current;
-				if (__vwsne_0 == (end + 1))
+				auto __vwsn_switch_0 = current;
+				if ((__vwsn_switch_0 == (end + 1)))
 				{
 					(needToExit = true);
 				}
-				else 				{
+				else
+				{
 					(result = (result + current));
 				}
 			}

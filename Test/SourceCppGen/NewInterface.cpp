@@ -44,16 +44,22 @@ Global Functions
 	::vl::WString NewInterface::Show1(const ::vl::collections::LazyList<::vl::vint32_t>& xs)
 	{
 		auto s = ::vl::WString(L"", false);
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, xs)
 		{
-			if ((s == ::vl::WString(L"", false)))
+			auto __vwsn_for_enumerable_x = xs;
+			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
 			{
-				(s = (s + ::vl::__vwsn::ToString(x)));
-			}
-			else
-			{
-				(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+				auto x = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
+				{
+					if ((s == ::vl::WString(L"", false)))
+					{
+						(s = (s + ::vl::__vwsn::ToString(x)));
+					}
+					else
+					{
+						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+					}
+				}
 			}
 		}
 		return s;
@@ -62,16 +68,22 @@ Global Functions
 	::vl::WString NewInterface::Show2(const ::vl::collections::LazyList<::vl::vint32_t>& xs)
 	{
 		auto s = ::vl::WString(L"", false);
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, xs.Reverse())
 		{
-			if ((s == ::vl::WString(L"", false)))
+			auto __vwsn_for_enumerable_x = ::vl::reflection::description::Sys::ReverseEnumerable(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(xs));
+			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
 			{
-				(s = (s + ::vl::__vwsn::ToString(x)));
-			}
-			else
-			{
-				(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+				auto x = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
+				{
+					if ((s == ::vl::WString(L"", false)))
+					{
+						(s = (s + ::vl::__vwsn::ToString(x)));
+					}
+					else
+					{
+						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+					}
+				}
 			}
 		}
 		return s;

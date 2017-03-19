@@ -44,16 +44,22 @@ Global Functions
 	::vl::WString ForEach::Show1(::vl::Ptr<::vl::reflection::description::IValueList> xs)
 	{
 		auto s = ::vl::WString(L"", false);
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::reflection::description::GetLazyList<::vl::vint32_t>(xs))
 		{
-			if ((s == ::vl::WString(L"", false)))
+			auto __vwsn_for_enumerable_x = xs;
+			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
 			{
-				(s = (s + ::vl::__vwsn::ToString(x)));
-			}
-			else
-			{
-				(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+				auto x = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
+				{
+					if ((s == ::vl::WString(L"", false)))
+					{
+						(s = (s + ::vl::__vwsn::ToString(x)));
+					}
+					else
+					{
+						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+					}
+				}
 			}
 		}
 		return s;
@@ -62,16 +68,22 @@ Global Functions
 	::vl::WString ForEach::Show2(::vl::Ptr<::vl::reflection::description::IValueList> xs)
 	{
 		auto s = ::vl::WString(L"", false);
-		using __vwsnt_0 = ::vl::vint32_t;
-		FOREACH(__vwsnt_0, x, ::vl::reflection::description::GetLazyList<::vl::vint32_t>(xs).Reverse())
 		{
-			if ((s == ::vl::WString(L"", false)))
+			auto __vwsn_for_enumerable_x = ::vl::reflection::description::Sys::ReverseEnumerable(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs));
+			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
 			{
-				(s = (s + ::vl::__vwsn::ToString(x)));
-			}
-			else
-			{
-				(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+				auto x = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
+				{
+					if ((s == ::vl::WString(L"", false)))
+					{
+						(s = (s + ::vl::__vwsn::ToString(x)));
+					}
+					else
+					{
+						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+					}
+				}
 			}
 		}
 		return s;
