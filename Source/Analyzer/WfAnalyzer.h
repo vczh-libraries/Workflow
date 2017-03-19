@@ -167,6 +167,7 @@ Scope Manager
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
 				AttributeTypeMap							attributes;
+				vint										usedTempVars = 0;
 
 				ParsingErrorList							errors;							// compile errors
 

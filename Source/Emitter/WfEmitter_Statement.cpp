@@ -160,83 +160,6 @@ GenerateInstructions(Statement)
 					context.assembly->instructions[fillEndIndex].indexParameter = context.assembly->instructions.Count();
 				}
 
-				void Visit(WfSwitchStatement* node)override
-				{
-					auto function = context.functionContext->function;
-					vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<switch>");
-					GenerateExpressionInstructions(context, node->expression);
-					auto expressionResult = context.manager->expressionResolvings[node->expression.Obj()];
-					if ((expressionResult.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
-					{
-						INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
-					}
-
-					INSTRUCTION(Ins::StoreLocalVar(variableIndex));
-					auto switchContext = context.functionContext->PushScopeContext(WfCodegenScopeType::Switch);
-					{
-						EXIT_CODE(Ins::LoadValue(Value()));
-						EXIT_CODE(Ins::StoreLocalVar(variableIndex));
-					}
-
-					List<vint> caseInstructions, caseLabelIndices, breakInstructions;
-					auto expressionType = expressionResult.expectedType ? expressionResult.expectedType : expressionResult.type;
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
-					{
-						auto caseResult = context.manager->expressionResolvings[switchCase->expression.Obj()];
-						auto caseType = caseResult.expectedType ? caseResult.expectedType : caseResult.type;
-						auto mergedType = GetMergedType(expressionType, caseType);
-
-						INSTRUCTION(Ins::LoadLocalVar(variableIndex));
-						if (!IsSameType(expressionType.Obj(), mergedType.Obj()))
-						{
-							GenerateTypeCastInstructions(context, mergedType, true, switchCase->expression.Obj());
-						}
-						GenerateExpressionInstructions(context, switchCase->expression);
-						if (!IsSameType(caseType.Obj(), mergedType.Obj()))
-						{
-							GenerateTypeCastInstructions(context, mergedType, true, switchCase->expression.Obj());
-						}
-						if (mergedType->GetDecorator() == ITypeInfo::RawPtr || mergedType->GetDecorator() == ITypeInfo::SharedPtr)
-						{
-							INSTRUCTION(Ins::CompareReference());
-							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
-						}
-						else if ((mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
-						{
-							INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
-							INSTRUCTION(Ins::CompareLiteral(WfInsType::U8));
-							INSTRUCTION(Ins::OpNE());
-						}
-						else
-						{
-							INSTRUCTION(Ins::CompareLiteral(GetInstructionTypeArgument(mergedType)));
-							INSTRUCTION(Ins::OpNE());
-						}
-						caseInstructions.Add(INSTRUCTION(Ins::JumpIf(-1)));
-
-						GenerateStatementInstructions(context, switchCase->statement);
-						breakInstructions.Add(INSTRUCTION(Ins::Jump(-1)));
-						caseLabelIndices.Add(context.assembly->instructions.Count());
-					}
-
-					if (node->defaultBranch)
-					{
-						GenerateStatementInstructions(context, node->defaultBranch);
-					}
-					
-					vint breakLabelIndex = context.assembly->instructions.Count();
-					for (vint i = 0; i < caseInstructions.Count(); i++)
-					{
-						context.assembly->instructions[caseInstructions[i]].indexParameter = caseLabelIndices[i];
-					}
-					FOREACH(vint, index, breakInstructions)
-					{
-						context.assembly->instructions[index].indexParameter = breakLabelIndex;
-					}
-					ApplyCurrentScopeExitCode();
-					context.functionContext->PopScopeContext();
-				}
-
 				void Visit(WfWhileStatement* node)override
 				{
 					vint continueLabelIndex = -1;
@@ -252,150 +175,6 @@ GenerateInstructions(Statement)
 					GenerateStatementInstructions(context, node->statement);
 					INSTRUCTION(Ins::Jump(loopLabelIndex));
 					breakLabelIndex = context.assembly->instructions.Count();
-
-					FOREACH(vint, index, loopContext->continueInstructions)
-					{
-						context.assembly->instructions[index].indexParameter = continueLabelIndex;
-					}
-					FOREACH(vint, index, loopContext->breakInstructions)
-					{
-						context.assembly->instructions[index].indexParameter = breakLabelIndex;
-					}
-					context.functionContext->PopScopeContext();
-				}
-
-				void Visit(WfForEachStatement* node)override
-				{
-					vint continueLabelIndex = -1;
-					vint breakLabelIndex = -1;
-					vint loopLabelIndex = -1;
-					auto loopContext = context.functionContext->PushScopeContext(WfCodegenScopeType::Loop);
-
-					auto scope = context.manager->nodeScopes[node].Obj();
-					auto symbol = scope->symbols[node->name.value][0];
-					auto function = context.functionContext->function;
-					vint elementIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<for>" + node->name.value);
-					{
-						EXIT_CODE(Ins::LoadValue(Value()));
-						EXIT_CODE(Ins::StoreLocalVar(elementIndex));
-					}
-					context.functionContext->localVariables.Add(symbol.Obj(), elementIndex);
-
-					if (auto range = node->collection.Cast<WfRangeExpression>())
-					{
-						auto typeArgument = GetInstructionTypeArgument(symbol->typeInfo);
-						vint beginIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<for-begin>" + node->name.value);
-						vint endIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<for-end>" + node->name.value);
-						{
-							EXIT_CODE(Ins::LoadValue(Value()));
-							EXIT_CODE(Ins::StoreLocalVar(beginIndex));
-							EXIT_CODE(Ins::LoadValue(Value()));
-							EXIT_CODE(Ins::StoreLocalVar(endIndex));
-						}
-						GenerateExpressionInstructions(context, range->begin, symbol->typeInfo);
-						if (range->beginBoundary == WfRangeBoundary::Exclusive)
-						{
-							INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
-							INSTRUCTION(Ins::OpAdd(typeArgument));
-						}
-						INSTRUCTION(Ins::StoreLocalVar(beginIndex));
-						GenerateExpressionInstructions(context, range->end, symbol->typeInfo);
-						if (range->endBoundary == WfRangeBoundary::Exclusive)
-						{
-							INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
-							INSTRUCTION(Ins::OpSub(typeArgument));
-						}
-						INSTRUCTION(Ins::StoreLocalVar(endIndex));
-
-						if (node->direction == WfForEachDirection::Normal)
-						{
-							INSTRUCTION(Ins::LoadLocalVar(beginIndex));
-							INSTRUCTION(Ins::StoreLocalVar(elementIndex));
-							loopLabelIndex = INSTRUCTION(Ins::LoadLocalVar(elementIndex));
-							INSTRUCTION(Ins::LoadLocalVar(endIndex));
-							INSTRUCTION(Ins::CompareLiteral(typeArgument));
-							INSTRUCTION(Ins::OpGT());
-							loopContext->breakInstructions.Add(INSTRUCTION(Ins::JumpIf(-1)));
-						}
-						else
-						{
-							INSTRUCTION(Ins::LoadLocalVar(endIndex));
-							INSTRUCTION(Ins::StoreLocalVar(elementIndex));
-							loopLabelIndex = INSTRUCTION(Ins::LoadLocalVar(elementIndex));
-							INSTRUCTION(Ins::LoadLocalVar(beginIndex));
-							INSTRUCTION(Ins::CompareLiteral(typeArgument));
-							INSTRUCTION(Ins::OpLT());
-							loopContext->breakInstructions.Add(INSTRUCTION(Ins::JumpIf(-1)));
-						}
-						GenerateStatementInstructions(context, node->statement);
-						continueLabelIndex = context.assembly->instructions.Count();
-						if (node->direction == WfForEachDirection::Normal)
-						{
-							INSTRUCTION(Ins::LoadLocalVar(elementIndex));
-							INSTRUCTION(Ins::LoadLocalVar(endIndex));
-							INSTRUCTION(Ins::CompareLiteral(typeArgument));
-							INSTRUCTION(Ins::OpEQ());
-							loopContext->breakInstructions.Add(INSTRUCTION(Ins::JumpIf(-1)));
-							INSTRUCTION(Ins::LoadLocalVar(elementIndex));
-							INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
-							INSTRUCTION(Ins::OpAdd(typeArgument));
-							INSTRUCTION(Ins::StoreLocalVar(elementIndex));
-						}
-						else
-						{
-							INSTRUCTION(Ins::LoadLocalVar(elementIndex));
-							INSTRUCTION(Ins::LoadLocalVar(beginIndex));
-							INSTRUCTION(Ins::CompareLiteral(typeArgument));
-							INSTRUCTION(Ins::OpEQ());
-							loopContext->breakInstructions.Add(INSTRUCTION(Ins::JumpIf(-1)));
-							INSTRUCTION(Ins::LoadLocalVar(elementIndex));
-							INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
-							INSTRUCTION(Ins::OpSub(typeArgument));
-							INSTRUCTION(Ins::StoreLocalVar(elementIndex));
-						}
-						INSTRUCTION(Ins::Jump(loopLabelIndex));
-
-						breakLabelIndex = context.assembly->instructions.Count();
-					}
-					else
-					{
-						vint enumerableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<for-enumerable>" + node->name.value);
-						vint enumeratorIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<for-enumerator>" + node->name.value);
-						{
-							EXIT_CODE(Ins::LoadValue(Value()));
-							EXIT_CODE(Ins::StoreLocalVar(enumerableIndex));
-							EXIT_CODE(Ins::LoadValue(Value()));
-							EXIT_CODE(Ins::StoreLocalVar(enumeratorIndex));
-						}
-						auto methodCreateEnumerator = description::GetTypeDescriptor<IValueEnumerable>()->GetMethodGroupByName(L"CreateEnumerator", true)->GetMethod(0);
-						auto methodNext = description::GetTypeDescriptor<IValueEnumerator>()->GetMethodGroupByName(L"Next", true)->GetMethod(0);
-						auto methodGetCurrent = description::GetTypeDescriptor<IValueEnumerator>()->GetMethodGroupByName(L"GetCurrent", true)->GetMethod(0);
-
-						GenerateExpressionInstructions(context, node->collection);
-						if (node->direction == WfForEachDirection::Reversed)
-						{
-							INSTRUCTION(Ins::ReverseEnumerable());
-						}
-						INSTRUCTION(Ins::StoreLocalVar(enumerableIndex));
-						INSTRUCTION(Ins::LoadLocalVar(enumerableIndex));
-						INSTRUCTION(Ins::InvokeMethod(methodCreateEnumerator, 0));
-						INSTRUCTION(Ins::StoreLocalVar(enumeratorIndex));
-						
-						loopLabelIndex = INSTRUCTION(Ins::LoadLocalVar(elementIndex));
-						INSTRUCTION(Ins::LoadLocalVar(enumeratorIndex));
-						INSTRUCTION(Ins::InvokeMethod(methodNext, 0));
-						INSTRUCTION(Ins::OpNot(WfInsType::Bool));
-						loopContext->breakInstructions.Add(INSTRUCTION(Ins::JumpIf(-1)));
-						INSTRUCTION(Ins::LoadLocalVar(enumeratorIndex));
-						INSTRUCTION(Ins::InvokeMethod(methodGetCurrent, 0));
-						INSTRUCTION(Ins::StoreLocalVar(elementIndex));
-						GenerateStatementInstructions(context, node->statement);
-						continueLabelIndex = context.assembly->instructions.Count();
-						INSTRUCTION(Ins::Jump(loopLabelIndex));
-
-						breakLabelIndex = context.assembly->instructions.Count();
-					}
-					ApplyCurrentScopeExitCode();
 
 					FOREACH(vint, index, loopContext->continueInstructions)
 					{
@@ -508,6 +287,11 @@ GenerateInstructions(Statement)
 
 					GenerateExpressionInstructions(context, node->variable->expression);
 					INSTRUCTION(Ins::StoreLocalVar(index));
+				}
+
+				void Visit(WfVirtualStatement* node)override
+				{
+					GenerateStatementInstructions(context, node->expandedStatement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override
