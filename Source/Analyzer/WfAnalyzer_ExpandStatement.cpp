@@ -104,8 +104,7 @@ ExpandForEachStatement
 			}
 
 			class CopyForEachRangeBodyVisitor
-				: public copy_visitor::StatementVisitor
-				, public copy_visitor::CoroutineStatementVisitor
+				: public copy_visitor::ModuleVisitor
 			{
 			public:
 				WfLexicalScopeManager*						manager;
@@ -116,40 +115,6 @@ ExpandForEachStatement
 					, forEach(_forEach)
 				{
 				}
-
-				// CreateField (virtual) -----------------------------
-
-				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
-				{
-					return CopyExpression(from);
-				}
-
-				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
-				{
-					return CopyType(from);
-				}
-
-				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
-				{
-					if (!from) return nullptr;
-					from->Accept(static_cast<StatementVisitor*>(this));
-					return this->result.Cast<WfStatement>();
-				}
-
-				// Dspatch (virtual) --------------------------------
-
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node)override
-				{
-					return CreateField(node->expandedStatement);
-				}
-
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node)override
-				{
-					node->Accept(static_cast<CoroutineStatementVisitor*>(this));
-					return this->result;
-				}
-
-				// Visitor Members -----------------------------------
 
 				void Visit(WfContinueStatement* node)
 				{
@@ -286,8 +251,15 @@ ExpandForEachStatement
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
 						decl->name.value = varEnum;
-						decl->expression = CopyExpression(node->collection);
-						if (node->direction == WfForEachDirection::Reversed)
+						if (node->direction == WfForEachDirection::Normal)
+						{
+							auto inferExpr = MakePtr<WfInferExpression>();
+							inferExpr->expression = CopyExpression(node->collection);
+							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IValueEnumerable>>::CreateTypeInfo().Obj());
+
+							decl->expression = inferExpr;
+						}
+						else
 						{
 							auto refSystem = MakePtr<WfTopQualifiedExpression>();
 							refSystem->name.value = L"system";
@@ -302,7 +274,7 @@ ExpandForEachStatement
 
 							auto refCall = MakePtr<WfCallExpression>();
 							refCall->function = refMethod;
-							refCall->arguments.Add(decl->expression);
+							refCall->arguments.Add(CopyExpression(node->collection));
 
 							decl->expression = refCall;
 						}

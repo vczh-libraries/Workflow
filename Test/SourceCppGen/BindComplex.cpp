@@ -95,7 +95,7 @@ Closures
 	{
 		auto __vwsn_bind_activator_result_ = [&](auto _x){ return (::vl::__vwsn::This(_x.Obj())->GetValue() + [&](auto _y){ return (::vl::__vwsn::This(_y.Obj())->GetValue() + [&](auto _z){ return ::vl::__vwsn::This(_z.Obj())->GetValue(); }(__vwsn_bind_cache_2)); }(__vwsn_bind_cache_1)); }(__vwsn_bind_cache_0);
 		{
-			auto __vwsn_for_enumerable_ = ::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues();
+			auto __vwsn_for_enumerable_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues());
 			auto __vwsn_for_enumerator_ = ::vl::__vwsn::This(__vwsn_for_enumerable_.Obj())->CreateEnumerator();
 			while (::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->Next())
 			{

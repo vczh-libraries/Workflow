@@ -45,7 +45,7 @@ Global Functions
 	{
 		auto s = ::vl::WString(L"", false);
 		{
-			auto __vwsn_for_enumerable_x = xs;
+			auto __vwsn_for_enumerable_x = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(xs);
 			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
 			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
 			{

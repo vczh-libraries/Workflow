@@ -90,7 +90,7 @@ Closures
 	{
 		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetValue()) + ::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->GetValue());
 		{
-			auto __vwsn_for_enumerable_ = ::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues();
+			auto __vwsn_for_enumerable_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues());
 			auto __vwsn_for_enumerator_ = ::vl::__vwsn::This(__vwsn_for_enumerable_.Obj())->CreateEnumerator();
 			while (::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->Next())
 			{
