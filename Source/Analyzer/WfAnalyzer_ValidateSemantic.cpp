@@ -550,9 +550,31 @@ ValidateSemantic(Declaration)
 ValidateSemantic(Statement)
 ***********************************************************************/
 
+			class ExpandVirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor
+			{
+			public:
+				WfLexicalScopeManager*				manager;
+
+				ExpandVirtualStatementVisitor(WfLexicalScopeManager* _manager)
+					:manager(_manager)
+				{
+				}
+
+				void Visit(WfSwitchStatement* node)override
+				{
+					ExpandSwitchStatement(manager, node);
+				}
+
+				void Visit(WfForEachStatement* node)override
+				{
+					ExpandForEachStatement(manager, node);
+				}
+			};
+
 			class ValidateSemanticStatementVisitor
 				: public Object
 				, public WfStatement::IVisitor
+				, public WfVirtualStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
 			{
 			public:
@@ -648,53 +670,10 @@ ValidateSemantic(Statement)
 					}
 				}
 
-				void Visit(WfSwitchStatement* node)override
-				{
-					Ptr<ITypeInfo> type = GetExpressionType(manager, node->expression, 0);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
-					{
-						Ptr<ITypeInfo> caseType;
-						if (IsExpressionDependOnExpectedType(manager, switchCase->expression))
-						{
-							caseType = GetExpressionType(manager, switchCase->expression, type);
-						}
-						else
-						{
-							caseType = GetExpressionType(manager, switchCase->expression, 0);
-						}
-
-						if (type && caseType)
-						{
-							if (!GetMergedType(type, caseType))
-							{
-								manager->errors.Add(WfErrors::CannotMergeTwoType(switchCase->expression.Obj(), type.Obj(), caseType.Obj()));
-							}
-						}
-						ValidateStatementSemantic(manager, switchCase->statement);
-					}
-					if (node->defaultBranch)
-					{
-						ValidateStatementSemantic(manager, node->defaultBranch);
-					}
-				}
-
 				void Visit(WfWhileStatement* node)override
 				{
 					Ptr<ITypeInfo> boolType = TypeInfoRetriver<bool>::CreateTypeInfo();
 					GetExpressionType(manager, node->condition, boolType);
-					ValidateStatementSemantic(manager, node->statement);
-				}
-
-				void Visit(WfForEachStatement* node)override
-				{
-					Ptr<ITypeInfo> elementType = GetEnumerableExpressionItemType(manager, node->collection, 0);
-					if (elementType)
-					{
-						auto scope = manager->nodeScopes[node].Obj();
-						auto symbol = scope->symbols[node->name.value][0];
-						symbol->typeInfo = elementType;
-						symbol->type = GetTypeFromTypeInfo(elementType.Obj());
-					}
 					ValidateStatementSemantic(manager, node->statement);
 				}
 
@@ -727,6 +706,74 @@ ValidateSemantic(Statement)
 				void Visit(WfVariableStatement* node)override
 				{
 					ValidateDeclarationSemantic(manager, node->variable);
+				}
+
+				void Visit(WfVirtualStatement* node)override
+				{
+					bool expanded = node->expandedStatement;
+					vint errorCount = manager->errors.Count();
+					node->Accept((WfVirtualStatement::IVisitor*)this);
+
+					if (!expanded && manager->errors.Count() == errorCount)
+					{
+						ExpandVirtualStatementVisitor visitor(manager);
+						node->Accept(&visitor);
+
+						auto parentScope = manager->nodeScopes[node];
+						BuildScopeForStatement(manager, parentScope, node->expandedStatement);
+						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
+						{
+							return;
+						}
+					}
+
+					if (node->expandedStatement)
+					{
+						ValidateStatementSemantic(manager, node->expandedStatement);
+					}
+				}
+
+				void Visit(WfSwitchStatement* node)override
+				{
+					Ptr<ITypeInfo> type = GetExpressionType(manager, node->expression, 0);
+					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					{
+						Ptr<ITypeInfo> caseType;
+						if (IsExpressionDependOnExpectedType(manager, switchCase->expression))
+						{
+							caseType = GetExpressionType(manager, switchCase->expression, type);
+						}
+						else
+						{
+							caseType = GetExpressionType(manager, switchCase->expression, 0);
+						}
+
+						if (type && caseType)
+						{
+							if (!GetMergedType(type, caseType))
+							{
+								manager->errors.Add(WfErrors::CannotMergeTwoType(switchCase->expression.Obj(), type.Obj(), caseType.Obj()));
+							}
+						}
+						ValidateStatementSemantic(manager, switchCase->statement);
+					}
+					if (node->defaultBranch)
+					{
+						ValidateStatementSemantic(manager, node->defaultBranch);
+					}
+				}
+
+				void Visit(WfForEachStatement* node)override
+				{
+					Ptr<ITypeInfo> elementType = GetEnumerableExpressionItemType(manager, node->collection, 0);
+					if (elementType)
+					{
+						auto scope = manager->nodeScopes[node].Obj();
+						auto symbol = scope->symbols[node->name.value][0];
+						symbol->typeInfo = elementType;
+						symbol->type = GetTypeFromTypeInfo(elementType.Obj());
+					}
+					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override

@@ -947,6 +947,7 @@ ValidateStructure(Statement)
 			class ValidateStructureStatementVisitor
 				: public Object
 				, public WfStatement::IVisitor
+				, public WfVirtualStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
 			{
 			public:
@@ -1015,34 +1016,11 @@ ValidateStructure(Statement)
 					}
 				}
 
-				void Visit(WfSwitchStatement* node)override
-				{
-					ValidateExpressionStructure(manager, context, node->expression);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
-					{
-						ValidateExpressionStructure(manager, context, switchCase->expression);
-						ValidateStatementStructure(manager, context, switchCase->statement);
-					}
-					if (node->defaultBranch)
-					{
-						ValidateStatementStructure(manager, context, node->defaultBranch);
-					}
-				}
-
 				void Visit(WfWhileStatement* node)override
 				{
 					auto oldLoop = context->currentLoopStatement;
 					context->currentLoopStatement = node;
 					ValidateExpressionStructure(manager, context, node->condition);
-					ValidateStatementStructure(manager, context, node->statement);
-					context->currentLoopStatement = oldLoop;
-				}
-
-				void Visit(WfForEachStatement* node)override
-				{
-					auto oldLoop = context->currentLoopStatement;
-					context->currentLoopStatement = node;
-					ValidateExpressionStructure(manager, context, node->collection);
 					ValidateStatementStructure(manager, context, node->statement);
 					context->currentLoopStatement = oldLoop;
 				}
@@ -1083,6 +1061,38 @@ ValidateStructure(Statement)
 				void Visit(WfVariableStatement* node)override
 				{
 					ValidateDeclarationStructure(manager, node->variable);
+				}
+
+				void Visit(WfVirtualStatement* node)override
+				{
+					node->Accept((WfVirtualStatement::IVisitor*)this);
+					if (node->expandedStatement)
+					{
+						ValidateStatementStructure(manager, context, node->expandedStatement);
+					}
+				}
+
+				void Visit(WfSwitchStatement* node)override
+				{
+					ValidateExpressionStructure(manager, context, node->expression);
+					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					{
+						ValidateExpressionStructure(manager, context, switchCase->expression);
+						ValidateStatementStructure(manager, context, switchCase->statement);
+					}
+					if (node->defaultBranch)
+					{
+						ValidateStatementStructure(manager, context, node->defaultBranch);
+					}
+				}
+
+				void Visit(WfForEachStatement* node)override
+				{
+					auto oldLoop = context->currentLoopStatement;
+					context->currentLoopStatement = node;
+					ValidateExpressionStructure(manager, context, node->collection);
+					ValidateStatementStructure(manager, context, node->statement);
+					context->currentLoopStatement = oldLoop;
 				}
 
 				void Visit(WfCoroutineStatement* node)override

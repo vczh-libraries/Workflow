@@ -365,7 +365,7 @@ Semantic Analyzing
 			extern Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
 
 /***********************************************************************
-Expanding Virtual Expressions
+Expanding Virtual Nodes
 ***********************************************************************/
 
 			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
@@ -374,9 +374,11 @@ Expanding Virtual Expressions
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
 			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration);
 			extern Ptr<WfExpression>						CreateDefaultValue(reflection::description::ITypeInfo* elementType);
-			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 
+			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 			extern void										ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node);
+			extern void										ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node);
+			extern void										ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node);
 
 /***********************************************************************
 Error Messages

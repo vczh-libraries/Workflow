@@ -803,6 +803,7 @@ Print (Statement)
 		class PrintStatementVisitor
 			: public Object
 			, public WfStatement::IVisitor
+			, public WfVirtualStatement::IVisitor
 			, public WfCoroutineStatement::IVisitor
 		{
 		public:
@@ -905,62 +906,11 @@ Print (Statement)
 				writer.AfterPrint(node);
 			}
 
-			void Visit(WfSwitchStatement* node)override
-			{
-				writer.BeforePrint(node);
-				writer.WriteString(L"switch (");
-				WfPrint(node->expression, indent, writer);
-				writer.WriteLine(L")");
-
-				writer.WriteString(indent);
-				writer.WriteLine(L"{");
-
-				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
-				{
-					writer.WriteString(indent);
-					writer.WriteString(L"    case ");
-					WfPrint(switchCase->expression, indent, writer);
-					writer.WriteLine(L":");
-					writer.WriteString(indent + L"    ");
-					WfPrint(switchCase->statement, indent + L"    ", writer);
-					writer.WriteLine(L"");
-				}
-				if (node->defaultBranch)
-				{
-					writer.WriteString(indent);
-					writer.WriteLine(L"    default:");
-					writer.WriteString(indent + L"    ");
-					WfPrint(node->defaultBranch, indent + L"    ", writer);
-					writer.WriteLine(L"");
-				}
-
-				writer.WriteString(indent);
-				writer.WriteString(L"}");
-				writer.AfterPrint(node);
-			}
-
 			void Visit(WfWhileStatement* node)override
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"while (");
 				WfPrint(node->condition, indent, writer);
-				writer.WriteLine(L")");
-				writer.WriteString(indent);
-				WfPrint(node->statement, indent, writer);
-				writer.AfterPrint(node);
-			}
-
-			void Visit(WfForEachStatement* node)override
-			{
-				writer.BeforePrint(node);
-				writer.WriteString(L"for (");
-				writer.WriteString(node->name.value);
-				writer.WriteString(L" in ");
-				if (node->direction == WfForEachDirection::Reversed)
-				{
-					writer.WriteString(L"reversed ");
-				}
-				WfPrint(node->collection, indent, writer);
 				writer.WriteLine(L")");
 				writer.WriteString(indent);
 				WfPrint(node->statement, indent, writer);
@@ -1023,6 +973,62 @@ Print (Statement)
 			{
 				writer.BeforePrint(node);
 				WfPrint(Ptr<WfDeclaration>(node->variable), indent, writer);
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfVirtualStatement* node)override
+			{
+				node->Accept((WfVirtualStatement::IVisitor*)this);
+			}
+
+			void Visit(WfSwitchStatement* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"switch (");
+				WfPrint(node->expression, indent, writer);
+				writer.WriteLine(L")");
+
+				writer.WriteString(indent);
+				writer.WriteLine(L"{");
+
+				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+				{
+					writer.WriteString(indent);
+					writer.WriteString(L"    case ");
+					WfPrint(switchCase->expression, indent, writer);
+					writer.WriteLine(L":");
+					writer.WriteString(indent + L"    ");
+					WfPrint(switchCase->statement, indent + L"    ", writer);
+					writer.WriteLine(L"");
+				}
+				if (node->defaultBranch)
+				{
+					writer.WriteString(indent);
+					writer.WriteLine(L"    default:");
+					writer.WriteString(indent + L"    ");
+					WfPrint(node->defaultBranch, indent + L"    ", writer);
+					writer.WriteLine(L"");
+				}
+
+				writer.WriteString(indent);
+				writer.WriteString(L"}");
+				writer.AfterPrint(node);
+			}
+
+			void Visit(WfForEachStatement* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"for (");
+				writer.WriteString(node->name.value);
+				writer.WriteString(L" in ");
+				if (node->direction == WfForEachDirection::Reversed)
+				{
+					writer.WriteString(L"reversed ");
+				}
+				WfPrint(node->collection, indent, writer);
+				writer.WriteLine(L")");
+				writer.WriteString(indent);
+				WfPrint(node->statement, indent, writer);
 				writer.AfterPrint(node);
 			}
 

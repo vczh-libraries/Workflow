@@ -815,38 +815,9 @@ StatementVisitor
 				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
 			}
 
-			void StatementVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
-			{
-				to->expression = CreateField(from->expression);
-				FOREACH(vl::Ptr<WfSwitchCase>, listItem, from->caseBranches)
-				{
-					to->caseBranches.Add(CreateField(listItem));
-				}
-				to->defaultBranch = CreateField(from->defaultBranch);
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-			}
-
-			void StatementVisitor::CopyFields(WfSwitchCase* from, WfSwitchCase* to)
-			{
-				to->expression = CreateField(from->expression);
-				to->statement = CreateField(from->statement);
-				to->codeRange = from->codeRange;
-			}
-
 			void StatementVisitor::CopyFields(WfWhileStatement* from, WfWhileStatement* to)
 			{
 				to->condition = CreateField(from->condition);
-				to->statement = CreateField(from->statement);
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-			}
-
-			void StatementVisitor::CopyFields(WfForEachStatement* from, WfForEachStatement* to)
-			{
-				to->name.codeRange = from->name.codeRange;
-				to->name.tokenIndex = from->name.tokenIndex;
-				to->name.value = from->name.value;
-				to->direction = from->direction;
-				to->collection = CreateField(from->collection);
 				to->statement = CreateField(from->statement);
 				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
 			}
@@ -923,14 +894,6 @@ StatementVisitor
 
 			// CreateField ---------------------------------------
 
-			vl::Ptr<WfSwitchCase> StatementVisitor::CreateField(vl::Ptr<WfSwitchCase> from)
-			{
-				if (!from) return nullptr;
-				auto to = vl::MakePtr<WfSwitchCase>();
-				CopyFields(from.Obj(), to.Obj());
-				return to;
-			}
-
 			vl::Ptr<WfVariableDeclaration> StatementVisitor::CreateField(vl::Ptr<WfVariableDeclaration> from)
 			{
 				if (!from) return nullptr;
@@ -999,23 +962,9 @@ StatementVisitor
 				this->result = newNode;
 			}
 
-			void StatementVisitor::Visit(WfSwitchStatement* node)
-			{
-				auto newNode = vl::MakePtr<WfSwitchStatement>();
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
 			void StatementVisitor::Visit(WfWhileStatement* node)
 			{
 				auto newNode = vl::MakePtr<WfWhileStatement>();
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void StatementVisitor::Visit(WfForEachStatement* node)
-			{
-				auto newNode = vl::MakePtr<WfForEachStatement>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
@@ -1046,6 +995,11 @@ StatementVisitor
 				auto newNode = vl::MakePtr<WfExpressionStatement>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
+			}
+
+			void StatementVisitor::Visit(WfVirtualStatement* node)
+			{
+				this->result = Dispatch(node);
 			}
 
 			void StatementVisitor::Visit(WfCoroutineStatement* node)
@@ -1479,6 +1433,78 @@ VirtualDeclarationVisitor
 			}
 
 /***********************************************************************
+VirtualStatementVisitor
+***********************************************************************/
+
+			// CopyFields ----------------------------------------
+
+			void VirtualStatementVisitor::CopyFields(WfForEachStatement* from, WfForEachStatement* to)
+			{
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				to->direction = from->direction;
+				to->collection = CreateField(from->collection);
+				to->statement = CreateField(from->statement);
+				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
+			}
+
+			void VirtualStatementVisitor::CopyFields(WfVirtualStatement* from, WfVirtualStatement* to)
+			{
+				to->expandedStatement = CreateField(from->expandedStatement);
+				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+			}
+
+			void VirtualStatementVisitor::CopyFields(WfStatement* from, WfStatement* to)
+			{
+				to->codeRange = from->codeRange;
+			}
+
+			void VirtualStatementVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
+			{
+				to->expression = CreateField(from->expression);
+				FOREACH(vl::Ptr<WfSwitchCase>, listItem, from->caseBranches)
+				{
+					to->caseBranches.Add(CreateField(listItem));
+				}
+				to->defaultBranch = CreateField(from->defaultBranch);
+				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
+			}
+
+			void VirtualStatementVisitor::CopyFields(WfSwitchCase* from, WfSwitchCase* to)
+			{
+				to->expression = CreateField(from->expression);
+				to->statement = CreateField(from->statement);
+				to->codeRange = from->codeRange;
+			}
+
+			// CreateField ---------------------------------------
+
+			vl::Ptr<WfSwitchCase> VirtualStatementVisitor::CreateField(vl::Ptr<WfSwitchCase> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfSwitchCase>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			// Visitor Members -----------------------------------
+
+			void VirtualStatementVisitor::Visit(WfForEachStatement* node)
+			{
+				auto newNode = vl::MakePtr<WfForEachStatement>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualStatementVisitor::Visit(WfSwitchStatement* node)
+			{
+				auto newNode = vl::MakePtr<WfSwitchStatement>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+/***********************************************************************
 CoroutineStatementVisitor
 ***********************************************************************/
 
@@ -1717,6 +1743,12 @@ ModuleVisitor
 			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualExpression* node)
 			{
 				node->Accept(static_cast<VirtualExpressionVisitor*>(this));
+				return this->result;
+			}
+
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualStatement* node)
+			{
+				node->Accept(static_cast<VirtualStatementVisitor*>(this));
 				return this->result;
 			}
 

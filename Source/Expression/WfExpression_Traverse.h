@@ -164,10 +164,7 @@ namespace vl
 				virtual void Traverse(WfDeleteStatement* node);
 				virtual void Traverse(WfRaiseExceptionStatement* node);
 				virtual void Traverse(WfIfStatement* node);
-				virtual void Traverse(WfSwitchStatement* node);
-				virtual void Traverse(WfSwitchCase* node);
 				virtual void Traverse(WfWhileStatement* node);
-				virtual void Traverse(WfForEachStatement* node);
 				virtual void Traverse(WfTryStatement* node);
 				virtual void Traverse(WfBlockStatement* node);
 				virtual void Traverse(WfVariableStatement* node);
@@ -178,7 +175,6 @@ namespace vl
 				virtual void Traverse(WfExpressionStatement* node);
 
 				// VisitField ----------------------------------------
-				void VisitField(WfSwitchCase* node);
 				void VisitField(WfVariableDeclaration* node);
 				void VisitField(WfAttribute* node);
 				void VisitField(WfClassMember* node);
@@ -189,6 +185,7 @@ namespace vl
 				virtual void VisitField(WfStatement* node) = 0;
 
 				// Dispatch (virtual) --------------------------------
+				virtual void Dispatch(WfVirtualStatement* node) = 0;
 				virtual void Dispatch(WfCoroutineStatement* node) = 0;
 
 				// Visitor Members -----------------------------------
@@ -198,13 +195,12 @@ namespace vl
 				void Visit(WfDeleteStatement* node)override;
 				void Visit(WfRaiseExceptionStatement* node)override;
 				void Visit(WfIfStatement* node)override;
-				void Visit(WfSwitchStatement* node)override;
 				void Visit(WfWhileStatement* node)override;
-				void Visit(WfForEachStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
+				void Visit(WfVirtualStatement* node)override;
 				void Visit(WfCoroutineStatement* node)override;
 			};
 
@@ -292,6 +288,31 @@ namespace vl
 				void Visit(WfAutoPropertyDeclaration* node)override;
 			};
 
+			class VirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor
+			{
+			public:
+
+				// Traverse ------------------------------------------
+				virtual void Traverse(vl::parsing::ParsingToken& token);
+				virtual void Traverse(vl::parsing::ParsingTreeCustomBase* node);
+				virtual void Traverse(WfForEachStatement* node);
+				virtual void Traverse(WfVirtualStatement* node);
+				virtual void Traverse(WfStatement* node);
+				virtual void Traverse(WfSwitchStatement* node);
+				virtual void Traverse(WfSwitchCase* node);
+
+				// VisitField ----------------------------------------
+				void VisitField(WfSwitchCase* node);
+
+				// VisitField (virtual) ------------------------------
+				virtual void VisitField(WfStatement* node) = 0;
+				virtual void VisitField(WfExpression* node) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfForEachStatement* node)override;
+				void Visit(WfSwitchStatement* node)override;
+			};
+
 			class CoroutineStatementVisitor : public Object, public WfCoroutineStatement::IVisitor
 			{
 			public:
@@ -355,6 +376,7 @@ namespace vl
 				, public StatementVisitor
 				, public DeclarationVisitor
 				, public VirtualDeclarationVisitor
+				, public VirtualStatementVisitor
 				, public CoroutineStatementVisitor
 				, public VirtualExpressionVisitor
 				, public ModuleUsingFragmentVisitor
@@ -382,6 +404,7 @@ namespace vl
 
 				// Dispatch (virtual) --------------------------------
 				void Dispatch(WfVirtualExpression* node);
+				void Dispatch(WfVirtualStatement* node);
 				void Dispatch(WfCoroutineStatement* node);
 				void Dispatch(WfVirtualDeclaration* node);
 			};

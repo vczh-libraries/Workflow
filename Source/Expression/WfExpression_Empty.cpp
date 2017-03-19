@@ -223,15 +223,7 @@ StatementVisitor
 			{
 			}
 
-			void StatementVisitor::Visit(WfSwitchStatement* node)
-			{
-			}
-
 			void StatementVisitor::Visit(WfWhileStatement* node)
-			{
-			}
-
-			void StatementVisitor::Visit(WfForEachStatement* node)
 			{
 			}
 
@@ -249,6 +241,11 @@ StatementVisitor
 
 			void StatementVisitor::Visit(WfExpressionStatement* node)
 			{
+			}
+
+			void StatementVisitor::Visit(WfVirtualStatement* node)
+			{
+				Dispatch(node);
 			}
 
 			void StatementVisitor::Visit(WfCoroutineStatement* node)
@@ -314,6 +311,20 @@ VirtualDeclarationVisitor
 			// Visitor Members -----------------------------------
 
 			void VirtualDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
+			{
+			}
+
+/***********************************************************************
+VirtualStatementVisitor
+***********************************************************************/
+
+			// Visitor Members -----------------------------------
+
+			void VirtualStatementVisitor::Visit(WfForEachStatement* node)
+			{
+			}
+
+			void VirtualStatementVisitor::Visit(WfSwitchStatement* node)
 			{
 			}
 

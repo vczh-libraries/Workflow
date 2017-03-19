@@ -337,36 +337,9 @@ class IfStatement : Statement
 	Statement				falseBranch;
 }
 
-class SwitchCase
-{
-	Expression				expression;
-	Statement				statement;
-}
-
-class SwitchStatement : Statement
-{
-	Expression				expression;
-	SwitchCase[]			caseBranches;
-	Statement				defaultBranch;
-}
-
 class WhileStatement : Statement
 {
 	Expression				condition;
-	Statement				statement;
-}
-
-enum ForEachDirection
-{
-	Normal,
-	Reversed,
-}
-
-class ForEachStatement : Statement
-{
-	token					name;
-	ForEachDirection		direction;
-	Expression				collection;
 	Statement				statement;
 }
 
@@ -391,6 +364,42 @@ class VariableStatement : Statement
 class ExpressionStatement : Statement
 {
 	Expression				expression;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (VirtualStatements)
+//////////////////////////////////////////////////////////////////
+
+class VirtualStatement : Statement
+{
+	Statement				expandedStatement;
+}
+
+enum ForEachDirection
+{
+	Normal,
+	Reversed,
+}
+
+class ForEachStatement : VirtualStatement
+{
+	token					name;
+	ForEachDirection		direction;
+	Expression				collection;
+	Statement				statement;
+}
+
+class SwitchCase
+{
+	Expression				expression;
+	Statement				statement;
+}
+
+class SwitchStatement : VirtualStatement
+{
+	Expression				expression;
+	SwitchCase[]			caseBranches;
+	Statement				defaultBranch;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1032,6 +1041,13 @@ rule IfStatement _If
 	= "if" "(" ["var" NAME : name ":" _Type : type "="] _Expression : expression ")" _Block : trueBranch ["else" (_Block : falseBranch | _If : falseBranch)] as IfStatement
 	;
 
+rule Statement _VirtualStatement
+	= "switch" "(" _Expression : expression ")" "{" {_SwitchCase : caseBranches} ["default" ":" _Block : defaultBranch] "}" as SwitchStatement
+	= "for" "(" NAME : name 
+		(("in" with {direction="Normal"}) | ("in" "reversed" with {direction="Reversed"}))
+		_Expression : collection ")" _Block : statement as ForEachStatement
+	;
+
 rule Statement _CoStatement
 	= "$pause" (";" | _Block : statement) as CoPauseStatement
 	;
@@ -1045,13 +1061,10 @@ rule Statement _Statement
 	= "delete" _Expression : expression ";" as DeleteStatement
 	= "raise" [_Expression : expression] ";" as RaiseExceptionStatement
 	= !_If
-	= "switch" "(" _Expression : expression ")" "{" {_SwitchCase : caseBranches} ["default" ":" _Block : defaultBranch] "}" as SwitchStatement
 	= "while" "(" _Expression : condition ")" _Block : statement as WhileStatement
-	= "for" "(" NAME : name 
-		(("in" with {direction="Normal"}) | ("in" "reversed" with {direction="Reversed"}))
-		_Expression : collection ")" _Block : statement as ForEachStatement
 	= "try" _Block : protectedStatement ["catch" "(" NAME : name ")" _Block : catchStatement] ["finally" _Block : finallyStatement] as TryStatement
 	= _Expression : expression ";" as ExpressionStatement
+	= !_VirtualStatement
 	= !_CoStatement
 	;
 

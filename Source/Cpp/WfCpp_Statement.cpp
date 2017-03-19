@@ -128,95 +128,12 @@ namespace vl
 					}
 				}
 
-				void Visit(WfSwitchStatement* node)override
-				{
-					auto exprName = L"__vwsne_" + itow(functionRecord->exprCounter++);
-					auto result = config->manager->expressionResolvings[node->expression.Obj()];
-
-					writer.WriteString(prefix);
-					writer.WriteLine(L"{");
-					writer.WriteString(prefix);
-					writer.WriteString(L"\t");
-					writer.WriteString(config->ConvertType(result.type.Obj()));
-					writer.WriteString(L" ");
-					writer.WriteString(exprName);
-					writer.WriteString(L" = ");
-					GenerateExpression(config, writer, node->expression, result.type.Obj());
-					writer.WriteLine(L";");
-
-					FOREACH_INDEXER(Ptr<WfSwitchCase>, switchCase, index, node->caseBranches)
-					{
-						writer.WriteString(prefix);
-						writer.WriteString(L"\t");
-						if (index > 0)
-						{
-							writer.WriteString(L"else ");
-						}
-						writer.WriteString(L"if (");
-						writer.WriteString(exprName);
-						writer.WriteString(L" == ");
-						GenerateExpression(config, writer, switchCase->expression, result.type.Obj());
-						writer.WriteLine(L")");
-						GenerateStatement(config, functionRecord, writer, switchCase->statement, prefix + L"\t", WString(L"\t", false), returnType);
-					}
-
-					if (node->defaultBranch)
-					{
-						writer.WriteString(prefix);
-						writer.WriteString(L"\telse ");
-						GenerateStatement(config, functionRecord, writer, node->defaultBranch, prefix + L"\t", WString(L"\t", false), returnType);
-					}
-
-					writer.WriteString(prefix);
-					writer.WriteLine(L"}");
-				}
-
 				void Visit(WfWhileStatement* node)override
 				{
 					writer.WriteString(prefix);
 					writer.WriteString(L"while (");
 					GenerateExpression(config, writer, node->condition, TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
 					writer.WriteLine(L")");
-					Call(node->statement);
-				}
-
-				void Visit(WfForEachStatement* node)override
-				{
-					auto result = config->manager->expressionResolvings[node->collection.Obj()];
-					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
-					auto elementTypeCpp = elementType ? config->ConvertType(elementType) : config->ConvertType(description::GetTypeDescriptor<Value>());
-
-					auto typeName = L"__vwsnt_" + itow(functionRecord->typeCounter++);
-					writer.WriteString(prefix);
-					writer.WriteString(L"using ");
-					writer.WriteString(typeName);
-					writer.WriteString(L" = ");
-					writer.WriteString(elementTypeCpp);
-					writer.WriteLine(L";");
-
-					writer.WriteString(prefix);
-					writer.WriteString(L"FOREACH(");
-					writer.WriteString(typeName);
-					writer.WriteString(L", ");
-					writer.WriteString(config->ConvertName(node->name.value));
-					writer.WriteString(L", ");
-					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
-					{
-						writer.WriteString(L"::vl::reflection::description::GetLazyList<");
-						writer.WriteString(elementTypeCpp);
-						writer.WriteString(L">(");
-					}
-					GenerateExpression(config, writer, node->collection, nullptr);
-					if (result.type->GetTypeDescriptor() != description::GetTypeDescriptor<IValueEnumerable>())
-					{
-						writer.WriteString(L")");
-					}
-					if (node->direction == WfForEachDirection::Reversed)
-					{
-						writer.WriteString(L".Reverse()");
-					}
-					writer.WriteLine(L")");
-
 					Call(node->statement);
 				}
 
@@ -362,6 +279,11 @@ namespace vl
 						GenerateExpression(config, writer, node->variable->expression, symbol->typeInfo.Obj());
 					}
 					writer.WriteLine(L";");
+				}
+
+				void Visit(WfVirtualStatement* node)override
+				{
+					Call(node->expandedStatement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override

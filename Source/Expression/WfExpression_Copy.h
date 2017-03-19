@@ -164,10 +164,7 @@ namespace vl
 				void CopyFields(WfDeleteStatement* from, WfDeleteStatement* to);
 				void CopyFields(WfRaiseExceptionStatement* from, WfRaiseExceptionStatement* to);
 				void CopyFields(WfIfStatement* from, WfIfStatement* to);
-				void CopyFields(WfSwitchStatement* from, WfSwitchStatement* to);
-				void CopyFields(WfSwitchCase* from, WfSwitchCase* to);
 				void CopyFields(WfWhileStatement* from, WfWhileStatement* to);
-				void CopyFields(WfForEachStatement* from, WfForEachStatement* to);
 				void CopyFields(WfTryStatement* from, WfTryStatement* to);
 				void CopyFields(WfBlockStatement* from, WfBlockStatement* to);
 				void CopyFields(WfVariableStatement* from, WfVariableStatement* to);
@@ -178,7 +175,6 @@ namespace vl
 				void CopyFields(WfExpressionStatement* from, WfExpressionStatement* to);
 
 				// CreateField ---------------------------------------
-				vl::Ptr<WfSwitchCase> CreateField(vl::Ptr<WfSwitchCase> from);
 				vl::Ptr<WfVariableDeclaration> CreateField(vl::Ptr<WfVariableDeclaration> from);
 				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
 				vl::Ptr<WfClassMember> CreateField(vl::Ptr<WfClassMember> from);
@@ -189,6 +185,7 @@ namespace vl
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node) = 0;
 				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node) = 0;
 
 				// Visitor Members -----------------------------------
@@ -198,13 +195,12 @@ namespace vl
 				void Visit(WfDeleteStatement* node)override;
 				void Visit(WfRaiseExceptionStatement* node)override;
 				void Visit(WfIfStatement* node)override;
-				void Visit(WfSwitchStatement* node)override;
 				void Visit(WfWhileStatement* node)override;
-				void Visit(WfForEachStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
+				void Visit(WfVirtualStatement* node)override;
 				void Visit(WfCoroutineStatement* node)override;
 			};
 
@@ -288,6 +284,29 @@ namespace vl
 				void Visit(WfAutoPropertyDeclaration* node)override;
 			};
 
+			class VirtualStatementVisitor : public virtual VisitorBase, public WfVirtualStatement::IVisitor
+			{
+			public:
+
+				// CopyFields ----------------------------------------
+				void CopyFields(WfForEachStatement* from, WfForEachStatement* to);
+				void CopyFields(WfVirtualStatement* from, WfVirtualStatement* to);
+				void CopyFields(WfStatement* from, WfStatement* to);
+				void CopyFields(WfSwitchStatement* from, WfSwitchStatement* to);
+				void CopyFields(WfSwitchCase* from, WfSwitchCase* to);
+
+				// CreateField ---------------------------------------
+				vl::Ptr<WfSwitchCase> CreateField(vl::Ptr<WfSwitchCase> from);
+
+				// CreateField (virtual) -----------------------------
+				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
+				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfForEachStatement* node)override;
+				void Visit(WfSwitchStatement* node)override;
+			};
+
 			class CoroutineStatementVisitor : public virtual VisitorBase, public WfCoroutineStatement::IVisitor
 			{
 			public:
@@ -345,6 +364,7 @@ namespace vl
 				, public StatementVisitor
 				, public DeclarationVisitor
 				, public VirtualDeclarationVisitor
+				, public VirtualStatementVisitor
 				, public CoroutineStatementVisitor
 				, public VirtualExpressionVisitor
 				, public ModuleUsingFragmentVisitor
@@ -370,6 +390,7 @@ namespace vl
 
 				// Dispatch (virtual) --------------------------------
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node);
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node);
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node);
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualDeclaration* node);
 			};

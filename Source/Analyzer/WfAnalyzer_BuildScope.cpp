@@ -276,6 +276,7 @@ BuildScopeForStatement
 			class BuildScopeForStatementVisitor
 				: public Object
 				, public WfStatement::IVisitor
+				, public WfVirtualStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
 			{
 			public:
@@ -338,37 +339,10 @@ BuildScopeForStatement
 					}
 				}
 
-				void Visit(WfSwitchStatement* node)override
-				{
-					BuildScopeForExpression(manager, parentScope, node->expression);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
-					{
-						BuildScopeForExpression(manager, parentScope, switchCase->expression);
-						BuildScopeForStatement(manager, parentScope, switchCase->statement);
-					}
-					if (node->defaultBranch)
-					{
-						BuildScopeForStatement(manager, parentScope, node->defaultBranch);
-					}
-				}
-
 				void Visit(WfWhileStatement* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->condition);
 					BuildScopeForStatement(manager, parentScope, node->statement);
-				}
-
-				void Visit(WfForEachStatement* node)override
-				{
-					resultScope = new WfLexicalScope(parentScope);
-
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
-					symbol->name = node->name.value;
-					symbol->creatorNode = node;
-					resultScope->symbols.Add(symbol->name, symbol);
-
-					BuildScopeForExpression(manager, parentScope, node->collection);
-					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 
 				void Visit(WfTryStatement* node)override
@@ -438,6 +412,42 @@ BuildScopeForStatement
 						manager->nodeScopes.Add(statement.Obj(), parentScope);
 					}
 					return visitor.resultScope;
+				}
+
+				void Visit(WfVirtualStatement* node)override
+				{
+					node->Accept((WfVirtualStatement::IVisitor*)this);
+					if (node->expandedStatement)
+					{
+						BuildScopeForStatement(manager, parentScope, node->expandedStatement);
+					}
+				}
+
+				void Visit(WfSwitchStatement* node)override
+				{
+					BuildScopeForExpression(manager, parentScope, node->expression);
+					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					{
+						BuildScopeForExpression(manager, parentScope, switchCase->expression);
+						BuildScopeForStatement(manager, parentScope, switchCase->statement);
+					}
+					if (node->defaultBranch)
+					{
+						BuildScopeForStatement(manager, parentScope, node->defaultBranch);
+					}
+				}
+
+				void Visit(WfForEachStatement* node)override
+				{
+					resultScope = new WfLexicalScope(parentScope);
+
+					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+					symbol->name = node->name.value;
+					symbol->creatorNode = node;
+					resultScope->symbols.Add(symbol->name, symbol);
+
+					BuildScopeForExpression(manager, parentScope, node->collection);
+					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override
