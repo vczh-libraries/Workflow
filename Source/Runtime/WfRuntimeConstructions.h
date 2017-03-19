@@ -73,35 +73,6 @@ Range
 			};
 			
 /***********************************************************************
-ReverseEnumerable
-***********************************************************************/
-
-			class WfRuntimeReverseEnumerable : public Object, public reflection::description::IValueEnumerable
-			{
-				typedef reflection::description::IValueReadonlyList		IValueReadonlyList;
-			protected:
-				Ptr<IValueReadonlyList>					list;
-
-				class Enumerator : public Object, public reflection::description::IValueEnumerator
-				{
-				protected:
-					Ptr<IValueReadonlyList>				list;
-					vint								index;
-
-				public:
-					Enumerator(Ptr<IValueReadonlyList> _list);
-					reflection::description::Value						GetCurrent();
-					vint												GetIndex();
-					bool												Next();
-				};
-
-			public:
-				WfRuntimeReverseEnumerable(Ptr<IValueReadonlyList> _list);
-
-				Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
-			};
-			
-/***********************************************************************
 Lambda
 ***********************************************************************/
 

@@ -196,7 +196,22 @@ ExpandForEachStatement
 						decl->expression = CopyExpression(node->collection);
 						if (node->direction == WfForEachDirection::Reversed)
 						{
-							throw 0;
+							auto refSystem = MakePtr<WfTopQualifiedExpression>();
+							refSystem->name.value = L"system";
+
+							auto refSys = MakePtr<WfChildExpression>();
+							refSys->parent = refSystem;
+							refSys->name.value = L"Sys";
+
+							auto refMethod = MakePtr<WfChildExpression>();
+							refMethod->parent = refSys;
+							refMethod->name.value = L"ReverseEnumerable";
+
+							auto refCall = MakePtr<WfCallExpression>();
+							refCall->function = refMethod;
+							refCall->arguments.Add(decl->expression);
+
+							decl->expression = refCall;
 						}
 
 						auto stat = MakePtr<WfVariableStatement>();

@@ -7,42 +7,6 @@ namespace vl
 		namespace runtime
 		{
 			using namespace reflection::description;
-
-/***********************************************************************
-WfRuntimeReverseEnumerable
-***********************************************************************/
-
-			WfRuntimeReverseEnumerable::Enumerator::Enumerator(Ptr<IValueReadonlyList> _list)
-				:list(_list), index(_list->GetCount())
-			{
-			}
-
-			reflection::description::Value WfRuntimeReverseEnumerable::Enumerator::GetCurrent()
-			{
-				return list->Get(index);
-			}
-
-			vint WfRuntimeReverseEnumerable::Enumerator::GetIndex()
-			{
-				return list->GetCount() - 1 - index;
-			}
-
-			bool WfRuntimeReverseEnumerable::Enumerator::Next()
-			{
-				if (index <= 0) return false;
-				index--;
-				return true;
-			}
-
-			WfRuntimeReverseEnumerable::WfRuntimeReverseEnumerable(Ptr<IValueReadonlyList> _list)
-				:list(_list)
-			{
-			}
-
-			Ptr<reflection::description::IValueEnumerator> WfRuntimeReverseEnumerable::CreateEnumerator()
-			{
-				return MakePtr<Enumerator>(list);
-			}
 			
 /***********************************************************************
 WfRuntimeLambda

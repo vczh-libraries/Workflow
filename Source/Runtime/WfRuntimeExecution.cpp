@@ -259,21 +259,6 @@ WfRuntimeThreadContext (Range)
 				CONTEXT_ACTION(PushValue(Value::From(enumerable)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
-			
-/***********************************************************************
-WfRuntimeThreadContext (ReverseEnumerable)
-***********************************************************************/
-			
-			Value OPERATOR_OpReverseEnumerable(Value operand)
-			{
-				auto enumerable = UnboxValue<Ptr<IValueEnumerable>>(operand);
-				auto list = enumerable.Cast<IValueReadonlyList>();
-				if (!list)
-				{
-					list = IValueList::Create(GetLazyList<Value>(enumerable));
-				}
-				return Value::From(MakePtr<WfRuntimeReverseEnumerable>(list));
-			}
 
 #undef INTERNAL_ERROR
 #undef CONTEXT_ACTION
@@ -547,14 +532,6 @@ WfRuntimeThreadContext
 						}
 						Value result = ins.typeDescriptorParameter->GetValueType()->CreateDefault();
 						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::ReverseEnumerable:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						Value reversedEnumerable = OPERATOR_OpReverseEnumerable(operand);
-						CONTEXT_ACTION(PushValue(reversedEnumerable), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::DeleteRawPtr:
