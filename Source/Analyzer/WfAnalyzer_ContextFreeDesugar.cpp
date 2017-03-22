@@ -84,6 +84,11 @@ ContextFreeModuleDesugar
 
 				void Traverse(WfFormatExpression* node)override
 				{
+					if (node->expandedExpression)
+					{
+						return;
+					}
+
 					List<Ptr<WfExpression>> expressions;
 					const wchar_t* reading = node->value.value.Buffer();
 
@@ -173,6 +178,11 @@ ContextFreeModuleDesugar
 
 				void Traverse(WfAutoPropertyDeclaration* node)override
 				{
+					if (node->expandedDeclarations.Count() > 0)
+					{
+						return;
+					}
+
 					bool needVariable = false;
 					bool needVirtual = false;
 					bool needEvent = false;
