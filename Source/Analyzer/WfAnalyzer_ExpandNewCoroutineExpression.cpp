@@ -7,6 +7,8 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
 
 /***********************************************************************
 FindCoroutineAwaredStatementVisitor
@@ -119,7 +121,9 @@ FindCoroutineAwaredVariableVisitor
 
 				void Dispatch(WfVirtualStatement* node)override
 				{
-					node->expandedStatement->Accept(this);
+					// If an virtual node is coroutine awared
+					// than its expandedStatement is also in the list
+					// no need to find variables again
 				}
 
 				void Dispatch(WfCoroutineStatement* node)override
@@ -192,7 +196,76 @@ ExpandNewCoroutineExpression
 						stat->Accept(&visitor);
 					}
 				}
-				throw 0;
+
+				auto newExpr = MakePtr<WfNewInterfaceExpression>();
+				node->expandedExpression = newExpr;
+				newExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo().Obj());
+				{
+					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
+					newExpr->declarations.Add(propDecl);
+					{
+						auto member = MakePtr<WfClassMember>();
+						member->kind = WfClassMemberKind::Override;
+						propDecl->classMember = member;
+					}
+
+					propDecl->name.value = L"Failure";
+					propDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IValueException>>::CreateTypeInfo().Obj());
+					propDecl->configConst = WfAPConst::Readonly;
+					propDecl->configObserve = WfAPObserve::NotObservable;
+
+					auto nullExpr = MakePtr<WfLiteralExpression>();
+					nullExpr->value = WfLiteralValue::Null;
+					propDecl->expression = nullExpr;
+				}
+				{
+					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
+					newExpr->declarations.Add(propDecl);
+					{
+						auto member = MakePtr<WfClassMember>();
+						member->kind = WfClassMemberKind::Override;
+						propDecl->classMember = member;
+					}
+
+					propDecl->name.value = L"Status";
+					propDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<CoroutineStatus>::CreateTypeInfo().Obj());
+					propDecl->configConst = WfAPConst::Readonly;
+					propDecl->configObserve = WfAPObserve::NotObservable;
+
+					auto refExpr = MakePtr<WfReferenceExpression>();
+					refExpr->name.value = L"Waiting";
+					propDecl->expression = refExpr;
+				}
+				{
+					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					newExpr->declarations.Add(funcDecl);
+					{
+						auto member = MakePtr<WfClassMember>();
+						member->kind = WfClassMemberKind::Override;
+						funcDecl->classMember = member;
+					}
+
+					funcDecl->name.value = L"Resume";
+					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						funcDecl->arguments.Add(argument);
+						argument->name.value = L"raiseException";
+						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+					}
+
+					auto block = MakePtr<WfBlockStatement>();
+					funcDecl->statement = block;
+
+					{
+						auto stat = MakePtr<WfRaiseExceptionStatement>();
+						block->statements.Add(stat);
+
+						auto strExpr = MakePtr<WfStringExpression>();
+						strExpr->value.value = L"Not Implemented!";
+						stat->expression = strExpr;
+					}
+				}
 			}
 		}
 	}

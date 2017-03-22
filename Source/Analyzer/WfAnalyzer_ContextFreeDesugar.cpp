@@ -421,6 +421,21 @@ ContextFreeModuleDesugar
 			{
 				ContextFreeDesugarVisitor(manager).VisitField(module.Obj());
 			}
+
+			void ContextFreeDeclarationDesugar(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
+			{
+				ContextFreeDesugarVisitor(manager).VisitField(declaration.Obj());
+			}
+
+			void ContextFreeStatementDesugar(WfLexicalScopeManager* manager, Ptr<WfStatement> statement)
+			{
+				ContextFreeDesugarVisitor(manager).VisitField(statement.Obj());
+			}
+
+			void ContextFreeExpressionDesugar(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			{
+				ContextFreeDesugarVisitor(manager).VisitField(expression.Obj());
+			}
 		}
 	}
 }

@@ -726,6 +726,7 @@ ValidateSemantic(Statement)
 							parentScope = parentScope->parentScope;
 						}
 
+						ContextFreeStatementDesugar(manager, node->expandedStatement);
 						BuildScopeForStatement(manager, parentScope, node->expandedStatement);
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
@@ -2512,6 +2513,7 @@ ValidateSemantic(Expression)
 							parentScope = parentScope->parentScope;
 						}
 
+						ContextFreeExpressionDesugar(manager, node->expandedExpression);
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{

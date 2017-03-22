@@ -297,7 +297,11 @@ Structure Analyzing
 			extern void										SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange);
 			extern void										SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange);
 			extern void										SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange);
+
 			extern void										ContextFreeModuleDesugar(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern void										ContextFreeDeclarationDesugar(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
+			extern void										ContextFreeStatementDesugar(WfLexicalScopeManager* manager, Ptr<WfStatement> statement);
+			extern void										ContextFreeExpressionDesugar(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
 
 			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, ValidateTypeStragety strategy = ValidateTypeStragety::Value, WfClassDeclaration* classDecl = nullptr);
 			extern void										ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module);
