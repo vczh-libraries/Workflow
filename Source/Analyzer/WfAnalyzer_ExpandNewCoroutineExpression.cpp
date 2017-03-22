@@ -17,10 +17,10 @@ FindCoroutineAwaredStatementVisitor
 			class FindCoroutineAwaredStatementVisitor : public empty_visitor::StatementVisitor
 			{
 			public:
-				SortedList<WfStatement*>&				awaredStatements;
+				List<WfStatement*>&						awaredStatements;
 				bool									awared = false;
 
-				FindCoroutineAwaredStatementVisitor(SortedList<WfStatement*>& _awaredStatements)
+				FindCoroutineAwaredStatementVisitor(List<WfStatement*>& _awaredStatements)
 					:awaredStatements(_awaredStatements)
 				{
 				}
@@ -184,10 +184,12 @@ ExpandNewCoroutineExpression
 			void ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node)
 			{
 				SortedList<WfStatement*> awaredStatements;
+				List<WfStatement*> orderedAwaredStatements;
 				List<WfVariableStatement*> awaredVariables;
 				{
-					FindCoroutineAwaredStatementVisitor visitor(awaredStatements);
+					FindCoroutineAwaredStatementVisitor visitor(orderedAwaredStatements);
 					visitor.Call(node->statement);
+					CopyFrom(awaredStatements, orderedAwaredStatements);
 				}
 				{
 					FindCoroutineAwaredBlockVisitor visitor(awaredVariables);
@@ -227,7 +229,7 @@ ExpandNewCoroutineExpression
 						referenceRenaming.Add(symbol.Obj(), name);
 					}
 
-					FOREACH(WfStatement*, stat, awaredStatements)
+					FOREACH(WfStatement*, stat, orderedAwaredStatements)
 					{
 						if (auto tryStat = dynamic_cast<WfTryStatement*>(stat))
 						{
