@@ -12,7 +12,7 @@ namespace vl
 FindCoroutineAwaredStatementVisitor
 ***********************************************************************/
 
-			class FindCoroutineAwaredStatementVisitor : public Object, public WfStatement::IVisitor
+			class FindCoroutineAwaredStatementVisitor : public empty_visitor::StatementVisitor
 			{
 			public:
 				SortedList<WfStatement*>&				awaredStatements;
@@ -36,24 +36,14 @@ FindCoroutineAwaredStatementVisitor
 					return awared;
 				}
 
-				void Visit(WfBreakStatement* node)override
+				void Dispatch(WfVirtualStatement* node)override
 				{
+					awared = Call(node->expandedStatement);
 				}
 
-				void Visit(WfContinueStatement* node)override
+				void Dispatch(WfCoroutineStatement* node)override
 				{
-				}
-
-				void Visit(WfReturnStatement* node)override
-				{
-				}
-
-				void Visit(WfDeleteStatement* node)override
-				{
-				}
-
-				void Visit(WfRaiseExceptionStatement* node)override
-				{
+					awared = true;
 				}
 
 				void Visit(WfIfStatement* node)override
@@ -86,25 +76,101 @@ FindCoroutineAwaredStatementVisitor
 					}
 					awared = result;
 				}
+			};
+
+/***********************************************************************
+FindCoroutineAwaredVariableVisitor
+***********************************************************************/
+
+			class FindCoroutineAwaredVariableVisitor : public empty_visitor::StatementVisitor
+			{
+			public:
+				List<WfVariableStatement*>&				awaredVariables;
+
+				FindCoroutineAwaredVariableVisitor(List<WfVariableStatement*>& _awaredVariables)
+					:awaredVariables(_awaredVariables)
+				{
+				}
+
+				void Dispatch(WfVirtualStatement* node)override
+				{
+					node->expandedStatement->Accept(this);
+				}
+
+				void Dispatch(WfCoroutineStatement* node)override
+				{
+				}
 
 				void Visit(WfVariableStatement* node)override
 				{
-				}
-
-				void Visit(WfExpressionStatement* node)override
-				{
-				}
-
-				void Visit(WfVirtualStatement* node)override
-				{
-					awared = Call(node->expandedStatement);
-				}
-
-				void Visit(WfCoroutineStatement* node)override
-				{
-					awared = true;
+					awaredVariables.Add(node);
 				}
 			};
+
+			class FindCoroutineAwaredBlockVisitor : public empty_visitor::StatementVisitor
+			{
+			public:
+				List<WfVariableStatement*>&				awaredVariables;
+
+				FindCoroutineAwaredBlockVisitor(List<WfVariableStatement*>& _awaredVariables)
+					:awaredVariables(_awaredVariables)
+				{
+				}
+
+				void Dispatch(WfVirtualStatement* node)override
+				{
+					node->expandedStatement->Accept(this);
+				}
+
+				void Dispatch(WfCoroutineStatement* node)override
+				{
+				}
+
+				void Visit(WfBlockStatement* node)override
+				{
+					FindCoroutineAwaredVariableVisitor visitor(awaredVariables);
+					FOREACH(Ptr<WfStatement>, stat, node->statements)
+					{
+						stat->Accept(&visitor);
+					}
+				}
+			};
+
+/***********************************************************************
+GenerateFlowChart
+***********************************************************************/
+
+			class FlowChartNode;
+
+			class FlowChartBranch : public Object
+			{
+			public:
+				Ptr<WfExpression>						condition;
+				FlowChartNode*							destination = nullptr;
+			};
+
+			class FlowChartNode : public Object
+			{
+			public:
+				List<Ptr<WfStatement>>					statements;
+				List<Ptr<FlowChartBranch>>				branches;
+				FlowChartNode*							destination = nullptr;
+			};
+
+			class FlowChart : public Object
+			{
+			public:
+				List<Ptr<FlowChartNode>>				nodes;
+			};
+
+			Ptr<FlowChart> GenerateFlowChart(WfLexicalScopeManager* manager, SortedList<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Ptr<WfStatement> statement)
+			{
+				throw 0;
+			}
+
+/***********************************************************************
+GenerateCodeFromFlowChartNode
+***********************************************************************/
 
 /***********************************************************************
 ExpandNewCoroutineExpression
@@ -112,6 +178,19 @@ ExpandNewCoroutineExpression
 
 			void ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node)
 			{
+				SortedList<WfStatement*> awaredStatements;
+				List<WfVariableStatement*> awaredVariables;
+				{
+					FindCoroutineAwaredStatementVisitor visitor(awaredStatements);
+					visitor.Call(node->statement);
+				}
+				{
+					FindCoroutineAwaredBlockVisitor visitor(awaredVariables);
+					FOREACH(WfStatement*, stat, awaredStatements)
+					{
+						stat->Accept(&visitor);
+					}
+				}
 				throw 0;
 			}
 		}
