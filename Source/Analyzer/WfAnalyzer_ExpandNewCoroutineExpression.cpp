@@ -250,6 +250,11 @@ ExpandNewCoroutineExpression
 					{
 						auto varDecl = MakePtr<WfVariableDeclaration>();
 						newExpr->declarations.Add(varDecl);
+						{
+							auto member = MakePtr<WfClassMember>();
+							member->kind = WfClassMemberKind::Normal;
+							varDecl->classMember = member;
+						}
 
 						varDecl->name.value = referenceRenaming[symbol];
 						varDecl->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());

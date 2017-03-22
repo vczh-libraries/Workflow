@@ -34,14 +34,9 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoRawCoroutine)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString(L"", false);
-		instance.__vwsn_co0_for_begin_i = 0;
-		instance.__vwsn_co1_for_end_i = 0;
-		instance.__vwsn_co2_i = 0;
-		instance.__vwsn_co3_ex = ::vl::Ptr<::vl::reflection::description::IValueException>();
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
-		instance.__vwsn_co3_ex = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoRawCoroutine)
 
 namespace vl_workflow_global
