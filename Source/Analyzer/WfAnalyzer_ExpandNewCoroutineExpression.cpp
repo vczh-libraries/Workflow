@@ -197,9 +197,66 @@ ExpandNewCoroutineExpression
 					}
 				}
 
+				vint renameCounter = 0;
+				auto rename = [&](const WString& name)
+				{
+					if (name.Length() > 0 && name[0] == L'<')
+					{
+						vint index = INVLOC.FindFirst(name, L">", Locale::None).key;
+						auto category = name.Sub(1, index - 1);
+						auto local = name.Sub(index + 1, name.Length() - index - 1);
+						return L"<co" + itow(renameCounter++) + L"-" + category + L">" + local;
+					}
+					else
+					{
+						return L"<co" + itow(renameCounter++) + L">" + name;
+					}
+				};
+
 				auto newExpr = MakePtr<WfNewInterfaceExpression>();
 				node->expandedExpression = newExpr;
 				newExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo().Obj());
+
+				Dictionary<WfLexicalSymbol*, WString> referenceRenaming;
+				{
+					FOREACH(WfVariableStatement*, stat, awaredVariables)
+					{
+						auto scope = manager->nodeScopes[stat];
+						auto symbol = scope->symbols[stat->variable->name.value][0];
+						auto name = rename(stat->variable->name.value);
+						referenceRenaming.Add(symbol.Obj(), name);
+					}
+
+					FOREACH(WfStatement*, stat, awaredStatements)
+					{
+						if (auto tryStat = dynamic_cast<WfTryStatement*>(stat))
+						{
+							if (tryStat->catchStatement)
+							{
+								auto scope = manager->nodeScopes[tryStat->catchStatement.Obj()]->parentScope.Obj();
+								auto symbol = scope->symbols[tryStat->name.value][0];
+								auto name = rename(tryStat->name.value);
+								referenceRenaming.Add(symbol.Obj(), name);
+							}
+						}
+					}
+
+					FOREACH(WfLexicalSymbol*, symbol,
+						From(referenceRenaming.Keys())
+							.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
+							{
+								return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
+							}))
+					{
+						auto varDecl = MakePtr<WfVariableDeclaration>();
+						newExpr->declarations.Add(varDecl);
+
+						varDecl->name.value = referenceRenaming[symbol];
+						varDecl->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
+						varDecl->expression = CreateDefaultValue(symbol->typeInfo.Obj());
+					}
+				}
+
 				{
 					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
 					newExpr->declarations.Add(propDecl);
