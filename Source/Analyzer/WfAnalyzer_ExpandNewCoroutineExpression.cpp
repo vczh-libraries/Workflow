@@ -155,6 +155,7 @@ GenerateFlowChart
 				List<Ptr<WfStatement>>					statements;
 				List<Ptr<FlowChartBranch>>				branches;
 				FlowChartNode*							destination = nullptr;
+				FlowChartNode*							exceptionDestination = nullptr;
 			};
 
 			class FlowChart : public Object
