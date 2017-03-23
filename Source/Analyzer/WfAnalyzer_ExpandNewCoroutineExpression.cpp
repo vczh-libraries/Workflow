@@ -705,14 +705,34 @@ GenerateFlowChart
 
 			void RemoveUnnecessaryNodes(Ptr<FlowChart> flowChart)
 			{
-				SortedList<FlowChartNode*> pauseTargets;
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				Dictionary<FlowChartNode*, vint> enterCounts;
 				{
-					if (auto pauseTarget = node->pauseDestination)
+					const auto& keys = enterCounts.Keys();
+					auto& values = const_cast<Dictionary<FlowChartNode*, vint>::ValueContainer&>(enterCounts.Values());
+
+					FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
 					{
-						if (!pauseTargets.Contains(pauseTarget))
+						enterCounts.Add(node.Obj(), 0);
+					}
+					enterCounts.Set(flowChart->headNode, 1);
+
+					auto Inc = [&](FlowChartNode* node)
+					{
+						if (node)
 						{
-							pauseTargets.Add(pauseTarget);
+							vint index = keys.IndexOf(node);
+							values[index]++;
+						}
+					};
+
+					FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+					{
+						Inc(node->destination);
+						Inc(node->exceptionDestination);
+						Inc(node->pauseDestination);
+						FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+						{
+							Inc(branch->destination);
 						}
 					}
 				}
@@ -721,18 +741,28 @@ GenerateFlowChart
 				List<Ptr<FlowChartNode>> keepingNodes;
 				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
 				{
-					if (!pauseTargets.Contains(node.Obj()) && node->destination)
+					bool mergable = false;
+
+					if (node->branches.Count() == 0)
 					{
-						if (node->destination->action == FlowChartNodeAction::None &&
-							node->branches.Count() == 0 &&
-							(node->statements.Count() == 0 || node->exceptionDestination == node->destination->exceptionDestination)
-							)
+						if (node->statements.Count() == 0 && node->action == FlowChartNodeAction::None)
 						{
-							mergableNodes.Add(node.Obj());
-							continue;
+							mergable = true;
+						}
+						else if (node->destination->action == FlowChartNodeAction::None && enterCounts[node->destination] == 1)
+						{
+							mergable = true;
 						}
 					}
-					keepingNodes.Add(node);
+
+					if (mergable)
+					{
+						mergableNodes.Add(node.Obj());
+					}
+					else
+					{
+						keepingNodes.Add(node);
+					}
 				}
 
 				Dictionary<FlowChartNode*, FlowChartNode*> merging;
@@ -742,14 +772,20 @@ GenerateFlowChart
 					while (mergableNodes.Contains(current))
 					{
 						auto target = current->destination;
-						target->action = current->action;
-						target->pauseDestination = current->pauseDestination;
+
+						if (current->action == FlowChartNodeAction::SetPause)
+						{
+							target->action = current->action;
+							target->pauseDestination = current->pauseDestination;
+						}
+
 						if (current->statements.Count() > 0)
 						{
 							CopyFrom(current->statements, target->statements, true);
 							CopyFrom(target->statements, current->statements);
 							current->statements.Clear();
 						}
+
 						current = target;
 					}
 					merging.Add(node, current);
@@ -1117,8 +1153,7 @@ ExpandNewCoroutineExpression
 											/////////////////////////////////////////////////////////////////////////////
 											// return;
 											/////////////////////////////////////////////////////////////////////////////
-											auto returnStat = MakePtr<WfReturnStatement>();
-											nodeBlock->statements.Add(returnStat);
+											nodeBlock->statements.Add(MakePtr<WfReturnStatement>());
 										}
 										else
 										{
