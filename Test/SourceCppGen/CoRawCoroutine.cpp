@@ -77,6 +77,7 @@ Closures
 		this->__vwsn_co1_for_end_i = 0;
 		this->__vwsn_co2_i = 0;
 		this->__vwsn_co3_ex = ::vl::Ptr<::vl::reflection::description::IValueException>();
+		this->__vwsn_co_state_ = 0;
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}

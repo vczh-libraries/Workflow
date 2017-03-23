@@ -691,12 +691,107 @@ GenerateFlowChart
 				SortedList<WfStatement*> sortedAwaredStatements;
 				CopyFrom(sortedAwaredStatements, awaredStatements);
 
+				auto endNode = flowChart->CreateNode(nullptr);
 				GenerateFlowChartStatementVisitor::ScopeContext context;
+				context.leaveNode = endNode;
+
 				auto pair = GenerateFlowChartStatementVisitor::Execute(manager, sortedAwaredStatements, referenceRenaming, flowChart, nullptr, nullptr, &context, statement);
+				pair.value->destination = endNode;
 
 				flowChart->headNode = pair.key;
-				flowChart->lastNode = pair.value;
+				flowChart->lastNode = endNode;
 				return flowChart;
+			}
+
+			void RemoveUnnecessaryNodes(Ptr<FlowChart> flowChart)
+			{
+				SortedList<FlowChartNode*> pauseTargets;
+				pauseTargets.Add(flowChart->headNode);
+				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				{
+					if (auto pauseTarget = node->pauseDestination)
+					{
+						if (!pauseTargets.Contains(pauseTarget))
+						{
+							pauseTargets.Add(pauseTarget);
+						}
+					}
+				}
+
+				SortedList<FlowChartNode*> mergableNodes;
+				List<Ptr<FlowChartNode>> keepingNodes;
+				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				{
+					if (!pauseTargets.Contains(node.Obj()) && node->destination)
+					{
+						if (node->destination->action == FlowChartNodeAction::None &&
+							node->branches.Count() == 0 &&
+							(node->statements.Count() == 0 || node->exceptionDestination == node->destination->exceptionDestination)
+							)
+						{
+							mergableNodes.Add(node.Obj());
+							continue;
+						}
+					}
+					keepingNodes.Add(node);
+				}
+
+				Dictionary<FlowChartNode*, FlowChartNode*> merging;
+				FOREACH(FlowChartNode*, node, mergableNodes)
+				{
+					auto current = node;
+					while (mergableNodes.Contains(current))
+					{
+						auto target = current->destination;
+						target->action = current->action;
+						target->pauseDestination = current->pauseDestination;
+						if (current->statements.Count() > 0)
+						{
+							CopyFrom(current->statements, target->statements, true);
+							CopyFrom(target->statements, current->statements);
+							current->statements.Clear();
+						}
+						current = target;
+					}
+					merging.Add(node, current);
+				}
+
+				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				{
+					if (!mergableNodes.Contains(node.Obj()))
+					{
+						{
+							vint index = merging.Keys().IndexOf(node->destination);
+							if (index != -1) node->destination = merging.Values()[index];
+						}
+						{
+							vint index = merging.Keys().IndexOf(node->exceptionDestination);
+							if (index != -1) node->exceptionDestination = merging.Values()[index];
+						}
+						{
+							vint index = merging.Keys().IndexOf(node->pauseDestination);
+							if (index != -1) node->pauseDestination = merging.Values()[index];
+						}
+						FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+						{
+							vint index = merging.Keys().IndexOf(branch->destination);
+							if (index != -1) branch->destination = merging.Values()[index];
+						}
+					}
+				}
+				{
+					vint index = merging.Keys().IndexOf(flowChart->headNode);
+					if (index != -1) flowChart->headNode = merging.Values()[index];
+				}
+				{
+					vint index = merging.Keys().IndexOf(flowChart->lastNode);
+					if (index != -1) flowChart->lastNode = merging.Values()[index];
+				}
+
+				Ptr<FlowChartNode> headNode = flowChart->headNode;
+				keepingNodes.Remove(headNode.Obj());
+				keepingNodes.Insert(0, headNode);
+				CopyFrom(flowChart->nodes, keepingNodes);
 			}
 
 /***********************************************************************
@@ -720,6 +815,7 @@ ExpandNewCoroutineExpression
 				}
 				FindCoroutineReferenceRenaming(manager, awaredStatements, awaredVariables, referenceRenaming);
 				auto flowChart = GenerateFlowChart(manager, awaredStatements, awaredVariables, referenceRenaming, node->statement);
+				RemoveUnnecessaryNodes(flowChart);
 
 				auto newExpr = MakePtr<WfNewInterfaceExpression>();
 				node->expandedExpression = newExpr;
@@ -743,6 +839,22 @@ ExpandNewCoroutineExpression
 					varDecl->name.value = referenceRenaming[symbol];
 					varDecl->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
 					varDecl->expression = CreateDefaultValue(symbol->typeInfo.Obj());
+				}
+				{
+					auto varDecl = MakePtr<WfVariableDeclaration>();
+					newExpr->declarations.Add(varDecl);
+					{
+						auto member = MakePtr<WfClassMember>();
+						member->kind = WfClassMemberKind::Normal;
+						varDecl->classMember = member;
+					}
+
+					varDecl->name.value = L"<co-state>";
+					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+
+					auto stateExpr = MakePtr<WfIntegerExpression>();
+					stateExpr->value.value = L"0";
+					varDecl->expression = stateExpr;
 				}
 				{
 					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
