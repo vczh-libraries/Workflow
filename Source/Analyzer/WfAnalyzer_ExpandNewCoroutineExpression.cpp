@@ -193,6 +193,16 @@ FindCoroutineReferenceRenaming
 							referenceRenaming.Add(symbol.Obj(), name);
 						}
 					}
+					else if (auto ifStat = dynamic_cast<WfIfStatement*>(stat))
+					{
+						if (ifStat->name.value != L"")
+						{
+							auto scope = manager->nodeScopes[ifStat->trueBranch.Obj()]->parentScope.Obj();
+							auto symbol = scope->symbols[ifStat->name.value][0];
+							auto name = rename(ifStat->name.value);
+							referenceRenaming.Add(symbol.Obj(), name);
+						}
+					}
 				}
 			}
 
@@ -256,7 +266,11 @@ GenerateFlowChart
 
 				FlowChartNode* EnsureAppendStatement(FlowChartNode* head, FlowChartNode* catchNode)
 				{
-					if (head == nullptr || head->action == FlowChartNodeAction::Pause || head->branches.Count() > 0 || head->exceptionDestination != catchNode)
+					if (head == nullptr)
+					{
+						return CreateNode(catchNode);
+					}
+					else if(head->action == FlowChartNodeAction::Pause || head->branches.Count() > 0 || head->exceptionDestination != catchNode)
 					{
 						CHECK_ERROR(head->destination == nullptr, L"FlowChart::EnsureAppendStatement(FlowChartNode*, FlowChartNode*)#Cannot append a statement to a flow chart node that already has a default destination.");
 						auto node = CreateNode(catchNode);
@@ -436,7 +450,32 @@ GenerateFlowChart
 						}
 						else
 						{
-							throw 0;
+							auto scope = manager->nodeScopes[node];
+							auto symbol = scope->symbols[node->name.value][0].Obj();
+							{
+								auto refExpr = MakePtr<WfReferenceExpression>();
+								refExpr->name.value = referenceRenaming[symbol];
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->op = WfBinaryOperator::Assign;
+								assignExpr->first = refExpr;
+								assignExpr->second = COPY_AST(node->expression);
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assignExpr;
+
+								resultHead->statements.Add(stat);
+							}
+							{
+								auto refExpr = MakePtr<WfReferenceExpression>();
+								refExpr->name.value = referenceRenaming[symbol];
+
+								auto testExpr = MakePtr<WfTypeTestingExpression>();
+								testExpr->test = WfTypeTesting::IsNotNull;
+								testExpr->expression = refExpr;
+
+								branch->condition = testExpr;
+							}
 						}
 					}
 					resultLast = flowChart->CreateNode(catchNode);
