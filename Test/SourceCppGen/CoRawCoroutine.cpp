@@ -131,6 +131,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}
@@ -139,6 +140,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_1.Description());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}
@@ -180,6 +182,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_2.Message());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}
@@ -188,6 +191,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_2.Description());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}
@@ -207,6 +211,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_3.Message());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}
@@ -215,6 +220,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_3.Description());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}
@@ -236,6 +242,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_4.Message());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}
@@ -244,6 +251,7 @@ Closures
 						{
 							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_4.Description());
 							{
+								(__vwsn_co3_ex = __vwsn_co_ex_);
 								(__vwsn_co_state_ = 2);
 								continue;
 							}

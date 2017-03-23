@@ -55,6 +55,7 @@
 #include "EnumCtor2.h"
 #include "WorkflowHints.h"
 #include "WorkflowAttributes.h"
+#include "CoRawCoroutine.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -572,6 +573,15 @@ TEST_CASE(WorkflowAttributes)
 {
 	WString expected = L"((1 + 2) * (3 + 4)) = 21";
 	WString actual = ::vl_workflow_global::WorkflowAttributes::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoRawCoroutine)
+{
+	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
+	WString actual = ::vl_workflow_global::CoRawCoroutine::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

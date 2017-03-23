@@ -234,6 +234,7 @@ GenerateFlowChart
 				FlowChartNode*							destination = nullptr;
 				FlowChartNode*							exceptionDestination = nullptr;
 				FlowChartNode*							pauseDestination = nullptr;
+				WfLexicalSymbol*						exceptionVariable = nullptr;
 			};
 
 			class FlowChart : public Object
@@ -531,7 +532,13 @@ GenerateFlowChart
 
 				Pair<FlowChartNode*, FlowChartNode*> GenerateCatch(WfTryStatement* node, FlowChartNode* catchNode)
 				{
-					return Execute(nullptr, catchNode, scopeContext, node->catchStatement);
+					auto pair = Execute(nullptr, catchNode, scopeContext, node->catchStatement);
+
+					auto scope = manager->nodeScopes[node->catchStatement.Obj()]->parentScope.Obj();
+					auto symbol = scope->symbols[node->name.value][0];
+					pair.key->exceptionVariable = symbol.Obj();
+
+					return pair;
 				}
 
 				Pair<FlowChartNode*, FlowChartNode*> GenerateFinally(WfTryStatement* node, FlowChartNode* catchNode)
@@ -742,11 +749,11 @@ GenerateFlowChart
 
 					if (node->branches.Count() == 0 && node->destination)
 					{
-						if (node->statements.Count() == 0 && node->action == FlowChartNodeAction::None)
+						if (node->statements.Count() == 0 && node->action == FlowChartNodeAction::None && !node->exceptionVariable)
 						{
 							mergable = true;
 						}
-						else if (node->destination->action == FlowChartNodeAction::None && enterCounts[node->destination] == 1)
+						else if (node->destination->action == FlowChartNodeAction::None && !node->destination->exceptionVariable && enterCounts[node->destination] == 1)
 						{
 							mergable = true;
 						}
@@ -775,7 +782,10 @@ GenerateFlowChart
 							target->action = current->action;
 							target->pauseDestination = current->pauseDestination;
 						}
-
+						if (current->exceptionVariable)
+						{
+							target->exceptionVariable = current->exceptionVariable;
+						}
 						if (current->statements.Count() > 0)
 						{
 							CopyFrom(current->statements, target->statements, true);
@@ -818,10 +828,6 @@ GenerateFlowChart
 				keepingNodes.Insert(0, headNode);
 				CopyFrom(flowChart->nodes, keepingNodes);
 			}
-
-/***********************************************************************
-GenerateCodeFromFlowChartNode
-***********************************************************************/
 
 /***********************************************************************
 ExpandNewCoroutineExpression
@@ -1127,6 +1133,7 @@ ExpandNewCoroutineExpression
 										/////////////////////////////////////////////////////////////////////////////
 										// catch(<co-ex>)
 										// {
+										//      THE_EXCEPTION_VARIABLE = <co-ex>;
 										//      <co-state> = THE_EXCEPTION_STATE;
 										//      continue;
 										// }
@@ -1135,7 +1142,22 @@ ExpandNewCoroutineExpression
 										nodeTryStat->name.value = L"<co-ex>";
 										auto catchBlock = MakePtr<WfBlockStatement>();
 										nodeTryStat->catchStatement = catchBlock;
+										{
+											auto refTarget = MakePtr<WfReferenceExpression>();
+											refTarget->name.value = referenceRenaming[flowChartNode->exceptionDestination->exceptionVariable];
 
+											auto refEx = MakePtr<WfReferenceExpression>();
+											refEx->name.value = L"<co-ex>";
+
+											auto assignExpr = MakePtr<WfBinaryExpression>();
+											assignExpr->op = WfBinaryOperator::Assign;
+											assignExpr->first = refTarget;
+											assignExpr->second = refEx;
+
+											auto stat = MakePtr<WfExpressionStatement>();
+											stat->expression = assignExpr;
+											catchBlock->statements.Add(stat);
+										}
 										catchBlock->statements.Add(GenerateSetCoState(flowChartNode->exceptionDestination));
 										catchBlock->statements.Add(MakePtr<WfContinueStatement>());
 
