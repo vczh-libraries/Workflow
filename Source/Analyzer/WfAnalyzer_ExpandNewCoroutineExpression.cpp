@@ -821,6 +821,10 @@ ExpandNewCoroutineExpression
 				node->expandedExpression = newExpr;
 				newExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo().Obj());
 
+				/////////////////////////////////////////////////////////////////////////////
+				// Coroutine Awared Variables
+				/////////////////////////////////////////////////////////////////////////////
+
 				FOREACH(WfLexicalSymbol*, symbol,
 					From(referenceRenaming.Keys())
 						.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
@@ -840,6 +844,11 @@ ExpandNewCoroutineExpression
 					varDecl->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
 					varDecl->expression = CreateDefaultValue(symbol->typeInfo.Obj());
 				}
+
+				/////////////////////////////////////////////////////////////////////////////
+				// <co-state>
+				/////////////////////////////////////////////////////////////////////////////
+
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);
@@ -856,6 +865,11 @@ ExpandNewCoroutineExpression
 					stateExpr->value.value = L"0";
 					varDecl->expression = stateExpr;
 				}
+
+				/////////////////////////////////////////////////////////////////////////////
+				// prop Failure : Exception^ {const, not observe}
+				/////////////////////////////////////////////////////////////////////////////
+
 				{
 					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
 					newExpr->declarations.Add(propDecl);
@@ -874,6 +888,11 @@ ExpandNewCoroutineExpression
 					nullExpr->value = WfLiteralValue::Null;
 					propDecl->expression = nullExpr;
 				}
+
+				/////////////////////////////////////////////////////////////////////////////
+				// prop Status : CoroutineStatus^ {const, not observe}
+				/////////////////////////////////////////////////////////////////////////////
+
 				{
 					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
 					newExpr->declarations.Add(propDecl);
@@ -892,6 +911,56 @@ ExpandNewCoroutineExpression
 					refExpr->name.value = L"Waiting";
 					propDecl->expression = refExpr;
 				}
+
+				/////////////////////////////////////////////////////////////////////////////
+				// GenerateSetStatus
+				/////////////////////////////////////////////////////////////////////////////
+
+				auto GenerateSetStatus = [&](const WString& status)
+				{
+					auto refExpr = MakePtr<WfReferenceExpression>();
+					refExpr->name.value = status;
+
+					auto funcExpr = MakePtr<WfReferenceExpression>();
+					funcExpr->name.value = L"SetStatus";
+
+					auto callExpr = MakePtr<WfCallExpression>();
+					callExpr->function = funcExpr;
+					callExpr->arguments.Add(refExpr);
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = callExpr;
+					
+					return stat;
+				};
+
+				/////////////////////////////////////////////////////////////////////////////
+				// GenerateSetCoState
+				/////////////////////////////////////////////////////////////////////////////
+
+				auto GenerateSetCoState = [&](FlowChartNode* node)
+				{
+					auto refState = MakePtr<WfReferenceExpression>();
+					refState->name.value = L"<co-state>";
+
+					auto intState = MakePtr<WfIntegerExpression>();
+					intState->value.value = itow(flowChart->nodes.IndexOf(node));
+
+					auto assignExpr = MakePtr<WfBinaryExpression>();
+					assignExpr->op = WfBinaryOperator::Assign;
+					assignExpr->first = refState;
+					assignExpr->second = intState;
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = assignExpr;
+
+					return stat;
+				};
+
+				/////////////////////////////////////////////////////////////////////////////
+				// func Resume(<raise-exception> : bool) : void
+				/////////////////////////////////////////////////////////////////////////////
+
 				{
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
 					newExpr->declarations.Add(funcDecl);
@@ -913,6 +982,10 @@ ExpandNewCoroutineExpression
 					auto block = MakePtr<WfBlockStatement>();
 					funcDecl->statement = block;
 
+					/////////////////////////////////////////////////////////////////////////////
+					// if (Status != Waiting) raise "...";
+					/////////////////////////////////////////////////////////////////////////////
+
 					{
 						auto ifStat = MakePtr<WfIfStatement>();
 						{
@@ -930,38 +1003,37 @@ ExpandNewCoroutineExpression
 							ifStat->expression = compExpr;
 						}
 
-						auto stateBlock = MakePtr<WfBlockStatement>();
-						ifStat->trueBranch = stateBlock;
+						auto trueBlock = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = trueBlock;
 						{
 							auto exExpr = MakePtr<WfStringExpression>();
 							exExpr->value.value = L"Resume should be called only when the coroutine is in the waiting status.";
 
 							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
 							raiseStat->expression = exExpr;
-							stateBlock->statements.Add(raiseStat);
+							trueBlock->statements.Add(raiseStat);
 						}
 						block->statements.Add(ifStat);
 					}
+
+					/////////////////////////////////////////////////////////////////////////////
+					// SetStatus(Executing);
+					/////////////////////////////////////////////////////////////////////////////
+
+					block->statements.Add(GenerateSetStatus(L"Executing"));
 					{
-						auto refExpr = MakePtr<WfReferenceExpression>();
-						refExpr->name.value = L"Executing";
+						/////////////////////////////////////////////////////////////////////////////
+						// try { ... }
+						/////////////////////////////////////////////////////////////////////////////
 
-						auto funcExpr = MakePtr<WfReferenceExpression>();
-						funcExpr->name.value = L"SetStatus";
-
-						auto callExpr = MakePtr<WfCallExpression>();
-						callExpr->function = funcExpr;
-						callExpr->arguments.Add(refExpr);
-
-						auto stat = MakePtr<WfExpressionStatement>();
-						stat->expression = callExpr;
-						block->statements.Add(stat);
-					}
-					{
 						auto tryStat = MakePtr<WfTryStatement>();
 						auto tryBlock = MakePtr<WfBlockStatement>();
 						tryStat->protectedStatement = tryBlock;
 						{
+							/////////////////////////////////////////////////////////////////////////////
+							// while (true) { ... }
+							/////////////////////////////////////////////////////////////////////////////
+
 							auto whileStat = MakePtr<WfWhileStatement>();
 							{
 								auto trueExpr = MakePtr<WfLiteralExpression>();
@@ -978,6 +1050,9 @@ ExpandNewCoroutineExpression
 							{
 								auto node = flowChart->nodes[i];
 
+								/////////////////////////////////////////////////////////////////////////////
+								// if (<co-state> == THE_CURRENT_STATE) { ... }
+								/////////////////////////////////////////////////////////////////////////////
 								auto ifStat = MakePtr<WfIfStatement>();
 								{
 									auto refState = MakePtr<WfReferenceExpression>();
@@ -997,23 +1072,35 @@ ExpandNewCoroutineExpression
 								auto stateBlock = MakePtr<WfBlockStatement>();
 								ifStat->trueBranch = stateBlock;
 								{
-									if (node == flowChart->lastNode)
+									if (node->action == FlowChartNodeAction::SetPause)
 									{
+										/////////////////////////////////////////////////////////////////////////////
+										// <co-state> = THE_NEXT_STATE;
+										/////////////////////////////////////////////////////////////////////////////
+										stateBlock->statements.Add(GenerateSetCoState(node->pauseDestination));
+									}
+									FOREACH(Ptr<WfStatement>, stat, node->statements)
+									{
+										if (stat.Cast<WfCoPauseStatement>())
 										{
-											auto refExpr = MakePtr<WfReferenceExpression>();
-											refExpr->name.value = L"Stopped";
-
-											auto funcExpr = MakePtr<WfReferenceExpression>();
-											funcExpr->name.value = L"SetStatus";
-
-											auto callExpr = MakePtr<WfCallExpression>();
-											callExpr->function = funcExpr;
-											callExpr->arguments.Add(refExpr);
-
-											auto stat = MakePtr<WfExpressionStatement>();
-											stat->expression = callExpr;
+											/////////////////////////////////////////////////////////////////////////////
+											// return;
+											/////////////////////////////////////////////////////////////////////////////
+											auto returnStat = MakePtr<WfReturnStatement>();
+											stateBlock->statements.Add(returnStat);
+										}
+										else
+										{
 											stateBlock->statements.Add(stat);
 										}
+									}
+									if (node == flowChart->lastNode)
+									{
+										/////////////////////////////////////////////////////////////////////////////
+										// SetStatus(Stopped);
+										// return;
+										/////////////////////////////////////////////////////////////////////////////
+										stateBlock->statements.Add(GenerateSetStatus(L"Stopped"));
 										{
 											auto returnStat = MakePtr<WfReturnStatement>();
 											stateBlock->statements.Add(returnStat);
@@ -1021,20 +1108,10 @@ ExpandNewCoroutineExpression
 									}
 									else
 									{
-										auto refState = MakePtr<WfReferenceExpression>();
-										refState->name.value = L"<co-state>";
-
-										auto intState = MakePtr<WfIntegerExpression>();
-										intState->value.value = itow(flowChart->nodes.IndexOf(node->destination));
-
-										auto assignExpr = MakePtr<WfBinaryExpression>();
-										assignExpr->op = WfBinaryOperator::Assign;
-										assignExpr->first = refState;
-										assignExpr->second = intState;
-
-										auto stat = MakePtr<WfExpressionStatement>();
-										stat->expression = assignExpr;
-										stateBlock->statements.Add(stat);
+										/////////////////////////////////////////////////////////////////////////////
+										// <co-state> = THE_NEXT_STATE;
+										/////////////////////////////////////////////////////////////////////////////
+										stateBlock->statements.Add(GenerateSetCoState(node->destination));
 									}
 								}
 
@@ -1043,6 +1120,15 @@ ExpandNewCoroutineExpression
 							}
 							whileBlock->statements.Add(firstIfStat);
 						}
+
+						/////////////////////////////////////////////////////////////////////////////
+						// catch(<co-ex>)
+						// {
+						//      SetFailure(<co-ex>);
+						//      SetStatus(Stopped);
+						//      if (<raise-exception> raise <co-ex>;
+						// }
+						/////////////////////////////////////////////////////////////////////////////
 
 						tryStat->name.value = L"<co-ex>";
 						auto catchBlock = MakePtr<WfBlockStatement>();
@@ -1062,21 +1148,7 @@ ExpandNewCoroutineExpression
 							stat->expression = callExpr;
 							catchBlock->statements.Add(stat);
 						}
-						{
-							auto refExpr = MakePtr<WfReferenceExpression>();
-							refExpr->name.value = L"Stopped";
-
-							auto funcExpr = MakePtr<WfReferenceExpression>();
-							funcExpr->name.value = L"SetStatus";
-
-							auto callExpr = MakePtr<WfCallExpression>();
-							callExpr->function = funcExpr;
-							callExpr->arguments.Add(refExpr);
-
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = callExpr;
-							catchBlock->statements.Add(stat);
-						}
+						catchBlock->statements.Add(GenerateSetStatus(L"Stopped"));
 						{
 							auto refExpr = MakePtr<WfReferenceExpression>();
 							refExpr->name.value = L"<raise-exception>";
