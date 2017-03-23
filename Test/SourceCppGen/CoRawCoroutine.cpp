@@ -99,7 +99,7 @@ Closures
 		(__vwsn_prop_Status = __vwsn_value_);
 	}
 
-	void __vwsnc1_CoRawCoroutine_main__vl_reflection_description_ICoroutine::Resume(bool raiseException)
+	void __vwsnc1_CoRawCoroutine_main__vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_)
 	{
 		throw ::vl::Exception(::vl::WString(L"Not Implemented!", false));
 	}

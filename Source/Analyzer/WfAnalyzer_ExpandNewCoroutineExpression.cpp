@@ -223,7 +223,6 @@ GenerateFlowChart
 			{
 				None,
 				SetPause,
-				Pause,
 			};
 
 			class FlowChartNode : public Object
@@ -270,7 +269,7 @@ GenerateFlowChart
 					{
 						return CreateNode(catchNode);
 					}
-					else if(head->action == FlowChartNodeAction::Pause || head->branches.Count() > 0 || head->exceptionDestination != catchNode)
+					else if(head->branches.Count() > 0 || head->exceptionDestination != catchNode)
 					{
 						CHECK_ERROR(head->destination == nullptr, L"FlowChart::EnsureAppendStatement(FlowChartNode*, FlowChartNode*)#Cannot append a statement to a flow chart node that already has a default destination.");
 						auto node = CreateNode(catchNode);
@@ -511,7 +510,7 @@ GenerateFlowChart
 					auto loopEnd = flowChart->CreateNode(catchNode);
 					{
 						auto branch = MakePtr<FlowChartBranch>();
-						resultHead->branches.Add(branch);
+						loopEnd->branches.Add(branch);
 						branch->condition = COPY_AST(node->condition);
 					}
 					resultLast = flowChart->CreateNode(catchNode);
@@ -612,9 +611,17 @@ GenerateFlowChart
 
 				void Visit(WfBlockStatement* node)override
 				{
-					FOREACH(Ptr<WfStatement>, stat, node->statements)
+					FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
 					{
-						AppendAwaredStatement(catchNode, scopeContext, stat);
+						if (index == 0)
+						{
+							AppendAwaredStatement(catchNode, scopeContext, stat);
+						}
+						else
+						{
+							auto pair = Execute(resultLast, catchNode, scopeContext, stat);
+							resultLast = pair.value;
+						}
 					}
 				}
 
@@ -665,7 +672,13 @@ GenerateFlowChart
 						AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node->statement));
 					}
 
-					resultLast = flowChart->AppendNode(resultLast, catchNode, FlowChartNodeAction::Pause);
+					resultLast = flowChart->AppendNode(resultLast, catchNode);
+					{
+						auto pauseStat = MakePtr<WfCoPauseStatement>();
+						SetCodeRange((Ptr<WfStatement>)pauseStat, node->codeRange);
+						resultLast->statements.Add(pauseStat);
+					}
+					resultLast = flowChart->AppendNode(resultLast, catchNode);
 					resultHead->pauseDestination = resultLast;
 				}
 

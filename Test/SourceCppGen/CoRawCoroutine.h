@@ -64,7 +64,7 @@ Closures
 		::vl::reflection::description::CoroutineStatus __vwsn_prop_Status = static_cast<::vl::reflection::description::CoroutineStatus>(0);
 		::vl::reflection::description::CoroutineStatus GetStatus() override;
 		void SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_);
-		void Resume(bool raiseException) override;
+		void Resume(bool __vwsn_raise_exception_) override;
 	};
 }
 
