@@ -222,11 +222,122 @@ GenerateFlowChart
 			{
 			public:
 				List<Ptr<FlowChartNode>>				nodes;
+				FlowChartNode*							headNode = nullptr;
+				FlowChartNode*							lastNode = nullptr;
+			};
+
+			class GenerateFlowChartStatementVisitor : public Object, public WfStatement::IVisitor
+			{
+			public:
+				enum class ScopeType
+				{
+					Function,
+					Loop,
+					TryCatch,
+				};
+
+				struct ScopeContext
+				{
+					ScopeContext*						parent = nullptr;
+					ScopeType							type = ScopeType::Function;
+					Ptr<WfStatement>					exitStatement;
+				};
+
+			public:
+				WfLexicalScopeManager*					manager;
+				SortedList<WfStatement*>&				awaredStatements;
+				Ptr<FlowChart>							flowChart;
+				FlowChartNode*							headNode;
+				FlowChartNode*							catchNode;
+				ScopeContext*							scopeContext;
+				FlowChartNode*							resultHead = nullptr;
+				FlowChartNode*							resultLast = nullptr;
+
+				GenerateFlowChartStatementVisitor(WfLexicalScopeManager* _manager, SortedList<WfStatement*>& _awaredStatements, Ptr<FlowChart> _flowChart, FlowChartNode* _headNode, FlowChartNode* _catchNode, ScopeContext* _scopeContext)
+					:manager(_manager)
+					, awaredStatements(_awaredStatements)
+					, flowChart(_flowChart)
+					, headNode(_headNode)
+					, catchNode(_catchNode)
+					, scopeContext(_scopeContext)
+				{
+				}
+
+				static Pair<FlowChartNode*, FlowChartNode*> Execute(WfLexicalScopeManager* manager, SortedList<WfStatement*>& awaredStatements, Ptr<FlowChart> flowChart, FlowChartNode* headNode, FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
+				{
+					GenerateFlowChartStatementVisitor visitor(manager, awaredStatements, flowChart, headNode, catchNode, scopeContext);
+					statement->Accept(&visitor);
+					return{ visitor.resultHead,visitor.resultLast };
+				}
+
+				Pair<FlowChartNode*, FlowChartNode*> Execute(FlowChartNode* headNode, FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
+				{
+					return Execute(manager, awaredStatements, flowChart, headNode, catchNode, scopeContext, statement);
+				}
+
+				void Visit(WfBreakStatement* node)override
+				{
+				}
+
+				void Visit(WfContinueStatement* node)override
+				{
+				}
+
+				void Visit(WfReturnStatement* node)override
+				{
+				}
+
+				void Visit(WfDeleteStatement* node)override
+				{
+				}
+
+				void Visit(WfRaiseExceptionStatement* node)override
+				{
+				}
+
+				void Visit(WfIfStatement* node)override
+				{
+				}
+
+				void Visit(WfWhileStatement* node)override
+				{
+				}
+
+				void Visit(WfTryStatement* node)override
+				{
+				}
+
+				void Visit(WfBlockStatement* node)override
+				{
+				}
+
+				void Visit(WfVariableStatement* node)override
+				{
+				}
+
+				void Visit(WfExpressionStatement* node)override
+				{
+				}
+
+				void Visit(WfVirtualStatement* node)override
+				{
+					node->expandedStatement->Accept(this);
+				}
+
+				void Visit(WfCoroutineStatement* node)override
+				{
+				}
 			};
 
 			Ptr<FlowChart> GenerateFlowChart(WfLexicalScopeManager* manager, List<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Ptr<WfStatement> statement)
 			{
 				auto flowChart = MakePtr<FlowChart>();
+				SortedList<WfStatement*> sortedAwaredStatements;
+				CopyFrom(sortedAwaredStatements, awaredStatements);
+				GenerateFlowChartStatementVisitor::ScopeContext context;
+				auto pair = GenerateFlowChartStatementVisitor::Execute(manager, sortedAwaredStatements, flowChart, nullptr, nullptr, &context, statement);
+				flowChart->headNode = pair.key;
+				flowChart->lastNode = pair.value;
 				return flowChart;
 			}
 
