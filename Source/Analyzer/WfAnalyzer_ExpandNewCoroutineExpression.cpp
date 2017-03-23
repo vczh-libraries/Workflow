@@ -508,26 +508,106 @@ GenerateFlowChart
 						resultHead->branches.Add(branch);
 						branch->condition = COPY_AST(node->condition);
 					}
-
-					auto pair = Execute(nullptr, catchNode, scopeContext, node->statement);
-					auto pairLast = flowChart->EnsureAppendStatement(pair.value, catchNode);
+					auto loopEnd = flowChart->CreateNode(catchNode);
 					{
 						auto branch = MakePtr<FlowChartBranch>();
 						resultHead->branches.Add(branch);
 						branch->condition = COPY_AST(node->condition);
 					}
+					resultLast = flowChart->CreateNode(catchNode);
+
+					ScopeContext loopContext;
+					loopContext.parent = scopeContext;
+					loopContext.type = ScopeType::Loop;
+					loopContext.enterNode = loopEnd;
+					loopContext.leaveNode = resultLast;
+					auto pair = Execute(nullptr, catchNode, &loopContext, node->statement);
+					pair.value->destination = loopEnd;
 
 					resultHead->branches[0]->destination = pair.key;
-					pairLast->branches[0]->destination = pair.key;
-
-					resultLast = flowChart->CreateNode(catchNode);
+					loopEnd->branches[0]->destination = pair.key;
 					resultHead->destination = resultLast;
-					pairLast->destination = resultLast;
+					loopEnd->destination = resultLast;
+				}
+
+				Pair<FlowChartNode*, FlowChartNode*> GenerateCatch(WfTryStatement* node, FlowChartNode* catchNode)
+				{
+					return Execute(nullptr, catchNode, scopeContext, node->catchStatement);
+				}
+
+				Pair<FlowChartNode*, FlowChartNode*> GenerateFinally(WfTryStatement* node, FlowChartNode* catchNode)
+				{
+					return Execute(nullptr, catchNode, scopeContext, node->finallyStatement);
+				}
+
+				Pair<FlowChartNode*, FlowChartNode*> GenerateFinallyAndRaise(WfTryStatement* node, FlowChartNode* catchNode)
+				{
+					auto pair = Execute(nullptr, catchNode, scopeContext, node->finallyStatement);
+					auto raiseNode = flowChart->CreateNode(catchNode);
+					{
+						auto scope = manager->nodeScopes[node->catchStatement.Obj()]->parentScope.Obj();
+						auto symbol = scope->symbols[node->name.value][0];
+
+						auto refExpr = MakePtr<WfReferenceExpression>();
+						refExpr->name.value = referenceRenaming[symbol.Obj()];
+
+						auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+						raiseStat->expression = refExpr;
+
+						SetCodeRange((Ptr<WfStatement>)raiseStat, node->finallyStatement->codeRange);
+						raiseNode->statements.Add(raiseStat);
+					}
+					pair.value->destination = raiseNode;
+					return { pair.key,raiseNode };
 				}
 
 				void Visit(WfTryStatement* node)override
 				{
-					throw 0;
+					ScopeContext tryContext;
+					tryContext.parent = scopeContext;
+					tryContext.type = ScopeType::TryCatch;
+					if (node->finallyStatement)
+					{
+						tryContext.exitStatementScope = scopeContext;
+						tryContext.exitStatement = node->finallyStatement;
+					}
+
+					if (node->catchStatement && !node->finallyStatement)
+					{
+						auto pairCatch = GenerateCatch(node, catchNode);
+						AppendAwaredStatement(pairCatch.key, &tryContext, node->protectedStatement);
+
+						auto endNode = flowChart->CreateNode(catchNode);
+						pairCatch.value->destination = endNode;
+						resultLast->destination = endNode;
+						resultLast = endNode;
+					}
+					else if (!node->catchStatement && node->finallyStatement)
+					{
+						auto pairFinallyAndRaise = GenerateFinallyAndRaise(node, catchNode);
+						AppendAwaredStatement(pairFinallyAndRaise.key, &tryContext, node->protectedStatement);
+						auto pairFinally = GenerateFinally(node, catchNode);
+
+						auto endNode = flowChart->CreateNode(catchNode);
+						resultLast->destination = pairFinally.key;
+						pairFinally.value->destination = endNode;
+						pairFinallyAndRaise.value->destination = endNode;
+						resultLast = endNode;
+					}
+					else
+					{
+						auto pairFinallyAndRaise = GenerateFinallyAndRaise(node, catchNode);
+						auto pairCatch = GenerateCatch(node, pairFinallyAndRaise.key);
+						AppendAwaredStatement(pairFinallyAndRaise.key, &tryContext, node->protectedStatement);
+						auto pairFinally = GenerateFinally(node, catchNode);
+
+						auto endNode = flowChart->CreateNode(catchNode);
+						resultLast->destination = pairFinally.key;
+						pairCatch.value->destination = pairFinally.key;
+						pairFinally.value->destination = endNode;
+						pairFinallyAndRaise.value->destination = endNode;
+						resultLast = endNode;
+					}
 				}
 
 				void Visit(WfBlockStatement* node)override
