@@ -209,13 +209,22 @@ GenerateFlowChart
 				FlowChartNode*							destination = nullptr;
 			};
 
+			enum class FlowChartNodeAction
+			{
+				None,
+				SetPause,
+				Pause,
+			};
+
 			class FlowChartNode : public Object
 			{
 			public:
+				FlowChartNodeAction						action = FlowChartNodeAction::None;
 				List<Ptr<WfStatement>>					statements;
 				List<Ptr<FlowChartBranch>>				branches;
 				FlowChartNode*							destination = nullptr;
 				FlowChartNode*							exceptionDestination = nullptr;
+				FlowChartNode*							pauseDestination = nullptr;
 			};
 
 			class FlowChart : public Object
@@ -233,11 +242,23 @@ GenerateFlowChart
 					return node.Obj();
 				}
 
+				FlowChartNode* AppendNode(FlowChartNode* head, FlowChartNode* catchNode, FlowChartNodeAction action = FlowChartNodeAction::None)
+				{
+					auto node = CreateNode(catchNode);
+					node->action = action;
+					if (head)
+					{
+						CHECK_ERROR(head->destination == nullptr, L"FlowChart::AppendNode(FlowChartNode*, FlowChartNode*, FlowChartNodeAction)#Cannot append a new node to a flow chart node that already has a default destination.");
+						head->destination = node;
+					}
+					return node;
+				}
+
 				FlowChartNode* EnsureAppendStatement(FlowChartNode* head, FlowChartNode* catchNode)
 				{
-					if (head == nullptr || head->branches.Count() > 0 || head->exceptionDestination != catchNode)
+					if (head == nullptr || head->action == FlowChartNodeAction::Pause || head->branches.Count() > 0 || head->exceptionDestination != catchNode)
 					{
-						CHECK_ERROR(head->destination == nullptr, L"FlowChart::EnsureAppendStatement(FlowChartNode*, FlowChartNode*)#Cannot append statement to a flow chart node that already has a default destination.");
+						CHECK_ERROR(head->destination == nullptr, L"FlowChart::EnsureAppendStatement(FlowChartNode*, FlowChartNode*)#Cannot append a statement to a flow chart node that already has a default destination.");
 						auto node = CreateNode(catchNode);
 						head->destination = node;
 						return node;
@@ -273,7 +294,10 @@ GenerateFlowChart
 				}
 			};
 
-			class GenerateFlowChartStatementVisitor : public Object, public WfStatement::IVisitor
+			class GenerateFlowChartStatementVisitor
+				: public Object
+				, public WfStatement::IVisitor
+				, public WfCoroutineStatement::IVisitor
 			{
 			public:
 				enum class ScopeType
@@ -458,7 +482,20 @@ GenerateFlowChart
 
 				void Visit(WfCoroutineStatement* node)override
 				{
-					throw 0;
+					node->Accept(static_cast<WfCoroutineStatement::IVisitor*>(this));
+				}
+
+				void Visit(WfCoPauseStatement* node)override
+				{
+					resultHead = flowChart->AppendNode(resultHead, catchNode, FlowChartNodeAction::SetPause);
+					resultLast = resultHead;
+					if (node->statement)
+					{
+						AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node->statement));
+					}
+
+					resultLast = flowChart->AppendNode(resultLast, catchNode, FlowChartNodeAction::Pause);
+					resultHead->pauseDestination = resultLast;
 				}
 
 #undef COPY_STATEMENT
