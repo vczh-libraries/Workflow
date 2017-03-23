@@ -11,7 +11,7 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
-FindCoroutineAwaredStatementVisitor
+FindCoroutineAwaredStatements
 ***********************************************************************/
 
 			class FindCoroutineAwaredStatementVisitor : public empty_visitor::StatementVisitor
@@ -80,8 +80,13 @@ FindCoroutineAwaredStatementVisitor
 				}
 			};
 
+			void FindCoroutineAwaredStatements(Ptr<WfStatement> node, List<WfStatement*>& awaredStatements)
+			{
+				FindCoroutineAwaredStatementVisitor(awaredStatements).Call(node);
+			}
+
 /***********************************************************************
-FindCoroutineAwaredVariableVisitor
+FindCoroutineAwaredVariables
 ***********************************************************************/
 
 			class FindCoroutineAwaredVariableVisitor : public empty_visitor::StatementVisitor
@@ -140,6 +145,57 @@ FindCoroutineAwaredVariableVisitor
 				}
 			};
 
+			void FindCoroutineAwaredVariables(WfStatement* node, List<WfVariableStatement*>& awaredVariables)
+			{
+				FindCoroutineAwaredBlockVisitor visitor(awaredVariables);
+				node->Accept(&visitor);
+			}
+
+/***********************************************************************
+FindCoroutineReferenceRenaming
+***********************************************************************/
+
+			void FindCoroutineReferenceRenaming(WfLexicalScopeManager* manager, List<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming)
+			{
+				vint renameCounter = 0;
+				auto rename = [&](const WString& name)
+				{
+					if (name.Length() > 0 && name[0] == L'<')
+					{
+						vint index = INVLOC.FindFirst(name, L">", Locale::None).key;
+						auto category = name.Sub(1, index - 1);
+						auto local = name.Sub(index + 1, name.Length() - index - 1);
+						return L"<co" + itow(renameCounter++) + L"-" + category + L">" + local;
+					}
+					else
+					{
+						return L"<co" + itow(renameCounter++) + L">" + name;
+					}
+				};
+
+				FOREACH(WfVariableStatement*, stat, awaredVariables)
+				{
+					auto scope = manager->nodeScopes[stat];
+					auto symbol = scope->symbols[stat->variable->name.value][0];
+					auto name = rename(stat->variable->name.value);
+					referenceRenaming.Add(symbol.Obj(), name);
+				}
+
+				FOREACH(WfStatement*, stat, awaredStatements)
+				{
+					if (auto tryStat = dynamic_cast<WfTryStatement*>(stat))
+					{
+						if (tryStat->catchStatement)
+						{
+							auto scope = manager->nodeScopes[tryStat->catchStatement.Obj()]->parentScope.Obj();
+							auto symbol = scope->symbols[tryStat->name.value][0];
+							auto name = rename(tryStat->name.value);
+							referenceRenaming.Add(symbol.Obj(), name);
+						}
+					}
+				}
+			}
+
 /***********************************************************************
 GenerateFlowChart
 ***********************************************************************/
@@ -168,9 +224,10 @@ GenerateFlowChart
 				List<Ptr<FlowChartNode>>				nodes;
 			};
 
-			Ptr<FlowChart> GenerateFlowChart(WfLexicalScopeManager* manager, SortedList<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Ptr<WfStatement> statement)
+			Ptr<FlowChart> GenerateFlowChart(WfLexicalScopeManager* manager, List<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Ptr<WfStatement> statement)
 			{
-				throw 0;
+				auto flowChart = MakePtr<FlowChart>();
+				return flowChart;
 			}
 
 /***********************************************************************
@@ -183,87 +240,41 @@ ExpandNewCoroutineExpression
 
 			void ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node)
 			{
-				SortedList<WfStatement*> awaredStatements;
-				List<WfStatement*> orderedAwaredStatements;
+				List<WfStatement*> awaredStatements;
 				List<WfVariableStatement*> awaredVariables;
-				{
-					FindCoroutineAwaredStatementVisitor visitor(orderedAwaredStatements);
-					visitor.Call(node->statement);
-					CopyFrom(awaredStatements, orderedAwaredStatements);
-				}
-				{
-					FindCoroutineAwaredBlockVisitor visitor(awaredVariables);
-					FOREACH(WfStatement*, stat, awaredStatements)
-					{
-						stat->Accept(&visitor);
-					}
-				}
+				Dictionary<WfLexicalSymbol*, WString> referenceRenaming;
 
-				vint renameCounter = 0;
-				auto rename = [&](const WString& name)
+				FindCoroutineAwaredStatements(node->statement, awaredStatements);
+				FOREACH(WfStatement*, stat, awaredStatements)
 				{
-					if (name.Length() > 0 && name[0] == L'<')
-					{
-						vint index = INVLOC.FindFirst(name, L">", Locale::None).key;
-						auto category = name.Sub(1, index - 1);
-						auto local = name.Sub(index + 1, name.Length() - index - 1);
-						return L"<co" + itow(renameCounter++) + L"-" + category + L">" + local;
-					}
-					else
-					{
-						return L"<co" + itow(renameCounter++) + L">" + name;
-					}
-				};
+					FindCoroutineAwaredVariables(stat, awaredVariables);
+				}
+				FindCoroutineReferenceRenaming(manager, awaredStatements, awaredVariables, referenceRenaming);
+				auto flowChart = GenerateFlowChart(manager, awaredStatements, awaredVariables, node->statement);
 
 				auto newExpr = MakePtr<WfNewInterfaceExpression>();
 				node->expandedExpression = newExpr;
 				newExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo().Obj());
 
-				Dictionary<WfLexicalSymbol*, WString> referenceRenaming;
+				FOREACH(WfLexicalSymbol*, symbol,
+					From(referenceRenaming.Keys())
+						.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
+						{
+							return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
+						}))
 				{
-					FOREACH(WfVariableStatement*, stat, awaredVariables)
+					auto varDecl = MakePtr<WfVariableDeclaration>();
+					newExpr->declarations.Add(varDecl);
 					{
-						auto scope = manager->nodeScopes[stat];
-						auto symbol = scope->symbols[stat->variable->name.value][0];
-						auto name = rename(stat->variable->name.value);
-						referenceRenaming.Add(symbol.Obj(), name);
+						auto member = MakePtr<WfClassMember>();
+						member->kind = WfClassMemberKind::Normal;
+						varDecl->classMember = member;
 					}
 
-					FOREACH(WfStatement*, stat, orderedAwaredStatements)
-					{
-						if (auto tryStat = dynamic_cast<WfTryStatement*>(stat))
-						{
-							if (tryStat->catchStatement)
-							{
-								auto scope = manager->nodeScopes[tryStat->catchStatement.Obj()]->parentScope.Obj();
-								auto symbol = scope->symbols[tryStat->name.value][0];
-								auto name = rename(tryStat->name.value);
-								referenceRenaming.Add(symbol.Obj(), name);
-							}
-						}
-					}
-
-					FOREACH(WfLexicalSymbol*, symbol,
-						From(referenceRenaming.Keys())
-							.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
-							{
-								return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
-							}))
-					{
-						auto varDecl = MakePtr<WfVariableDeclaration>();
-						newExpr->declarations.Add(varDecl);
-						{
-							auto member = MakePtr<WfClassMember>();
-							member->kind = WfClassMemberKind::Normal;
-							varDecl->classMember = member;
-						}
-
-						varDecl->name.value = referenceRenaming[symbol];
-						varDecl->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
-						varDecl->expression = CreateDefaultValue(symbol->typeInfo.Obj());
-					}
+					varDecl->name.value = referenceRenaming[symbol];
+					varDecl->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
+					varDecl->expression = CreateDefaultValue(symbol->typeInfo.Obj());
 				}
-
 				{
 					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
 					newExpr->declarations.Add(propDecl);
