@@ -1079,6 +1079,48 @@ ExpandNewCoroutineExpression
 										/////////////////////////////////////////////////////////////////////////////
 										stateBlock->statements.Add(GenerateSetCoState(node->pauseDestination));
 									}
+
+									auto nodeBlock = stateBlock;
+									if (node->exceptionDestination)
+									{
+										/////////////////////////////////////////////////////////////////////////////
+										// try { ... }
+										/////////////////////////////////////////////////////////////////////////////
+
+										auto nodeTryStat = MakePtr<WfTryStatement>();
+										nodeBlock = MakePtr<WfBlockStatement>();
+										nodeTryStat->protectedStatement = nodeBlock;
+
+										/////////////////////////////////////////////////////////////////////////////
+										// catch(<co-ex>)
+										// {
+										//      <co-state> = THE_NEXT_STATE;
+										//      continue;
+										// }
+										/////////////////////////////////////////////////////////////////////////////
+
+										nodeTryStat->name.value = L"<co-ex>";
+										auto catchBlock = MakePtr<WfBlockStatement>();
+										nodeTryStat->catchStatement = catchBlock;
+										{
+											auto refExpr = MakePtr<WfReferenceExpression>();
+											refExpr->name.value = L"<co-ex>";
+
+											auto funcExpr = MakePtr<WfReferenceExpression>();
+											funcExpr->name.value = L"SetFailure";
+
+											auto callExpr = MakePtr<WfCallExpression>();
+											callExpr->function = funcExpr;
+											callExpr->arguments.Add(refExpr);
+
+											auto stat = MakePtr<WfExpressionStatement>();
+											stat->expression = callExpr;
+											catchBlock->statements.Add(stat);
+										}
+										catchBlock->statements.Add(MakePtr<WfContinueStatement>());
+
+										stateBlock->statements.Add(nodeTryStat);
+									}
 									FOREACH(Ptr<WfStatement>, stat, node->statements)
 									{
 										if (stat.Cast<WfCoPauseStatement>())
@@ -1087,13 +1129,14 @@ ExpandNewCoroutineExpression
 											// return;
 											/////////////////////////////////////////////////////////////////////////////
 											auto returnStat = MakePtr<WfReturnStatement>();
-											stateBlock->statements.Add(returnStat);
+											nodeBlock->statements.Add(returnStat);
 										}
 										else
 										{
-											stateBlock->statements.Add(stat);
+											nodeBlock->statements.Add(stat);
 										}
 									}
+
 									if (node == flowChart->lastNode)
 									{
 										/////////////////////////////////////////////////////////////////////////////
@@ -1110,8 +1153,10 @@ ExpandNewCoroutineExpression
 									{
 										/////////////////////////////////////////////////////////////////////////////
 										// <co-state> = THE_NEXT_STATE;
+										// continue;
 										/////////////////////////////////////////////////////////////////////////////
 										stateBlock->statements.Add(GenerateSetCoState(node->destination));
+										stateBlock->statements.Add(MakePtr<WfContinueStatement>());
 									}
 								}
 
@@ -1126,7 +1171,7 @@ ExpandNewCoroutineExpression
 						// {
 						//      SetFailure(<co-ex>);
 						//      SetStatus(Stopped);
-						//      if (<raise-exception> raise <co-ex>;
+						//      if (<raise-exception>) raise <co-ex>;
 						// }
 						/////////////////////////////////////////////////////////////////////////////
 
