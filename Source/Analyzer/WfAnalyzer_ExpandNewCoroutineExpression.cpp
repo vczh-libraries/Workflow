@@ -426,7 +426,37 @@ GenerateFlowChart
 
 				void Visit(WfIfStatement* node)override
 				{
-					throw 0;
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+					{
+						auto branch = MakePtr<FlowChartBranch>();
+						resultHead->branches.Add(branch);
+						if (node->name.value == L"")
+						{
+							branch->condition = COPY_AST(node->expression);
+						}
+						else
+						{
+							throw 0;
+						}
+					}
+					resultLast = flowChart->CreateNode(catchNode);
+
+					{
+						auto pair = Execute(nullptr, catchNode, scopeContext, node->trueBranch);
+						pair.value->destination = resultLast;
+						resultHead->branches[0]->destination = pair.key;
+					}
+					
+					if(node->falseBranch)
+					{
+						auto pair = Execute(nullptr, catchNode, scopeContext, node->falseBranch);
+						pair.value->destination = resultLast;
+						resultHead->destination = pair.key;
+					}
+					else
+					{
+						resultHead->destination = resultLast;
+					}
 				}
 
 				void Visit(WfWhileStatement* node)override
@@ -487,7 +517,7 @@ GenerateFlowChart
 
 				void Visit(WfCoPauseStatement* node)override
 				{
-					resultHead = flowChart->AppendNode(resultHead, catchNode, FlowChartNodeAction::SetPause);
+					resultHead = flowChart->AppendNode(headNode, catchNode, FlowChartNodeAction::SetPause);
 					resultLast = resultHead;
 					if (node->statement)
 					{
