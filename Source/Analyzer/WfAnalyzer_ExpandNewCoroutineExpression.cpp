@@ -1053,6 +1053,7 @@ ExpandNewCoroutineExpression
 								/////////////////////////////////////////////////////////////////////////////
 								// if (<co-state> == THE_CURRENT_STATE) { ... }
 								/////////////////////////////////////////////////////////////////////////////
+
 								auto ifStat = MakePtr<WfIfStatement>();
 								{
 									auto refState = MakePtr<WfReferenceExpression>();
@@ -1094,7 +1095,7 @@ ExpandNewCoroutineExpression
 										/////////////////////////////////////////////////////////////////////////////
 										// catch(<co-ex>)
 										// {
-										//      <co-state> = THE_NEXT_STATE;
+										//      <co-state> = THE_EXCEPTION_STATE;
 										//      continue;
 										// }
 										/////////////////////////////////////////////////////////////////////////////
@@ -1102,25 +1103,13 @@ ExpandNewCoroutineExpression
 										nodeTryStat->name.value = L"<co-ex>";
 										auto catchBlock = MakePtr<WfBlockStatement>();
 										nodeTryStat->catchStatement = catchBlock;
-										{
-											auto refExpr = MakePtr<WfReferenceExpression>();
-											refExpr->name.value = L"<co-ex>";
 
-											auto funcExpr = MakePtr<WfReferenceExpression>();
-											funcExpr->name.value = L"SetFailure";
-
-											auto callExpr = MakePtr<WfCallExpression>();
-											callExpr->function = funcExpr;
-											callExpr->arguments.Add(refExpr);
-
-											auto stat = MakePtr<WfExpressionStatement>();
-											stat->expression = callExpr;
-											catchBlock->statements.Add(stat);
-										}
+										catchBlock->statements.Add(GenerateSetCoState(flowChartNode->exceptionDestination));
 										catchBlock->statements.Add(MakePtr<WfContinueStatement>());
 
 										stateBlock->statements.Add(nodeTryStat);
 									}
+
 									FOREACH(Ptr<WfStatement>, stat, flowChartNode->statements)
 									{
 										if (stat.Cast<WfCoPauseStatement>())
@@ -1135,6 +1124,20 @@ ExpandNewCoroutineExpression
 										{
 											nodeBlock->statements.Add(stat);
 										}
+									}
+
+									FOREACH(Ptr<FlowChartBranch>, branch, flowChartNode->branches)
+									{
+										auto ifStat = MakePtr<WfIfStatement>();
+										ifStat->expression = branch->condition;
+
+										auto trueBlock = MakePtr<WfBlockStatement>();
+										ifStat->trueBranch = trueBlock;
+
+										trueBlock->statements.Add(GenerateSetCoState(branch->destination));
+										trueBlock->statements.Add(MakePtr<WfContinueStatement>());
+
+										nodeBlock->statements.Add(ifStat);
 									}
 
 									if (flowChartNode == flowChart->lastNode)
