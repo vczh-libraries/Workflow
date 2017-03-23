@@ -248,13 +248,13 @@ GenerateFlowChart
 				}
 			};
 
-			class GenerateFlowChartExpressionVisitor : public copy_visitor::ModuleVisitor
+			class GenerateFlowChartModuleVisitor : public copy_visitor::ModuleVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
 				Dictionary<WfLexicalSymbol*, WString>&	referenceRenaming;
 
-				GenerateFlowChartExpressionVisitor(WfLexicalScopeManager* _manager, Dictionary<WfLexicalSymbol*, WString>& _referenceRenaming)
+				GenerateFlowChartModuleVisitor(WfLexicalScopeManager* _manager, Dictionary<WfLexicalSymbol*, WString>& _referenceRenaming)
 					:manager(_manager)
 					, referenceRenaming(_referenceRenaming)
 				{
