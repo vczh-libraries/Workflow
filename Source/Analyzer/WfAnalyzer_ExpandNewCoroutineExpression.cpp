@@ -464,6 +464,7 @@ GenerateFlowChart
 								auto stat = MakePtr<WfExpressionStatement>();
 								stat->expression = assignExpr;
 
+								SetCodeRange((Ptr<WfStatement>)stat, node->expression->codeRange);
 								resultHead->statements.Add(stat);
 							}
 							{
@@ -474,6 +475,7 @@ GenerateFlowChart
 								testExpr->test = WfTypeTesting::IsNotNull;
 								testExpr->expression = refExpr;
 
+								SetCodeRange((Ptr<WfExpression>)testExpr, node->expression->codeRange);
 								branch->condition = testExpr;
 							}
 						}
@@ -500,7 +502,27 @@ GenerateFlowChart
 
 				void Visit(WfWhileStatement* node)override
 				{
-					throw 0;
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+					{
+						auto branch = MakePtr<FlowChartBranch>();
+						resultHead->branches.Add(branch);
+						branch->condition = COPY_AST(node->condition);
+					}
+
+					auto pair = Execute(nullptr, catchNode, scopeContext, node->statement);
+					auto pairLast = flowChart->EnsureAppendStatement(pair.value, catchNode);
+					{
+						auto branch = MakePtr<FlowChartBranch>();
+						resultHead->branches.Add(branch);
+						branch->condition = COPY_AST(node->condition);
+					}
+
+					resultHead->branches[0]->destination = pair.key;
+					pairLast->branches[0]->destination = pair.key;
+
+					resultLast = flowChart->CreateNode(catchNode);
+					resultHead->destination = resultLast;
+					pairLast->destination = resultLast;
 				}
 
 				void Visit(WfTryStatement* node)override
