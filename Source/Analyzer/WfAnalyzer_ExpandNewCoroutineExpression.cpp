@@ -224,6 +224,52 @@ GenerateFlowChart
 				List<Ptr<FlowChartNode>>				nodes;
 				FlowChartNode*							headNode = nullptr;
 				FlowChartNode*							lastNode = nullptr;
+
+				FlowChartNode* CreateNode()
+				{
+					auto node = MakePtr<FlowChartNode>();
+					nodes.Add(node);
+					return node.Obj();
+				}
+
+				FlowChartNode* EnsureAppendStatement(FlowChartNode* head, FlowChartNode* catchNode)
+				{
+					if (head == nullptr || head->branches.Count() > 0 || head->exceptionDestination != catchNode)
+					{
+						CHECK_ERROR(head->destination == nullptr, L"FlowChart::EnsureAppendStatement(FlowChartNode*, FlowChartNode*)#Cannot append statement to a flow chart node that already has a default destination.");
+						auto node = CreateNode();
+						head->destination = node;
+						return node;
+					}
+					else
+					{
+						return head;
+					}
+				}
+			};
+
+			class GenerateFlowChartExpressionVisitor : public copy_visitor::ModuleVisitor
+			{
+			public:
+				WfLexicalScopeManager*					manager;
+				Dictionary<WfLexicalSymbol*, WString>&	referenceRenaming;
+
+				GenerateFlowChartExpressionVisitor(WfLexicalScopeManager* _manager, Dictionary<WfLexicalSymbol*, WString>& _referenceRenaming)
+					:manager(_manager)
+					, referenceRenaming(_referenceRenaming)
+				{
+				}
+
+				void Visit(WfReferenceExpression* node)override
+				{
+					copy_visitor::ExpressionVisitor::Visit(node);
+					auto resolvingResult = manager->expressionResolvings[node];
+					vint index = referenceRenaming.Keys().IndexOf(resolvingResult.symbol.Obj());
+					if (index != -1)
+					{
+						result.Cast<WfReferenceExpression>()->name.value = referenceRenaming.Values()[index];
+					}
+				}
 			};
 
 			class GenerateFlowChartStatementVisitor : public Object, public WfStatement::IVisitor
@@ -246,6 +292,7 @@ GenerateFlowChart
 			public:
 				WfLexicalScopeManager*					manager;
 				SortedList<WfStatement*>&				awaredStatements;
+				Dictionary<WfLexicalSymbol*, WString>&	referenceRenaming;
 				Ptr<FlowChart>							flowChart;
 				FlowChartNode*							headNode;
 				FlowChartNode*							catchNode;
@@ -253,9 +300,10 @@ GenerateFlowChart
 				FlowChartNode*							resultHead = nullptr;
 				FlowChartNode*							resultLast = nullptr;
 
-				GenerateFlowChartStatementVisitor(WfLexicalScopeManager* _manager, SortedList<WfStatement*>& _awaredStatements, Ptr<FlowChart> _flowChart, FlowChartNode* _headNode, FlowChartNode* _catchNode, ScopeContext* _scopeContext)
+				GenerateFlowChartStatementVisitor(WfLexicalScopeManager* _manager, SortedList<WfStatement*>& _awaredStatements, Dictionary<WfLexicalSymbol*, WString>& _referenceRenaming, Ptr<FlowChart> _flowChart, FlowChartNode* _headNode, FlowChartNode* _catchNode, ScopeContext* _scopeContext)
 					:manager(_manager)
 					, awaredStatements(_awaredStatements)
+					, referenceRenaming(_referenceRenaming)
 					, flowChart(_flowChart)
 					, headNode(_headNode)
 					, catchNode(_catchNode)
@@ -263,16 +311,16 @@ GenerateFlowChart
 				{
 				}
 
-				static Pair<FlowChartNode*, FlowChartNode*> Execute(WfLexicalScopeManager* manager, SortedList<WfStatement*>& awaredStatements, Ptr<FlowChart> flowChart, FlowChartNode* headNode, FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
+				static Pair<FlowChartNode*, FlowChartNode*> Execute(WfLexicalScopeManager* manager, SortedList<WfStatement*>& awaredStatements, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, Ptr<FlowChart> flowChart, FlowChartNode* headNode, FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
 				{
-					GenerateFlowChartStatementVisitor visitor(manager, awaredStatements, flowChart, headNode, catchNode, scopeContext);
+					GenerateFlowChartStatementVisitor visitor(manager, awaredStatements, referenceRenaming, flowChart, headNode, catchNode, scopeContext);
 					statement->Accept(&visitor);
 					return{ visitor.resultHead,visitor.resultLast };
 				}
 
 				Pair<FlowChartNode*, FlowChartNode*> Execute(FlowChartNode* headNode, FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
 				{
-					return Execute(manager, awaredStatements, flowChart, headNode, catchNode, scopeContext, statement);
+					return Execute(manager, awaredStatements, referenceRenaming, flowChart, headNode, catchNode, scopeContext, statement);
 				}
 
 				void Visit(WfBreakStatement* node)override
@@ -329,13 +377,13 @@ GenerateFlowChart
 				}
 			};
 
-			Ptr<FlowChart> GenerateFlowChart(WfLexicalScopeManager* manager, List<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Ptr<WfStatement> statement)
+			Ptr<FlowChart> GenerateFlowChart(WfLexicalScopeManager* manager, List<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, Ptr<WfStatement> statement)
 			{
 				auto flowChart = MakePtr<FlowChart>();
 				SortedList<WfStatement*> sortedAwaredStatements;
 				CopyFrom(sortedAwaredStatements, awaredStatements);
 				GenerateFlowChartStatementVisitor::ScopeContext context;
-				auto pair = GenerateFlowChartStatementVisitor::Execute(manager, sortedAwaredStatements, flowChart, nullptr, nullptr, &context, statement);
+				auto pair = GenerateFlowChartStatementVisitor::Execute(manager, sortedAwaredStatements, referenceRenaming, flowChart, nullptr, nullptr, &context, statement);
 				flowChart->headNode = pair.key;
 				flowChart->lastNode = pair.value;
 				return flowChart;
@@ -361,7 +409,7 @@ ExpandNewCoroutineExpression
 					FindCoroutineAwaredVariables(stat, awaredVariables);
 				}
 				FindCoroutineReferenceRenaming(manager, awaredStatements, awaredVariables, referenceRenaming);
-				auto flowChart = GenerateFlowChart(manager, awaredStatements, awaredVariables, node->statement);
+				auto flowChart = GenerateFlowChart(manager, awaredStatements, awaredVariables, referenceRenaming, node->statement);
 
 				auto newExpr = MakePtr<WfNewInterfaceExpression>();
 				node->expandedExpression = newExpr;
