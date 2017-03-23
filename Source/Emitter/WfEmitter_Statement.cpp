@@ -115,7 +115,6 @@ GenerateInstructions(Statement)
 							scope = scope->parentScope;
 						}
 					}
-					InlineScopeExitCode(WfCodegenScopeType::TryCatch, true);
 					INSTRUCTION(Ins::RaiseException());
 				}
 
@@ -187,79 +186,99 @@ GenerateInstructions(Statement)
 					context.functionContext->PopScopeContext();
 				}
 
-				void VisitTryCatch(WfTryStatement* node)
+				Pair<int, int> GenerateTryProtected(WfStatement* node, Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement)
 				{
-					if (!node->catchStatement)
-					{
-						GenerateStatementInstructions(context, node->protectedStatement);
-					}
-					else
-					{
-						auto catchContext = context.functionContext->PushScopeContext(WfCodegenScopeType::TryCatch);
-						EXIT_CODE(Ins::UninstallTry(0));
+					auto catchContext = context.functionContext->PushScopeContext(WfCodegenScopeType::TryCatch);
+					EXIT_CODE(Ins::UninstallTry(0));
+					catchContext->exitStatement = finallyStatement;
 
-						vint trapInstruction = INSTRUCTION(Ins::InstallTry(-1));
-						GenerateStatementInstructions(context, node->protectedStatement);
-						INSTRUCTION(Ins::UninstallTry(0));
-						vint finishInstruction = INSTRUCTION(Ins::Jump(-1));
-						context.functionContext->PopScopeContext();
-						
-						context.assembly->instructions[trapInstruction].indexParameter = context.assembly->instructions.Count();
-						auto scope = context.manager->nodeScopes[node].Obj();
-						auto symbol = scope->symbols[node->name.value][0].Obj();
-						auto function = context.functionContext->function;
-						vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<catch>" + node->name.value);
-						context.functionContext->localVariables.Add(symbol, variableIndex);
-						INSTRUCTION(Ins::LoadException());
-						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
-						GenerateStatementInstructions(context, node->catchStatement);
-						
-						context.assembly->instructions[finishInstruction].indexParameter = context.assembly->instructions.Count();
-					}
+					vint trap = INSTRUCTION(Ins::InstallTry(-1));
+					GenerateStatementInstructions(context, protectedStatement);
+					context.functionContext->PopScopeContext();
+					INSTRUCTION(Ins::UninstallTry(0));
+					vint finish = INSTRUCTION(Ins::Jump(-1));
+
+					return{ trap,finish };
 				}
 
-				void VisitTryFinally(WfTryStatement* node)
+				vint GenerateExceptionVariable(WfTryStatement* node)
 				{
-					if (!node->finallyStatement)
+					WfLexicalSymbol* exceptionSymbol = nullptr;
+					WString exceptionName;
+					if (node->catchStatement)
 					{
-						VisitTryCatch(node);
+						auto scope = context.manager->nodeScopes[node].Obj();
+						exceptionSymbol = scope->symbols[node->name.value][0].Obj();
+						exceptionName = L"<catch>" + node->name.value;
 					}
 					else
 					{
-						auto catchContext = context.functionContext->PushScopeContext(WfCodegenScopeType::TryCatch);
-						EXIT_CODE(Ins::UninstallTry(0));
-						catchContext->exitStatement = node->finallyStatement;
-						
-						auto function = context.functionContext->function;
-						vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<try-finally-exception>");
-						INSTRUCTION(Ins::LoadValue(Value()));
-						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
-						vint trapInstruction = INSTRUCTION(Ins::InstallTry(-1));
-						VisitTryCatch(node);
-						INSTRUCTION(Ins::UninstallTry(0));
-						vint untrapInstruction = INSTRUCTION(Ins::Jump(-1));
-						context.functionContext->PopScopeContext();
-
-						context.assembly->instructions[trapInstruction].indexParameter = context.assembly->instructions.Count();
-						INSTRUCTION(Ins::LoadException());
-						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
-
-						context.assembly->instructions[untrapInstruction].indexParameter = context.assembly->instructions.Count();
-						GenerateStatementInstructions(context, node->finallyStatement);
-
-						INSTRUCTION(Ins::LoadLocalVar(variableIndex));
-						INSTRUCTION(Ins::LoadValue(Value()));
-						INSTRUCTION(Ins::CompareReference());
-						vint finishInstruction = INSTRUCTION(Ins::JumpIf(-1));
-						INSTRUCTION(Ins::LoadLocalVar(variableIndex));
-						INSTRUCTION(Ins::RaiseException());
-						context.assembly->instructions[finishInstruction].indexParameter = context.assembly->instructions.Count();
+						exceptionName = L"<try-finally-exception>";
 					}
+
+					auto function = context.functionContext->function;
+					vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<catch>" + node->name.value);
+					if (exceptionSymbol)
+					{
+						context.functionContext->localVariables.Add(exceptionSymbol, variableIndex);
+					}
+
+					return variableIndex;
+				}
+
+				void GenerateTrap(WfTryStatement* node, vint variableIndex, Pair<int, int> trap)
+				{
+					context.assembly->instructions[trap.key].indexParameter = context.assembly->instructions.Count();
+					INSTRUCTION(Ins::LoadException());
+					INSTRUCTION(Ins::StoreLocalVar(variableIndex));
+				}
+
+				void GenerateFinallyAndRaise(WfTryStatement* node, vint variableIndex)
+				{
+					GenerateStatementInstructions(context, node->finallyStatement);
+					INSTRUCTION(Ins::LoadLocalVar(variableIndex));
+					INSTRUCTION(Ins::RaiseException());
 				}
 
 				void Visit(WfTryStatement* node)override
 				{
-					VisitTryFinally(node);
+					// try
+					auto trap1 = GenerateTryProtected(node, node->protectedStatement, node->finallyStatement);
+					Pair<int, int> trap2 = { -1,-1 };
+					auto variableIndex = GenerateExceptionVariable(node);
+
+					// catch
+					{
+						GenerateTrap(node, variableIndex, trap1);
+						if (node->catchStatement)
+						{
+							if (node->finallyStatement)
+							{
+								trap2 = GenerateTryProtected(node, node->catchStatement, node->finallyStatement);
+								GenerateTrap(node, variableIndex, trap2);
+								GenerateFinallyAndRaise(node, variableIndex);
+							}
+							else
+							{
+								GenerateStatementInstructions(context, node->catchStatement);
+							}
+						}
+						else
+						{
+							GenerateFinallyAndRaise(node, variableIndex);
+						}
+					}
+
+					// finally
+					context.assembly->instructions[trap1.value].indexParameter = context.assembly->instructions.Count();
+					if (trap2.value != -1)
+					{
+						context.assembly->instructions[trap2.value].indexParameter = context.assembly->instructions.Count();
+					}
+					if (node->finallyStatement)
+					{
+						GenerateStatementInstructions(context, node->finallyStatement);
+					}
 				}
 
 				void Visit(WfBlockStatement* node)override

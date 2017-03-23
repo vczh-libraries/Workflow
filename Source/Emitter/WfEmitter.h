@@ -55,7 +55,6 @@ Code Generation
 			enum class WfCodegenScopeType
 			{
 				Function,	// contains the whole function
-				Switch,		// contains all switchs
 				Loop,		// contains all loops
 				TryCatch,	// contains try and catch, not finally
 			};
