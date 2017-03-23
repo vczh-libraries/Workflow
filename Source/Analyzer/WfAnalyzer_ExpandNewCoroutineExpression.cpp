@@ -225,9 +225,10 @@ GenerateFlowChart
 				FlowChartNode*							headNode = nullptr;
 				FlowChartNode*							lastNode = nullptr;
 
-				FlowChartNode* CreateNode()
+				FlowChartNode* CreateNode(FlowChartNode* catchNode)
 				{
 					auto node = MakePtr<FlowChartNode>();
+					node->exceptionDestination = catchNode;
 					nodes.Add(node);
 					return node.Obj();
 				}
@@ -237,7 +238,7 @@ GenerateFlowChart
 					if (head == nullptr || head->branches.Count() > 0 || head->exceptionDestination != catchNode)
 					{
 						CHECK_ERROR(head->destination == nullptr, L"FlowChart::EnsureAppendStatement(FlowChartNode*, FlowChartNode*)#Cannot append statement to a flow chart node that already has a default destination.");
-						auto node = CreateNode();
+						auto node = CreateNode(catchNode);
 						head->destination = node;
 						return node;
 					}
@@ -286,6 +287,9 @@ GenerateFlowChart
 				{
 					ScopeContext*						parent = nullptr;
 					ScopeType							type = ScopeType::Function;
+					FlowChartNode*						enterNode = nullptr;
+					FlowChartNode*						leaveNode = nullptr;
+					ScopeContext*						exitStatementScope = nullptr;
 					Ptr<WfStatement>					exitStatement;
 				};
 
@@ -311,10 +315,55 @@ GenerateFlowChart
 				{
 				}
 
+#define COPY_AST(STATEMENT) GenerateFlowChartModuleVisitor(manager, referenceRenaming).CreateField(STATEMENT)
+
+				void AppendAwaredStatement(FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
+				{
+					if (!resultHead)
+					{
+						resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+						resultLast = resultHead;
+					}
+					resultLast = Execute(resultHead, catchNode, scopeContext, statement).value;
+				}
+
+				void AppendUnawaredCopiedStatement(FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
+				{
+					if (!resultHead)
+					{
+						resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+						resultLast = resultHead;
+					}
+					resultHead->statements.Add(statement);
+				}
+
+				ScopeContext* InlineScopeExitCode(ScopeType untilScopeType, bool exclusive)
+				{
+					auto current = scopeContext;
+					while (current)
+					{
+						if (exclusive && scopeContext->type == untilScopeType) break;
+						if (current->exitStatement)
+						{
+							AppendAwaredStatement(catchNode, current->exitStatementScope, current->exitStatement);
+						}
+						if (!exclusive && scopeContext->type == untilScopeType) break;
+						current = current->parent;
+					}
+					return current;
+				}
+
 				static Pair<FlowChartNode*, FlowChartNode*> Execute(WfLexicalScopeManager* manager, SortedList<WfStatement*>& awaredStatements, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, Ptr<FlowChart> flowChart, FlowChartNode* headNode, FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
 				{
 					GenerateFlowChartStatementVisitor visitor(manager, awaredStatements, referenceRenaming, flowChart, headNode, catchNode, scopeContext);
-					statement->Accept(&visitor);
+					if (awaredStatements.Contains(statement.Obj()))
+					{
+						statement->Accept(&visitor);
+					}
+					else
+					{
+						visitor.AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(statement));
+					}
 					return{ visitor.resultHead,visitor.resultLast };
 				}
 
@@ -325,46 +374,81 @@ GenerateFlowChart
 
 				void Visit(WfBreakStatement* node)override
 				{
+					auto targetContext = InlineScopeExitCode(ScopeType::Loop, false);
+					resultLast->destination = targetContext->leaveNode;
 				}
 
 				void Visit(WfContinueStatement* node)override
 				{
+					auto targetContext = InlineScopeExitCode(ScopeType::Loop, true);
+					resultLast->destination = targetContext->enterNode;
 				}
 
 				void Visit(WfReturnStatement* node)override
 				{
+					auto targetContext = InlineScopeExitCode(ScopeType::Function, false);
+					resultLast->destination = targetContext->leaveNode;
 				}
 
 				void Visit(WfDeleteStatement* node)override
 				{
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
 				}
 
 				void Visit(WfRaiseExceptionStatement* node)override
 				{
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
 				}
 
 				void Visit(WfIfStatement* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfWhileStatement* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfTryStatement* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfBlockStatement* node)override
 				{
+					FOREACH(Ptr<WfStatement>, stat, node->statements)
+					{
+						AppendAwaredStatement(catchNode, scopeContext, stat);
+					}
 				}
 
 				void Visit(WfVariableStatement* node)override
 				{
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+					resultLast = resultHead;
+
+					auto scope = manager->nodeScopes[node];
+					auto symbol = scope->symbols[node->variable->name.value][0].Obj();
+
+					auto refExpr = MakePtr<WfReferenceExpression>();
+					refExpr->name.value = referenceRenaming[symbol];
+
+					auto assignExpr = MakePtr<WfBinaryExpression>();
+					assignExpr->op = WfBinaryOperator::Assign;
+					assignExpr->first = refExpr;
+					assignExpr->second = COPY_AST(node->variable->expression);
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = assignExpr;
+
+					SetCodeRange((Ptr<WfStatement>)stat, node->codeRange);
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, stat);
 				}
 
 				void Visit(WfExpressionStatement* node)override
 				{
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
 				}
 
 				void Visit(WfVirtualStatement* node)override
@@ -374,7 +458,10 @@ GenerateFlowChart
 
 				void Visit(WfCoroutineStatement* node)override
 				{
+					throw 0;
 				}
+
+#undef COPY_STATEMENT
 			};
 
 			Ptr<FlowChart> GenerateFlowChart(WfLexicalScopeManager* manager, List<WfStatement*>& awaredStatements, List<WfVariableStatement*>& awaredVariables, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, Ptr<WfStatement> statement)
@@ -382,8 +469,10 @@ GenerateFlowChart
 				auto flowChart = MakePtr<FlowChart>();
 				SortedList<WfStatement*> sortedAwaredStatements;
 				CopyFrom(sortedAwaredStatements, awaredStatements);
+
 				GenerateFlowChartStatementVisitor::ScopeContext context;
 				auto pair = GenerateFlowChartStatementVisitor::Execute(manager, sortedAwaredStatements, referenceRenaming, flowChart, nullptr, nullptr, &context, statement);
+
 				flowChart->headNode = pair.key;
 				flowChart->lastNode = pair.value;
 				return flowChart;
@@ -484,7 +573,7 @@ ExpandNewCoroutineExpression
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
 						funcDecl->arguments.Add(argument);
-						argument->name.value = L"raiseException";
+						argument->name.value = L"<raise-exception>";
 						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
 					}
 
