@@ -743,7 +743,7 @@ GenerateFlowChart
 				{
 					bool mergable = false;
 
-					if (node->branches.Count() == 0)
+					if (node->branches.Count() == 0 && node->destination)
 					{
 						if (node->statements.Count() == 0 && node->action == FlowChartNodeAction::None)
 						{
@@ -791,37 +791,29 @@ GenerateFlowChart
 					merging.Add(node, current);
 				}
 
+#define MERGE_FLOW_CHART_NODE(DESTINATION)\
+				{\
+					vint index = merging.Keys().IndexOf(DESTINATION);\
+					if (index != -1) DESTINATION = merging.Values()[index];\
+				}\
+
 				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
 				{
 					if (!mergableNodes.Contains(node.Obj()))
 					{
-						{
-							vint index = merging.Keys().IndexOf(node->destination);
-							if (index != -1) node->destination = merging.Values()[index];
-						}
-						{
-							vint index = merging.Keys().IndexOf(node->exceptionDestination);
-							if (index != -1) node->exceptionDestination = merging.Values()[index];
-						}
-						{
-							vint index = merging.Keys().IndexOf(node->pauseDestination);
-							if (index != -1) node->pauseDestination = merging.Values()[index];
-						}
+						MERGE_FLOW_CHART_NODE(node->destination);
+						MERGE_FLOW_CHART_NODE(node->exceptionDestination);
+						MERGE_FLOW_CHART_NODE(node->pauseDestination);
 						FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
 						{
-							vint index = merging.Keys().IndexOf(branch->destination);
-							if (index != -1) branch->destination = merging.Values()[index];
+							MERGE_FLOW_CHART_NODE(branch->destination);
 						}
 					}
 				}
-				{
-					vint index = merging.Keys().IndexOf(flowChart->headNode);
-					if (index != -1) flowChart->headNode = merging.Values()[index];
-				}
-				{
-					vint index = merging.Keys().IndexOf(flowChart->lastNode);
-					if (index != -1) flowChart->lastNode = merging.Values()[index];
-				}
+				MERGE_FLOW_CHART_NODE(flowChart->headNode);
+				MERGE_FLOW_CHART_NODE(flowChart->lastNode);
+
+#undef MERGE_FLOW_CHART_NODE
 
 				vint headNodeIndex = keepingNodes.IndexOf(flowChart->headNode);
 				auto headNode = keepingNodes[headNodeIndex];
@@ -945,7 +937,12 @@ ExpandNewCoroutineExpression
 
 					auto refExpr = MakePtr<WfReferenceExpression>();
 					refExpr->name.value = L"Waiting";
-					propDecl->expression = refExpr;
+
+					auto inferExpr = MakePtr<WfInferExpression>();
+					inferExpr->expression = refExpr;
+					inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<CoroutineStatus>::CreateTypeInfo().Obj());
+
+					propDecl->expression = inferExpr;
 				}
 
 				/////////////////////////////////////////////////////////////////////////////
