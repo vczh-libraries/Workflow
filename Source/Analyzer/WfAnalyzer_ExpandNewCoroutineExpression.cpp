@@ -706,7 +706,6 @@ GenerateFlowChart
 			void RemoveUnnecessaryNodes(Ptr<FlowChart> flowChart)
 			{
 				SortedList<FlowChartNode*> pauseTargets;
-				pauseTargets.Add(flowChart->headNode);
 				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
 				{
 					if (auto pauseTarget = node->pauseDestination)
@@ -788,8 +787,9 @@ GenerateFlowChart
 					if (index != -1) flowChart->lastNode = merging.Values()[index];
 				}
 
-				Ptr<FlowChartNode> headNode = flowChart->headNode;
-				keepingNodes.Remove(headNode.Obj());
+				vint headNodeIndex = keepingNodes.IndexOf(flowChart->headNode);
+				auto headNode = keepingNodes[headNodeIndex];
+				keepingNodes.RemoveAt(headNodeIndex);
 				keepingNodes.Insert(0, headNode);
 				CopyFrom(flowChart->nodes, keepingNodes);
 			}
@@ -1048,7 +1048,7 @@ ExpandNewCoroutineExpression
 							Ptr<WfStatement>* lastStat = &firstIfStat;
 							for (vint i = 0; i < flowChart->nodes.Count(); i++)
 							{
-								auto node = flowChart->nodes[i];
+								auto flowChartNode = flowChart->nodes[i].Obj();
 
 								/////////////////////////////////////////////////////////////////////////////
 								// if (<co-state> == THE_CURRENT_STATE) { ... }
@@ -1072,16 +1072,16 @@ ExpandNewCoroutineExpression
 								auto stateBlock = MakePtr<WfBlockStatement>();
 								ifStat->trueBranch = stateBlock;
 								{
-									if (node->action == FlowChartNodeAction::SetPause)
+									if (flowChartNode->action == FlowChartNodeAction::SetPause)
 									{
 										/////////////////////////////////////////////////////////////////////////////
 										// <co-state> = THE_NEXT_STATE;
 										/////////////////////////////////////////////////////////////////////////////
-										stateBlock->statements.Add(GenerateSetCoState(node->pauseDestination));
+										stateBlock->statements.Add(GenerateSetCoState(flowChartNode->pauseDestination));
 									}
 
 									auto nodeBlock = stateBlock;
-									if (node->exceptionDestination)
+									if (flowChartNode->exceptionDestination)
 									{
 										/////////////////////////////////////////////////////////////////////////////
 										// try { ... }
@@ -1121,7 +1121,7 @@ ExpandNewCoroutineExpression
 
 										stateBlock->statements.Add(nodeTryStat);
 									}
-									FOREACH(Ptr<WfStatement>, stat, node->statements)
+									FOREACH(Ptr<WfStatement>, stat, flowChartNode->statements)
 									{
 										if (stat.Cast<WfCoPauseStatement>())
 										{
@@ -1137,7 +1137,7 @@ ExpandNewCoroutineExpression
 										}
 									}
 
-									if (node == flowChart->lastNode)
+									if (flowChartNode == flowChart->lastNode)
 									{
 										/////////////////////////////////////////////////////////////////////////////
 										// SetStatus(Stopped);
@@ -1155,7 +1155,7 @@ ExpandNewCoroutineExpression
 										// <co-state> = THE_NEXT_STATE;
 										// continue;
 										/////////////////////////////////////////////////////////////////////////////
-										stateBlock->statements.Add(GenerateSetCoState(node->destination));
+										stateBlock->statements.Add(GenerateSetCoState(flowChartNode->destination));
 										stateBlock->statements.Add(MakePtr<WfContinueStatement>());
 									}
 								}
@@ -1164,6 +1164,7 @@ ExpandNewCoroutineExpression
 								lastStat = &ifStat->falseBranch;
 							}
 							whileBlock->statements.Add(firstIfStat);
+							tryBlock->statements.Add(whileStat);
 						}
 
 						/////////////////////////////////////////////////////////////////////////////
@@ -1209,6 +1210,8 @@ ExpandNewCoroutineExpression
 							}
 							catchBlock->statements.Add(ifStat);
 						}
+
+						block->statements.Add(tryStat);
 					}
 				}
 			}
