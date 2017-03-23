@@ -914,12 +914,184 @@ ExpandNewCoroutineExpression
 					funcDecl->statement = block;
 
 					{
-						auto stat = MakePtr<WfRaiseExceptionStatement>();
-						block->statements.Add(stat);
+						auto ifStat = MakePtr<WfIfStatement>();
+						{
+							auto refState = MakePtr<WfReferenceExpression>();
+							refState->name.value = L"Status";
 
-						auto strExpr = MakePtr<WfStringExpression>();
-						strExpr->value.value = L"Not Implemented!";
-						stat->expression = strExpr;
+							auto intState = MakePtr<WfReferenceExpression>();
+							intState->name.value = L"Waiting";
+
+							auto compExpr = MakePtr<WfBinaryExpression>();
+							compExpr->op = WfBinaryOperator::NE;
+							compExpr->first = refState;
+							compExpr->second = intState;
+
+							ifStat->expression = compExpr;
+						}
+
+						auto stateBlock = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = stateBlock;
+						{
+							auto exExpr = MakePtr<WfStringExpression>();
+							exExpr->value.value = L"Resume should be called only when the coroutine is in the waiting status.";
+
+							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+							raiseStat->expression = exExpr;
+							stateBlock->statements.Add(raiseStat);
+						}
+						block->statements.Add(ifStat);
+					}
+					{
+						auto refExpr = MakePtr<WfReferenceExpression>();
+						refExpr->name.value = L"Executing";
+
+						auto funcExpr = MakePtr<WfReferenceExpression>();
+						funcExpr->name.value = L"SetStatus";
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = funcExpr;
+						callExpr->arguments.Add(refExpr);
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = callExpr;
+						block->statements.Add(stat);
+					}
+					{
+						auto tryStat = MakePtr<WfTryStatement>();
+						auto tryBlock = MakePtr<WfBlockStatement>();
+						tryStat->protectedStatement = tryBlock;
+						{
+							auto whileStat = MakePtr<WfWhileStatement>();
+							{
+								auto trueExpr = MakePtr<WfLiteralExpression>();
+								trueExpr->value = WfLiteralValue::True;
+								whileStat->condition = trueExpr;
+							}
+
+							auto whileBlock = MakePtr<WfBlockStatement>();
+							whileStat->statement = whileBlock;
+
+							Ptr<WfStatement> firstIfStat;
+							Ptr<WfStatement>* lastStat = &firstIfStat;
+							for (vint i = 0; i < flowChart->nodes.Count(); i++)
+							{
+								auto node = flowChart->nodes[i];
+
+								auto ifStat = MakePtr<WfIfStatement>();
+								{
+									auto refState = MakePtr<WfReferenceExpression>();
+									refState->name.value = L"<co-state>";
+
+									auto intState = MakePtr<WfIntegerExpression>();
+									intState->value.value = itow(i);
+
+									auto compExpr = MakePtr<WfBinaryExpression>();
+									compExpr->op = WfBinaryOperator::EQ;
+									compExpr->first = refState;
+									compExpr->second = intState;
+
+									ifStat->expression = compExpr;
+								}
+
+								auto stateBlock = MakePtr<WfBlockStatement>();
+								ifStat->trueBranch = stateBlock;
+								{
+									if (node == flowChart->lastNode)
+									{
+										{
+											auto refExpr = MakePtr<WfReferenceExpression>();
+											refExpr->name.value = L"Stopped";
+
+											auto funcExpr = MakePtr<WfReferenceExpression>();
+											funcExpr->name.value = L"SetStatus";
+
+											auto callExpr = MakePtr<WfCallExpression>();
+											callExpr->function = funcExpr;
+											callExpr->arguments.Add(refExpr);
+
+											auto stat = MakePtr<WfExpressionStatement>();
+											stat->expression = callExpr;
+											stateBlock->statements.Add(stat);
+										}
+										{
+											auto returnStat = MakePtr<WfReturnStatement>();
+											stateBlock->statements.Add(returnStat);
+										}
+									}
+									else
+									{
+										auto refState = MakePtr<WfReferenceExpression>();
+										refState->name.value = L"<co-state>";
+
+										auto intState = MakePtr<WfIntegerExpression>();
+										intState->value.value = itow(flowChart->nodes.IndexOf(node->destination));
+
+										auto assignExpr = MakePtr<WfBinaryExpression>();
+										assignExpr->op = WfBinaryOperator::Assign;
+										assignExpr->first = refState;
+										assignExpr->second = intState;
+
+										auto stat = MakePtr<WfExpressionStatement>();
+										stat->expression = assignExpr;
+										stateBlock->statements.Add(stat);
+									}
+								}
+
+								*lastStat = ifStat;
+								lastStat = &ifStat->falseBranch;
+							}
+							whileBlock->statements.Add(firstIfStat);
+						}
+
+						tryStat->name.value = L"<co-ex>";
+						auto catchBlock = MakePtr<WfBlockStatement>();
+						tryStat->catchStatement = catchBlock;
+						{
+							auto refExpr = MakePtr<WfReferenceExpression>();
+							refExpr->name.value = L"<co-ex>";
+
+							auto funcExpr = MakePtr<WfReferenceExpression>();
+							funcExpr->name.value = L"SetFailure";
+
+							auto callExpr = MakePtr<WfCallExpression>();
+							callExpr->function = funcExpr;
+							callExpr->arguments.Add(refExpr);
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = callExpr;
+							catchBlock->statements.Add(stat);
+						}
+						{
+							auto refExpr = MakePtr<WfReferenceExpression>();
+							refExpr->name.value = L"Stopped";
+
+							auto funcExpr = MakePtr<WfReferenceExpression>();
+							funcExpr->name.value = L"SetStatus";
+
+							auto callExpr = MakePtr<WfCallExpression>();
+							callExpr->function = funcExpr;
+							callExpr->arguments.Add(refExpr);
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = callExpr;
+							catchBlock->statements.Add(stat);
+						}
+						{
+							auto refExpr = MakePtr<WfReferenceExpression>();
+							refExpr->name.value = L"<raise-exception>";
+
+							auto ifStat = MakePtr<WfIfStatement>();
+							ifStat->expression = refExpr;
+
+							auto trueBlock = MakePtr<WfBlockStatement>();
+							ifStat->trueBranch = trueBlock;
+							{
+								auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+								trueBlock->statements.Add(raiseStat);
+							}
+							catchBlock->statements.Add(ifStat);
+						}
 					}
 				}
 			}
