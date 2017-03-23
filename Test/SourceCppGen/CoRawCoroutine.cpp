@@ -102,7 +102,182 @@ Closures
 
 	void __vwsnc1_CoRawCoroutine_main__vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_)
 	{
-		throw ::vl::Exception(::vl::WString(L"Not Implemented!", false));
+		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
+		{
+			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+		}
+		::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
+		try
+		{
+			{
+				while (true)
+				{
+					if ((__vwsn_co_state_ == 0))
+					{
+						try
+						{
+							{
+								(__vwsn_co0_for_begin_i = 0);
+								(__vwsn_co1_for_end_i = 10);
+								(__vwsn_co2_i = __vwsn_co0_for_begin_i);
+								if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
+								{
+									(__vwsn_co_state_ = 4);
+									continue;
+								}
+							}
+						}
+						catch(const ::vl::Exception& __vwsne_1)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						catch(const ::vl::Error& __vwsne_1)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_1.Description());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						(__vwsn_co_state_ = 1);
+						continue;
+					}
+					else if ((__vwsn_co_state_ == 1))
+					{
+						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						return;
+					}
+					else if ((__vwsn_co_state_ == 2))
+					{
+						{
+							(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::This(__vwsn_co3_ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
+						}
+						(__vwsn_co_state_ = 1);
+						continue;
+					}
+					else if ((__vwsn_co_state_ == 3))
+					{
+						try
+						{
+							{
+								if ((__vwsn_co2_i == 4))
+								{
+									throw ::vl::Exception(::vl::WString(L"Enough!", false));
+								}
+								(__vwsn_co2_i = (__vwsn_co2_i + 1));
+								if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
+								{
+									(__vwsn_co_state_ = 4);
+									continue;
+								}
+							}
+						}
+						catch(const ::vl::Exception& __vwsne_2)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_2.Message());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						catch(const ::vl::Error& __vwsne_2)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_2.Description());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						(__vwsn_co_state_ = 1);
+						continue;
+					}
+					else if ((__vwsn_co_state_ == 4))
+					{
+						try
+						{
+							{
+								(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co2_i)) + ::vl::WString(L"]", false)));
+							}
+						}
+						catch(const ::vl::Exception& __vwsne_3)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_3.Message());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						catch(const ::vl::Error& __vwsne_3)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_3.Description());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						(__vwsn_co_state_ = 5);
+						continue;
+					}
+					else if ((__vwsn_co_state_ == 5))
+					{
+						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						(__vwsn_co_state_ = 3);
+						try
+						{
+							{
+								return;
+							}
+						}
+						catch(const ::vl::Exception& __vwsne_4)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_4.Message());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						catch(const ::vl::Error& __vwsne_4)
+						{
+							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_4.Description());
+							{
+								(__vwsn_co_state_ = 2);
+								continue;
+							}
+						}
+						(__vwsn_co_state_ = 3);
+						continue;
+					}
+				}
+			}
+		}
+		catch(const ::vl::Exception& __vwsne_0)
+		{
+			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+			{
+				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
+				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+				if (__vwsn_raise_exception_)
+				{
+					throw;
+				}
+			}
+		}
+		catch(const ::vl::Error& __vwsne_0)
+		{
+			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
+			{
+				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
+				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+				if (__vwsn_raise_exception_)
+				{
+					throw;
+				}
+			}
+		}
 	}
 
 }

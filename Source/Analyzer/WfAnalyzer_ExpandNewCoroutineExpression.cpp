@@ -611,17 +611,13 @@ GenerateFlowChart
 
 				void Visit(WfBlockStatement* node)override
 				{
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+					resultLast = resultHead;
+
 					FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
 					{
-						if (index == 0)
-						{
-							AppendAwaredStatement(catchNode, scopeContext, stat);
-						}
-						else
-						{
-							auto pair = Execute(resultLast, catchNode, scopeContext, stat);
-							resultLast = pair.value;
-						}
+						auto pair = Execute(resultLast, catchNode, scopeContext, stat);
+						resultLast = pair.value;
 					}
 				}
 
@@ -689,7 +685,8 @@ GenerateFlowChart
 			{
 				auto flowChart = MakePtr<FlowChart>();
 				SortedList<WfStatement*> sortedAwaredStatements;
-				CopyFrom(sortedAwaredStatements, awaredStatements);
+				CopyFrom(sortedAwaredStatements, awaredStatements, true);
+				CopyFrom(sortedAwaredStatements, awaredVariables, true);
 
 				auto endNode = flowChart->CreateNode(nullptr);
 				GenerateFlowChartStatementVisitor::ScopeContext context;
@@ -938,11 +935,7 @@ ExpandNewCoroutineExpression
 					auto refExpr = MakePtr<WfReferenceExpression>();
 					refExpr->name.value = L"Waiting";
 
-					auto inferExpr = MakePtr<WfInferExpression>();
-					inferExpr->expression = refExpr;
-					inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<CoroutineStatus>::CreateTypeInfo().Obj());
-
-					propDecl->expression = inferExpr;
+					propDecl->expression = refExpr;
 				}
 
 				/////////////////////////////////////////////////////////////////////////////
@@ -1022,16 +1015,20 @@ ExpandNewCoroutineExpression
 					{
 						auto ifStat = MakePtr<WfIfStatement>();
 						{
-							auto refState = MakePtr<WfReferenceExpression>();
-							refState->name.value = L"Status";
+							auto refStatus = MakePtr<WfReferenceExpression>();
+							refStatus->name.value = L"Status";
 
-							auto intState = MakePtr<WfReferenceExpression>();
-							intState->name.value = L"Waiting";
+							auto waitingStatus = MakePtr<WfReferenceExpression>();
+							waitingStatus->name.value = L"Waiting";
+
+							auto inferExpr = MakePtr<WfInferExpression>();
+							inferExpr->expression = waitingStatus;
+							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<CoroutineStatus>::CreateTypeInfo().Obj());
 
 							auto compExpr = MakePtr<WfBinaryExpression>();
 							compExpr->op = WfBinaryOperator::NE;
-							compExpr->first = refState;
-							compExpr->second = intState;
+							compExpr->first = refStatus;
+							compExpr->second = inferExpr;
 
 							ifStat->expression = compExpr;
 						}
@@ -1110,7 +1107,9 @@ ExpandNewCoroutineExpression
 									{
 										/////////////////////////////////////////////////////////////////////////////
 										// <co-state> = THE_NEXT_STATE;
+										// SetStatus(Waiting);
 										/////////////////////////////////////////////////////////////////////////////
+										stateBlock->statements.Add(GenerateSetStatus(L"Waiting"));
 										stateBlock->statements.Add(GenerateSetCoState(flowChartNode->pauseDestination));
 									}
 
