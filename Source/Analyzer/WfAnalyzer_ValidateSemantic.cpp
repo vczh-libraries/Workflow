@@ -656,7 +656,7 @@ ValidateSemantic(Statement)
 						{
 							manager->errors.Add(WfErrors::NullCannotImplicitlyConvertToType(node->expression.Obj(), symbol->typeInfo.Obj()));
 						}
-						GetExpressionType(manager, node->expression, 0);
+						GetExpressionType(manager, node->expression, nullptr);
 					}
 					else
 					{

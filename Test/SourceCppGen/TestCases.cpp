@@ -58,6 +58,7 @@
 #include "CoRawCoroutine.h"
 #include "CoRawCoroutine2.h"
 #include "CoRawCoroutine3.h"
+#include "CoRawCoroutine4.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -602,6 +603,15 @@ TEST_CASE(CoRawCoroutine3)
 {
 	WString expected = L"[+0][-0]!![-1][*]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine3::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoRawCoroutine4)
+{
+	WString expected = L"[+0][-0][+1][-1][-2][*]";
+	WString actual = ::vl_workflow_global::CoRawCoroutine4::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
