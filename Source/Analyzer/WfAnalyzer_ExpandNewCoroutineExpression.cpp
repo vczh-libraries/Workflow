@@ -239,10 +239,12 @@ GenerateFlowChart
 
 			class FlowChart : public Object
 			{
+				typedef Dictionary<WfTryStatement*, Ptr<WfLexicalSymbol>>		TempExVarMap;
 			public:
 				List<Ptr<FlowChartNode>>				nodes;
 				FlowChartNode*							headNode = nullptr;
 				FlowChartNode*							lastNode = nullptr;
+				TempExVarMap							tempExVars;
 
 				FlowChartNode* CreateNode(FlowChartNode* catchNode)
 				{
@@ -530,14 +532,35 @@ GenerateFlowChart
 					loopEnd->destination = resultLast;
 				}
 
+				WfLexicalSymbol* GetExceptionVariableSymbol(WfTryStatement* node)
+				{
+					if (node->catchStatement)
+					{
+						auto scope = manager->nodeScopes[node->catchStatement.Obj()]->parentScope.Obj();
+						auto symbol = scope->symbols[node->name.value][0];
+						return symbol.Obj();
+					}
+					else
+					{
+						vint index = flowChart->tempExVars.Keys().IndexOf(node);
+						if (index == -1)
+						{
+							auto symbol = MakePtr<WfLexicalSymbol>(nullptr);
+							symbol->name = L"ex";
+							symbol->typeInfo = TypeInfoRetriver<Ptr<IValueException>>::CreateTypeInfo();
+							flowChart->tempExVars.Add(node, symbol);
+
+							referenceRenaming.Add(symbol.Obj(), L"<co-tempexvar" + itow(flowChart->tempExVars.Count() - 1) + L">ex");
+							return symbol.Obj();
+						}
+						return flowChart->tempExVars.Values()[index].Obj();
+					}
+				}
+
 				Pair<FlowChartNode*, FlowChartNode*> GenerateCatch(WfTryStatement* node, FlowChartNode* catchNode)
 				{
 					auto pair = Execute(nullptr, catchNode, scopeContext, node->catchStatement);
-
-					auto scope = manager->nodeScopes[node->catchStatement.Obj()]->parentScope.Obj();
-					auto symbol = scope->symbols[node->name.value][0];
-					pair.key->exceptionVariable = symbol.Obj();
-
+					pair.key->exceptionVariable = GetExceptionVariableSymbol(node);
 					return pair;
 				}
 
@@ -551,12 +574,10 @@ GenerateFlowChart
 					auto pair = Execute(nullptr, catchNode, scopeContext, node->finallyStatement);
 					auto raiseNode = flowChart->CreateNode(catchNode);
 					{
-						auto scope = manager->nodeScopes[node->catchStatement.Obj()]->parentScope.Obj();
-						auto symbol = scope->symbols[node->name.value][0];
-						pair.key->exceptionVariable = symbol.Obj();
+						pair.key->exceptionVariable = GetExceptionVariableSymbol(node);
 
 						auto refExpr = MakePtr<WfReferenceExpression>();
-						refExpr->name.value = referenceRenaming[symbol.Obj()];
+						refExpr->name.value = referenceRenaming[pair.key->exceptionVariable];
 
 						auto memberExpr = MakePtr<WfMemberExpression>();
 						memberExpr->parent = refExpr;

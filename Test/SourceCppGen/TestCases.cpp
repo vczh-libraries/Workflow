@@ -57,6 +57,7 @@
 #include "WorkflowAttributes.h"
 #include "CoRawCoroutine.h"
 #include "CoRawCoroutine2.h"
+#include "CoRawCoroutine3.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -592,6 +593,15 @@ TEST_CASE(CoRawCoroutine2)
 {
 	WString expected = L"[+0][-0]![*]![+2][-1]![*]![-2]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoRawCoroutine3)
+{
+	WString expected = L"[+0][-0]!![-1][*]";
+	WString actual = ::vl_workflow_global::CoRawCoroutine3::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
