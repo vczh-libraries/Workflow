@@ -185,17 +185,17 @@ ExpandForEachStatement
 						decl->name.value = varEnd;
 						decl->type = GetTypeFromTypeInfo(result.type.Obj());
 						decl->expression = CopyExpression(range->end);
-						if (range->beginBoundary == WfRangeBoundary::Exclusive)
+						if (range->endBoundary == WfRangeBoundary::Exclusive)
 						{
 							auto one = MakePtr<WfIntegerExpression>();
 							one->value.value = L"1";
 
-							auto addExpr = MakePtr<WfBinaryExpression>();
-							addExpr->first = decl->expression;
-							addExpr->second = one;
-							addExpr->op = WfBinaryOperator::Sub;
+							auto subExpr = MakePtr<WfBinaryExpression>();
+							subExpr->first = decl->expression;
+							subExpr->second = one;
+							subExpr->op = WfBinaryOperator::Sub;
 
-							decl->expression = addExpr;
+							decl->expression = subExpr;
 						}
 
 						auto stat = MakePtr<WfVariableStatement>();

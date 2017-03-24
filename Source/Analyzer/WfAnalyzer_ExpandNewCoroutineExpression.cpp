@@ -553,12 +553,17 @@ GenerateFlowChart
 					{
 						auto scope = manager->nodeScopes[node->catchStatement.Obj()]->parentScope.Obj();
 						auto symbol = scope->symbols[node->name.value][0];
+						pair.key->exceptionVariable = symbol.Obj();
 
 						auto refExpr = MakePtr<WfReferenceExpression>();
 						refExpr->name.value = referenceRenaming[symbol.Obj()];
 
+						auto memberExpr = MakePtr<WfMemberExpression>();
+						memberExpr->parent = refExpr;
+						memberExpr->name.value = L"Message";
+
 						auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
-						raiseStat->expression = refExpr;
+						raiseStat->expression = memberExpr;
 
 						SetCodeRange((Ptr<WfStatement>)raiseStat, node->finallyStatement->codeRange);
 						raiseNode->statements.Add(raiseStat);
@@ -604,7 +609,7 @@ GenerateFlowChart
 					{
 						auto pairFinallyAndRaise = GenerateFinallyAndRaise(node, catchNode);
 						auto pairCatch = GenerateCatch(node, pairFinallyAndRaise.key);
-						AppendAwaredStatement(pairFinallyAndRaise.key, &tryContext, node->protectedStatement);
+						AppendAwaredStatement(pairCatch.key, &tryContext, node->protectedStatement);
 						auto pairFinally = GenerateFinally(node, catchNode);
 
 						auto endNode = flowChart->CreateNode(catchNode);
