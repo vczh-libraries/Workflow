@@ -164,8 +164,6 @@ Closures
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 2);
 						return;
-						(__vwsn_co_state_ = 2);
-						continue;
 					}
 					else if ((__vwsn_co_state_ == 6))
 					{

@@ -427,6 +427,7 @@ GenerateFlowChart
 				void Visit(WfReturnStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Function, false);
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
 					resultLast->destination = targetContext->leaveNode;
 				}
 
@@ -777,7 +778,7 @@ GenerateFlowChart
 				return flowChart;
 			}
 
-			void RemoveUnnecessaryNodes(Ptr<FlowChart> flowChart)
+			void RemoveUnnecessaryNodesPass(Ptr<FlowChart> flowChart)
 			{
 				Dictionary<FlowChartNode*, vint> enterCounts;
 				{
@@ -893,10 +894,26 @@ GenerateFlowChart
 #undef MERGE_FLOW_CHART_NODE
 
 				vint headNodeIndex = keepingNodes.IndexOf(flowChart->headNode);
-				auto headNode = keepingNodes[headNodeIndex];
-				keepingNodes.RemoveAt(headNodeIndex);
-				keepingNodes.Insert(0, headNode);
+				if (headNodeIndex != 0)
+				{
+					auto headNode = keepingNodes[headNodeIndex];
+					keepingNodes.RemoveAt(headNodeIndex);
+					keepingNodes.Insert(0, headNode);
+				}
 				CopyFrom(flowChart->nodes, keepingNodes);
+			}
+
+			void RemoveUnnecessaryNodes(Ptr<FlowChart> flowChart)
+			{
+				RemoveUnnecessaryNodesPass(flowChart);
+				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				{
+					if (node->pauseDestination && node->statements.Count() > 0 && node->statements[node->statements.Count() - 1].Cast<WfCoPauseStatement>())
+					{
+						node->destination = nullptr;
+					}
+				}
+				RemoveUnnecessaryNodesPass(flowChart);
 			}
 
 /***********************************************************************
@@ -1234,14 +1251,29 @@ ExpandNewCoroutineExpression
 										stateBlock->statements.Add(nodeTryStat);
 									}
 
+									bool exited = false;
 									FOREACH(Ptr<WfStatement>, stat, flowChartNode->statements)
 									{
 										if (stat.Cast<WfCoPauseStatement>())
 										{
+											exited = true;
 											/////////////////////////////////////////////////////////////////////////////
 											// return;
 											/////////////////////////////////////////////////////////////////////////////
 											nodeBlock->statements.Add(MakePtr<WfReturnStatement>());
+										}
+										else if (stat.Cast<WfReturnStatement>())
+										{
+											exited = true;
+											/////////////////////////////////////////////////////////////////////////////
+											// SetStatus(Stopped);
+											// return;
+											/////////////////////////////////////////////////////////////////////////////
+											stateBlock->statements.Add(GenerateSetStatus(L"Stopped"));
+											{
+												auto returnStat = MakePtr<WfReturnStatement>();
+												stateBlock->statements.Add(returnStat);
+											}
 										}
 										else
 										{
@@ -1263,26 +1295,29 @@ ExpandNewCoroutineExpression
 										nodeBlock->statements.Add(ifStat);
 									}
 
-									if (flowChartNode == flowChart->lastNode)
+									if (!exited)
 									{
-										/////////////////////////////////////////////////////////////////////////////
-										// SetStatus(Stopped);
-										// return;
-										/////////////////////////////////////////////////////////////////////////////
-										stateBlock->statements.Add(GenerateSetStatus(L"Stopped"));
+										if (flowChartNode == flowChart->lastNode)
 										{
-											auto returnStat = MakePtr<WfReturnStatement>();
-											stateBlock->statements.Add(returnStat);
+											/////////////////////////////////////////////////////////////////////////////
+											// SetStatus(Stopped);
+											// return;
+											/////////////////////////////////////////////////////////////////////////////
+											stateBlock->statements.Add(GenerateSetStatus(L"Stopped"));
+											{
+												auto returnStat = MakePtr<WfReturnStatement>();
+												stateBlock->statements.Add(returnStat);
+											}
 										}
-									}
-									else
-									{
-										/////////////////////////////////////////////////////////////////////////////
-										// <co-state> = THE_NEXT_STATE;
-										// continue;
-										/////////////////////////////////////////////////////////////////////////////
-										stateBlock->statements.Add(GenerateSetCoState(flowChartNode->destination));
-										stateBlock->statements.Add(MakePtr<WfContinueStatement>());
+										else
+										{
+											/////////////////////////////////////////////////////////////////////////////
+											// <co-state> = THE_NEXT_STATE;
+											// continue;
+											/////////////////////////////////////////////////////////////////////////////
+											stateBlock->statements.Add(GenerateSetCoState(flowChartNode->destination));
+											stateBlock->statements.Add(MakePtr<WfContinueStatement>());
+										}
 									}
 								}
 

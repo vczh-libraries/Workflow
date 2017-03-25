@@ -256,8 +256,6 @@ Closures
 								continue;
 							}
 						}
-						(__vwsn_co_state_ = 3);
-						continue;
 					}
 				}
 			}

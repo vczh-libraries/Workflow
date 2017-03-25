@@ -248,8 +248,6 @@ Closures
 								continue;
 							}
 						}
-						(__vwsn_co_state_ = 8);
-						continue;
 					}
 					else if ((__vwsn_co_state_ == 7))
 					{
