@@ -193,6 +193,11 @@ Closures
 									(__vwsn_co_state_ = 6);
 									continue;
 								}
+								if ((__vwsn_co0_switch_0 == 1))
+								{
+									(__vwsn_co_state_ = 8);
+									continue;
+								}
 							}
 						}
 						catch(const ::vl::Exception& __vwsne_2)
@@ -213,7 +218,7 @@ Closures
 								continue;
 							}
 						}
-						(__vwsn_co_state_ = 8);
+						(__vwsn_co_state_ = 9);
 						continue;
 					}
 					else if ((__vwsn_co_state_ == 6))
@@ -281,7 +286,6 @@ Closures
 						try
 						{
 							{
-								if ((__vwsn_co0_switch_0 == 1))
 								{
 									throw ::vl::Exception(::vl::WString(L"*", false));
 								}

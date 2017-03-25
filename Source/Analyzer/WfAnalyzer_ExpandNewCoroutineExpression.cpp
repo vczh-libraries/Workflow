@@ -440,46 +440,40 @@ GenerateFlowChart
 					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
 				}
 
-				void Visit(WfIfStatement* node)override
+				void GenerateIfWithVar(WfIfStatement* node)
 				{
 					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
 					{
 						auto branch = MakePtr<FlowChartBranch>();
 						resultHead->branches.Add(branch);
-						if (node->name.value == L"")
+
+						auto scope = manager->nodeScopes[node];
+						auto symbol = scope->symbols[node->name.value][0].Obj();
 						{
-							branch->condition = COPY_AST(node->expression);
+							auto refExpr = MakePtr<WfReferenceExpression>();
+							refExpr->name.value = referenceRenaming[symbol];
+
+							auto assignExpr = MakePtr<WfBinaryExpression>();
+							assignExpr->op = WfBinaryOperator::Assign;
+							assignExpr->first = refExpr;
+							assignExpr->second = COPY_AST(node->expression);
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = assignExpr;
+
+							SetCodeRange((Ptr<WfStatement>)stat, node->expression->codeRange);
+							resultHead->statements.Add(stat);
 						}
-						else
 						{
-							auto scope = manager->nodeScopes[node];
-							auto symbol = scope->symbols[node->name.value][0].Obj();
-							{
-								auto refExpr = MakePtr<WfReferenceExpression>();
-								refExpr->name.value = referenceRenaming[symbol];
+							auto refExpr = MakePtr<WfReferenceExpression>();
+							refExpr->name.value = referenceRenaming[symbol];
 
-								auto assignExpr = MakePtr<WfBinaryExpression>();
-								assignExpr->op = WfBinaryOperator::Assign;
-								assignExpr->first = refExpr;
-								assignExpr->second = COPY_AST(node->expression);
+							auto testExpr = MakePtr<WfTypeTestingExpression>();
+							testExpr->test = WfTypeTesting::IsNotNull;
+							testExpr->expression = refExpr;
 
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assignExpr;
-
-								SetCodeRange((Ptr<WfStatement>)stat, node->expression->codeRange);
-								resultHead->statements.Add(stat);
-							}
-							{
-								auto refExpr = MakePtr<WfReferenceExpression>();
-								refExpr->name.value = referenceRenaming[symbol];
-
-								auto testExpr = MakePtr<WfTypeTestingExpression>();
-								testExpr->test = WfTypeTesting::IsNotNull;
-								testExpr->expression = refExpr;
-
-								SetCodeRange((Ptr<WfExpression>)testExpr, node->expression->codeRange);
-								branch->condition = testExpr;
-							}
+							SetCodeRange((Ptr<WfExpression>)testExpr, node->expression->codeRange);
+							branch->condition = testExpr;
 						}
 					}
 					resultLast = flowChart->CreateNode(catchNode);
@@ -489,8 +483,8 @@ GenerateFlowChart
 						pair.value->destination = resultLast;
 						resultHead->branches[0]->destination = pair.key;
 					}
-					
-					if(node->falseBranch)
+
+					if (node->falseBranch)
 					{
 						auto pair = Execute(nullptr, catchNode, scopeContext, node->falseBranch);
 						pair.value->destination = resultLast;
@@ -499,6 +493,56 @@ GenerateFlowChart
 					else
 					{
 						resultHead->destination = resultLast;
+					}
+				}
+
+				void GenerateIfWithoutVar(WfIfStatement* node)
+				{
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+					resultLast = flowChart->CreateNode(catchNode);
+
+					while (true)
+					{
+						auto branch = MakePtr<FlowChartBranch>();
+						resultHead->branches.Add(branch);
+						branch->condition = COPY_AST(node->expression);
+
+						auto pair = Execute(nullptr, catchNode, scopeContext, node->trueBranch);
+						pair.value->destination = resultLast;
+						branch->destination = pair.key;
+
+						auto next = dynamic_cast<WfIfStatement*>(node->falseBranch.Obj());
+						if (next && next->name.value == L"")
+						{
+							node = next;
+						}
+						else
+						{
+							break;
+						}
+					}
+
+					if (node->falseBranch)
+					{
+						auto pair = Execute(nullptr, catchNode, scopeContext, node->falseBranch);
+						pair.value->destination = resultLast;
+						resultHead->destination = pair.key;
+					}
+					else
+					{
+						resultHead->destination = resultLast;
+					}
+				}
+
+				void Visit(WfIfStatement* node)override
+				{
+					if (node->name.value == L"")
+					{
+						GenerateIfWithoutVar(node);
+					}
+					else
+					{
+						GenerateIfWithVar(node);
 					}
 				}
 
