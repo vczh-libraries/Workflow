@@ -126,12 +126,12 @@ Closures
 						(__vwsn_co_state_ = 1);
 						continue;
 					}
-					else if ((__vwsn_co_state_ == 1))
+					if ((__vwsn_co_state_ == 1))
 					{
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
-					else if ((__vwsn_co_state_ == 2))
+					if ((__vwsn_co_state_ == 2))
 					{
 						(__vwsn_co2_i = (__vwsn_co2_i + 1));
 						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
@@ -142,7 +142,7 @@ Closures
 						(__vwsn_co_state_ = 1);
 						continue;
 					}
-					else if ((__vwsn_co_state_ == 3))
+					if ((__vwsn_co_state_ == 3))
 					{
 						(__vwsn_co3_o = ((__vwsn_co2_i == 2) ? ::vl::Ptr<::vl::reflection::description::IValueList>() : (::vl::__vwsn::CreateList().Add(0)).list));
 						if (static_cast<bool>(__vwsn_co3_o))
@@ -154,13 +154,13 @@ Closures
 						(__vwsn_co_state_ = 5);
 						continue;
 					}
-					else if ((__vwsn_co_state_ == 4))
+					if ((__vwsn_co_state_ == 4))
 					{
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 2);
 						return;
 					}
-					else if ((__vwsn_co_state_ == 5))
+					if ((__vwsn_co_state_ == 5))
 					{
 						{
 							throw ::vl::Exception(::vl::WString(L"*", false));

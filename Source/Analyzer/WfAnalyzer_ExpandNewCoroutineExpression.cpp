@@ -987,6 +987,55 @@ GenerateSetCoState
 			};
 
 /***********************************************************************
+ExpandExceptionDestination
+***********************************************************************/
+
+			Ptr<WfBlockStatement> ExpandExceptionDestination(FlowChartNode* catchNode, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, List<FlowChartNode*>& nodeOrders, Ptr<WfBlockStatement> stateBlock)
+			{
+				/////////////////////////////////////////////////////////////////////////////
+				// try { ... }
+				/////////////////////////////////////////////////////////////////////////////
+
+				auto nodeTryStat = MakePtr<WfTryStatement>();
+				auto nodeBlock = MakePtr<WfBlockStatement>();
+				nodeTryStat->protectedStatement = nodeBlock;
+
+				/////////////////////////////////////////////////////////////////////////////
+				// catch(<co-ex>)
+				// {
+				//      THE_EXCEPTION_VARIABLE = <co-ex>;
+				//      <co-state> = THE_EXCEPTION_STATE;
+				//      continue;
+				// }
+				/////////////////////////////////////////////////////////////////////////////
+
+				nodeTryStat->name.value = L"<co-ex>";
+				auto catchBlock = MakePtr<WfBlockStatement>();
+				nodeTryStat->catchStatement = catchBlock;
+				{
+					auto refTarget = MakePtr<WfReferenceExpression>();
+					refTarget->name.value = referenceRenaming[catchNode->exceptionVariable];
+
+					auto refEx = MakePtr<WfReferenceExpression>();
+					refEx->name.value = L"<co-ex>";
+
+					auto assignExpr = MakePtr<WfBinaryExpression>();
+					assignExpr->op = WfBinaryOperator::Assign;
+					assignExpr->first = refTarget;
+					assignExpr->second = refEx;
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = assignExpr;
+					catchBlock->statements.Add(stat);
+				}
+				catchBlock->statements.Add(GenerateSetCoState(nodeOrders, catchNode));
+				catchBlock->statements.Add(MakePtr<WfContinueStatement>());
+
+				stateBlock->statements.Add(nodeTryStat);
+				return nodeBlock;
+			}
+
+/***********************************************************************
 ExpandFlowChartNode
 ***********************************************************************/
 
@@ -1005,46 +1054,7 @@ ExpandFlowChartNode
 				auto nodeBlock = stateBlock;
 				if (flowChartNode->exceptionDestination && parentCatchNode != flowChartNode->exceptionDestination)
 				{
-					/////////////////////////////////////////////////////////////////////////////
-					// try { ... }
-					/////////////////////////////////////////////////////////////////////////////
-
-					auto nodeTryStat = MakePtr<WfTryStatement>();
-					nodeBlock = MakePtr<WfBlockStatement>();
-					nodeTryStat->protectedStatement = nodeBlock;
-
-					/////////////////////////////////////////////////////////////////////////////
-					// catch(<co-ex>)
-					// {
-					//      THE_EXCEPTION_VARIABLE = <co-ex>;
-					//      <co-state> = THE_EXCEPTION_STATE;
-					//      continue;
-					// }
-					/////////////////////////////////////////////////////////////////////////////
-
-					nodeTryStat->name.value = L"<co-ex>";
-					auto catchBlock = MakePtr<WfBlockStatement>();
-					nodeTryStat->catchStatement = catchBlock;
-					{
-						auto refTarget = MakePtr<WfReferenceExpression>();
-						refTarget->name.value = referenceRenaming[flowChartNode->exceptionDestination->exceptionVariable];
-
-						auto refEx = MakePtr<WfReferenceExpression>();
-						refEx->name.value = L"<co-ex>";
-
-						auto assignExpr = MakePtr<WfBinaryExpression>();
-						assignExpr->op = WfBinaryOperator::Assign;
-						assignExpr->first = refTarget;
-						assignExpr->second = refEx;
-
-						auto stat = MakePtr<WfExpressionStatement>();
-						stat->expression = assignExpr;
-						catchBlock->statements.Add(stat);
-					}
-					catchBlock->statements.Add(GenerateSetCoState(nodeOrders, flowChartNode->exceptionDestination));
-					catchBlock->statements.Add(MakePtr<WfContinueStatement>());
-
-					stateBlock->statements.Add(nodeTryStat);
+					nodeBlock = ExpandExceptionDestination(flowChartNode->exceptionDestination, referenceRenaming, nodeOrders, stateBlock);
 				}
 
 				bool exited = false;
@@ -1348,40 +1358,56 @@ ExpandNewCoroutineExpression
 							auto whileBlock = MakePtr<WfBlockStatement>();
 							whileStat->statement = whileBlock;
 
-							Ptr<WfStatement> firstIfStat;
-							Ptr<WfStatement>* lastStat = &firstIfStat;
-							FOREACH_INDEXER(FlowChartNode*, flowChartNode, index, nodeOrders)
+							using GroupPair = Pair<FlowChartNode*, LazyList<FlowChartNode*>>;
+							auto nodeByCatches = From(nodeOrders)
+								.GroupBy([](FlowChartNode* node)
+								{
+									return node->exceptionDestination;
+								})
+								.OrderBy([&](const GroupPair& p1, const GroupPair& p2)
+								{
+									return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
+								});
+
+							FOREACH(GroupPair, group, nodeByCatches)
 							{
-								/////////////////////////////////////////////////////////////////////////////
-								// if (<co-state> == THE_CURRENT_STATE) { ... }
-								/////////////////////////////////////////////////////////////////////////////
-
-								auto ifStat = MakePtr<WfIfStatement>();
+								auto catchNode = group.key;
+								auto groupBlock = whileBlock;
+								if (catchNode)
 								{
-									auto refState = MakePtr<WfReferenceExpression>();
-									refState->name.value = L"<co-state>";
-
-									auto intState = MakePtr<WfIntegerExpression>();
-									intState->value.value = itow(index);
-
-									auto compExpr = MakePtr<WfBinaryExpression>();
-									compExpr->op = WfBinaryOperator::EQ;
-									compExpr->first = refState;
-									compExpr->second = intState;
-
-									ifStat->expression = compExpr;
+									groupBlock = ExpandExceptionDestination(catchNode, referenceRenaming, nodeOrders, whileBlock);
 								}
 
-								auto stateBlock = MakePtr<WfBlockStatement>();
-								ifStat->trueBranch = stateBlock;
+								FOREACH(FlowChartNode*, flowChartNode, group.value)
 								{
-									ExpandFlowChartNode(flowChart, flowChartNode, referenceRenaming, nodeOrders, nullptr, stateBlock);
-								}
+									/////////////////////////////////////////////////////////////////////////////
+									// if (<co-state> == THE_CURRENT_STATE) { ... }
+									/////////////////////////////////////////////////////////////////////////////
 
-								*lastStat = ifStat;
-								lastStat = &ifStat->falseBranch;
+									auto ifStat = MakePtr<WfIfStatement>();
+									groupBlock->statements.Add(ifStat);
+									{
+										auto refState = MakePtr<WfReferenceExpression>();
+										refState->name.value = L"<co-state>";
+
+										auto intState = MakePtr<WfIntegerExpression>();
+										intState->value.value = itow(nodeOrders.IndexOf(flowChartNode));
+
+										auto compExpr = MakePtr<WfBinaryExpression>();
+										compExpr->op = WfBinaryOperator::EQ;
+										compExpr->first = refState;
+										compExpr->second = intState;
+
+										ifStat->expression = compExpr;
+									}
+
+									auto stateBlock = MakePtr<WfBlockStatement>();
+									ifStat->trueBranch = stateBlock;
+									{
+										ExpandFlowChartNode(flowChart, flowChartNode, referenceRenaming, nodeOrders, catchNode, stateBlock);
+									}
+								}
 							}
-							whileBlock->statements.Add(firstIfStat);
 							tryBlock->statements.Add(whileStat);
 						}
 
