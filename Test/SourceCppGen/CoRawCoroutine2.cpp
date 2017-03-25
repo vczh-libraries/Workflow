@@ -179,15 +179,6 @@ Closures
 							continue;
 						}
 					}
-					catch(const ::vl::Error& __vwsne_1)
-					{
-						auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_1.Description());
-						{
-							(__vwsn_co4_ex = __vwsn_co_ex_);
-							(__vwsn_co_state_ = 3);
-							continue;
-						}
-					}
 					try
 					{
 						{
@@ -228,33 +219,12 @@ Closures
 							continue;
 						}
 					}
-					catch(const ::vl::Error& __vwsne_2)
-					{
-						auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_2.Description());
-						{
-							(__vwsn_co4_ex = __vwsn_co_ex_);
-							(__vwsn_co_state_ = 4);
-							continue;
-						}
-					}
 				}
 			}
 		}
 		catch(const ::vl::Exception& __vwsne_0)
 		{
 			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-			{
-				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
-				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
-				if (__vwsn_raise_exception_)
-				{
-					throw;
-				}
-			}
-		}
-		catch(const ::vl::Error& __vwsne_0)
-		{
-			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 			{
 				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
 				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);

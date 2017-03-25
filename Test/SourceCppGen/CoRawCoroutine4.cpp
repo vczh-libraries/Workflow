@@ -183,18 +183,6 @@ Closures
 				}
 			}
 		}
-		catch(const ::vl::Error& __vwsne_0)
-		{
-			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
-			{
-				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
-				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
-				if (__vwsn_raise_exception_)
-				{
-					throw;
-				}
-			}
-		}
 	}
 
 }

@@ -1203,11 +1203,6 @@ WfRuntimeThreadContext
 					RaiseException(ex.Message(), false);
 					return WfRuntimeExecutionAction::ExecuteInstruction;
 				}
-				catch (const Error& ex)
-				{
-					RaiseException(ex.Description(), false);
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				}
 			}
 
 #undef INTERNAL_ERROR

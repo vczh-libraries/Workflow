@@ -72,9 +72,6 @@ Global Functions
 						catch(const ::vl::Exception&)
 						{
 						}
-						catch(const ::vl::Error&)
-						{
-						}
 					}
 				}
 				(x = (x + 1));
@@ -107,9 +104,6 @@ Global Functions
 						catch(const ::vl::Exception&)
 						{
 						}
-						catch(const ::vl::Error&)
-						{
-						}
 					}
 				}
 				(x = (x + 1));
@@ -133,9 +127,6 @@ Global Functions
 				}
 			}
 			catch(const ::vl::Exception&)
-			{
-			}
-			catch(const ::vl::Error&)
 			{
 			}
 		}
@@ -179,25 +170,16 @@ Global Functions
 									catch(const ::vl::Exception&)
 									{
 									}
-									catch(const ::vl::Error&)
-									{
-									}
 								}
 							}
 						}
 						catch(const ::vl::Exception&)
 						{
 						}
-						catch(const ::vl::Error&)
-						{
-						}
 					}
 				}
 			}
 			catch(const ::vl::Exception&)
-			{
-			}
-			catch(const ::vl::Error&)
 			{
 			}
 		}

@@ -60,13 +60,6 @@ Global Functions
 				(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 			}
 		}
-		catch(const ::vl::Error& __vwsne_0)
-		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
-			{
-				(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
-			}
-		}
 	}
 
 	void TryCatch::Test2()
@@ -87,13 +80,6 @@ Global Functions
 			catch(const ::vl::Exception& __vwsne_0)
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-				{
-					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
-				}
-			}
-			catch(const ::vl::Error& __vwsne_0)
-			{
-				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 				}
@@ -139,27 +125,12 @@ Global Functions
 								throw;
 							}
 						}
-						catch(const ::vl::Error& __vwsne_1)
-						{
-							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Description());
-							{
-								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
-								throw;
-							}
-						}
 					}
 				}
 			}
 			catch(const ::vl::Exception& __vwsne_0)
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-				{
-					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
-				}
-			}
-			catch(const ::vl::Error& __vwsne_0)
-			{
-				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}
@@ -199,27 +170,12 @@ Global Functions
 								throw;
 							}
 						}
-						catch(const ::vl::Error& __vwsne_1)
-						{
-							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Description());
-							{
-								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
-								throw;
-							}
-						}
 					}
 				}
 			}
 			catch(const ::vl::Exception& __vwsne_0)
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-				{
-					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
-				}
-			}
-			catch(const ::vl::Error& __vwsne_0)
-			{
-				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
 				{
 					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
 				}

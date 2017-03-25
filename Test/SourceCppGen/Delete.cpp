@@ -57,13 +57,6 @@ Global Functions
 				return false;
 			}
 		}
-		catch(const ::vl::Error& __vwsne_0)
-		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Description());
-			{
-				return false;
-			}
-		}
 	}
 
 	::vl::WString Delete::main()
