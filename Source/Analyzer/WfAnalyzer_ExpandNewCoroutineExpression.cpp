@@ -917,7 +917,7 @@ GenerateFlowChart
 			}
 
 /***********************************************************************
-ExpandNewCoroutineExpression
+GenerateSetStatus
 ***********************************************************************/
 
 			Ptr<WfStatement> GenerateSetStatus(const WString& status)
@@ -938,6 +938,10 @@ ExpandNewCoroutineExpression
 				return stat;
 			};
 
+/***********************************************************************
+GenerateSetCoState
+***********************************************************************/
+
 			Ptr<WfStatement> GenerateSetCoState(Ptr<FlowChart> flowChart, FlowChartNode* node)
 			{
 				auto refState = MakePtr<WfReferenceExpression>();
@@ -956,6 +960,10 @@ ExpandNewCoroutineExpression
 
 				return stat;
 			};
+
+/***********************************************************************
+ExpandFlowChartNode
+***********************************************************************/
 
 			void ExpandFlowChartNode(Ptr<FlowChart> flowChart, FlowChartNode* flowChartNode, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, Ptr<WfBlockStatement> stateBlock)
 			{
@@ -1083,6 +1091,10 @@ ExpandNewCoroutineExpression
 					}
 				}
 			}
+
+/***********************************************************************
+ExpandNewCoroutineExpression
+***********************************************************************/
 
 			void ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node)
 			{
