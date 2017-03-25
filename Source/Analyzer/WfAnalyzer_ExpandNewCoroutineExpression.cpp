@@ -207,7 +207,7 @@ FindCoroutineReferenceRenaming
 			}
 
 /***********************************************************************
-GenerateFlowChart
+FlowChart
 ***********************************************************************/
 
 			class FlowChartNode;
@@ -229,6 +229,7 @@ GenerateFlowChart
 			{
 			public:
 				FlowChartNodeAction						action = FlowChartNodeAction::None;
+				bool									embedInBranch = false;
 				List<Ptr<WfStatement>>					statements;
 				List<Ptr<FlowChartBranch>>				branches;
 				FlowChartNode*							destination = nullptr;
@@ -285,6 +286,10 @@ GenerateFlowChart
 					}
 				}
 			};
+
+/***********************************************************************
+GenerateFlowChart
+***********************************************************************/
 
 			class GenerateFlowChartModuleVisitor : public copy_visitor::ModuleVisitor
 			{
@@ -778,39 +783,46 @@ GenerateFlowChart
 				return flowChart;
 			}
 
+/***********************************************************************
+RemoveUnnecessaryNodes
+***********************************************************************/
+
+			void CalculateEnterCounts(Ptr<FlowChart> flowChart, Dictionary<FlowChartNode*, vint>& enterCounts)
+			{
+				const auto& keys = enterCounts.Keys();
+				auto& values = const_cast<Dictionary<FlowChartNode*, vint>::ValueContainer&>(enterCounts.Values());
+
+				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				{
+					enterCounts.Add(node.Obj(), 0);
+				}
+				enterCounts.Set(flowChart->headNode, 1);
+
+				auto Inc = [&](FlowChartNode* node)
+				{
+					if (node)
+					{
+						vint index = keys.IndexOf(node);
+						values[index]++;
+					}
+				};
+
+				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				{
+					Inc(node->destination);
+					Inc(node->exceptionDestination);
+					Inc(node->pauseDestination);
+					FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+					{
+						Inc(branch->destination);
+					}
+				}
+			}
+
 			void RemoveUnnecessaryNodesPass(Ptr<FlowChart> flowChart)
 			{
 				Dictionary<FlowChartNode*, vint> enterCounts;
-				{
-					const auto& keys = enterCounts.Keys();
-					auto& values = const_cast<Dictionary<FlowChartNode*, vint>::ValueContainer&>(enterCounts.Values());
-
-					FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
-					{
-						enterCounts.Add(node.Obj(), 0);
-					}
-					enterCounts.Set(flowChart->headNode, 1);
-
-					auto Inc = [&](FlowChartNode* node)
-					{
-						if (node)
-						{
-							vint index = keys.IndexOf(node);
-							values[index]++;
-						}
-					};
-
-					FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
-					{
-						Inc(node->destination);
-						Inc(node->exceptionDestination);
-						Inc(node->pauseDestination);
-						FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
-						{
-							Inc(branch->destination);
-						}
-					}
-				}
+				CalculateEnterCounts(flowChart, enterCounts);
 
 				SortedList<FlowChartNode*> mergableNodes;
 				List<Ptr<FlowChartNode>> keepingNodes;
@@ -906,6 +918,7 @@ GenerateFlowChart
 			void RemoveUnnecessaryNodes(Ptr<FlowChart> flowChart)
 			{
 				RemoveUnnecessaryNodesPass(flowChart);
+
 				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
 				{
 					if (node->pauseDestination && node->statements.Count() > 0 && node->statements[node->statements.Count() - 1].Cast<WfCoPauseStatement>())
@@ -913,7 +926,19 @@ GenerateFlowChart
 						node->destination = nullptr;
 					}
 				}
-				RemoveUnnecessaryNodesPass(flowChart);
+
+				Dictionary<FlowChartNode*, vint> enterCounts;
+				CalculateEnterCounts(flowChart, enterCounts);
+				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				{
+					FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+					{
+						if (enterCounts[branch->destination] == 1)
+						{
+							branch->destination->embedInBranch = true;
+						}
+					}
+				}
 			}
 
 /***********************************************************************
@@ -942,13 +967,13 @@ GenerateSetStatus
 GenerateSetCoState
 ***********************************************************************/
 
-			Ptr<WfStatement> GenerateSetCoState(Ptr<FlowChart> flowChart, FlowChartNode* node)
+			Ptr<WfStatement> GenerateSetCoState(List<FlowChartNode*>& nodeOrders, FlowChartNode* node)
 			{
 				auto refState = MakePtr<WfReferenceExpression>();
 				refState->name.value = L"<co-state>";
 
 				auto intState = MakePtr<WfIntegerExpression>();
-				intState->value.value = itow(flowChart->nodes.IndexOf(node));
+				intState->value.value = itow(nodeOrders.IndexOf(node));
 
 				auto assignExpr = MakePtr<WfBinaryExpression>();
 				assignExpr->op = WfBinaryOperator::Assign;
@@ -965,7 +990,7 @@ GenerateSetCoState
 ExpandFlowChartNode
 ***********************************************************************/
 
-			void ExpandFlowChartNode(Ptr<FlowChart> flowChart, FlowChartNode* flowChartNode, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, Ptr<WfBlockStatement> stateBlock)
+			void ExpandFlowChartNode(Ptr<FlowChart> flowChart, FlowChartNode* flowChartNode, Dictionary<WfLexicalSymbol*, WString>& referenceRenaming, List<FlowChartNode*>& nodeOrders, FlowChartNode* parentCatchNode, Ptr<WfBlockStatement> stateBlock)
 			{
 				if (flowChartNode->action == FlowChartNodeAction::SetPause)
 				{
@@ -974,11 +999,11 @@ ExpandFlowChartNode
 					// SetStatus(Waiting);
 					/////////////////////////////////////////////////////////////////////////////
 					stateBlock->statements.Add(GenerateSetStatus(L"Waiting"));
-					stateBlock->statements.Add(GenerateSetCoState(flowChart, flowChartNode->pauseDestination));
+					stateBlock->statements.Add(GenerateSetCoState(nodeOrders, flowChartNode->pauseDestination));
 				}
 
 				auto nodeBlock = stateBlock;
-				if (flowChartNode->exceptionDestination)
+				if (flowChartNode->exceptionDestination && parentCatchNode != flowChartNode->exceptionDestination)
 				{
 					/////////////////////////////////////////////////////////////////////////////
 					// try { ... }
@@ -1016,7 +1041,7 @@ ExpandFlowChartNode
 						stat->expression = assignExpr;
 						catchBlock->statements.Add(stat);
 					}
-					catchBlock->statements.Add(GenerateSetCoState(flowChart, flowChartNode->exceptionDestination));
+					catchBlock->statements.Add(GenerateSetCoState(nodeOrders, flowChartNode->exceptionDestination));
 					catchBlock->statements.Add(MakePtr<WfContinueStatement>());
 
 					stateBlock->statements.Add(nodeTryStat);
@@ -1048,6 +1073,10 @@ ExpandFlowChartNode
 					}
 					else
 					{
+						if (stat.Cast<WfRaiseExceptionStatement>())
+						{
+							exited = true;
+						}
 						nodeBlock->statements.Add(stat);
 					}
 				}
@@ -1060,8 +1089,15 @@ ExpandFlowChartNode
 					auto trueBlock = MakePtr<WfBlockStatement>();
 					ifStat->trueBranch = trueBlock;
 
-					trueBlock->statements.Add(GenerateSetCoState(flowChart, branch->destination));
-					trueBlock->statements.Add(MakePtr<WfContinueStatement>());
+					if (branch->destination->embedInBranch)
+					{
+						ExpandFlowChartNode(flowChart, branch->destination, referenceRenaming, nodeOrders, flowChartNode->exceptionDestination, trueBlock);
+					}
+					else
+					{
+						trueBlock->statements.Add(GenerateSetCoState(nodeOrders, branch->destination));
+						trueBlock->statements.Add(MakePtr<WfContinueStatement>());
+					}
 
 					nodeBlock->statements.Add(ifStat);
 				}
@@ -1086,7 +1122,7 @@ ExpandFlowChartNode
 						// <co-state> = THE_NEXT_STATE;
 						// continue;
 						/////////////////////////////////////////////////////////////////////////////
-						stateBlock->statements.Add(GenerateSetCoState(flowChart, flowChartNode->destination));
+						stateBlock->statements.Add(GenerateSetCoState(nodeOrders, flowChartNode->destination));
 						stateBlock->statements.Add(MakePtr<WfContinueStatement>());
 					}
 				}
@@ -1110,6 +1146,20 @@ ExpandNewCoroutineExpression
 				FindCoroutineReferenceRenaming(manager, awaredStatements, awaredVariables, referenceRenaming);
 				auto flowChart = GenerateFlowChart(manager, awaredStatements, awaredVariables, referenceRenaming, node->statement);
 				RemoveUnnecessaryNodes(flowChart);
+
+				List<FlowChartNode*> nodeOrders;
+				CopyFrom(
+					nodeOrders,
+					From(flowChart->nodes)
+						.Select([](Ptr<FlowChartNode> node)
+						{
+							return node.Obj();
+						})
+						.Where([](FlowChartNode* node)
+						{
+							return !node->embedInBranch;
+						})
+				);
 
 				auto newExpr = MakePtr<WfNewInterfaceExpression>();
 				node->expandedExpression = newExpr;
@@ -1300,10 +1350,8 @@ ExpandNewCoroutineExpression
 
 							Ptr<WfStatement> firstIfStat;
 							Ptr<WfStatement>* lastStat = &firstIfStat;
-							for (vint i = 0; i < flowChart->nodes.Count(); i++)
+							FOREACH_INDEXER(FlowChartNode*, flowChartNode, index, nodeOrders)
 							{
-								auto flowChartNode = flowChart->nodes[i].Obj();
-
 								/////////////////////////////////////////////////////////////////////////////
 								// if (<co-state> == THE_CURRENT_STATE) { ... }
 								/////////////////////////////////////////////////////////////////////////////
@@ -1314,7 +1362,7 @@ ExpandNewCoroutineExpression
 									refState->name.value = L"<co-state>";
 
 									auto intState = MakePtr<WfIntegerExpression>();
-									intState->value.value = itow(i);
+									intState->value.value = itow(index);
 
 									auto compExpr = MakePtr<WfBinaryExpression>();
 									compExpr->op = WfBinaryOperator::EQ;
@@ -1327,7 +1375,7 @@ ExpandNewCoroutineExpression
 								auto stateBlock = MakePtr<WfBlockStatement>();
 								ifStat->trueBranch = stateBlock;
 								{
-									ExpandFlowChartNode(flowChart, flowChartNode, referenceRenaming, stateBlock);
+									ExpandFlowChartNode(flowChart, flowChartNode, referenceRenaming, nodeOrders, nullptr, stateBlock);
 								}
 
 								*lastStat = ifStat;

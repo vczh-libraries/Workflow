@@ -148,8 +148,6 @@ Closures
 							(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
 						}
 						throw ::vl::Exception(::vl::__vwsn::This(__vwsn_co4_ex.Obj())->GetMessage());
-						(__vwsn_co_state_ = 2);
-						continue;
 					}
 					else if ((__vwsn_co_state_ == 4))
 					{
@@ -179,7 +177,7 @@ Closures
 								continue;
 							}
 						}
-						(__vwsn_co_state_ = 9);
+						(__vwsn_co_state_ = 7);
 						continue;
 					}
 					else if ((__vwsn_co_state_ == 5))
@@ -190,12 +188,16 @@ Closures
 								(__vwsn_co0_switch_0 = (__vwsn_co3_i % 2));
 								if ((__vwsn_co0_switch_0 == 0))
 								{
+									(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co3_i)) + ::vl::WString(L"]", false)));
 									(__vwsn_co_state_ = 6);
 									continue;
 								}
 								if ((__vwsn_co0_switch_0 == 1))
 								{
-									(__vwsn_co_state_ = 8);
+									{
+										throw ::vl::Exception(::vl::WString(L"*", false));
+									}
+									(__vwsn_co_state_ = 7);
 									continue;
 								}
 							}
@@ -218,15 +220,17 @@ Closures
 								continue;
 							}
 						}
-						(__vwsn_co_state_ = 9);
+						(__vwsn_co_state_ = 7);
 						continue;
 					}
 					else if ((__vwsn_co_state_ == 6))
 					{
+						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						(__vwsn_co_state_ = 7);
 						try
 						{
 							{
-								(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co3_i)) + ::vl::WString(L"]", false)));
+								return;
 							}
 						}
 						catch(const ::vl::Exception& __vwsne_3)
@@ -247,70 +251,8 @@ Closures
 								continue;
 							}
 						}
-						(__vwsn_co_state_ = 7);
-						continue;
 					}
 					else if ((__vwsn_co_state_ == 7))
-					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
-						(__vwsn_co_state_ = 9);
-						try
-						{
-							{
-								return;
-							}
-						}
-						catch(const ::vl::Exception& __vwsne_4)
-						{
-							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_4.Message());
-							{
-								(__vwsn_co4_ex = __vwsn_co_ex_);
-								(__vwsn_co_state_ = 4);
-								continue;
-							}
-						}
-						catch(const ::vl::Error& __vwsne_4)
-						{
-							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_4.Description());
-							{
-								(__vwsn_co4_ex = __vwsn_co_ex_);
-								(__vwsn_co_state_ = 4);
-								continue;
-							}
-						}
-					}
-					else if ((__vwsn_co_state_ == 8))
-					{
-						try
-						{
-							{
-								{
-									throw ::vl::Exception(::vl::WString(L"*", false));
-								}
-							}
-						}
-						catch(const ::vl::Exception& __vwsne_5)
-						{
-							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_5.Message());
-							{
-								(__vwsn_co4_ex = __vwsn_co_ex_);
-								(__vwsn_co_state_ = 4);
-								continue;
-							}
-						}
-						catch(const ::vl::Error& __vwsne_5)
-						{
-							auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_5.Description());
-							{
-								(__vwsn_co4_ex = __vwsn_co_ex_);
-								(__vwsn_co_state_ = 4);
-								continue;
-							}
-						}
-						(__vwsn_co_state_ = 9);
-						continue;
-					}
-					else if ((__vwsn_co_state_ == 9))
 					{
 						{
 							(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));

@@ -147,25 +147,20 @@ Closures
 						(__vwsn_co3_o = ((__vwsn_co2_i == 2) ? ::vl::Ptr<::vl::reflection::description::IValueList>() : (::vl::__vwsn::CreateList().Add(0)).list));
 						if (static_cast<bool>(__vwsn_co3_o))
 						{
+							(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co2_i)) + ::vl::WString(L"]", false)));
 							(__vwsn_co_state_ = 4);
 							continue;
 						}
-						(__vwsn_co_state_ = 6);
-						continue;
-					}
-					else if ((__vwsn_co_state_ == 4))
-					{
-						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co2_i)) + ::vl::WString(L"]", false)));
 						(__vwsn_co_state_ = 5);
 						continue;
 					}
-					else if ((__vwsn_co_state_ == 5))
+					else if ((__vwsn_co_state_ == 4))
 					{
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 2);
 						return;
 					}
-					else if ((__vwsn_co_state_ == 6))
+					else if ((__vwsn_co_state_ == 5))
 					{
 						{
 							throw ::vl::Exception(::vl::WString(L"*", false));
