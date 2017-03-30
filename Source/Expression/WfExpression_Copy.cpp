@@ -1478,6 +1478,30 @@ VirtualStatementVisitor
 				to->codeRange = from->codeRange;
 			}
 
+			void VirtualStatementVisitor::CopyFields(WfCoProviderStatement* from, WfCoProviderStatement* to)
+			{
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				to->statement = CreateField(from->statement);
+				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
+			}
+
+			void VirtualStatementVisitor::CopyFields(WfCoOperatorStatement* from, WfCoOperatorStatement* to)
+			{
+				to->varName.codeRange = from->varName.codeRange;
+				to->varName.tokenIndex = from->varName.tokenIndex;
+				to->varName.value = from->varName.value;
+				to->opName.codeRange = from->opName.codeRange;
+				to->opName.tokenIndex = from->opName.tokenIndex;
+				to->opName.value = from->opName.value;
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
+				{
+					to->arguments.Add(CreateField(listItem));
+				}
+				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
+			}
+
 			// CreateField ---------------------------------------
 
 			vl::Ptr<WfSwitchCase> VirtualStatementVisitor::CreateField(vl::Ptr<WfSwitchCase> from)
@@ -1500,6 +1524,20 @@ VirtualStatementVisitor
 			void VirtualStatementVisitor::Visit(WfSwitchStatement* node)
 			{
 				auto newNode = vl::MakePtr<WfSwitchStatement>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualStatementVisitor::Visit(WfCoProviderStatement* node)
+			{
+				auto newNode = vl::MakePtr<WfCoProviderStatement>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualStatementVisitor::Visit(WfCoOperatorStatement* node)
+			{
+				auto newNode = vl::MakePtr<WfCoOperatorStatement>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}

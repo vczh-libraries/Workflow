@@ -398,22 +398,6 @@ BuildScopeForStatement
 					BuildScopeForDeclaration(manager, parentScope, node->variable, node);
 				}
 
-				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
-				{
-					BuildScopeForStatementVisitor visitor(manager, parentScope);
-					statement->Accept(&visitor);
-					if (visitor.resultScope)
-					{
-						manager->nodeScopes.Add(statement.Obj(), visitor.resultScope);
-						visitor.resultScope->ownerNode = statement;
-					}
-					else
-					{
-						manager->nodeScopes.Add(statement.Obj(), parentScope);
-					}
-					return visitor.resultScope;
-				}
-
 				void Visit(WfVirtualStatement* node)override
 				{
 					node->Accept((WfVirtualStatement::IVisitor*)this);
@@ -450,6 +434,16 @@ BuildScopeForStatement
 					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 
+				void Visit(WfCoProviderStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfCoroutineStatement* node)override
 				{
 					node->Accept((WfCoroutineStatement::IVisitor*)this);
@@ -461,6 +455,22 @@ BuildScopeForStatement
 					{
 						BuildScopeForStatement(manager, parentScope, node->statement);
 					}
+				}
+
+				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
+				{
+					BuildScopeForStatementVisitor visitor(manager, parentScope);
+					statement->Accept(&visitor);
+					if (visitor.resultScope)
+					{
+						manager->nodeScopes.Add(statement.Obj(), visitor.resultScope);
+						visitor.resultScope->ownerNode = statement;
+					}
+					else
+					{
+						manager->nodeScopes.Add(statement.Obj(), parentScope);
+					}
+					return visitor.resultScope;
 				}
 			};
 

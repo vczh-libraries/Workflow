@@ -1095,6 +1095,16 @@ ValidateStructure(Statement)
 					context->currentLoopStatement = oldLoop;
 				}
 
+				void Visit(WfCoProviderStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfCoroutineStatement* node)override
 				{
 					node->Accept((WfCoroutineStatement::IVisitor*)this);

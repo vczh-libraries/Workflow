@@ -294,6 +294,8 @@ namespace vl
 				void CopyFields(WfStatement* from, WfStatement* to);
 				void CopyFields(WfSwitchStatement* from, WfSwitchStatement* to);
 				void CopyFields(WfSwitchCase* from, WfSwitchCase* to);
+				void CopyFields(WfCoProviderStatement* from, WfCoProviderStatement* to);
+				void CopyFields(WfCoOperatorStatement* from, WfCoOperatorStatement* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfSwitchCase> CreateField(vl::Ptr<WfSwitchCase> from);
@@ -305,6 +307,8 @@ namespace vl
 				// Visitor Members -----------------------------------
 				void Visit(WfForEachStatement* node)override;
 				void Visit(WfSwitchStatement* node)override;
+				void Visit(WfCoProviderStatement* node)override;
+				void Visit(WfCoOperatorStatement* node)override;
 			};
 
 			class CoroutineStatementVisitor : public virtual VisitorBase, public WfCoroutineStatement::IVisitor

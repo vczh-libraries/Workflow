@@ -402,6 +402,19 @@ class SwitchStatement : VirtualStatement
 	Statement				defaultBranch;
 }
 
+class CoProviderStatement : VirtualStatement
+{
+	token					name;
+	Statement				statement;
+}
+
+class CoOperatorStatement : VirtualStatement
+{
+	token					varName;
+	token					opName;
+	Expression[]			arguments;
+}
+
 //////////////////////////////////////////////////////////////////
 // AST (CoroutineStatements)
 //////////////////////////////////////////////////////////////////
@@ -849,6 +862,8 @@ token KEYWORD_UNIT = "unit";
 
 token COROUTINE_COROUTINE = "/$coroutine";
 token COROUTINE_PAUSE = "/$pause";
+token COROUTINE_OPERATOR = "/$[A-Z]/w*";
+token COROUTINE_SIGN = "/$";
 
 token NAME = "[a-zA-Z_]/w*";
 token ORDERED_NAME = "/$[0-9]*";
@@ -1047,10 +1062,15 @@ rule Statement _VirtualStatement
 	= "for" "(" NAME : name 
 		(("in" with {direction="Normal"}) | ("in" "reversed" with {direction="Reversed"}))
 		_Expression : collection ")" _Block : statement as ForEachStatement
+	= ["var" NAME : varName "="] COROUTINE_OPERATOR : opName [_Expression : arguments {"," _Expression : arguments}] ";" as CoOperatorStatement
 	;
 
 rule Statement _CoStatement
 	= "$pause" (";" | _Block : statement) as CoPauseStatement
+	;
+
+rule Statement _CoProvider
+	= ("$" | COROUTINE_OPERATOR : name) _Block : statement as CoProviderStatement
 	;
 
 rule Statement _Statement
@@ -1091,7 +1111,7 @@ rule FunctionDeclaration _Function
 			| ("(" with {anonymity="Anonymous"})
 		)
 		[_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" ":" _Type : returnType
-		(_Block : statement | ";") as FunctionDeclaration
+		(_Block : statement | _CoProvider : statement | ";") as FunctionDeclaration
 	;
 rule VariableDeclaration _Variable
 	= "var" NAME : name [":" _Type : type] "=" _Expression : expression ";" as VariableDeclaration

@@ -569,6 +569,16 @@ ValidateSemantic(Statement)
 				{
 					ExpandForEachStatement(manager, node);
 				}
+
+				void Visit(WfCoProviderStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
+				}
 			};
 
 			class ValidateSemanticStatementVisitor
@@ -781,6 +791,16 @@ ValidateSemantic(Statement)
 						symbol->type = GetTypeFromTypeInfo(elementType.Obj());
 					}
 					ValidateStatementSemantic(manager, node->statement);
+				}
+
+				void Visit(WfCoProviderStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
 				}
 
 				void Visit(WfCoroutineStatement* node)override

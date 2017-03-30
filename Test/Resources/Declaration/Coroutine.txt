@@ -1,0 +1,26 @@
+namespace test
+{
+    func a() : int[]
+	${
+		for(x in range [0,10))
+		{
+			$Yield x;
+		}
+	}
+
+	func b(urls : string[]) : IDownloadAsync^
+	${
+		var xs : string[] = {};
+		for(x in urls)
+		{
+			var text = $Await DownloadSingleAsync(x);
+			xs.Add(text);
+		}
+		return xs;
+	}
+
+	func c() : void
+	$Async {
+		$Await b({});
+	}
+}

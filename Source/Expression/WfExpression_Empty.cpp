@@ -328,6 +328,14 @@ VirtualStatementVisitor
 			{
 			}
 
+			void VirtualStatementVisitor::Visit(WfCoProviderStatement* node)
+			{
+			}
+
+			void VirtualStatementVisitor::Visit(WfCoOperatorStatement* node)
+			{
+			}
+
 /***********************************************************************
 CoroutineStatementVisitor
 ***********************************************************************/

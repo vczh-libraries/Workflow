@@ -114,14 +114,16 @@ namespace vl
 			KEYWORD_UNIT = 94,
 			COROUTINE_COROUTINE = 95,
 			COROUTINE_PAUSE = 96,
-			NAME = 97,
-			ORDERED_NAME = 98,
-			FLOAT = 99,
-			INTEGER = 100,
-			STRING = 101,
-			FORMATSTRING = 102,
-			SPACE = 103,
-			COMMENT = 104,
+			COROUTINE_OPERATOR = 97,
+			COROUTINE_SIGN = 98,
+			NAME = 99,
+			ORDERED_NAME = 100,
+			FLOAT = 101,
+			INTEGER = 102,
+			STRING = 103,
+			FORMATSTRING = 104,
+			SPACE = 105,
+			COMMENT = 106,
 		};
 		class WfClassMember;
 		class WfType;
@@ -171,6 +173,8 @@ namespace vl
 		class WfForEachStatement;
 		class WfSwitchCase;
 		class WfSwitchStatement;
+		class WfCoProviderStatement;
+		class WfCoOperatorStatement;
 		class WfCoroutineStatement;
 		class WfCoPauseStatement;
 		class WfThisExpression;
@@ -840,6 +844,8 @@ namespace vl
 			public:
 				virtual void Visit(WfForEachStatement* node)=0;
 				virtual void Visit(WfSwitchStatement* node)=0;
+				virtual void Visit(WfCoProviderStatement* node)=0;
+				virtual void Visit(WfCoOperatorStatement* node)=0;
 			};
 
 			virtual void Accept(WfVirtualStatement::IVisitor* visitor)=0;
@@ -887,6 +893,29 @@ namespace vl
 			void Accept(WfVirtualStatement::IVisitor* visitor)override;
 
 			static vl::Ptr<WfSwitchStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfCoProviderStatement : public WfVirtualStatement, vl::reflection::Description<WfCoProviderStatement>
+		{
+		public:
+			vl::parsing::ParsingToken name;
+			vl::Ptr<WfStatement> statement;
+
+			void Accept(WfVirtualStatement::IVisitor* visitor)override;
+
+			static vl::Ptr<WfCoProviderStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfCoOperatorStatement : public WfVirtualStatement, vl::reflection::Description<WfCoOperatorStatement>
+		{
+		public:
+			vl::parsing::ParsingToken varName;
+			vl::parsing::ParsingToken opName;
+			vl::collections::List<vl::Ptr<WfExpression>> arguments;
+
+			void Accept(WfVirtualStatement::IVisitor* visitor)override;
+
+			static vl::Ptr<WfCoOperatorStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfCoroutineStatement abstract : public WfStatement, vl::reflection::Description<WfCoroutineStatement>
@@ -1513,6 +1542,8 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfForEachStatement)
 			DECL_TYPE_INFO(vl::workflow::WfSwitchCase)
 			DECL_TYPE_INFO(vl::workflow::WfSwitchStatement)
+			DECL_TYPE_INFO(vl::workflow::WfCoProviderStatement)
+			DECL_TYPE_INFO(vl::workflow::WfCoOperatorStatement)
 			DECL_TYPE_INFO(vl::workflow::WfCoroutineStatement)
 			DECL_TYPE_INFO(vl::workflow::WfCoPauseStatement)
 			DECL_TYPE_INFO(vl::workflow::WfThisExpression)
@@ -1928,6 +1959,16 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfSwitchStatement* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfCoProviderStatement* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfCoOperatorStatement* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}

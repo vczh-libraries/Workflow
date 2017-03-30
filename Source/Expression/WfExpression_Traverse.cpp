@@ -1361,6 +1361,14 @@ VirtualStatementVisitor
 			{
 			}
 
+			void VirtualStatementVisitor::Traverse(WfCoProviderStatement* node)
+			{
+			}
+
+			void VirtualStatementVisitor::Traverse(WfCoOperatorStatement* node)
+			{
+			}
+
 			// VisitField ----------------------------------------
 
 			void VirtualStatementVisitor::VisitField(WfSwitchCase* node)
@@ -1398,6 +1406,32 @@ VirtualStatementVisitor
 					VisitField(listItem.Obj());
 				}
 				VisitField(node->defaultBranch.Obj());
+				VisitField(node->expandedStatement.Obj());
+			}
+
+			void VirtualStatementVisitor::Visit(WfCoProviderStatement* node)
+			{
+				Traverse(static_cast<WfCoProviderStatement*>(node));
+				Traverse(static_cast<WfVirtualStatement*>(node));
+				Traverse(static_cast<WfStatement*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->name);
+				VisitField(node->statement.Obj());
+				VisitField(node->expandedStatement.Obj());
+			}
+
+			void VirtualStatementVisitor::Visit(WfCoOperatorStatement* node)
+			{
+				Traverse(static_cast<WfCoOperatorStatement*>(node));
+				Traverse(static_cast<WfVirtualStatement*>(node));
+				Traverse(static_cast<WfStatement*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->varName);
+				Traverse(node->opName);
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
+				{
+					VisitField(listItem.Obj());
+				}
 				VisitField(node->expandedStatement.Obj());
 			}
 
