@@ -1568,6 +1568,9 @@ VirtualExpressionVisitor
 
 			void VirtualExpressionVisitor::CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to)
 			{
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
 				to->statement = CreateField(from->statement);
 				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
 			}

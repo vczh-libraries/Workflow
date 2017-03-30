@@ -1392,6 +1392,7 @@ namespace vl
 
 				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfNewCoroutineExpression>(), NO_PARAMETER)
 
+				PARSING_TOKEN_FIELD(name)
 				CLASS_MEMBER_FIELD(statement)
 			END_CLASS_MEMBER(WfNewCoroutineExpression)
 

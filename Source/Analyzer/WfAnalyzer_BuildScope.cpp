@@ -764,6 +764,16 @@ BuildScopeForExpression
 					auto config = MakePtr<WfLexicalFunctionConfig>();
 					resultScope->functionConfig = config;
 
+					if (node->name.value != L"")
+					{
+						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						symbol->name = node->name.value;
+						symbol->creatorNode = node;
+						symbol->typeInfo = TypeInfoRetriver<Ptr<CoroutineResult>>::CreateTypeInfo();
+						symbol->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
+						resultScope->symbols.Add(symbol->name, symbol);
+					}
+
 					config->lambda = true;
 					config->thisAccessable = false;
 					config->parentThisAccessable = true;

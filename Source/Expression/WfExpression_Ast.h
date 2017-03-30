@@ -1371,6 +1371,7 @@ namespace vl
 		class WfNewCoroutineExpression : public WfVirtualExpression, vl::reflection::Description<WfNewCoroutineExpression>
 		{
 		public:
+			vl::parsing::ParsingToken name;
 			vl::Ptr<WfStatement> statement;
 
 			void Accept(WfVirtualExpression::IVisitor* visitor)override;

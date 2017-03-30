@@ -52,7 +52,7 @@ Global Functions
 			auto i = 0;
 			while ((::vl::__vwsn::This(coroutine.Obj())->GetStatus() != ::vl::reflection::description::CoroutineStatus::Stopped))
 			{
-				::vl::__vwsn::This(coroutine.Obj())->Resume(true);
+				::vl::__vwsn::This(coroutine.Obj())->Resume(true, ::vl::Ptr<::vl::reflection::description::CoroutineResult>());
 				(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[-", false)) + ::vl::__vwsn::ToString(i)) + ::vl::WString(L"]", false)));
 				(i = (i + 1));
 			}
@@ -100,7 +100,7 @@ Closures
 		(__vwsn_prop_Status = __vwsn_value_);
 	}
 
-	void __vwsnc1_CoRawCoroutine_main__vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_)
+	void __vwsnc1_CoRawCoroutine_main__vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_coroutine_output_)
 	{
 		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{

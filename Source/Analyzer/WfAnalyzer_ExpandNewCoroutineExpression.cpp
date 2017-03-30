@@ -1268,7 +1268,7 @@ ExpandNewCoroutineExpression
 				}
 
 				/////////////////////////////////////////////////////////////////////////////
-				// func Resume(<raise-exception> : bool) : void
+				// func Resume(<raise-exception> : bool, <coroutine-output> : CoroutineResult^) : void
 				/////////////////////////////////////////////////////////////////////////////
 
 				{
@@ -1287,6 +1287,19 @@ ExpandNewCoroutineExpression
 						funcDecl->arguments.Add(argument);
 						argument->name.value = L"<raise-exception>";
 						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+					}
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						funcDecl->arguments.Add(argument);
+						if (node->name.value == L"")
+						{
+							argument->name.value = L"<coroutine-output>";
+						}
+						else
+						{
+							argument->name.value = node->name.value;
+						}
+						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<CoroutineResult>>::CreateTypeInfo().Obj());
 					}
 
 					auto block = MakePtr<WfBlockStatement>();

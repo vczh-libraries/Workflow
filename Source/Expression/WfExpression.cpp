@@ -784,7 +784,16 @@ Print (Expression)
 			void Visit(WfNewCoroutineExpression* node)override
 			{
 				writer.BeforePrint(node);
-				writer.WriteLine(L"$coroutine");
+				if (node->name.value == L"")
+				{
+					writer.WriteLine(L"$coroutine");
+				}
+				else
+				{
+					writer.WriteString(L"$coroutine(");
+					writer.WriteString(node->name.value);
+					writer.WriteLine(L")");
+				}
 				writer.WriteString(indent);
 				WfPrint(node->statement, indent, writer);
 				writer.AfterPrint(node);

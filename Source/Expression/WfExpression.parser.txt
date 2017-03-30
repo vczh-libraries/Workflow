@@ -700,6 +700,7 @@ class FormatExpression : VirtualExpression
 
 class NewCoroutineExpression : VirtualExpression
 {
+	token					name;
 	Statement				statement;
 }
 
@@ -902,7 +903,7 @@ rule LetVariable _LetVariable
 rule Expression _VirtualExpression
 	= FORMATSTRING : value as FormatExpression
 	= "bind" "(" _Expression : expression ")" as BindExpression
-	= "$coroutine" _Block : statement as NewCoroutineExpression
+	= "$coroutine" ["(" NAME : name ")"] _Block : statement as NewCoroutineExpression
 	;
 
 rule Expression _ExpPrimitive

@@ -1500,6 +1500,7 @@ VirtualExpressionVisitor
 				Traverse(static_cast<WfVirtualExpression*>(node));
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->name);
 				VisitField(node->statement.Obj());
 				VisitField(node->expandedExpression.Obj());
 			}
