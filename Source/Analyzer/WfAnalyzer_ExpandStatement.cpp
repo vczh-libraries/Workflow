@@ -355,6 +355,15 @@ ExpandForEachStatement
 					}
 				}
 			}
+
+/***********************************************************************
+ExpandCoProviderStatement
+***********************************************************************/
+
+			void ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node)
+			{
+				throw 0;
+			}
 		}
 	}
 }

@@ -392,6 +392,7 @@ Expanding Virtual Nodes
 			extern void										ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node);
 			extern void										ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node);
 			extern void										ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node);
+			extern void										ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node);
 
 /***********************************************************************
 Error Messages

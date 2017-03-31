@@ -763,7 +763,7 @@ GenerateFlowChart
 
 				void Visit(WfCoOperatorStatement* node)override
 				{
-					throw 0;
+					CHECK_FAIL(L"GenerateFlowChartStatementVisitor::Visit(WfCoOperatorStatement*)#Internal error, co-operator statement is not allowed in $coroutine expression.");
 				}
 
 #undef COPY_STATEMENT

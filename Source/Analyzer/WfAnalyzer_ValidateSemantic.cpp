@@ -572,7 +572,7 @@ ValidateSemantic(Statement)
 
 				void Visit(WfCoProviderStatement* node)override
 				{
-					throw 0;
+					ExpandCoProviderStatement(manager, node);
 				}
 			};
 
