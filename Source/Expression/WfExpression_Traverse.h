@@ -301,7 +301,6 @@ namespace vl
 				virtual void Traverse(WfSwitchStatement* node);
 				virtual void Traverse(WfSwitchCase* node);
 				virtual void Traverse(WfCoProviderStatement* node);
-				virtual void Traverse(WfCoOperatorStatement* node);
 
 				// VisitField ----------------------------------------
 				void VisitField(WfSwitchCase* node);
@@ -314,7 +313,6 @@ namespace vl
 				void Visit(WfForEachStatement* node)override;
 				void Visit(WfSwitchStatement* node)override;
 				void Visit(WfCoProviderStatement* node)override;
-				void Visit(WfCoOperatorStatement* node)override;
 			};
 
 			class CoroutineStatementVisitor : public Object, public WfCoroutineStatement::IVisitor
@@ -327,12 +325,15 @@ namespace vl
 				virtual void Traverse(WfCoPauseStatement* node);
 				virtual void Traverse(WfCoroutineStatement* node);
 				virtual void Traverse(WfStatement* node);
+				virtual void Traverse(WfCoOperatorStatement* node);
 
 				// VisitField (virtual) ------------------------------
 				virtual void VisitField(WfStatement* node) = 0;
+				virtual void VisitField(WfExpression* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfCoPauseStatement* node)override;
+				void Visit(WfCoOperatorStatement* node)override;
 			};
 
 			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor

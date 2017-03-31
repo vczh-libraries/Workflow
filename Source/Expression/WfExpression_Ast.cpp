@@ -202,17 +202,17 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
-		void WfCoOperatorStatement::Accept(WfVirtualStatement::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
-
 		void WfCoroutineStatement::Accept(WfStatement::IVisitor* visitor)
 		{
 			visitor->Visit(this);
 		}
 
 		void WfCoPauseStatement::Accept(WfCoroutineStatement::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
+		void WfCoOperatorStatement::Accept(WfCoroutineStatement::IVisitor* visitor)
 		{
 			visitor->Visit(this);
 		}
@@ -473,9 +473,9 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfSwitchCase, workflow::WfSwitchCase)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfSwitchStatement, workflow::WfSwitchStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoProviderStatement, workflow::WfCoProviderStatement)
-			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoOperatorStatement, workflow::WfCoOperatorStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoroutineStatement, workflow::WfCoroutineStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoPauseStatement, workflow::WfCoPauseStatement)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCoOperatorStatement, workflow::WfCoOperatorStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfThisExpression, workflow::WfThisExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfTopQualifiedExpression, workflow::WfTopQualifiedExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfReferenceExpression, workflow::WfReferenceExpression)
@@ -1019,16 +1019,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(statement)
 			END_CLASS_MEMBER(WfCoProviderStatement)
 
-			BEGIN_CLASS_MEMBER(WfCoOperatorStatement)
-				CLASS_MEMBER_BASE(WfVirtualStatement)
-
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfCoOperatorStatement>(), NO_PARAMETER)
-
-				PARSING_TOKEN_FIELD(varName)
-				PARSING_TOKEN_FIELD(opName)
-				CLASS_MEMBER_FIELD(arguments)
-			END_CLASS_MEMBER(WfCoOperatorStatement)
-
 			BEGIN_CLASS_MEMBER(WfCoroutineStatement)
 				CLASS_MEMBER_BASE(WfStatement)
 
@@ -1042,6 +1032,16 @@ namespace vl
 
 				CLASS_MEMBER_FIELD(statement)
 			END_CLASS_MEMBER(WfCoPauseStatement)
+
+			BEGIN_CLASS_MEMBER(WfCoOperatorStatement)
+				CLASS_MEMBER_BASE(WfCoroutineStatement)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfCoOperatorStatement>(), NO_PARAMETER)
+
+				PARSING_TOKEN_FIELD(varName)
+				PARSING_TOKEN_FIELD(opName)
+				CLASS_MEMBER_FIELD(arguments)
+			END_CLASS_MEMBER(WfCoOperatorStatement)
 
 			BEGIN_CLASS_MEMBER(WfThisExpression)
 				CLASS_MEMBER_BASE(WfExpression)
@@ -1558,11 +1558,11 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualStatement::IVisitor::*)(WfForEachStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualStatement::IVisitor::*)(WfSwitchStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualStatement::IVisitor::*)(WfCoProviderStatement* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualStatement::IVisitor::*)(WfCoOperatorStatement* node))
 			END_INTERFACE_MEMBER(WfVirtualStatement)
 
 			BEGIN_INTERFACE_MEMBER(WfCoroutineStatement::IVisitor)
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfCoroutineStatement::IVisitor::*)(WfCoPauseStatement* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfCoroutineStatement::IVisitor::*)(WfCoOperatorStatement* node))
 			END_INTERFACE_MEMBER(WfCoroutineStatement)
 
 			BEGIN_INTERFACE_MEMBER(WfVirtualExpression::IVisitor)
@@ -1643,9 +1643,9 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfSwitchCase)
 					ADD_TYPE_INFO(vl::workflow::WfSwitchStatement)
 					ADD_TYPE_INFO(vl::workflow::WfCoProviderStatement)
-					ADD_TYPE_INFO(vl::workflow::WfCoOperatorStatement)
 					ADD_TYPE_INFO(vl::workflow::WfCoroutineStatement)
 					ADD_TYPE_INFO(vl::workflow::WfCoPauseStatement)
+					ADD_TYPE_INFO(vl::workflow::WfCoOperatorStatement)
 					ADD_TYPE_INFO(vl::workflow::WfThisExpression)
 					ADD_TYPE_INFO(vl::workflow::WfTopQualifiedExpression)
 					ADD_TYPE_INFO(vl::workflow::WfReferenceExpression)

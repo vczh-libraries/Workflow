@@ -332,10 +332,6 @@ VirtualStatementVisitor
 			{
 			}
 
-			void VirtualStatementVisitor::Visit(WfCoOperatorStatement* node)
-			{
-			}
-
 /***********************************************************************
 CoroutineStatementVisitor
 ***********************************************************************/
@@ -343,6 +339,10 @@ CoroutineStatementVisitor
 			// Visitor Members -----------------------------------
 
 			void CoroutineStatementVisitor::Visit(WfCoPauseStatement* node)
+			{
+			}
+
+			void CoroutineStatementVisitor::Visit(WfCoOperatorStatement* node)
 			{
 			}
 

@@ -1487,21 +1487,6 @@ VirtualStatementVisitor
 				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
 			}
 
-			void VirtualStatementVisitor::CopyFields(WfCoOperatorStatement* from, WfCoOperatorStatement* to)
-			{
-				to->varName.codeRange = from->varName.codeRange;
-				to->varName.tokenIndex = from->varName.tokenIndex;
-				to->varName.value = from->varName.value;
-				to->opName.codeRange = from->opName.codeRange;
-				to->opName.tokenIndex = from->opName.tokenIndex;
-				to->opName.value = from->opName.value;
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
-				{
-					to->arguments.Add(CreateField(listItem));
-				}
-				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
-			}
-
 			// CreateField ---------------------------------------
 
 			vl::Ptr<WfSwitchCase> VirtualStatementVisitor::CreateField(vl::Ptr<WfSwitchCase> from)
@@ -1535,13 +1520,6 @@ VirtualStatementVisitor
 				this->result = newNode;
 			}
 
-			void VirtualStatementVisitor::Visit(WfCoOperatorStatement* node)
-			{
-				auto newNode = vl::MakePtr<WfCoOperatorStatement>();
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
 /***********************************************************************
 CoroutineStatementVisitor
 ***********************************************************************/
@@ -1564,11 +1542,33 @@ CoroutineStatementVisitor
 				to->codeRange = from->codeRange;
 			}
 
+			void CoroutineStatementVisitor::CopyFields(WfCoOperatorStatement* from, WfCoOperatorStatement* to)
+			{
+				to->varName.codeRange = from->varName.codeRange;
+				to->varName.tokenIndex = from->varName.tokenIndex;
+				to->varName.value = from->varName.value;
+				to->opName.codeRange = from->opName.codeRange;
+				to->opName.tokenIndex = from->opName.tokenIndex;
+				to->opName.value = from->opName.value;
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
+				{
+					to->arguments.Add(CreateField(listItem));
+				}
+				CopyFields(static_cast<WfCoroutineStatement*>(from), static_cast<WfCoroutineStatement*>(to));
+			}
+
 			// Visitor Members -----------------------------------
 
 			void CoroutineStatementVisitor::Visit(WfCoPauseStatement* node)
 			{
 				auto newNode = vl::MakePtr<WfCoPauseStatement>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void CoroutineStatementVisitor::Visit(WfCoOperatorStatement* node)
+			{
+				auto newNode = vl::MakePtr<WfCoOperatorStatement>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}

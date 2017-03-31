@@ -137,7 +137,6 @@ namespace vl
 				void Visit(WfForEachStatement* node)override;
 				void Visit(WfSwitchStatement* node)override;
 				void Visit(WfCoProviderStatement* node)override;
-				void Visit(WfCoOperatorStatement* node)override;
 			};
 
 			class CoroutineStatementVisitor : public Object, public WfCoroutineStatement::IVisitor
@@ -146,6 +145,7 @@ namespace vl
 
 				// Visitor Members -----------------------------------
 				void Visit(WfCoPauseStatement* node)override;
+				void Visit(WfCoOperatorStatement* node)override;
 			};
 
 			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor

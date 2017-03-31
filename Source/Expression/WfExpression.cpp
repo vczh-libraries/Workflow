@@ -1061,24 +1061,6 @@ Print (Statement)
 				writer.AfterPrint(node);
 			}
 
-			void Visit(WfCoOperatorStatement* node)override
-			{
-				if (node->varName.value != L"")
-				{
-					writer.WriteString(L"var ");
-					writer.WriteString(node->varName.value);
-					writer.WriteString(L" = ");
-				}
-				writer.WriteString(node->opName.value);
-
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
-				{
-					writer.WriteString(index == 0 ? L" " : L", ");
-					WfPrint(argument, indent, writer);
-				}
-				writer.WriteString(L";");
-			}
-
 			void Visit(WfCoroutineStatement* node)override
 			{
 				node->Accept((WfCoroutineStatement::IVisitor*)this);
@@ -1098,6 +1080,24 @@ Print (Statement)
 					writer.WriteString(L"$pause;");
 				}
 				writer.AfterPrint(node);
+			}
+
+			void Visit(WfCoOperatorStatement* node)override
+			{
+				if (node->varName.value != L"")
+				{
+					writer.WriteString(L"var ");
+					writer.WriteString(node->varName.value);
+					writer.WriteString(L" = ");
+				}
+				writer.WriteString(node->opName.value);
+
+				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				{
+					writer.WriteString(index == 0 ? L" " : L", ");
+					WfPrint(argument, indent, writer);
+				}
+				writer.WriteString(L";");
 			}
 		};
 

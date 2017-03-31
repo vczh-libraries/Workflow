@@ -574,11 +574,6 @@ ValidateSemantic(Statement)
 				{
 					throw 0;
 				}
-
-				void Visit(WfCoOperatorStatement* node)override
-				{
-					throw 0;
-				}
 			};
 
 			class ValidateSemanticStatementVisitor
@@ -798,11 +793,6 @@ ValidateSemantic(Statement)
 					throw 0;
 				}
 
-				void Visit(WfCoOperatorStatement* node)override
-				{
-					throw 0;
-				}
-
 				void Visit(WfCoroutineStatement* node)override
 				{
 					node->Accept((WfCoroutineStatement::IVisitor*)this);
@@ -814,6 +804,11 @@ ValidateSemantic(Statement)
 					{
 						ValidateStatementSemantic(manager, node->statement);
 					}
+				}
+
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
 				}
 
 				static void Execute(Ptr<WfStatement> statement, WfLexicalScopeManager* manager)

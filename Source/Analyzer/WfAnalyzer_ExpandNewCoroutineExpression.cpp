@@ -761,6 +761,11 @@ GenerateFlowChart
 					resultHead->pauseDestination = resultLast;
 				}
 
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
+				}
+
 #undef COPY_STATEMENT
 			};
 

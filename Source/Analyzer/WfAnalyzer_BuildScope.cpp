@@ -439,11 +439,6 @@ BuildScopeForStatement
 					throw 0;
 				}
 
-				void Visit(WfCoOperatorStatement* node)override
-				{
-					throw 0;
-				}
-
 				void Visit(WfCoroutineStatement* node)override
 				{
 					node->Accept((WfCoroutineStatement::IVisitor*)this);
@@ -455,6 +450,11 @@ BuildScopeForStatement
 					{
 						BuildScopeForStatement(manager, parentScope, node->statement);
 					}
+				}
+
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)

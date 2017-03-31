@@ -1365,10 +1365,6 @@ VirtualStatementVisitor
 			{
 			}
 
-			void VirtualStatementVisitor::Traverse(WfCoOperatorStatement* node)
-			{
-			}
-
 			// VisitField ----------------------------------------
 
 			void VirtualStatementVisitor::VisitField(WfSwitchCase* node)
@@ -1420,21 +1416,6 @@ VirtualStatementVisitor
 				VisitField(node->expandedStatement.Obj());
 			}
 
-			void VirtualStatementVisitor::Visit(WfCoOperatorStatement* node)
-			{
-				Traverse(static_cast<WfCoOperatorStatement*>(node));
-				Traverse(static_cast<WfVirtualStatement*>(node));
-				Traverse(static_cast<WfStatement*>(node));
-				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				Traverse(node->varName);
-				Traverse(node->opName);
-				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
-				{
-					VisitField(listItem.Obj());
-				}
-				VisitField(node->expandedStatement.Obj());
-			}
-
 /***********************************************************************
 CoroutineStatementVisitor
 ***********************************************************************/
@@ -1461,6 +1442,10 @@ CoroutineStatementVisitor
 			{
 			}
 
+			void CoroutineStatementVisitor::Traverse(WfCoOperatorStatement* node)
+			{
+			}
+
 			// Visitor Members -----------------------------------
 
 			void CoroutineStatementVisitor::Visit(WfCoPauseStatement* node)
@@ -1470,6 +1455,20 @@ CoroutineStatementVisitor
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->statement.Obj());
+			}
+
+			void CoroutineStatementVisitor::Visit(WfCoOperatorStatement* node)
+			{
+				Traverse(static_cast<WfCoOperatorStatement*>(node));
+				Traverse(static_cast<WfCoroutineStatement*>(node));
+				Traverse(static_cast<WfStatement*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->varName);
+				Traverse(node->opName);
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
+				{
+					VisitField(listItem.Obj());
+				}
 			}
 
 /***********************************************************************
