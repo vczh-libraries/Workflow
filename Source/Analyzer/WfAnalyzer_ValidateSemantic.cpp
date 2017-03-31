@@ -950,14 +950,14 @@ ValidateSemantic(Statement)
 				FINISH_SEARCHING:
 					if (selectedProviderTd)
 					{
-						symbol->typeInfo = MakePtr<TypeDescriptorTypeInfo>(selectedProviderTd, TypeInfoHint::Normal);
+					symbol->typeInfo = MakePtr<TypeDescriptorTypeInfo>(selectedProviderTd, TypeInfoHint::Normal);
 					}
 					else
 					{
 						manager->errors.Add(WfErrors::CoProviderNotExists(node, candidates));
 					}
 				SKIP_SEARCHING:
-					ValidateStatementSemantic(manager, node->statement);
+				ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override
@@ -1019,10 +1019,53 @@ ValidateSemantic(Statement)
 									}
 
 									vint selectedFunctionIndex = -1;
+									vint oldErrorCount = manager->errors.Count();
 									SelectFunction(manager, node, nullptr, functions, node->arguments, selectedFunctionIndex);
 									if (selectedFunctionIndex != -1)
 									{
 										manager->coOperatorResolvings.Add(node, functions[selectedFunctionIndex]);
+										if (node->varName.value != L"" && manager->errors.Count() == oldErrorCount)
+										{
+											auto symbol = scope->symbols[node->varName.value][0];
+											List<ITypeInfo*> types;
+
+											FOREACH(Ptr<WfExpression>, argument, node->arguments)
+											{
+												vint index = manager->expressionResolvings.Keys().IndexOf(argument.Obj());
+												if (index != -1)
+												{
+													auto type = manager->expressionResolvings.Values()[index].type;
+													if (!types.Contains(type.Obj()))
+													{
+														types.Add(type.Obj());
+														if (auto group = type->GetTypeDescriptor()->GetMethodGroupByName(L"CastResult", true))
+														{
+															vint count = group->GetMethodCount();
+															for (vint i = 0; i < count; i++)
+															{
+																auto method = group->GetMethod(i);
+																if (method->IsStatic())
+																{
+																	if (method->GetParameterCount() == 1 &&
+																		method->GetParameter(0)->GetType()->GetTypeDescriptor() == description::GetTypeDescriptor<DescriptableObject>() &&
+																		method->GetReturn()->GetTypeDescriptor() != description::GetTypeDescriptor<void>()
+																		)
+																	{
+																		symbol->typeInfo = CopyTypeInfo(method->GetReturn());
+																		break;
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+
+											if (!symbol->typeInfo)
+											{
+												manager->errors.Add(WfErrors::CoOperatorCannotResolveResultType(node, types));
+											}
+										}
 									}
 								}
 							}

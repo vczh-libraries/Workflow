@@ -372,7 +372,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates)
 			{
 				WString description;
-				FOREACH_INDEXER(WString, candidate, index, candidates)
+				FOREACH(WString, candidate, candidates)
 				{
 					description += L"\r\n\t";
 					description += candidate;
@@ -402,6 +402,25 @@ WfErrors
 				else
 				{
 					return new ParsingError(node, L"C10: Static function \"" + operatorName + L"AndRead\" does not exist in type \"" + type->GetTypeFriendlyName() + L"\".");
+				}
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::CoOperatorCannotResolveResultType(WfCoOperatorStatement* node, collections::List<reflection::description::ITypeInfo*>& types)
+			{
+				auto operatorName = node->opName.value.Right(node->opName.value.Length() - 1);
+				if (node->arguments.Count() == 0)
+				{
+					return new ParsingError(node, L"C11: Failed to resolve the result type of coroutine operator \"" + operatorName + L"\", since there is no argument.");
+				}
+				else
+				{
+					WString description;
+					FOREACH(ITypeInfo*, type, types)
+					{
+						description += L"\r\n\t";
+						description += type->GetTypeFriendlyName();
+					}
+					return new ParsingError(node, L"C11: Failed to resolve the result type of coroutine operator \"" + operatorName + L"\", no appropriate static function \"CastResult\" is found in the following types. It requires exactly one argument of type \"object\" with a return type which is not \"void\": " + description + L".");
 				}
 			}
 

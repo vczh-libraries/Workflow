@@ -1,0 +1,25 @@
+module test;
+using system::*;
+
+interface IA
+{
+	static func CastResult() : void {}
+	static func CastResult(a : object, b : object) : string {}
+}
+
+interface IB
+{
+	static func CastResult(o : object) : string {}
+}
+
+class XCoroutine
+{
+	static func AwaitAndRead(a : IA^, b : IB^):void
+	{
+	}
+}
+
+func main():void
+$X{
+	var result = $Await new IA^{}, new IB^{};
+}
