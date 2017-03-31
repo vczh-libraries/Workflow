@@ -470,6 +470,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CannotReturnExpression(WfStatement* node);
 				static Ptr<parsing::ParsingError>			WrongCoPause(WfStatement* node);
 				static Ptr<parsing::ParsingError>			WrongCoOperator(WfStatement* node);
+				static Ptr<parsing::ParsingError>			CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);

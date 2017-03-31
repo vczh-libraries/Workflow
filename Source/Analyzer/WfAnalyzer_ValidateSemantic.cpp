@@ -790,7 +790,135 @@ ValidateSemantic(Statement)
 
 				void Visit(WfCoProviderStatement* node)override
 				{
-					throw 0;
+					auto scope = manager->nodeScopes[node].Obj();
+					auto symbol = scope->symbols[L"$PROVIDER"][0];
+					ITypeDescriptor* selectedProviderTd = nullptr;
+					List<WString> candidates;
+
+					if (node->name.value == L"")
+					{
+						auto decl = scope->parentScope->ownerNode.Cast<WfFunctionDeclaration>();
+						auto funcSymbol = manager->GetDeclarationSymbol(scope->parentScope.Obj(), decl.Obj());
+						if (funcSymbol->typeInfo)
+						{
+							List<ITypeDescriptor*> unprocessed;
+							unprocessed.Add(funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0)->GetTypeDescriptor());
+
+							for (vint i = 0; i < unprocessed.Count(); i++)
+							{
+								auto td = unprocessed[i];
+								auto candidate = td->GetTypeName() + L"Coroutine";
+								if ((selectedProviderTd = description::GetTypeDescriptor(candidate)))
+								{
+									break;
+								}
+								else
+								{
+									candidates.Add(candidate);
+								}
+
+								vint count = td->GetBaseTypeDescriptorCount();
+								for (vint i = 0; i < count; i++)
+								{
+									auto baseTd = td->GetBaseTypeDescriptor(i);
+									if (!unprocessed.Contains(baseTd))
+									{
+										unprocessed.Add(baseTd);
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						List<ResolveExpressionResult> results, resolveResults;
+						auto providerName = node->name.value.Right(node->name.value.Length() - 1);
+
+						if (manager->ResolveName(scope, providerName, resolveResults))
+						{
+							CopyFrom(results, resolveResults);
+
+							for (vint i = results.Count() - 1; i >= 0; i--)
+							{
+								auto& result = results[i];
+								ITypeDescriptor* providerTd = nullptr;
+
+								if (result.scopeName && result.scopeName->typeDescriptor)
+								{
+									auto candidate = result.scopeName->typeDescriptor->GetTypeName() + L"Coroutine";
+									providerTd = description::GetTypeDescriptor(candidate);
+									if (providerTd)
+									{
+										selectedProviderTd = providerTd;
+									}
+									else
+									{
+										candidates.Add(candidate);
+									}
+								}
+
+								if (!providerTd)
+								{
+									results.RemoveAt(i);
+								}
+							}
+
+							if (results.Count() == 1)
+							{
+								goto FINISH_SEARCHING;
+							}
+							else if (results.Count() > 1)
+							{
+								manager->errors.Add(WfErrors::TooManyTargets(node, resolveResults, providerName));
+								goto SKIP_SEARCHING;
+							}
+						}
+
+						resolveResults.Clear();
+						if (manager->ResolveName(scope, providerName + L"Coroutine", resolveResults))
+						{
+							CopyFrom(results, resolveResults);
+
+							for (vint i = results.Count() - 1; i >= 0; i--)
+							{
+								auto& result = results[i];
+
+								if (result.scopeName && result.scopeName->typeDescriptor)
+								{
+									selectedProviderTd = result.scopeName->typeDescriptor;
+								}
+								else
+								{
+									results.RemoveAt(i);
+								}
+							}
+
+							if (results.Count() == 1)
+							{
+								goto FINISH_SEARCHING;
+							}
+							else if (results.Count() > 1)
+							{
+								manager->errors.Add(WfErrors::TooManyTargets(node, resolveResults, providerName));
+								goto SKIP_SEARCHING;
+							}
+						}
+
+						candidates.Add(providerName);
+						candidates.Add(providerName + L"Coroutine");
+					}
+
+				FINISH_SEARCHING:
+					if (selectedProviderTd)
+					{
+						symbol->typeInfo = MakePtr<TypeDescriptorTypeInfo>(selectedProviderTd, TypeInfoHint::Normal);
+					}
+					else
+					{
+						manager->errors.Add(WfErrors::CoProviderNotExists(node, candidates));
+					}
+				SKIP_SEARCHING:
+					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override

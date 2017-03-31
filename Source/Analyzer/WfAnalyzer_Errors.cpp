@@ -369,6 +369,24 @@ WfErrors
 				return new ParsingError(node, L"C8: $Operator statement should appear inside a coroutine function (which has a functiona body like ${} or $Provider{}).");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates)
+			{
+				WString description;
+				FOREACH_INDEXER(WString, candidate, index, candidates)
+				{
+					description += L"\r\n\t";
+					description += candidate;
+				}
+				if (node->name.value == L"")
+				{
+					return new ParsingError(node, L"C9: Cannot find a coroutine provider based on the function return type, all of the following types do not exist: " + description + L".");
+				}
+				else
+				{
+					return new ParsingError(node, L"C9: Cannot find a coroutine provider based on the provider name \"" + node->name.value.Right(node->name.value.Length() - 1) + L"\", all of the following types do not exist: " + description + L".");
+				}
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
