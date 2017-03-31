@@ -437,12 +437,18 @@ BuildScopeForStatement
 				void Visit(WfCoProviderStatement* node)override
 				{
 					resultScope = new WfLexicalScope(parentScope);
-
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
-					symbol->name = L"$PROVIDER";
-					symbol->creatorNode = node;
-					resultScope->symbols.Add(symbol->name, symbol);
-
+					{
+						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						symbol->name = L"$PROVIDER";
+						symbol->creatorNode = node;
+						resultScope->symbols.Add(symbol->name, symbol);
+					}
+					{
+						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						symbol->name = L"$IMPL";
+						symbol->creatorNode = node;
+						resultScope->symbols.Add(symbol->name, symbol);
+					}
 					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 

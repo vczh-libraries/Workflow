@@ -389,7 +389,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::CoOperatorNotExists(WfReturnStatement* node, reflection::description::ITypeInfo* type)
 			{
-				return new ParsingError(node, L"C10: Static function \"ReturnAndExit\" does not exist in type \"" + type->GetTypeFriendlyName() + L"\".");
+				return new ParsingError(node, L"C10: Static function \"ReturnAndExit\" does not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::CoOperatorNotExists(WfCoOperatorStatement* node, reflection::description::ITypeInfo* type)
@@ -397,11 +397,11 @@ WfErrors
 				auto operatorName = node->opName.value.Right(node->opName.value.Length() - 1);
 				if (node->varName.value == L"")
 				{
-					return new ParsingError(node, L"C10: Static functions \"" + operatorName + L"AndPause\" and \"" + operatorName + L"AndRead\" do not exist in type \"" + type->GetTypeFriendlyName() + L"\".");
+					return new ParsingError(node, L"C10: Static functions \"" + operatorName + L"AndPause\" and \"" + operatorName + L"AndRead\" do not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\".");
 				}
 				else
 				{
-					return new ParsingError(node, L"C10: Static function \"" + operatorName + L"AndRead\" does not exist in type \"" + type->GetTypeFriendlyName() + L"\".");
+					return new ParsingError(node, L"C10: Static function \"" + operatorName + L"AndRead\" does not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\".");
 				}
 			}
 
@@ -422,6 +422,16 @@ WfErrors
 					}
 					return new ParsingError(node, L"C11: Failed to resolve the result type of coroutine operator \"" + operatorName + L"\", no appropriate static function \"CastResult\" is found in the following types. It requires exactly one argument of type \"object\" with a return type which is not \"void\": " + description + L".");
 				}
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::CoProviderCreateNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type)
+			{
+				return new ParsingError(node, L"C12: The required static function \"Create\" does not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\". It is required to have exactly one argument of a function type, which consumes a pointer type and returns system::Coroutine^");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::CoProviderCreateAndRunNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type)
+			{
+				return new ParsingError(node, L"C12: The required static function \"CreateAndRun\" does not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\". It is required to have exactly one argument of a function type, which consumes a pointer type and returns system::Coroutine^");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)

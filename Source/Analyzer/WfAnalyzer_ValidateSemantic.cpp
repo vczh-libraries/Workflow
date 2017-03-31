@@ -64,10 +64,10 @@ Helper Functions
 				List<Ptr<ITypeInfo>> types;
 				FOREACH(Ptr<WfExpression>, argument, arguments)
 				{
-					if (IsExpressionDependOnExpectedType(manager, argument))
+					if (!argument || IsExpressionDependOnExpectedType(manager, argument))
 					{
 						resolvables.Add(false);
-						types.Add(0);
+						types.Add(nullptr);
 					}
 					else
 					{
@@ -138,7 +138,10 @@ Helper Functions
 						if (!resolvables[i])
 						{
 							ITypeInfo* argumentType = genericType->GetGenericArgument(i + 1);
-							GetExpressionType(manager, arguments[i], CopyTypeInfo(argumentType));
+							if (arguments[i])
+							{
+								GetExpressionType(manager, arguments[i], CopyTypeInfo(argumentType));
+							}
 						}
 					}
 					return CopyTypeInfo(genericType->GetGenericArgument(0));
@@ -606,8 +609,10 @@ ValidateSemantic(Statement)
 					{
 						if (funcDecl->statement.Cast<WfCoProviderStatement>())
 						{
-							auto providerSymbol = manager->nodeScopes[funcDecl->statement.Obj()]->symbols[L"$PROVIDER"][0];
-							if (providerSymbol->typeInfo)
+							auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
+							auto providerSymbol = providerScope->symbols[L"$PROVIDER"][0];
+							auto implSymbol = providerScope->symbols[L"$IMPL"][0];
+							if (providerSymbol->typeInfo && implSymbol->typeInfo)
 							{
 								if (auto group = providerSymbol->typeInfo->GetTypeDescriptor()->GetMethodGroupByName(L"ReturnAndExit", true))
 								{
@@ -618,12 +623,16 @@ ValidateSemantic(Statement)
 										auto method = group->GetMethod(i);
 										if (method->IsStatic())
 										{
-											functions.Add(ResolveExpressionResult::Method(method));
+											if (method->GetParameterCount() > 0 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
+											{
+												functions.Add(ResolveExpressionResult::Method(method));
+											}
 										}
 									}
 
 									vint selectedFunctionIndex = -1;
 									List<Ptr<WfExpression>> arguments;
+									arguments.Add(nullptr);
 									if (node->expression)
 									{
 										arguments.Add(node->expression);
@@ -830,18 +839,26 @@ ValidateSemantic(Statement)
 				void Visit(WfCoProviderStatement* node)override
 				{
 					auto scope = manager->nodeScopes[node].Obj();
-					auto symbol = scope->symbols[L"$PROVIDER"][0];
-					ITypeDescriptor* selectedProviderTd = nullptr;
-					List<WString> candidates;
-
-					if (node->name.value == L"")
+					auto providerSymbol = scope->symbols[L"$PROVIDER"][0];
+					auto implSymbol = scope->symbols[L"$IMPL"][0];
+					ITypeInfo* funcReturnType = nullptr;
 					{
 						auto decl = scope->parentScope->ownerNode.Cast<WfFunctionDeclaration>();
 						auto funcSymbol = manager->GetDeclarationSymbol(scope->parentScope.Obj(), decl.Obj());
 						if (funcSymbol->typeInfo)
 						{
+							funcReturnType = funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0);
+						}
+					}
+					ITypeDescriptor* selectedProviderTd = nullptr;
+					List<WString> candidates;
+
+					if (node->name.value == L"")
+					{
+						if (funcReturnType)
+						{
 							List<ITypeDescriptor*> unprocessed;
-							unprocessed.Add(funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0)->GetTypeDescriptor());
+							unprocessed.Add(funcReturnType->GetTypeDescriptor());
 
 							for (vint i = 0; i < unprocessed.Count(); i++)
 							{
@@ -950,14 +967,83 @@ ValidateSemantic(Statement)
 				FINISH_SEARCHING:
 					if (selectedProviderTd)
 					{
-					symbol->typeInfo = MakePtr<TypeDescriptorTypeInfo>(selectedProviderTd, TypeInfoHint::Normal);
+						providerSymbol->typeInfo = MakePtr<TypeDescriptorTypeInfo>(selectedProviderTd, TypeInfoHint::Normal);
+
+						if (funcReturnType)
+						{
+							WString creatorName;
+							if (funcReturnType->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+							{
+								creatorName = L"CreateAndRun";
+							}
+							else
+							{
+								creatorName = L"Create";
+							}
+
+							if (auto group = selectedProviderTd->GetMethodGroupByName(creatorName, true))
+							{
+								List<ResolveExpressionResult> results;
+								ITypeInfo* selectedImplType = nullptr;
+								vint count = group->GetMethodCount();
+
+								for (vint i = 0; i < count; i++)
+								{
+									auto method = group->GetMethod(i);
+									if (method->IsStatic())
+									{
+										if (method->GetParameterCount() == 1)
+										{
+											auto creatorType = method->GetParameter(0)->GetType();
+											if (creatorType->GetDecorator() == ITypeInfo::SharedPtr)
+											{
+												auto functionType = creatorType->GetElementType();
+												if (functionType->GetDecorator() == ITypeInfo::Generic &&
+													functionType->GetGenericArgumentCount() == 2 &&
+													functionType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>()
+													)
+												{
+													auto returnType = functionType->GetGenericArgument(0);
+													if (returnType->GetDecorator() == ITypeInfo::SharedPtr &&returnType->GetTypeDescriptor() == description::GetTypeDescriptor<ICoroutine>())
+													{
+														selectedImplType = functionType->GetGenericArgument(1);
+														results.Add(ResolveExpressionResult::Method(method));
+													}
+												}
+											}
+										}
+									}
+								}
+
+								if (results.Count() == 1)
+								{
+									implSymbol->typeInfo = CopyTypeInfo(selectedImplType);
+								}
+								else if (results.Count() > 1)
+								{
+									manager->errors.Add(WfErrors::TooManyTargets(node, results, creatorName));
+								}
+							}
+
+							if (!implSymbol->typeInfo)
+							{
+								if (funcReturnType->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+								{
+									manager->errors.Add(WfErrors::CoProviderCreateAndRunNotExists(node, providerSymbol->typeInfo.Obj()));
+								}
+								else
+								{
+									manager->errors.Add(WfErrors::CoProviderCreateNotExists(node, providerSymbol->typeInfo.Obj()));
+								}
+							}
+						}
 					}
 					else
 					{
 						manager->errors.Add(WfErrors::CoProviderNotExists(node, candidates));
 					}
 				SKIP_SEARCHING:
-				ValidateStatementSemantic(manager, node->statement);
+					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override
@@ -981,8 +1067,10 @@ ValidateSemantic(Statement)
 					{
 						if (funcDecl->statement.Cast<WfCoProviderStatement>())
 						{
-							auto providerSymbol = manager->nodeScopes[funcDecl->statement.Obj()]->symbols[L"$PROVIDER"][0];
-							if (providerSymbol->typeInfo)
+							auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
+							auto providerSymbol = providerScope->symbols[L"$PROVIDER"][0];
+							auto implSymbol = providerScope->symbols[L"$IMPL"][0];
+							if (providerSymbol->typeInfo && implSymbol->typeInfo)
 							{
 								List<IMethodGroupInfo*> groups;
 								auto operatorName = node->opName.value.Right(node->opName.value.Length() - 1);
@@ -1013,14 +1101,20 @@ ValidateSemantic(Statement)
 											auto method = group->GetMethod(i);
 											if (method->IsStatic())
 											{
-												functions.Add(ResolveExpressionResult::Method(method));
+												if (method->GetParameterCount() > 0 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
+												{
+													functions.Add(ResolveExpressionResult::Method(method));
+												}
 											}
 										}
 									}
 
 									vint selectedFunctionIndex = -1;
 									vint oldErrorCount = manager->errors.Count();
-									SelectFunction(manager, node, nullptr, functions, node->arguments, selectedFunctionIndex);
+									List<Ptr<WfExpression>> arguments;
+									arguments.Add(nullptr);
+									CopyFrom(arguments, node->arguments, true);
+									SelectFunction(manager, node, nullptr, functions, arguments, selectedFunctionIndex);
 									if (selectedFunctionIndex != -1)
 									{
 										manager->coOperatorResolvings.Add(node, functions[selectedFunctionIndex]);
