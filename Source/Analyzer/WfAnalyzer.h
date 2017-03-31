@@ -148,6 +148,7 @@ Scope Manager
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
+				typedef collections::Dictionary<Ptr<WfStatement>, ResolveExpressionResult>					CoOperatorResolvingMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
@@ -177,6 +178,7 @@ Scope Manager
 
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
 				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
+				CoOperatorResolvingMap						coOperatorResolvings;			// the resolving result for the co-operator statement
 				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
 				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
@@ -471,6 +473,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongCoPause(WfStatement* node);
 				static Ptr<parsing::ParsingError>			WrongCoOperator(WfStatement* node);
 				static Ptr<parsing::ParsingError>			CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates);
+				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfReturnStatement* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfCoOperatorStatement* node, reflection::description::ITypeInfo* type);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);

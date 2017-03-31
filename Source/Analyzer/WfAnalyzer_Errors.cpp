@@ -387,6 +387,24 @@ WfErrors
 				}
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::CoOperatorNotExists(WfReturnStatement* node, reflection::description::ITypeInfo* type)
+			{
+				return new ParsingError(node, L"C10: Static function \"ReturnAndExit\" does not exist in type \"" + type->GetTypeFriendlyName() + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::CoOperatorNotExists(WfCoOperatorStatement* node, reflection::description::ITypeInfo* type)
+			{
+				auto operatorName = node->opName.value.Right(node->opName.value.Length() - 1);
+				if (node->varName.value == L"")
+				{
+					return new ParsingError(node, L"C10: Static functions \"" + operatorName + L"AndPause\" and \"" + operatorName + L"AndRead\" do not exist in type \"" + type->GetTypeFriendlyName() + L"\".");
+				}
+				else
+				{
+					return new ParsingError(node, L"C10: Static function \"" + operatorName + L"AndRead\" does not exist in type \"" + type->GetTypeFriendlyName() + L"\".");
+				}
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
