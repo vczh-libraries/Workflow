@@ -1097,7 +1097,10 @@ ValidateStructure(Statement)
 
 				void Visit(WfCoProviderStatement* node)override
 				{
-					throw 0;
+					auto oldProvider = context->currentCoProviderStatement;
+					context->currentCoProviderStatement = node;
+					ValidateStatementStructure(manager, context, node->statement);
+					context->currentCoProviderStatement = oldProvider;
 				}
 
 				void Visit(WfCoroutineStatement* node)override
@@ -1122,7 +1125,10 @@ ValidateStructure(Statement)
 
 				void Visit(WfCoOperatorStatement* node)override
 				{
-					throw 0;
+					if (!context->currentCoProviderStatement)
+					{
+						manager->errors.Add(WfErrors::WrongCoOperator(node));
+					}
 				}
 
 				static void Execute(Ptr<WfStatement>& statement, WfLexicalScopeManager* manager, ValidateStructureContext* context)

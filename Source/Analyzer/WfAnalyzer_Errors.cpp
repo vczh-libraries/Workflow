@@ -361,7 +361,12 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::WrongCoPause(WfStatement* node)
 			{
-				return new ParsingError(node, L"C7: $pause statement should appear inside a $coroutine expression. But it is not allowed if the $pause statement appears inside another $pause statement or any kind of lambda expression that is contained in the $coroutine expression.");
+				return new ParsingError(node, L"C7: $pause statement should appear inside a $coroutine expression, and it cannot be nested.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongCoOperator(WfStatement* node)
+			{
+				return new ParsingError(node, L"C8: $Operator statement should appear inside a coroutine function (which has a functiona body like ${} or $Provider{}).");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)

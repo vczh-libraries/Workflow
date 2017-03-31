@@ -436,7 +436,14 @@ BuildScopeForStatement
 
 				void Visit(WfCoProviderStatement* node)override
 				{
-					throw 0;
+					resultScope = new WfLexicalScope(parentScope);
+
+					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+					symbol->name = L"$PROVIDER";
+					symbol->creatorNode = node;
+					resultScope->symbols.Add(symbol->name, symbol);
+
+					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 
 				void Visit(WfCoroutineStatement* node)override
@@ -454,7 +461,18 @@ BuildScopeForStatement
 
 				void Visit(WfCoOperatorStatement* node)override
 				{
-					throw 0;
+					if (node->varName.value != L"")
+					{
+						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+						symbol->name = node->varName.value;
+						symbol->creatorNode = node;
+						parentScope->symbols.Add(symbol->name, symbol);
+					}
+
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						BuildScopeForExpression(manager, parentScope, argument);
+					}
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
