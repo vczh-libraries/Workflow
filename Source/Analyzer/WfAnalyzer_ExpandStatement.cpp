@@ -7,6 +7,7 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
+			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
 
@@ -360,6 +361,79 @@ ExpandForEachStatement
 ExpandCoProviderStatement
 ***********************************************************************/
 
+			class ExpandCoProviderStatementVisitor
+				: public copy_visitor::StatementVisitor
+				, public copy_visitor::CoroutineStatementVisitor
+			{
+			public:
+				WfLexicalScopeManager*						manager;
+
+				ExpandCoProviderStatementVisitor(WfLexicalScopeManager* _manager)
+					:manager(_manager)
+				{
+				}
+
+				Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				{
+					return CopyExpression(from);
+				}
+
+				Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
+				{
+					return CopyType(from);
+				}
+
+				Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
+				{
+					from->Accept(this);
+					return result.Cast<WfStatement>();
+				}
+
+				void Visit(WfReturnStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfCoOperatorStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfBlockStatement* node)override
+				{
+					auto block = MakePtr<WfBlockStatement>();
+					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					{
+						while (auto virtualStat = statement.Cast<WfVirtualStatement>())
+						{
+							statement = virtualStat->expandedStatement;
+						}
+						if (auto coOperatorStat = statement.Cast<WfCoOperatorStatement>())
+						{
+							coOperatorStat->Accept(this);
+							CopyFrom(block->statements, result.Cast<WfBlockStatement>()->statements, true);
+						}
+						else
+						{
+							block->statements.Add(CreateField(statement));
+						}
+					}
+					result = block;
+				}
+
+				Ptr<ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node)override
+				{
+					node->expandedStatement->Accept(this);
+					return result;
+				}
+
+				Ptr<ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node)override
+				{
+					node->Accept((WfCoroutineStatement::IVisitor*)this);
+					return result;
+				}
+			};
+
 			void ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node)
 			{
 				auto scope = manager->nodeScopes[node].Obj();
@@ -372,7 +446,7 @@ ExpandCoProviderStatement
 				auto coroutineExpr = MakePtr<WfNewCoroutineExpression>();
 				{
 					auto coBlock = MakePtr<WfBlockStatement>();
-					coroutineExpr->statement = coBlock;
+					coroutineExpr->statement = ExpandCoProviderStatementVisitor(manager).CreateField(node->statement);
 				}
 
 				auto creatorExpr = MakePtr<WfFunctionExpression>();
