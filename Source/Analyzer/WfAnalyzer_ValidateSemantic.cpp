@@ -1152,7 +1152,7 @@ ValidateSemantic(Statement)
 																if (method->IsStatic())
 																{
 																	if (method->GetParameterCount() == 1 &&
-																		method->GetParameter(0)->GetType()->GetTypeDescriptor() == description::GetTypeDescriptor<DescriptableObject>() &&
+																		method->GetParameter(0)->GetType()->GetTypeDescriptor() == description::GetTypeDescriptor<Value>() &&
 																		method->GetReturn()->GetTypeDescriptor() != description::GetTypeDescriptor<void>()
 																		)
 																	{

@@ -156,11 +156,39 @@ Hinters
 		CopyFrom(hinter->dictionary, xs);
 		return hinter->dictionary;
 	}
-}
+
+/***********************************************************************
+SyncScheduler
+***********************************************************************/
+
+	void SyncScheduler::Run(const Func<void()>& callback)
+	{
+		auto scheduler = MakePtr<SyncScheduler>();
+		IAsyncScheduler::RegisterDefaultScheduler(scheduler);
+		callback();
+		while (scheduler->tasks.Count() > 0)
+		{
+			auto firstTask = scheduler->tasks[0];
+			scheduler->tasks.RemoveAt(0);
+			firstTask();
+		}
+		IAsyncScheduler::UnregisterDefaultScheduler();
+	}
+
+	void SyncScheduler::Execute(const Func<void()>& callback)
+	{
+		tasks.Add(callback);
+	}
+
+	void SyncScheduler::DelayExecute(const Func<void()>& callback, vint milliseconds)
+	{
+		tasks.Add(callback);
+	}
 
 /***********************************************************************
 Metadata
 ***********************************************************************/
+}
 
 namespace vl
 {
@@ -229,6 +257,10 @@ namespace vl
 				CLASS_MEMBER_PROPERTY_FAST(Storage)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MyList)
 			END_CLASS_MEMBER(Hinters)
+
+			BEGIN_CLASS_MEMBER(SyncScheduler)
+				CLASS_MEMBER_STATIC_METHOD(Run, { L"callback "})
+			END_CLASS_MEMBER(SyncScheduler)
 
 			class UnitTestTypeLoader : public Object, public ITypeLoader
 			{

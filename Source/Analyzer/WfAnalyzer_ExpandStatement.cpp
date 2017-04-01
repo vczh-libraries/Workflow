@@ -528,7 +528,7 @@ ExpandCoProviderStatement
 						auto castResultInfo = manager->coCastResultResolvings[node].methodInfo;
 						auto refCastResult = MakePtr<WfChildExpression>();
 						refCastResult->parent = GetExpressionFromTypeDescriptor(castResultInfo->GetOwnerTypeDescriptor());
-						refCastResult->name.value = refCastResult->name.value;
+						refCastResult->name.value = L"CastResult";
 
 						auto callExpr = MakePtr<WfCallExpression>();
 						callExpr->function = refCastResult;
@@ -662,7 +662,149 @@ ExpandCoProviderStatement
 						}
 						else
 						{
-							throw 0;
+							{
+								auto varDecl = MakePtr<WfVariableDeclaration>();
+								varDecl->name.value = L"<co-mixin-source-variable>";
+								varDecl->expression = callExpr;
+
+								auto stat = MakePtr<WfVariableStatement>();
+								stat->variable = varDecl;
+								providerBlock->statements.Add(stat);
+							}
+							{
+								auto newExpr = MakePtr<WfNewInterfaceExpression>();
+								newExpr->type = GetTypeFromTypeInfo(funcReturnType);
+								{
+									auto refExpr = MakePtr<WfReferenceExpression>();
+									refExpr->name.value = L"<co-mixin-source-variable>";
+
+									auto varDecl = MakePtr<WfVariableDeclaration>();
+									newExpr->declarations.Add(varDecl);
+									{
+										varDecl->classMember = MakePtr<WfClassMember>();
+										varDecl->classMember->kind = WfClassMemberKind::Normal;
+									}
+									varDecl->name.value = L"<co-mixin-source>";
+									varDecl->expression = refExpr;
+
+									if (creatorInfo->GetReturn()->GetDecorator() == ITypeInfo::RawPtr)
+									{
+										auto tdType = MakePtr<TypeDescriptorTypeInfo>(creatorInfo->GetReturn()->GetTypeDescriptor(), TypeInfoHint::Normal);
+										auto pointerType = MakePtr<SharedPtrTypeInfo>(tdType);
+
+										auto castExpr = MakePtr<WfTypeCastingExpression>();
+										castExpr->strategy = WfTypeCastingStrategy::Strong;
+										castExpr->expression = callExpr;
+										castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+
+										varDecl->expression = castExpr;
+									}
+								}
+								List<ITypeDescriptor*> unprocessed;
+								unprocessed.Add(creatorInfo->GetReturn()->GetTypeDescriptor());
+								for (vint i = 0; i < unprocessed.Count(); i++)
+								{
+									auto td = unprocessed[i];
+									vint groupCount = td->GetMethodGroupCount();
+									for (vint j = 0; j < groupCount; j++)
+									{
+										auto group = td->GetMethodGroup(j);
+										vint methodCount = group->GetMethodCount();
+										for (vint k = 0; k < methodCount; k++)
+										{
+											auto method = group->GetMethod(k);
+											if (!method->IsStatic())
+											{
+												auto funcDecl = MakePtr<WfFunctionDeclaration>();
+												newExpr->declarations.Add(funcDecl);
+												{
+													funcDecl->classMember = MakePtr<WfClassMember>();
+													funcDecl->classMember->kind = WfClassMemberKind::Override;
+												}
+												funcDecl->anonymity = WfFunctionAnonymity::Named;
+												funcDecl->name.value = method->GetName();
+												funcDecl->returnType = GetTypeFromTypeInfo(method->GetReturn());
+												vint parameterCount = method->GetParameterCount();
+												for (vint l = 0; l < parameterCount; l++)
+												{
+													auto parameter = method->GetParameter(l);
+													auto argument = MakePtr<WfFunctionArgument>();
+													argument->name.value = parameter->GetName();
+													argument->type = GetTypeFromTypeInfo(parameter->GetType());
+													funcDecl->arguments.Add(argument);
+												}
+
+												auto implBlock = MakePtr<WfBlockStatement>();
+												funcDecl->statement = implBlock;
+												{
+													auto refSource = MakePtr<WfReferenceExpression>();
+													refSource->name.value = L"<co-mixin-source>";
+
+													auto castExpr = MakePtr<WfTypeCastingExpression>();
+													castExpr->strategy = WfTypeCastingStrategy::Strong;
+													castExpr->expression = refSource;
+													{
+														auto tdType = MakePtr<TypeDescriptorTypeInfo>(creatorInfo->GetReturn()->GetTypeDescriptor(), TypeInfoHint::Normal);
+														auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
+														castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+													}
+
+													auto inferExpr = MakePtr<WfInferExpression>();
+													inferExpr->expression = castExpr;
+													{
+														auto tdType = MakePtr<TypeDescriptorTypeInfo>(method->GetOwnerTypeDescriptor(), TypeInfoHint::Normal);
+														auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
+														inferExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+													}
+
+													auto memberExpr = MakePtr<WfMemberExpression>();
+													memberExpr->parent = inferExpr;
+													memberExpr->name.value = method->GetName();
+
+													auto callExpr = MakePtr<WfCallExpression>();
+													callExpr->function = memberExpr;
+
+													for (vint l = 0; l < parameterCount; l++)
+													{
+														auto parameter = method->GetParameter(l);
+
+														auto argumentExpr = MakePtr<WfReferenceExpression>();
+														argumentExpr->name.value = parameter->GetName();
+														callExpr->arguments.Add(argumentExpr);
+													}
+
+													if (method->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+													{
+														auto stat = MakePtr<WfExpressionStatement>();
+														stat->expression = callExpr;
+														implBlock->statements.Add(stat);
+													}
+													else
+													{
+														auto stat = MakePtr<WfReturnStatement>();
+														stat->expression = callExpr;
+														implBlock->statements.Add(stat);
+													}
+												}
+											}
+										}
+									}
+
+									vint count = td->GetBaseTypeDescriptorCount();
+									for (vint j = 0; j < count; j++)
+									{
+										auto baseTd = td->GetBaseTypeDescriptor(j);
+										if (!unprocessed.Contains(baseTd))
+										{
+											unprocessed.Add(baseTd);
+										}
+									}
+								}
+
+								auto stat = MakePtr<WfReturnStatement>();
+								stat->expression = newExpr;
+								providerBlock->statements.Add(stat);
+							}
 						}
 					}
 				}

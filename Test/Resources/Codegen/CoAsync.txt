@@ -1,0 +1,36 @@
+module test;
+using system::*;
+using test::*;
+
+var s = "";
+
+interface IStringAsync : Async
+{
+	static func CastResult(value : object) : string
+	{
+		return cast string value;
+	}
+}
+
+func GetStringAsync(x : int) : IStringAsync^
+${
+	s = $"$(s)[$(x)]";
+	return cast string x;
+}
+
+func GetMultipleString() : void
+$Async{
+	for(i in range[0, 1])
+	{
+		var x = $Await GetStringAsync(i);
+		s = $"$(s)[+$(i)]";
+		$Await Async::Delay(0);
+		s = $"$(s)!";
+	}
+}
+
+func main():string
+{
+	SyncScheduler::Run([GetMultipleString()]);
+	return s;
+}

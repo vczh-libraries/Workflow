@@ -95,6 +95,17 @@ namespace test
 	extern Hinters*							CreateHinter(vint);
 	extern Dictionary<vint, vint>&			GetDictionaryFromHinter(Hinters* hinter, Dictionary<vint, vint>& xs);
 	extern const Dictionary<vint, vint>&	GetReadonlyDictionaryFromHinter(Hinters* hinter, const Dictionary<vint, vint>& xs);
+
+	class SyncScheduler : public Object, public IAsyncScheduler, public Description<SyncScheduler>
+	{
+	public:
+		List<Func<void()>>		tasks;
+
+		static void Run(const Func<void()>& callback);
+
+		void Execute(const Func<void()>& callback)override;
+		void DelayExecute(const Func<void()>& callback, vint milliseconds)override;
+	};
 }
 
 namespace vl
@@ -111,6 +122,7 @@ namespace vl
 			F(test::ObservableValue)\
 			F(test::CustomInterfaceProcessor)\
 			F(test::Hinters)\
+			F(test::SyncScheduler)\
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
 

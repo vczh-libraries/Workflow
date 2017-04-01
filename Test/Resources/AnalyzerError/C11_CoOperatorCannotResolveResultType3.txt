@@ -9,7 +9,7 @@ interface IA
 
 interface IB
 {
-	static func CastResult(o : object) : string {}
+	func CastResult(o : object) : string;
 }
 
 class XCoroutine
@@ -20,5 +20,11 @@ class XCoroutine
 
 func main():void
 $X{
-	var result = $Await new IA^{}, new IB^{};
+	var result = $Await new IA^{}, new IB^
+	{
+		override func CastResult(o : object) : string
+		{
+			return "";
+		}
+	};
 }
