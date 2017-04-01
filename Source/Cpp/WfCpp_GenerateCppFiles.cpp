@@ -319,51 +319,79 @@ MergeCppFile
 				}
 			}
 
+			template<typename TCallback>
+			void SplitCppContent(const WString& code, Dictionary<WString, WString>& userContents, Dictionary<WString, WString>& userContentsFull, const TCallback& callback)
+			{
+				WString name;
+				WString userImpl;
+				WString userImplFull;
+				ProcessCppContent(code, [&](vint previousState, vint state, const WString& line, const WString& content)
+				{
+					if (state == UNUSED_USER_CONTENT)
+					{
+						callback(line);
+					}
+					else
+					{
+						if (previousState == NORMAL && state == WAIT_HEADER)
+						{
+							name = content;
+							userImpl = L"";
+							userImplFull = L"";
+						}
+						else if (previousState == WAIT_HEADER)
+						{
+							name += content;
+						}
+						else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
+						{
+							userImpl += line + L"\r\n";
+						}
+						else if (previousState == WAIT_CLOSE && state == NORMAL)
+						{
+							userImplFull += L"//" + line + L"\r\n";
+							userContents.Add(name, userImpl);
+							userContentsFull.Add(name, userImplFull);
+							name = L"";
+						}
+
+						if (name != L"")
+						{
+							userImplFull += L"//" + line + L"\r\n";
+						}
+					}
+				});
+			}
+
 			WString MergeCppFileContent(const WString& dst, const WString& src)
 			{
 				Dictionary<WString, WString> userContents, userContentsFull;
 				WString unusedUserContent = GenerateToStream([&](StreamWriter& writer)
 				{
-					WString name;
-					WString userImpl;
-					WString userImplFull;
-					ProcessCppContent(dst, [&](vint previousState, vint state, const WString& line, const WString& content)
+					SplitCppContent(dst, userContents, userContentsFull, [&](const WString& line)
 					{
-						if (state == UNUSED_USER_CONTENT)
-						{
-							writer.WriteLine(line);
-						}
-						else
-						{
-							if (previousState == NORMAL && state == WAIT_HEADER)
-							{
-								name = content;
-								userImpl = L"";
-								userImplFull = L"";
-							}
-							else if (previousState == WAIT_HEADER)
-							{
-								name += content;
-							}
-							else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
-							{
-								userImpl += line + L"\r\n";
-							}
-							else if (previousState == WAIT_CLOSE && state == NORMAL)
-							{
-								userImplFull += L"//" + line + L"\r\n";
-								userContents.Add(name, userImpl);
-								userContentsFull.Add(name, userImplFull);
-								name = L"";
-							}
-
-							if (name != L"")
-							{
-								userImplFull += L"//" + line + L"\r\n";
-							}
-						}
+						writer.WriteLine(line);
 					});
 				});
+
+				WString processedUnusedUserContent = GenerateToStream([&](StreamWriter& writer)
+				{
+					StringReader reader(unusedUserContent);
+					while (!reader.IsEnd())
+					{
+						auto line = reader.ReadLine();
+						if (line != L"// UNUSED_USER_CONTENT:")
+						{
+							if (INVLOC.StartsWith(line, L"//", Locale::None))
+							{
+								line = line.Right(line.Length() - 2);
+							}
+							writer.WriteLine(line);
+						}
+					}
+				});
+
+				SplitCppContent(processedUnusedUserContent, userContents, userContentsFull, [&](const WString& line) {});
 				
 				return GenerateToStream([&](StreamWriter& writer)
 				{
@@ -401,13 +429,9 @@ MergeCppFile
 						writer.WriteLine(line);
 					});
 
-					writer.WriteString(unusedUserContent);
 					if (userContentsFull.Count() > 0)
 					{
-						if (unusedUserContent == L"")
-						{
-							writer.WriteLine(L"// UNUSED_USER_CONTENT:");
-						}
+						writer.WriteLine(L"// UNUSED_USER_CONTENT:");
 						FOREACH(WString, content, userContentsFull.Values())
 						{
 							writer.WriteString(content);
