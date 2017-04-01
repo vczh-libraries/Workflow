@@ -64,3 +64,11 @@ namespace calculator
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+// UNUSED_USER_CONTENT:
+//	USERIMPL(/* ::calculator::Expression */)
+//	::vl::vint64_t Expression::Evaluate()
+//	{
+//		{
+//			return GLOBAL_NAME Evaluate(this);
+//		}
+//	}

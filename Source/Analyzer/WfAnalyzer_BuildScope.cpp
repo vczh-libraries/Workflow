@@ -793,7 +793,7 @@ BuildScopeForExpression
 				{
 				}
 
-				void Visit(WfNewCoroutineExpression* node)
+				void Visit(WfNewCoroutineExpression* node)override
 				{
 					manager->CreateLambdaCapture(node);
 

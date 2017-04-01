@@ -15,7 +15,7 @@ clean:
 
 all:pre-build ./Bin/UnitTest
 
-./Bin/UnitTest:./Obj/Vlpp.o ./Obj/AnonymousLambda.o ./Obj/BindComplex.o ./Obj/BindCustomInterface.o ./Obj/BindCustomInterface2.o ./Obj/BindFormat.o ./Obj/BindSimple.o ./Obj/CallStaticMethod.o ./Obj/ClassCtor.o ./Obj/ClassDtor.o ./Obj/ClassField.o ./Obj/ClassMethod.o ./Obj/ControlFlow.o ./Obj/Delete.o ./Obj/ElementInSet.o ./Obj/EnumCtor.o ./Obj/EnumCtor2.o ./Obj/Event.o ./Obj/FailedThen.o ./Obj/ForEach.o ./Obj/GlobalVariable.o ./Obj/HelloWorld.o ./Obj/IfNotNull.o ./Obj/LetIn.o ./Obj/ListProcessing.o ./Obj/MapProcessing.o ./Obj/MethodClosure.o ./Obj/NamedLambda.o ./Obj/NestedLambda.o ./Obj/NewCustomInterface.o ./Obj/NewCustomInterface2.o ./Obj/NewCustomInterface3.o ./Obj/NewInterface.o ./Obj/OpAdd.o ./Obj/OpAnd.o ./Obj/OpCompare.o ./Obj/OpCompareReference.o ./Obj/OpDiv.o ./Obj/OpMod.o ./Obj/OpMul.o ./Obj/OpNegative.o ./Obj/OpNot.o ./Obj/OpOr.o ./Obj/OpPositive.o ./Obj/OpShl.o ./Obj/OpShr.o ./Obj/OpSub.o ./Obj/OpXor.o ./Obj/OrderedLambda.o ./Obj/Property.o ./Obj/RecursiveFunction.o ./Obj/StaticMethod.o ./Obj/StructCtor.o ./Obj/StructCtor2.o ./Obj/TestCases.o ./Obj/TryCatch.o ./Obj/TryFinally.o ./Obj/WorkflowAttributes.o ./Obj/WorkflowAttributes_BinaryExpression.o ./Obj/WorkflowAttributes_Expression.o ./Obj/WorkflowAttributes_NumberExpression.o ./Obj/WorkflowHints.o ./Obj/CppTypes.o ./Obj/Main.o
+./Bin/UnitTest:./Obj/Vlpp.o ./Obj/AnonymousLambda.o ./Obj/BindComplex.o ./Obj/BindCustomInterface.o ./Obj/BindCustomInterface2.o ./Obj/BindFormat.o ./Obj/BindSimple.o ./Obj/CallStaticMethod.o ./Obj/ClassCtor.o ./Obj/ClassDtor.o ./Obj/ClassField.o ./Obj/ClassMethod.o ./Obj/CoAsync.o ./Obj/CoEnum.o ./Obj/CoEnum2.o ./Obj/ControlFlow.o ./Obj/CoRawCoroutine.o ./Obj/CoRawCoroutine2.o ./Obj/CoRawCoroutine3.o ./Obj/CoRawCoroutine4.o ./Obj/Delete.o ./Obj/ElementInSet.o ./Obj/EnumCtor.o ./Obj/EnumCtor2.o ./Obj/Event.o ./Obj/FailedThen.o ./Obj/ForEach.o ./Obj/GlobalVariable.o ./Obj/HelloWorld.o ./Obj/IfNotNull.o ./Obj/LetIn.o ./Obj/ListProcessing.o ./Obj/MapProcessing.o ./Obj/MethodClosure.o ./Obj/NamedLambda.o ./Obj/NestedLambda.o ./Obj/NewCustomInterface.o ./Obj/NewCustomInterface2.o ./Obj/NewCustomInterface3.o ./Obj/NewInterface.o ./Obj/OpAdd.o ./Obj/OpAnd.o ./Obj/OpCompare.o ./Obj/OpCompareReference.o ./Obj/OpDiv.o ./Obj/OpMod.o ./Obj/OpMul.o ./Obj/OpNegative.o ./Obj/OpNot.o ./Obj/OpOr.o ./Obj/OpPositive.o ./Obj/OpShl.o ./Obj/OpShr.o ./Obj/OpSub.o ./Obj/OpXor.o ./Obj/OrderedLambda.o ./Obj/Property.o ./Obj/RecursiveFunction.o ./Obj/StaticMethod.o ./Obj/StructCtor.o ./Obj/StructCtor2.o ./Obj/TestCases.o ./Obj/TryCatch.o ./Obj/TryFinally.o ./Obj/WorkflowAttributes.o ./Obj/WorkflowAttributes_BinaryExpression.o ./Obj/WorkflowAttributes_Expression.o ./Obj/WorkflowAttributes_NumberExpression.o ./Obj/WorkflowHints.o ./Obj/CppTypes.o ./Obj/Main.o
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../Import/Vlpp.cpp ../../Import/Vlpp.h
@@ -54,7 +54,28 @@ all:pre-build ./Bin/UnitTest
 ./Obj/ClassMethod.o: ../SourceCppGen/ClassMethod.cpp ../SourceCppGen/ClassMethod.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
+./Obj/CoAsync.o: ../SourceCppGen/CoAsync.cpp ../SourceCppGen/CoAsync.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/CoEnum.o: ../SourceCppGen/CoEnum.cpp ../SourceCppGen/CoEnum.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/CoEnum2.o: ../SourceCppGen/CoEnum2.cpp ../SourceCppGen/CoEnum2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
 ./Obj/ControlFlow.o: ../SourceCppGen/ControlFlow.cpp ../SourceCppGen/ControlFlow.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/CoRawCoroutine.o: ../SourceCppGen/CoRawCoroutine.cpp ../SourceCppGen/CoRawCoroutine.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/CoRawCoroutine2.o: ../SourceCppGen/CoRawCoroutine2.cpp ../SourceCppGen/CoRawCoroutine2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/CoRawCoroutine3.o: ../SourceCppGen/CoRawCoroutine3.cpp ../SourceCppGen/CoRawCoroutine3.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/CoRawCoroutine4.o: ../SourceCppGen/CoRawCoroutine4.cpp ../SourceCppGen/CoRawCoroutine4.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
 ./Obj/Delete.o: ../SourceCppGen/Delete.cpp ../SourceCppGen/Delete.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -180,7 +201,7 @@ all:pre-build ./Bin/UnitTest
 ./Obj/StructCtor2.o: ../SourceCppGen/StructCtor2.cpp ../SourceCppGen/StructCtor2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/TestCases.o: ../SourceCppGen/TestCases.cpp ../SourceCppGen/HelloWorld.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/OpNot.h ../SourceCppGen/OpPositive.h ../SourceCppGen/OpNegative.h ../SourceCppGen/OpAdd.h ../SourceCppGen/OpSub.h ../SourceCppGen/OpMul.h ../SourceCppGen/OpDiv.h ../SourceCppGen/OpMod.h ../SourceCppGen/OpShl.h ../SourceCppGen/OpShr.h ../SourceCppGen/OpAnd.h ../SourceCppGen/OpOr.h ../SourceCppGen/OpXor.h ../SourceCppGen/OpCompare.h ../SourceCppGen/OpCompareReference.h ../SourceCppGen/ListProcessing.h ../SourceCppGen/MapProcessing.h ../SourceCppGen/ElementInSet.h ../SourceCppGen/GlobalVariable.h ../SourceCppGen/RecursiveFunction.h ../SourceCppGen/LetIn.h ../SourceCppGen/Property.h ../SourceCppGen/MethodClosure.h ../SourceCppGen/StaticMethod.h ../SourceCppGen/Event.h ../SourceCppGen/ControlFlow.h ../SourceCppGen/IfNotNull.h ../SourceCppGen/ForEach.h ../SourceCppGen/AnonymousLambda.h ../SourceCppGen/NamedLambda.h ../SourceCppGen/OrderedLambda.h ../SourceCppGen/TryFinally.h ../SourceCppGen/TryCatch.h ../SourceCppGen/Delete.h ../SourceCppGen/FailedThen.h ../SourceCppGen/NewInterface.h ../SourceCppGen/NewCustomInterface.h ../SourceCppGen/NewCustomInterface2.h ../SourceCppGen/NewCustomInterface3.h ../SourceCppGen/BindSimple.h ../SourceCppGen/BindComplex.h ../SourceCppGen/BindFormat.h ../SourceCppGen/BindCustomInterface.h ../SourceCppGen/BindCustomInterface2.h ../SourceCppGen/ClassField.h ../SourceCppGen/CallStaticMethod.h ../SourceCppGen/NestedLambda.h ../SourceCppGen/ClassMethod.h ../SourceCppGen/ClassCtor.h ../SourceCppGen/ClassDtor.h ../SourceCppGen/StructCtor.h ../SourceCppGen/StructCtor2.h ../SourceCppGen/EnumCtor.h ../SourceCppGen/EnumCtor2.h ../SourceCppGen/WorkflowHints.h ../SourceCppGen/WorkflowAttributes.h
+./Obj/TestCases.o: ../SourceCppGen/TestCases.cpp ../SourceCppGen/HelloWorld.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/OpNot.h ../SourceCppGen/OpPositive.h ../SourceCppGen/OpNegative.h ../SourceCppGen/OpAdd.h ../SourceCppGen/OpSub.h ../SourceCppGen/OpMul.h ../SourceCppGen/OpDiv.h ../SourceCppGen/OpMod.h ../SourceCppGen/OpShl.h ../SourceCppGen/OpShr.h ../SourceCppGen/OpAnd.h ../SourceCppGen/OpOr.h ../SourceCppGen/OpXor.h ../SourceCppGen/OpCompare.h ../SourceCppGen/OpCompareReference.h ../SourceCppGen/ListProcessing.h ../SourceCppGen/MapProcessing.h ../SourceCppGen/ElementInSet.h ../SourceCppGen/GlobalVariable.h ../SourceCppGen/RecursiveFunction.h ../SourceCppGen/LetIn.h ../SourceCppGen/Property.h ../SourceCppGen/MethodClosure.h ../SourceCppGen/StaticMethod.h ../SourceCppGen/Event.h ../SourceCppGen/ControlFlow.h ../SourceCppGen/IfNotNull.h ../SourceCppGen/ForEach.h ../SourceCppGen/AnonymousLambda.h ../SourceCppGen/NamedLambda.h ../SourceCppGen/OrderedLambda.h ../SourceCppGen/TryFinally.h ../SourceCppGen/TryCatch.h ../SourceCppGen/Delete.h ../SourceCppGen/FailedThen.h ../SourceCppGen/NewInterface.h ../SourceCppGen/NewCustomInterface.h ../SourceCppGen/NewCustomInterface2.h ../SourceCppGen/NewCustomInterface3.h ../SourceCppGen/BindSimple.h ../SourceCppGen/BindComplex.h ../SourceCppGen/BindFormat.h ../SourceCppGen/BindCustomInterface.h ../SourceCppGen/BindCustomInterface2.h ../SourceCppGen/ClassField.h ../SourceCppGen/CallStaticMethod.h ../SourceCppGen/NestedLambda.h ../SourceCppGen/ClassMethod.h ../SourceCppGen/ClassCtor.h ../SourceCppGen/ClassDtor.h ../SourceCppGen/StructCtor.h ../SourceCppGen/StructCtor2.h ../SourceCppGen/EnumCtor.h ../SourceCppGen/EnumCtor2.h ../SourceCppGen/WorkflowHints.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/CoRawCoroutine.h ../SourceCppGen/CoRawCoroutine2.h ../SourceCppGen/CoRawCoroutine3.h ../SourceCppGen/CoRawCoroutine4.h ../SourceCppGen/CoEnum.h ../SourceCppGen/CoEnum2.h ../SourceCppGen/CoAsync.h
 	$(CPP_COMPILE)
 
 ./Obj/TryCatch.o: ../SourceCppGen/TryCatch.cpp ../SourceCppGen/TryCatch.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
