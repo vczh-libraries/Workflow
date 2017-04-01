@@ -1405,6 +1405,13 @@ VirtualDeclarationVisitor
 				to->codeRange = from->codeRange;
 			}
 
+			void VirtualDeclarationVisitor::CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to)
+			{
+				to->baseType = CreateField(from->baseType);
+				to->elementType = CreateField(from->elementType);
+				CopyFields(static_cast<WfVirtualDeclaration*>(from), static_cast<WfVirtualDeclaration*>(to));
+			}
+
 			// CreateField ---------------------------------------
 
 			vl::Ptr<WfAttribute> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfAttribute> from)
@@ -1428,6 +1435,13 @@ VirtualDeclarationVisitor
 			void VirtualDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
 			{
 				auto newNode = vl::MakePtr<WfAutoPropertyDeclaration>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+			{
+				auto newNode = vl::MakePtr<WfCastResultInterfaceDeclaration>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}

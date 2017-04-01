@@ -274,6 +274,7 @@ namespace vl
 				virtual void Traverse(WfDeclaration* node);
 				virtual void Traverse(WfAttribute* node);
 				virtual void Traverse(WfClassMember* node);
+				virtual void Traverse(WfCastResultInterfaceDeclaration* node);
 
 				// VisitField ----------------------------------------
 				void VisitField(WfAttribute* node);
@@ -286,6 +287,7 @@ namespace vl
 
 				// Visitor Members -----------------------------------
 				void Visit(WfAutoPropertyDeclaration* node)override;
+				void Visit(WfCastResultInterfaceDeclaration* node)override;
 			};
 
 			class VirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor

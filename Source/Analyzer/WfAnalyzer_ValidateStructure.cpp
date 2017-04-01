@@ -933,6 +933,10 @@ ValidateStructure(Declaration)
 					}
 				}
 
+				void Visit(WfCastResultInterfaceDeclaration* node)override
+				{
+				}
+
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager, WfClassDeclaration* classDecl, WfExpression* surroundingLambda)
 				{
 					ValidateStructureDeclarationVisitor visitor(manager, classDecl, surroundingLambda);

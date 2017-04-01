@@ -1286,6 +1286,10 @@ VirtualDeclarationVisitor
 			{
 			}
 
+			void VirtualDeclarationVisitor::Traverse(WfCastResultInterfaceDeclaration* node)
+			{
+			}
+
 			// VisitField ----------------------------------------
 
 			void VirtualDeclarationVisitor::VisitField(WfAttribute* node)
@@ -1315,6 +1319,26 @@ VirtualDeclarationVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
 				VisitField(node->expression.Obj());
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
+				{
+					VisitField(listItem.Obj());
+				}
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				{
+					VisitField(listItem.Obj());
+				}
+				Traverse(node->name);
+				VisitField(node->classMember.Obj());
+			}
+
+			void VirtualDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+			{
+				Traverse(static_cast<WfCastResultInterfaceDeclaration*>(node));
+				Traverse(static_cast<WfVirtualDeclaration*>(node));
+				Traverse(static_cast<WfDeclaration*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->baseType.Obj());
+				VisitField(node->elementType.Obj());
 				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
 				{
 					VisitField(listItem.Obj());

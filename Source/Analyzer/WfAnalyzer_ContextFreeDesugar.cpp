@@ -397,6 +397,51 @@ ContextFreeModuleDesugar
 					}
 				}
 
+				void Traverse(WfCastResultInterfaceDeclaration* node)override
+				{
+					auto decl = MakePtr<WfClassDeclaration>();
+					node->expandedDeclarations.Add(decl);
+					decl->kind = WfClassKind::Interface;
+					decl->constructorType = WfConstructorType::SharedPtr;
+					decl->name.value = node->name.value;
+					decl->baseTypes.Add(CopyType(node->baseType));
+
+					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					decl->declarations.Add(funcDecl);
+					{
+						funcDecl->classMember = MakePtr<WfClassMember>();
+						funcDecl->classMember->kind = WfClassMemberKind::Static;
+					}
+					funcDecl->anonymity = WfFunctionAnonymity::Named;
+					funcDecl->name.value = L"CastResult";
+					funcDecl->returnType = CopyType(node->elementType);
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						funcDecl->arguments.Add(argument);
+						argument->name.value = L"value";
+						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+					}
+					{
+						auto block = MakePtr<WfBlockStatement>();
+						funcDecl->statement = block;
+
+						auto refValue = MakePtr<WfReferenceExpression>();
+						refValue->name.value = L"value";
+
+						auto castExpr = MakePtr<WfTypeCastingExpression>();
+						castExpr->strategy = WfTypeCastingStrategy::Strong;
+						castExpr->type = CopyType(node->elementType);
+						castExpr->expression = refValue;
+
+						auto stat = MakePtr<WfReturnStatement>();
+						stat->expression = castExpr;
+
+						block->statements.Add(stat);
+					}
+
+					SetCodeRange(Ptr<WfDeclaration>(decl), node->codeRange);
+				}
+
 #define PUSH_SURROUNDING\
 					auto o1 = surroundingClassDecl;\
 					auto o2 = surroundingLambda;\

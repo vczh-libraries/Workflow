@@ -127,6 +127,7 @@ namespace vl
 
 				// Visitor Members -----------------------------------
 				void Visit(WfAutoPropertyDeclaration* node)override;
+				void Visit(WfCastResultInterfaceDeclaration* node)override;
 			};
 
 			class VirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor

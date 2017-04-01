@@ -1489,6 +1489,19 @@ Print (Declaration)
 				writer.WriteString(L"}");
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfCastResultInterfaceDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"$interface ");
+				writer.WriteString(node->name.value);
+				writer.WriteString(L" : ");
+				WfPrint(node->baseType, indent, writer);
+				writer.WriteString(L"<");
+				WfPrint(node->elementType, indent, writer);
+				writer.WriteString(L">;");
+				writer.AfterPrint(node);
+			}
 		};
 
 /***********************************************************************

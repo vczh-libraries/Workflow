@@ -314,6 +314,10 @@ VirtualDeclarationVisitor
 			{
 			}
 
+			void VirtualDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+			{
+			}
+
 /***********************************************************************
 VirtualStatementVisitor
 ***********************************************************************/

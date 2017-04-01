@@ -127,6 +127,11 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
+		void WfCastResultInterfaceDeclaration::Accept(WfVirtualDeclaration::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
 		void WfBreakStatement::Accept(WfStatement::IVisitor* visitor)
 		{
 			visitor->Visit(this);
@@ -456,6 +461,7 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfAPConst, workflow::WfAPConst)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfAPObserve, workflow::WfAPObserve)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfAutoPropertyDeclaration, workflow::WfAutoPropertyDeclaration)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfCastResultInterfaceDeclaration, workflow::WfCastResultInterfaceDeclaration)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfBreakStatement, workflow::WfBreakStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfContinueStatement, workflow::WfContinueStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfReturnStatement, workflow::WfReturnStatement)
@@ -874,6 +880,15 @@ namespace vl
 				CLASS_MEMBER_FIELD(configObserve)
 				CLASS_MEMBER_FIELD(expression)
 			END_CLASS_MEMBER(WfAutoPropertyDeclaration)
+
+			BEGIN_CLASS_MEMBER(WfCastResultInterfaceDeclaration)
+				CLASS_MEMBER_BASE(WfVirtualDeclaration)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfCastResultInterfaceDeclaration>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(baseType)
+				CLASS_MEMBER_FIELD(elementType)
+			END_CLASS_MEMBER(WfCastResultInterfaceDeclaration)
 
 			BEGIN_CLASS_MEMBER(WfBreakStatement)
 				CLASS_MEMBER_BASE(WfStatement)
@@ -1552,6 +1567,7 @@ namespace vl
 
 			BEGIN_INTERFACE_MEMBER(WfVirtualDeclaration::IVisitor)
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualDeclaration::IVisitor::*)(WfAutoPropertyDeclaration* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualDeclaration::IVisitor::*)(WfCastResultInterfaceDeclaration* node))
 			END_INTERFACE_MEMBER(WfVirtualDeclaration)
 
 			BEGIN_INTERFACE_MEMBER(WfVirtualStatement::IVisitor)
@@ -1626,6 +1642,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfAPConst)
 					ADD_TYPE_INFO(vl::workflow::WfAPObserve)
 					ADD_TYPE_INFO(vl::workflow::WfAutoPropertyDeclaration)
+					ADD_TYPE_INFO(vl::workflow::WfCastResultInterfaceDeclaration)
 					ADD_TYPE_INFO(vl::workflow::WfBreakStatement)
 					ADD_TYPE_INFO(vl::workflow::WfContinueStatement)
 					ADD_TYPE_INFO(vl::workflow::WfReturnStatement)

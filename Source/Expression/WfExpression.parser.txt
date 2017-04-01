@@ -301,6 +301,12 @@ class AutoPropertyDeclaration : VirtualDeclaration
 	Expression				expression;
 }
 
+class CastResultInterfaceDeclaration : VirtualDeclaration
+{
+	Type					baseType;
+	Type					elementType;
+}
+
 //////////////////////////////////////////////////////////////////
 // AST (Statements)
 //////////////////////////////////////////////////////////////////
@@ -862,6 +868,7 @@ token KEYWORD_UNIT = "unit";
 
 token COROUTINE_COROUTINE = "/$coroutine";
 token COROUTINE_PAUSE = "/$pause";
+token COROUTINE_INTERFACE = "/$interface";
 token COROUTINE_OPERATOR = "/$[A-Z]/w*";
 token COROUTINE_SIGN = "/$";
 
@@ -1196,6 +1203,10 @@ rule AutoPropertyDeclaration _AutoProperty
 	= "prop" NAME : name ":" _Type : type ["=" _Expression : expression] !_APConfig
 	;
 
+rule CastResultInterfaceDeclaration _CastResultInterface
+	= "$interface" NAME : name ":" _Type : baseType "<" _Type : elementType ">" ";" as CastResultInterfaceDeclaration
+	;
+
 //////////////////////////////////////////////////////////////////
 // Rule (Declaration -- Branches)
 //////////////////////////////////////////////////////////////////
@@ -1210,6 +1221,7 @@ rule Declaration _SharedDeclarationBranch
 	= !_Class
 	= !_Enum
 	= !_Struct
+	= !_CastResultInterface
 	;
 
 rule Declaration _MemberDeclarationBranch

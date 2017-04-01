@@ -270,6 +270,7 @@ namespace vl
 				void CopyFields(WfDeclaration* from, WfDeclaration* to);
 				void CopyFields(WfAttribute* from, WfAttribute* to);
 				void CopyFields(WfClassMember* from, WfClassMember* to);
+				void CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
@@ -282,6 +283,7 @@ namespace vl
 
 				// Visitor Members -----------------------------------
 				void Visit(WfAutoPropertyDeclaration* node)override;
+				void Visit(WfCastResultInterfaceDeclaration* node)override;
 			};
 
 			class VirtualStatementVisitor : public virtual VisitorBase, public WfVirtualStatement::IVisitor

@@ -236,6 +236,10 @@ BuildGlobalNameFromModules
 
 				void Dispatch(WfVirtualDeclaration* node)override
 				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
 				}
 
 				void Visit(WfNamespaceDeclaration* node)override

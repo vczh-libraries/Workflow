@@ -114,16 +114,17 @@ namespace vl
 			KEYWORD_UNIT = 94,
 			COROUTINE_COROUTINE = 95,
 			COROUTINE_PAUSE = 96,
-			COROUTINE_OPERATOR = 97,
-			COROUTINE_SIGN = 98,
-			NAME = 99,
-			ORDERED_NAME = 100,
-			FLOAT = 101,
-			INTEGER = 102,
-			STRING = 103,
-			FORMATSTRING = 104,
-			SPACE = 105,
-			COMMENT = 106,
+			COROUTINE_INTERFACE = 97,
+			COROUTINE_OPERATOR = 98,
+			COROUTINE_SIGN = 99,
+			NAME = 100,
+			ORDERED_NAME = 101,
+			FLOAT = 102,
+			INTEGER = 103,
+			STRING = 104,
+			FORMATSTRING = 105,
+			SPACE = 106,
+			COMMENT = 107,
 		};
 		class WfClassMember;
 		class WfType;
@@ -158,6 +159,7 @@ namespace vl
 		class WfStructDeclaration;
 		class WfVirtualDeclaration;
 		class WfAutoPropertyDeclaration;
+		class WfCastResultInterfaceDeclaration;
 		class WfBreakStatement;
 		class WfContinueStatement;
 		class WfReturnStatement;
@@ -686,6 +688,7 @@ namespace vl
 			{
 			public:
 				virtual void Visit(WfAutoPropertyDeclaration* node)=0;
+				virtual void Visit(WfCastResultInterfaceDeclaration* node)=0;
 			};
 
 			virtual void Accept(WfVirtualDeclaration::IVisitor* visitor)=0;
@@ -718,6 +721,17 @@ namespace vl
 			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfAutoPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfCastResultInterfaceDeclaration : public WfVirtualDeclaration, vl::reflection::Description<WfCastResultInterfaceDeclaration>
+		{
+		public:
+			vl::Ptr<WfType> baseType;
+			vl::Ptr<WfType> elementType;
+
+			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfCastResultInterfaceDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfBreakStatement : public WfStatement, vl::reflection::Description<WfBreakStatement>
@@ -1526,6 +1540,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfAPConst)
 			DECL_TYPE_INFO(vl::workflow::WfAPObserve)
 			DECL_TYPE_INFO(vl::workflow::WfAutoPropertyDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfCastResultInterfaceDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfBreakStatement)
 			DECL_TYPE_INFO(vl::workflow::WfContinueStatement)
 			DECL_TYPE_INFO(vl::workflow::WfReturnStatement)
@@ -1946,6 +1961,11 @@ namespace vl
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualDeclaration::IVisitor)
 				void Visit(vl::workflow::WfAutoPropertyDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfCastResultInterfaceDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
