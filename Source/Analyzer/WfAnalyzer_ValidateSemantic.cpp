@@ -607,7 +607,8 @@ ValidateSemantic(Statement)
 					auto functionScope = scope->FindFunctionScope();
 					if (auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>())
 					{
-						if (funcDecl->statement.Cast<WfCoProviderStatement>())
+						auto providerStat = funcDecl->statement.Cast<WfCoProviderStatement>();
+						if (providerStat && !providerStat->expandedStatement)
 						{
 							auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
 							auto providerSymbol = providerScope->symbols[L"$PROVIDER"][0];
@@ -985,6 +986,7 @@ ValidateSemantic(Statement)
 							{
 								List<ResolveExpressionResult> results;
 								ITypeInfo* selectedImplType = nullptr;
+								IMethodInfo* selectedCreator = nullptr;
 								vint count = group->GetMethodCount();
 
 								for (vint i = 0; i < count; i++)
@@ -1007,6 +1009,7 @@ ValidateSemantic(Statement)
 													if (returnType->GetDecorator() == ITypeInfo::SharedPtr &&returnType->GetTypeDescriptor() == description::GetTypeDescriptor<ICoroutine>())
 													{
 														selectedImplType = functionType->GetGenericArgument(1);
+														selectedCreator = method;
 														results.Add(ResolveExpressionResult::Method(method));
 													}
 												}
@@ -1018,6 +1021,7 @@ ValidateSemantic(Statement)
 								if (results.Count() == 1)
 								{
 									implSymbol->typeInfo = CopyTypeInfo(selectedImplType);
+									manager->coOperatorResolvings.Add(node, ResolveExpressionResult::Method(selectedCreator));
 								}
 								else if (results.Count() > 1)
 								{

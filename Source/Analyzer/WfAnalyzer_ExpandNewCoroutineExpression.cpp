@@ -1320,17 +1320,14 @@ ExpandNewCoroutineExpression
 							auto refStatus = MakePtr<WfReferenceExpression>();
 							refStatus->name.value = L"Status";
 
-							auto waitingStatus = MakePtr<WfReferenceExpression>();
+							auto waitingStatus = MakePtr<WfChildExpression>();
+							waitingStatus->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<CoroutineStatus>());
 							waitingStatus->name.value = L"Waiting";
-
-							auto inferExpr = MakePtr<WfInferExpression>();
-							inferExpr->expression = waitingStatus;
-							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<CoroutineStatus>::CreateTypeInfo().Obj());
 
 							auto compExpr = MakePtr<WfBinaryExpression>();
 							compExpr->op = WfBinaryOperator::NE;
 							compExpr->first = refStatus;
-							compExpr->second = inferExpr;
+							compExpr->second = waitingStatus;
 
 							ifStat->expression = compExpr;
 						}

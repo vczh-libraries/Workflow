@@ -362,7 +362,87 @@ ExpandCoProviderStatement
 
 			void ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node)
 			{
-				throw 0;
+				auto scope = manager->nodeScopes[node].Obj();
+				auto functionScope = scope->FindFunctionScope();
+				auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>();
+				auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
+				auto providerType = providerScope->symbols[L"$PROVIDER"][0]->typeInfo;
+				auto implType = providerScope->symbols[L"$IMPL"][0]->typeInfo;
+
+				auto coroutineExpr = MakePtr<WfNewCoroutineExpression>();
+				{
+					auto coBlock = MakePtr<WfBlockStatement>();
+					coroutineExpr->statement = coBlock;
+				}
+
+				auto creatorExpr = MakePtr<WfFunctionExpression>();
+				{
+					auto creatorDecl = MakePtr<WfFunctionDeclaration>();
+					creatorExpr->function = creatorDecl;
+					creatorDecl->anonymity = WfFunctionAnonymity::Anonymous;
+					creatorDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo().Obj());
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						creatorDecl->arguments.Add(argument);
+						argument->name.value = L"<co-impl>";
+						argument->type = GetTypeFromTypeInfo(implType.Obj());
+					}
+
+					auto block = MakePtr<WfBlockStatement>();
+					creatorDecl->statement = block;
+
+					auto returnStat = MakePtr<WfReturnStatement>();
+					returnStat->expression = coroutineExpr;
+					block->statements.Add(returnStat);
+				}
+
+				auto providerBlock = MakePtr<WfBlockStatement>();
+				{
+					auto funcSymbol = manager->GetDeclarationSymbol(manager->nodeScopes[funcDecl.Obj()].Obj(), funcDecl.Obj());
+					auto funcReturnType = funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0);
+					auto creatorInfo = manager->coOperatorResolvings[node].methodInfo;
+
+					auto funcExpr = MakePtr<WfChildExpression>();
+					funcExpr->parent = GetExpressionFromTypeDescriptor(creatorInfo->GetOwnerTypeDescriptor());
+					funcExpr->name.value = creatorInfo->GetName();
+
+					auto callExpr = MakePtr<WfCallExpression>();
+					callExpr->function = funcExpr;
+					callExpr->arguments.Add(creatorExpr);
+
+					if (funcReturnType->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+					{
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = callExpr;
+						providerBlock->statements.Add(stat);
+					}
+					else
+					{
+						if (IsSameType(funcReturnType, creatorInfo->GetReturn()))
+						{
+							auto stat = MakePtr<WfReturnStatement>();
+							stat->expression = callExpr;
+							providerBlock->statements.Add(stat);
+						}
+						else if (funcReturnType->GetTypeDescriptor() == creatorInfo->GetReturn()->GetTypeDescriptor())
+						{
+							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							castExpr->strategy = WfTypeCastingStrategy::Strong;
+							castExpr->type = GetTypeFromTypeInfo(funcReturnType);
+							castExpr->expression = callExpr;
+
+							auto stat = MakePtr<WfReturnStatement>();
+							stat->expression = castExpr;
+							providerBlock->statements.Add(stat);
+						}
+						else
+						{
+							throw 0;
+						}
+					}
+				}
+				
+				node->expandedStatement = providerBlock;
 			}
 		}
 	}

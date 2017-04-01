@@ -71,6 +71,59 @@ CreateTypeInfoFromTypeFlag
 			}
 
 /***********************************************************************
+GetTypeFragments
+***********************************************************************/
+
+			void GetTypeFragments(reflection::description::ITypeDescriptor* typeDescriptor, collections::List<WString>& fragments)
+			{
+				WString name = typeDescriptor->GetTypeName();
+				const wchar_t* reading = name.Buffer();
+				while (reading)
+				{
+					const wchar_t* delimiter = wcsstr(reading, L"::");
+					if (delimiter)
+					{
+						fragments.Add(WString(reading, vint(delimiter - reading)));
+						reading = delimiter + 2;
+					}
+					else
+					{
+						fragments.Add(reading);
+						break;
+					}
+				}
+			}
+
+/***********************************************************************
+GetExpressionFromTypeDescriptor
+***********************************************************************/
+
+			Ptr<WfExpression> GetExpressionFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor)
+			{
+				List<WString> fragments;
+				GetTypeFragments(typeDescriptor, fragments);
+
+				Ptr<WfExpression> parentExpr;
+				FOREACH(WString, fragment, fragments)
+				{
+					if (!parentExpr)
+					{
+						auto expr = MakePtr<WfTopQualifiedExpression>();
+						expr->name.value = fragment;
+						parentExpr = expr;
+					}
+					else
+					{
+						auto expr = MakePtr<WfChildExpression>();
+						expr->parent = parentExpr;
+						expr->name.value = fragment;
+						parentExpr = expr;
+					}
+				}
+				return parentExpr;
+			}
+
+/***********************************************************************
 GetTypeFromTypeInfo
 ***********************************************************************/
 
@@ -121,37 +174,20 @@ GetTypeFromTypeInfo
 				case ITypeInfo::TypeDescriptor:
 					{
 						List<WString> fragments;
-						{
-							WString name = typeInfo->GetTypeDescriptor()->GetTypeName();
-							const wchar_t* reading = name.Buffer();
-							while (reading)
-							{
-								const wchar_t* delimiter = wcsstr(reading, L"::");
-								if (delimiter)
-								{
-									fragments.Add(WString(reading, vint(delimiter - reading)));
-									reading = delimiter + 2;
-								}
-								else
-								{
-									fragments.Add(reading);
-									break;
-								}
-							}
-						}
+						GetTypeFragments(typeInfo->GetTypeDescriptor(), fragments);
 
 						Ptr<WfType> parentType;
 						FOREACH(WString, fragment, fragments)
 						{
 							if (!parentType)
 							{
-								Ptr<WfTopQualifiedType> type = new WfTopQualifiedType;
+								auto type = MakePtr<WfTopQualifiedType>();
 								type->name.value = fragment;
 								parentType = type;
 							}
 							else
 							{
-								Ptr<WfChildType> type = new WfChildType;
+								auto type = MakePtr<WfChildType>();
 								type->parent = parentType;
 								type->name.value = fragment;
 								parentType = type;
