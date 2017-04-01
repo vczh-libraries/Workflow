@@ -149,20 +149,6 @@ Closures
 					}
 					if ((__vwsn_co_state_ == 2))
 					{
-						if (static_cast<bool>(__vwsn_co_result_))
-						{
-							if (static_cast<bool>(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure()))
-							{
-								throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
-							}
-						}
-						if ((__vwsn_co2_i == 2))
-						{
-							{
-								::vl::reflection::description::EnumerableCoroutine::ReturnAndExit(__vwsn_co_impl_);
-								return;
-							}
-						}
 						(__vwsn_co2_i = (__vwsn_co2_i + 1));
 						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
 						{
@@ -175,11 +161,29 @@ Closures
 					if ((__vwsn_co_state_ == 3))
 					{
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
-						(__vwsn_co_state_ = 2);
+						(__vwsn_co_state_ = 4);
 						{
 							::vl::reflection::description::EnumerableCoroutine::JoinAndPause(__vwsn_co_impl_, ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::Range(__vwsn_co2_i, (__vwsn_co2_i + 2) + 1)));
 						}
 						return;
+					}
+					if ((__vwsn_co_state_ == 4))
+					{
+						if (static_cast<bool>(__vwsn_co_result_))
+						{
+							if (static_cast<bool>(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure()))
+							{
+								throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
+							}
+						}
+						if ((__vwsn_co2_i == 2))
+						{
+							::vl::reflection::description::EnumerableCoroutine::ReturnAndExit(__vwsn_co_impl_);
+							::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+							return;
+						}
+						(__vwsn_co_state_ = 2);
+						continue;
 					}
 				}
 			}

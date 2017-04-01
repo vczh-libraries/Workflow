@@ -48,6 +48,11 @@ FindCoroutineAwaredStatements
 					awared = true;
 				}
 
+				void Visit(WfReturnStatement* node)override
+				{
+					awared = true;
+				}
+
 				void Visit(WfIfStatement* node)override
 				{
 					bool a = Call(node->trueBranch);
@@ -387,12 +392,12 @@ GenerateFlowChart
 					auto current = scopeContext;
 					while (current)
 					{
-						if (exclusive && scopeContext->type == untilScopeType) break;
+						if (exclusive && current->type == untilScopeType) break;
 						if (current->exitStatement)
 						{
 							AppendAwaredStatement(catchNode, current->exitStatementScope, current->exitStatement);
 						}
-						if (!exclusive && scopeContext->type == untilScopeType) break;
+						if (!exclusive && current->type == untilScopeType) break;
 						current = current->parent;
 					}
 					return current;

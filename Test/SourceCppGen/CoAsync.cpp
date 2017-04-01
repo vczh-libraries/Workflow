@@ -148,13 +148,8 @@ Closures
 				{
 					if ((__vwsn_co_state_ == 0))
 					{
-						{
-							(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
-							{
-								::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
-								return;
-							}
-						}
+						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
+						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}

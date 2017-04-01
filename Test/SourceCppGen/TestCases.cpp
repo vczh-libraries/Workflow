@@ -61,6 +61,7 @@
 #include "CoRawCoroutine4.h"
 #include "CoEnum.h"
 #include "CoEnum2.h"
+#include "CoAsync.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -632,6 +633,15 @@ TEST_CASE(CoEnum2)
 {
 	WString expected = L"[0][1][2][1][2][3][2][3][4]";
 	WString actual = ::vl_workflow_global::CoEnum2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoAsync)
+{
+	WString expected = L"[0][+0]![1][+1]!";
+	WString actual = ::vl_workflow_global::CoAsync::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
