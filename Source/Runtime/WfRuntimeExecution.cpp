@@ -847,6 +847,10 @@ WfRuntimeThreadContext
 						{
 							RaiseException(info);
 						}
+						else if (auto ex = operand.GetSharedPtr().Cast<IValueException>())
+						{
+							RaiseException(ex->GetMessage(), false);
+						}
 						else
 						{
 							INTERNAL_ERROR(L"failed to raise an exception which is neither a string nor a WfRuntimeExceptionInfo.");

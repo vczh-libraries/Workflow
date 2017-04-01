@@ -794,6 +794,8 @@ BuildScopeForExpression
 
 				void Visit(WfNewCoroutineExpression* node)
 				{
+					manager->CreateLambdaCapture(node);
+
 					resultScope = new WfLexicalScope(parentScope);
 					auto config = MakePtr<WfLexicalFunctionConfig>();
 					resultScope->functionConfig = config;

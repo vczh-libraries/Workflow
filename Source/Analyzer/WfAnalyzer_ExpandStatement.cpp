@@ -443,7 +443,6 @@ ExpandCoProviderStatement
 
 						auto stat = MakePtr<WfExpressionStatement>();
 						stat->expression = callExpr;
-						block->statements.Add(stat);
 
 						auto pauseBlock = MakePtr<WfBlockStatement>();
 						pauseBlock->statements.Add(stat);
@@ -454,8 +453,24 @@ ExpandCoProviderStatement
 						block->statements.Add(pauseStat);
 					}
 					{
+						Ptr<WfIfStatement> ifHasResultStat;
+
+						if (node->varName.value == L"")
+						{
+							ifHasResultStat = MakePtr<WfIfStatement>();
+							{
+								auto refCoResult = MakePtr<WfReferenceExpression>();
+								refCoResult->name.value = L"<co-result>";
+
+								auto testExpr = MakePtr<WfTypeTestingExpression>();
+								testExpr->expression = refCoResult;
+								testExpr->test = WfTypeTesting::IsNotNull;
+
+								ifHasResultStat->expression = testExpr;
+							}
+						}
+
 						auto ifStat = MakePtr<WfIfStatement>();
-						block->statements.Add(ifStat);
 						{
 							auto refCoResult = MakePtr<WfReferenceExpression>();
 							refCoResult->name.value = L"<co-result>";
@@ -484,6 +499,17 @@ ExpandCoProviderStatement
 							auto ifBlock = MakePtr<WfBlockStatement>();
 							ifBlock->statements.Add(raiseStat);
 							ifStat->trueBranch = ifBlock;
+						}
+
+						if (ifHasResultStat)
+						{
+							auto ifBlock = MakePtr<WfBlockStatement>();
+							ifHasResultStat->trueBranch = ifBlock;
+							ifBlock->statements.Add(ifStat);
+						}
+						else
+						{
+							block->statements.Add(ifStat);
 						}
 					}
 					if (node->varName.value != L"")

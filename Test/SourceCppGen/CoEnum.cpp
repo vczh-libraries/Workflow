@@ -83,13 +83,17 @@ Closures
 
 	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf1_CoEnum_GetNumbers_::operator()(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsn_co_impl_) const
 	{
-		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine());
+		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine(__vwsn_co_impl_));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine::__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine()
+	__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine::__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_)
+		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
 	{
+		this->__vwsn_co0_for_begin_i = 0;
+		this->__vwsn_co1_for_end_i = 0;
+		this->__vwsn_co2_i = 0;
 		this->__vwsn_co_state_ = 0;
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
@@ -113,7 +117,7 @@ Closures
 		(__vwsn_prop_Status = __vwsn_value_);
 	}
 
-	void __vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_coroutine_output_)
+	void __vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
 	{
 		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
@@ -127,9 +131,40 @@ Closures
 				{
 					if ((__vwsn_co_state_ == 0))
 					{
+						(__vwsn_co0_for_begin_i = 0);
+						(__vwsn_co1_for_end_i = 4);
+						(__vwsn_co2_i = __vwsn_co0_for_begin_i);
+						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
 						{
+							(__vwsn_co_state_ = 3);
+							continue;
 						}
+						(__vwsn_co_state_ = 1);
+						continue;
+					}
+					if ((__vwsn_co_state_ == 1))
+					{
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						return;
+					}
+					if ((__vwsn_co_state_ == 2))
+					{
+						(__vwsn_co2_i = (__vwsn_co2_i + 1));
+						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
+						{
+							(__vwsn_co_state_ = 3);
+							continue;
+						}
+						(__vwsn_co_state_ = 1);
+						continue;
+					}
+					if ((__vwsn_co_state_ == 3))
+					{
+						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						(__vwsn_co_state_ = 2);
+						{
+							::vl::reflection::description::EnumerableCoroutine::YieldAndPause(__vwsn_co_impl_, ::vl::__vwsn::Box(__vwsn_co2_i));
+						}
 						return;
 					}
 				}

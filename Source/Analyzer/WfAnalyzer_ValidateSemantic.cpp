@@ -695,8 +695,15 @@ ValidateSemantic(Statement)
 				{
 					if (node->expression)
 					{
-						Ptr<ITypeInfo> stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-						GetExpressionType(manager, node->expression, stringType);
+						if (auto type = GetExpressionType(manager, node->expression, nullptr))
+						{
+							auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+							auto exceptionType = TypeInfoRetriver<Ptr<IValueException>>::CreateTypeInfo();
+							if (!CanConvertToType(type.Obj(), stringType.Obj(), false) && !CanConvertToType(type.Obj(), exceptionType.Obj(), false))
+							{
+								manager->errors.Add(WfErrors::ExpressionCannotImplicitlyConvertToType(node->expression.Obj(), type.Obj(), stringType.Obj()));
+							}
+						}
 					}
 				}
 

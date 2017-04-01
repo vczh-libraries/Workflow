@@ -61,8 +61,13 @@ Closures
 	class __vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine : public ::vl::Object, public virtual ::vl::reflection::description::ICoroutine
 	{
 	public:
-		__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine();
+		::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsn_co_impl_;
 
+		__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_);
+
+		::vl::vint32_t __vwsn_co0_for_begin_i = 0;
+		::vl::vint32_t __vwsn_co1_for_end_i = 0;
+		::vl::vint32_t __vwsn_co2_i = 0;
 		::vl::vint32_t __vwsn_co_state_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
@@ -70,7 +75,7 @@ Closures
 		::vl::reflection::description::CoroutineStatus __vwsn_prop_Status = static_cast<::vl::reflection::description::CoroutineStatus>(0);
 		::vl::reflection::description::CoroutineStatus GetStatus() override;
 		void SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_);
-		void Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_coroutine_output_) override;
+		void Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_) override;
 	};
 }
 
