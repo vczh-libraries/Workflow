@@ -179,6 +179,8 @@ Scope Manager
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
 				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
 				CoOperatorResolvingMap						coOperatorResolvings;			// the resolving result for the co-operator statement
+				CoOperatorResolvingMap						coProviderResolvings;			// the resolving result for the co-provider statement
+				CoOperatorResolvingMap						coCastResultResolvings;			// the resolving result for the co-operator statement's type casting
 				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
 				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration

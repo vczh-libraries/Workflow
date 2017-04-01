@@ -1021,7 +1021,7 @@ ValidateSemantic(Statement)
 								if (results.Count() == 1)
 								{
 									implSymbol->typeInfo = CopyTypeInfo(selectedImplType);
-									manager->coOperatorResolvings.Add(node, ResolveExpressionResult::Method(selectedCreator));
+									manager->coProviderResolvings.Add(node, ResolveExpressionResult::Method(selectedCreator));
 								}
 								else if (results.Count() > 1)
 								{
@@ -1149,6 +1149,7 @@ ValidateSemantic(Statement)
 																		method->GetReturn()->GetTypeDescriptor() != description::GetTypeDescriptor<void>()
 																		)
 																	{
+																		manager->coCastResultResolvings.Add(node, ResolveExpressionResult::Method(method));
 																		symbol->typeInfo = CopyTypeInfo(method->GetReturn());
 																		break;
 																	}

@@ -373,17 +373,17 @@ ExpandCoProviderStatement
 				{
 				}
 
-				Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				Ptr<WfExpression> CreateField(Ptr<WfExpression> from)override
 				{
 					return CopyExpression(from);
 				}
 
-				Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
+				Ptr<WfType> CreateField(Ptr<WfType> from)override
 				{
 					return CopyType(from);
 				}
 
-				Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
+				Ptr<WfStatement> CreateField(Ptr<WfStatement> from)override
 				{
 					from->Accept(this);
 					return result.Cast<WfStatement>();
@@ -391,17 +391,136 @@ ExpandCoProviderStatement
 
 				void Visit(WfReturnStatement* node)override
 				{
-					throw 0;
+					auto opInfo = manager->coOperatorResolvings[node].methodInfo;
+					auto block = MakePtr<WfBlockStatement>();
+
+					{
+						auto refImpl = MakePtr<WfReferenceExpression>();
+						refImpl->name.value = L"<co-impl>";
+
+						auto funcExpr = MakePtr<WfChildExpression>();
+						funcExpr->parent = GetExpressionFromTypeDescriptor(opInfo->GetOwnerTypeDescriptor());
+						funcExpr->name.value = opInfo->GetName();
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = funcExpr;
+						callExpr->arguments.Add(refImpl);
+						if (node->expression)
+						{
+							callExpr->arguments.Add(CreateField(node->expression));
+						}
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = callExpr;
+						block->statements.Add(stat);
+					}
+					block->statements.Add(MakePtr<WfReturnStatement>());
+
+					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
+					result = block;
 				}
 
 				void Visit(WfCoOperatorStatement* node)override
 				{
-					throw 0;
+					auto opInfo = manager->coOperatorResolvings[node].methodInfo;
+					auto block = MakePtr<WfBlockStatement>();
+
+					{
+						auto refImpl = MakePtr<WfReferenceExpression>();
+						refImpl->name.value = L"<co-impl>";
+
+						auto funcExpr = MakePtr<WfChildExpression>();
+						funcExpr->parent = GetExpressionFromTypeDescriptor(opInfo->GetOwnerTypeDescriptor());
+						funcExpr->name.value = opInfo->GetName();
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = funcExpr;
+						callExpr->arguments.Add(refImpl);
+						FOREACH(Ptr<WfExpression>, argument, node->arguments)
+						{
+							callExpr->arguments.Add(CreateField(argument));
+						}
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = callExpr;
+						block->statements.Add(stat);
+
+						auto pauseBlock = MakePtr<WfBlockStatement>();
+						pauseBlock->statements.Add(stat);
+
+						auto pauseStat = MakePtr<WfCoPauseStatement>();
+						pauseStat->statement = pauseBlock;
+
+						block->statements.Add(pauseStat);
+					}
+					{
+						auto ifStat = MakePtr<WfIfStatement>();
+						block->statements.Add(ifStat);
+						{
+							auto refCoResult = MakePtr<WfReferenceExpression>();
+							refCoResult->name.value = L"<co-result>";
+
+							auto refFailure = MakePtr<WfMemberExpression>();
+							refFailure->parent = refCoResult;
+							refFailure->name.value = L"Failure";
+
+							auto testExpr = MakePtr<WfTypeTestingExpression>();
+							testExpr->expression = refFailure;
+							testExpr->test = WfTypeTesting::IsNotNull;
+
+							ifStat->expression = testExpr;
+						}
+						{
+							auto refCoResult = MakePtr<WfReferenceExpression>();
+							refCoResult->name.value = L"<co-result>";
+
+							auto refFailure = MakePtr<WfMemberExpression>();
+							refFailure->parent = refCoResult;
+							refFailure->name.value = L"Failure";
+
+							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+							raiseStat->expression = refFailure;
+
+							auto ifBlock = MakePtr<WfBlockStatement>();
+							ifBlock->statements.Add(raiseStat);
+							ifStat->trueBranch = ifBlock;
+						}
+					}
+					if (node->varName.value != L"")
+					{
+						auto refCoResult = MakePtr<WfReferenceExpression>();
+						refCoResult->name.value = L"<co-result>";
+
+						auto refResult = MakePtr<WfMemberExpression>();
+						refResult->parent = refCoResult;
+						refResult->name.value = L"Result";
+
+						auto castResultInfo = manager->coCastResultResolvings[node].methodInfo;
+						auto refCastResult = MakePtr<WfChildExpression>();
+						refCastResult->parent = GetExpressionFromTypeDescriptor(castResultInfo->GetOwnerTypeDescriptor());
+						refCastResult->name.value = refCastResult->name.value;
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = refCastResult;
+						callExpr->arguments.Add(refResult);
+
+						auto varDecl = MakePtr<WfVariableDeclaration>();
+						varDecl->name.value = node->varName.value;
+						varDecl->expression = callExpr;
+
+						auto stat = MakePtr<WfVariableStatement>();
+						stat->variable = varDecl;
+						block->statements.Add(stat);
+					}
+
+					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
+					result = block;
 				}
 
 				void Visit(WfBlockStatement* node)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
+
 					FOREACH(Ptr<WfStatement>, statement, node->statements)
 					{
 						while (auto virtualStat = statement.Cast<WfVirtualStatement>())
@@ -418,6 +537,8 @@ ExpandCoProviderStatement
 							block->statements.Add(CreateField(statement));
 						}
 					}
+
+					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
 					result = block;
 				}
 
@@ -445,7 +566,7 @@ ExpandCoProviderStatement
 
 				auto coroutineExpr = MakePtr<WfNewCoroutineExpression>();
 				{
-					auto coBlock = MakePtr<WfBlockStatement>();
+					coroutineExpr->name.value = L"<co-result>";
 					coroutineExpr->statement = ExpandCoProviderStatementVisitor(manager).CreateField(node->statement);
 				}
 
@@ -474,7 +595,7 @@ ExpandCoProviderStatement
 				{
 					auto funcSymbol = manager->GetDeclarationSymbol(manager->nodeScopes[funcDecl.Obj()].Obj(), funcDecl.Obj());
 					auto funcReturnType = funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0);
-					auto creatorInfo = manager->coOperatorResolvings[node].methodInfo;
+					auto creatorInfo = manager->coProviderResolvings[node].methodInfo;
 
 					auto funcExpr = MakePtr<WfChildExpression>();
 					funcExpr->parent = GetExpressionFromTypeDescriptor(creatorInfo->GetOwnerTypeDescriptor());
