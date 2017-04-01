@@ -47,6 +47,7 @@ namespace vl
 				public:
 					WString											lambdaClassName;
 					SymbolMap										symbols;
+					SymbolMap										ctorArgumentSymbols;
 					collections::List<ITypeDescriptor*>				thisTypes;				// nearer this pointer first
 				};
 

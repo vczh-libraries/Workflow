@@ -1342,11 +1342,31 @@ ValidateSemantic(Expression)
 											break;
 										}
 
+										if (currentScope->ownerNode.Cast<WfNewInterfaceExpression>())
+										{
+											auto capture = manager->lambdaCaptures[currentScope->ownerNode.Obj()];
+											if (!capture->ctorArgumentSymbols.Contains(result.symbol.Obj()))
+											{
+												if (lastConfigScope == nullptr)
+												{
+													capture->ctorArgumentSymbols.Add(result.symbol);
+												}
+												else
+												{
+													auto functionCapture = manager->lambdaCaptures[lastConfigScope->ownerNode.Obj()];
+													if (capture != functionCapture)
+													{
+														capture->ctorArgumentSymbols.Add(result.symbol);
+													}
+												}
+											}
+										}
+
 										if (currentScope->functionConfig)
 										{
 											if (currentScope->functionConfig->lambda)
 											{
-												auto capture = manager->lambdaCaptures.Get(currentScope->ownerNode.Obj());
+												auto capture = manager->lambdaCaptures[currentScope->ownerNode.Obj()];
 												if (!capture->symbols.Contains(result.symbol.Obj()))
 												{
 													capture->symbols.Add(result.symbol);

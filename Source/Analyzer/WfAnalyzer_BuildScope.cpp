@@ -765,6 +765,7 @@ BuildScopeForExpression
 				{
 					resultScope = new WfLexicalScope(parentScope);
 					auto capture = MakePtr<WfLexicalCapture>();
+					manager->CreateLambdaCapture(node, capture);
 
 					CreateLambdaCaptureVisitor visitor(manager, capture);
 					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)

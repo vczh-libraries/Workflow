@@ -48,7 +48,7 @@ Global Functions
 	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync(::vl::vint32_t x)
 	{
 		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoAsync_GetStringAsync_(x)));
-		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync_GetStringAsync__IStringAsync());
+		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync_GetStringAsync__IStringAsync(__vwsn_co_mixin_source_variable_));
 	}
 
 	void CoAsync::GetMultipleString()
@@ -172,9 +172,9 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_CoAsync_GetStringAsync__IStringAsync::__vwsnc2_CoAsync_GetStringAsync__IStringAsync()
+	__vwsnc2_CoAsync_GetStringAsync__IStringAsync::__vwsnc2_CoAsync_GetStringAsync__IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_)
 	{
-		this->__vwsn_co_mixin_source_ = __vwsn_co_mixin_source_variable_;
+		this->__vwsn_co_mixin_source_ = __vwsnctor___vwsn_co_mixin_source_variable_;
 	}
 
 	bool __vwsnc2_CoAsync_GetStringAsync__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback)

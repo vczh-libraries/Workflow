@@ -16,12 +16,11 @@ namespace vl
 WfCppConfig::CollectClosureInfo
 ***********************************************************************/
 
-			class WfCppCollectClassExprInfoVisitor : public Object, public WfDeclaration::IVisitor
+			class WfCppCollectClassExprInfoVisitor : public empty_visitor::DeclarationVisitor
 			{
 			public:
 				WfCppConfig*							config;
 				vint									variableCount = 0;
-				WfFunctionDeclaration*					firstFunction = nullptr;
 				Ptr<analyzer::WfLexicalCapture>			capture;
 
 				WfCppCollectClassExprInfoVisitor(WfCppConfig* _config)
@@ -29,53 +28,12 @@ WfCppConfig::CollectClosureInfo
 				{
 				}
 
-				void Visit(WfNamespaceDeclaration* node)override
-				{
-				}
-
-				void Visit(WfFunctionDeclaration* node)override
-				{
-					if (!firstFunction)
-					{
-						firstFunction = node;
-						capture = config->manager->lambdaCaptures[node];
-					}
-				}
-
 				void Visit(WfVariableDeclaration* node)override
 				{
 					variableCount++;
 				}
 
-				void Visit(WfEventDeclaration* node)override
-				{
-				}
-
-				void Visit(WfPropertyDeclaration* node)override
-				{
-				}
-
-				void Visit(WfClassDeclaration* node)override
-				{
-				}
-
-				void Visit(WfConstructorDeclaration* node)override
-				{
-				}
-
-				void Visit(WfDestructorDeclaration* node)override
-				{
-				}
-
-				void Visit(WfEnumDeclaration* node)override
-				{
-				}
-
-				void Visit(WfStructDeclaration* node)override
-				{
-				}
-
-				void Visit(WfVirtualDeclaration* node)override
+				void Dispatch(WfVirtualDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
@@ -85,6 +43,7 @@ WfCppConfig::CollectClosureInfo
 
 				void Execute(WfNewInterfaceExpression* node)
 				{
+					capture = config->manager->lambdaCaptures[node];
 					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
 						memberDecl->Accept(this);
@@ -137,6 +96,15 @@ WfCppConfig::CollectClosureInfo
 							info->symbols,
 							From(visitor.capture->symbols)
 								.Skip(visitor.variableCount)
+								.Select([](Ptr<WfLexicalSymbol> symbol)
+								{
+									return SymbolPair(symbol->name, symbol);
+								})
+							);
+
+						CopyFrom(
+							info->ctorArgumentSymbols,
+							From(visitor.capture->ctorArgumentSymbols)
 								.Select([](Ptr<WfLexicalSymbol> symbol)
 								{
 									return SymbolPair(symbol->name, symbol);
@@ -299,9 +267,11 @@ WfCppConfig::WriteCpp
 				writer.WriteString(name);
 				writer.WriteString(L"(");
 
-				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, info->symbols.Values())
+				vint argumentIndex = 0;
+
+				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, From(info->symbols.Values()).Concat(info->ctorArgumentSymbols.Values()))
 				{
-					if (index > 0)
+					if (argumentIndex++ > 0)
 					{
 						writer.WriteString(L", ");
 					}
@@ -314,7 +284,7 @@ WfCppConfig::WriteCpp
 				{
 					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
 
-					if (index > 0 || info->symbols.Count() > 0)
+					if (argumentIndex++ > 0)
 					{
 						writer.WriteString(L", ");
 					}

@@ -130,6 +130,7 @@ Scope Manager
 			struct WfLexicalCapture
 			{
 				collections::List<Ptr<WfLexicalSymbol>>		symbols;
+				collections::List<Ptr<WfLexicalSymbol>>		ctorArgumentSymbols;
 			};
 
 			/// <summary>Workflow compiler.</summary>

@@ -362,7 +362,7 @@ WfGenerateExpressionVisitor
 					GenerateExpression(config, writer, node, expectedType, useReturnValue);
 				}
 
-				Ptr<WfCppConfig::ClosureInfo> GetClosureInfo(WfExpression* node)
+				Ptr<WfCppConfig::ClosureInfo> GetClosureInfo(WfExpression* node, Ptr<WfLexicalSymbol> testCtorArgumentSymbol = nullptr)
 				{
 					Ptr<WfCppConfig::ClosureInfo> closureInfo;
 					auto scope = config->manager->nodeScopes[node].Obj();
@@ -390,6 +390,15 @@ WfGenerateExpressionVisitor
 							else if (auto classExpr = dynamic_cast<WfNewInterfaceExpression*>(source))
 							{
 								closureInfo = config->closureInfos[classExpr];
+								break;
+							}
+						}
+						else if (auto classExpr = scope->ownerNode.Cast<WfNewInterfaceExpression>())
+						{
+							auto info = config->closureInfos[classExpr.Obj()];
+							if (info->ctorArgumentSymbols.Values().Contains(testCtorArgumentSymbol.Obj()))
+							{
+								closureInfo = info;
 								break;
 							}
 						}
@@ -474,7 +483,7 @@ WfGenerateExpressionVisitor
 					writer.WriteString(L"this");
 				}
 
-				void VisitSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol)
+				void VisitSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol, bool forLambdaArgument)
 				{
 					if (auto varDecl = symbol->creatorNode.Cast<WfVariableDeclaration>())
 					{
@@ -485,11 +494,17 @@ WfGenerateExpressionVisitor
 							writer.WriteString(config->ConvertName(symbol->name));
 							return;
 						}
-						else if(auto closureInfo = GetClosureInfo(node))
+						else if(auto closureInfo = GetClosureInfo(node, (forLambdaArgument ? nullptr : symbol)))
 						{
 							if (closureInfo->symbols.Values().Contains(symbol.Obj()))
 							{
 								writer.WriteString(L"::vl::__vwsn::This(this)->");
+								writer.WriteString(config->ConvertName(symbol->name));
+								return;
+							}
+							else if (closureInfo->ctorArgumentSymbols.Values().Contains(symbol.Obj()))
+							{
+								writer.WriteString(L"__vwsnctor_");
 								writer.WriteString(config->ConvertName(symbol->name));
 								return;
 							}
@@ -919,7 +934,7 @@ WfGenerateExpressionVisitor
 					{
 						if (result.symbol)
 						{
-							VisitSymbol(node, result.symbol);
+							VisitSymbol(node, result.symbol, false);
 						}
 						else
 						{
@@ -942,18 +957,20 @@ WfGenerateExpressionVisitor
 				
 				void WriteClosureArguments(Ptr<WfCppConfig::ClosureInfo> closureInfo, WfExpression* node)
 				{
-					FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, closureInfo->symbols.Values())
+					vint index = 0;
+
+					FOREACH(Ptr<WfLexicalSymbol>, symbol, From(closureInfo->symbols.Values()).Union(closureInfo->ctorArgumentSymbols.Values()))
 					{
-						if (index > 0)
+						if (index++ > 0)
 						{
 							writer.WriteString(L", ");
 						}
-						VisitSymbol(node, symbol);
+						VisitSymbol(node, symbol, true);
 					}
 
-					FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
+					FOREACH(ITypeDescriptor*, thisType, closureInfo->thisTypes)
 					{
-						if (index > 0 || closureInfo->symbols.Count() > 0)
+						if (index++ > 0)
 						{
 							writer.WriteString(L", ");
 						}
