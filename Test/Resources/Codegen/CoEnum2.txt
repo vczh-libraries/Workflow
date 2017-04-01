@@ -1,0 +1,26 @@
+module test;
+using system::*;
+
+var s = "";
+
+func GetNumbers() : int{}
+${
+	for(i in range[0, 10])
+	{
+		$Join range [i, i+2];
+		if (i == 2)
+		{
+			return;
+		}
+	}
+}
+
+func main():string
+{
+	for(i in GetNumbers())
+	{
+		s = $"$(s)[$(i)]";
+	}
+
+	return s;
+}

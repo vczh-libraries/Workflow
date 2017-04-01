@@ -375,16 +375,19 @@ ExpandCoProviderStatement
 
 				Ptr<WfExpression> CreateField(Ptr<WfExpression> from)override
 				{
+					if (!from) return nullptr;
 					return CopyExpression(from);
 				}
 
 				Ptr<WfType> CreateField(Ptr<WfType> from)override
 				{
+					if (!from) return nullptr;
 					return CopyType(from);
 				}
 
 				Ptr<WfStatement> CreateField(Ptr<WfStatement> from)override
 				{
+					if (!from) return nullptr;
 					from->Accept(this);
 					return result.Cast<WfStatement>();
 				}
