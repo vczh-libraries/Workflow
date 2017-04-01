@@ -87,7 +87,7 @@ namespace vl
 						GenerateExpression(config, writer, node->expression, result.type.Obj());
 						if (!throwString)
 						{
-							writer.WriteLine(L".Obj())->GetMessage()");
+							writer.WriteString(L".Obj())->GetMessage()");
 						}
 
 						writer.WriteLine(L");");
