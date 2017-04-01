@@ -506,6 +506,7 @@ ExpandCoProviderStatement
 							auto ifBlock = MakePtr<WfBlockStatement>();
 							ifHasResultStat->trueBranch = ifBlock;
 							ifBlock->statements.Add(ifStat);
+							block->statements.Add(ifHasResultStat);
 						}
 						else
 						{

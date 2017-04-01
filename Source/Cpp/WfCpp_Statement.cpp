@@ -77,7 +77,19 @@ namespace vl
 					{
 						writer.WriteString(prefix);
 						writer.WriteString(L"throw ::vl::Exception(");
-						GenerateExpression(config, writer, node->expression, TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+
+						auto result = config->manager->expressionResolvings[node->expression.Obj()];
+						bool throwString = result.type->GetTypeDescriptor() == description::GetTypeDescriptor<WString>();
+						if (!throwString)
+						{
+							writer.WriteString(L"::vl::__vwsn::This(");
+						}
+						GenerateExpression(config, writer, node->expression, result.type.Obj());
+						if (!throwString)
+						{
+							writer.WriteLine(L".Obj())->GetMessage()");
+						}
+
 						writer.WriteLine(L");");
 					}
 					else
