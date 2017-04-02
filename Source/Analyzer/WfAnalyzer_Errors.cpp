@@ -279,6 +279,11 @@ WfErrors
 					L"\ttype() or typeof() expressions.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongMixinTargetType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType)
+			{
+				return new ParsingError(node, L"A32: Mixin cast cannot implicitly convert from \"" + fromType->GetTypeFriendlyName() + L"\" to \"" + toType->GetTypeFriendlyName() + L"\". It is only for converting from an interface to a derived interface.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
 			{
 				return new ParsingError(node, L"B0: Void is not a type for a value.");

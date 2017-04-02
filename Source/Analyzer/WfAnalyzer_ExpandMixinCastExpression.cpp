@@ -16,13 +16,12 @@ ExpandNewCoroutineExpression
 
 			void ExpandMixinCastExpression(WfLexicalScopeManager* manager, WfMixinCastExpression* node)
 			{
-				auto targetType = manager->expressionResolvings[node].type.Obj();
-				auto sourceType = manager->expressionResolvings[node->expression.Obj()].type.Obj();
+				auto sourceType = manager->expressionResolvings[node->expression.Obj()].type;
 
 				auto newExpr = MakePtr<WfNewInterfaceExpression>();
 				node->expandedExpression = newExpr;
 
-				newExpr->type = GetTypeFromTypeInfo(targetType);
+				newExpr->type = CopyType(node->type);
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);

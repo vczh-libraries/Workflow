@@ -126,7 +126,7 @@ Closures
 	public:
 		__vwsnc2_CoAsync_GetStringAsync__IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_);
 
-		::vl::Ptr<::vl::reflection::description::IAsync> __vwsn_co_mixin_source_;
+		::vl::Ptr<::vl::reflection::description::IAsync> __vwsn_mixin_source_;
 		bool Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback) override;
 		::vl::reflection::description::AsyncStatus GetStatus() override;
 	};
@@ -134,12 +134,11 @@ Closures
 	class __vwsnc3_CoAsync_GetStringAsync2__IStringAsync : public ::vl::Object, public virtual ::IStringAsync
 	{
 	public:
-		::vl::Ptr<::vl::reflection::description::IFuture> future;
-
 		__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future);
 
-		::vl::reflection::description::AsyncStatus GetStatus() override;
+		::vl::Ptr<::vl::reflection::description::IAsync> __vwsn_mixin_source_;
 		bool Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback) override;
+		::vl::reflection::description::AsyncStatus GetStatus() override;
 	};
 
 	class __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine : public ::vl::Object, public virtual ::vl::reflection::description::ICoroutine

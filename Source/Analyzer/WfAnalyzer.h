@@ -457,6 +457,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotConstant(WfExpression* node);
+				static Ptr<parsing::ParsingError>			WrongMixinTargetType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);

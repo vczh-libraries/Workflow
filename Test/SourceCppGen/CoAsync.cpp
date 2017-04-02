@@ -195,34 +195,34 @@ Closures
 
 	__vwsnc2_CoAsync_GetStringAsync__IStringAsync::__vwsnc2_CoAsync_GetStringAsync__IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_)
 	{
-		this->__vwsn_co_mixin_source_ = __vwsnctor___vwsn_co_mixin_source_variable_;
+		this->__vwsn_mixin_source_ = __vwsnctor___vwsn_co_mixin_source_variable_;
 	}
 
 	bool __vwsnc2_CoAsync_GetStringAsync__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback)
 	{
-		return ::vl::__vwsn::This(::vl::__vwsn::Ensure(static_cast<::vl::reflection::description::IAsync*>(__vwsn_co_mixin_source_.Obj())))->Execute(callback);
+		return ::vl::__vwsn::This(::vl::__vwsn::Ensure(static_cast<::vl::reflection::description::IAsync*>(__vwsn_mixin_source_.Obj())))->Execute(callback);
 	}
 
 	::vl::reflection::description::AsyncStatus __vwsnc2_CoAsync_GetStringAsync__IStringAsync::GetStatus()
 	{
-		return ::vl::__vwsn::This(::vl::__vwsn::Ensure(static_cast<::vl::reflection::description::IAsync*>(__vwsn_co_mixin_source_.Obj())))->GetStatus();
+		return ::vl::__vwsn::This(::vl::__vwsn::Ensure(static_cast<::vl::reflection::description::IAsync*>(__vwsn_mixin_source_.Obj())))->GetStatus();
 	}
 
 	//-------------------------------------------------------------------
 
 	__vwsnc3_CoAsync_GetStringAsync2__IStringAsync::__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future)
-		:future(__vwsnctor_future)
 	{
-	}
-
-	::vl::reflection::description::AsyncStatus __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::GetStatus()
-	{
-		return ::vl::__vwsn::This(::vl::__vwsn::This(this)->future.Obj())->GetStatus();
+		this->__vwsn_mixin_source_ = ::vl::Ptr<::vl::reflection::description::IAsync>(__vwsnctor_future);
 	}
 
 	bool __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback)
 	{
-		return ::vl::__vwsn::This(::vl::__vwsn::This(this)->future.Obj())->Execute(callback);
+		return ::vl::__vwsn::This(::vl::__vwsn::Ensure(static_cast<::vl::reflection::description::IAsync*>(__vwsn_mixin_source_.Obj())))->Execute(callback);
+	}
+
+	::vl::reflection::description::AsyncStatus __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::GetStatus()
+	{
+		return ::vl::__vwsn::This(::vl::__vwsn::Ensure(static_cast<::vl::reflection::description::IAsync*>(__vwsn_mixin_source_.Obj())))->GetStatus();
 	}
 
 	//-------------------------------------------------------------------

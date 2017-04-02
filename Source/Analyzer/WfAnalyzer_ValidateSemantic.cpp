@@ -2968,7 +2968,24 @@ ValidateSemantic(Expression)
 					auto expressionType = GetExpressionType(manager, node->expression, 0);
 					if (type && expressionType)
 					{
-						throw 0;
+						results.Add(ResolveExpressionResult::ReadonlyType(type));
+						if (expressionType)
+						{
+							auto fromTd = expressionType->GetTypeDescriptor();
+							auto toTd = type->GetTypeDescriptor();
+							if ((fromTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
+							{
+								if ((toTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
+								{
+									if (fromTd != toTd && toTd->CanConvertTo(fromTd))
+									{
+										goto PASS_VALIDATION;
+									}
+								}
+							}
+							manager->errors.Add(WfErrors::WrongMixinTargetType(node, expressionType.Obj(), type.Obj()));
+						PASS_VALIDATION:;
+						}
 					}
 				}
 
