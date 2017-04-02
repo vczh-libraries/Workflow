@@ -1213,6 +1213,11 @@ ValidateSemantic(Expression)
 				{
 					ExpandNewCoroutineExpression(manager, node);
 				}
+
+				void Visit(WfMixinCastExpression* node)override
+				{
+					ExpandMixinCastExpression(manager, node);
+				}
 			};
 
 			class ValidateSemanticExpressionVisitor

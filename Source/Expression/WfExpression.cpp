@@ -798,6 +798,18 @@ Print (Expression)
 				WfPrint(node->statement, indent, writer);
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfMixinCastExpression* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"new (");
+				WfPrint(node->type, indent, writer);
+				writer.WriteString(L")");
+
+				writer.WriteString(L"(using ");
+				WfPrint(node->expression, indent, writer);
+				writer.AfterPrint(node);
+			}
 		};
 
 /***********************************************************************

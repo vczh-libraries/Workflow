@@ -818,6 +818,11 @@ BuildScopeForExpression
 					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 
+				void Visit(WfMixinCastExpression* node)override
+				{
+					BuildScopeForExpression(manager, parentScope, node->expression);
+				}
+
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression)
 				{
 					BuildScopeForExpressionVisitor visitor(manager, parentScope);

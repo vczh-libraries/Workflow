@@ -1439,6 +1439,12 @@ ValidateStructure(Expression)
 					ValidateStatementStructure(manager, &context, node->statement);
 				}
 
+				void Visit(WfMixinCastExpression* node)override
+				{
+					ValidateTypeStructure(manager, node->type);
+					ValidateExpressionStructure(manager, context, node->expression);
+				}
+
 				static void Execute(Ptr<WfExpression>& expression, WfLexicalScopeManager* manager, ValidateStructureContext* context)
 				{
 					ValidateStructureExpressionVisitor visitor(manager, context);

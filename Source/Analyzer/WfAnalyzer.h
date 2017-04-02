@@ -395,6 +395,7 @@ Expanding Virtual Nodes
 
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 			extern void										ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node);
+			extern void										ExpandMixinCastExpression(WfLexicalScopeManager* manager, WfMixinCastExpression* node);
 			extern void										ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node);
 			extern void										ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node);
 			extern void										ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node);

@@ -1093,6 +1093,7 @@ ExpandBindExpression
 				BindCallbackInfo bcInfo;
 						
 				auto newSubscription = MakePtr<WfNewInterfaceExpression>();
+				node->expandedExpression = newSubscription;
 				{
 					auto typeInfo = TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo();
 					newSubscription->type = GetTypeFromTypeInfo(typeInfo.Obj());
@@ -1369,7 +1370,6 @@ ExpandBindExpression
 				newSubscription->declarations.Add(AssignOverrideMember(CreateBindSubscribeFunction()));
 				newSubscription->declarations.Add(AssignOverrideMember(CreateBindUpdateFunction(bcInfo)));
 				newSubscription->declarations.Add(AssignOverrideMember(CreateBindCloseFunction(manager, bcInfo)));
-				node->expandedExpression = newSubscription;
 			}
 		}
 	}
