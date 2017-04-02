@@ -849,14 +849,10 @@ ValidateSemantic(Statement)
 					auto scope = manager->nodeScopes[node].Obj();
 					auto providerSymbol = scope->symbols[L"$PROVIDER"][0];
 					auto implSymbol = scope->symbols[L"$IMPL"][0];
-					ITypeInfo* funcReturnType = nullptr;
+					Ptr<ITypeInfo> funcReturnType;
 					{
 						auto decl = scope->parentScope->ownerNode.Cast<WfFunctionDeclaration>();
-						auto funcSymbol = manager->GetDeclarationSymbol(scope->parentScope.Obj(), decl.Obj());
-						if (funcSymbol->typeInfo)
-						{
-							funcReturnType = funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0);
-						}
+						funcReturnType = CreateTypeInfoFromType(scope->parentScope.Obj(), decl->returnType);
 					}
 					ITypeDescriptor* selectedProviderTd = nullptr;
 					List<WString> candidates;
