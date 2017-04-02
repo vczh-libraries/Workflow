@@ -392,6 +392,11 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
+		void WfMixinCastExpression::Accept(WfVirtualExpression::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
 		void WfModuleUsingNameFragment::Accept(WfModuleUsingFragment::IVisitor* visitor)
 		{
 			visitor->Visit(this);
@@ -526,6 +531,7 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfBindExpression, workflow::WfBindExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfFormatExpression, workflow::WfFormatExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfNewCoroutineExpression, workflow::WfNewCoroutineExpression)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfMixinCastExpression, workflow::WfMixinCastExpression)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingFragment, workflow::WfModuleUsingFragment)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingNameFragment, workflow::WfModuleUsingNameFragment)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingWildCardFragment, workflow::WfModuleUsingWildCardFragment)
@@ -1442,6 +1448,15 @@ namespace vl
 				CLASS_MEMBER_FIELD(statement)
 			END_CLASS_MEMBER(WfNewCoroutineExpression)
 
+			BEGIN_CLASS_MEMBER(WfMixinCastExpression)
+				CLASS_MEMBER_BASE(WfVirtualExpression)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfMixinCastExpression>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(type)
+				CLASS_MEMBER_FIELD(expression)
+			END_CLASS_MEMBER(WfMixinCastExpression)
+
 			BEGIN_CLASS_MEMBER(WfModuleUsingFragment)
 				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(WfModuleUsingFragment::*)(WfModuleUsingFragment::IVisitor* visitor))
 			END_CLASS_MEMBER(WfModuleUsingFragment)
@@ -1585,6 +1600,7 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfBindExpression* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfFormatExpression* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfNewCoroutineExpression* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfVirtualExpression::IVisitor::*)(WfMixinCastExpression* node))
 			END_INTERFACE_MEMBER(WfVirtualExpression)
 
 			BEGIN_INTERFACE_MEMBER(WfModuleUsingFragment::IVisitor)
@@ -1707,6 +1723,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfBindExpression)
 					ADD_TYPE_INFO(vl::workflow::WfFormatExpression)
 					ADD_TYPE_INFO(vl::workflow::WfNewCoroutineExpression)
+					ADD_TYPE_INFO(vl::workflow::WfMixinCastExpression)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingWildCardFragment)

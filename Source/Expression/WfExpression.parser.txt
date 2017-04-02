@@ -724,6 +724,12 @@ class NewCoroutineExpression : VirtualExpression
 	Statement				statement;
 }
 
+class MixinCastExpression : VirtualExpression
+{
+	Type					type;
+	Expression				expression;
+}
+
 //////////////////////////////////////////////////////////////////
 // AST (Module)
 //////////////////////////////////////////////////////////////////
@@ -927,6 +933,7 @@ rule Expression _VirtualExpression
 	= FORMATSTRING : value as FormatExpression
 	= "bind" "(" _Expression : expression ")" as BindExpression
 	= "$coroutine" ["(" NAME : name ")"] _Block : statement as NewCoroutineExpression
+	= "new" _Type : type "(" "using" _Expression : expression ")" as MixinCastExpression
 	;
 
 rule Expression _ExpPrimitive

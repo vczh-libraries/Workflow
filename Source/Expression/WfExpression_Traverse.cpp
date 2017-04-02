@@ -1529,6 +1529,10 @@ VirtualExpressionVisitor
 			{
 			}
 
+			void VirtualExpressionVisitor::Traverse(WfMixinCastExpression* node)
+			{
+			}
+
 			// Visitor Members -----------------------------------
 
 			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
@@ -1559,6 +1563,17 @@ VirtualExpressionVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
 				VisitField(node->statement.Obj());
+				VisitField(node->expandedExpression.Obj());
+			}
+
+			void VirtualExpressionVisitor::Visit(WfMixinCastExpression* node)
+			{
+				Traverse(static_cast<WfMixinCastExpression*>(node));
+				Traverse(static_cast<WfVirtualExpression*>(node));
+				Traverse(static_cast<WfExpression*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->type.Obj());
+				VisitField(node->expression.Obj());
 				VisitField(node->expandedExpression.Obj());
 			}
 

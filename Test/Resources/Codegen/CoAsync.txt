@@ -21,12 +21,7 @@ func GetStringAsync2(x : int) : IStringAsync^
 		future.Promise.SendResult(cast string x);
 	});
 	
-	/* consider mixin_cast */
-	return new IStringAsync^
-	{
-		override func GetStatus() : AsyncStatus { return future.GetStatus(); }
-		override func Execute(callback : func(CoroutineResult^):void) : bool { return future.Execute(callback); }
-	};
+	return new IStringAsync^(using future);
 }
 
 func GetMultipleString() : void

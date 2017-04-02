@@ -368,6 +368,10 @@ VirtualExpressionVisitor
 			{
 			}
 
+			void VirtualExpressionVisitor::Visit(WfMixinCastExpression* node)
+			{
+			}
+
 /***********************************************************************
 ModuleUsingFragmentVisitor
 ***********************************************************************/
