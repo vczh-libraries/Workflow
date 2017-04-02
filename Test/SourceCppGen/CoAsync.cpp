@@ -51,14 +51,21 @@ Global Functions
 		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync_GetStringAsync__IStringAsync(__vwsn_co_mixin_source_variable_));
 	}
 
+	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync2(::vl::vint32_t x)
+	{
+		auto future = ::vl::reflection::description::IFuture::Create();
+		::vl::__vwsn::This(::vl::reflection::description::IAsyncScheduler::GetSchedulerForCurrentThread().Obj())->ExecuteInBackground(LAMBDA(::vl_workflow_global::__vwsnf2_CoAsync_GetStringAsync2_(future, x)));
+		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(future));
+	}
+
 	void CoAsync::GetMultipleString()
 	{
-		::vl::reflection::description::AsyncCoroutine::CreateAndRun(LAMBDA(::vl_workflow_global::__vwsnf2_CoAsync_GetMultipleString_()));
+		::vl::reflection::description::AsyncCoroutine::CreateAndRun(LAMBDA(::vl_workflow_global::__vwsnf3_CoAsync_GetMultipleString_()));
 	}
 
 	::vl::WString CoAsync::main()
 	{
-		::test::SyncScheduler::Run(LAMBDA(::vl_workflow_global::__vwsno3_CoAsync_main_()));
+		::test::SyncScheduler::Run(LAMBDA(::vl_workflow_global::__vwsno4_CoAsync_main_()));
 		return GLOBAL_NAME s;
 	}
 
@@ -85,22 +92,36 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf2_CoAsync_GetMultipleString_::__vwsnf2_CoAsync_GetMultipleString_()
+	__vwsnf2_CoAsync_GetStringAsync2_::__vwsnf2_CoAsync_GetStringAsync2_(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future, ::vl::vint32_t __vwsnctor_x)
+		:future(__vwsnctor_future)
+		, x(__vwsnctor_x)
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf2_CoAsync_GetMultipleString_::operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const
+	void __vwsnf2_CoAsync_GetStringAsync2_::operator()() const
 	{
-		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine(__vwsn_co_impl_));
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->future.Obj())->GetPromise().Obj())->SendResult(::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno3_CoAsync_main_::__vwsno3_CoAsync_main_()
+	__vwsnf3_CoAsync_GetMultipleString_::__vwsnf3_CoAsync_GetMultipleString_()
 	{
 	}
 
-	void __vwsno3_CoAsync_main_::operator()() const
+	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf3_CoAsync_GetMultipleString_::operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const
+	{
+		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine(__vwsn_co_impl_));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsno4_CoAsync_main_::__vwsno4_CoAsync_main_()
+	{
+	}
+
+	void __vwsno4_CoAsync_main_::operator()() const
 	{
 		return GLOBAL_NAME GetMultipleString();
 	}
@@ -189,37 +210,55 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::__vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_)
+	__vwsnc3_CoAsync_GetStringAsync2__IStringAsync::__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future)
+		:future(__vwsnctor_future)
+	{
+	}
+
+	::vl::reflection::description::AsyncStatus __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::GetStatus()
+	{
+		return ::vl::__vwsn::This(::vl::__vwsn::This(this)->future.Obj())->GetStatus();
+	}
+
+	bool __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback)
+	{
+		return ::vl::__vwsn::This(::vl::__vwsn::This(this)->future.Obj())->Execute(callback);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::__vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_)
 		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
 	{
 		this->__vwsn_co0_x = ::vl::WString(L"", false);
-		this->__vwsn_co1_for_begin_i = 0;
-		this->__vwsn_co2_for_end_i = 0;
-		this->__vwsn_co3_i = 0;
+		this->__vwsn_co1_y = ::vl::WString(L"", false);
+		this->__vwsn_co2_for_begin_i = 0;
+		this->__vwsn_co3_for_end_i = 0;
+		this->__vwsn_co4_i = 0;
 		this->__vwsn_co_state_ = 0;
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueException> __vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::GetFailure()
+	::vl::Ptr<::vl::reflection::description::IValueException> __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::GetFailure()
 	{
 		return __vwsn_prop_Failure;
 	}
-	void __vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_)
+	void __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_)
 	{
 		(__vwsn_prop_Failure = __vwsn_value_);
 	}
 
-	::vl::reflection::description::CoroutineStatus __vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::GetStatus()
+	::vl::reflection::description::CoroutineStatus __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::GetStatus()
 	{
 		return __vwsn_prop_Status;
 	}
-	void __vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_)
+	void __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_)
 	{
 		(__vwsn_prop_Status = __vwsn_value_);
 	}
 
-	void __vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
+	void __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
 	{
 		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
@@ -233,10 +272,10 @@ Closures
 				{
 					if ((__vwsn_co_state_ == 0))
 					{
-						(__vwsn_co1_for_begin_i = 0);
-						(__vwsn_co2_for_end_i = 1);
-						(__vwsn_co3_i = __vwsn_co1_for_begin_i);
-						if ((__vwsn_co3_i <= __vwsn_co2_for_end_i))
+						(__vwsn_co2_for_begin_i = 0);
+						(__vwsn_co3_for_end_i = 1);
+						(__vwsn_co4_i = __vwsn_co2_for_begin_i);
+						if ((__vwsn_co4_i <= __vwsn_co3_for_end_i))
 						{
 							(__vwsn_co_state_ = 3);
 							continue;
@@ -259,8 +298,8 @@ Closures
 							}
 						}
 						(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
-						(__vwsn_co3_i = (__vwsn_co3_i + 1));
-						if ((__vwsn_co3_i <= __vwsn_co2_for_end_i))
+						(__vwsn_co4_i = (__vwsn_co4_i + 1));
+						if ((__vwsn_co4_i <= __vwsn_co3_for_end_i))
 						{
 							(__vwsn_co_state_ = 3);
 							continue;
@@ -273,7 +312,7 @@ Closures
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 4);
 						{
-							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::Ptr<::vl::reflection::description::IAsync>(GLOBAL_NAME GetStringAsync(__vwsn_co3_i)));
+							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::Ptr<::vl::reflection::description::IAsync>(GLOBAL_NAME GetStringAsync(__vwsn_co4_i)));
 						}
 						return;
 					}
@@ -284,11 +323,31 @@ Closures
 							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 						}
 						(__vwsn_co0_x = ::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
-						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co3_i)) + ::vl::WString(L"]", false)));
+						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + __vwsn_co0_x) + ::vl::WString(L"]", false)));
 						(__vwsn_co_state_ = 5);
 						continue;
 					}
 					if ((__vwsn_co_state_ == 5))
+					{
+						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						(__vwsn_co_state_ = 6);
+						{
+							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::Ptr<::vl::reflection::description::IAsync>(GLOBAL_NAME GetStringAsync2(__vwsn_co4_i)));
+						}
+						return;
+					}
+					if ((__vwsn_co_state_ == 6))
+					{
+						if (static_cast<bool>(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure()))
+						{
+							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
+						}
+						(__vwsn_co1_y = ::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
+						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[-", false)) + __vwsn_co1_y) + ::vl::WString(L"]", false)));
+						(__vwsn_co_state_ = 7);
+						continue;
+					}
+					if ((__vwsn_co_state_ == 7))
 					{
 						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 2);

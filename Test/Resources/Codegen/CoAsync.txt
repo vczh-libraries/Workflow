@@ -12,12 +12,31 @@ ${
 	return cast string x;
 }
 
+func GetStringAsync2(x : int) : IStringAsync^
+{
+	var future = Future::Create();
+	AsyncScheduler::GetSchedulerForCurrentThread().ExecuteInBackground(func():void
+	{
+		s = $"$(s)[$(x)]";
+		future.Promise.SendResult(cast string x);
+	});
+	
+	/* consider mixin_cast */
+	return new IStringAsync^
+	{
+		override func GetStatus() : AsyncStatus { return future.GetStatus(); }
+		override func Execute(callback : func(CoroutineResult^):void) : bool { return future.Execute(callback); }
+	};
+}
+
 func GetMultipleString() : void
 $Async{
 	for(i in range[0, 1])
 	{
 		var x = $Await GetStringAsync(i);
-		s = $"$(s)[+$(i)]";
+		s = $"$(s)[+$(x)]";
+		var y = $Await GetStringAsync2(i);
+		s = $"$(s)[-$(y)]";
 		$Await Async::Delay(0);
 		s = $"$(s)!";
 	}

@@ -180,6 +180,11 @@ SyncScheduler
 		tasks.Add(callback);
 	}
 
+	void SyncScheduler::ExecuteInBackground(const Func<void()>& callback)
+	{
+		tasks.Add(callback);
+	}
+
 	void SyncScheduler::DelayExecute(const Func<void()>& callback, vint milliseconds)
 	{
 		tasks.Add(callback);
@@ -259,6 +264,7 @@ namespace vl
 			END_CLASS_MEMBER(Hinters)
 
 			BEGIN_CLASS_MEMBER(SyncScheduler)
+				CLASS_MEMBER_BASE(IAsyncScheduler)
 				CLASS_MEMBER_STATIC_METHOD(Run, { L"callback "})
 			END_CLASS_MEMBER(SyncScheduler)
 

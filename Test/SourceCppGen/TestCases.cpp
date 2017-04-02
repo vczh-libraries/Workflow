@@ -640,7 +640,7 @@ TEST_CASE(CoEnum2)
 
 TEST_CASE(CoAsync)
 {
-	WString expected = L"[0][+0]![1][+1]!";
+	WString expected = L"[0][+0][0][-0]![1][+1][1][-1]!";
 	WString actual = ::vl_workflow_global::CoAsync::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);

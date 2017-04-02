@@ -104,6 +104,7 @@ namespace test
 		static void Run(const Func<void()>& callback);
 
 		void Execute(const Func<void()>& callback)override;
+		void ExecuteInBackground(const Func<void()>& callback)override;
 		void DelayExecute(const Func<void()>& callback, vint milliseconds)override;
 	};
 }

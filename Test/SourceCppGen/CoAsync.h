@@ -26,11 +26,13 @@ https://github.com/vczh-libraries
 namespace vl_workflow_global
 {
 	struct __vwsnf1_CoAsync_GetStringAsync_;
-	struct __vwsnf2_CoAsync_GetMultipleString_;
-	struct __vwsno3_CoAsync_main_;
+	struct __vwsnf2_CoAsync_GetStringAsync2_;
+	struct __vwsnf3_CoAsync_GetMultipleString_;
+	struct __vwsno4_CoAsync_main_;
 	class __vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine;
 	class __vwsnc2_CoAsync_GetStringAsync__IStringAsync;
-	class __vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine;
+	class __vwsnc3_CoAsync_GetStringAsync2__IStringAsync;
+	class __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine;
 }
 
 class IStringAsync;
@@ -57,6 +59,7 @@ namespace vl_workflow_global
 		::vl::WString s;
 
 		::vl::Ptr<::IStringAsync> GetStringAsync(::vl::vint32_t x);
+		::vl::Ptr<::IStringAsync> GetStringAsync2(::vl::vint32_t x);
 		void GetMultipleString();
 		::vl::WString main();
 
@@ -76,16 +79,26 @@ Closures
 		::vl::Ptr<::vl::reflection::description::ICoroutine> operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const;
 	};
 
-	struct __vwsnf2_CoAsync_GetMultipleString_
+	struct __vwsnf2_CoAsync_GetStringAsync2_
 	{
-		__vwsnf2_CoAsync_GetMultipleString_();
+		::vl::Ptr<::vl::reflection::description::IFuture> future;
+		::vl::vint32_t x;
+
+		__vwsnf2_CoAsync_GetStringAsync2_(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future, ::vl::vint32_t __vwsnctor_x);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf3_CoAsync_GetMultipleString_
+	{
+		__vwsnf3_CoAsync_GetMultipleString_();
 
 		::vl::Ptr<::vl::reflection::description::ICoroutine> operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const;
 	};
 
-	struct __vwsno3_CoAsync_main_
+	struct __vwsno4_CoAsync_main_
 	{
-		__vwsno3_CoAsync_main_();
+		__vwsno4_CoAsync_main_();
 
 		void operator()() const;
 	};
@@ -118,17 +131,29 @@ Closures
 		::vl::reflection::description::AsyncStatus GetStatus() override;
 	};
 
-	class __vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine : public ::vl::Object, public virtual ::vl::reflection::description::ICoroutine
+	class __vwsnc3_CoAsync_GetStringAsync2__IStringAsync : public ::vl::Object, public virtual ::IStringAsync
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IFuture> future;
+
+		__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future);
+
+		::vl::reflection::description::AsyncStatus GetStatus() override;
+		bool Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback) override;
+	};
+
+	class __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine : public ::vl::Object, public virtual ::vl::reflection::description::ICoroutine
 	{
 	public:
 		::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_;
 
-		__vwsnc3_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_);
+		__vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_);
 
 		::vl::WString __vwsn_co0_x;
-		::vl::vint32_t __vwsn_co1_for_begin_i = 0;
-		::vl::vint32_t __vwsn_co2_for_end_i = 0;
-		::vl::vint32_t __vwsn_co3_i = 0;
+		::vl::WString __vwsn_co1_y;
+		::vl::vint32_t __vwsn_co2_for_begin_i = 0;
+		::vl::vint32_t __vwsn_co3_for_end_i = 0;
+		::vl::vint32_t __vwsn_co4_i = 0;
 		::vl::vint32_t __vwsn_co_state_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
