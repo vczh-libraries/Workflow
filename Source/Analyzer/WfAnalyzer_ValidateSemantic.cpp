@@ -2961,6 +2961,17 @@ ValidateSemantic(Expression)
 					ValidateStatementSemantic(manager, node->statement);
 				}
 
+				void Visit(WfMixinCastExpression* node)override
+				{
+					auto scope = manager->nodeScopes[node].Obj();
+					auto type = CreateTypeInfoFromType(scope, node->type);
+					auto expressionType = GetExpressionType(manager, node->expression, 0);
+					if (type && expressionType)
+					{
+						throw 0;
+					}
+				}
+
 				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType, List<ResolveExpressionResult>& results)
 				{
 					ValidateSemanticExpressionVisitor visitor(manager, expectedType, results);
