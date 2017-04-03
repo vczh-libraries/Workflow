@@ -399,6 +399,11 @@ ContextFreeModuleDesugar
 
 				void Traverse(WfCastResultInterfaceDeclaration* node)override
 				{
+					if (node->expandedDeclarations.Count() > 0)
+					{
+						return;
+					}
+
 					auto decl = MakePtr<WfClassDeclaration>();
 					node->expandedDeclarations.Add(decl);
 					decl->kind = WfClassKind::Interface;
