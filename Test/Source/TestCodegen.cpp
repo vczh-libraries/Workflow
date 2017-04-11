@@ -81,12 +81,12 @@ TEST_CASE(TestCodegen)
 
 				if (file.Exists())
 				{
-					code = MergeCppFileContent(file.ReadAllText(), code);
+					code = MergeCppFileContent(file.ReadAllTextByBom(), code);
 				}
 
 				if (file.Exists())
 				{
-					auto originalCode = file.ReadAllText();
+					auto originalCode = file.ReadAllTextByBom();
 					if (originalCode == code)
 					{
 						continue;
