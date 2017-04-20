@@ -1,6 +1,8 @@
 # Workflow
 ### Debuggable script language for interoperation with C++ using reflection, which can also generate C++ code.
 
+**Read the [LICENSE](https://github.com/vczh-libraries/Tools/blob/master/LICENSE.md) first.**
+
 ### Notice
 
 Using this library requires you to use C++ source files (you should put them together) in
