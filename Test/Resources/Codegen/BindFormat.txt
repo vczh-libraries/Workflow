@@ -13,7 +13,8 @@ func main() : string
 {
 	var x = new ObservableValue^();
 	var subscription = bind($"The value has changed to $(x.Value)");
-	subscription.Subscribe(Callback);
+	subscription.Open();
+	attach(subscription.ValueChanged, Callback);
 
 	x.Value = 10;
 	x.Value = 20;

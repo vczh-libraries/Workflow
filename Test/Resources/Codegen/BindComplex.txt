@@ -23,7 +23,8 @@ func main() : string
 				on _y.ValueChanged)
 			on _x.ValueChanged)
 		);
-	subscription.Subscribe(Callback);
+	subscription.Open();
+	attach(subscription.ValueChanged, Callback);
 
 	x.Value = 10;
 	y.Value = 20;

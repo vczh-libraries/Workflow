@@ -12,7 +12,8 @@ class OuterClass
 		func Initialize(derived : Derived*) : void
 		{
 			subscription = bind(derived.x.Value + derived.y.Value + derived.z.Value);
-			subscription.Subscribe(
+			subscription.Open();
+			attach(subscription.ValueChanged,
 				func (value : object) : void
 				{
 					s = $"$(s)[$(cast int value)]";

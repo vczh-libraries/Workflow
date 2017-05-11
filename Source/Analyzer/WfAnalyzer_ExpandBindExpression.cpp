@@ -527,145 +527,6 @@ CreateBindWritableVariable
 			}
 
 /***********************************************************************
-IValueListener::GetSubscription
-***********************************************************************/
-
-			Ptr<WfFunctionDeclaration> CreateListenerGetSubscriptionFunction()
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				func->name.value = L"GetSubscription";
-				func->anonymity = WfFunctionAnonymity::Named;
-				{
-					auto typeInfo = TypeInfoRetriver<IValueSubscription*>::CreateTypeInfo();
-					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
-				}
-
-				auto block = MakePtr<WfBlockStatement>();
-				func->statement = block;
-				{
-					auto returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression =  CreateReference(L"<subscription>");
-					block->statements.Add(returnStat);
-				}
-				return func;
-			}
-
-/***********************************************************************
-IValueListener::GetStopped
-***********************************************************************/
-
-			Ptr<WfFunctionDeclaration> CreateListenerGetStoppedFunction()
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				func->name.value = L"GetStopped";
-				func->anonymity = WfFunctionAnonymity::Named;
-				{
-					auto typeInfo = TypeInfoRetriver<bool>::CreateTypeInfo();
-					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
-				}
-
-				auto block = MakePtr<WfBlockStatement>();
-				func->statement = block;
-				{
-					auto listenersRef = CreateReference(L"<bind-listeners>");
-
-					auto keysExpr = MakePtr<WfMemberExpression>();
-					keysExpr->parent = listenersRef;
-					keysExpr->name.value = L"Keys";
-
-					auto containsExpr = MakePtr<WfMemberExpression>();
-					containsExpr->parent = keysExpr;
-					containsExpr->name.value = L"Contains";
-
-					auto callExpr = MakePtr<WfCallExpression>();
-					callExpr->function = containsExpr;
-					callExpr->arguments.Add(MakePtr<WfThisExpression>());
-
-					auto notExpr = MakePtr<WfUnaryExpression>();
-					notExpr->op = WfUnaryOperator::Not;
-					notExpr->operand = callExpr;
-
-					auto returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression = notExpr;
-					block->statements.Add(returnStat);
-				}
-				return func;
-			}
-
-/***********************************************************************
-IValueListener::StopListening
-***********************************************************************/
-
-			Ptr<WfFunctionDeclaration> CreateListenerStopListeningFunction()
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				func->name.value = L"StopListening";
-				func->anonymity = WfFunctionAnonymity::Named;
-				{
-					auto typeInfo = TypeInfoRetriver<bool>::CreateTypeInfo();
-					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
-				}
-
-				auto block = MakePtr<WfBlockStatement>();
-				func->statement = block;
-				{
-					auto ifStat = MakePtr<WfIfStatement>();
-					block->statements.Add(ifStat);
-					{
-						auto listenersRef = CreateReference(L"<bind-listeners>");
-
-						auto keysExpr = MakePtr<WfMemberExpression>();
-						keysExpr->parent = listenersRef;
-						keysExpr->name.value = L"Keys";
-
-						auto containsExpr = MakePtr<WfMemberExpression>();
-						containsExpr->parent = keysExpr;
-						containsExpr->name.value = L"Contains";
-
-						auto callExpr = MakePtr<WfCallExpression>();
-						callExpr->function = containsExpr;
-						callExpr->arguments.Add(MakePtr<WfThisExpression>());
-						ifStat->expression = callExpr;
-					}
-
-					auto ifBlock = MakePtr<WfBlockStatement>();
-					ifStat->trueBranch = ifBlock;
-					{
-						auto listenersRef = CreateReference(L"<bind-listeners>");
-
-						auto removeExpr = MakePtr<WfMemberExpression>();
-						removeExpr->parent = listenersRef;
-						removeExpr->name.value = L"Remove";
-
-						auto callExpr = MakePtr<WfCallExpression>();
-						callExpr->function = removeExpr;
-						callExpr->arguments.Add(MakePtr<WfThisExpression>());
-
-						auto stat = MakePtr<WfExpressionStatement>();
-						stat->expression = callExpr;
-						ifBlock->statements.Add(stat);
-					}
-					{
-						auto literal = MakePtr<WfLiteralExpression>();
-						literal->value = WfLiteralValue::True;
-
-						auto returnStat = MakePtr<WfReturnStatement>();
-						returnStat->expression = literal;
-						ifBlock->statements.Add(returnStat);
-					}
-				}
-				{
-					auto literal = MakePtr<WfLiteralExpression>();
-					literal->value = WfLiteralValue::False;
-
-					auto returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression = literal;
-					block->statements.Add(returnStat);
-				}
-				return func;
-			}
-
-/***********************************************************************
 IValueSubscription::Subscribe
 ***********************************************************************/
 
@@ -681,109 +542,6 @@ IValueSubscription::Subscribe
 				decl->classMember = MakePtr<WfClassMember>();
 				decl->classMember->kind = WfClassMemberKind::Override;
 				return decl;
-			}
-
-			Ptr<WfFunctionDeclaration> CreateBindSubscribeFunction()
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				func->name.value = L"Subscribe";
-				func->anonymity = WfFunctionAnonymity::Named;
-				{
-					auto typeInfo = TypeInfoRetriver<Ptr<IValueListener>>::CreateTypeInfo();
-					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
-				}
-				{
-					auto typeInfo = TypeInfoRetriver<Func<void(Value)>>::CreateTypeInfo();
-					auto argument = MakePtr<WfFunctionArgument>();
-					argument->name.value = L"<bind-callback>";
-					argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
-					func->arguments.Add(argument);
-				}
-
-				auto block = MakePtr<WfBlockStatement>();
-				func->statement = block;
-				{
-					auto notOpenedRef = MakePtr<WfUnaryExpression>();
-					notOpenedRef->op = WfUnaryOperator::Not;
-					notOpenedRef->operand = CreateReference(L"<bind-opened>");
-
-					auto ifStat = MakePtr<WfIfStatement>();
-					block->statements.Add(ifStat);
-					ifStat->expression = notOpenedRef;
-
-					auto block = MakePtr<WfBlockStatement>();
-					ifStat->trueBranch = block;
-
-					{
-						auto assignExpr = MakePtr<WfBinaryExpression>();
-						assignExpr->op = WfBinaryOperator::Assign;
-						assignExpr->first = CreateReference(L"<bind-opened>");
-
-						auto trueValue = MakePtr<WfLiteralExpression>();
-						trueValue->value = WfLiteralValue::True;
-						assignExpr->second = trueValue;
-
-						auto stat = MakePtr<WfExpressionStatement>();
-						stat->expression = assignExpr;
-						block->statements.Add(stat);
-					}
-					{
-						auto callExpr = MakePtr<WfCallExpression>();
-						callExpr->function = CreateReference(L"<bind-initialize>");
-
-						auto stat = MakePtr<WfExpressionStatement>();
-						stat->expression = callExpr;
-						block->statements.Add(stat);
-					}
-				}
-				{
-					auto thisExpr = MakePtr<WfThisExpression>();
-					block->statements.Add(CreateWritableVariableStatement(L"<subscription>", TypeInfoRetriver<IValueSubscription*>::CreateTypeInfo().Obj(), thisExpr));
-				}
-				{
-					auto newListener = MakePtr<WfNewInterfaceExpression>();
-					{
-						auto typeInfo = TypeInfoRetriver<Ptr<IValueListener>>::CreateTypeInfo();
-						newListener->type = GetTypeFromTypeInfo(typeInfo.Obj());
-					}
-					newListener->declarations.Add(AssignOverrideMember(CreateListenerGetSubscriptionFunction()));
-					newListener->declarations.Add(AssignOverrideMember(CreateListenerGetStoppedFunction()));
-					newListener->declarations.Add(AssignOverrideMember(CreateListenerStopListeningFunction()));
-
-					auto variable = MakePtr<WfVariableDeclaration>();
-					variable->name.value = L"<listener-shared>";
-					variable->expression = newListener;
-					
-					auto variableStat = MakePtr<WfVariableStatement>();
-					variableStat->variable = variable;
-					block->statements.Add(variableStat);
-				}
-				{
-					auto callbackRef = CreateReference(L"<bind-callback>");
-
-					auto mapRef = CreateReference(L"<bind-listeners>");
-
-					auto func = MakePtr<WfMemberExpression>();
-					func->parent = mapRef;
-					func->name.value = L"Set";
-
-					auto call = MakePtr<WfCallExpression>();
-					call->function = func;
-					call->arguments.Add(CreateReference(L"<listener-shared>"));
-					call->arguments.Add(callbackRef);
-
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = call;
-					block->statements.Add(stat);
-				}
-				{
-					auto listenerRef = CreateReference(L"<listener-shared>");
-
-					auto returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression = listenerRef;
-					block->statements.Add(returnStat);
-				}
-				return func;
 			}
 
 /***********************************************************************
@@ -916,6 +674,118 @@ CreateBindCacheAssignStatement
 			}
 
 /***********************************************************************
+IValueSubscription::Open
+***********************************************************************/
+
+			Ptr<WfFunctionDeclaration> CreateBindOpenFunction(WfLexicalScopeManager* manager, WfObservingDependency& dependency, BindCallbackInfo& info)
+			{
+				auto func = MakePtr<WfFunctionDeclaration>();
+				func->name.value = L"Open";
+				func->anonymity = WfFunctionAnonymity::Named;
+				{
+					auto typeInfo = TypeInfoRetriver<bool>::CreateTypeInfo();
+					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
+				}
+
+				auto block = MakePtr<WfBlockStatement>();
+				func->statement = block;
+				{
+					auto ifStat = MakePtr<WfIfStatement>();
+					block->statements.Add(ifStat);
+					{
+						auto notExpr = MakePtr<WfUnaryExpression>();
+						notExpr->op = WfUnaryOperator::Not;
+						notExpr->operand = CreateReference(L"<bind-opened>");
+						ifStat->expression = notExpr;
+					}
+
+					auto ifBlock = MakePtr<WfBlockStatement>();
+					ifStat->trueBranch = ifBlock;
+					{
+						auto literal = MakePtr<WfLiteralExpression>();
+						literal->value = WfLiteralValue::True;
+
+						auto assign = MakePtr<WfBinaryExpression>();
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = CreateReference(L"<bind-opened>");
+						assign->second = literal;
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assign;
+						ifBlock->statements.Add(stat);
+					}
+					{
+						Group<WfExpression*, WfExpression*> reversedDependencies;
+						FOREACH_INDEXER(WfExpression*, key, index, dependency.dependencies.Keys())
+						{
+							FOREACH(WfExpression*, value, dependency.dependencies.GetByIndex(index))
+							{
+								if (value)
+								{
+									reversedDependencies.Add(value, key);
+								}
+							}
+						}
+
+						SortedList<WfExpression*> freeObserves;
+						while (reversedDependencies.Count() > 0)
+						{
+							CopyFrom(
+								freeObserves,
+								From(reversedDependencies.Keys())
+								.Where([&](WfExpression* observe)
+							{
+								return From(reversedDependencies[observe])
+									.All([&](WfExpression* parent)
+								{
+									return !reversedDependencies.Contains(parent);
+								});
+							})
+							);
+
+							FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+							{
+								if (freeObserves.Contains(observe))
+								{
+									CreateBindCacheAssignStatement(ifBlock, observe, info);
+								}
+							}
+
+							FOREACH(WfExpression*, observe, freeObserves)
+							{
+								reversedDependencies.Remove(observe);
+							}
+							freeObserves.Clear();
+						}
+					}
+					{
+						FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+						{
+							CreateBindAttachStatement(ifBlock, manager, observe, info);
+						}
+					}
+					{
+						auto literal = MakePtr<WfLiteralExpression>();
+						literal->value = WfLiteralValue::True;
+
+						auto returnStat = MakePtr<WfReturnStatement>();
+						returnStat->expression = literal;
+						ifBlock->statements.Add(returnStat);
+					}
+				}
+				{
+					auto literal = MakePtr<WfLiteralExpression>();
+					literal->value = WfLiteralValue::False;
+
+					auto returnStat = MakePtr<WfReturnStatement>();
+					returnStat->expression = literal;
+					block->statements.Add(returnStat);
+				}
+
+				return func;
+			}
+
+/***********************************************************************
 IValueSubscription::Update
 ***********************************************************************/
 
@@ -1045,20 +915,6 @@ IValueSubscription::Close
 						}
 					}
 					{
-						auto ref = CreateReference(L"<bind-listeners>");
-
-						auto func = MakePtr<WfMemberExpression>();
-						func->parent = ref;
-						func->name.value = L"Clear";
-
-						auto call = MakePtr<WfCallExpression>();
-						call->function = func;
-
-						auto stat = MakePtr<WfExpressionStatement>();
-						stat->expression = call;
-						ifBlock->statements.Add(stat);
-					}
-					{
 						auto literal = MakePtr<WfLiteralExpression>();
 						literal->value = WfLiteralValue::True;
 
@@ -1176,14 +1032,6 @@ ExpandBindExpression
 					newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(L"<bind-opened>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
 					newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(L"<bind-closed>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
 					{
-						auto typeInfo = TypeInfoRetriver<Dictionary<Ptr<IValueListener>, Func<void(Value)>>>::CreateTypeInfo();
-						auto decl = MakePtr<WfVariableDeclaration>();
-						decl->name.value = L"<bind-listeners>";
-						decl->type = GetTypeFromTypeInfo(typeInfo.Obj());
-						decl->expression = MakePtr<WfConstructorExpression>();
-						newSubscription->declarations.Add(AssignNormalMember(decl));
-					}
-					{
 						auto func = MakePtr<WfFunctionDeclaration>();
 						func->name.value = L"<bind-activator>";
 						func->anonymity = WfFunctionAnonymity::Named;
@@ -1202,37 +1050,13 @@ ExpandBindExpression
 							block->statements.Add(varStat);
 						}
 						{
-							auto ref = CreateReference(L"<bind-listeners>");
-
-							auto values = MakePtr<WfMemberExpression>();
-							values->parent = ref;
-							values->name.value = L"Values";
-
-							auto forStat = MakePtr<WfForEachStatement>();
-							block->statements.Add(forStat);
-							forStat->name.value = L"<bind-callback>";
-							forStat->collection = values;
-							forStat->direction = WfForEachDirection::Normal;
-
-							auto forBlock = MakePtr<WfBlockStatement>();
-							forStat->statement = forBlock;
-
-							auto refResult = CreateReference(L"<bind-activator-result>");
-
-							auto refFunction = CreateReference(L"<bind-callback>");
-
-							auto cast = MakePtr<WfTypeCastingExpression>();
-							cast->expression = refFunction;
-							cast->type = GetTypeFromTypeInfo(TypeInfoRetriver<Func<void(Value)>>::CreateTypeInfo().Obj());
-							cast->strategy = WfTypeCastingStrategy::Strong;
-
 							auto call = MakePtr<WfCallExpression>();
-							call->function = cast;
-							call->arguments.Add(refResult);
+							call->function = CreateReference(L"ValueChanged");
+							call->arguments.Add(CreateReference(L"<bind-activator-result>"));
 
 							auto stat = MakePtr<WfExpressionStatement>();
 							stat->expression = call;
-							forBlock->statements.Add(stat);
+							block->statements.Add(stat);
 						}
 					
 						newSubscription->declarations.Add(AssignNormalMember(func));
@@ -1305,69 +1129,8 @@ ExpandBindExpression
 							newSubscription->declarations.Add(AssignNormalMember(func));
 						}
 					}
-					{
-						auto func = MakePtr<WfFunctionDeclaration>();
-						func->name.value = L"<bind-initialize>";
-						func->anonymity = WfFunctionAnonymity::Named;
-						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-					
-						auto block = MakePtr<WfBlockStatement>();
-						func->statement = block;
-						{
-							Group<WfExpression*, WfExpression*> reversedDependencies;
-							FOREACH_INDEXER(WfExpression*, key, index, dependency.dependencies.Keys())
-							{
-								FOREACH(WfExpression*, value, dependency.dependencies.GetByIndex(index))
-								{
-									if (value)
-									{
-										reversedDependencies.Add(value, key);
-									}
-								}
-							}
-
-							SortedList<WfExpression*> freeObserves;
-							while (reversedDependencies.Count() > 0)
-							{
-								CopyFrom(
-									freeObserves,
-									From(reversedDependencies.Keys())
-										.Where([&](WfExpression* observe)
-										{
-											return From(reversedDependencies[observe])
-												.All([&](WfExpression* parent)
-											{
-												return !reversedDependencies.Contains(parent);
-											});
-										})
-									);
-
-								FOREACH(WfExpression*, observe, bcInfo.orderedObserves.Values())
-								{
-									if (freeObserves.Contains(observe))
-									{
-										CreateBindCacheAssignStatement(block, observe, bcInfo);
-									}
-								}
-
-								FOREACH(WfExpression*, observe, freeObserves)
-								{
-									reversedDependencies.Remove(observe);
-								}
-								freeObserves.Clear();
-							}
-						}
-						{
-							FOREACH(WfExpression*, observe, bcInfo.orderedObserves.Values())
-							{
-								CreateBindAttachStatement(block, manager, observe, bcInfo);
-							}
-						}
-					
-						newSubscription->declarations.Add(AssignNormalMember(func));
-					}
 				}
-				newSubscription->declarations.Add(AssignOverrideMember(CreateBindSubscribeFunction()));
+				newSubscription->declarations.Add(AssignOverrideMember(CreateBindOpenFunction(manager, dependency, bcInfo)));
 				newSubscription->declarations.Add(AssignOverrideMember(CreateBindUpdateFunction(bcInfo)));
 				newSubscription->declarations.Add(AssignOverrideMember(CreateBindCloseFunction(manager, bcInfo)));
 			}

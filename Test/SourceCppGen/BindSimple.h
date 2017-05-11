@@ -27,7 +27,6 @@ namespace vl_workflow_global
 {
 	struct __vwsnf1_BindSimple_OuterClass_Base_Initialize_;
 	class __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
 }
 
 class OuterClass;
@@ -36,7 +35,6 @@ class Derived;
 class OuterClass : public ::vl::Object, public ::vl::reflection::Description<OuterClass>
 {
 	friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
-	friend class ::vl_workflow_global::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
 	friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<OuterClass>;
@@ -47,7 +45,6 @@ public:
 	class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 	{
 		friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
 		friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
@@ -66,7 +63,6 @@ class Derived : public ::OuterClass::Base, public ::vl::reflection::Description<
 	friend class ::OuterClass;
 	friend class ::OuterClass::Base;
 	friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
-	friend class ::vl_workflow_global::__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener;
 	friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Derived>;
@@ -124,30 +120,13 @@ Closures
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Open() override;
 		bool Update() override;
 		bool Close() override;
-	};
-
-	class __vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
-	{
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
-		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
-		::OuterClass::Base* __vwsnthis_1;
-
-		__vwsnc2_BindSimple_OuterClass_Base_Initialize_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::OuterClass::Base* __vwsnctorthis_1);
-
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
 	};
 }
 

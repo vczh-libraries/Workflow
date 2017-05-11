@@ -17,7 +17,8 @@ interface IAdder2 : ISummer2
 func Bind(summer : ISummer2^) : Subscription^
 {
 	var subscription = bind(summer.Sum);
-	subscription.Subscribe(
+	subscription.Open();
+	attach(subscription.ValueChanged,
 		func (value : object) : void
 		{
 			s = $"$(s)[$(cast int value)]";
