@@ -85,25 +85,36 @@ ExpandNewCoroutineExpression
 									auto refSource = MakePtr<WfReferenceExpression>();
 									refSource->name.value = L"<mixin-source>";
 
-									auto castExpr = MakePtr<WfTypeCastingExpression>();
-									castExpr->strategy = WfTypeCastingStrategy::Strong;
-									castExpr->expression = refSource;
-									{
-										auto tdType = MakePtr<TypeDescriptorTypeInfo>(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal);
-										auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
-										castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
-									}
-
-									auto inferExpr = MakePtr<WfInferExpression>();
-									inferExpr->expression = castExpr;
-									{
-										auto tdType = MakePtr<TypeDescriptorTypeInfo>(method->GetOwnerTypeDescriptor(), TypeInfoHint::Normal);
-										auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
-										inferExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
-									}
-
 									auto memberExpr = MakePtr<WfMemberExpression>();
-									memberExpr->parent = inferExpr;
+									if (sourceType->GetTypeDescriptor() == method->GetOwnerTypeDescriptor())
+									{
+										memberExpr->parent = refSource;
+									}
+									else if (sourceType->GetTypeDescriptor()->GetMethodGroupByName(method->GetName(), true) == method->GetOwnerMethodGroup())
+									{
+										memberExpr->parent = refSource;
+									}
+									else
+									{
+										auto castExpr = MakePtr<WfTypeCastingExpression>();
+										castExpr->strategy = WfTypeCastingStrategy::Strong;
+										castExpr->expression = refSource;
+										{
+											auto tdType = MakePtr<TypeDescriptorTypeInfo>(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal);
+											auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
+											castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+										}
+
+										auto inferExpr = MakePtr<WfInferExpression>();
+										inferExpr->expression = castExpr;
+										{
+											auto tdType = MakePtr<TypeDescriptorTypeInfo>(method->GetOwnerTypeDescriptor(), TypeInfoHint::Normal);
+											auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
+											inferExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+										}
+
+										memberExpr->parent = inferExpr;
+									}
 									memberExpr->name.value = method->GetName();
 
 									auto callExpr = MakePtr<WfCallExpression>();
