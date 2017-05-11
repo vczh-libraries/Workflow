@@ -27,8 +27,7 @@ namespace vl_workflow_global
 {
 	struct __vwsnf1_BindCustomInterface_Bind_;
 	class __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription;
-	class __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener;
-	class __vwsnc3_BindCustomInterface_main__IAdder;
+	class __vwsnc2_BindCustomInterface_main__IAdder;
 }
 
 class ISummer;
@@ -94,33 +93,17 @@ Closures
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0();
-		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Open() override;
 		bool Update() override;
 		bool Close() override;
 	};
 
-	class __vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	class __vwsnc2_BindCustomInterface_main__IAdder : public ::vl::Object, public virtual ::IAdder
 	{
 	public:
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
-		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
-
-		__vwsnc2_BindCustomInterface_Bind_Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0);
-
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
-	};
-
-	class __vwsnc3_BindCustomInterface_main__IAdder : public ::vl::Object, public virtual ::IAdder
-	{
-	public:
-		__vwsnc3_BindCustomInterface_main__IAdder();
+		__vwsnc2_BindCustomInterface_main__IAdder();
 
 		::vl::vint32_t sum = 0;
 		::vl::vint32_t GetSum() override;

@@ -808,7 +808,13 @@ IValueSubscription::Update
 						auto notExpr = MakePtr<WfUnaryExpression>();
 						notExpr->op = WfUnaryOperator::Not;
 						notExpr->operand = CreateReference(L"<bind-closed>");
-						ifStat->expression = notExpr;
+
+						auto andExpr = MakePtr<WfBinaryExpression>();
+						andExpr->op = WfBinaryOperator::And;
+						andExpr->first = CreateReference(L"<bind-opened>");
+						andExpr->second = notExpr;
+
+						ifStat->expression = andExpr;
 					}
 
 					auto ifBlock = MakePtr<WfBlockStatement>();

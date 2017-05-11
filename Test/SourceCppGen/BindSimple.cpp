@@ -124,7 +124,7 @@ Closures
 
 	bool __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
-		if ((! __vwsn_bind_closed_))
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
 			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 			return true;
