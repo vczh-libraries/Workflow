@@ -810,6 +810,24 @@ Print (Expression)
 				WfPrint(node->expression, indent, writer);
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfExpectedTypeCastExpression* node)override
+			{
+				writer.BeforePrint(node);
+				if (node->strategy == WfTypeCastingStrategy::Strong)
+				{
+					writer.WriteString(L"(cast * ");
+					WfPrint(node->expression, indent, writer);
+					writer.WriteString(L")");
+				}
+				else
+				{
+					writer.WriteString(L"(");
+					WfPrint(node->expression, indent, writer);
+					writer.WriteString(L" as *)");
+				}
+				writer.AfterPrint(node);
+			}
 		};
 
 /***********************************************************************

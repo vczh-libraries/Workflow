@@ -1214,6 +1214,16 @@ ValidateSemantic(Expression)
 				{
 					ExpandMixinCastExpression(manager, node);
 				}
+
+				void Visit(WfExpectedTypeCastExpression* node)override
+				{
+					auto result = manager->expressionResolvings[node];
+					auto castExpr = MakePtr<WfTypeCastingExpression>();
+					castExpr->strategy = node->strategy;
+					castExpr->expression = CopyExpression(node->expression);
+					castExpr->type = GetTypeFromTypeInfo(result.type.Obj());
+					node->expandedExpression = castExpr;
+				}
 			};
 
 			class ValidateSemanticExpressionVisitor
@@ -2982,6 +2992,19 @@ ValidateSemantic(Expression)
 							manager->errors.Add(WfErrors::WrongMixinTargetType(node, expressionType.Obj(), type.Obj()));
 						PASS_VALIDATION:;
 						}
+					}
+				}
+
+				void Visit(WfExpectedTypeCastExpression* node)override
+				{
+					GetExpressionType(manager, node->expression, nullptr);
+					if (expectedType)
+					{
+						results.Add(ResolveExpressionResult::ReadonlyType(expectedType));
+					}
+					else
+					{
+						manager->errors.Add(WfErrors::ExpectedTypeCastCannotResolveType(node));
 					}
 				}
 

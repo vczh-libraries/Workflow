@@ -730,6 +730,12 @@ class MixinCastExpression : VirtualExpression
 	Expression				expression;
 }
 
+class ExpectedTypeCastExpression : VirtualExpression
+{
+	TypeCastingStrategy		strategy;
+	Expression				expression;
+}
+
 //////////////////////////////////////////////////////////////////
 // AST (Module)
 //////////////////////////////////////////////////////////////////
@@ -980,6 +986,7 @@ rule Expression _ExpPrimitive
 			| ("is" "not" "null" as TypeTestingExpression with {test="IsNotNull"})
 		)
 	= _ExpPrimitive : expression "as" _Type : type as TypeCastingExpression with {strategy = "Weak"}
+	= _ExpPrimitive : expression "as" "*" as ExpectedTypeCastExpression with {strategy = "Weak"}
 	= "typeof" "(" _Type : type ")" as TypeOfTypeExpression
 	= "type" "(" _Expression : expression ")" as TypeOfExpressionExpression
 	= "attach" "(" _Expression : event "," _Expression : function ")" as AttachEventExpression
@@ -994,6 +1001,7 @@ rule Expression _Exp0
 	= "-" _Exp0 : operand as UnaryExpression with {op = "Negative"}
 	= "not" _Exp0 : operand as UnaryExpression with {op = "Not"}
 	= "cast" _Type : type _Exp0 : expression as TypeCastingExpression with {strategy = "Strong"}
+	= "cast" "*" _Exp0 : expression as ExpectedTypeCastExpression with {strategy = "Strong"}
 	;
 
 rule Expression _Exp1

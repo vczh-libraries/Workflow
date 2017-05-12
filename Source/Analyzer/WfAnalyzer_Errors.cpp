@@ -284,6 +284,11 @@ WfErrors
 				return new ParsingError(node, L"A32: Mixin cast cannot implicitly convert from \"" + fromType->GetTypeFriendlyName() + L"\" to \"" + toType->GetTypeFriendlyName() + L"\". It is only for converting from an interface to a derived interface.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::ExpectedTypeCastCannotResolveType(WfExpression* node)
+			{
+				return new ParsingError(node, L"A33: Cannot resolve type \"*\". This expression should only appear on a place which has an explicit type, including variables and arguments.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongVoidType(WfType* node)
 			{
 				return new ParsingError(node, L"B0: Void is not a type for a value.");

@@ -458,6 +458,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotConstant(WfExpression* node);
 				static Ptr<parsing::ParsingError>			WrongMixinTargetType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static Ptr<parsing::ParsingError>			ExpectedTypeCastCannotResolveType(WfExpression* node);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);

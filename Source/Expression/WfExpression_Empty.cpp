@@ -372,6 +372,10 @@ VirtualExpressionVisitor
 			{
 			}
 
+			void VirtualExpressionVisitor::Visit(WfExpectedTypeCastExpression* node)
+			{
+			}
+
 /***********************************************************************
 ModuleUsingFragmentVisitor
 ***********************************************************************/
