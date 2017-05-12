@@ -54,7 +54,7 @@
 #include "EnumCtor.h"
 #include "EnumCtor2.h"
 #include "WorkflowHints.h"
-#include "WorkflowAttributes.h"
+#include "WorkflowAttributesIncludes.h"
 #include "CoRawCoroutine.h"
 #include "CoRawCoroutine2.h"
 #include "CoRawCoroutine3.h"
@@ -69,6 +69,22 @@ using namespace vl::reflection::description;
 
 void LoadTestCaseTypes()
 {
+	 LoadNewCustomInterfaceTypes();
+	 LoadNewCustomInterface2Types();
+	 LoadNewCustomInterface3Types();
+	 LoadBindSimpleTypes();
+	 LoadBindCustomInterfaceTypes();
+	 LoadBindCustomInterface2Types();
+	 LoadCallStaticMethodTypes();
+	 LoadNestedLambdaTypes();
+	 LoadClassMethodTypes();
+	 LoadClassCtorTypes();
+	 LoadClassDtorTypes();
+	 LoadStructCtor2Types();
+	 LoadEnumCtor2Types();
+	 LoadWorkflowHintsTypes();
+	 LoadWorkflowAttributesTypes();
+	 LoadCoAsyncTypes();
 }
 
 TEST_CASE(HelloWorld)

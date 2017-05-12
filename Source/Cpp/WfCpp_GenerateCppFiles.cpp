@@ -58,6 +58,10 @@ GenerateCppFiles
 			{
 				WfCppConfig config(manager, input->assemblyName, input->assemblyNamespace);
 				auto output = MakePtr<WfCppOutput>();
+				if (config.manager->declarationTypes.Count() > 0)
+				{
+					output->containsReflectionInfo = true;
+				}
 
 				bool multiFile = false;
 				switch (input->multiFile)
@@ -70,6 +74,16 @@ GenerateCppFiles
 					break;
 				default:
 					multiFile = config.topLevelClassDeclsForFiles.Count() > 1;
+				}
+
+				output->multiFile = multiFile;
+				if (multiFile)
+				{
+					output->entryFileName = input->includeFileName;
+				}
+				else
+				{
+					output->entryFileName = input->defaultFileName;
 				}
 
 				output->cppFiles.Add(input->defaultFileName + L".h", GenerateToStream([&](StreamWriter& writer)
@@ -102,14 +116,7 @@ GenerateCppFiles
 				{
 					GenerateCppComment(writer, input->comment);
 					writer.WriteLine(L"");
-					if (multiFile)
-					{
-						writer.WriteLine(L"#include \"" + input->includeFileName + L".h\"");
-					}
-					else
-					{
-						writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-					}
+					writer.WriteLine(L"#include \"" + output->entryFileName + L".h\"");
 					writer.WriteLine(L"");
 					config.WriteCpp(writer, multiFile);
 				}));

@@ -42,6 +42,7 @@ TEST_CASE(TestCodegen)
 {
 	Ptr<ParsingTable> table = GetWorkflowTable();
 	List<WString> codegenNames, reflectableAssemblies;
+	Dictionary<WString, WString> assemblyEntries;
 	LoadSampleIndex(L"Codegen", codegenNames);
 
 	WfLexicalScopeManager manager(table);
@@ -73,7 +74,14 @@ TEST_CASE(TestCodegen)
 			input->multiFile = WfCppMultiFile::OnDemand;
 			input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";
 			input->normalIncludes.Add(L"../Source/CppTypes.h");
+
 			auto output = GenerateCppFiles(input, &manager);
+			if (output->containsReflectionInfo)
+			{
+				reflectableAssemblies.Add(input->assemblyName);
+			}
+			assemblyEntries.Add(input->assemblyName, output->entryFileName);
+
 			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
 				WString code = output->cppFiles.Values()[index];
@@ -154,7 +162,7 @@ TEST_CASE(TestCodegen)
 			if (!cppCodegen) continue;
 
 			writer.WriteString(L"#include \"");
-			writer.WriteString(itemName);
+			writer.WriteString(assemblyEntries[itemName]);
 			writer.WriteLine(L".h\"");
 		}
 
