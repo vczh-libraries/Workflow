@@ -1190,9 +1190,11 @@ ValidateSemantic(Expression)
 			{
 			public:
 				WfLexicalScopeManager*				manager;
+				Ptr<ITypeInfo>						expectedType;
 
-				ExpandVirtualExpressionVisitor(WfLexicalScopeManager* _manager)
+				ExpandVirtualExpressionVisitor(WfLexicalScopeManager* _manager, Ptr<ITypeInfo> _expectedType)
 					:manager(_manager)
+					, expectedType(_expectedType)
 				{
 				}
 
@@ -1217,11 +1219,10 @@ ValidateSemantic(Expression)
 
 				void Visit(WfExpectedTypeCastExpression* node)override
 				{
-					auto result = manager->expressionResolvings[node];
 					auto castExpr = MakePtr<WfTypeCastingExpression>();
 					castExpr->strategy = node->strategy;
 					castExpr->expression = CopyExpression(node->expression);
-					castExpr->type = GetTypeFromTypeInfo(result.type.Obj());
+					castExpr->type = GetTypeFromTypeInfo(expectedType.Obj());
 					node->expandedExpression = castExpr;
 				}
 			};
@@ -2917,7 +2918,7 @@ ValidateSemantic(Expression)
 
 					if (!expanded && manager->errors.Count() == errorCount)
 					{
-						ExpandVirtualExpressionVisitor visitor(manager);
+						ExpandVirtualExpressionVisitor visitor(manager, expectedType);
 						node->Accept(&visitor);
 						SetCodeRange(node->expandedExpression, node->codeRange);
 

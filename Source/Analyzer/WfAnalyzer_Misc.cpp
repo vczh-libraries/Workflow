@@ -102,6 +102,11 @@ IsExpressionDependOnExpectedType(Expression)
 						result = unresolvableField&&possibleFieldCount == node->arguments.Count();
 					}
 				}
+
+				void Visit(WfExpectedTypeCastExpression* node)override
+				{
+					result = true;
+				}
 			};
 
 			bool IsExpressionDependOnExpectedType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)

@@ -63,6 +63,8 @@ namespace vl_workflow_global
 	public:
 
 		void Ensure(bool condition);
+		void Ensure(bool a, bool b);
+		void Ensure(::vl::vint32_t a, ::vl::vint32_t b);
 		void ExtraTests();
 		::vl::WString main();
 

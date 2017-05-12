@@ -11,6 +11,16 @@ func Ensure(condition : bool) : void
 	}
 }
 
+func Ensure(a : bool, b : bool) : void
+{
+	Ensure(a == b);
+}
+
+func Ensure(a : int, b : int) : void
+{
+	Ensure(a == b);
+}
+
 namespace workflow
 {
 	namespace hints
@@ -33,6 +43,16 @@ func ExtraTests() : void
 {
 	Ensure((cast string 123) == "123");
 	Ensure((cast int "123") == 123);
+	Ensure(cast * "true", true);
+	Ensure(cast * "123", 123);
+	{
+		var v : string = cast * 123;
+		Ensure(v == "123");
+	}
+	{
+		var v : int = cast * "123";
+		Ensure(v == 123);
+	}
 
 	var sBase = new Base^();
 	var rBase = new Base*(0);

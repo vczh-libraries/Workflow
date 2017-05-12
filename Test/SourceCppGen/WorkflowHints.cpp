@@ -49,10 +49,30 @@ Global Functions
 		}
 	}
 
+	void WorkflowHints::Ensure(bool a, bool b)
+	{
+		GLOBAL_NAME Ensure((a == b));
+	}
+
+	void WorkflowHints::Ensure(::vl::vint32_t a, ::vl::vint32_t b)
+	{
+		GLOBAL_NAME Ensure((a == b));
+	}
+
 	void WorkflowHints::ExtraTests()
 	{
 		GLOBAL_NAME Ensure((::vl::__vwsn::ToString(123) == ::vl::WString(L"123", false)));
 		GLOBAL_NAME Ensure((::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"123", false)) == 123));
+		GLOBAL_NAME Ensure(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)), true);
+		GLOBAL_NAME Ensure(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"123", false)), 123);
+		{
+			auto v = ::vl::__vwsn::ToString(123);
+			GLOBAL_NAME Ensure((v == ::vl::WString(L"123", false)));
+		}
+		{
+			auto v = ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"123", false));
+			GLOBAL_NAME Ensure((v == 123));
+		}
 		auto sBase = ::vl::Ptr<::workflow::hints::Base>(new ::workflow::hints::Base());
 		auto rBase = new ::workflow::hints::Base(0);
 		auto sDerived = ::vl::Ptr<::workflow::hints::Derived>(new ::workflow::hints::Derived());
