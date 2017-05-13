@@ -102,11 +102,11 @@ Closures
 
 	void __vwsnc1_CoRawCoroutine_main__vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_coroutine_output_)
 	{
-		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
+		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
 			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
 		}
-		::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
+		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
 		{
 			{
@@ -114,7 +114,7 @@ Closures
 				{
 					if ((__vwsn_co_state_ == 1))
 					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
 					if ((__vwsn_co_state_ == 2))
@@ -164,7 +164,7 @@ Closures
 							}
 							if ((__vwsn_co_state_ == 5))
 							{
-								::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+								this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 								(__vwsn_co_state_ = 3);
 								return;
 							}
@@ -186,8 +186,8 @@ Closures
 		{
 			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
-				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+				this->SetFailure(__vwsn_co_ex_);
+				this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 				if (__vwsn_raise_exception_)
 				{
 					throw;

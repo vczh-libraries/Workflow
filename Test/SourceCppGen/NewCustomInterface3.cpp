@@ -60,7 +60,7 @@ Closures
 	//-------------------------------------------------------------------
 
 	__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3::__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3(::MyClass* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
@@ -77,15 +77,15 @@ Closures
 	//-------------------------------------------------------------------
 
 	__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator(::IMyInterface3* __vwsnctorthis_0, ::MyClass* __vwsnctorthis_1)
-		:__vwsnthis_0(__vwsnctorthis_0)
-		, __vwsnthis_1(__vwsnctorthis_1)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+		, __vwsnthis_1(::vl::__vwsn::This(__vwsnctorthis_1))
 	{
 		this->index = (- 1);
 	}
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
 	{
-		return ::vl::__vwsn::Box((::vl::__vwsn::This(__vwsnthis_1)->begin + index));
+		return ::vl::__vwsn::Box((__vwsnthis_1->begin + index));
 	}
 
 	::vl::vint32_t __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
@@ -95,7 +95,7 @@ Closures
 
 	bool __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator::Next()
 	{
-		if ((index == (::vl::__vwsn::This(__vwsnthis_1)->end - ::vl::__vwsn::This(__vwsnthis_1)->begin)))
+		if ((index == (__vwsnthis_1->end - __vwsnthis_1->begin)))
 		{
 			return false;
 		}
@@ -118,8 +118,8 @@ Class (::MyClass)
 
 MyClass::MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end)
 {
-	(::vl::__vwsn::This(this)->begin = _begin);
-	(::vl::__vwsn::This(this)->end = _end);
+	(this->begin = _begin);
+	(this->end = _end);
 }
 
 ::vl::vint32_t MyClass::Get50()

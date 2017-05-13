@@ -75,10 +75,10 @@ Dtor::Dtor()
 
 Dtor::~Dtor()
 {
-	(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(this)->name) + ::vl::WString(L"]", false)));
-	if ((::vl::__vwsn::This(this)->next != nullptr))
+	(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + this->name) + ::vl::WString(L"]", false)));
+	if ((this->next != nullptr))
 	{
-		::vl::__vwsn::This(::vl::__vwsn::This(this)->next)->Dispose(true);
+		::vl::__vwsn::This(this->next)->Dispose(true);
 	}
 }
 

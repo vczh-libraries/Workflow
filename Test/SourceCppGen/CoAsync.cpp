@@ -101,7 +101,7 @@ Closures
 	void __vwsnf2_CoAsync_GetStringAsync2_::operator()() const
 	{
 		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
-		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->future.Obj())->GetPromise().Obj())->SendResult(::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
+		::vl::__vwsn::This(::vl::__vwsn::This(this->future.Obj())->GetPromise().Obj())->SendResult(::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
 	}
 
 	//-------------------------------------------------------------------
@@ -157,11 +157,11 @@ Closures
 
 	void __vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
 	{
-		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
+		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
 			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
 		}
-		::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
+		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
 		{
 			{
@@ -171,7 +171,7 @@ Closures
 					{
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
 						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
 				}
@@ -181,8 +181,8 @@ Closures
 		{
 			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
-				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+				this->SetFailure(__vwsn_co_ex_);
+				this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 				if (__vwsn_raise_exception_)
 				{
 					throw;
@@ -260,11 +260,11 @@ Closures
 
 	void __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
 	{
-		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
+		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
 			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
 		}
-		::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
+		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
 		{
 			{
@@ -285,7 +285,7 @@ Closures
 					}
 					if ((__vwsn_co_state_ == 1))
 					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
 					if ((__vwsn_co_state_ == 2))
@@ -309,7 +309,7 @@ Closures
 					}
 					if ((__vwsn_co_state_ == 3))
 					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 4);
 						{
 							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::Ptr<::vl::reflection::description::IAsync>(GLOBAL_NAME GetStringAsync(__vwsn_co4_i)));
@@ -329,7 +329,7 @@ Closures
 					}
 					if ((__vwsn_co_state_ == 5))
 					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 6);
 						{
 							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::Ptr<::vl::reflection::description::IAsync>(GLOBAL_NAME GetStringAsync2(__vwsn_co4_i)));
@@ -349,7 +349,7 @@ Closures
 					}
 					if ((__vwsn_co_state_ == 7))
 					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 2);
 						{
 							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::reflection::description::IAsync::Delay(0));
@@ -363,8 +363,8 @@ Closures
 		{
 			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
-				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+				this->SetFailure(__vwsn_co_ex_);
+				this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 				if (__vwsn_raise_exception_)
 				{
 					throw;

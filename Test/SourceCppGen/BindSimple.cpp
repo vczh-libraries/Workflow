@@ -60,20 +60,20 @@ Closures
 	//-------------------------------------------------------------------
 
 	__vwsnf1_BindSimple_OuterClass_Base_Initialize_::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(::OuterClass::Base* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
 	void __vwsnf1_BindSimple_OuterClass_Base_Initialize_::operator()(const ::vl::reflection::description::Value& value) const
 	{
-		(::vl::__vwsn::This(__vwsnthis_0)->s = ((((::vl::WString(L"", false) + ::vl::__vwsn::This(__vwsnthis_0)->s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
+		(__vwsnthis_0->s = ((((::vl::WString(L"", false) + __vwsnthis_0->s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
 	}
 
 	//-------------------------------------------------------------------
 
 	__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(::Derived* __vwsnctor_derived, ::OuterClass::Base* __vwsnctorthis_0)
 		:derived(__vwsnctor_derived)
-		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = ::vl::Ptr<::test::ObservableValue>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
@@ -88,22 +88,22 @@ Closures
 	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetValue()) + ::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->GetValue());
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		this->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		this->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::vint32_t __vwsn_bind_callback_argument_0, ::vl::vint32_t __vwsn_bind_callback_argument_1)
 	{
-		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		this->__vwsn_bind_activator_();
 	}
 
 	bool __vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::Open()
@@ -114,9 +114,9 @@ Closures
 			(__vwsn_bind_cache_0 = ::vl::__vwsn::This(derived)->x);
 			(__vwsn_bind_cache_1 = ::vl::__vwsn::This(derived)->y);
 			(__vwsn_bind_cache_2 = ::vl::__vwsn::This(derived)->z);
-			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
-			(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
-			(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(::vl::__vwsn::This(this), &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(this, &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(this, &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+			(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->ValueChanged, ::vl::Func<void(::vl::vint32_t, ::vl::vint32_t)>(this, &__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
 			return true;
 		}
 		return false;
@@ -126,7 +126,7 @@ Closures
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
-			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			this->__vwsn_bind_activator_();
 			return true;
 		}
 		return false;
@@ -167,9 +167,9 @@ Class (::OuterClass::Base)
 
 void OuterClass::Base::Initialize(::Derived* derived)
 {
-	(::vl::__vwsn::This(this)->subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(derived, this)));
-	::vl::__vwsn::This(::vl::__vwsn::This(this)->subscription.Obj())->Open();
-	::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->subscription.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(this)));
+	(this->subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(derived, this)));
+	::vl::__vwsn::This(this->subscription.Obj())->Open();
+	::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->subscription.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(this)));
 }
 
 OuterClass::Base::Base()
@@ -182,15 +182,15 @@ Class (::Derived)
 
 Derived::Derived()
 {
-	::vl::__vwsn::This(this)->Initialize(this);
+	this->Initialize(this);
 }
 
 void Derived::Execute()
 {
-	::vl::__vwsn::This(::vl::__vwsn::This(this)->x.Obj())->SetValue(10);
-	::vl::__vwsn::This(::vl::__vwsn::This(this)->y.Obj())->SetValue(20);
-	::vl::__vwsn::This(::vl::__vwsn::This(this)->z.Obj())->SetValue(30);
-	::vl::__vwsn::This(::vl::__vwsn::This(this)->subscription.Obj())->Close();
+	::vl::__vwsn::This(this->x.Obj())->SetValue(10);
+	::vl::__vwsn::This(this->y.Obj())->SetValue(20);
+	::vl::__vwsn::This(this->z.Obj())->SetValue(30);
+	::vl::__vwsn::This(this->subscription.Obj())->Close();
 }
 
 #undef GLOBAL_SYMBOL

@@ -498,7 +498,7 @@ WfGenerateExpressionVisitor
 						{
 							if (closureInfo->symbols.Values().Contains(symbol.Obj()))
 							{
-								writer.WriteString(L"::vl::__vwsn::This(this)->");
+								writer.WriteString(L"this->");
 								writer.WriteString(config->ConvertName(symbol->name));
 								return;
 							}
@@ -526,7 +526,7 @@ WfGenerateExpressionVisitor
 						else if (auto classExpr = ownerNode.Cast<WfNewInterfaceExpression>())
 						{
 							writer.WriteString(config->ConvertType(symbol->typeInfo.Obj()));
-							writer.WriteString(L"(::vl::__vwsn::This(this), &");
+							writer.WriteString(L"(this, &");
 							writer.WriteString(config->classExprs[classExpr.Obj()]);
 							writer.WriteString(L"::");
 							writer.WriteString(config->ConvertName(symbol->name));
@@ -912,21 +912,17 @@ WfGenerateExpressionVisitor
 					bool success = WriteReferenceTemplate(result,
 						[&](IMethodInfo* methodInfo)
 						{
-							writer.WriteString(L"::vl::__vwsn::This(");
 							VisitThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
 							if (result.type->GetDecorator() == ITypeInfo::SharedPtr)
 							{
 								writer.WriteString(L".Obj()");
 							}
-							writer.WriteString(L")");
 							return true;
 						},
 						[&](IPropertyInfo* propertyInfo)
 						{
 							auto isRef = (propertyInfo->GetOwnerTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
-							if (isRef) writer.WriteString(L"::vl::__vwsn::This(");
 							VisitThisExpression(node, propertyInfo->GetOwnerTypeDescriptor());
-							if (isRef) writer.WriteString(L")");
 							return true;
 						}, useReturnValue);
 
@@ -1217,21 +1213,21 @@ WfGenerateExpressionVisitor
 									WriteMethodTemplate(CppGetInvokeTemplate(propInfo->GetSetter()), propInfo->GetSetter(),
 										[&](IMethodInfo*)
 										{
-											writer.WriteString(L"::vl::__vwsn::This(");
 											if (member)
 											{
+												writer.WriteString(L"::vl::__vwsn::This(");
 												Call(member->parent);
 												auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
 												if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
 												{
 													writer.WriteString(L".Obj()");
 												}
+												writer.WriteString(L")");
 											}
 											else
 											{
 												VisitThisExpression(node->first.Obj(), propInfo->GetOwnerTypeDescriptor());
 											}
-											writer.WriteString(L")");
 											return true;
 										},
 										[&](IMethodInfo*, vint index)
@@ -1245,21 +1241,21 @@ WfGenerateExpressionVisitor
 									WritePropertyTemplate(CppGetReferenceTemplate(propInfo), propInfo,
 										[&](IPropertyInfo*)
 										{
-											writer.WriteString(L"::vl::__vwsn::This(");
 											if (member)
 											{
+												writer.WriteString(L"::vl::__vwsn::This(");
 												Call(member->parent);
 												auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
 												if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
 												{
 													writer.WriteString(L".Obj()");
 												}
+												writer.WriteString(L")");
 											}
 											else
 											{
 												VisitThisExpression(node->first.Obj(), propInfo->GetOwnerTypeDescriptor());
 											}
-											writer.WriteString(L")");
 											return true;
 										}, true);
 									writer.WriteString(L" = ");
@@ -2019,21 +2015,21 @@ WfGenerateExpressionVisitor
 				{
 					auto thisCallback = [&](ITypeDescriptor* td)
 					{
-						writer.WriteString(L"::vl::__vwsn::This(");
 						if (auto member = node->function.Cast<WfMemberExpression>())
 						{
+							writer.WriteString(L"::vl::__vwsn::This(");
 							Call(member->parent);
 							auto parentResult = config->manager->expressionResolvings[member->parent.Obj()];
 							if (parentResult.type->GetDecorator() == ITypeInfo::SharedPtr)
 							{
 								writer.WriteString(L".Obj()");
 							}
+							writer.WriteString(L")");
 						}
 						else
 						{
 							VisitThisExpression(node, td);
 						}
-						writer.WriteString(L")");
 						return true;
 					};
 
@@ -2070,7 +2066,7 @@ WfGenerateExpressionVisitor
 						{
 							if (result.symbol->ownerScope->ownerNode.Cast<WfNewInterfaceExpression>())
 							{
-								writer.WriteString(L"::vl::__vwsn::This(this)->");
+								writer.WriteString(L"this->");
 								writer.WriteString(config->ConvertName(result.symbol->name));
 							}
 							else if (result.symbol->ownerScope->functionConfig && result.symbol->ownerScope->functionConfig->lambda && result.symbol->name == funcDecl->name.value)

@@ -326,8 +326,8 @@ WfCppConfig::WriteCpp
 						writer.WriteString(L"\t\t:");
 					}
 					writer.WriteString(L"__vwsnthis_" + itow(index));
-					writer.WriteString(L"(__vwsnctorthis_" + itow(index));
-					writer.WriteLine(L")");
+					writer.WriteString(L"(::vl::__vwsn::This(__vwsnctorthis_" + itow(index));
+					writer.WriteLine(L"))");
 				}
 			}
 

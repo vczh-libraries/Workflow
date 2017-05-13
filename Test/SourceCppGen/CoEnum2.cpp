@@ -119,11 +119,11 @@ Closures
 
 	void __vwsnc1_CoEnum2_GetNumbers___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
 	{
-		if ((::vl::__vwsn::This(this)->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
+		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
 			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
 		}
-		::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
+		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
 		{
 			{
@@ -144,7 +144,7 @@ Closures
 					}
 					if ((__vwsn_co_state_ == 1))
 					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
 					if ((__vwsn_co_state_ == 2))
@@ -160,7 +160,7 @@ Closures
 					}
 					if ((__vwsn_co_state_ == 3))
 					{
-						::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
 						(__vwsn_co_state_ = 4);
 						{
 							::vl::reflection::description::EnumerableCoroutine::JoinAndPause(__vwsn_co_impl_, ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::Range(__vwsn_co2_i, (__vwsn_co2_i + 2) + 1)));
@@ -179,7 +179,7 @@ Closures
 						if ((__vwsn_co2_i == 2))
 						{
 							::vl::reflection::description::EnumerableCoroutine::ReturnAndExit(__vwsn_co_impl_);
-							::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+							this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 							return;
 						}
 						(__vwsn_co_state_ = 2);
@@ -192,8 +192,8 @@ Closures
 		{
 			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				::vl::__vwsn::This(this)->SetFailure(__vwsn_co_ex_);
-				::vl::__vwsn::This(this)->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+				this->SetFailure(__vwsn_co_ex_);
+				this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 				if (__vwsn_raise_exception_)
 				{
 					throw;

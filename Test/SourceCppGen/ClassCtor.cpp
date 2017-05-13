@@ -82,8 +82,8 @@ Base::Base()
 
 Base::Base(::vl::vint32_t _x)
 {
-	(::vl::__vwsn::This(this)->x = _x);
-	if ((::vl::__vwsn::This(this)->x != ::vl::__vwsn::This(this)->x))
+	(this->x = _x);
+	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
 		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
@@ -91,19 +91,19 @@ Base::Base(::vl::vint32_t _x)
 
 ::vl::vint32_t Base::GetX()
 {
-	if ((::vl::__vwsn::This(this)->x != ::vl::__vwsn::This(this)->x))
+	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
 		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
-	return ::vl::__vwsn::This(this)->x;
+	return this->x;
 }
 
 void Base::SetX(::vl::vint32_t _x)
 {
-	if ((::vl::__vwsn::This(this)->x != _x))
+	if ((this->x != _x))
 	{
-		(::vl::__vwsn::This(this)->x = _x);
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->XChanged)();
+		(this->x = _x);
+		::vl::__vwsn::EventInvoke(this->XChanged)();
 	}
 }
 

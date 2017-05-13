@@ -111,12 +111,12 @@ Closures
 	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSum();
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
-		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		this->__vwsn_bind_activator_();
 	}
 
 	bool __vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::Open()
@@ -125,7 +125,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = summer);
-			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SumChanged, ::vl::Func<void()>(::vl::__vwsn::This(this), &__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SumChanged, ::vl::Func<void()>(this, &__vwsnc1_BindCustomInterface_Bind__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 			return true;
 		}
 		return false;
@@ -135,7 +135,7 @@ Closures
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
-			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			this->__vwsn_bind_activator_();
 			return true;
 		}
 		return false;
@@ -169,7 +169,7 @@ Closures
 	void __vwsnc2_BindCustomInterface_main__IAdder::Add(::vl::vint32_t value)
 	{
 		(sum = (sum + value));
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->SumChanged)();
+		::vl::__vwsn::EventInvoke(this->SumChanged)();
 	}
 
 }

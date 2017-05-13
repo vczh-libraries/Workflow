@@ -86,7 +86,7 @@ Closures
 
 	void __vwsnf1_ClassMethod_main_::operator()() const
 	{
-		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(::vl::__vwsn::This(this)->a.Obj())->GetX())) + ::vl::WString(L"]", false))));
+		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(this->a.Obj())->GetX())) + ::vl::WString(L"]", false))));
 	}
 }
 
@@ -100,8 +100,8 @@ Methods::Methods()
 
 Methods::Methods(::vl::vint32_t _x)
 {
-	(::vl::__vwsn::This(this)->x = _x);
-	if ((::vl::__vwsn::This(this)->x != ::vl::__vwsn::This(this)->x))
+	(this->x = _x);
+	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
 		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
@@ -109,19 +109,19 @@ Methods::Methods(::vl::vint32_t _x)
 
 ::vl::vint32_t Methods::GetX()
 {
-	if ((::vl::__vwsn::This(this)->x != ::vl::__vwsn::This(this)->x))
+	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
 		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
 	}
-	return ::vl::__vwsn::This(this)->x;
+	return this->x;
 }
 
 void Methods::SetX(::vl::vint32_t _x)
 {
-	if ((::vl::__vwsn::This(this)->x != _x))
+	if ((this->x != _x))
 	{
-		(::vl::__vwsn::This(this)->x = _x);
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->XChanged)();
+		(this->x = _x);
+		::vl::__vwsn::EventInvoke(this->XChanged)();
 	}
 }
 
