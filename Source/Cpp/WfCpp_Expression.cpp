@@ -1030,6 +1030,10 @@ WfGenerateExpressionVisitor
 							{
 								writer.WriteString(L".Obj()");
 							}
+							else if (parentResult.type->GetDecorator() == ITypeInfo::Nullable)
+							{
+								writer.WriteString(L".Value()");
+							}
 							if (isRef) writer.WriteString(L")");
 							return true;
 						}, useReturnValue);
