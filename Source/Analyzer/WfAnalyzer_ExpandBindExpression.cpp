@@ -11,190 +11,327 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
-WfObservingDependency
+WfBindingContext
+
+observing expressions:
+	WfObserveExpression
+	WfMemberExpression that detects the event
 ***********************************************************************/
 
-			class WfObservingDependency : public Object
+			class WfBindingContext : public Object
 			{
-				typedef collections::Group<WfExpression*, WfExpression*>			DependencyGroup;
-				typedef collections::List<WfExpression*>							ObserveList;
+				typedef collections::SortedList<WfExpression*>						ExprSet;
+				typedef collections::Dictionary<WfExpression*, WfExpression*>		ExprMap;
+				typedef collections::Group<WfExpression*, WfExpression*>			ExprGroup;
+				typedef collections::Group<WfExpression*, IEventInfo*>				ExprEventGroup;
 			public:
-				ObserveList							inputObserves;
-				ObserveList							outputObserves;
-				DependencyGroup&					dependencies;
+				ExprMap								observeParents;
+				ExprEventGroup						observeEvents;
+				ExprSet								cachedExprs;	// expression that need to cache its value
+				ExprMap								renames;		// expression -> the expression being renamed
 
-				WfObservingDependency(WfObservingDependency& dependency)
-					:dependencies(dependency.dependencies)
-				{
-					CopyFrom(inputObserves, dependency.inputObserves);
-				}
-
-				WfObservingDependency(DependencyGroup& _dependencies)
-					:dependencies(_dependencies)
-				{
-				}
-
-				WfObservingDependency(DependencyGroup& _dependencies, ObserveList& _inputObserves)
-					:dependencies(_dependencies)
-				{
-					CopyFrom(inputObserves, _inputObserves);
-				}
-
-				void AddInternal(WfExpression* observe, WfExpression* dependedObserve)
-				{
-					if (!dependencies.Contains(dependedObserve, observe))
-					{
-						dependencies.Add(dependedObserve, observe);
-					}
-				}
-
-				void Prepare(WfExpression* observe)
-				{
-					AddInternal(nullptr, observe);
-
-					if (!outputObserves.Contains(observe))
-					{
-						outputObserves.Add(observe);
-					}
-				}
-
-				void Add(WfExpression* observe)
-				{
-					Add(observe, *this);
-				}
-
-				void Add(WfExpression* observe, WfObservingDependency& dependency)
-				{
-					Prepare(observe);
-					FOREACH(WfExpression*, dependedObserve, dependency.inputObserves)
-					{
-						AddInternal(observe, dependedObserve);
-					}
-				}
-
-				void TurnToInput()
-				{
-					if (outputObserves.Count() > 0)
-					{
-						CopyFrom(inputObserves, outputObserves);
-						outputObserves.Clear();
-					}
-				}
-
-				void Cleanup()
-				{
-					SortedList<WfExpression*> all;
-					CopyFrom(all, From(dependencies.Keys()).Distinct());
-
-					vint count = dependencies.Keys().Count();
-					for (vint i = 0; i < count; i++)
-					{
-						const auto& values = dependencies.GetByIndex(i);
-						if (values.Contains(0) && values.Count()>1)
-						{
-							dependencies.Remove(dependencies.Keys()[i], 0);
-						}
-
-						FOREACH(WfExpression*, value, values)
-						{
-							all.Remove(value);
-						}
-					}
-
-					FOREACH(WfExpression*, observe, all)
-					{
-						dependencies.Add(0, observe);
-					}
-				}
+				ExprGroup							exprAffects;	// observe expression -> all expressions that it can cause to change
+				ExprGroup							exprCauses;		// expression -> observe expressions that cause it to change
+				ExprGroup							observeAffects;	// observe expression -> all observe expressions that it can cause to change
 			};
 
 /***********************************************************************
-GetObservingDependency
+CreateBindingContext
 ***********************************************************************/
 
-			void GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency);
-
-			class GetObservingDependencyVisitor
-				: public traverse_visitor::ExpressionVisitor
-				, public traverse_visitor::VirtualExpressionVisitor
+			class CreateBindingContextVisitor : public Object, public WfExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
-				WfObservingDependency&				dependency;
+				WfBindingContext&					context;
 
-				GetObservingDependencyVisitor(WfLexicalScopeManager* _manager, WfObservingDependency& _dependency)
+				CreateBindingContextVisitor(WfLexicalScopeManager* _manager, WfBindingContext& _context)
 					:manager(_manager)
-					, dependency(_dependency)
+					, context(_context)
 				{
 				}
 
-				void VisitField(WfExpression* node)override
+				void Call(WfExpression* node)
 				{
 					node->Accept(this);
 				}
 
-				void VisitField(WfType* node)override
+				void ObservableDepend(WfExpression* expr, WfExpression* parent)
 				{
-					// No need to traverse inside a type
-				}
-
-				void VisitField(WfStatement* node)override
-				{
-					// No need to traverse inside a statement
-				}
-
-				void VisitField(WfDeclaration* node)override
-				{
-					// No need to traverse inside a declaration
-				}
-
-				void Dispatch(WfVirtualExpression* node)override
-				{
-					node->Accept(static_cast<traverse_visitor::VirtualExpressionVisitor*>(this));
-				}
-
-				void Visit(WfMemberExpression* node)override
-				{
-					WfObservingDependency parent(dependency);
-					GetObservingDependency(manager, node->parent, parent);
-					parent.TurnToInput();
-
-					if (dependency.inputObserves.Count() == 0)
+					context.observeParents.Add(expr, parent);
+					DirectDepend(expr, parent, false);
 					{
-						auto memberResult = manager->expressionResolvings[node];
-						if (memberResult.propertyInfo)
+						auto cache = parent;
+						while (true)
 						{
-							auto td = memberResult.propertyInfo->GetOwnerTypeDescriptor();
-							auto ev = memberResult.propertyInfo->GetValueChangedEvent();
-							if (!ev)
+							vint index = context.renames.Keys().IndexOf(cache);
+							if (index == -1)
 							{
-								ev = td->GetEventByName(memberResult.propertyInfo->GetName() + L"Changed", true);
+								index = context.cachedExprs.IndexOf(cache);
+								if (index == -1)
+								{
+									context.cachedExprs.Add(cache);
+								}
+								break;
 							}
-							if (ev)
+							else
 							{
-								dependency.Add(node, parent);
+								cache = context.renames.Values()[index];
 							}
+						}
+					}
+
+					vint index = context.exprCauses.Keys().IndexOf(parent);
+					if (index != -1)
+					{
+						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						{
+							context.observeAffects.Add(observe, expr);
 						}
 					}
 				}
 
+				void DirectDepend(WfExpression* expr, WfExpression* depended, bool processDepended = true)
+				{
+					if (processDepended)
+					{
+						Call(depended);
+					}
+
+					vint index = context.exprCauses.Keys().IndexOf(depended);
+					if (index != -1)
+					{
+						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						{
+							context.exprCauses.Add(expr, observe);
+							context.exprAffects.Add(observe, expr);
+						}
+					}
+				}
+
+				void Visit(WfThisExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfTopQualifiedExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfReferenceExpression* node)override
+				{
+					auto result = manager->expressionResolvings[node];
+					if (result.symbol)
+					{
+						auto scope = result.symbol->ownerScope;
+						if (auto letExpr = dynamic_cast<WfLetExpression*>(scope->ownerNode.Obj()))
+						{
+							auto letVar = From(letExpr->variables)
+								.Where([=](const Ptr<WfLetVariable>& letVar)
+								{
+									return letVar->name.value = node->name.value;
+								})
+								.First();
+							context.renames.Add(node, letVar->value.Obj());
+							DirectDepend(node, letVar->value.Obj());
+						}
+						else if (auto observeExpr = dynamic_cast<WfObserveExpression*>(scope->ownerNode.Obj()))
+						{
+							context.renames.Add(node, observeExpr->parent.Obj());
+							DirectDepend(node, observeExpr->parent.Obj());
+						}
+					}
+				}
+
+				void Visit(WfOrderedNameExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfOrderedLambdaExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfMemberExpression* node)override
+				{
+					Call(node->parent.Obj());
+
+					auto memberResult = manager->expressionResolvings[node];
+					if (memberResult.propertyInfo)
+					{
+						auto td = memberResult.propertyInfo->GetOwnerTypeDescriptor();
+						auto ev = memberResult.propertyInfo->GetValueChangedEvent();
+						if (!ev)
+						{
+							ev = td->GetEventByName(memberResult.propertyInfo->GetName() + L"Changed", true);
+						}
+						if (ev)
+						{
+							ObservableDepend(node, node->parent.Obj());
+							context.observeEvents.Add(node, ev);
+							return;
+						}
+					}
+
+					DirectDepend(node, node->parent.Obj(), false);
+				}
+
+				void Visit(WfChildExpression* node)override
+				{
+					DirectDepend(node, node->parent.Obj());
+				}
+
+				void Visit(WfLiteralExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfFloatingExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfIntegerExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfStringExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfUnaryExpression* node)override
+				{
+					DirectDepend(node, node->operand.Obj());
+				}
+
+				void Visit(WfBinaryExpression* node)override
+				{
+					DirectDepend(node, node->first.Obj());
+					DirectDepend(node, node->second.Obj());
+				}
+
+				void Visit(WfLetExpression* node)override
+				{
+					FOREACH(Ptr<WfLetVariable>, var, node->variables)
+					{
+						DirectDepend(node, var->value.Obj());
+					}
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfIfExpression* node)override
+				{
+					DirectDepend(node, node->condition.Obj());
+					DirectDepend(node, node->trueBranch.Obj());
+					DirectDepend(node, node->falseBranch.Obj());
+				}
+
+				void Visit(WfRangeExpression* node)override
+				{
+					DirectDepend(node, node->begin.Obj());
+					DirectDepend(node, node->end.Obj());
+				}
+
+				void Visit(WfSetTestingExpression* node)override
+				{
+					DirectDepend(node, node->collection.Obj());
+					DirectDepend(node, node->element.Obj());
+				}
+
+				void Visit(WfConstructorExpression* node)override
+				{
+					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					{
+						DirectDepend(node, argument->key.Obj());
+						DirectDepend(node, argument->value.Obj());
+					}
+				}
+
+				void Visit(WfInferExpression* node)override
+				{
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfTypeCastingExpression* node)override
+				{
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfTypeTestingExpression* node)override
+				{
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfTypeOfTypeExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfTypeOfExpressionExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfAttachEventExpression* node)override
+				{
+					DirectDepend(node, node->event.Obj());
+					DirectDepend(node, node->function.Obj());
+				}
+
+				void Visit(WfDetachEventExpression* node)override
+				{
+					DirectDepend(node, node->event.Obj());
+					DirectDepend(node, node->handler.Obj());
+				}
+
 				void Visit(WfObserveExpression* node)override
 				{
-					WfObservingDependency parent(dependency);
-					GetObservingDependency(manager, node->parent, parent);
-					parent.TurnToInput();
+					Call(node->parent.Obj());
+					ObservableDepend(node, node->parent.Obj());
+					FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+					{
+						auto result = manager->expressionResolvings[eventExpr.Obj()];
+						context.observeEvents.Add(node, result.eventInfo);
+					}
+					Call(node->expression.Obj());
+				}
 
-					dependency.Add(node, parent);
-					dependency.TurnToInput();
-					GetObservingDependency(manager, node->expression, dependency);
+				void Visit(WfCallExpression* node)override
+				{
+					DirectDepend(node, node->function.Obj());
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						DirectDepend(node, argument.Obj());
+					}
+				}
+
+				void Visit(WfFunctionExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfNewClassExpression* node)override
+				{
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						DirectDepend(node, argument.Obj());
+					}
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					DirectDepend(node, node->expandedExpression.Obj());
 				}
 			};
-
-			void GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency)
-			{
-				GetObservingDependencyVisitor visitor(manager, dependency);
-				expression->Accept(&visitor);
-			}
 
 /***********************************************************************
 Copy(Type|Expression|Statement|Declaration)
@@ -363,35 +500,6 @@ ExpandObserveExpression
 				ExpandObserveExpressionVisitor visitor(cacheNames, referenceReplacement);
 				expression->Accept(&visitor);
 				return visitor.result.Cast<WfExpression>();
-			}
-
-/***********************************************************************
-DecodeObserveExpression
-***********************************************************************/
-
-			void DecodeObserveExpression(WfLexicalScopeManager* manager, WfExpression* observe, List<IEventInfo*>& events, WfExpression*& parent)
-			{
-				if (auto observeExpr = dynamic_cast<WfObserveExpression*>(observe))
-				{
-					parent = observeExpr->parent.Obj();
-					FOREACH(Ptr<WfExpression>, eventExpr, observeExpr->events)
-					{
-						auto result = manager->expressionResolvings[eventExpr.Obj()];
-						events.Add(result.eventInfo);
-					}
-				}
-				else if (auto memberExpr = dynamic_cast<WfMemberExpression*>(observe))
-				{
-					parent = memberExpr->parent.Obj();
-					auto result = manager->expressionResolvings[memberExpr];
-					auto td = result.propertyInfo->GetOwnerTypeDescriptor();
-					auto ev = result.propertyInfo->GetValueChangedEvent();
-					if (!ev)
-					{
-						ev = td->GetEventByName(result.propertyInfo->GetName() + L"Changed", true);
-					}
-					events.Add(ev);
-				}
 			}
 
 /***********************************************************************
