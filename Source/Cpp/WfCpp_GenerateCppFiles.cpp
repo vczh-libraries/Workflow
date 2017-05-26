@@ -370,6 +370,91 @@ MergeCppFile
 				});
 			}
 
+			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
+			{
+				return GenerateToStream([&](StreamWriter& writer)
+				{
+					const wchar_t* reading32 = code32.Buffer();
+					const wchar_t* reading64 = code64.Buffer();
+					const wchar_t* start32 = reading32;
+					while (true)
+					{
+						vint length = 0;
+						while (reading32[length] && reading64[length])
+						{
+							if (reading32[length] == reading64[length])
+							{
+								length++;
+							}
+							else
+							{
+								break;
+							}
+						}
+
+						writer.WriteString(reading32, length);
+						reading32 += length;
+						reading64 += length;
+
+						if (*reading32 == 0 && *reading64 == 0)
+						{
+							break;
+						}
+
+#define IS_DIGIT(C) (L'0' <= C && C <= L'9')
+
+						if (reading32[0] == L'3' && reading32[1] == L'2' && reading64[0] == L'6' && reading64[1] == L'4')
+						{
+							if (length >= 4)
+							{
+								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
+								{
+									reading32 += 2;
+									reading64 += 2;
+									goto NEXT_ROUND;
+								}
+							}
+						}
+						else if (reading64[0] == L'L')
+						{
+							if (reading32[0] == reading64[1] && length >= 1)
+							{
+								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
+								{
+									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[1]))
+									{
+										reading64 += 1;
+										goto NEXT_ROUND;
+									}
+								}
+							}
+						}
+						else if (reading64[0] == L'U' && reading64[1] == L'L')
+						{
+							if (reading32[0] == reading64[2] && length >= 1)
+							{
+								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
+								{
+									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[2]))
+									{
+										reading64 += 2;
+										goto NEXT_ROUND;
+									}
+								}
+							}
+						}
+						throw Exception(L"The difference at " + itow((vint)(reading32 - start32)) + L"-th character between Input C++ source files are not "
+							L"\"vint32_t\" and \"vint64_t\", "
+							L"\"<number>\" and \"<number>L\", "
+							L"\"<number>\" and \"<number>UL\"."
+							);
+					NEXT_ROUND:;
+
+#undef IS_DIGIT
+					}
+				});
+			}
+
 			WString MergeCppFileContent(const WString& dst, const WString& src)
 			{
 				Dictionary<WString, WString> userContents, userContentsFull;

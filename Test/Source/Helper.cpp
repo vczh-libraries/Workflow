@@ -100,29 +100,16 @@ WString GetCppOutputPath()
 {
 #if defined VCZH_MSVC
 #ifdef VCZH_64
-	return GetExePath() + L"..\\..\\..\\Output\\x64\\";
+	return GetTestOutputPath() + L"x64\\";
 #else
-	return GetExePath() + L"..\\..\\Output\\x32\\";
+	return GetTestOutputPath() + L"x32\\";
 #endif
 #elif defined VCZH_GCC
 #ifdef VCZH_64
-	return L"../SourceCppGen/x64";
+	return GetTestOutputPath() + L"x64/";
 #else
-	return L"../SourceCppGen/x32";
+	return GetTestOutputPath() + L"x32/";
 #endif
-#endif
-}
-
-WString GetCppMergePath()
-{
-#if defined VCZH_MSVC
-#ifdef VCZH_64
-	return GetExePath() + L"..\\..\\..\\SourceCppGen\\";
-#else
-	return GetExePath() + L"..\\..\\SourceCppGen\\";
-#endif
-#elif defined VCZH_GCC
-	return L"../SourceCppGen/";
 #endif
 }
 

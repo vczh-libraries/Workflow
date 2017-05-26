@@ -86,20 +86,6 @@ TEST_CASE(TestCodegen)
 			{
 				WString code = output->cppFiles.Values()[index];
 				File file(GetCppOutputPath() + fileName);
-
-				if (file.Exists())
-				{
-					code = MergeCppFileContent(file.ReadAllTextByBom(), code);
-				}
-
-				if (file.Exists())
-				{
-					auto originalCode = file.ReadAllTextByBom();
-					if (originalCode == code)
-					{
-						continue;
-					}
-				}
 				file.WriteAllText(code, false, BomEncoder::Mbcs);
 			}
 		}

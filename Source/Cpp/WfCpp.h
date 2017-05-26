@@ -216,6 +216,7 @@ GenerateCppFiles
 			};
 
 			extern Ptr<WfCppOutput>		GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager);
+			extern WString				MergeCppMultiPlatform(const WString& code32, const WString& code64);
 			extern WString				MergeCppFileContent(const WString& dst, const WString& src);
 		}
 	}

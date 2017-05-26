@@ -24,7 +24,6 @@ extern void					ReleaseWorkflowTable();
 extern WString				GetTestResourcePath();
 extern WString				GetTestOutputPath();
 extern WString				GetCppOutputPath();
-extern WString				GetCppMergePath();
 extern void					LoadSampleIndex(const WString& sampleName, List<WString>& itemNames);
 extern WString				LoadSample(const WString& sampleName, const WString& itemName);
 extern void					LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, Ptr<ParsingTreeCustomBase> typedNode, WfLexicalScopeManager* manager = 0);
