@@ -25,6 +25,7 @@ observing expressions:
 			public:
 				ExprMap											observeParents;
 				ExprEventGroup									observeEvents;
+				ExprList										orderedObserves;
 				ExprList										cachedExprs;	// expression that need to cache its value
 				ExprMap											renames;		// expression -> the expression being renamed
 
@@ -79,7 +80,6 @@ observing expressions:
 			{
 				Dictionary<WString, Ptr<ITypeInfo>>				handlerVariables;
 				Dictionary<WString, Ptr<ITypeInfo>>				callbackFunctions;
-				Dictionary<vint, WfExpression*>					orderedObserves;
 				Group<WfExpression*, CallbackInfo>				observeCallbackInfos;
 			};
 
@@ -106,6 +106,7 @@ CreateBindContext
 
 				void ObservableDepend(WfExpression* expr, WfExpression* parent)
 				{
+					context.orderedObserves.Add(expr);
 					context.observeParents.Add(expr, parent);
 					DirectDepend(expr, parent, false);
 					{
@@ -186,7 +187,7 @@ CreateBindContext
 								})
 								.First();
 							context.renames.Add(node, letVar->value.Obj());
-							DirectDepend(node, letVar->value.Obj());
+							DirectDepend(node, letVar->value.Obj(), false);
 						}
 						else if (auto observeExpr = dynamic_cast<WfObserveExpression*>(scope->ownerNode.Obj()))
 						{
@@ -439,12 +440,18 @@ ExpandObserveExpression
 						return nullptr;
 					}
 
-					if(expandImmediately)
 					{
 						vint index = context.GetCachedExpressionIndexRecursively(expression, false);
 						if (index != -1)
 						{
-							return CreateReference(context.GetCacheVariableName(index));
+							if (expandImmediately)
+							{
+								return CreateReference(context.GetCacheVariableName(index));
+							}
+							else
+							{
+								expression = context.cachedExprs[index];
+							}
 						}
 					}
 
@@ -815,6 +822,7 @@ IValueSubscription::Open
 						ifBlock->statements.Add(stat);
 					}
 					{
+						SortedList<vint> assignedParents;
 						SortedList<WfExpression*> observes;
 						CopyFrom(observes, context.observeParents.Keys());
 
@@ -835,11 +843,16 @@ IValueSubscription::Open
 									})
 								);
 
-							FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+							FOREACH(WfExpression*, observe, context.orderedObserves)
 							{
 								if (freeObserves.Contains(observe))
 								{
-									CreateBindCacheAssignStatement(ifBlock, observe, context);
+									auto parent = context.GetCachedExpressionIndexRecursively(context.observeParents[observe], true);
+									if (!assignedParents.Contains(parent))
+									{
+										assignedParents.Add(parent);
+										CreateBindCacheAssignStatement(ifBlock, observe, context);
+									}
 								}
 							}
 
@@ -851,7 +864,7 @@ IValueSubscription::Open
 						}
 					}
 					{
-						FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+						FOREACH(WfExpression*, observe, context.orderedObserves)
 						{
 							CreateBindAttachStatement(ifBlock, manager, observe, context, info);
 						}
@@ -983,7 +996,7 @@ IValueSubscription::Close
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
-					FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+					FOREACH(WfExpression*, observe, context.orderedObserves)
 					{
 						CreateBindDetachStatement(ifBlock, manager, observe, context, info);
 					}
@@ -1072,35 +1085,18 @@ ExpandBindExpression
 						}
 					};
 
-					CopyFrom(
-						orderedObserves,
-						From(context.observeParents.Keys())
-							.Where([](WfExpression* expr)
-							{
-								return expr != nullptr;
-							})
-							.OrderBy([&](WfExpression* a, WfExpression* b)
-							{
-								auto codeA = printExpression(a);
-								auto codeB = printExpression(b);
-								auto compare = WString::Compare(codeA, codeB);
-								if (compare) return compare;
-								return a->codeRange.start.index - b->codeRange.start.index;
-							})
-						);
-
-					FOREACH_INDEXER(WfExpression*, observe, observeIndex, orderedObserves)
+					FOREACH_INDEXER(WfExpression*, parent, index, context.cachedExprs)
 					{
-						const auto& events = context.observeEvents[observe];
-						auto parent = context.observeParents[observe];
-
-						WString cacheName = L"<bind-cache>" + itow(observeIndex);
-						bcInfo.orderedObserves.Add(observeIndex, observe);
+						WString cacheName = context.GetCacheVariableName(index);
 						{
 							auto elementType = manager->expressionResolvings[parent].type;
 							newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(cacheName, elementType.Obj())));
 						}
+					}
 
+					FOREACH_INDEXER(WfExpression*, observe, observeIndex, context.orderedObserves)
+					{
+						const auto& events = context.observeEvents[observe];
 						FOREACH_INDEXER(IEventInfo*, ev, eventIndex, events)
 						{
 							WString handlerName = L"<bind-handler>" + itow(observeIndex) + L"_" + itow(eventIndex);
@@ -1156,7 +1152,7 @@ ExpandBindExpression
 					
 						newSubscription->declarations.Add(AssignNormalMember(func));
 					}
-					FOREACH(WfExpression*, observe, bcInfo.orderedObserves.Values())
+					FOREACH(WfExpression*, observe, context.orderedObserves)
 					{
 						FOREACH(CallbackInfo, callbackInfo, bcInfo.observeCallbackInfos[observe])
 						{
@@ -1201,9 +1197,17 @@ ExpandBindExpression
 								{
 									CreateBindDetachStatement(block, manager, affectedObserve, context, bcInfo);
 								}
-								FOREACH(WfExpression*, affectedObserve, affected)
 								{
-									CreateBindCacheAssignStatement(block, affectedObserve, context);
+									SortedList<vint> assignedParents;
+									FOREACH(WfExpression*, affectedObserve, affected)
+									{
+										auto parent = context.GetCachedExpressionIndexRecursively(context.observeParents[affectedObserve], true);
+										if (!assignedParents.Contains(parent))
+										{
+											assignedParents.Add(parent);
+											CreateBindCacheAssignStatement(block, affectedObserve, context);
+										}
+									}
 								}
 								FOREACH(WfExpression*, affectedObserve, affected)
 								{
