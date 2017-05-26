@@ -1717,36 +1717,42 @@ ValidateSemantic(Expression)
 
 				void Visit(WfFloatingExpression* node)override
 				{
-					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<double>::CreateTypeInfo()));
-				}
-
-				template<typename T>
-				bool ValidateInteger(const WString& text, ITypeDescriptor*& resultTd)
-				{
-					T value;
-					if (TypedValueSerializerProvider<T>::Deserialize(text, value))
+					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
+					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor == description::GetTypeDescriptor<WString>())
 					{
-						resultTd = description::GetTypeDescriptor<T>();
-						return true;
+						typeDescriptor = description::GetTypeDescriptor<double>();
 					}
-					return false;
+
+					if (auto serializableType = typeDescriptor->GetSerializableType())
+					{
+						Value output;
+						if (serializableType->Deserialize(node->value.value, output))
+						{
+							results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
+							return;
+						}
+					}
+					manager->errors.Add(WfErrors::FloatingLiteralOutOfRange(node));
 				}
 
 				void Visit(WfIntegerExpression* node)override
 				{
-					ITypeDescriptor* typeDescriptor = nullptr;
-#ifndef VCZH_64
-					if (ValidateInteger<vint32_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
-					if (ValidateInteger<vuint32_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
-#endif
-					if (ValidateInteger<vint64_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
-					if (ValidateInteger<vuint64_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
+					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor==description::GetTypeDescriptor<WString>())
+					{
+						typeDescriptor = description::GetTypeDescriptor<vint32_t>();
+					}
 
+					if (auto serializableType = typeDescriptor->GetSerializableType())
+					{
+						Value output;
+						if (serializableType->Deserialize(node->value.value, output))
+						{
+							results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
+							return;
+						}
+					}
 					manager->errors.Add(WfErrors::IntegerLiteralOutOfRange(node));
-					typeDescriptor = description::GetTypeDescriptor<vint>();
-
-				TYPE_FINISHED:
-					results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
 				}
 
 				void Visit(WfStringExpression* node)override

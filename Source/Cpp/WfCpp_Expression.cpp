@@ -1089,6 +1089,10 @@ WfGenerateExpressionVisitor
 				{
 					auto result = config->manager->expressionResolvings[node];
 					auto td = result.type->GetTypeDescriptor();
+
+					writer.WriteString(L"static_cast<");
+					writer.WriteString(config->ConvertType(td));
+					writer.WriteString(L"(");
 					if (td == description::GetTypeDescriptor<float>())
 					{
 						writer.WriteString(node->value.value + L"f");
@@ -1097,17 +1101,18 @@ WfGenerateExpressionVisitor
 					{
 						writer.WriteString(node->value.value);
 					}
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfIntegerExpression* node)override
 				{
 					auto result = config->manager->expressionResolvings[node];
 					auto td = result.type->GetTypeDescriptor();
-					if (td == description::GetTypeDescriptor<vint32_t>())
-					{
-						writer.WriteString(node->value.value);
-					}
-					else if (td == description::GetTypeDescriptor<vuint32_t>())
+
+					writer.WriteString(L"static_cast<");
+					writer.WriteString(config->ConvertType(td));
+					writer.WriteString(L"(");
+					if (td == description::GetTypeDescriptor<vuint32_t>())
 					{
 						writer.WriteString(node->value.value + L"U");
 					}
@@ -1119,6 +1124,7 @@ WfGenerateExpressionVisitor
 					{
 						writer.WriteString(node->value.value + L"UL");
 					}
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfStringExpression* node)override

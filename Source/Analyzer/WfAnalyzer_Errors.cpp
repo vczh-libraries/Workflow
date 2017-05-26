@@ -160,6 +160,11 @@ WfErrors
 				return new ParsingError(node, L"A13: Integer literal \"" + node->value.value + L"\" out of range.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::FloatingLiteralOutOfRange(WfFloatingExpression* node)
+			{
+				return new ParsingError(node, L"A13: Floating literal \"" + node->value.value + L"\" out of range.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::CannotMergeTwoType(WfExpression* node, reflection::description::ITypeInfo* firstType, reflection::description::ITypeInfo* secondType)
 			{
 				return new ParsingError(node, L"A14: Failed to merge type \"" + firstType->GetTypeFriendlyName() + L"\" with type \"" + secondType->GetTypeFriendlyName() + L"\" together to calculate the result type.");

@@ -330,33 +330,20 @@ GenerateInstructions(Expression)
 
 				void Visit(WfFloatingExpression* node)override
 				{
-					INSTRUCTION(Ins::LoadValue(BoxValue(wtof(node->value.value))));
+					auto result = context.manager->expressionResolvings[node];
+					auto td = result.type->GetTypeDescriptor();
+					Value output;
+					td->GetSerializableType()->Deserialize(node->value.value, output);
+					INSTRUCTION(Ins::LoadValue(output));
 				}
 
 				void Visit(WfIntegerExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node];
 					auto td = result.type->GetTypeDescriptor();
-					if (td == description::GetTypeDescriptor<vint32_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vint32_t)wtoi(node->value.value))));
-					}
-					else if (td == description::GetTypeDescriptor<vuint32_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vuint32_t)wtou(node->value.value))));
-					}
-					else if (td == description::GetTypeDescriptor<vint64_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vint64_t)wtoi64(node->value.value))));
-					}
-					else if (td == description::GetTypeDescriptor<vuint64_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vuint64_t)wtou64(node->value.value))));
-					}
-					else
-					{
-						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfIntegerExpression*)#Internal error, unknown integer type.");
-					}
+					Value output;
+					td->GetSerializableType()->Deserialize(node->value.value, output);
+					INSTRUCTION(Ins::LoadValue(output));
 				}
 
 				void Visit(WfStringExpression* node)override
