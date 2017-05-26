@@ -345,12 +345,13 @@ CreateBindContext
 				{
 					Call(node->parent.Obj());
 					ObservableDepend(node, node->parent.Obj());
+					Call(node->expression.Obj());
 					FOREACH(Ptr<WfExpression>, eventExpr, node->events)
 					{
 						auto result = manager->expressionResolvings[eventExpr.Obj()];
 						context.observeEvents.Add(node, result.eventInfo);
+						Call(eventExpr.Obj());
 					}
-					Call(node->expression.Obj());
 				}
 
 				void Visit(WfCallExpression* node)override
