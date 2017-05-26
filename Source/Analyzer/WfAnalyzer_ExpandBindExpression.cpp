@@ -211,20 +211,33 @@ CreateBindContext
 				{
 					Call(node->parent.Obj());
 
-					auto memberResult = manager->expressionResolvings[node];
-					if (memberResult.propertyInfo)
+					auto scope = manager->nodeScopes[node].Obj();
+					while (scope)
 					{
-						auto td = memberResult.propertyInfo->GetOwnerTypeDescriptor();
-						auto ev = memberResult.propertyInfo->GetValueChangedEvent();
-						if (!ev)
+						if (scope->ownerNode.Cast<WfObserveExpression>())
 						{
-							ev = td->GetEventByName(memberResult.propertyInfo->GetName() + L"Changed", true);
+							break;
 						}
-						if (ev)
+						scope = scope->parentScope.Obj();
+					}
+
+					if (!scope)
+					{
+						auto memberResult = manager->expressionResolvings[node];
+						if (memberResult.propertyInfo)
 						{
-							ObservableDepend(node, node->parent.Obj());
-							context.observeEvents.Add(node, ev);
-							return;
+							auto td = memberResult.propertyInfo->GetOwnerTypeDescriptor();
+							auto ev = memberResult.propertyInfo->GetValueChangedEvent();
+							if (!ev)
+							{
+								ev = td->GetEventByName(memberResult.propertyInfo->GetName() + L"Changed", true);
+							}
+							if (ev)
+							{
+								ObservableDepend(node, node->parent.Obj());
+								context.observeEvents.Add(node, ev);
+								return;
+							}
 						}
 					}
 
