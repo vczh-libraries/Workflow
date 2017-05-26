@@ -1,0 +1,33 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+func Callback(value : object) : void
+{
+	s = $"$(s)[$(cast int value)]";
+}
+
+func main() : string
+{
+	var x = new ObservableValue^();
+	var y = new ObservableValue^();
+	var z = new ObservableValue^();
+	var subscription = bind(
+		let
+			_x = x,
+			_y = y,
+			_z = z
+			in (_x.Value + _y.Value + _z.Value)
+		);
+	subscription.Open();
+	attach(subscription.ValueChanged, Callback);
+
+	x.Value = 10;
+	y.Value = 20;
+	z.Value = 30;
+	
+	subscription.Close();
+	return s;
+}
