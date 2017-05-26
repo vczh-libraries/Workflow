@@ -4,6 +4,25 @@ using system::*;
 
 var s = "";
 
+class Bar
+{
+	prop value : int = 0 {}
+
+	new()
+	{
+	}
+
+	new(value : int)
+	{
+		this.value = value;
+	}
+}
+
+class Foo
+{
+	prop bar : Bar^ = new Bar^() {}
+}
+
 func Callback(value : object) : void
 {
 	s = $"$(s)[$(cast int value)]";
@@ -11,22 +30,25 @@ func Callback(value : object) : void
 
 func main() : string
 {
-	var x = new ObservableValue^();
-	var y = new ObservableValue^();
-	var z = new ObservableValue^();
+	var x = new Foo^();
+	var y = new Foo^();
+	var z = new Foo^();
 	var subscription = bind(
 		let
 			_x = x,
-			_y = y,
-			_z = z
-			in (_x.Value + _y.Value + _z.Value)
+			_y = y.bar,
+			_z = z.bar.value
+			in (_x.bar.value + _y.value+ _z)
 		);
 	subscription.Open();
 	attach(subscription.ValueChanged, Callback);
 
-	x.Value = 10;
-	y.Value = 20;
-	z.Value = 30;
+	x.bar = new Bar^(1);
+	x.bar.value = 2;
+	y.bar = new Bar^(10);
+	y.bar.value = 20;
+	z.bar = new Bar^(100);
+	z.bar.value = 200;
 	
 	subscription.Close();
 	return s;
