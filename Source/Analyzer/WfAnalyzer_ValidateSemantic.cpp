@@ -1740,7 +1740,11 @@ ValidateSemantic(Expression)
 					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
 					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor==description::GetTypeDescriptor<WString>())
 					{
+#ifdef VCZH_64
+						typeDescriptor = description::GetTypeDescriptor<vint64_t>();
+#else
 						typeDescriptor = description::GetTypeDescriptor<vint32_t>();
+#endif
 					}
 
 					if (auto serializableType = typeDescriptor->GetSerializableType())
@@ -2363,12 +2367,43 @@ ValidateSemantic(Expression)
 					}
 					else
 					{
+						ITypeInfo* expectedKeyType = nullptr;
+						ITypeInfo* expectedValueType = nullptr;
+						if (expectedType)
+						{
+							if (expectedType->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								auto genericType = expectedType->GetElementType();
+								if (genericType->GetDecorator() == ITypeInfo::Generic)
+								{
+									if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyDictionary>())
+									{
+										if (genericType->GetGenericArgumentCount() == 2)
+										{
+											expectedKeyType = genericType->GetGenericArgument(0);
+											expectedValueType = genericType->GetGenericArgument(1);
+										}
+									}
+									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+									{
+										if (genericType->GetGenericArgumentCount() == 1)
+										{
+											expectedKeyType = genericType->GetGenericArgument(0);
+										}
+									}
+								}
+							}
+						}
+
 						bool map = node->arguments[0]->value;
 						Ptr<ITypeInfo> keyType, valueType;
 						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 						{
 							{
-								Ptr<ITypeInfo> newKeyType = GetExpressionType(manager, argument->key, 0);
+								Ptr<ITypeInfo> newKeyType = GetExpressionType(manager, argument->key, expectedKeyType);
 								if (!keyType)
 								{
 									keyType = newKeyType;
@@ -2384,7 +2419,7 @@ ValidateSemantic(Expression)
 							}
 							if (map)
 							{
-								Ptr<ITypeInfo> newValueType = GetExpressionType(manager, argument->value, 0);
+								Ptr<ITypeInfo> newValueType = GetExpressionType(manager, argument->value, expectedValueType);
 								if (!valueType)
 								{
 									valueType = newValueType;
