@@ -138,6 +138,9 @@ CreateBindContext
 							context.observeCauses.Add(expr, observe);
 						}
 					}
+
+					context.exprAffects.Add(expr, expr);
+					context.exprCauses.Add(expr, expr);
 				}
 
 				void DirectDepend(WfExpression* expr, WfExpression* depended, bool processDepended = true)
@@ -429,11 +432,20 @@ ExpandObserveExpression
 				{
 				}
 
-				static Ptr<WfExpression> Execute(WfExpression* expression, BindContext& context)
+				static Ptr<WfExpression> Execute(WfExpression* expression, BindContext& context, bool expandImmediately = true)
 				{
 					if (!expression)
 					{
 						return nullptr;
+					}
+
+					if(expandImmediately)
+					{
+						vint index = context.GetCachedExpressionIndexRecursively(expression, false);
+						if (index != -1)
+						{
+							return CreateReference(context.GetCacheVariableName(index));
+						}
 					}
 
 					ExpandObserveExpressionVisitor visitor(context);
@@ -465,19 +477,6 @@ ExpandObserveExpression
 				{
 					node->Accept((WfVirtualExpression::IVisitor*)this);
 					return result;
-				}
-
-				void Visit(WfReferenceExpression* node)override
-				{
-					vint index = context.GetCachedExpressionIndexRecursively(node, false);
-					if (index == -1)
-					{
-						result = CopyExpression(node);
-					}
-					else
-					{
-						result = CreateReference(context.GetCacheVariableName(index));
-					}
 				}
 
 				void Visit(WfLetExpression* node)override
@@ -687,7 +686,7 @@ ExpandObserveEvent
 
 			Ptr<WfExpression> ExpandObserveEvent(WfLexicalScopeManager* manager, WfExpression* observe, vint eventIndex, BindContext& context)
 			{
-				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(observe, true));
+				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(context.observeParents[observe], true));
 				if (auto observeExpr = dynamic_cast<WfObserveExpression*>(observe))
 				{
 					if (observeExpr->observeType == WfObserveType::SimpleObserve)
@@ -767,7 +766,7 @@ CreateBindCacheAssignStatement
 				auto assign = MakePtr<WfBinaryExpression>();
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = CreateReference(cacheName);
-				assign->second = ExpandObserveExpressionVisitor::Execute(parent, context);
+				assign->second = ExpandObserveExpressionVisitor::Execute(parent, context, false);
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = assign;
@@ -816,21 +815,22 @@ IValueSubscription::Open
 						ifBlock->statements.Add(stat);
 					}
 					{
-						Group<WfExpression*, WfExpression*> observeCauses;
-						CopyFrom(observeCauses, context.observeCauses);
+						SortedList<WfExpression*> observes;
+						CopyFrom(observes, context.observeParents.Keys());
 
 						SortedList<WfExpression*> freeObserves;
-						while (observeCauses.Count() > 0)
+						while (observes.Count() > 0)
 						{
 							CopyFrom(
 								freeObserves,
-								From(observeCauses.Keys())
+								From(observes)
 									.Where([&](WfExpression* observe)
 									{
-										return From(observeCauses[observe])
+										return !context.observeCauses.Keys().Contains(observe) ||
+											From(context.observeCauses[observe])
 											.All([&](WfExpression* depended)
 											{
-												return !observeCauses.Contains(depended);
+												return !observes.Contains(depended);
 											});
 									})
 								);
@@ -845,7 +845,7 @@ IValueSubscription::Open
 
 							FOREACH(WfExpression*, observe, freeObserves)
 							{
-								observeCauses.Remove(observe);
+								observes.Remove(observe);
 							}
 							freeObserves.Clear();
 						}
@@ -1074,7 +1074,7 @@ ExpandBindExpression
 
 					CopyFrom(
 						orderedObserves,
-						From(context.observeAffects.Keys())
+						From(context.observeParents.Keys())
 							.Where([](WfExpression* expr)
 							{
 								return expr != nullptr;
