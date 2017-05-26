@@ -14,98 +14,105 @@ namespace vl
 WfObservingDependency
 ***********************************************************************/
 
-			WfObservingDependency::WfObservingDependency(WfObservingDependency& dependency)
-				:dependencies(dependency.dependencies)
+			class WfObservingDependency : public Object
 			{
-				CopyFrom(inputObserves, dependency.inputObserves);
-			}
+				typedef collections::Group<WfExpression*, WfExpression*>			DependencyGroup;
+				typedef collections::List<WfExpression*>							ObserveList;
+			public:
+				ObserveList							inputObserves;
+				ObserveList							outputObserves;
+				DependencyGroup&					dependencies;
 
-			WfObservingDependency::WfObservingDependency(DependencyGroup& _dependencies)
-				:dependencies(_dependencies)
-			{
-			}
-
-			WfObservingDependency::WfObservingDependency(DependencyGroup& _dependencies, ObserveList& _inputObserves)
-				:dependencies(_dependencies)
-			{
-				CopyFrom(inputObserves, _inputObserves);
-			}
-
-			void WfObservingDependency::AddInternal(WfExpression* observe, WfExpression* dependedObserve)
-			{
-				auto index = dependencies.Keys().IndexOf(dependedObserve);
-				if (index == -1)
+				WfObservingDependency(WfObservingDependency& dependency)
+					:dependencies(dependency.dependencies)
 				{
-					dependencies.Add(dependedObserve, observe);
+					CopyFrom(inputObserves, dependency.inputObserves);
 				}
-				else if (!dependencies.GetByIndex(index).Contains(observe))
+
+				WfObservingDependency(DependencyGroup& _dependencies)
+					:dependencies(_dependencies)
 				{
-					dependencies.Add(dependedObserve, observe);
 				}
-			}
 
-			void WfObservingDependency::Prepare(WfExpression* observe)
-			{
-				AddInternal(0, observe);
-
-				if (!outputObserves.Contains(observe))
+				WfObservingDependency(DependencyGroup& _dependencies, ObserveList& _inputObserves)
+					:dependencies(_dependencies)
 				{
-					outputObserves.Add(observe);
+					CopyFrom(inputObserves, _inputObserves);
 				}
-			}
 
-			void WfObservingDependency::Add(WfExpression* observe)
-			{
-				Add(observe, *this);
-			}
-
-			void WfObservingDependency::Add(WfExpression* observe, WfObservingDependency& dependency)
-			{
-				Prepare(observe);
-				FOREACH(WfExpression*, dependedObserve, dependency.inputObserves)
+				void AddInternal(WfExpression* observe, WfExpression* dependedObserve)
 				{
-					AddInternal(observe, dependedObserve);
-				}
-			}
-
-			void WfObservingDependency::TurnToInput()
-			{
-				if (outputObserves.Count() > 0)
-				{
-					CopyFrom(inputObserves, outputObserves);
-					outputObserves.Clear();
-				}
-			}
-
-			void WfObservingDependency::Cleanup()
-			{
-				SortedList<WfExpression*> all;
-				CopyFrom(all, From(dependencies.Keys()).Distinct());
-
-				vint count = dependencies.Keys().Count();
-				for (vint i = 0; i < count; i++)
-				{
-					const auto& values = dependencies.GetByIndex(i);
-					if (values.Contains(0) && values.Count()>1)
+					if (!dependencies.Contains(dependedObserve, observe))
 					{
-						dependencies.Remove(dependencies.Keys()[i], 0);
-					}
-
-					FOREACH(WfExpression*, value, values)
-					{
-						all.Remove(value);
+						dependencies.Add(dependedObserve, observe);
 					}
 				}
 
-				FOREACH(WfExpression*, observe, all)
+				void Prepare(WfExpression* observe)
 				{
-					dependencies.Add(0, observe);
+					AddInternal(nullptr, observe);
+
+					if (!outputObserves.Contains(observe))
+					{
+						outputObserves.Add(observe);
+					}
 				}
-			}
+
+				void Add(WfExpression* observe)
+				{
+					Add(observe, *this);
+				}
+
+				void Add(WfExpression* observe, WfObservingDependency& dependency)
+				{
+					Prepare(observe);
+					FOREACH(WfExpression*, dependedObserve, dependency.inputObserves)
+					{
+						AddInternal(observe, dependedObserve);
+					}
+				}
+
+				void TurnToInput()
+				{
+					if (outputObserves.Count() > 0)
+					{
+						CopyFrom(inputObserves, outputObserves);
+						outputObserves.Clear();
+					}
+				}
+
+				void Cleanup()
+				{
+					SortedList<WfExpression*> all;
+					CopyFrom(all, From(dependencies.Keys()).Distinct());
+
+					vint count = dependencies.Keys().Count();
+					for (vint i = 0; i < count; i++)
+					{
+						const auto& values = dependencies.GetByIndex(i);
+						if (values.Contains(0) && values.Count()>1)
+						{
+							dependencies.Remove(dependencies.Keys()[i], 0);
+						}
+
+						FOREACH(WfExpression*, value, values)
+						{
+							all.Remove(value);
+						}
+					}
+
+					FOREACH(WfExpression*, observe, all)
+					{
+						dependencies.Add(0, observe);
+					}
+				}
+			};
 
 /***********************************************************************
 GetObservingDependency
 ***********************************************************************/
+
+			void GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency);
 
 			class GetObservingDependencyVisitor
 				: public traverse_visitor::ExpressionVisitor
@@ -334,11 +341,6 @@ ExpandObserveExpression
 						expr->expression = CreateField(node->expression);
 						result = expr;
 					}
-				}
-
-				void Visit(WfBindExpression* node)override
-				{
-					result = CopyExpression(node);
 				}
 			};
 
