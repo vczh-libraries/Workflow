@@ -73,7 +73,7 @@ WString GetExePath()
 WString GetTestResourcePath()
 {
 #if defined VCZH_MSVC
-#ifdef _WIN64
+#ifdef VCZH_64
 	return GetExePath() + L"..\\..\\..\\Resources\\";
 #else
 	return GetExePath() + L"..\\..\\Resources\\";
@@ -86,7 +86,7 @@ WString GetTestResourcePath()
 WString GetTestOutputPath()
 {
 #if defined VCZH_MSVC
-#ifdef _WIN64
+#ifdef VCZH_64
 	return GetExePath() + L"..\\..\\..\\Output\\";
 #else
 	return GetExePath() + L"..\\..\\Output\\";
@@ -99,7 +99,24 @@ WString GetTestOutputPath()
 WString GetCppOutputPath()
 {
 #if defined VCZH_MSVC
-#ifdef _WIN64
+#ifdef VCZH_64
+	return GetExePath() + L"..\\..\\..\\Output\\x64\\";
+#else
+	return GetExePath() + L"..\\..\\Output\\x32\\";
+#endif
+#elif defined VCZH_GCC
+#ifdef VCZH_64
+	return L"../SourceCppGen/x64";
+#else
+	return L"../SourceCppGen/x32";
+#endif
+#endif
+}
+
+WString GetCppMergePath()
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
 	return GetExePath() + L"..\\..\\..\\SourceCppGen\\";
 #else
 	return GetExePath() + L"..\\..\\SourceCppGen\\";

@@ -36,6 +36,13 @@ int main()
 			TEST_ASSERT(folder.Create(false) == true);
 		}
 	}
+	{
+		Folder folder(GetCppOutputPath());
+		if (!folder.Exists())
+		{
+			TEST_ASSERT(folder.Create(false) == true);
+		}
+	}
 #endif
 	LoadTypes();
 	unittest::UnitTest::RunAndDisposeTests();

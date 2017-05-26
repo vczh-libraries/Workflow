@@ -186,7 +186,7 @@ GenerateInstructions(Statement)
 					context.functionContext->PopScopeContext();
 				}
 
-				Pair<int, int> GenerateTryProtected(WfStatement* node, Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement)
+				Pair<vint, vint> GenerateTryProtected(WfStatement* node, Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement)
 				{
 					auto catchContext = context.functionContext->PushScopeContext(WfCodegenScopeType::TryCatch);
 					EXIT_CODE(Ins::UninstallTry(0));
@@ -226,7 +226,7 @@ GenerateInstructions(Statement)
 					return variableIndex;
 				}
 
-				void GenerateTrap(WfTryStatement* node, vint variableIndex, Pair<int, int> trap)
+				void GenerateTrap(WfTryStatement* node, vint variableIndex, Pair<vint, vint> trap)
 				{
 					context.assembly->instructions[trap.key].indexParameter = context.assembly->instructions.Count();
 					INSTRUCTION(Ins::LoadException());
@@ -244,7 +244,7 @@ GenerateInstructions(Statement)
 				{
 					// try
 					auto trap1 = GenerateTryProtected(node, node->protectedStatement, node->finallyStatement);
-					Pair<int, int> trap2 = { -1,-1 };
+					Pair<vint, vint> trap2 = { -1,-1 };
 					auto variableIndex = GenerateExceptionVariable(node);
 
 					// catch
