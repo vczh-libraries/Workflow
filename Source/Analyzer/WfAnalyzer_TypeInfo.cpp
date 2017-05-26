@@ -411,7 +411,7 @@ GetScopeNameFromReferenceType
 						}
 						else
 						{
-							manager->errors.Add(WfErrors::TypeNotExists(node, results[0].symbol));
+							manager->errors.Add(WfErrors::TypeNotExists(node, results[0]));
 						}
 					}
 					else
@@ -744,7 +744,7 @@ CreateTypeInfoFromType
 CreateTypeInfoFromType
 ***********************************************************************/
 			
-			Ptr<reflection::description::ITypeInfo>	CopyTypeInfo(reflection::description::ITypeInfo* typeInfo)
+			Ptr<reflection::description::ITypeInfo>	CopyTypeInfoInternal(reflection::description::ITypeInfo* typeInfo)
 			{
 				switch (typeInfo->GetDecorator())
 				{
@@ -757,18 +757,24 @@ CreateTypeInfoFromType
 				case ITypeInfo::TypeDescriptor:
 					return MakePtr<TypeDescriptorTypeInfo>(typeInfo->GetTypeDescriptor(), typeInfo->GetHint());
 				case ITypeInfo::Generic:
+				{
+					auto impl = MakePtr<GenericTypeInfo>(typeInfo->GetElementType());
+					vint count = typeInfo->GetGenericArgumentCount();
+					for (vint i = 0; i < count; i++)
 					{
-						auto impl = MakePtr<GenericTypeInfo>(typeInfo->GetElementType());
-						vint count = typeInfo->GetGenericArgumentCount();
-						for (vint i = 0; i < count; i++)
-						{
-							impl->AddGenericArgument(CopyTypeInfo(typeInfo->GetGenericArgument(i)));
-						}
-						return impl;
+						impl->AddGenericArgument(CopyTypeInfo(typeInfo->GetGenericArgument(i)));
 					}
-				default:
-					return 0;
+					return impl;
 				}
+				default:;
+					return nullptr;
+				}
+			}
+			
+			Ptr<reflection::description::ITypeInfo>	CopyTypeInfo(reflection::description::ITypeInfo* typeInfo)
+			{
+				if (!typeInfo) return nullptr;
+				return CopyTypeInfoInternal(typeInfo);
 			}
 
 /***********************************************************************

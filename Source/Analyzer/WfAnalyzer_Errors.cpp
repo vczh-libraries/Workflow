@@ -324,9 +324,9 @@ WfErrors
 				return new ParsingError(node, L"B6: \"" + scopeName->GetFriendlyName() + L"\" is not a type.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::TypeNotExists(WfType* node, Ptr<WfLexicalSymbol> symbol)
+			Ptr<parsing::ParsingError> WfErrors::TypeNotExists(WfType* node, const ResolveExpressionResult& result)
 			{
-				return new ParsingError(node, L"B6: \"" + symbol->name + L"\" is not a type.");
+				return new ParsingError(node, L"B6: \"" + result.GetFriendlyName() + L"\" is not a type.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::TypeNotForValue(WfType* node, reflection::description::ITypeInfo* typeInfo)

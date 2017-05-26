@@ -296,20 +296,24 @@ ResolveExpressionResult
 			{
 				Ptr<ITypeInfo> getterType = CopyTypeInfo(_propertyInfo->GetReturn());
 				Ptr<ITypeInfo> setterType;
-				if (IMethodInfo* setter = _propertyInfo->GetSetter())
+
+				if (getterType)
 				{
-					setterType = getterType;
-					if (setter->GetParameterCount() == 1 && !IsSameType(getterType.Obj(), setter->GetParameter(0)->GetType()))
+					if (IMethodInfo* setter = _propertyInfo->GetSetter())
 					{
-						setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
+						setterType = getterType;
+						if (setter->GetParameterCount() == 1 && !IsSameType(getterType.Obj(), setter->GetParameter(0)->GetType()))
+						{
+							setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
+						}
 					}
-				}
-				else if (_propertyInfo->IsWritable())
-				{
-					auto td = _propertyInfo->GetOwnerTypeDescriptor();
-					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+					else if (_propertyInfo->IsWritable())
 					{
-						setterType = CopyTypeInfo(_propertyInfo->GetReturn());
+						auto td = _propertyInfo->GetOwnerTypeDescriptor();
+						if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+						{
+							setterType = CopyTypeInfo(_propertyInfo->GetReturn());
+						}
 					}
 				}
 

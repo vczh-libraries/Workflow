@@ -468,7 +468,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			NullableToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
 				static Ptr<parsing::ParsingError>			ChildOfNonReferenceType(WfType* node);
 				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, Ptr<WfLexicalScopeName> scopeName);
-				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			TypeNotForValue(WfType* node, reflection::description::ITypeInfo* typeInfo);
 				
 				// C: Statement error

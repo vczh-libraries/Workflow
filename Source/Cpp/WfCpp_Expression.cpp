@@ -933,12 +933,20 @@ WfGenerateExpressionVisitor
 							if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 							{
 								auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
+								auto enumValueType = result.type->GetDecorator() == ITypeInfo::TypeDescriptor
+									? result.type
+									: MakePtr<TypeDescriptorTypeInfo>(result.type->GetTypeDescriptor(), TypeInfoHint::Normal)
+									;
 								vint index = enumType->IndexOfItem(name);
 								if (index != -1)
 								{
-									writer.WriteString(config->ConvertType(result.type.Obj()));
-									writer.WriteString(L"::");
-									writer.WriteString(name);
+									ITypeInfo* types[] = { enumValueType.Obj(),result.type.Obj() };
+									ConvertMultipleTypes(types, (sizeof(types) / sizeof(*types)), [=]()
+									{
+										writer.WriteString(config->ConvertType(result.type->GetTypeDescriptor()));
+										writer.WriteString(L"::");
+										writer.WriteString(name);
+									});
 									return;
 								}
 							}
