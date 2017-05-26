@@ -38,10 +38,11 @@ int main()
 	}
 	{
 		Folder folder(GetCppOutputPath());
-		if (!folder.Exists())
+		if (folder.Exists())
 		{
-			TEST_ASSERT(folder.Create(false) == true);
+			TEST_ASSERT(folder.Delete(true) == true);
 		}
+		TEST_ASSERT(folder.Create(false) == true);
 	}
 #endif
 	LoadTypes();
