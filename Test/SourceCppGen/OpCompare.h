@@ -23,6 +23,13 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+enum class MyEnum : vl::vuint64_t
+{
+	Item = 0UL,
+};
+inline MyEnum operator& (MyEnum a, MyEnum b) { return static_cast<MyEnum>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
+inline MyEnum operator| (MyEnum a, MyEnum b) { return static_cast<MyEnum>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -37,6 +44,25 @@ namespace vl_workflow_global
 
 		static OpCompare& Instance();
 	};
+}
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::MyEnum)
+#endif
+
+			extern bool LoadOpCompareTypes();
+		}
+	}
 }
 
 #if defined( _MSC_VER)

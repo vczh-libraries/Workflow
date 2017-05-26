@@ -69,6 +69,7 @@ using namespace vl::reflection::description;
 
 void LoadTestCaseTypes()
 {
+	 LoadOpCompareTypes();
 	 LoadNewCustomInterfaceTypes();
 	 LoadNewCustomInterface2Types();
 	 LoadNewCustomInterface3Types();
@@ -215,7 +216,7 @@ TEST_CASE(OpXor)
 
 TEST_CASE(OpCompare)
 {
-	WString expected = L"true, false, false, true, false, true, true, false, false, false, false, false, true, true, true, true, false, false, false, true";
+	WString expected = L"true, false, false, true, false, true, true, false, false, false, false, false, true, true, true, true, false, false, false, true, true, false, false, false, true, false, false, true";
 	WString actual = ::vl_workflow_global::OpCompare::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);

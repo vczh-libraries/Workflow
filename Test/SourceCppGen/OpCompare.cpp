@@ -63,7 +63,9 @@ Global Functions
 		auto q1 = ::vl::Nullable<::test::Point>(p2);
 		auto q2 = ::vl::Nullable<::test::Point>(p4);
 		auto q3 = ::vl::Nullable<::test::Point>();
-		return ((((((((((((((((((((((((((((((((((((((::vl::__vwsn::ToString((static_cast<::vl::vint16_t>(i8) < i16)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vint32_t>(i16) > i32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vint64_t>(i32) == i64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint16_t>(u8) <= u16))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint32_t>(u16) >= u32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint64_t>(u32) != u64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<double>(f32) < f64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<double>(f32) > f64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<double>(f32) == f64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((b == true))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((b != false))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((s == ::vl::WString(L"string", false)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((s != ::vl::WString(L"string", false)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((p0 == p1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((p1 == p2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((p2 == p3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((p3 == p4))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q1 == q3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q2 == q3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q3 == q3)));
+		auto e1 = ::vl::Nullable<::MyEnum>();
+		auto e2 = ::vl::Nullable<::MyEnum>::Item;
+		return ((((((((((((((((((((((::vl::__vwsn::ToString((static_cast<::vl::vint16_t>(i8) < i16)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vint32_t>(i16) > i32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vint64_t>(i32) == i64))) + ::vl::WString(L", ", false)) + ((((::vl::__vwsn::ToString((static_cast<::vl::vuint16_t>(u8) <= u16)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint32_t>(u16) >= u32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint64_t>(u32) != u64)))) + ::vl::WString(L", ", false)) + ((((::vl::__vwsn::ToString((static_cast<double>(f32) < f64)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<double>(f32) > f64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<double>(f32) == f64)))) + ::vl::WString(L", ", false)) + ((::vl::__vwsn::ToString((b == true)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((b != false)))) + ::vl::WString(L", ", false)) + ((::vl::__vwsn::ToString((s == ::vl::WString(L"string", false))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((s != ::vl::WString(L"string", false))))) + ::vl::WString(L", ", false)) + ((((((::vl::__vwsn::ToString((p0 == p1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((p1 == p2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((p2 == p3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((p3 == p4)))) + ::vl::WString(L", ", false)) + ((((::vl::__vwsn::ToString((q1 == q3)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q2 == q3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q3 == q3)))) + ::vl::WString(L", ", false)) + ((((::vl::__vwsn::ToString((q1 == ::vl::Nullable<::test::Point>(p2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q2 == ::vl::Nullable<::test::Point>(p2)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q3 == ::vl::Nullable<::test::Point>(p2))))) + ::vl::WString(L", ", false)) + ((((::vl::__vwsn::ToString((q1 == ::vl::Nullable<::test::Point>(p4))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q2 == ::vl::Nullable<::test::Point>(p4)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((q3 == ::vl::Nullable<::test::Point>(p4))))) + ::vl::WString(L", ", false)) + ((::vl::__vwsn::ToString((e1 == ::vl::Nullable<::MyEnum>(::MyEnum::Item))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((e2 == ::vl::Nullable<::MyEnum>(::MyEnum::Item)))));
 	}
 
 	OpCompare& OpCompare::Instance()
@@ -76,6 +78,53 @@ Global Functions
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
 #undef USERIMPL
+
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(MyEnum)
+
+#define _ ,
+			BEGIN_ENUM_ITEM(::MyEnum)
+				ENUM_CLASS_ITEM(Item)
+			END_ENUM_ITEM(::MyEnum)
+
+#undef _
+			class OpCompareTypeLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)
+				{
+					ADD_TYPE_INFO(::MyEnum)
+				}
+
+				void Unload(ITypeManager* manager)
+				{
+				}
+			};
+#endif
+
+			bool LoadOpCompareTypes()
+			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				if (auto manager = GetGlobalTypeManager())
+				{
+					return manager->AddTypeLoader(MakePtr<OpCompareTypeLoader>());
+				}
+#endif
+				return false;
+			}
+		}
+	}
+}
 
 #if defined( _MSC_VER)
 #pragma warning(pop)

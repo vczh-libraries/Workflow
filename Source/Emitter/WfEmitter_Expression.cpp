@@ -550,36 +550,14 @@ GenerateInstructions(Expression)
 								mergedType = GetMergedType(firstType, secondType);
 								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
 								{
-									switch (mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags())
+									GenerateExpressionInstructions(context, node->first);
+									GenerateExpressionInstructions(context, node->second);
+									INSTRUCTION(Ins::CompareValue());
+									if (node->op == WfBinaryOperator::NE)
 									{
-									case TypeDescriptorFlags::Object:
-									case TypeDescriptorFlags::Struct:
-										GenerateExpressionInstructions(context, node->first);
-										GenerateExpressionInstructions(context, node->second);
-										INSTRUCTION(Ins::CompareValue());
-										if (node->op == WfBinaryOperator::NE)
-										{
-											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
-										}
-										return;
-									case TypeDescriptorFlags::FlagEnum:
-									case TypeDescriptorFlags::NormalEnum:
-										GenerateExpressionInstructions(context, node->first);
-										INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
-										GenerateExpressionInstructions(context, node->second);
-										INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
-										INSTRUCTION(Ins::CompareLiteral(WfInsType::U8));
-										if (node->op == WfBinaryOperator::NE)
-										{
-											INSTRUCTION(Ins::OpNE());
-										}
-										else
-										{
-											INSTRUCTION(Ins::OpEQ());
-										}
-										return;
-									default:;
+										INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 									}
+									return;
 								}
 							}
 						}

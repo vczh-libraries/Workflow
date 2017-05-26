@@ -2,6 +2,11 @@ module test;
 using system::*;
 using test::*;
 
+enum MyEnum
+{
+	Item = 0,
+}
+
 func main():string
 {
 	var b = false;
@@ -26,12 +31,19 @@ func main():string
 	var q2 : Point? = p4;
 	var q3 : Point? = null;
 
+	var e1 : MyEnum? = null;
+	var e2 : MyEnum? = Item;
+
 	return
-		(i8<i16) & ", " & (i16>i32) & ", " & (i32==i64) & ", " &
-		(u8<=u16) & ", " & (u16>=u32) & ", " & (u32!=u64) & ", " &
-		(f32<f64) & ", " & (f32>f64) & ", " & (f32==f64) & ", " &
-		(b==true) & ", " & (b!=false) & ", " &
-		(s=="string") & ", " & (s!="string") & ", " &
-		(p0==p1) & ", " & (p1==p2) & ", " & (p2==p3) & ", " & (p3==p4) & ", " &
-		(q1==q3) & ", " & (q2==q3) & ", " & (q3==q3);
+		((i8<i16) & ", " & (i16>i32) & ", " & (i32==i64)				) & ", " &
+		((u8<=u16) & ", " & (u16>=u32) & ", " & (u32!=u64)				) & ", " &
+		((f32<f64) & ", " & (f32>f64) & ", " & (f32==f64)				) & ", " &
+		((b==true) & ", " & (b!=false)									) & ", " &
+		((s=="string") & ", " & (s!="string")							) & ", " &
+		((p0==p1) & ", " & (p1==p2) & ", " & (p2==p3) & ", " & (p3==p4)	) & ", " &
+		((q1==q3) & ", " & (q2==q3) & ", " & (q3==q3)					) & ", " &
+		((q1==p2) & ", " & (q2==p2) & ", " & (q3==p2)					) & ", " &
+		((q1==p4) & ", " & (q2==p4) & ", " & (q3==p4)					) & ", " &
+		((e1 == MyEnum::Item) & ", " & (e2 == MyEnum::Item)				)
+		;
 }

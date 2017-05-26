@@ -1921,23 +1921,25 @@ ValidateSemantic(Expression)
 
 						if (typeA && typeB)
 						{
-							auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-							if (CanConvertToType(typeA.Obj(), stringType.Obj(), false) && CanConvertToType(typeB.Obj(), stringType.Obj(), false))
+							if (typeA->GetDecorator() == ITypeInfo::TypeDescriptor && typeB->GetDecorator() == ITypeInfo::TypeDescriptor)
 							{
-								results.Add(ResolveExpressionResult::ReadonlyType(stringType));
-							}
-							else if (auto type = GetMergedType(typeA, typeB))
-							{
-								if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+								auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+								if (CanConvertToType(typeA.Obj(), stringType.Obj(), false) && CanConvertToType(typeB.Obj(), stringType.Obj(), false))
 								{
-									manager->errors.Add(WfErrors::IncorrectTypeForUnion(node->first.Obj(), type.Obj()));
+									results.Add(ResolveExpressionResult::ReadonlyType(stringType));
+									return;
 								}
-								results.Add(ResolveExpressionResult::ReadonlyType(type));
+								else if (auto type = GetMergedType(typeA, typeB))
+								{
+									if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+									{
+										manager->errors.Add(WfErrors::IncorrectTypeForUnion(node->first.Obj(), type.Obj()));
+									}
+									results.Add(ResolveExpressionResult::ReadonlyType(type));
+									return;
+								}
 							}
-							else
-							{
-								manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
-							}
+							manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
 						}
 					}
 					else if (node->op == WfBinaryOperator::Intersect)
@@ -1947,18 +1949,19 @@ ValidateSemantic(Expression)
 
 						if (typeA && typeB)
 						{
-							if (auto type = GetMergedType(typeA, typeB))
+							if (typeA->GetDecorator() == ITypeInfo::TypeDescriptor && typeB->GetDecorator() == ITypeInfo::TypeDescriptor)
 							{
-								if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+								if (auto type = GetMergedType(typeA, typeB))
 								{
-									manager->errors.Add(WfErrors::IncorrectTypeForIntersect(node->first.Obj(), type.Obj()));
+									if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+									{
+										manager->errors.Add(WfErrors::IncorrectTypeForIntersect(node->first.Obj(), type.Obj()));
+									}
+									results.Add(ResolveExpressionResult::ReadonlyType(type));
+									return;
 								}
-								results.Add(ResolveExpressionResult::ReadonlyType(type));
 							}
-							else
-							{
-								manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
-							}
+							manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
 						}
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
