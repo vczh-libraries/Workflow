@@ -364,7 +364,6 @@ Semantic Analyzing
 Expanding Virtual Nodes
 ***********************************************************************/
 
-			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
