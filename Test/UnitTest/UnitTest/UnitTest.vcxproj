@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="DebugNoReflection|Win32">
-      <Configuration>DebugNoReflection</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="DebugNoReflection|x64">
-      <Configuration>DebugNoReflection</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -38,19 +30,7 @@
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -76,13 +56,7 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -95,13 +69,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,20 +91,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;VCZH_CHECK_MEMORY_LEAKS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -152,21 +109,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <StackReserveSize>2097152</StackReserveSize>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;VCZH_CHECK_MEMORY_LEAKS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <StackReserveSize>2097152</StackReserveSize>
-    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -185,6 +130,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -204,81 +152,20 @@
       <OptimizeReferences>true</OptimizeReferences>
       <StackReserveSize>2097152</StackReserveSize>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Import\Vlpp.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_ExpandMixinCastExpression.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_ExpandNewCoroutineExpression.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_BuildGlobalName.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_BuildScope.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_CompleteScope.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_ContextFreeDesugar.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_Errors.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_ExpandBindExpression.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_ExpandStatement.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_Misc.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_SearchOrderedName.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_TypeInfo.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_ValidateSemantic.cpp" />
-    <ClCompile Include="..\..\..\Source\Analyzer\WfAnalyzer_ValidateStructure.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_Class.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_Collect.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_Expression.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_File.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_GenerateCppFiles.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_Statement.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_WriteClass.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_WriteEnum.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_WriteFunctionHeader.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_WriteGlobal.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_WriteLambda.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_WriteReflection.cpp" />
-    <ClCompile Include="..\..\..\Source\Cpp\WfCpp_WriteStruct.cpp" />
-    <ClCompile Include="..\..\..\Source\Emitter\WfEmitter.cpp" />
-    <ClCompile Include="..\..\..\Source\Emitter\WfEmitter_Assembly.cpp" />
-    <ClCompile Include="..\..\..\Source\Emitter\WfEmitter_Declaration.cpp" />
-    <ClCompile Include="..\..\..\Source\Emitter\WfEmitter_Expression.cpp" />
-    <ClCompile Include="..\..\..\Source\Emitter\WfEmitter_Metadata.cpp" />
-    <ClCompile Include="..\..\..\Source\Emitter\WfEmitter_Statement.cpp" />
-    <ClCompile Include="..\..\..\Source\Expression\WfExpression.cpp" />
-    <ClCompile Include="..\..\..\Source\Expression\WfExpression_Ast.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Expression\WfExpression_Copy.cpp" />
-    <ClCompile Include="..\..\..\Source\Expression\WfExpression_Empty.cpp" />
-    <ClCompile Include="..\..\..\Source\Expression\WfExpression_Parser.cpp" />
-    <ClCompile Include="..\..\..\Source\Expression\WfExpression_Traverse.cpp" />
-    <ClCompile Include="..\..\..\Source\Runtime\WfRuntime.cpp" />
-    <ClCompile Include="..\..\..\Source\Runtime\WfRuntimeConstructions.cpp" />
-    <ClCompile Include="..\..\..\Source\Runtime\WfRuntimeInstruction.cpp" />
-    <ClCompile Include="..\..\..\Source\Runtime\WfRuntimeAssembly.cpp" />
-    <ClCompile Include="..\..\..\Source\Runtime\WfRuntimeDebugger.cpp" />
-    <ClCompile Include="..\..\..\Source\Runtime\WfRuntimeExecution.cpp" />
-    <ClCompile Include="..\..\..\Source\Runtime\WfRuntimeTypeDescriptor.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="..\..\Source\CppTypes.cpp" />
     <ClCompile Include="..\..\Source\Helper.cpp" />
     <ClCompile Include="..\..\Source\TestAnalyzer.cpp" />
     <ClCompile Include="..\..\Source\TestCodegen.cpp" />
     <ClCompile Include="..\..\Source\TestDebugger.cpp" />
     <ClCompile Include="..\..\Source\TestSamples.cpp" />
-    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\Source\Expression\WfExpression.parser.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A0_WrongFormatStringSyntax.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A10_AnonymousLambdaToStruct.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A10_AnonymousLambdaToWrongFunctionType.txt" />
@@ -775,27 +662,13 @@
     <Text Include="Spec.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Import\Vlpp.h" />
-    <ClInclude Include="..\..\..\Source\Analyzer\WfAnalyzer.h" />
-    <ClInclude Include="..\..\..\Source\Cpp\WfCpp.h" />
-    <ClInclude Include="..\..\..\Source\Emitter\WfEmitter.h" />
-    <ClInclude Include="..\..\..\Source\Expression\WfExpression.h" />
-    <ClInclude Include="..\..\..\Source\Expression\WfExpression_Ast.h" />
-    <ClInclude Include="..\..\..\Source\Expression\WfExpression_Copy.h" />
-    <ClInclude Include="..\..\..\Source\Expression\WfExpression_Empty.h" />
-    <ClInclude Include="..\..\..\Source\Expression\WfExpression_Parser.h" />
-    <ClInclude Include="..\..\..\Source\Expression\WfExpression_Traverse.h" />
-    <ClInclude Include="..\..\..\Source\Runtime\WfRuntime.h" />
-    <ClInclude Include="..\..\..\Source\Runtime\WfRuntimeAssembly.h" />
-    <ClInclude Include="..\..\..\Source\Runtime\WfRuntimeConstructions.h" />
-    <ClInclude Include="..\..\..\Source\Runtime\WfRuntimeDebugger.h" />
-    <ClInclude Include="..\..\..\Source\Runtime\WfRuntimeInstruction.h" />
-    <ClInclude Include="..\..\..\Source\Runtime\WfRuntimeTypeDescriptor.h" />
     <ClInclude Include="..\..\Source\CppTypes.h" />
     <ClInclude Include="..\..\Source\Helper.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Source\Expression\Codegen.bat" />
+    <ProjectReference Include="..\Workflow\Workflow.vcxproj">
+      <Project>{6a10c161-eb96-4cba-9ad5-2b6b69d494bd}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
