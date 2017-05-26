@@ -1097,7 +1097,7 @@ WfGenerateExpressionVisitor
 					{
 						writer.WriteString(node->value.value + L"f");
 					}
-					else if (td == description::GetTypeDescriptor<double>())
+					else
 					{
 						writer.WriteString(node->value.value);
 					}
@@ -1111,7 +1111,7 @@ WfGenerateExpressionVisitor
 
 					writer.WriteString(L"static_cast<");
 					writer.WriteString(config->ConvertType(td));
-					writer.WriteString(L"(");
+					writer.WriteString(L">(");
 					if (td == description::GetTypeDescriptor<vuint32_t>())
 					{
 						writer.WriteString(node->value.value + L"U");
@@ -1123,6 +1123,10 @@ WfGenerateExpressionVisitor
 					else if (td == description::GetTypeDescriptor<vuint64_t>())
 					{
 						writer.WriteString(node->value.value + L"UL");
+					}
+					else
+					{
+						writer.WriteString(node->value.value);
 					}
 					writer.WriteString(L")");
 				}
