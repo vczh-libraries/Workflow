@@ -93,7 +93,7 @@ Closures
 
 	void __vwsnc1_BindComplex_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](auto _x){ return (::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue() + [&](auto _y){ return (::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetValue() + [&](auto _z){ return ::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->GetValue(); }(__vwsn_bind_cache_2)); }(__vwsn_bind_cache_1)); }(__vwsn_bind_cache_0);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue() + (::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetValue() + ::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->GetValue()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 

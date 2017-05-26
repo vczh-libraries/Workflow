@@ -536,14 +536,7 @@ ExpandObserveExpression
 					}
 					else
 					{
-						auto var = MakePtr<WfLetVariable>();
-						var->name.value = node->name.value;
-						var->value = CreateField(node->parent);
-
-						auto expr = MakePtr<WfLetExpression>();
-						expr->variables.Add(var);
-						expr->expression = CreateField(node->expression);
-						result = expr;
+						result = CreateField(node->expression);
 					}
 				}
 			};
