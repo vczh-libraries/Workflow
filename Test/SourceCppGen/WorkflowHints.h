@@ -37,7 +37,7 @@ namespace workflow
 #endif
 		public:
 			Base();
-			Base(::vl::vint32_t x);
+			Base(::vl::vint x);
 		};
 
 		class Derived : public ::workflow::hints::Base, public ::vl::reflection::Description<Derived>
@@ -47,7 +47,7 @@ namespace workflow
 #endif
 		public:
 			Derived();
-			Derived(::vl::vint32_t x);
+			Derived(::vl::vint x);
 		};
 
 	}
@@ -64,7 +64,7 @@ namespace vl_workflow_global
 
 		void Ensure(bool condition);
 		void Ensure(bool a, bool b);
-		void Ensure(::vl::vint32_t a, ::vl::vint32_t b);
+		void Ensure(::vl::vint a, ::vl::vint b);
 		void ExtraTests();
 		::vl::WString main();
 

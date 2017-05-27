@@ -32,11 +32,11 @@ class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
 #endif
 public:
-	::vl::vint32_t x = 0;
+	::vl::vint x = static_cast<::vl::vint>(0);
 	Base();
-	Base(::vl::vint32_t _x);
-	::vl::vint32_t GetX();
-	void SetX(::vl::vint32_t _x);
+	Base(::vl::vint _x);
+	::vl::vint GetX();
+	void SetX(::vl::vint _x);
 	::vl::Event<void()> XChanged;
 };
 
@@ -47,9 +47,9 @@ class Ctor : public ::Base, public ::test::ObservableValue, public ::vl::reflect
 #endif
 public:
 	Ctor();
-	Ctor(::vl::vint32_t y, bool b);
-	Ctor(bool b, ::vl::vint32_t value);
-	Ctor(::vl::vint32_t y, ::vl::vint32_t value);
+	Ctor(::vl::vint y, bool b);
+	Ctor(bool b, ::vl::vint value);
+	Ctor(::vl::vint y, ::vl::vint value);
 };
 
 /***********************************************************************

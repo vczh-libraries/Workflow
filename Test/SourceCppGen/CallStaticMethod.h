@@ -39,9 +39,9 @@ public:
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Internal>;
 #endif
 	public:
-		static ::vl::vint32_t Sum(::vl::vint32_t begin, ::vl::vint32_t end);
+		static ::vl::vint Sum(::vl::vint begin, ::vl::vint end);
 	};
-	static ::vl::vint32_t Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum);
+	static ::vl::vint Sum2(::vl::vint begin, ::vl::vint end, ::vl::vint sum);
 	Calculator();
 };
 

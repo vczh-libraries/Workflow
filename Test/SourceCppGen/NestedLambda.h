@@ -47,8 +47,8 @@ class IA : public virtual ::vl::reflection::IDescriptable, public ::vl::reflecti
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IA>;
 #endif
 public:
-	virtual ::vl::vint32_t GetA() = 0;
-	virtual void SetA(::vl::vint32_t value) = 0;
+	virtual ::vl::vint GetA() = 0;
+	virtual void SetA(::vl::vint value) = 0;
 	::vl::Event<void()> AChanged;
 	virtual ::vl::WString Calculate() = 0;
 };
@@ -59,8 +59,8 @@ class IB : public virtual ::vl::reflection::IDescriptable, public ::vl::reflecti
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IB>;
 #endif
 public:
-	virtual ::vl::vint32_t GetB() = 0;
-	virtual void SetB(::vl::vint32_t value) = 0;
+	virtual ::vl::vint GetB() = 0;
+	virtual void SetB(::vl::vint value) = 0;
 	::vl::Event<void()> BChanged;
 	virtual ::vl::WString Calculate() = 0;
 };
@@ -91,7 +91,7 @@ Closures
 
 		__vwsnf3_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	struct __vwsnf4_NestedLambda_main_H_Calculate_
@@ -101,7 +101,7 @@ Closures
 
 		__vwsnf4_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	struct __vwsnf7_NestedLambda_main_Calculate_
@@ -110,7 +110,7 @@ Closures
 
 		__vwsnf7_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	struct __vwsnf8_NestedLambda_main_Calculate_
@@ -119,7 +119,7 @@ Closures
 
 		__vwsnf8_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	struct __vwsno1_NestedLambda_main_H_
@@ -138,7 +138,7 @@ Closures
 
 		__vwsno2_NestedLambda_main_H_Calculate_(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	struct __vwsno5_NestedLambda_main_H_Calculate__
@@ -148,7 +148,7 @@ Closures
 
 		__vwsno5_NestedLambda_main_H_Calculate__(::IB* __vwsnctorthis_0, ::IA* __vwsnctorthis_1);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	struct __vwsno6_NestedLambda_main_Calculate_
@@ -157,7 +157,7 @@ Closures
 
 		__vwsno6_NestedLambda_main_Calculate_(::IA* __vwsnctorthis_0);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	struct __vwsno9_NestedLambda_main_Calculate__
@@ -166,7 +166,7 @@ Closures
 
 		__vwsno9_NestedLambda_main_Calculate__(::IA* __vwsnctorthis_0);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 
 	class __vwsnc1_NestedLambda_main__IA : public ::vl::Object, public virtual ::IA
@@ -174,9 +174,9 @@ Closures
 	public:
 		__vwsnc1_NestedLambda_main__IA();
 
-		::vl::vint32_t a = 0;
-		::vl::vint32_t GetA() override;
-		void SetA(::vl::vint32_t value) override;
+		::vl::vint a = 0;
+		::vl::vint GetA() override;
+		void SetA(::vl::vint value) override;
 		::vl::WString H();
 		::vl::WString Calculate() override;
 	};
@@ -188,9 +188,9 @@ Closures
 
 		__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0);
 
-		::vl::vint32_t b = 0;
-		::vl::vint32_t GetB() override;
-		void SetB(::vl::vint32_t value) override;
+		::vl::vint b = 0;
+		::vl::vint GetB() override;
+		void SetB(::vl::vint value) override;
 		::vl::WString H();
 		::vl::WString Calculate() override;
 	};
@@ -215,11 +215,11 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Calculate);
 				}
-				::vl::vint32_t GetA() override
+				::vl::vint GetA() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetA);
 				}
-				void SetA(::vl::vint32_t value) override
+				void SetA(::vl::vint value) override
 				{
 					INVOKE_INTERFACE_PROXY(SetA, value);
 				}
@@ -230,11 +230,11 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Calculate);
 				}
-				::vl::vint32_t GetB() override
+				::vl::vint GetB() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetB);
 				}
-				void SetB(::vl::vint32_t value) override
+				void SetB(::vl::vint value) override
 				{
 					INVOKE_INTERFACE_PROXY(SetB, value);
 				}

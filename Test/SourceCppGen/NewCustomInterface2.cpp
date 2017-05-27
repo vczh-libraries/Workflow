@@ -43,8 +43,8 @@ Global Functions
 
 	::vl::WString NewCustomInterface2::main()
 	{
-		auto begin = 1;
-		auto end = 5;
+		auto begin = static_cast<::vl::vint>(1);
+		auto end = static_cast<::vl::vint>(5);
 		auto xs = ::vl::Ptr<::IMyInterface2>(new ::vl_workflow_global::__vwsnc1_NewCustomInterface2_main__IMyInterface2(begin, end));
 		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"]", false));
 	}
@@ -60,7 +60,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_NewCustomInterface2_main__IMyInterface2::__vwsnc1_NewCustomInterface2_main__IMyInterface2(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end)
+	__vwsnc1_NewCustomInterface2_main__IMyInterface2::__vwsnc1_NewCustomInterface2_main__IMyInterface2(::vl::vint __vwsnctor_begin, ::vl::vint __vwsnctor_end)
 		:begin(__vwsnctor_begin)
 		, end(__vwsnctor_end)
 	{
@@ -71,24 +71,24 @@ Closures
 		return ::vl::Ptr<::vl::reflection::description::IValueEnumerator>(new ::vl_workflow_global::__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(this->begin, this->end, this));
 	}
 
-	::vl::vint32_t __vwsnc1_NewCustomInterface2_main__IMyInterface2::Get50()
+	::vl::vint __vwsnc1_NewCustomInterface2_main__IMyInterface2::Get50()
 	{
-		return 50;
+		return static_cast<::vl::vint>(50);
 	}
 
-	::vl::vint32_t __vwsnc1_NewCustomInterface2_main__IMyInterface2::Get100()
+	::vl::vint __vwsnc1_NewCustomInterface2_main__IMyInterface2::Get100()
 	{
-		return (this->Get50() * 2);
+		return (this->Get50() * static_cast<::vl::vint>(2));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::IMyInterface2* __vwsnctorthis_0)
+	__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint __vwsnctor_begin, ::vl::vint __vwsnctor_end, ::IMyInterface2* __vwsnctorthis_0)
 		:begin(__vwsnctor_begin)
 		, end(__vwsnctor_end)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->index = (- 1);
+		this->index = (- static_cast<::vl::vint>(1));
 	}
 
 	::vl::reflection::description::Value __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetCurrent()
@@ -96,7 +96,7 @@ Closures
 		return ::vl::__vwsn::Box((this->begin + index));
 	}
 
-	::vl::vint32_t __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
+	::vl::vint __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator::GetIndex()
 	{
 		return index;
 	}
@@ -109,7 +109,7 @@ Closures
 		}
 		else
 		{
-			(index = (index + 1));
+			(index = (index + static_cast<::vl::vint>(1)));
 			return true;
 		}
 	}

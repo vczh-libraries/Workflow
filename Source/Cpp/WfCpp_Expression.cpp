@@ -1092,7 +1092,7 @@ WfGenerateExpressionVisitor
 
 					writer.WriteString(L"static_cast<");
 					writer.WriteString(config->ConvertType(td));
-					writer.WriteString(L"(");
+					writer.WriteString(L">(");
 					if (td == description::GetTypeDescriptor<float>())
 					{
 						writer.WriteString(node->value.value + L"f");

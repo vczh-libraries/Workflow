@@ -33,7 +33,7 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::vint32_t sum = 0;
+		::vl::vint sum = 0;
 
 		void test1();
 		void test2();

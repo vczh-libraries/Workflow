@@ -32,10 +32,10 @@ namespace calculator
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<NumberExpression>;
 #endif
 	public:
-		::vl::vint32_t __vwsn_prop_Value = 0;
-		::vl::vint32_t GetValue();
-		void SetValue(::vl::vint32_t __vwsn_value_);
-		NumberExpression(::vl::vint32_t _value);
+		::vl::vint __vwsn_prop_Value = static_cast<::vl::vint>(0);
+		::vl::vint GetValue();
+		void SetValue(::vl::vint __vwsn_value_);
+		NumberExpression(::vl::vint _value);
 	};
 
 }

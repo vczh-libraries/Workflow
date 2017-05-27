@@ -33,7 +33,7 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::vint32_t GetValue(::vl::Ptr<::test::ObservableValue> value, ::vl::vint32_t increase, ::vl::vint32_t defaultValue);
+		::vl::vint GetValue(::vl::Ptr<::test::ObservableValue> value, ::vl::vint increase, ::vl::vint defaultValue);
 		::vl::WString main();
 
 		static FailedThen& Instance();

@@ -55,11 +55,11 @@ Closures
 		__vwsnc1_CoRawCoroutine3_main__vl_reflection_description_ICoroutine();
 
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_co_tempexvar0_ex;
-		::vl::vint32_t __vwsn_co0_switch_0 = 0;
-		::vl::vint32_t __vwsn_co1_for_begin_i = 0;
-		::vl::vint32_t __vwsn_co2_for_end_i = 0;
-		::vl::vint32_t __vwsn_co3_i = 0;
-		::vl::vint32_t __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co0_switch_0 = 0;
+		::vl::vint __vwsn_co1_for_begin_i = 0;
+		::vl::vint __vwsn_co2_for_end_i = 0;
+		::vl::vint __vwsn_co3_i = 0;
+		::vl::vint __vwsn_co_state_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
 		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);

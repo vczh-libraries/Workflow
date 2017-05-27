@@ -39,8 +39,8 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::vint32_t Apply(const ::vl::Func<::vl::vint32_t(::vl::vint32_t)>& f, ::vl::vint32_t arg);
-		::vl::Func<::vl::vint32_t(::vl::vint32_t)> Adder(::vl::vint32_t x);
+		::vl::vint Apply(const ::vl::Func<::vl::vint(::vl::vint)>& f, ::vl::vint arg);
+		::vl::Func<::vl::vint(::vl::vint)> Adder(::vl::vint x);
 		::vl::WString main();
 
 		static OrderedLambda& Instance();
@@ -52,20 +52,20 @@ Closures
 
 	struct __vwsno1_OrderedLambda_Adder_
 	{
-		::vl::vint32_t x;
+		::vl::vint x;
 
-		__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x);
+		__vwsno1_OrderedLambda_Adder_(::vl::vint __vwsnctor_x);
 
-		::vl::vint32_t operator()(::vl::vint32_t __vwsno_1) const;
+		::vl::vint operator()(::vl::vint __vwsno_1) const;
 	};
 
 	struct __vwsno2_OrderedLambda_Adder_
 	{
-		::vl::vint32_t __vwsno_1;
+		::vl::vint __vwsno_1;
 
-		__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1);
+		__vwsno2_OrderedLambda_Adder_(::vl::vint __vwsnctor___vwsno_1);
 
-		::vl::vint32_t operator()(::vl::vint32_t __vwsno_2) const;
+		::vl::vint operator()(::vl::vint __vwsno_2) const;
 	};
 }
 

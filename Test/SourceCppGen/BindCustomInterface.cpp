@@ -57,15 +57,15 @@ Global Functions
 	{
 		auto subscription = GLOBAL_NAME Bind(::vl::Ptr<::ISummer>(adder));
 		{
-			auto __vwsn_for_begin_x = 1;
-			auto __vwsn_for_end_x = 5;
+			auto __vwsn_for_begin_x = static_cast<::vl::vint>(1);
+			auto __vwsn_for_end_x = static_cast<::vl::vint>(5);
 			auto x = __vwsn_for_begin_x;
 			while ((x <= __vwsn_for_end_x))
 			{
 				{
 					::vl::__vwsn::This(adder.Obj())->Add(x);
 				}
-				(x = (x + 1));
+				(x = (x + static_cast<::vl::vint>(1)));
 			}
 		}
 		::vl::__vwsn::This(subscription.Obj())->Close();
@@ -94,7 +94,7 @@ Closures
 
 	void __vwsnf1_BindCustomInterface_Bind_::operator()(const ::vl::reflection::description::Value& value) const
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(value))) + ::vl::WString(L"]", false)));
 	}
 
 	//-------------------------------------------------------------------
@@ -158,15 +158,15 @@ Closures
 
 	__vwsnc2_BindCustomInterface_main__IAdder::__vwsnc2_BindCustomInterface_main__IAdder()
 	{
-		this->sum = 0;
+		this->sum = static_cast<::vl::vint>(0);
 	}
 
-	::vl::vint32_t __vwsnc2_BindCustomInterface_main__IAdder::GetSum()
+	::vl::vint __vwsnc2_BindCustomInterface_main__IAdder::GetSum()
 	{
 		return sum;
 	}
 
-	void __vwsnc2_BindCustomInterface_main__IAdder::Add(::vl::vint32_t value)
+	void __vwsnc2_BindCustomInterface_main__IAdder::Add(::vl::vint value)
 	{
 		(sum = (sum + value));
 		::vl::__vwsn::EventInvoke(this->SumChanged)();

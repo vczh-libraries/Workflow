@@ -33,11 +33,11 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::vint32_t Sum1(::vl::vint32_t start, ::vl::vint32_t end);
-		::vl::vint32_t Sum2(::vl::vint32_t start, ::vl::vint32_t end);
-		::vl::vint32_t Sum3(::vl::vint32_t start, ::vl::vint32_t end);
-		::vl::vint32_t Sum4(::vl::vint32_t start, ::vl::vint32_t end);
-		::vl::vint32_t Sum5(::vl::vint32_t start, ::vl::vint32_t end);
+		::vl::vint Sum1(::vl::vint start, ::vl::vint end);
+		::vl::vint Sum2(::vl::vint start, ::vl::vint end);
+		::vl::vint Sum3(::vl::vint start, ::vl::vint end);
+		::vl::vint Sum4(::vl::vint start, ::vl::vint end);
+		::vl::vint Sum5(::vl::vint start, ::vl::vint end);
 		::vl::WString main();
 
 		static ControlFlow& Instance();

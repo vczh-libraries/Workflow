@@ -52,17 +52,17 @@ Global Functions
 			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
 		}
 		{
-			auto a = ::vl::Ptr<::Methods>(new ::Methods(100));
+			auto a = ::vl::Ptr<::Methods>(new ::Methods(static_cast<::vl::vint>(100)));
 			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
 		}
 		{
-			auto a = ::vl::Ptr<::Methods>(new ::Methods(1));
+			auto a = ::vl::Ptr<::Methods>(new ::Methods(static_cast<::vl::vint>(1)));
 			auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(a.Obj())->XChanged, LAMBDA(::vl_workflow_global::__vwsnf1_ClassMethod_main_(a)));
-			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() + 1));
-			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() - 1));
+			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() + static_cast<::vl::vint>(1)));
+			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() - static_cast<::vl::vint>(1)));
 			::vl::__vwsn::This(a.Obj())->SetX(::vl::__vwsn::This(a.Obj())->GetX());
 			::vl::__vwsn::EventDetach(::vl::__vwsn::This(a.Obj())->XChanged, handler);
-			::vl::__vwsn::This(a.Obj())->SetX(100);
+			::vl::__vwsn::This(a.Obj())->SetX(static_cast<::vl::vint>(100));
 			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"]", false))));
 		}
 		return GLOBAL_NAME s;
@@ -98,7 +98,7 @@ Methods::Methods()
 {
 }
 
-Methods::Methods(::vl::vint32_t _x)
+Methods::Methods(::vl::vint _x)
 {
 	(this->x = _x);
 	if ((::vl::__vwsn::This(this)->x != this->x))
@@ -107,7 +107,7 @@ Methods::Methods(::vl::vint32_t _x)
 	}
 }
 
-::vl::vint32_t Methods::GetX()
+::vl::vint Methods::GetX()
 {
 	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
@@ -116,7 +116,7 @@ Methods::Methods(::vl::vint32_t _x)
 	return this->x;
 }
 
-void Methods::SetX(::vl::vint32_t _x)
+void Methods::SetX(::vl::vint _x)
 {
 	if ((this->x != _x))
 	{
@@ -146,7 +146,7 @@ namespace vl
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Methods)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Methods>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Methods>(::vl::vint32_t), { L"_x" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Methods>(::vl::vint), { L"_x" })
 				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetX, { L"_x" })
 				CLASS_MEMBER_EVENT(XChanged)

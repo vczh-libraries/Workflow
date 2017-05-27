@@ -43,7 +43,7 @@ Global Functions
 
 	::vl::WString LetIn::main()
 	{
-		return [&](auto x, auto y){ return ::vl::__vwsn::ToString((x + y)); }(10, 20);
+		return [&](auto x, auto y){ return ::vl::__vwsn::ToString((x + y)); }(static_cast<::vl::vint>(10), static_cast<::vl::vint>(20));
 	}
 
 	LetIn& LetIn::Instance()

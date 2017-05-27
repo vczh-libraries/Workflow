@@ -61,8 +61,8 @@ Global Functions
 
 	::vl::WString Delete::main()
 	{
-		auto raw1 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
-		auto raw2 = ::test::ObservableValue::CreatePtr(0, ::vl::WString(L"", false));
+		auto raw1 = ::test::ObservableValue::CreatePtr(static_cast<::vl::vint>(0), ::vl::WString(L"", false));
+		auto raw2 = ::test::ObservableValue::CreatePtr(static_cast<::vl::vint>(0), ::vl::WString(L"", false));
 		auto shared = ::vl::__vwsn::Ensure(::vl::Ptr<::test::ObservableValue>(raw1));
 		auto a = (raw1 == nullptr);
 		auto b = (raw2 == nullptr);

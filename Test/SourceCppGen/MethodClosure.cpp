@@ -43,11 +43,11 @@ Global Functions
 
 	::vl::WString MethodClosure::main()
 	{
-		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(10));
-		auto get = ::vl::Func<::vl::vint32_t()>(::vl::__vwsn::This(x.Obj()), &::test::ObservableValue::GetValue);
-		auto set = ::vl::Func<void(::vl::vint32_t)>(::vl::__vwsn::This(x.Obj()), &::test::ObservableValue::SetValue);
+		auto x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(static_cast<::vl::vint>(10)));
+		auto get = ::vl::Func<::vl::vint()>(::vl::__vwsn::This(x.Obj()), &::test::ObservableValue::GetValue);
+		auto set = ::vl::Func<void(::vl::vint)>(::vl::__vwsn::This(x.Obj()), &::test::ObservableValue::SetValue);
 		auto s1 = get();
-		set(20);
+		set(static_cast<::vl::vint>(20));
 		auto s2 = get();
 		return ((::vl::__vwsn::ToString(s1) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(s2));
 	}

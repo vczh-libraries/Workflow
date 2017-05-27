@@ -58,8 +58,8 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 
-		::vl::Ptr<::IStringAsync> GetStringAsync(::vl::vint32_t x);
-		::vl::Ptr<::IStringAsync> GetStringAsync2(::vl::vint32_t x);
+		::vl::Ptr<::IStringAsync> GetStringAsync(::vl::vint x);
+		::vl::Ptr<::IStringAsync> GetStringAsync2(::vl::vint x);
 		void GetMultipleString();
 		::vl::WString main();
 
@@ -72,9 +72,9 @@ Closures
 
 	struct __vwsnf1_CoAsync_GetStringAsync_
 	{
-		::vl::vint32_t x;
+		::vl::vint x;
 
-		__vwsnf1_CoAsync_GetStringAsync_(::vl::vint32_t __vwsnctor_x);
+		__vwsnf1_CoAsync_GetStringAsync_(::vl::vint __vwsnctor_x);
 
 		::vl::Ptr<::vl::reflection::description::ICoroutine> operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const;
 	};
@@ -82,9 +82,9 @@ Closures
 	struct __vwsnf2_CoAsync_GetStringAsync2_
 	{
 		::vl::Ptr<::vl::reflection::description::IFuture> future;
-		::vl::vint32_t x;
+		::vl::vint x;
 
-		__vwsnf2_CoAsync_GetStringAsync2_(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future, ::vl::vint32_t __vwsnctor_x);
+		__vwsnf2_CoAsync_GetStringAsync2_(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future, ::vl::vint __vwsnctor_x);
 
 		void operator()() const;
 	};
@@ -107,11 +107,11 @@ Closures
 	{
 	public:
 		::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_;
-		::vl::vint32_t x;
+		::vl::vint x;
 
-		__vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::vl::vint32_t __vwsnctor_x);
+		__vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::vl::vint __vwsnctor_x);
 
-		::vl::vint32_t __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co_state_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
 		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);
@@ -150,10 +150,10 @@ Closures
 
 		::vl::WString __vwsn_co0_x;
 		::vl::WString __vwsn_co1_y;
-		::vl::vint32_t __vwsn_co2_for_begin_i = 0;
-		::vl::vint32_t __vwsn_co3_for_end_i = 0;
-		::vl::vint32_t __vwsn_co4_i = 0;
-		::vl::vint32_t __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co2_for_begin_i = 0;
+		::vl::vint __vwsn_co3_for_end_i = 0;
+		::vl::vint __vwsn_co4_i = 0;
+		::vl::vint __vwsn_co_state_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
 		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);

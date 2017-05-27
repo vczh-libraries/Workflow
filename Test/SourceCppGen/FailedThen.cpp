@@ -41,14 +41,14 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::vint32_t FailedThen::GetValue(::vl::Ptr<::test::ObservableValue> value, ::vl::vint32_t increase, ::vl::vint32_t defaultValue)
+	::vl::vint FailedThen::GetValue(::vl::Ptr<::test::ObservableValue> value, ::vl::vint increase, ::vl::vint defaultValue)
 	{
 		return [&](){ try{ return (::vl::__vwsn::This(value.Obj())->GetValue() + increase); } catch(...){ return defaultValue; } }();
 	}
 
 	::vl::WString FailedThen::main()
 	{
-		return (((::vl::WString(L"", false) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(), 10, (- 1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(100)), 10, (- 1))));
+		return (((::vl::WString(L"", false) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(), static_cast<::vl::vint>(10), (- static_cast<::vl::vint>(1))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(static_cast<::vl::vint>(100))), static_cast<::vl::vint>(10), (- static_cast<::vl::vint>(1)))));
 	}
 
 	FailedThen& FailedThen::Instance()

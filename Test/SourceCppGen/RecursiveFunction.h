@@ -33,7 +33,7 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::vint32_t Fib(::vl::vint32_t n);
+		::vl::vint Fib(::vl::vint n);
 		::vl::WString main();
 
 		static RecursiveFunction& Instance();

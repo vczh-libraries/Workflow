@@ -39,7 +39,7 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> Adder(::vl::vint32_t x);
+		::vl::Func<::vl::Func<::vl::vint()>(::vl::vint)> Adder(::vl::vint x);
 		::vl::WString main();
 
 		static AnonymousLambda& Instance();
@@ -51,21 +51,21 @@ Closures
 
 	struct __vwsnf1_AnonymousLambda_Adder_
 	{
-		::vl::vint32_t x;
+		::vl::vint x;
 
-		__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t __vwsnctor_x);
+		__vwsnf1_AnonymousLambda_Adder_(::vl::vint __vwsnctor_x);
 
-		::vl::Func<::vl::vint32_t()> operator()(::vl::vint32_t y) const;
+		::vl::Func<::vl::vint()> operator()(::vl::vint y) const;
 	};
 
 	struct __vwsnf2_AnonymousLambda_Adder__
 	{
-		::vl::vint32_t x;
-		::vl::vint32_t y;
+		::vl::vint x;
+		::vl::vint y;
 
-		__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t __vwsnctor_x, ::vl::vint32_t __vwsnctor_y);
+		__vwsnf2_AnonymousLambda_Adder__(::vl::vint __vwsnctor_x, ::vl::vint __vwsnctor_y);
 
-		::vl::vint32_t operator()() const;
+		::vl::vint operator()() const;
 	};
 }
 

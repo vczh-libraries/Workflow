@@ -41,14 +41,14 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::vint32_t RecursiveFunction::Fib(::vl::vint32_t n)
+	::vl::vint RecursiveFunction::Fib(::vl::vint n)
 	{
-		return ((n <= 2) ? 1 : (GLOBAL_NAME Fib((n - 1)) + GLOBAL_NAME Fib((n - 2))));
+		return ((n <= static_cast<::vl::vint>(2)) ? static_cast<::vl::vint>(1) : (GLOBAL_NAME Fib((n - static_cast<::vl::vint>(1))) + GLOBAL_NAME Fib((n - static_cast<::vl::vint>(2)))));
 	}
 
 	::vl::WString RecursiveFunction::main()
 	{
-		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Fib(1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(3))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(4))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(5)));
+		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(2)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(3)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(4)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(5))));
 	}
 
 	RecursiveFunction& RecursiveFunction::Instance()

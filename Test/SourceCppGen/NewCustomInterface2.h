@@ -37,7 +37,7 @@ class IMyInterface2 : public virtual ::vl::reflection::description::IValueEnumer
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IMyInterface2>;
 #endif
 public:
-	virtual ::vl::vint32_t Get100() = 0;
+	virtual ::vl::vint Get100() = 0;
 };
 
 /***********************************************************************
@@ -62,28 +62,28 @@ Closures
 	class __vwsnc1_NewCustomInterface2_main__IMyInterface2 : public ::vl::Object, public virtual ::IMyInterface2
 	{
 	public:
-		::vl::vint32_t begin;
-		::vl::vint32_t end;
+		::vl::vint begin;
+		::vl::vint end;
 
-		__vwsnc1_NewCustomInterface2_main__IMyInterface2(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end);
+		__vwsnc1_NewCustomInterface2_main__IMyInterface2(::vl::vint __vwsnctor_begin, ::vl::vint __vwsnctor_end);
 
 		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
-		::vl::vint32_t Get50();
-		::vl::vint32_t Get100() override;
+		::vl::vint Get50();
+		::vl::vint Get100() override;
 	};
 
 	class __vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
 	{
 	public:
-		::vl::vint32_t begin;
-		::vl::vint32_t end;
+		::vl::vint begin;
+		::vl::vint end;
 		::IMyInterface2* __vwsnthis_0;
 
-		__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint32_t __vwsnctor_begin, ::vl::vint32_t __vwsnctor_end, ::IMyInterface2* __vwsnctorthis_0);
+		__vwsnc2_NewCustomInterface2_main_CreateEnumerator__vl_reflection_description_IValueEnumerator(::vl::vint __vwsnctor_begin, ::vl::vint __vwsnctor_end, ::IMyInterface2* __vwsnctorthis_0);
 
-		::vl::vint32_t index = 0;
+		::vl::vint index = 0;
 		::vl::reflection::description::Value GetCurrent() override;
-		::vl::vint32_t GetIndex() override;
+		::vl::vint GetIndex() override;
 		bool Next() override;
 	};
 }
@@ -102,7 +102,7 @@ namespace vl
 			DECL_TYPE_INFO(::IMyInterface2)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IMyInterface2, ::vl::reflection::description::IValueEnumerable)
-				::vl::vint32_t Get100() override
+				::vl::vint Get100() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
 				}

@@ -41,7 +41,7 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 
-		::vl::collections::LazyList<::vl::vint32_t> GetNumbers();
+		::vl::collections::LazyList<::vl::vint> GetNumbers();
 		::vl::WString main();
 
 		static CoEnum& Instance();
@@ -65,10 +65,10 @@ Closures
 
 		__vwsnc1_CoEnum_GetNumbers___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_);
 
-		::vl::vint32_t __vwsn_co0_for_begin_i = 0;
-		::vl::vint32_t __vwsn_co1_for_end_i = 0;
-		::vl::vint32_t __vwsn_co2_i = 0;
-		::vl::vint32_t __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co0_for_begin_i = 0;
+		::vl::vint __vwsn_co1_for_end_i = 0;
+		::vl::vint __vwsn_co2_i = 0;
+		::vl::vint __vwsn_co_state_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
 		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);

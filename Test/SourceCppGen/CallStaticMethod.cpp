@@ -43,7 +43,7 @@ Global Functions
 
 	::vl::WString CallStaticMethod::main()
 	{
-		return ::vl::__vwsn::ToString(::Calculator::Internal::Sum(1, 10));
+		return ::vl::__vwsn::ToString(::Calculator::Internal::Sum(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)));
 	}
 
 	CallStaticMethod& CallStaticMethod::Instance()
@@ -56,7 +56,7 @@ Global Functions
 Class (::Calculator)
 ***********************************************************************/
 
-::vl::vint32_t Calculator::Sum2(::vl::vint32_t begin, ::vl::vint32_t end, ::vl::vint32_t sum)
+::vl::vint Calculator::Sum2(::vl::vint begin, ::vl::vint end, ::vl::vint sum)
 {
 	if ((begin > end))
 	{
@@ -64,7 +64,7 @@ Class (::Calculator)
 	}
 	else
 	{
-		return ::Calculator::Sum2((begin + 1), end, (sum + begin));
+		return ::Calculator::Sum2((begin + static_cast<::vl::vint>(1)), end, (sum + begin));
 	}
 }
 
@@ -76,9 +76,9 @@ Calculator::Calculator()
 Class (::Calculator::Internal)
 ***********************************************************************/
 
-::vl::vint32_t Calculator::Internal::Sum(::vl::vint32_t begin, ::vl::vint32_t end)
+::vl::vint Calculator::Internal::Sum(::vl::vint begin, ::vl::vint end)
 {
-	return ::Calculator::Sum2(begin, end, 0);
+	return ::Calculator::Sum2(begin, end, static_cast<::vl::vint>(0));
 }
 
 #undef GLOBAL_SYMBOL

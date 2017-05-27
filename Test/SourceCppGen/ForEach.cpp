@@ -49,7 +49,7 @@ Global Functions
 			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
 			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
 			{
-				auto x = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
+				auto x = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
 				{
 					if ((s == ::vl::WString(L"", false)))
 					{
@@ -73,7 +73,7 @@ Global Functions
 			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
 			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
 			{
-				auto x = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
+				auto x = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
 				{
 					if ((s == ::vl::WString(L"", false)))
 					{
@@ -91,7 +91,7 @@ Global Functions
 
 	::vl::WString ForEach::main()
 	{
-		auto xs = (::vl::__vwsn::CreateList().Add(1).Add(2).Add(3).Add(4).Add(5)).list;
+		auto xs = (::vl::__vwsn::CreateList().Add(static_cast<::vl::vint>(1)).Add(static_cast<::vl::vint>(2)).Add(static_cast<::vl::vint>(3)).Add(static_cast<::vl::vint>(4)).Add(static_cast<::vl::vint>(5))).list;
 		return ((((::vl::WString(L"[", false) + GLOBAL_NAME Show1(xs)) + ::vl::WString(L"][", false)) + GLOBAL_NAME Show2(xs)) + ::vl::WString(L"]", false));
 	}
 

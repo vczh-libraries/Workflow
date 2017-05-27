@@ -40,11 +40,9 @@ namespace calculator
 	}
 
 	USERIMPL(/* ::calculator::Expression */)
-	::vl::vint32_t Expression::Evaluate()
+	::vl::vint Expression::Evaluate()
 	{
-		{
-			return GLOBAL_NAME Evaluate(this);
-		}
+		return GLOBAL_NAME Evaluate(this);
 	}
 
 	Expression::Expression()
@@ -64,11 +62,3 @@ namespace calculator
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-// UNUSED_USER_CONTENT:
-//	USERIMPL(/* ::calculator::Expression */)
-//	::vl::vint64_t Expression::Evaluate()
-//	{
-//		{
-//			return GLOBAL_NAME Evaluate(this);
-//		}
-//	}

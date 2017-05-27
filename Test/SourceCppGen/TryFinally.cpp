@@ -33,7 +33,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_TryFinally)
 	vl_workflow_global::TryFinally instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.sum = 0;
+		instance.sum = static_cast<::vl::vint>(0);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_TryFinally)
@@ -47,8 +47,8 @@ Global Functions
 	void TryFinally::test1()
 	{
 		{
-			auto __vwsn_for_begin_x = 1;
-			auto __vwsn_for_end_x = 5;
+			auto __vwsn_for_begin_x = static_cast<::vl::vint>(1);
+			auto __vwsn_for_end_x = static_cast<::vl::vint>(5);
 			auto x = __vwsn_for_begin_x;
 			while ((x <= __vwsn_for_end_x))
 			{
@@ -56,7 +56,7 @@ Global Functions
 					{
 						auto __vwsnb_0 = [&]()
 						{
-							(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1));
+							(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1)));
 						}
 						;
 						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
@@ -64,7 +64,7 @@ Global Functions
 						{
 							{
 								{
-									(x = (x + 1));
+									(x = (x + static_cast<::vl::vint>(1)));
 									continue;
 								}
 							}
@@ -74,7 +74,7 @@ Global Functions
 						}
 					}
 				}
-				(x = (x + 1));
+				(x = (x + static_cast<::vl::vint>(1)));
 			}
 		}
 	}
@@ -82,8 +82,8 @@ Global Functions
 	void TryFinally::test2()
 	{
 		{
-			auto __vwsn_for_begin_x = 1;
-			auto __vwsn_for_end_x = 5;
+			auto __vwsn_for_begin_x = static_cast<::vl::vint>(1);
+			auto __vwsn_for_end_x = static_cast<::vl::vint>(5);
 			auto x = __vwsn_for_begin_x;
 			while ((x <= __vwsn_for_end_x))
 			{
@@ -91,7 +91,7 @@ Global Functions
 					{
 						auto __vwsnb_0 = [&]()
 						{
-							(GLOBAL_NAME sum = (GLOBAL_NAME sum + 10));
+							(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(10)));
 						}
 						;
 						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
@@ -106,7 +106,7 @@ Global Functions
 						}
 					}
 				}
-				(x = (x + 1));
+				(x = (x + static_cast<::vl::vint>(1)));
 			}
 		}
 	}
@@ -116,7 +116,7 @@ Global Functions
 		{
 			auto __vwsnb_0 = [&]()
 			{
-				(GLOBAL_NAME sum = (GLOBAL_NAME sum + 100));
+				(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(100)));
 			}
 			;
 			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
@@ -137,7 +137,7 @@ Global Functions
 		{
 			auto __vwsnb_0 = [&]()
 			{
-				(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
+				(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1000)));
 			}
 			;
 			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
@@ -147,7 +147,7 @@ Global Functions
 					{
 						auto __vwsnb_1 = [&]()
 						{
-							(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
+							(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1000)));
 						}
 						;
 						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
@@ -157,7 +157,7 @@ Global Functions
 								{
 									auto __vwsnb_2 = [&]()
 									{
-										(GLOBAL_NAME sum = (GLOBAL_NAME sum + 1000));
+										(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1000)));
 									}
 									;
 									::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_2)>::Type> __vwsnb_2_dtor(&__vwsnb_2);

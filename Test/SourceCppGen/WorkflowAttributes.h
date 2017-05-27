@@ -41,7 +41,7 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString Print(::vl::Ptr<::calculator::Expression> expr);
-		::vl::vint32_t Evaluate(::vl::Ptr<::calculator::Expression> expr);
+		::vl::vint Evaluate(::vl::Ptr<::calculator::Expression> expr);
 		::vl::WString main();
 
 		static WorkflowAttributes& Instance();

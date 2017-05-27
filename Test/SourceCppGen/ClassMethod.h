@@ -36,11 +36,11 @@ class Methods : public ::vl::Object, public ::vl::reflection::Description<Method
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Methods>;
 #endif
 public:
-	::vl::vint32_t x = 0;
+	::vl::vint x = static_cast<::vl::vint>(0);
 	Methods();
-	Methods(::vl::vint32_t _x);
-	::vl::vint32_t GetX();
-	void SetX(::vl::vint32_t _x);
+	Methods(::vl::vint _x);
+	::vl::vint GetX();
+	void SetX(::vl::vint _x);
 	::vl::Event<void()> XChanged;
 };
 

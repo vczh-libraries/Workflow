@@ -45,9 +45,9 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::collections::LazyList<::vl::vint32_t> CoEnum2::GetNumbers()
+	::vl::collections::LazyList<::vl::vint> CoEnum2::GetNumbers()
 	{
-		return ::vl::reflection::description::GetLazyList<::vl::vint32_t>(::vl::reflection::description::EnumerableCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoEnum2_GetNumbers_())));
+		return ::vl::reflection::description::GetLazyList<::vl::vint>(::vl::reflection::description::EnumerableCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoEnum2_GetNumbers_())));
 	}
 
 	::vl::WString CoEnum2::main()
@@ -57,7 +57,7 @@ Global Functions
 			auto __vwsn_for_enumerator_i = ::vl::__vwsn::This(__vwsn_for_enumerable_i.Obj())->CreateEnumerator();
 			while (::vl::__vwsn::This(__vwsn_for_enumerator_i.Obj())->Next())
 			{
-				auto i = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_for_enumerator_i.Obj())->GetCurrent());
+				auto i = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_i.Obj())->GetCurrent());
 				{
 					(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(i)) + ::vl::WString(L"]", false)));
 				}
@@ -91,10 +91,10 @@ Closures
 	__vwsnc1_CoEnum2_GetNumbers___vl_reflection_description_ICoroutine::__vwsnc1_CoEnum2_GetNumbers___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_)
 		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
 	{
-		this->__vwsn_co0_for_begin_i = 0;
-		this->__vwsn_co1_for_end_i = 0;
-		this->__vwsn_co2_i = 0;
-		this->__vwsn_co_state_ = 0;
+		this->__vwsn_co0_for_begin_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co1_for_end_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co2_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co_state_ = static_cast<::vl::vint>(0);
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}
@@ -129,45 +129,45 @@ Closures
 			{
 				while (true)
 				{
-					if ((__vwsn_co_state_ == 0))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
 					{
-						(__vwsn_co0_for_begin_i = 0);
-						(__vwsn_co1_for_end_i = 10);
+						(__vwsn_co0_for_begin_i = static_cast<::vl::vint>(0));
+						(__vwsn_co1_for_end_i = static_cast<::vl::vint>(10));
 						(__vwsn_co2_i = __vwsn_co0_for_begin_i);
 						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
 						{
-							(__vwsn_co_state_ = 3);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
 							continue;
 						}
-						(__vwsn_co_state_ = 1);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 1))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(1)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
-					if ((__vwsn_co_state_ == 2))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(2)))
 					{
-						(__vwsn_co2_i = (__vwsn_co2_i + 1));
+						(__vwsn_co2_i = (__vwsn_co2_i + static_cast<::vl::vint>(1)));
 						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
 						{
-							(__vwsn_co_state_ = 3);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
 							continue;
 						}
-						(__vwsn_co_state_ = 1);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 3))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(3)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
-						(__vwsn_co_state_ = 4);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(4));
 						{
-							::vl::reflection::description::EnumerableCoroutine::JoinAndPause(__vwsn_co_impl_, ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::Range(__vwsn_co2_i, (__vwsn_co2_i + 2) + 1)));
+							::vl::reflection::description::EnumerableCoroutine::JoinAndPause(__vwsn_co_impl_, ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::Range(__vwsn_co2_i, (__vwsn_co2_i + static_cast<::vl::vint>(2)) + 1)));
 						}
 						return;
 					}
-					if ((__vwsn_co_state_ == 4))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(4)))
 					{
 						if (static_cast<bool>(__vwsn_co_result_))
 						{
@@ -176,13 +176,13 @@ Closures
 								throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 							}
 						}
-						if ((__vwsn_co2_i == 2))
+						if ((__vwsn_co2_i == static_cast<::vl::vint>(2)))
 						{
 							::vl::reflection::description::EnumerableCoroutine::ReturnAndExit(__vwsn_co_impl_);
 							this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 							return;
 						}
-						(__vwsn_co_state_ = 2);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(2));
 						continue;
 					}
 				}

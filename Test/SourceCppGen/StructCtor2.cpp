@@ -41,16 +41,16 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::vint32_t StructCtor2::Do(::Point p)
+	::vl::vint StructCtor2::Do(::Point p)
 	{
 		return (p.x + p.y);
 	}
 
 	::vl::WString StructCtor2::main()
 	{
-		auto a = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = 1; __vwsn_temp__.y = 2; return __vwsn_temp__; }();
-		auto b = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = 3; __vwsn_temp__.y = 4; return __vwsn_temp__; }();
-		return ::vl::__vwsn::ToString(((GLOBAL_NAME Do(a) + GLOBAL_NAME Do(b)) + GLOBAL_NAME Do([&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = 5; __vwsn_temp__.y = 6; return __vwsn_temp__; }())));
+		auto a = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(1); __vwsn_temp__.y = static_cast<::vl::vint>(2); return __vwsn_temp__; }();
+		auto b = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(3); __vwsn_temp__.y = static_cast<::vl::vint>(4); return __vwsn_temp__; }();
+		return ::vl::__vwsn::ToString(((GLOBAL_NAME Do(a) + GLOBAL_NAME Do(b)) + GLOBAL_NAME Do([&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(5); __vwsn_temp__.y = static_cast<::vl::vint>(6); return __vwsn_temp__; }())));
 	}
 
 	StructCtor2& StructCtor2::Instance()

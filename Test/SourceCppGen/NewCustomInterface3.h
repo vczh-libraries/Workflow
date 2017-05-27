@@ -38,7 +38,7 @@ class IMyInterface3 : public virtual ::vl::reflection::description::IValueEnumer
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IMyInterface3>;
 #endif
 public:
-	virtual ::vl::vint32_t Get100() = 0;
+	virtual ::vl::vint Get100() = 0;
 };
 
 class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClass>
@@ -49,10 +49,10 @@ class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClas
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyClass>;
 #endif
 public:
-	::vl::vint32_t begin = (- 1);
-	::vl::vint32_t end = (- 1);
-	MyClass(::vl::vint32_t _begin, ::vl::vint32_t _end);
-	static ::vl::vint32_t Get50();
+	::vl::vint begin = (- static_cast<::vl::vint>(1));
+	::vl::vint end = (- static_cast<::vl::vint>(1));
+	MyClass(::vl::vint _begin, ::vl::vint _end);
+	static ::vl::vint Get50();
 	::vl::Ptr<::IMyInterface3> CreateMyInterface();
 };
 
@@ -83,7 +83,7 @@ Closures
 		__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3(::MyClass* __vwsnctorthis_0);
 
 		::vl::Ptr<::vl::reflection::description::IValueEnumerator> CreateEnumerator() override;
-		::vl::vint32_t Get100() override;
+		::vl::vint Get100() override;
 	};
 
 	class __vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator : public ::vl::Object, public virtual ::vl::reflection::description::IValueEnumerator
@@ -94,9 +94,9 @@ Closures
 
 		__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator(::IMyInterface3* __vwsnctorthis_0, ::MyClass* __vwsnctorthis_1);
 
-		::vl::vint32_t index = 0;
+		::vl::vint index = 0;
 		::vl::reflection::description::Value GetCurrent() override;
-		::vl::vint32_t GetIndex() override;
+		::vl::vint GetIndex() override;
 		bool Next() override;
 	};
 }
@@ -116,7 +116,7 @@ namespace vl
 			DECL_TYPE_INFO(::MyClass)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IMyInterface3, ::vl::reflection::description::IValueEnumerable)
-				::vl::vint32_t Get100() override
+				::vl::vint Get100() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
 				}

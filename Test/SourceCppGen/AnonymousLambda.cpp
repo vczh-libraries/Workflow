@@ -41,16 +41,16 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::Func<::vl::Func<::vl::vint32_t()>(::vl::vint32_t)> AnonymousLambda::Adder(::vl::vint32_t x)
+	::vl::Func<::vl::Func<::vl::vint()>(::vl::vint)> AnonymousLambda::Adder(::vl::vint x)
 	{
 		return LAMBDA(::vl_workflow_global::__vwsnf1_AnonymousLambda_Adder_(x));
 	}
 
 	::vl::WString AnonymousLambda::main()
 	{
-		auto f = GLOBAL_NAME Adder(1);
-		auto g = GLOBAL_NAME Adder(2);
-		return ((((((::vl::__vwsn::ToString(f(1)()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(2)())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(1)())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(2)()));
+		auto f = GLOBAL_NAME Adder(static_cast<::vl::vint>(1));
+		auto g = GLOBAL_NAME Adder(static_cast<::vl::vint>(2));
+		return ((((((::vl::__vwsn::ToString(f(static_cast<::vl::vint>(1))()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(static_cast<::vl::vint>(2))())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(1))())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(2))()));
 	}
 
 	AnonymousLambda& AnonymousLambda::Instance()
@@ -64,25 +64,25 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf1_AnonymousLambda_Adder_::__vwsnf1_AnonymousLambda_Adder_(::vl::vint32_t __vwsnctor_x)
+	__vwsnf1_AnonymousLambda_Adder_::__vwsnf1_AnonymousLambda_Adder_(::vl::vint __vwsnctor_x)
 		:x(__vwsnctor_x)
 	{
 	}
 
-	::vl::Func<::vl::vint32_t()> __vwsnf1_AnonymousLambda_Adder_::operator()(::vl::vint32_t y) const
+	::vl::Func<::vl::vint()> __vwsnf1_AnonymousLambda_Adder_::operator()(::vl::vint y) const
 	{
 		return LAMBDA(::vl_workflow_global::__vwsnf2_AnonymousLambda_Adder__(x, y));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf2_AnonymousLambda_Adder__::__vwsnf2_AnonymousLambda_Adder__(::vl::vint32_t __vwsnctor_x, ::vl::vint32_t __vwsnctor_y)
+	__vwsnf2_AnonymousLambda_Adder__::__vwsnf2_AnonymousLambda_Adder__(::vl::vint __vwsnctor_x, ::vl::vint __vwsnctor_y)
 		:x(__vwsnctor_x)
 		, y(__vwsnctor_y)
 	{
 	}
 
-	::vl::vint32_t __vwsnf2_AnonymousLambda_Adder__::operator()() const
+	::vl::vint __vwsnf2_AnonymousLambda_Adder__::operator()() const
 	{
 		return (x + y);
 	}

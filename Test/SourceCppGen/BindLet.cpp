@@ -47,7 +47,7 @@ Global Functions
 
 	void BindLet::Callback(const ::vl::reflection::description::Value& value)
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint32_t>(value))) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(value))) + ::vl::WString(L"]", false)));
 	}
 
 	::vl::WString BindLet::main()
@@ -58,12 +58,12 @@ Global Functions
 		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription(x, y, z));
 		::vl::__vwsn::This(subscription.Obj())->Open();
 		::vl::__vwsn::EventAttach(::vl::__vwsn::This(subscription.Obj())->ValueChanged, ::vl::Func<void(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Callback));
-		::vl::__vwsn::This(x.Obj())->Setbar(::vl::Ptr<::Bar>(new ::Bar(1)));
-		::vl::__vwsn::This(::vl::__vwsn::This(x.Obj())->Getbar().Obj())->Setvalue(2);
-		::vl::__vwsn::This(y.Obj())->Setbar(::vl::Ptr<::Bar>(new ::Bar(10)));
-		::vl::__vwsn::This(::vl::__vwsn::This(y.Obj())->Getbar().Obj())->Setvalue(20);
-		::vl::__vwsn::This(z.Obj())->Setbar(::vl::Ptr<::Bar>(new ::Bar(100)));
-		::vl::__vwsn::This(::vl::__vwsn::This(z.Obj())->Getbar().Obj())->Setvalue(200);
+		::vl::__vwsn::This(x.Obj())->Setbar(::vl::Ptr<::Bar>(new ::Bar(static_cast<::vl::vint>(1))));
+		::vl::__vwsn::This(::vl::__vwsn::This(x.Obj())->Getbar().Obj())->Setvalue(static_cast<::vl::vint>(2));
+		::vl::__vwsn::This(y.Obj())->Setbar(::vl::Ptr<::Bar>(new ::Bar(static_cast<::vl::vint>(10))));
+		::vl::__vwsn::This(::vl::__vwsn::This(y.Obj())->Getbar().Obj())->Setvalue(static_cast<::vl::vint>(20));
+		::vl::__vwsn::This(z.Obj())->Setbar(::vl::Ptr<::Bar>(new ::Bar(static_cast<::vl::vint>(100))));
+		::vl::__vwsn::This(::vl::__vwsn::This(z.Obj())->Getbar().Obj())->Setvalue(static_cast<::vl::vint>(200));
 		::vl::__vwsn::This(subscription.Obj())->Close();
 		return GLOBAL_NAME s;
 	}
@@ -222,11 +222,11 @@ Closures
 Class (::Bar)
 ***********************************************************************/
 
-::vl::vint32_t Bar::Getvalue()
+::vl::vint Bar::Getvalue()
 {
 	return this->__vwsn_prop_value;
 }
-void Bar::Setvalue(::vl::vint32_t __vwsn_value_)
+void Bar::Setvalue(::vl::vint __vwsn_value_)
 {
 	if ((this->__vwsn_prop_value != __vwsn_value_))
 	{
@@ -239,7 +239,7 @@ Bar::Bar()
 {
 }
 
-Bar::Bar(::vl::vint32_t _value)
+Bar::Bar(::vl::vint _value)
 {
 	::vl::__vwsn::This(this)->Setvalue(_value);
 }
@@ -287,7 +287,7 @@ namespace vl
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Bar)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Bar>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Bar>(::vl::vint32_t), { L"_value" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Bar>(::vl::vint), { L"_value" })
 				CLASS_MEMBER_METHOD(Getvalue, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Setvalue, { L"__vwsn_value_" })
 				CLASS_MEMBER_EVENT(valueChanged)

@@ -77,7 +77,7 @@ Global Functions
 		}
 	}
 
-	::vl::vint32_t WorkflowAttributes::Evaluate(::vl::Ptr<::calculator::Expression> expr)
+	::vl::vint WorkflowAttributes::Evaluate(::vl::Ptr<::calculator::Expression> expr)
 	{
 		if (auto ne = ::vl::__vwsn::SharedPtrCast<::calculator::NumberExpression>(expr.Obj()))
 		{
@@ -116,7 +116,7 @@ Global Functions
 
 	::vl::WString WorkflowAttributes::main()
 	{
-		auto expr = ::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(1)), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(2)))), ::calculator::BinaryExpression::BinaryOperator::Mul, ::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(3)), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(4))))));
+		auto expr = ::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(1))), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(2))))), ::calculator::BinaryExpression::BinaryOperator::Mul, ::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(3))), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(4)))))));
 		return (((::vl::WString(L"", false) + ::vl::__vwsn::This(expr.Obj())->Print()) + ::vl::WString(L" = ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(expr.Obj())->Evaluate()));
 	}
 
@@ -178,7 +178,7 @@ namespace vl
 			END_CLASS_MEMBER(::calculator::Expression)
 
 			BEGIN_CLASS_MEMBER(::calculator::NumberExpression)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::calculator::NumberExpression>(::vl::vint32_t), { L"_value" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::calculator::NumberExpression>(::vl::vint), { L"_value" })
 				CLASS_MEMBER_METHOD(GetValue, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetValue, { L"__vwsn_value_" })
 				CLASS_MEMBER_FIELD(__vwsn_prop_Value)

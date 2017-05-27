@@ -63,7 +63,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsnf3_NestedLambda_main_H_Calculate_::operator()() const
+	::vl::vint __vwsnf3_NestedLambda_main_H_Calculate_::operator()() const
 	{
 		return __vwsnthis_1->GetA();
 	}
@@ -76,7 +76,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsnf4_NestedLambda_main_H_Calculate_::operator()() const
+	::vl::vint __vwsnf4_NestedLambda_main_H_Calculate_::operator()() const
 	{
 		return (LAMBDA(::vl_workflow_global::__vwsno5_NestedLambda_main_H_Calculate__(__vwsnthis_0, __vwsnthis_1))() + __vwsnthis_0->GetB());
 	}
@@ -88,7 +88,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsnf7_NestedLambda_main_Calculate_::operator()() const
+	::vl::vint __vwsnf7_NestedLambda_main_Calculate_::operator()() const
 	{
 		return __vwsnthis_0->GetA();
 	}
@@ -100,7 +100,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsnf8_NestedLambda_main_Calculate_::operator()() const
+	::vl::vint __vwsnf8_NestedLambda_main_Calculate_::operator()() const
 	{
 		return LAMBDA(::vl_workflow_global::__vwsno9_NestedLambda_main_Calculate__(__vwsnthis_0))();
 	}
@@ -125,7 +125,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsno2_NestedLambda_main_H_Calculate_::operator()() const
+	::vl::vint __vwsno2_NestedLambda_main_H_Calculate_::operator()() const
 	{
 		return (LAMBDA(::vl_workflow_global::__vwsnf3_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1))() + __vwsnthis_0->GetB());
 	}
@@ -138,7 +138,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsno5_NestedLambda_main_H_Calculate__::operator()() const
+	::vl::vint __vwsno5_NestedLambda_main_H_Calculate__::operator()() const
 	{
 		return __vwsnthis_1->GetA();
 	}
@@ -150,7 +150,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsno6_NestedLambda_main_Calculate_::operator()() const
+	::vl::vint __vwsno6_NestedLambda_main_Calculate_::operator()() const
 	{
 		return LAMBDA(::vl_workflow_global::__vwsnf7_NestedLambda_main_Calculate_(__vwsnthis_0))();
 	}
@@ -162,7 +162,7 @@ Closures
 	{
 	}
 
-	::vl::vint32_t __vwsno9_NestedLambda_main_Calculate__::operator()() const
+	::vl::vint __vwsno9_NestedLambda_main_Calculate__::operator()() const
 	{
 		return __vwsnthis_0->GetA();
 	}
@@ -171,15 +171,15 @@ Closures
 
 	__vwsnc1_NestedLambda_main__IA::__vwsnc1_NestedLambda_main__IA()
 	{
-		this->a = 0;
+		this->a = static_cast<::vl::vint>(0);
 	}
 
-	::vl::vint32_t __vwsnc1_NestedLambda_main__IA::GetA()
+	::vl::vint __vwsnc1_NestedLambda_main__IA::GetA()
 	{
 		return a;
 	}
 
-	void __vwsnc1_NestedLambda_main__IA::SetA(::vl::vint32_t value)
+	void __vwsnc1_NestedLambda_main__IA::SetA(::vl::vint value)
 	{
 		(a = value);
 		::vl::__vwsn::EventInvoke(this->AChanged)();
@@ -196,11 +196,11 @@ Closures
 		auto g = LAMBDA(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
 		auto h = ::vl::Func<::vl::WString()>(this, &__vwsnc1_NestedLambda_main__IA::H);
 		auto s = ::vl::WString(L"", false);
-		(a = 1);
+		(a = static_cast<::vl::vint>(1));
 		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(f())) + ::vl::WString(L"]", false))));
-		this->SetA(2);
+		this->SetA(static_cast<::vl::vint>(2));
 		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(g())) + ::vl::WString(L"]", false))));
-		this->SetA((this->GetA() + 1));
+		this->SetA((this->GetA() + static_cast<::vl::vint>(1)));
 		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
 		return s;
 	}
@@ -210,15 +210,15 @@ Closures
 	__vwsnc2_NestedLambda_main_H__IB::__vwsnc2_NestedLambda_main_H__IB(::IA* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->b = 0;
+		this->b = static_cast<::vl::vint>(0);
 	}
 
-	::vl::vint32_t __vwsnc2_NestedLambda_main_H__IB::GetB()
+	::vl::vint __vwsnc2_NestedLambda_main_H__IB::GetB()
 	{
 		return b;
 	}
 
-	void __vwsnc2_NestedLambda_main_H__IB::SetB(::vl::vint32_t value)
+	void __vwsnc2_NestedLambda_main_H__IB::SetB(::vl::vint value)
 	{
 		(b = value);
 		::vl::__vwsn::EventInvoke(this->BChanged)();
@@ -235,11 +235,11 @@ Closures
 		auto g = LAMBDA(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
 		auto h = ::vl::Func<::vl::WString()>(this, &__vwsnc2_NestedLambda_main_H__IB::H);
 		auto s = ::vl::WString(L"", false);
-		(b = 1);
+		(b = static_cast<::vl::vint>(1));
 		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(f())) + ::vl::WString(L"]", false))));
-		this->SetB(2);
+		this->SetB(static_cast<::vl::vint>(2));
 		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(g())) + ::vl::WString(L"]", false))));
-		this->SetB((this->GetB() + 10));
+		this->SetB((this->GetB() + static_cast<::vl::vint>(10)));
 		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
 		return s;
 	}

@@ -41,9 +41,9 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::vint32_t ControlFlow::Sum1(::vl::vint32_t start, ::vl::vint32_t end)
+	::vl::vint ControlFlow::Sum1(::vl::vint start, ::vl::vint end)
 	{
-		auto result = 0;
+		auto result = static_cast<::vl::vint>(0);
 		{
 			auto __vwsn_for_begin_x = start;
 			auto __vwsn_for_end_x = end;
@@ -53,15 +53,15 @@ Global Functions
 				{
 					(result = (result + x));
 				}
-				(x = (x + 1));
+				(x = (x + static_cast<::vl::vint>(1)));
 			}
 		}
 		return result;
 	}
 
-	::vl::vint32_t ControlFlow::Sum2(::vl::vint32_t start, ::vl::vint32_t end)
+	::vl::vint ControlFlow::Sum2(::vl::vint start, ::vl::vint end)
 	{
-		auto result = 0;
+		auto result = static_cast<::vl::vint>(0);
 		{
 			auto __vwsn_for_begin_x = start;
 			auto __vwsn_for_end_x = end;
@@ -71,27 +71,27 @@ Global Functions
 				{
 					(result = (result + x));
 				}
-				(x = (x - 1));
+				(x = (x - static_cast<::vl::vint>(1)));
 			}
 		}
 		return result;
 	}
 
-	::vl::vint32_t ControlFlow::Sum3(::vl::vint32_t start, ::vl::vint32_t end)
+	::vl::vint ControlFlow::Sum3(::vl::vint start, ::vl::vint end)
 	{
-		auto result = 0;
+		auto result = static_cast<::vl::vint>(0);
 		auto current = start;
 		while ((current <= end))
 		{
 			(result = (result + current));
-			(current = (current + 1));
+			(current = (current + static_cast<::vl::vint>(1)));
 		}
 		return result;
 	}
 
-	::vl::vint32_t ControlFlow::Sum4(::vl::vint32_t start, ::vl::vint32_t end)
+	::vl::vint ControlFlow::Sum4(::vl::vint start, ::vl::vint end)
 	{
-		auto result = 0;
+		auto result = static_cast<::vl::vint>(0);
 		auto current = start;
 		while (true)
 		{
@@ -100,21 +100,21 @@ Global Functions
 				break;
 			}
 			(result = (result + current));
-			(current = (current + 1));
+			(current = (current + static_cast<::vl::vint>(1)));
 		}
 		return result;
 	}
 
-	::vl::vint32_t ControlFlow::Sum5(::vl::vint32_t start, ::vl::vint32_t end)
+	::vl::vint ControlFlow::Sum5(::vl::vint start, ::vl::vint end)
 	{
-		auto result = 0;
+		auto result = static_cast<::vl::vint>(0);
 		auto current = start;
 		auto needToExit = false;
 		while ((! needToExit))
 		{
 			{
 				auto __vwsn_switch_0 = current;
-				if ((__vwsn_switch_0 == (end + 1)))
+				if ((__vwsn_switch_0 == (end + static_cast<::vl::vint>(1))))
 				{
 					(needToExit = true);
 				}
@@ -123,14 +123,14 @@ Global Functions
 					(result = (result + current));
 				}
 			}
-			(current = (current + 1));
+			(current = (current + static_cast<::vl::vint>(1)));
 		}
 		return result;
 	}
 
 	::vl::WString ControlFlow::main()
 	{
-		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Sum1(1, 10)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum2(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum3(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum4(1, 10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum5(1, 10)));
+		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Sum1(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum2(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum3(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum4(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum5(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10))));
 	}
 
 	ControlFlow& ControlFlow::Instance()

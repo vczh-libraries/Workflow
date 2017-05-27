@@ -409,8 +409,8 @@ MergeCppFile
 							{
 								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
 								{
-									reading32 += 2;
-									reading64 += 2;
+									reading32 += 4;
+									reading64 += 4;
 									goto NEXT_ROUND;
 								}
 							}

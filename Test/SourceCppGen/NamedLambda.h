@@ -51,7 +51,7 @@ Closures
 	{
 		__vwsnf1_NamedLambda_main_();
 
-		::vl::vint32_t operator()(::vl::vint32_t n) const;
+		::vl::vint operator()(::vl::vint n) const;
 	};
 }
 

@@ -49,12 +49,12 @@ Global Functions
 	{
 		auto coroutine = ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc1_CoRawCoroutine4_main__vl_reflection_description_ICoroutine());
 		{
-			auto i = 0;
+			auto i = static_cast<::vl::vint>(0);
 			while ((::vl::__vwsn::This(coroutine.Obj())->GetStatus() != ::vl::reflection::description::CoroutineStatus::Stopped))
 			{
 				::vl::__vwsn::This(coroutine.Obj())->Resume(false, ::vl::Ptr<::vl::reflection::description::CoroutineResult>());
 				(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[-", false)) + ::vl::__vwsn::ToString(i)) + ::vl::WString(L"]", false)));
-				(i = (i + 1));
+				(i = (i + static_cast<::vl::vint>(1)));
 			}
 			(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(::vl::__vwsn::This(coroutine.Obj())->GetFailure().Obj())->GetMessage()) + ::vl::WString(L"]", false)));
 		}
@@ -74,11 +74,11 @@ Closures
 
 	__vwsnc1_CoRawCoroutine4_main__vl_reflection_description_ICoroutine::__vwsnc1_CoRawCoroutine4_main__vl_reflection_description_ICoroutine()
 	{
-		this->__vwsn_co0_for_begin_i = 0;
-		this->__vwsn_co1_for_end_i = 0;
-		this->__vwsn_co2_i = 0;
+		this->__vwsn_co0_for_begin_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co1_for_end_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co2_i = static_cast<::vl::vint>(0);
 		this->__vwsn_co3_o = ::vl::Ptr<::vl::reflection::description::IValueList>();
-		this->__vwsn_co_state_ = 0;
+		this->__vwsn_co_state_ = static_cast<::vl::vint>(0);
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}
@@ -113,59 +113,59 @@ Closures
 			{
 				while (true)
 				{
-					if ((__vwsn_co_state_ == 0))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
 					{
-						(__vwsn_co0_for_begin_i = 0);
-						(__vwsn_co1_for_end_i = (4 - 1));
+						(__vwsn_co0_for_begin_i = static_cast<::vl::vint>(0));
+						(__vwsn_co1_for_end_i = (static_cast<::vl::vint>(4) - static_cast<::vl::vint>(1)));
 						(__vwsn_co2_i = __vwsn_co0_for_begin_i);
 						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
 						{
-							(__vwsn_co_state_ = 3);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
 							continue;
 						}
-						(__vwsn_co_state_ = 1);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 1))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(1)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
-					if ((__vwsn_co_state_ == 2))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(2)))
 					{
-						(__vwsn_co2_i = (__vwsn_co2_i + 1));
+						(__vwsn_co2_i = (__vwsn_co2_i + static_cast<::vl::vint>(1)));
 						if ((__vwsn_co2_i <= __vwsn_co1_for_end_i))
 						{
-							(__vwsn_co_state_ = 3);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
 							continue;
 						}
-						(__vwsn_co_state_ = 1);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 3))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(3)))
 					{
-						(__vwsn_co3_o = ((__vwsn_co2_i == 2) ? ::vl::Ptr<::vl::reflection::description::IValueList>() : (::vl::__vwsn::CreateList().Add(0)).list));
+						(__vwsn_co3_o = ((__vwsn_co2_i == static_cast<::vl::vint>(2)) ? ::vl::Ptr<::vl::reflection::description::IValueList>() : (::vl::__vwsn::CreateList().Add(static_cast<::vl::vint>(0))).list));
 						if (static_cast<bool>(__vwsn_co3_o))
 						{
 							(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co2_i)) + ::vl::WString(L"]", false)));
-							(__vwsn_co_state_ = 4);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(4));
 							continue;
 						}
-						(__vwsn_co_state_ = 5);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(5));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 4))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(4)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
-						(__vwsn_co_state_ = 2);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(2));
 						return;
 					}
-					if ((__vwsn_co_state_ == 5))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(5)))
 					{
 						{
 							throw ::vl::Exception(::vl::WString(L"*", false));
 						}
-						(__vwsn_co_state_ = 2);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(2));
 						continue;
 					}
 				}

@@ -25,8 +25,8 @@ https://github.com/vczh-libraries
 
 struct Point
 {
-	::vl::vint32_t x = 0;
-	::vl::vint32_t y = 0;
+	::vl::vint x = 0;
+	::vl::vint y = 0;
 	::vl::Nullable<::Point> z;
 };
 inline bool operator== (const Point& a, const Point& b)
@@ -54,7 +54,7 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::vint32_t Do(::Point p);
+		::vl::vint Do(::Point p);
 		::vl::WString main();
 
 		static StructCtor2& Instance();

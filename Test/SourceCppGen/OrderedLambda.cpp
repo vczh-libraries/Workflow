@@ -41,21 +41,21 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::vint32_t OrderedLambda::Apply(const ::vl::Func<::vl::vint32_t(::vl::vint32_t)>& f, ::vl::vint32_t arg)
+	::vl::vint OrderedLambda::Apply(const ::vl::Func<::vl::vint(::vl::vint)>& f, ::vl::vint arg)
 	{
 		return f(arg);
 	}
 
-	::vl::Func<::vl::vint32_t(::vl::vint32_t)> OrderedLambda::Adder(::vl::vint32_t x)
+	::vl::Func<::vl::vint(::vl::vint)> OrderedLambda::Adder(::vl::vint x)
 	{
 		return LAMBDA(::vl_workflow_global::__vwsno1_OrderedLambda_Adder_(x));
 	}
 
 	::vl::WString OrderedLambda::main()
 	{
-		auto f = GLOBAL_NAME Adder(1);
-		auto g = GLOBAL_NAME Adder(2);
-		return ((((((::vl::__vwsn::ToString(f(1)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(2))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(2)));
+		auto f = GLOBAL_NAME Adder(static_cast<::vl::vint>(1));
+		auto g = GLOBAL_NAME Adder(static_cast<::vl::vint>(2));
+		return ((((((::vl::__vwsn::ToString(f(static_cast<::vl::vint>(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(static_cast<::vl::vint>(2)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(2))));
 	}
 
 	OrderedLambda& OrderedLambda::Instance()
@@ -69,24 +69,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor_x)
+	__vwsno1_OrderedLambda_Adder_::__vwsno1_OrderedLambda_Adder_(::vl::vint __vwsnctor_x)
 		:x(__vwsnctor_x)
 	{
 	}
 
-	::vl::vint32_t __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_1) const
+	::vl::vint __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint __vwsno_1) const
 	{
-		return ((__vwsno_1 * 0) + GLOBAL_NAME Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
+		return ((__vwsno_1 * static_cast<::vl::vint>(0)) + GLOBAL_NAME Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint32_t __vwsnctor___vwsno_1)
+	__vwsno2_OrderedLambda_Adder_::__vwsno2_OrderedLambda_Adder_(::vl::vint __vwsnctor___vwsno_1)
 		:__vwsno_1(__vwsnctor___vwsno_1)
 	{
 	}
 
-	::vl::vint32_t __vwsno2_OrderedLambda_Adder_::operator()(::vl::vint32_t __vwsno_2) const
+	::vl::vint __vwsno2_OrderedLambda_Adder_::operator()(::vl::vint __vwsno_2) const
 	{
 		return (__vwsno_1 + __vwsno_2);
 	}

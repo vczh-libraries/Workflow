@@ -52,15 +52,15 @@ Global Functions
 			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
-			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(1, true));
+			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(static_cast<::vl::vint>(1), true));
 			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
-			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(true, 2));
+			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(true, static_cast<::vl::vint>(2)));
 			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		{
-			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(1, 2));
+			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2)));
 			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
 		}
 		return GLOBAL_NAME s;
@@ -80,7 +80,7 @@ Base::Base()
 {
 }
 
-Base::Base(::vl::vint32_t _x)
+Base::Base(::vl::vint _x)
 {
 	(this->x = _x);
 	if ((::vl::__vwsn::This(this)->x != this->x))
@@ -89,7 +89,7 @@ Base::Base(::vl::vint32_t _x)
 	}
 }
 
-::vl::vint32_t Base::GetX()
+::vl::vint Base::GetX()
 {
 	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
@@ -98,7 +98,7 @@ Base::Base(::vl::vint32_t _x)
 	return this->x;
 }
 
-void Base::SetX(::vl::vint32_t _x)
+void Base::SetX(::vl::vint _x)
 {
 	if ((this->x != _x))
 	{
@@ -115,17 +115,17 @@ Ctor::Ctor()
 {
 }
 
-Ctor::Ctor(::vl::vint32_t y, bool b)
+Ctor::Ctor(::vl::vint y, bool b)
 	: ::Base(y)
 {
 }
 
-Ctor::Ctor(bool b, ::vl::vint32_t value)
+Ctor::Ctor(bool b, ::vl::vint value)
 	: ::test::ObservableValue(value, ::vl::Nullable<bool>(b))
 {
 }
 
-Ctor::Ctor(::vl::vint32_t y, ::vl::vint32_t value)
+Ctor::Ctor(::vl::vint y, ::vl::vint value)
 	: ::Base(y)
 	, ::test::ObservableValue(value)
 {
@@ -153,7 +153,7 @@ namespace vl
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Base)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Base>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Base>(::vl::vint32_t), { L"_x" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Base>(::vl::vint), { L"_x" })
 				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetX, { L"_x" })
 				CLASS_MEMBER_EVENT(XChanged)
@@ -163,9 +163,9 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::Ctor)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(::vl::vint32_t, bool), { L"y" _ L"b" })
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(bool, ::vl::vint32_t), { L"b" _ L"value" })
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(::vl::vint32_t, ::vl::vint32_t), { L"y" _ L"value" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(::vl::vint, bool), { L"y" _ L"b" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(bool, ::vl::vint), { L"b" _ L"value" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(::vl::vint, ::vl::vint), { L"y" _ L"value" })
 			END_CLASS_MEMBER(::Ctor)
 
 #undef _

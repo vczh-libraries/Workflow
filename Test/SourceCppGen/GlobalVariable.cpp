@@ -33,7 +33,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_GlobalVariable)
 	vl_workflow_global::GlobalVariable instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.x = 0;
+		instance.x = static_cast<::vl::vint>(0);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_GlobalVariable)
@@ -44,7 +44,7 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::vint32_t GlobalVariable::Add(::vl::vint32_t y)
+	::vl::vint GlobalVariable::Add(::vl::vint y)
 	{
 		auto z = GLOBAL_NAME x;
 		(GLOBAL_NAME x = (GLOBAL_NAME x + y));
@@ -53,8 +53,8 @@ Global Functions
 
 	::vl::WString GlobalVariable::main()
 	{
-		(GLOBAL_NAME x = 10);
-		auto y = GLOBAL_NAME Add(20);
+		(GLOBAL_NAME x = static_cast<::vl::vint>(10));
+		auto y = GLOBAL_NAME Add(static_cast<::vl::vint>(20));
 		return ((::vl::__vwsn::ToString(GLOBAL_NAME x) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(y));
 	}
 

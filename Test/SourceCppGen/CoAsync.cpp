@@ -45,13 +45,13 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync(::vl::vint32_t x)
+	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync(::vl::vint x)
 	{
 		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoAsync_GetStringAsync_(x)));
 		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync_GetStringAsync__IStringAsync(__vwsn_co_mixin_source_variable_));
 	}
 
-	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync2(::vl::vint32_t x)
+	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync2(::vl::vint x)
 	{
 		auto future = ::vl::reflection::description::IFuture::Create();
 		::vl::__vwsn::This(::vl::reflection::description::IAsyncScheduler::GetSchedulerForCurrentThread().Obj())->ExecuteInBackground(LAMBDA(::vl_workflow_global::__vwsnf2_CoAsync_GetStringAsync2_(future, x)));
@@ -80,7 +80,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf1_CoAsync_GetStringAsync_::__vwsnf1_CoAsync_GetStringAsync_(::vl::vint32_t __vwsnctor_x)
+	__vwsnf1_CoAsync_GetStringAsync_::__vwsnf1_CoAsync_GetStringAsync_(::vl::vint __vwsnctor_x)
 		:x(__vwsnctor_x)
 	{
 	}
@@ -92,7 +92,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf2_CoAsync_GetStringAsync2_::__vwsnf2_CoAsync_GetStringAsync2_(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future, ::vl::vint32_t __vwsnctor_x)
+	__vwsnf2_CoAsync_GetStringAsync2_::__vwsnf2_CoAsync_GetStringAsync2_(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future, ::vl::vint __vwsnctor_x)
 		:future(__vwsnctor_future)
 		, x(__vwsnctor_x)
 	{
@@ -128,11 +128,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine::__vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::vl::vint32_t __vwsnctor_x)
+	__vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine::__vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::vl::vint __vwsnctor_x)
 		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
 		, x(__vwsnctor_x)
 	{
-		this->__vwsn_co_state_ = 0;
+		this->__vwsn_co_state_ = static_cast<::vl::vint>(0);
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}
@@ -167,7 +167,7 @@ Closures
 			{
 				while (true)
 				{
-					if ((__vwsn_co_state_ == 0))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
 					{
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
 						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
@@ -232,10 +232,10 @@ Closures
 	{
 		this->__vwsn_co0_x = ::vl::WString(L"", false);
 		this->__vwsn_co1_y = ::vl::WString(L"", false);
-		this->__vwsn_co2_for_begin_i = 0;
-		this->__vwsn_co3_for_end_i = 0;
-		this->__vwsn_co4_i = 0;
-		this->__vwsn_co_state_ = 0;
+		this->__vwsn_co2_for_begin_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co3_for_end_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co4_i = static_cast<::vl::vint>(0);
+		this->__vwsn_co_state_ = static_cast<::vl::vint>(0);
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}
@@ -270,25 +270,25 @@ Closures
 			{
 				while (true)
 				{
-					if ((__vwsn_co_state_ == 0))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
 					{
-						(__vwsn_co2_for_begin_i = 0);
-						(__vwsn_co3_for_end_i = 1);
+						(__vwsn_co2_for_begin_i = static_cast<::vl::vint>(0));
+						(__vwsn_co3_for_end_i = static_cast<::vl::vint>(1));
 						(__vwsn_co4_i = __vwsn_co2_for_begin_i);
 						if ((__vwsn_co4_i <= __vwsn_co3_for_end_i))
 						{
-							(__vwsn_co_state_ = 3);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
 							continue;
 						}
-						(__vwsn_co_state_ = 1);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 1))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(1)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
-					if ((__vwsn_co_state_ == 2))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(2)))
 					{
 						if (static_cast<bool>(__vwsn_co_result_))
 						{
@@ -298,25 +298,25 @@ Closures
 							}
 						}
 						(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
-						(__vwsn_co4_i = (__vwsn_co4_i + 1));
+						(__vwsn_co4_i = (__vwsn_co4_i + static_cast<::vl::vint>(1)));
 						if ((__vwsn_co4_i <= __vwsn_co3_for_end_i))
 						{
-							(__vwsn_co_state_ = 3);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
 							continue;
 						}
-						(__vwsn_co_state_ = 1);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 3))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(3)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
-						(__vwsn_co_state_ = 4);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(4));
 						{
 							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::Ptr<::vl::reflection::description::IAsync>(GLOBAL_NAME GetStringAsync(__vwsn_co4_i)));
 						}
 						return;
 					}
-					if ((__vwsn_co_state_ == 4))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(4)))
 					{
 						if (static_cast<bool>(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure()))
 						{
@@ -324,19 +324,19 @@ Closures
 						}
 						(__vwsn_co0_x = ::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + __vwsn_co0_x) + ::vl::WString(L"]", false)));
-						(__vwsn_co_state_ = 5);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(5));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 5))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(5)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
-						(__vwsn_co_state_ = 6);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(6));
 						{
 							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::Ptr<::vl::reflection::description::IAsync>(GLOBAL_NAME GetStringAsync2(__vwsn_co4_i)));
 						}
 						return;
 					}
-					if ((__vwsn_co_state_ == 6))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(6)))
 					{
 						if (static_cast<bool>(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure()))
 						{
@@ -344,15 +344,15 @@ Closures
 						}
 						(__vwsn_co1_y = ::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[-", false)) + __vwsn_co1_y) + ::vl::WString(L"]", false)));
-						(__vwsn_co_state_ = 7);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(7));
 						continue;
 					}
-					if ((__vwsn_co_state_ == 7))
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(7)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
-						(__vwsn_co_state_ = 2);
+						(__vwsn_co_state_ = static_cast<::vl::vint>(2));
 						{
-							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::reflection::description::IAsync::Delay(0));
+							::vl::reflection::description::AsyncCoroutine::AwaitAndRead(__vwsn_co_impl_, ::vl::reflection::description::IAsync::Delay(static_cast<::vl::vint>(0)));
 						}
 						return;
 					}

@@ -37,12 +37,12 @@ class Bar : public ::vl::Object, public ::vl::reflection::Description<Bar>
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Bar>;
 #endif
 public:
-	::vl::vint32_t __vwsn_prop_value = 0;
-	::vl::vint32_t Getvalue();
-	void Setvalue(::vl::vint32_t __vwsn_value_);
+	::vl::vint __vwsn_prop_value = static_cast<::vl::vint>(0);
+	::vl::vint Getvalue();
+	void Setvalue(::vl::vint __vwsn_value_);
 	::vl::Event<void()> valueChanged;
 	Bar();
-	Bar(::vl::vint32_t _value);
+	Bar(::vl::vint _value);
 };
 
 class Foo : public ::vl::Object, public ::vl::reflection::Description<Foo>

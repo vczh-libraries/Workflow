@@ -31,16 +31,16 @@ Class (::calculator::NumberExpression)
 
 namespace calculator
 {
-	::vl::vint32_t NumberExpression::GetValue()
+	::vl::vint NumberExpression::GetValue()
 	{
 		return this->__vwsn_prop_Value;
 	}
-	void NumberExpression::SetValue(::vl::vint32_t __vwsn_value_)
+	void NumberExpression::SetValue(::vl::vint __vwsn_value_)
 	{
 		(this->__vwsn_prop_Value = __vwsn_value_);
 	}
 
-	NumberExpression::NumberExpression(::vl::vint32_t _value)
+	NumberExpression::NumberExpression(::vl::vint _value)
 	{
 		this->SetValue(_value);
 	}

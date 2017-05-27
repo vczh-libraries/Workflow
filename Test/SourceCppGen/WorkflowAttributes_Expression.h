@@ -32,7 +32,7 @@ namespace calculator
 #endif
 	public:
 		::vl::WString Print();
-		::vl::vint32_t Evaluate();
+		::vl::vint Evaluate();
 		Expression();
 	};
 

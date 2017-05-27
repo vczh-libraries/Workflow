@@ -39,7 +39,7 @@ class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::ref
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ISummer>;
 #endif
 public:
-	virtual ::vl::vint32_t GetSum() = 0;
+	virtual ::vl::vint GetSum() = 0;
 	::vl::Event<void()> SumChanged;
 };
 
@@ -49,7 +49,7 @@ class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IAdder>;
 #endif
 public:
-	virtual void Add(::vl::vint32_t value) = 0;
+	virtual void Add(::vl::vint value) = 0;
 };
 
 /***********************************************************************
@@ -105,9 +105,9 @@ Closures
 	public:
 		__vwsnc2_BindCustomInterface_main__IAdder();
 
-		::vl::vint32_t sum = 0;
-		::vl::vint32_t GetSum() override;
-		void Add(::vl::vint32_t value) override;
+		::vl::vint sum = 0;
+		::vl::vint GetSum() override;
+		void Add(::vl::vint value) override;
 	};
 }
 
@@ -126,14 +126,14 @@ namespace vl
 			DECL_TYPE_INFO(::ISummer)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::ISummer)
-				::vl::vint32_t GetSum() override
+				::vl::vint GetSum() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSum);
 				}
 			END_INTERFACE_PROXY(::ISummer)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IAdder, ::ISummer)
-				void Add(::vl::vint32_t value) override
+				void Add(::vl::vint value) override
 				{
 					INVOKE_INTERFACE_PROXY(Add, value);
 				}
