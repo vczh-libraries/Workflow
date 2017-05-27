@@ -38,11 +38,19 @@ int main()
 	}
 	{
 		Folder folder(GetCppOutputPath());
-		if (folder.Exists())
+		if (!folder.Exists())
 		{
-			TEST_ASSERT(folder.Delete(true) == true);
+			TEST_ASSERT(folder.Create(false) == true);
 		}
-		TEST_ASSERT(folder.Create(false) == true);
+		else
+		{
+			List<File> files;
+			TEST_ASSERT(folder.GetFiles(files) == true);
+			FOREACH(File, file, files)
+			{
+				TEST_ASSERT(file.Delete() == true);
+			}
+		}
 	}
 #endif
 	LoadTypes();

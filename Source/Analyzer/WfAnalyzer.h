@@ -245,13 +245,6 @@ Type Analyzing
 				Others,
 				Count,
 				Unknown = -1,
-#ifdef VCZH_64
-				I = I8,
-				U = U8,
-#else
-				I = I4,
-				U = U4,
-#endif
 			};
 
 			extern TypeFlag									GetTypeFlag(reflection::description::ITypeDescriptor* typeDescriptor);
