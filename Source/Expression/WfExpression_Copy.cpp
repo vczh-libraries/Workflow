@@ -81,6 +81,12 @@ TypeVisitor
 				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
 			}
 
+			void TypeVisitor::CopyFields(WfObservableListType* from, WfObservableListType* to)
+			{
+				to->element = CreateField(from->element);
+				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+			}
+
 			void TypeVisitor::CopyFields(WfFunctionType* from, WfFunctionType* to)
 			{
 				to->result = CreateField(from->result);
@@ -154,6 +160,13 @@ TypeVisitor
 			void TypeVisitor::Visit(WfMapType* node)
 			{
 				auto newNode = vl::MakePtr<WfMapType>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void TypeVisitor::Visit(WfObservableListType* node)
+			{
+				auto newNode = vl::MakePtr<WfObservableListType>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}

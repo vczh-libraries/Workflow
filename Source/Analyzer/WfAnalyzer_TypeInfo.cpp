@@ -445,6 +445,11 @@ GetScopeNameFromReferenceType
 					CHECK_FAIL(L"GetScopeNameFromReferenceTypeVisitor::Visit(WfMapType*)#Internal error, ValidateTypeStructure function should check correctly.");
 				}
 
+				void Visit(WfObservableListType* node)override
+				{
+					CHECK_FAIL(L"GetScopeNameFromReferenceTypeVisitor::Visit(WfObservableListType*)#Internal error, ValidateTypeStructure function should check correctly.");
+				}
+
 				void Visit(WfFunctionType* node)override
 				{
 					CHECK_FAIL(L"GetScopeNameFromReferenceTypeVisitor::Visit(WfFunctionType*)#Internal error, ValidateTypeStructure function should check correctly.");
@@ -699,6 +704,18 @@ CreateTypeInfoFromType
 					auto genericTypeInfo = MakePtr<GenericTypeInfo>(mapTypeInfo);
 					if (key) genericTypeInfo->AddGenericArgument(key);
 					genericTypeInfo->AddGenericArgument(value);
+					result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
+				}
+
+				void Visit(WfObservableListType* node)override
+				{
+					Ptr<ITypeInfo> element;
+					if (!(element = Call(node->element.Obj(), true))) return;
+
+					auto typeDescriptor = description::GetTypeDescriptor<IValueObservableList>();
+					auto mapTypeInfo = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+					auto genericTypeInfo = MakePtr<GenericTypeInfo>(mapTypeInfo);
+					genericTypeInfo->AddGenericArgument(element);
 					result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
 				}
 

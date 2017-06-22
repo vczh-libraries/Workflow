@@ -38,6 +38,7 @@ namespace vl
 				void CopyFields(WfNullableType* from, WfNullableType* to);
 				void CopyFields(WfEnumerableType* from, WfEnumerableType* to);
 				void CopyFields(WfMapType* from, WfMapType* to);
+				void CopyFields(WfObservableListType* from, WfObservableListType* to);
 				void CopyFields(WfFunctionType* from, WfFunctionType* to);
 				void CopyFields(WfChildType* from, WfChildType* to);
 
@@ -53,6 +54,7 @@ namespace vl
 				void Visit(WfNullableType* node)override;
 				void Visit(WfEnumerableType* node)override;
 				void Visit(WfMapType* node)override;
+				void Visit(WfObservableListType* node)override;
 				void Visit(WfFunctionType* node)override;
 				void Visit(WfChildType* node)override;
 			};

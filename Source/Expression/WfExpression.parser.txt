@@ -128,6 +128,11 @@ class MapType : Type
 	Type					value;
 }
 
+class ObservableListType : Type
+{
+	Type					element;
+}
+
 class FunctionType : Type
 {
 	Type					result;
@@ -917,6 +922,7 @@ rule Type _Type
 	= _Type : element "?" as NullableType
 	= _Type : element "{" "}" as EnumerableType
 	= _Type : value "[" [_Type : key] "]" as MapType with {writability="Writable"}
+	= "observe" _Type : element "[" "]" as ObservableListType
 	= "const" _Type : value "[" [_Type : key] "]" as MapType with {writability="Readonly"}
 	= _Type : parent "::" NAME : name as ChildType
 	= "::" NAME : name as TopQualifiedType

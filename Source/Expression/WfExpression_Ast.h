@@ -140,6 +140,7 @@ namespace vl
 		class WfNullableType;
 		class WfEnumerableType;
 		class WfMapType;
+		class WfObservableListType;
 		class WfFunctionType;
 		class WfChildType;
 		class WfNamespaceDeclaration;
@@ -253,6 +254,7 @@ namespace vl
 				virtual void Visit(WfNullableType* node)=0;
 				virtual void Visit(WfEnumerableType* node)=0;
 				virtual void Visit(WfMapType* node)=0;
+				virtual void Visit(WfObservableListType* node)=0;
 				virtual void Visit(WfFunctionType* node)=0;
 				virtual void Visit(WfChildType* node)=0;
 			};
@@ -465,6 +467,16 @@ namespace vl
 			void Accept(WfType::IVisitor* visitor)override;
 
 			static vl::Ptr<WfMapType> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfObservableListType : public WfType, vl::reflection::Description<WfObservableListType>
+		{
+		public:
+			vl::Ptr<WfType> element;
+
+			void Accept(WfType::IVisitor* visitor)override;
+
+			static vl::Ptr<WfObservableListType> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfFunctionType : public WfType, vl::reflection::Description<WfFunctionType>
@@ -1540,6 +1552,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfEnumerableType)
 			DECL_TYPE_INFO(vl::workflow::WfMapWritability)
 			DECL_TYPE_INFO(vl::workflow::WfMapType)
+			DECL_TYPE_INFO(vl::workflow::WfObservableListType)
 			DECL_TYPE_INFO(vl::workflow::WfFunctionType)
 			DECL_TYPE_INFO(vl::workflow::WfChildType)
 			DECL_TYPE_INFO(vl::workflow::WfNamespaceDeclaration)
@@ -1687,6 +1700,11 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfMapType* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfObservableListType* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}

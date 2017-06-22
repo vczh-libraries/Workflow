@@ -34,6 +34,7 @@ namespace vl
 				virtual void Traverse(WfNullableType* node);
 				virtual void Traverse(WfEnumerableType* node);
 				virtual void Traverse(WfMapType* node);
+				virtual void Traverse(WfObservableListType* node);
 				virtual void Traverse(WfFunctionType* node);
 				virtual void Traverse(WfChildType* node);
 
@@ -49,6 +50,7 @@ namespace vl
 				void Visit(WfNullableType* node)override;
 				void Visit(WfEnumerableType* node)override;
 				void Visit(WfMapType* node)override;
+				void Visit(WfObservableListType* node)override;
 				void Visit(WfFunctionType* node)override;
 				void Visit(WfChildType* node)override;
 			};

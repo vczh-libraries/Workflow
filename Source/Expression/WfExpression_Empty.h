@@ -31,6 +31,7 @@ namespace vl
 				void Visit(WfNullableType* node)override;
 				void Visit(WfEnumerableType* node)override;
 				void Visit(WfMapType* node)override;
+				void Visit(WfObservableListType* node)override;
 				void Visit(WfFunctionType* node)override;
 				void Visit(WfChildType* node)override;
 			};

@@ -54,6 +54,10 @@ TypeVisitor
 			{
 			}
 
+			void TypeVisitor::Visit(WfObservableListType* node)
+			{
+			}
+
 			void TypeVisitor::Visit(WfFunctionType* node)
 			{
 			}

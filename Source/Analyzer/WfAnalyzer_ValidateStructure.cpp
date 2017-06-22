@@ -75,6 +75,11 @@ ValidateStructure(Type)
 					result = false;
 				}
 
+				void Visit(WfObservableListType* node)override
+				{
+					result = false;
+				}
+
 				void Visit(WfFunctionType* node)override
 				{
 					result = false;
@@ -230,6 +235,16 @@ ValidateStructure(Type)
 						ValidateTypeStructure(manager, node->key);
 					}
 					ValidateTypeStructure(manager, node->value);
+				}
+
+				void Visit(WfObservableListType* node)override
+				{
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+
+					ValidateTypeStructure(manager, node->element);
 				}
 
 				void Visit(WfFunctionType* node)override

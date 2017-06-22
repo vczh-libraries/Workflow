@@ -66,6 +66,10 @@ TypeVisitor
 			{
 			}
 
+			void TypeVisitor::Traverse(WfObservableListType* node)
+			{
+			}
+
 			void TypeVisitor::Traverse(WfFunctionType* node)
 			{
 			}
@@ -138,6 +142,14 @@ TypeVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->key.Obj());
 				VisitField(node->value.Obj());
+			}
+
+			void TypeVisitor::Visit(WfObservableListType* node)
+			{
+				Traverse(static_cast<WfObservableListType*>(node));
+				Traverse(static_cast<WfType*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				VisitField(node->element.Obj());
 			}
 
 			void TypeVisitor::Visit(WfFunctionType* node)

@@ -57,6 +57,11 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
+		void WfObservableListType::Accept(WfType::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
 		void WfFunctionType::Accept(WfType::IVisitor* visitor)
 		{
 			visitor->Visit(this);
@@ -445,6 +450,7 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfEnumerableType, workflow::WfEnumerableType)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfMapWritability, workflow::WfMapWritability)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfMapType, workflow::WfMapType)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfObservableListType, workflow::WfObservableListType)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfFunctionType, workflow::WfFunctionType)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfChildType, workflow::WfChildType)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfNamespaceDeclaration, workflow::WfNamespaceDeclaration)
@@ -680,6 +686,14 @@ namespace vl
 				CLASS_MEMBER_FIELD(key)
 				CLASS_MEMBER_FIELD(value)
 			END_CLASS_MEMBER(WfMapType)
+
+			BEGIN_CLASS_MEMBER(WfObservableListType)
+				CLASS_MEMBER_BASE(WfType)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfObservableListType>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(element)
+			END_CLASS_MEMBER(WfObservableListType)
 
 			BEGIN_CLASS_MEMBER(WfFunctionType)
 				CLASS_MEMBER_BASE(WfType)
@@ -1527,6 +1541,7 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfType::IVisitor::*)(WfNullableType* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfType::IVisitor::*)(WfEnumerableType* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfType::IVisitor::*)(WfMapType* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfType::IVisitor::*)(WfObservableListType* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfType::IVisitor::*)(WfFunctionType* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfType::IVisitor::*)(WfChildType* node))
 			END_INTERFACE_MEMBER(WfType)
@@ -1648,6 +1663,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfEnumerableType)
 					ADD_TYPE_INFO(vl::workflow::WfMapWritability)
 					ADD_TYPE_INFO(vl::workflow::WfMapType)
+					ADD_TYPE_INFO(vl::workflow::WfObservableListType)
 					ADD_TYPE_INFO(vl::workflow::WfFunctionType)
 					ADD_TYPE_INFO(vl::workflow::WfChildType)
 					ADD_TYPE_INFO(vl::workflow::WfNamespaceDeclaration)

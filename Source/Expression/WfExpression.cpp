@@ -223,6 +223,15 @@ Print (Type)
 				writer.AfterPrint(node);
 			}
 
+			void Visit(WfObservableListType* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"observe ");
+				WfPrint(node->element, indent, writer);
+				writer.WriteString(L"[]");
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfFunctionType* node)override
 			{
 				writer.BeforePrint(node);
