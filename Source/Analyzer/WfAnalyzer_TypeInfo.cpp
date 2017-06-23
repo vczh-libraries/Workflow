@@ -237,6 +237,18 @@ GetTypeFromTypeInfo
 									}
 								}
 							}
+							else if (typeInfo->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>())
+							{
+								if (typeInfo->GetGenericArgumentCount() == 1)
+								{
+									if (Ptr<WfType> elementType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
+									{
+										Ptr<WfObservableListType> type = new WfObservableListType;
+										type->element = elementType;
+										return type;
+									}
+								}
+							}
 							else if (typeInfo->GetTypeDescriptor() == GetTypeDescriptor<IValueReadonlyDictionary>())
 							{
 								if (typeInfo->GetGenericArgumentCount() == 2)

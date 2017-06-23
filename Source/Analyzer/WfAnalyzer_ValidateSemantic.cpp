@@ -1859,6 +1859,12 @@ ValidateSemantic(Expression)
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 										leftValue = true;
 									}
+									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
+									{
+										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
+										leftValue = true;
+									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyDictionary>())
 									{
 										indexType = CopyTypeInfo(genericType->GetGenericArgument(0));
@@ -1883,6 +1889,12 @@ ValidateSemantic(Expression)
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+									{
+										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
+										leftValue = true;
+									}
+									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 									{
 										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
@@ -2385,7 +2397,8 @@ ValidateSemantic(Expression)
 											expectedValueType = genericType->GetGenericArgument(1);
 										}
 									}
-									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>()
+									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
 									{
@@ -2452,7 +2465,15 @@ ValidateSemantic(Expression)
 						{
 							if (keyType)
 							{
-								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), TypeInfoHint::Normal);
+								Ptr<ITypeInfo> classType;
+								if (expectedType && expectedType->GetTypeDescriptor()==description::GetTypeDescriptor<IValueObservableList>())
+								{
+									classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueObservableList>(), TypeInfoHint::Normal);
+								}
+								else
+								{
+									classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), TypeInfoHint::Normal);
+								}
 								auto genericType = MakePtr<GenericTypeInfo>(classType);
 								genericType->AddGenericArgument(keyType);
 

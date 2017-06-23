@@ -1684,6 +1684,20 @@ WfGenerateExpressionVisitor
 
 							writer.WriteString(L").list");
 						}
+						else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
+						{
+							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+							writer.WriteString(L"(::vl::__vwsn::CreateObservableList()");
+
+							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							{
+								writer.WriteString(L".Add(");
+								Call(argument->key);
+								writer.WriteString(L")");
+							}
+
+							writer.WriteString(L").list");
+						}
 						else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
 						{
 							auto keyType = result.type->GetElementType()->GetGenericArgument(0);

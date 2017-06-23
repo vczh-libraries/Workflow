@@ -785,6 +785,15 @@ GenerateInstructions(Expression)
 						}
 						INSTRUCTION(Ins::CreateArray(node->arguments.Count()));
 					}
+					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
+					{
+						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
+						FOREACH(Ptr<WfConstructorArgument>, argument, From(node->arguments).Reverse())
+						{
+							GenerateExpressionInstructions(context, argument->key, keyType);
+						}
+						INSTRUCTION(Ins::CreateObservableList(node->arguments.Count()));
+					}
 					else
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
