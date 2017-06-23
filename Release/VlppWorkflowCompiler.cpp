@@ -16056,10 +16056,15 @@ WfGenerateExpressionVisitor
 							if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 							{
 								auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
-								auto enumValueType = result.type->GetDecorator() == ITypeInfo::TypeDescriptor
-									? result.type
-									: MakePtr<TypeDescriptorTypeInfo>(result.type->GetTypeDescriptor(), TypeInfoHint::Normal)
-									;
+								Ptr<ITypeInfo> enumValueType;
+								if (result.type->GetDecorator() == ITypeInfo::TypeDescriptor)
+								{
+									enumValueType = result.type;
+								}
+								else
+								{
+									enumValueType = MakePtr<TypeDescriptorTypeInfo>(result.type->GetTypeDescriptor(), TypeInfoHint::Normal);
+								}
 								vint index = enumType->IndexOfItem(name);
 								if (index != -1)
 								{
