@@ -583,6 +583,7 @@ WfGenerateExpressionVisitor
 					case TypeInfoHint::Array:
 					case TypeInfoHint::List:
 					case TypeInfoHint::SortedList:
+					case TypeInfoHint::ObservableList:
 					case TypeInfoHint::Dictionary:
 						return true;
 					default:
@@ -635,6 +636,9 @@ WfGenerateExpressionVisitor
 									break;
 								case TypeInfoHint::SortedList:
 									writer.WriteString(L"::vl::collections::SortedList<");
+									break;
+								case TypeInfoHint::ObservableList:
+									writer.WriteString(L"::vl::collections::ObservableList<");
 									break;
 								case TypeInfoHint::Dictionary:
 									writer.WriteString(L"::vl::collections::Dictionary<");

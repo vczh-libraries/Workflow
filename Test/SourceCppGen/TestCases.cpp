@@ -16,6 +16,7 @@
 #include "OpCompareReference.h"
 #include "ListProcessing.h"
 #include "MapProcessing.h"
+#include "ObservableList.h"
 #include "ElementInSet.h"
 #include "GlobalVariable.h"
 #include "RecursiveFunction.h"
@@ -247,6 +248,15 @@ TEST_CASE(MapProcessing)
 {
 	WString expected = L"5, 1, 5, 6, 1, 6";
 	WString actual = ::vl_workflow_global::MapProcessing::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(ObservableList)
+{
+	WString expected = L"[1:0:1][3:0:1][5:0:1][7:0:1][9:0:1][0:1:0][1:1:0][2:1:0][3:1:0][4:1:0][2][4][6][8][10][0:5:0]";
+	WString actual = ::vl_workflow_global::ObservableList::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
@@ -596,7 +606,7 @@ TEST_CASE(EnumCtor2)
 
 TEST_CASE(WorkflowHints)
 {
-	WString expected = L"[1][10][100][1000][2][20][1][100][3]";
+	WString expected = L"[1][10][100][1000][2][20][1][100][3][4]";
 	WString actual = ::vl_workflow_global::WorkflowHints::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
