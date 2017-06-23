@@ -107,6 +107,11 @@ Hinters
 		return myList;
 	}
 
+	ObservableList<vint>& Hinters::GetObservableList()
+	{
+		return observableList;
+	}
+
 	const List<vint>& Hinters::GetReadonlyList(const List<vint>& xs)
 	{
 		CopyFrom(list, xs);
@@ -261,6 +266,7 @@ namespace vl
 
 				CLASS_MEMBER_PROPERTY_FAST(Storage)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MyList)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ObservableList)
 			END_CLASS_MEMBER(Hinters)
 
 			BEGIN_CLASS_MEMBER(SyncScheduler)

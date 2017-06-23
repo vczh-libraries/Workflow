@@ -81,9 +81,11 @@ namespace test
 		SortedList<vint>					sortedList;
 		Dictionary<vint, vint>				dictionary;
 		MyList								myList;
+		ObservableList<vint>				observableList;
 
 		List<vint>&							GetList(List<vint>& xs, vint y);
 		MyList&								GetMyList();
+		ObservableList<vint>&				GetObservableList();
 		const List<vint>&					GetReadonlyList(const List<vint>& xs);
 		const Array<vint>&					GetReadonlyArray(const Array<vint>& xs);
 		const SortedList<vint>&				GetReadonlySL(const SortedList<vint>& xs);
