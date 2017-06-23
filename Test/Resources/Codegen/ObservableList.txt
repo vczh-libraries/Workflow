@@ -1,0 +1,30 @@
+module test;
+using system::*;
+
+var s : string = "";
+
+func Callback(index : int, oldCount : int, newCount : int) : void
+{
+	s = s & $"[$(index):$(oldCount):$(newCount)]";
+}
+
+func main():string
+{
+	var list : observe int[] = {1 2 3 4 5};
+	attach(list.ItemChanged, Callback);
+
+	for(i in {2 4 6 8 10})
+	{
+		list.Insert(i - 1, i);
+	}
+	for(i in range[0, 4])
+	{
+		list.RemoveAt(i);
+	}
+	for(i in list)
+	{
+		s = s & $"[$(i)]";
+	}
+	list.Clear();
+	return s;
+}
