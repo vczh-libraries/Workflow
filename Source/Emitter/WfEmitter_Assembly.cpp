@@ -117,8 +117,11 @@ GenerateTypeCastInstructions
 GenerateAssembly
 ***********************************************************************/
 
-			Ptr<runtime::WfAssembly> GenerateAssembly(analyzer::WfLexicalScopeManager* manager)
+#define CALLBACK(EXPR) if (callback) callback->EXPR
+
+			Ptr<runtime::WfAssembly> GenerateAssembly(analyzer::WfLexicalScopeManager* manager, IWfCompilerCallback* callback)
 			{
+				CALLBACK(OnGenerateMetadata());
 				auto assembly = MakePtr<WfAssembly>();
 				assembly->insBeforeCodegen = new WfInstructionDebugInfo;
 				assembly->insAfterCodegen = new WfInstructionDebugInfo;
@@ -213,16 +216,19 @@ GenerateAssembly
 
 				FOREACH(Ptr<WfModule>, module, manager->GetModules())
 				{
+					CALLBACK(OnGenerateCode(module));
 					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
 					{
 						GenerateDeclarationInstructions(context, decl);
 					}
 				}
 
+				CALLBACK(OnGenerateDebugInfo());
 				assembly->Initialize();
 				return assembly;
 			}
 
+#undef CALLBACK
 #undef INSTRUCTION
 
 /***********************************************************************

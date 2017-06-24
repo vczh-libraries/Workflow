@@ -138,7 +138,7 @@ Code Generation
 			/// <summary>Generate an assembly from a compiler. [M:vl.workflow.analyzer.WfLexicalScopeManager.Rebuild] should be called before using this function.</summary>
 			/// <returns>The generated assembly.</returns>
 			/// <param name="manager">The Workflow compiler.</param>
-			extern Ptr<runtime::WfAssembly>					GenerateAssembly(analyzer::WfLexicalScopeManager* manager);
+			extern Ptr<runtime::WfAssembly>					GenerateAssembly(analyzer::WfLexicalScopeManager* manager, IWfCompilerCallback* callback = nullptr);
 
 			/// <summary>Compile a Workflow program.</summary>
 			/// <returns>The generated assembly.</returns>
