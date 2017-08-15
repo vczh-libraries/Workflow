@@ -259,67 +259,6 @@ Class (::IB)
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(IA)
-			IMPL_CPP_TYPE_INFO(IB)
-
-#define _ ,
-			BEGIN_INTERFACE_MEMBER(::IA)
-				CLASS_MEMBER_METHOD(Calculate, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetA, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetA, { L"value" })
-				CLASS_MEMBER_EVENT(AChanged)
-				CLASS_MEMBER_PROPERTY_EVENT(A, GetA, SetA, AChanged)
-			END_INTERFACE_MEMBER(::IA)
-
-			BEGIN_INTERFACE_MEMBER(::IB)
-				CLASS_MEMBER_METHOD(Calculate, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetB, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetB, { L"value" })
-				CLASS_MEMBER_EVENT(BChanged)
-				CLASS_MEMBER_PROPERTY_EVENT(B, GetB, SetB, BChanged)
-			END_INTERFACE_MEMBER(::IB)
-
-#undef _
-			class NestedLambdaTypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::IA)
-					ADD_TYPE_INFO(::IB)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadNestedLambdaTypes()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<NestedLambdaTypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

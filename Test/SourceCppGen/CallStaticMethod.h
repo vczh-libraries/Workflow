@@ -61,29 +61,6 @@ namespace vl_workflow_global
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::Calculator)
-			DECL_TYPE_INFO(::Calculator::Internal)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::Calculator::Internal)
-			END_INTERFACE_PROXY(::Calculator::Internal)
-#endif
-
-			extern bool LoadCallStaticMethodTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

@@ -87,55 +87,6 @@ Dtor::~Dtor()
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(Dtor)
-
-#define _ ,
-			BEGIN_CLASS_MEMBER(::Dtor)
-				CLASS_MEMBER_CONSTRUCTOR(::Dtor*(), NO_PARAMETER)
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(next)
-			END_CLASS_MEMBER(::Dtor)
-
-#undef _
-			class ClassDtorTypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::Dtor)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadClassDtorTypes()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<ClassDtorTypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

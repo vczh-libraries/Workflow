@@ -164,28 +164,6 @@ Closures
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::IStringAsync)
-
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IStringAsync, ::vl::reflection::description::IAsync)
-			END_INTERFACE_PROXY(::IStringAsync)
-#endif
-
-			extern bool LoadCoAsyncTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

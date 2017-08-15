@@ -118,26 +118,6 @@ Closures
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::Bar)
-			DECL_TYPE_INFO(::Foo)
-#endif
-
-			extern bool LoadBindLetTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

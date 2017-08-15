@@ -66,59 +66,6 @@ Global Functions
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(Seasons)
-
-#define _ ,
-			BEGIN_ENUM_ITEM_MERGABLE(::Seasons)
-				ENUM_CLASS_ITEM(Autumn)
-				ENUM_CLASS_ITEM(Bad)
-				ENUM_CLASS_ITEM(Good)
-				ENUM_CLASS_ITEM(None)
-				ENUM_CLASS_ITEM(Spring)
-				ENUM_CLASS_ITEM(Summer)
-				ENUM_CLASS_ITEM(Winter)
-			END_ENUM_ITEM(::Seasons)
-
-#undef _
-			class EnumCtor2TypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::Seasons)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadEnumCtor2Types()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<EnumCtor2TypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

@@ -46,25 +46,6 @@ namespace vl_workflow_global
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::MyEnum)
-#endif
-
-			extern bool LoadOpCompareTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

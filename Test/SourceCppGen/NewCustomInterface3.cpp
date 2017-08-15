@@ -137,63 +137,6 @@ MyClass::MyClass(::vl::vint _begin, ::vl::vint _end)
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(IMyInterface3)
-			IMPL_CPP_TYPE_INFO(MyClass)
-
-#define _ ,
-			BEGIN_INTERFACE_MEMBER(::IMyInterface3)
-				CLASS_MEMBER_METHOD(Get100, NO_PARAMETER)
-			END_INTERFACE_MEMBER(::IMyInterface3)
-
-			BEGIN_CLASS_MEMBER(::MyClass)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::MyClass>(::vl::vint, ::vl::vint), { L"_begin" _ L"_end" })
-				CLASS_MEMBER_METHOD(CreateMyInterface, NO_PARAMETER)
-				CLASS_MEMBER_STATIC_METHOD(Get50, NO_PARAMETER)
-				CLASS_MEMBER_FIELD(begin)
-				CLASS_MEMBER_FIELD(end)
-			END_CLASS_MEMBER(::MyClass)
-
-#undef _
-			class NewCustomInterface3TypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::IMyInterface3)
-					ADD_TYPE_INFO(::MyClass)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadNewCustomInterface3Types()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<NewCustomInterface3TypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

@@ -125,53 +125,6 @@ Class (::IMyInterface2)
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(IMyInterface2)
-
-#define _ ,
-			BEGIN_INTERFACE_MEMBER(::IMyInterface2)
-				CLASS_MEMBER_METHOD(Get100, NO_PARAMETER)
-			END_INTERFACE_MEMBER(::IMyInterface2)
-
-#undef _
-			class NewCustomInterface2TypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::IMyInterface2)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadNewCustomInterface2Types()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<NewCustomInterface2TypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

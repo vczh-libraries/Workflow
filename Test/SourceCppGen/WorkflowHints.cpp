@@ -212,61 +212,6 @@ Class (::workflow::hints::Derived)
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(workflow::hints::Base)
-			IMPL_CPP_TYPE_INFO(workflow::hints::Derived)
-
-#define _ ,
-			BEGIN_CLASS_MEMBER(::workflow::hints::Base)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::workflow::hints::Base>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(::workflow::hints::Base*(::vl::vint), { L"x" })
-			END_CLASS_MEMBER(::workflow::hints::Base)
-
-			BEGIN_CLASS_MEMBER(::workflow::hints::Derived)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::workflow::hints::Derived>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(::workflow::hints::Derived*(::vl::vint), { L"x" })
-			END_CLASS_MEMBER(::workflow::hints::Derived)
-
-#undef _
-			class WorkflowHintsTypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::workflow::hints::Base)
-					ADD_TYPE_INFO(::workflow::hints::Derived)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadWorkflowHintsTypes()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<WorkflowHintsTypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

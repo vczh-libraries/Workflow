@@ -72,26 +72,6 @@ namespace vl_workflow_global
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::workflow::hints::Base)
-			DECL_TYPE_INFO(::workflow::hints::Derived)
-#endif
-
-			extern bool LoadWorkflowHintsTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

@@ -187,61 +187,6 @@ Class (::IAdder)
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(IAdder)
-			IMPL_CPP_TYPE_INFO(ISummer)
-
-#define _ ,
-			BEGIN_INTERFACE_MEMBER(::IAdder)
-				CLASS_MEMBER_METHOD(Add, { L"value" })
-			END_INTERFACE_MEMBER(::IAdder)
-
-			BEGIN_INTERFACE_MEMBER(::ISummer)
-				CLASS_MEMBER_METHOD(GetSum, NO_PARAMETER)
-				CLASS_MEMBER_EVENT(SumChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Sum, GetSum, SumChanged)
-			END_INTERFACE_MEMBER(::ISummer)
-
-#undef _
-			class BindCustomInterfaceTypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::IAdder)
-					ADD_TYPE_INFO(::ISummer)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadBindCustomInterfaceTypes()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<BindCustomInterfaceTypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

@@ -86,60 +86,6 @@ Class (::Calculator::Internal)
 #undef GLOBAL_OBJ
 #undef USERIMPL
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(Calculator)
-			IMPL_CPP_TYPE_INFO(Calculator::Internal)
-
-#define _ ,
-			BEGIN_CLASS_MEMBER(::Calculator)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Calculator>(), NO_PARAMETER)
-				CLASS_MEMBER_STATIC_METHOD(Sum2, { L"begin" _ L"end" _ L"sum" })
-			END_CLASS_MEMBER(::Calculator)
-
-			BEGIN_INTERFACE_MEMBER(::Calculator::Internal)
-				CLASS_MEMBER_STATIC_METHOD(Sum, { L"begin" _ L"end" })
-			END_INTERFACE_MEMBER(::Calculator::Internal)
-
-#undef _
-			class CallStaticMethodTypeLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(::Calculator)
-					ADD_TYPE_INFO(::Calculator::Internal)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-
-			bool LoadCallStaticMethodTypes()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto manager = GetGlobalTypeManager())
-				{
-					return manager->AddTypeLoader(MakePtr<CallStaticMethodTypeLoader>());
-				}
-#endif
-				return false;
-			}
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

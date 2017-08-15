@@ -20,6 +20,7 @@ WfCppInput
 				assemblyName = _assemblyName;
 				assemblyNamespace = L"vl_workflow_global";
 				includeFileName = _assemblyName + L"Includes";
+				reflectionFileName = assemblyName + L"Reflection";
 				defaultFileName = _assemblyName;
 			}
 
@@ -66,10 +67,10 @@ GenerateCppFiles
 				bool multiFile = false;
 				switch (input->multiFile)
 				{
-				case WfCppMultiFile::Enabled:
+				case WfCppFileSwitch::Enabled:
 					multiFile = true;
 					break;
-				case WfCppMultiFile::Disabled:
+				case WfCppFileSwitch::Disabled:
 					multiFile = false;
 					break;
 				default:
@@ -97,15 +98,6 @@ GenerateCppFiles
 					{
 						writer.WriteLine(L"#include \"" + include + L"\"");
 					}
-					if (input->reflectionIncludes.Count() > 0)
-					{
-						writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
-						FOREACH(WString, include, input->reflectionIncludes)
-						{
-							writer.WriteLine(L"#include \"" + include + L"\"");
-						}
-						writer.WriteLine(L"#endif");
-					}
 					writer.WriteLine(L"");
 					config.WriteHeader(writer, multiFile);
 					writer.WriteLine(L"");
@@ -120,6 +112,55 @@ GenerateCppFiles
 					writer.WriteLine(L"");
 					config.WriteCpp(writer, multiFile);
 				}));
+
+				bool reflection = false;
+				switch (input->reflection)
+				{
+				case WfCppFileSwitch::Enabled:
+					reflection = true;
+					break;
+				case WfCppFileSwitch::Disabled:
+					reflection = false;
+					break;
+				default:
+					reflection = config.manager->declarationTypes.Count() > 0;
+				}
+
+				output->reflection = reflection;
+				if (reflection)
+				{
+					output->cppFiles.Add(input->reflectionFileName + L".h", GenerateToStream([&](StreamWriter& writer)
+					{
+						GenerateCppComment(writer, input->comment);
+						writer.WriteLine(L"");
+						writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->reflectionFileName));
+						writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->reflectionFileName));
+						writer.WriteLine(L"");
+						writer.WriteLine(L"#include \"" + output->entryFileName + L".h\"");
+						if (input->reflectionIncludes.Count() > 0)
+						{
+							writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+							FOREACH(WString, include, input->reflectionIncludes)
+							{
+								writer.WriteLine(L"#include \"" + include + L"\"");
+							}
+							writer.WriteLine(L"#endif");
+						}
+						writer.WriteLine(L"");
+						config.WriteReflectionHeader(writer, multiFile);
+						writer.WriteLine(L"");
+						writer.WriteLine(L"#endif");
+					}));
+
+					output->cppFiles.Add(input->reflectionFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
+					{
+						GenerateCppComment(writer, input->comment);
+						writer.WriteLine(L"");
+						writer.WriteLine(L"#include \"" + input->reflectionFileName + L".h\"");
+						writer.WriteLine(L"");
+						config.WriteReflectionCpp(writer, multiFile);
+					}));
+				}
 
 				if (multiFile)
 				{
@@ -138,12 +179,6 @@ GenerateCppFiles
 							{
 								writer.WriteLine(L"#include \"" + fileName + L".h\"");
 							}
-						}
-
-						if (config.manager->declarationTypes.Count() > 0)
-						{
-							writer.WriteLine(L"");
-							config.WriteHeader_Reflection(writer);
 						}
 
 						writer.WriteLine(L"");

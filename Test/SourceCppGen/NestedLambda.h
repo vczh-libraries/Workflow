@@ -196,56 +196,6 @@ Closures
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::IA)
-			DECL_TYPE_INFO(::IB)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::IA)
-				::vl::WString Calculate() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Calculate);
-				}
-				::vl::vint GetA() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetA);
-				}
-				void SetA(::vl::vint value) override
-				{
-					INVOKE_INTERFACE_PROXY(SetA, value);
-				}
-			END_INTERFACE_PROXY(::IA)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::IB)
-				::vl::WString Calculate() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Calculate);
-				}
-				::vl::vint GetB() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetB);
-				}
-				void SetB(::vl::vint value) override
-				{
-					INVOKE_INTERFACE_PROXY(SetB, value);
-				}
-			END_INTERFACE_PROXY(::IB)
-#endif
-
-			extern bool LoadNestedLambdaTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

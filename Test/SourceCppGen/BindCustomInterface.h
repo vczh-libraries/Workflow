@@ -111,40 +111,6 @@ Closures
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::IAdder)
-			DECL_TYPE_INFO(::ISummer)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::ISummer)
-				::vl::vint GetSum() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSum);
-				}
-			END_INTERFACE_PROXY(::ISummer)
-
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IAdder, ::ISummer)
-				void Add(::vl::vint value) override
-				{
-					INVOKE_INTERFACE_PROXY(Add, value);
-				}
-			END_INTERFACE_PROXY(::IAdder)
-#endif
-
-			extern bool LoadBindCustomInterfaceTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

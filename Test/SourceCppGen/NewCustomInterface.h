@@ -88,32 +88,6 @@ Closures
 	};
 }
 
-/***********************************************************************
-Reflection
-***********************************************************************/
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::IMyInterface)
-
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IMyInterface, ::vl::reflection::description::IValueEnumerable)
-				::vl::vint Get100() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
-				}
-			END_INTERFACE_PROXY(::IMyInterface)
-#endif
-
-			extern bool LoadNewCustomInterfaceTypes();
-		}
-	}
-}
-
 #if defined( _MSC_VER)
 #pragma warning(pop)
 #elif defined(__GNUC__)

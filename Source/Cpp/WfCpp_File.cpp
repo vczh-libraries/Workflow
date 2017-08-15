@@ -150,15 +150,6 @@ namespace vl
 
 				WriteHeader_Global(writer);
 
-				if (!multiFile)
-				{
-					if (manager->declarationTypes.Count() > 0)
-					{
-						writer.WriteLine(L"");
-						WriteHeader_Reflection(writer);
-					}
-				}
-
 				writer.WriteLine(L"");
 				WritePopCompileOptions(writer);
 			}
@@ -201,12 +192,6 @@ namespace vl
 
 				WriteCpp_PopMacros(writer);
 
-				if (manager->declarationTypes.Count() > 0)
-				{
-					writer.WriteLine(L"");
-					WriteCpp_Reflection(writer);
-				}
-
 				writer.WriteLine(L"");
 				WritePopCompileOptions(writer);
 			}
@@ -243,6 +228,30 @@ namespace vl
 				WriteNamespaceEnd(writer, nss);
 				WriteCpp_PopMacros(writer);
 				writer.WriteLine(L"");
+				WritePopCompileOptions(writer);
+			}
+
+			void WfCppConfig::WriteReflectionHeader(stream::StreamWriter& writer, bool multiFile)
+			{
+				WritePushCompileOptions(writer);
+				if (manager->declarationTypes.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					WriteHeader_Reflection(writer);
+					writer.WriteLine(L"");
+				}
+				WritePopCompileOptions(writer);
+			}
+
+			void WfCppConfig::WriteReflectionCpp(stream::StreamWriter& writer, bool multiFile)
+			{
+				WritePushCompileOptions(writer);
+				if (manager->declarationTypes.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					WriteCpp_Reflection(writer);
+					writer.WriteLine(L"");
+				}
 				WritePopCompileOptions(writer);
 			}
 		}

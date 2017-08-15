@@ -71,7 +71,8 @@ TEST_CASE(TestCodegen)
 		if (cppCodegen)
 		{
 			auto input = MakePtr<WfCppInput>(itemName);
-			input->multiFile = WfCppMultiFile::OnDemand;
+			input->multiFile = WfCppFileSwitch::OnDemand;
+			input->reflection = WfCppFileSwitch::OnDemand;
 			input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";
 			input->normalIncludes.Add(L"../Source/CppTypes.h");
 
@@ -80,7 +81,14 @@ TEST_CASE(TestCodegen)
 			{
 				reflectableAssemblies.Add(input->assemblyName);
 			}
-			assemblyEntries.Add(input->assemblyName, output->entryFileName);
+			if (output->reflection)
+			{
+				assemblyEntries.Add(input->assemblyName, input->reflectionFileName);
+			}
+			else
+			{
+				assemblyEntries.Add(input->assemblyName, output->entryFileName);
+			}
 
 			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
