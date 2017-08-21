@@ -29168,7 +29168,6 @@ GenerateCppFiles
 								writer.WriteLine(L"#include \"" + fileName + L".h\"");
 							}
 						}
-						extraInclude(writer);
 
 						writer.WriteLine(L"");
 						writer.WriteLine(L"#endif");
