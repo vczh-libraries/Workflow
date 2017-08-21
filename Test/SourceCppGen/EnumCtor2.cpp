@@ -8,6 +8,12 @@ https://github.com/vczh-libraries
 ***********************************************************************/
 
 #include "EnumCtor2.h"
+/* CodePack:BeginIgnore() */
+#ifndef VCZH_DEBUG_NO_REFLECTION
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, EnumCtor2Reflection.h) */
+#include "EnumCtor2Reflection.h"
+#endif
+/* CodePack:EndIgnore() */
 
 #if defined( _MSC_VER)
 #pragma warning(push)

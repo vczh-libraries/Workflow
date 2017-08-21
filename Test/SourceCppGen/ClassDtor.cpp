@@ -8,6 +8,12 @@ https://github.com/vczh-libraries
 ***********************************************************************/
 
 #include "ClassDtor.h"
+/* CodePack:BeginIgnore() */
+#ifndef VCZH_DEBUG_NO_REFLECTION
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, ClassDtorReflection.h) */
+#include "ClassDtorReflection.h"
+#endif
+/* CodePack:EndIgnore() */
 
 #if defined( _MSC_VER)
 #pragma warning(push)

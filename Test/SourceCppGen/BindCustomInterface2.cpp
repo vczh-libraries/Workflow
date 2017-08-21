@@ -8,6 +8,12 @@ https://github.com/vczh-libraries
 ***********************************************************************/
 
 #include "BindCustomInterface2.h"
+/* CodePack:BeginIgnore() */
+#ifndef VCZH_DEBUG_NO_REFLECTION
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, BindCustomInterface2Reflection.h) */
+#include "BindCustomInterface2Reflection.h"
+#endif
+/* CodePack:EndIgnore() */
 
 #if defined( _MSC_VER)
 #pragma warning(push)

@@ -8,6 +8,12 @@ https://github.com/vczh-libraries
 ***********************************************************************/
 
 #include "WorkflowHints.h"
+/* CodePack:BeginIgnore() */
+#ifndef VCZH_DEBUG_NO_REFLECTION
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, WorkflowHintsReflection.h) */
+#include "WorkflowHintsReflection.h"
+#endif
+/* CodePack:EndIgnore() */
 
 #if defined( _MSC_VER)
 #pragma warning(push)

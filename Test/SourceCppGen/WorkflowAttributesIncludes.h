@@ -14,5 +14,11 @@ https://github.com/vczh-libraries
 #include "WorkflowAttributes_BinaryExpression.h"
 #include "WorkflowAttributes_Expression.h"
 #include "WorkflowAttributes_NumberExpression.h"
+/* CodePack:BeginIgnore() */
+#ifndef VCZH_DEBUG_NO_REFLECTION
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, WorkflowAttributesReflection.h) */
+#include "WorkflowAttributesReflection.h"
+#endif
+/* CodePack:EndIgnore() */
 
 #endif
