@@ -27,10 +27,10 @@ all:pre-build ./Bin/UnitTest
 ./Obj/BindComplex.o: ../SourceCppGen/BindComplex.cpp ../SourceCppGen/BindComplex.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/BindCustomInterface.o: ../SourceCppGen/BindCustomInterface.cpp ../SourceCppGen/BindCustomInterface.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/BindCustomInterface.o: ../SourceCppGen/BindCustomInterface.cpp ../SourceCppGen/BindCustomInterface.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/BindCustomInterfaceReflection.h
 	$(CPP_COMPILE)
 
-./Obj/BindCustomInterface2.o: ../SourceCppGen/BindCustomInterface2.cpp ../SourceCppGen/BindCustomInterface2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/BindCustomInterface2.o: ../SourceCppGen/BindCustomInterface2.cpp ../SourceCppGen/BindCustomInterface2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/BindCustomInterface2Reflection.h
 	$(CPP_COMPILE)
 
 ./Obj/BindCustomInterface2Reflection.o: ../SourceCppGen/BindCustomInterface2Reflection.cpp ../SourceCppGen/BindCustomInterface2Reflection.h ../SourceCppGen/BindCustomInterface2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -42,31 +42,31 @@ all:pre-build ./Bin/UnitTest
 ./Obj/BindFormat.o: ../SourceCppGen/BindFormat.cpp ../SourceCppGen/BindFormat.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/BindLet.o: ../SourceCppGen/BindLet.cpp ../SourceCppGen/BindLet.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/BindLet.o: ../SourceCppGen/BindLet.cpp ../SourceCppGen/BindLet.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/BindLetReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/BindLetReflection.o: ../SourceCppGen/BindLetReflection.cpp ../SourceCppGen/BindLetReflection.h ../SourceCppGen/BindLet.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/BindSimple.o: ../SourceCppGen/BindSimple.cpp ../SourceCppGen/BindSimple.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/BindSimple.o: ../SourceCppGen/BindSimple.cpp ../SourceCppGen/BindSimple.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/BindSimpleReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/BindSimpleReflection.o: ../SourceCppGen/BindSimpleReflection.cpp ../SourceCppGen/BindSimpleReflection.h ../SourceCppGen/BindSimple.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/CallStaticMethod.o: ../SourceCppGen/CallStaticMethod.cpp ../SourceCppGen/CallStaticMethod.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/CallStaticMethod.o: ../SourceCppGen/CallStaticMethod.cpp ../SourceCppGen/CallStaticMethod.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/CallStaticMethodReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/CallStaticMethodReflection.o: ../SourceCppGen/CallStaticMethodReflection.cpp ../SourceCppGen/CallStaticMethodReflection.h ../SourceCppGen/CallStaticMethod.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/ClassCtor.o: ../SourceCppGen/ClassCtor.cpp ../SourceCppGen/ClassCtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/ClassCtor.o: ../SourceCppGen/ClassCtor.cpp ../SourceCppGen/ClassCtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/ClassCtorReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/ClassCtorReflection.o: ../SourceCppGen/ClassCtorReflection.cpp ../SourceCppGen/ClassCtorReflection.h ../SourceCppGen/ClassCtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/ClassDtor.o: ../SourceCppGen/ClassDtor.cpp ../SourceCppGen/ClassDtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/ClassDtor.o: ../SourceCppGen/ClassDtor.cpp ../SourceCppGen/ClassDtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/ClassDtorReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/ClassDtorReflection.o: ../SourceCppGen/ClassDtorReflection.cpp ../SourceCppGen/ClassDtorReflection.h ../SourceCppGen/ClassDtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -75,13 +75,13 @@ all:pre-build ./Bin/UnitTest
 ./Obj/ClassField.o: ../SourceCppGen/ClassField.cpp ../SourceCppGen/ClassField.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/ClassMethod.o: ../SourceCppGen/ClassMethod.cpp ../SourceCppGen/ClassMethod.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/ClassMethod.o: ../SourceCppGen/ClassMethod.cpp ../SourceCppGen/ClassMethod.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/ClassMethodReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/ClassMethodReflection.o: ../SourceCppGen/ClassMethodReflection.cpp ../SourceCppGen/ClassMethodReflection.h ../SourceCppGen/ClassMethod.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/CoAsync.o: ../SourceCppGen/CoAsync.cpp ../SourceCppGen/CoAsync.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/CoAsync.o: ../SourceCppGen/CoAsync.cpp ../SourceCppGen/CoAsync.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/CoAsyncReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/CoAsyncReflection.o: ../SourceCppGen/CoAsyncReflection.cpp ../SourceCppGen/CoAsyncReflection.h ../SourceCppGen/CoAsync.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -117,7 +117,7 @@ all:pre-build ./Bin/UnitTest
 ./Obj/EnumCtor.o: ../SourceCppGen/EnumCtor.cpp ../SourceCppGen/EnumCtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/EnumCtor2.o: ../SourceCppGen/EnumCtor2.cpp ../SourceCppGen/EnumCtor2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/EnumCtor2.o: ../SourceCppGen/EnumCtor2.cpp ../SourceCppGen/EnumCtor2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/EnumCtor2Reflection.h
 	$(CPP_COMPILE)
 
 ./Obj/EnumCtor2Reflection.o: ../SourceCppGen/EnumCtor2Reflection.cpp ../SourceCppGen/EnumCtor2Reflection.h ../SourceCppGen/EnumCtor2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -156,22 +156,22 @@ all:pre-build ./Bin/UnitTest
 ./Obj/NamedLambda.o: ../SourceCppGen/NamedLambda.cpp ../SourceCppGen/NamedLambda.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/NestedLambda.o: ../SourceCppGen/NestedLambda.cpp ../SourceCppGen/NestedLambda.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/NestedLambda.o: ../SourceCppGen/NestedLambda.cpp ../SourceCppGen/NestedLambda.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/NestedLambdaReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/NestedLambdaReflection.o: ../SourceCppGen/NestedLambdaReflection.cpp ../SourceCppGen/NestedLambdaReflection.h ../SourceCppGen/NestedLambda.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/NewCustomInterface.o: ../SourceCppGen/NewCustomInterface.cpp ../SourceCppGen/NewCustomInterface.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/NewCustomInterface.o: ../SourceCppGen/NewCustomInterface.cpp ../SourceCppGen/NewCustomInterface.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/NewCustomInterfaceReflection.h
 	$(CPP_COMPILE)
 
-./Obj/NewCustomInterface2.o: ../SourceCppGen/NewCustomInterface2.cpp ../SourceCppGen/NewCustomInterface2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/NewCustomInterface2.o: ../SourceCppGen/NewCustomInterface2.cpp ../SourceCppGen/NewCustomInterface2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/NewCustomInterface2Reflection.h
 	$(CPP_COMPILE)
 
 ./Obj/NewCustomInterface2Reflection.o: ../SourceCppGen/NewCustomInterface2Reflection.cpp ../SourceCppGen/NewCustomInterface2Reflection.h ../SourceCppGen/NewCustomInterface2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/NewCustomInterface3.o: ../SourceCppGen/NewCustomInterface3.cpp ../SourceCppGen/NewCustomInterface3.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/NewCustomInterface3.o: ../SourceCppGen/NewCustomInterface3.cpp ../SourceCppGen/NewCustomInterface3.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/NewCustomInterface3Reflection.h
 	$(CPP_COMPILE)
 
 ./Obj/NewCustomInterface3Reflection.o: ../SourceCppGen/NewCustomInterface3Reflection.cpp ../SourceCppGen/NewCustomInterface3Reflection.h ../SourceCppGen/NewCustomInterface3.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -192,7 +192,7 @@ all:pre-build ./Bin/UnitTest
 ./Obj/OpAnd.o: ../SourceCppGen/OpAnd.cpp ../SourceCppGen/OpAnd.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/OpCompare.o: ../SourceCppGen/OpCompare.cpp ../SourceCppGen/OpCompare.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/OpCompare.o: ../SourceCppGen/OpCompare.cpp ../SourceCppGen/OpCompare.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/OpCompareReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/OpCompareReference.o: ../SourceCppGen/OpCompareReference.cpp ../SourceCppGen/OpCompareReference.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -249,7 +249,7 @@ all:pre-build ./Bin/UnitTest
 ./Obj/StructCtor.o: ../SourceCppGen/StructCtor.cpp ../SourceCppGen/StructCtor.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/StructCtor2.o: ../SourceCppGen/StructCtor2.cpp ../SourceCppGen/StructCtor2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/StructCtor2.o: ../SourceCppGen/StructCtor2.cpp ../SourceCppGen/StructCtor2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/StructCtor2Reflection.h
 	$(CPP_COMPILE)
 
 ./Obj/StructCtor2Reflection.o: ../SourceCppGen/StructCtor2Reflection.cpp ../SourceCppGen/StructCtor2Reflection.h ../SourceCppGen/StructCtor2.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
@@ -264,22 +264,22 @@ all:pre-build ./Bin/UnitTest
 ./Obj/TryFinally.o: ../SourceCppGen/TryFinally.cpp ../SourceCppGen/TryFinally.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/WorkflowAttributes.o: ../SourceCppGen/WorkflowAttributes.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h
+./Obj/WorkflowAttributes.o: ../SourceCppGen/WorkflowAttributes.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h ../SourceCppGen/WorkflowAttributesReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/WorkflowAttributesReflection.o: ../SourceCppGen/WorkflowAttributesReflection.cpp ../SourceCppGen/WorkflowAttributesReflection.h ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h
 	$(CPP_COMPILE)
 
-./Obj/WorkflowAttributes_BinaryExpression.o: ../SourceCppGen/WorkflowAttributes_BinaryExpression.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h
+./Obj/WorkflowAttributes_BinaryExpression.o: ../SourceCppGen/WorkflowAttributes_BinaryExpression.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h ../SourceCppGen/WorkflowAttributesReflection.h
 	$(CPP_COMPILE)
 
-./Obj/WorkflowAttributes_Expression.o: ../SourceCppGen/WorkflowAttributes_Expression.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h
+./Obj/WorkflowAttributes_Expression.o: ../SourceCppGen/WorkflowAttributes_Expression.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h ../SourceCppGen/WorkflowAttributesReflection.h
 	$(CPP_COMPILE)
 
-./Obj/WorkflowAttributes_NumberExpression.o: ../SourceCppGen/WorkflowAttributes_NumberExpression.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h
+./Obj/WorkflowAttributes_NumberExpression.o: ../SourceCppGen/WorkflowAttributes_NumberExpression.cpp ../SourceCppGen/WorkflowAttributesIncludes.h ../SourceCppGen/WorkflowAttributes.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowAttributes_BinaryExpression.h ../SourceCppGen/WorkflowAttributes_Expression.h ../SourceCppGen/WorkflowAttributes_NumberExpression.h ../SourceCppGen/WorkflowAttributesReflection.h
 	$(CPP_COMPILE)
 
-./Obj/WorkflowHints.o: ../SourceCppGen/WorkflowHints.cpp ../SourceCppGen/WorkflowHints.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h
+./Obj/WorkflowHints.o: ../SourceCppGen/WorkflowHints.cpp ../SourceCppGen/WorkflowHints.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h ../SourceCppGen/WorkflowHintsReflection.h
 	$(CPP_COMPILE)
 
 ./Obj/WorkflowHintsReflection.o: ../SourceCppGen/WorkflowHintsReflection.cpp ../SourceCppGen/WorkflowHintsReflection.h ../SourceCppGen/WorkflowHints.h ../SourceCppGen/../Source/CppTypes.h ../SourceCppGen/../Source/../../Import/Vlpp.h

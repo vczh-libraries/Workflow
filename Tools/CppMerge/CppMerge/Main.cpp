@@ -25,9 +25,9 @@ int main(int argc, char* argv[])
 	FilePath file64 = argv[2];
 	FilePath fileOutput = argv[3];
 #elif defined VCZH_GCC
-	FilePath path32 = atow(argv[1]);
-	FilePath path64 = atow(argv[2]);
-	FilePath pathOut = atow(argv[3]);
+	FilePath file32 = atow(argv[1]);
+	FilePath file64 = atow(argv[2]);
+	FilePath fileOutput = atow(argv[3]);
 #endif
 
 	auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
