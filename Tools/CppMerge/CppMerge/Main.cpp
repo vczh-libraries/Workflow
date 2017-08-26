@@ -12,9 +12,12 @@ int wmain(int argc, wchar_t* argv[])
 int main(int argc, char* argv[])
 #endif
 {
+	Console::SetTitle(L"Vczh CodeMerge for C++");
 	if (argc != 4)
 	{
+		Console::SetColor(true, false, false, true);
 		Console::WriteLine(L"Usage: CppMerge <x32-file> <x64-file> <output-file>");
+		Console::SetColor(true, true, true, false);
 		return 0;
 	}
 #if defined VCZH_MSVC
