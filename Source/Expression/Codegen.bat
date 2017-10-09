@@ -1,1 +1,0 @@
-..\..\..\Tools\Tools\ParserGen.exe WfExpression.parser.txt
