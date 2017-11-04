@@ -77,11 +77,12 @@ Helper Functions
 				}
 
 				List<Ptr<parsing::ParsingError>> functionErrors, nonFunctionErrors;
-				List<vint> selectedFunctionIndices;
+				List<Pair<vint, vint>> selectedFunctionIndices;
 				ITypeDescriptor* functionFd = description::GetTypeDescriptor<IValueFunctionProxy>();
 				for (vint i = 0; i < functions.Count(); i++)
 				{
 					bool failed = false;
+					vint convertCount = 0;
 					auto result = functions[i];
 					ITypeInfo* expressionType = GetFunctionType(result);
 
@@ -104,7 +105,14 @@ Helper Functions
 								if (resolvables[j] && types[j])
 								{
 									ITypeInfo* argumentType = genericType->GetGenericArgument(j + 1);
-									if (!CanConvertToType(types[j].Obj(), argumentType, false))
+									if (CanConvertToType(types[j].Obj(), argumentType, false))
+									{
+										if (!IsSameType(types[j].Obj(), argumentType))
+										{
+											convertCount++;
+										}
+									}
+									else
 									{
 										functionErrors.Add(WfErrors::FunctionArgumentTypeMismatched(node, result, j + 1, types[j].Obj(), argumentType));
 										failed = true;
@@ -125,13 +133,31 @@ Helper Functions
 				FUNCTION_TYPE_FINISHED:
 					if (!failed)
 					{
-						selectedFunctionIndices.Add(i);
+						selectedFunctionIndices.Add({ i,convertCount });
+					}
+				}
+
+				if (selectedFunctionIndices.Count() > 1)
+				{
+					vint minScore = From(selectedFunctionIndices)
+						.Select([](Pair<vint, vint> p)
+						{
+							return p.value;
+						})
+						.Min();
+
+					for (vint i = selectedFunctionIndices.Count() - 1; i >= 0; i--)
+					{
+						if (selectedFunctionIndices[i].value != minScore)
+						{
+							selectedFunctionIndices.RemoveAt(i);
+						}
 					}
 				}
 
 				if (selectedFunctionIndices.Count() == 1)
 				{
-					selectedFunctionIndex = selectedFunctionIndices[0];
+					selectedFunctionIndex = selectedFunctionIndices[0].key;
 					ITypeInfo* genericType = GetFunctionType(functions[selectedFunctionIndex])->GetElementType();
 					for (vint i = 0; i < types.Count(); i++)
 					{
@@ -154,9 +180,9 @@ Helper Functions
 						CopyFrom(
 							overloadedFunctions,
 							From(selectedFunctionIndices)
-							.Select([&functions](vint index)
+							.Select([&functions](Pair<vint, vint> p)
 							{
-								return functions[index];
+								return functions[p.key];
 							}));
 						manager->errors.Add(WfErrors::CannotPickOverloadedFunctions(node, overloadedFunctions));
 					}

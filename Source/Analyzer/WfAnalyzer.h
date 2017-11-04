@@ -311,11 +311,11 @@ Structure Analyzing
 				BaseType,
 			};
 
-			extern void										SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange);
-			extern void										SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange);
-			extern void										SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange);
-			extern void										SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange);
-			extern void										SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange);
+			extern void										SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
 
 			extern void										ContextFreeModuleDesugar(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ContextFreeDeclarationDesugar(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);

@@ -18,10 +18,28 @@ SetCodeRange
 			{
 			public:
 				ParsingTextRange						range;
+				bool									asOffset;
 
-				SetCodeRangeVisitor(ParsingTextRange _range)
+				SetCodeRangeVisitor(ParsingTextRange _range, bool _asOffset)
 					:range(_range)
+					, asOffset(_asOffset)
 				{
+				}
+
+				void UpdateTextPos(ParsingTextPos& pos)
+				{
+					if (pos.row == -1 || pos.column == -1)
+					{
+						pos = range.start;
+					}
+					else 
+					{
+						if (pos.row == 0)
+						{
+							pos.column += range.start.column;
+						}
+						pos.row += range.start.row;
+					}
 				}
 
 				void Traverse(ParsingTreeCustomBase* node)override
@@ -29,6 +47,15 @@ SetCodeRange
 					if (node->codeRange == ParsingTextRange())
 					{
 						node->codeRange = range;
+					}
+					else if (asOffset)
+					{
+						UpdateTextPos(node->codeRange.start);
+						UpdateTextPos(node->codeRange.end);
+						if (node->codeRange.codeIndex == -1)
+						{
+							node->codeRange.codeIndex = range.codeIndex;
+						}
 					}
 				}
 
@@ -38,32 +65,41 @@ SetCodeRange
 					{
 						token.codeRange = range;
 					}
+					else if (asOffset)
+					{
+						UpdateTextPos(token.codeRange.start);
+						UpdateTextPos(token.codeRange.end);
+						if (token.codeRange.codeIndex == -1)
+						{
+							token.codeRange.codeIndex = range.codeIndex;
+						}
+					}
 				}
 			};
 
-			void SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
 /***********************************************************************
@@ -91,6 +127,10 @@ ContextFreeModuleDesugar
 
 					List<Ptr<WfExpression>> expressions;
 					const wchar_t* reading = node->value.value.Buffer();
+
+					const wchar_t* textPosCounter = reading;
+					ParsingTextPos formatPos = node->codeRange.start;
+					formatPos.column += 2;
 
 					while (*reading)
 					{
@@ -140,6 +180,21 @@ ContextFreeModuleDesugar
 							if (auto expression = WfParseExpression(input, manager->parsingTable, errors))
 							{
 								expressions.Add(expression);
+
+								while (textPosCounter++ < begin + 2)
+								{
+									switch (textPosCounter[-1])
+									{
+									case '\n':
+										formatPos.row++;
+										formatPos.column = 0;
+										break;
+									default:
+										formatPos.column++;
+										break;
+									}
+								}
+								SetCodeRange(expression, { formatPos,formatPos,node->codeRange.codeIndex }, true);
 							}
 							FOREACH(Ptr<ParsingError>, originalError, errors)
 							{
