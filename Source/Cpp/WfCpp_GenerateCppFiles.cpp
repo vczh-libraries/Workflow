@@ -434,6 +434,12 @@ MergeCppFile
 
 			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
 			{
+				static wchar_t stringCast32[] = L"static_cast<::vl::vint32_t>(";
+				const vint lengthCast32 = sizeof(stringCast32) / sizeof(*stringCast32) - 1;
+
+				static wchar_t stringCast64[] = L"static_cast<::vl::vint64_t>(";
+				const vint lengthCast64 = sizeof(stringCast64) / sizeof(*stringCast64) - 1;
+
 				return GenerateToStream([&](StreamWriter& writer)
 				{
 					const wchar_t* reading32 = code32.Buffer();
@@ -503,6 +509,36 @@ MergeCppFile
 										goto NEXT_ROUND;
 									}
 								}
+							}
+						}
+						else if (wcsncmp(reading32, stringCast32, lengthCast32) == 0 && IS_DIGIT(reading32[lengthCast32]) && IS_DIGIT(reading64[0]))
+						{
+							reading32 += lengthCast32;
+							vint digitCount = 0;
+							while (IS_DIGIT(reading32[digitCount])) digitCount++;
+							if (wcsncmp(reading32, reading64, digitCount) == 0 && reading64[digitCount] == L'L' && reading32[digitCount] == L')')
+							{
+								writer.WriteString(L"static_cast<::vl::vint>(");
+								writer.WriteString(WString(reading32, digitCount));
+								writer.WriteChar(L')');
+								reading64 += digitCount + 1;
+								reading32 += digitCount + 1;
+								goto NEXT_ROUND;
+							}
+						}
+						else if (wcsncmp(reading64, stringCast64, lengthCast64) == 0 && IS_DIGIT(reading64[lengthCast64]) && IS_DIGIT(reading32[0]))
+						{
+							reading64 += lengthCast64;
+							vint digitCount = 0;
+							while (IS_DIGIT(reading64[digitCount])) digitCount++;
+							if (wcsncmp(reading64, reading32, digitCount) == 0 && reading64[digitCount] == L'L' && reading64[digitCount + 1] == L')')
+							{
+								writer.WriteString(L"static_cast<::vl::vint>(");
+								writer.WriteString(WString(reading64, digitCount));
+								writer.WriteChar(L')');
+								reading64 += digitCount + 2;
+								reading32 += digitCount;
+								goto NEXT_ROUND;
 							}
 						}
 						throw Exception(L"The difference at " + itow((vint)(reading32 - start32)) + L"-th character between Input C++ source files are not "

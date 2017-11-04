@@ -64,6 +64,7 @@
 #include "CoEnum.h"
 #include "CoEnum2.h"
 #include "CoAsyncReflection.h"
+#include "Overloading.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -680,6 +681,15 @@ TEST_CASE(CoAsync)
 {
 	WString expected = L"[0][+0][0][-0]![1][+1][1][-1]!";
 	WString actual = ::vl_workflow_global::CoAsync::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(Overloading)
+{
+	WString expected = L"[2][2][2][2][2][2][2][2][2][2]";
+	WString actual = ::vl_workflow_global::Overloading::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
