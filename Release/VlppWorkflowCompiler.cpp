@@ -14129,10 +14129,28 @@ SetCodeRange
 			{
 			public:
 				ParsingTextRange						range;
+				bool									asOffset;
 
-				SetCodeRangeVisitor(ParsingTextRange _range)
+				SetCodeRangeVisitor(ParsingTextRange _range, bool _asOffset)
 					:range(_range)
+					, asOffset(_asOffset)
 				{
+				}
+
+				void UpdateTextPos(ParsingTextPos& pos)
+				{
+					if (pos.row == -1 || pos.column == -1)
+					{
+						pos = range.start;
+					}
+					else 
+					{
+						if (pos.row == 0)
+						{
+							pos.column += range.start.column;
+						}
+						pos.row += range.start.row;
+					}
 				}
 
 				void Traverse(ParsingTreeCustomBase* node)override
@@ -14140,6 +14158,15 @@ SetCodeRange
 					if (node->codeRange == ParsingTextRange())
 					{
 						node->codeRange = range;
+					}
+					else if (asOffset)
+					{
+						UpdateTextPos(node->codeRange.start);
+						UpdateTextPos(node->codeRange.end);
+						if (node->codeRange.codeIndex == -1)
+						{
+							node->codeRange.codeIndex = range.codeIndex;
+						}
 					}
 				}
 
@@ -14149,32 +14176,41 @@ SetCodeRange
 					{
 						token.codeRange = range;
 					}
+					else if (asOffset)
+					{
+						UpdateTextPos(token.codeRange.start);
+						UpdateTextPos(token.codeRange.end);
+						if (token.codeRange.codeIndex == -1)
+						{
+							token.codeRange.codeIndex = range.codeIndex;
+						}
+					}
 				}
 			};
 
-			void SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange)
+			void SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
 			}
 
 /***********************************************************************
@@ -14202,6 +14238,10 @@ ContextFreeModuleDesugar
 
 					List<Ptr<WfExpression>> expressions;
 					const wchar_t* reading = node->value.value.Buffer();
+
+					const wchar_t* textPosCounter = reading;
+					ParsingTextPos formatPos = node->codeRange.start;
+					formatPos.column += 2;
 
 					while (*reading)
 					{
@@ -14251,6 +14291,21 @@ ContextFreeModuleDesugar
 							if (auto expression = WfParseExpression(input, manager->parsingTable, errors))
 							{
 								expressions.Add(expression);
+
+								while (textPosCounter++ < begin + 2)
+								{
+									switch (textPosCounter[-1])
+									{
+									case '\n':
+										formatPos.row++;
+										formatPos.column = 0;
+										break;
+									default:
+										formatPos.column++;
+										break;
+									}
+								}
+								SetCodeRange(expression, { formatPos,formatPos,node->codeRange.codeIndex }, true);
 							}
 							FOREACH(Ptr<ParsingError>, originalError, errors)
 							{
@@ -20394,11 +20449,12 @@ Helper Functions
 				}
 
 				List<Ptr<parsing::ParsingError>> functionErrors, nonFunctionErrors;
-				List<vint> selectedFunctionIndices;
+				List<Pair<vint, vint>> selectedFunctionIndices;
 				ITypeDescriptor* functionFd = description::GetTypeDescriptor<IValueFunctionProxy>();
 				for (vint i = 0; i < functions.Count(); i++)
 				{
 					bool failed = false;
+					vint convertCount = 0;
 					auto result = functions[i];
 					ITypeInfo* expressionType = GetFunctionType(result);
 
@@ -20421,7 +20477,14 @@ Helper Functions
 								if (resolvables[j] && types[j])
 								{
 									ITypeInfo* argumentType = genericType->GetGenericArgument(j + 1);
-									if (!CanConvertToType(types[j].Obj(), argumentType, false))
+									if (CanConvertToType(types[j].Obj(), argumentType, false))
+									{
+										if (!IsSameType(types[j].Obj(), argumentType))
+										{
+											convertCount++;
+										}
+									}
+									else
 									{
 										functionErrors.Add(WfErrors::FunctionArgumentTypeMismatched(node, result, j + 1, types[j].Obj(), argumentType));
 										failed = true;
@@ -20442,13 +20505,31 @@ Helper Functions
 				FUNCTION_TYPE_FINISHED:
 					if (!failed)
 					{
-						selectedFunctionIndices.Add(i);
+						selectedFunctionIndices.Add({ i,convertCount });
+					}
+				}
+
+				if (selectedFunctionIndices.Count() > 1)
+				{
+					vint minScore = From(selectedFunctionIndices)
+						.Select([](Pair<vint, vint> p)
+						{
+							return p.value;
+						})
+						.Min();
+
+					for (vint i = selectedFunctionIndices.Count() - 1; i >= 0; i--)
+					{
+						if (selectedFunctionIndices[i].value != minScore)
+						{
+							selectedFunctionIndices.RemoveAt(i);
+						}
 					}
 				}
 
 				if (selectedFunctionIndices.Count() == 1)
 				{
-					selectedFunctionIndex = selectedFunctionIndices[0];
+					selectedFunctionIndex = selectedFunctionIndices[0].key;
 					ITypeInfo* genericType = GetFunctionType(functions[selectedFunctionIndex])->GetElementType();
 					for (vint i = 0; i < types.Count(); i++)
 					{
@@ -20471,9 +20552,9 @@ Helper Functions
 						CopyFrom(
 							overloadedFunctions,
 							From(selectedFunctionIndices)
-							.Select([&functions](vint index)
+							.Select([&functions](Pair<vint, vint> p)
 							{
-								return functions[index];
+								return functions[p.key];
 							}));
 						manager->errors.Add(WfErrors::CannotPickOverloadedFunctions(node, overloadedFunctions));
 					}
@@ -29395,6 +29476,12 @@ MergeCppFile
 
 			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
 			{
+				static wchar_t stringCast32[] = L"static_cast<::vl::vint32_t>(";
+				const vint lengthCast32 = sizeof(stringCast32) / sizeof(*stringCast32) - 1;
+
+				static wchar_t stringCast64[] = L"static_cast<::vl::vint64_t>(";
+				const vint lengthCast64 = sizeof(stringCast64) / sizeof(*stringCast64) - 1;
+
 				return GenerateToStream([&](StreamWriter& writer)
 				{
 					const wchar_t* reading32 = code32.Buffer();
@@ -29464,6 +29551,36 @@ MergeCppFile
 										goto NEXT_ROUND;
 									}
 								}
+							}
+						}
+						else if (wcsncmp(reading32, stringCast32, lengthCast32) == 0 && IS_DIGIT(reading32[lengthCast32]) && IS_DIGIT(reading64[0]))
+						{
+							reading32 += lengthCast32;
+							vint digitCount = 0;
+							while (IS_DIGIT(reading32[digitCount])) digitCount++;
+							if (wcsncmp(reading32, reading64, digitCount) == 0 && reading64[digitCount] == L'L' && reading32[digitCount] == L')')
+							{
+								writer.WriteString(L"static_cast<::vl::vint>(");
+								writer.WriteString(WString(reading32, digitCount));
+								writer.WriteChar(L')');
+								reading64 += digitCount + 1;
+								reading32 += digitCount + 1;
+								goto NEXT_ROUND;
+							}
+						}
+						else if (wcsncmp(reading64, stringCast64, lengthCast64) == 0 && IS_DIGIT(reading64[lengthCast64]) && IS_DIGIT(reading32[0]))
+						{
+							reading64 += lengthCast64;
+							vint digitCount = 0;
+							while (IS_DIGIT(reading64[digitCount])) digitCount++;
+							if (wcsncmp(reading64, reading32, digitCount) == 0 && reading64[digitCount] == L'L' && reading64[digitCount + 1] == L')')
+							{
+								writer.WriteString(L"static_cast<::vl::vint>(");
+								writer.WriteString(WString(reading64, digitCount));
+								writer.WriteChar(L')');
+								reading64 += digitCount + 2;
+								reading32 += digitCount;
+								goto NEXT_ROUND;
 							}
 						}
 						throw Exception(L"The difference at " + itow((vint)(reading32 - start32)) + L"-th character between Input C++ source files are not "
