@@ -474,6 +474,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates);
 				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfReturnStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfCoOperatorStatement* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfCoOperatorExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			CoOperatorCannotResolveResultType(WfCoOperatorStatement* node, collections::List<reflection::description::ITypeInfo*>& types);
 				static Ptr<parsing::ParsingError>			CoProviderCreateNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			CoProviderCreateAndRunNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);

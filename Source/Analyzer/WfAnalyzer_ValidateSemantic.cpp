@@ -657,17 +657,24 @@ ValidateSemantic(Statement)
 										}
 									}
 
-									vint selectedFunctionIndex = -1;
-									List<Ptr<WfExpression>> arguments;
-									arguments.Add(nullptr);
-									if (node->expression)
+									if (functions.Count() != 0)
 									{
-										arguments.Add(node->expression);
+										vint selectedFunctionIndex = -1;
+										List<Ptr<WfExpression>> arguments;
+										arguments.Add(nullptr);
+										if (node->expression)
+										{
+											arguments.Add(node->expression);
+										}
+										SelectFunction(manager, node, nullptr, functions, arguments, selectedFunctionIndex);
+										if (selectedFunctionIndex != -1)
+										{
+											manager->coOperatorResolvings.Add(node, functions[selectedFunctionIndex]);
+										}
 									}
-									SelectFunction(manager, node, nullptr, functions, arguments, selectedFunctionIndex);
-									if (selectedFunctionIndex != -1)
+									else
 									{
-										manager->coOperatorResolvings.Add(node, functions[selectedFunctionIndex]);
+										manager->errors.Add(WfErrors::CoOperatorNotExists(node, providerSymbol->typeInfo.Obj()));
 									}
 								}
 								else
@@ -1119,29 +1126,29 @@ ValidateSemantic(Statement)
 									}
 								}
 
-								if (groups.Count() == 0)
+								List<ResolveExpressionResult> functions;
+								FOREACH(IMethodGroupInfo*, group, groups)
+								{
+									vint count = group->GetMethodCount();
+									for (vint i = 0; i < count; i++)
+									{
+										auto method = group->GetMethod(i);
+										if (method->IsStatic())
+										{
+											if (method->GetParameterCount() > 0 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
+											{
+												functions.Add(ResolveExpressionResult::Method(method));
+											}
+										}
+									}
+								}
+
+								if (functions.Count() == 0)
 								{
 									manager->errors.Add(WfErrors::CoOperatorNotExists(node, providerSymbol->typeInfo.Obj()));
 								}
 								else
 								{
-									List<ResolveExpressionResult> functions;
-									FOREACH(IMethodGroupInfo*, group, groups)
-									{
-										vint count = group->GetMethodCount();
-										for (vint i = 0; i < count; i++)
-										{
-											auto method = group->GetMethod(i);
-											if (method->IsStatic())
-											{
-												if (method->GetParameterCount() > 0 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
-												{
-													functions.Add(ResolveExpressionResult::Method(method));
-												}
-											}
-										}
-									}
-
 									vint selectedFunctionIndex = -1;
 									vint oldErrorCount = manager->errors.Count();
 									List<Ptr<WfExpression>> arguments;
@@ -3107,7 +3114,40 @@ ValidateSemantic(Expression)
 
 				void Visit(WfCoOperatorExpression* node)override
 				{
-					throw 0;
+					auto scope = manager->nodeScopes[node].Obj();
+					auto functionScope = scope->FindFunctionScope();
+					if (auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>())
+					{
+						if (funcDecl->statement.Cast<WfCoProviderStatement>())
+						{
+							auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
+							auto providerSymbol = providerScope->symbols[L"$PROVIDER"][0];
+							auto implSymbol = providerScope->symbols[L"$IMPL"][0];
+							if (providerSymbol->typeInfo && implSymbol->typeInfo)
+							{
+								if (auto group = providerSymbol->typeInfo->GetTypeDescriptor()->GetMethodGroupByName(L"Query" + node->name.value, true))
+								{
+									vint count = group->GetMethodCount();
+									for (vint i = 0; i < count; i++)
+									{
+										auto method = group->GetMethod(i);
+										if (method->IsStatic())
+										{
+											if (method->GetParameterCount() > 0 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
+											{
+												results.Add(ResolveExpressionResult::Method(method));
+											}
+										}
+									}
+								}
+
+								if (results.Count() == 0)
+								{
+									manager->errors.Add(WfErrors::CoOperatorNotExists(node, providerSymbol->typeInfo.Obj()));
+								}
+							}
+						}
+					}
 				}
 
 				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType, List<ResolveExpressionResult>& results)
