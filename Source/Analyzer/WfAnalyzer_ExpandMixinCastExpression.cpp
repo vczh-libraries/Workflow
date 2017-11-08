@@ -30,7 +30,7 @@ ExpandNewCoroutineExpression
 						varDecl->classMember->kind = WfClassMemberKind::Normal;
 					}
 					varDecl->name.value = L"<mixin-source>";
-					varDecl->expression = CopyExpression(node->expression);
+					varDecl->expression = CopyExpression(node->expression, true);
 
 					if (sourceType->GetDecorator() == ITypeInfo::RawPtr)
 					{

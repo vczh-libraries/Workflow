@@ -26,7 +26,7 @@ ExpandSwitchStatement
 					auto decl = MakePtr<WfVariableDeclaration>();
 					decl->name.value = varName;
 					decl->type = GetTypeFromTypeInfo(result.type.Obj());
-					decl->expression = CopyExpression(node->expression);
+					decl->expression = CopyExpression(node->expression, true);
 
 					auto stat = MakePtr<WfVariableStatement>();
 					stat->variable = decl;
@@ -47,7 +47,7 @@ ExpandSwitchStatement
 						refExpr->name.value = varName;
 
 						auto inferExpr = MakePtr<WfInferExpression>();
-						inferExpr->expression= CopyExpression(switchCase->expression);
+						inferExpr->expression= CopyExpression(switchCase->expression, true);
 						{
 							auto result = manager->expressionResolvings[switchCase->expression.Obj()];
 							inferExpr->type = GetTypeFromTypeInfo(result.type.Obj());
@@ -60,12 +60,12 @@ ExpandSwitchStatement
 
 						ifStat->expression = compare;
 					}
-					ifStat->trueBranch = CopyStatement(switchCase->statement);
+					ifStat->trueBranch = CopyStatement(switchCase->statement, true);
 				}
 
 				if (node->defaultBranch)
 				{
-					*tailIfStat = CopyStatement(node->defaultBranch);
+					*tailIfStat = CopyStatement(node->defaultBranch, true);
 				}
 
 				if (rootIfStat)
@@ -104,15 +104,15 @@ ExpandForEachStatement
 				return stat;
 			}
 
-			class CopyForEachRangeBodyVisitor
-				: public copy_visitor::ModuleVisitor
+			class CopyForEachRangeBodyVisitor : public CopyWithExpandVirtualVisitor
 			{
 			public:
 				WfLexicalScopeManager*						manager;
 				WfForEachStatement*							forEach;
 
 				CopyForEachRangeBodyVisitor(WfLexicalScopeManager* _manager, WfForEachStatement* _forEach)
-					:manager(_manager)
+					:CopyWithExpandVirtualVisitor(true)
+					, manager(_manager)
 					, forEach(_forEach)
 				{
 				}
@@ -162,7 +162,7 @@ ExpandForEachStatement
 						auto decl = MakePtr<WfVariableDeclaration>();
 						decl->name.value = varBegin;
 						decl->type = GetTypeFromTypeInfo(result.type.Obj());
-						decl->expression = CopyExpression(range->begin);
+						decl->expression = CopyExpression(range->begin, true);
 						if (range->beginBoundary == WfRangeBoundary::Exclusive)
 						{
 							auto one = MakePtr<WfIntegerExpression>();
@@ -185,7 +185,7 @@ ExpandForEachStatement
 						auto decl = MakePtr<WfVariableDeclaration>();
 						decl->name.value = varEnd;
 						decl->type = GetTypeFromTypeInfo(result.type.Obj());
-						decl->expression = CopyExpression(range->end);
+						decl->expression = CopyExpression(range->end, true);
 						if (range->endBoundary == WfRangeBoundary::Exclusive)
 						{
 							auto one = MakePtr<WfIntegerExpression>();
@@ -255,7 +255,7 @@ ExpandForEachStatement
 						if (node->direction == WfForEachDirection::Normal)
 						{
 							auto inferExpr = MakePtr<WfInferExpression>();
-							inferExpr->expression = CopyExpression(node->collection);
+							inferExpr->expression = CopyExpression(node->collection, true);
 							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IValueEnumerable>>::CreateTypeInfo().Obj());
 
 							decl->expression = inferExpr;
@@ -275,7 +275,7 @@ ExpandForEachStatement
 
 							auto refCall = MakePtr<WfCallExpression>();
 							refCall->function = refMethod;
-							refCall->arguments.Add(CopyExpression(node->collection));
+							refCall->arguments.Add(CopyExpression(node->collection, true));
 
 							decl->expression = refCall;
 						}
@@ -350,7 +350,7 @@ ExpandForEachStatement
 								stat->variable = decl;
 								whileBlock->statements.Add(stat);
 							}
-							whileBlock->statements.Add(CopyStatement(node->statement));
+							whileBlock->statements.Add(CopyStatement(node->statement, true));
 						}
 						block->statements.Add(whileStat);
 					}
@@ -361,14 +361,14 @@ ExpandForEachStatement
 ExpandCoProviderStatement
 ***********************************************************************/
 
-			class ExpandCoProviderStatementVisitor
-				: public copy_visitor::ModuleVisitor
+			class ExpandCoProviderStatementVisitor : public CopyWithExpandVirtualVisitor
 			{
 			public:
 				WfLexicalScopeManager*						manager;
 
 				ExpandCoProviderStatementVisitor(WfLexicalScopeManager* _manager)
-					:manager(_manager)
+					:CopyWithExpandVirtualVisitor(true)
+					, manager(_manager)
 				{
 				}
 
@@ -550,18 +550,6 @@ ExpandCoProviderStatement
 
 					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
 					result = block;
-				}
-
-				Ptr<ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node)override
-				{
-					node->expandedExpression->Accept(this);
-					return result;
-				}
-
-				Ptr<ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node)override
-				{
-					node->expandedStatement->Accept(this);
-					return result;
 				}
 			};
 

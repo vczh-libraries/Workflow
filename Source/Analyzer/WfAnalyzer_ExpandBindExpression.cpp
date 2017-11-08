@@ -9,6 +9,7 @@ namespace vl
 			using namespace collections;
 			using namespace reflection;
 			using namespace reflection::description;
+			using namespace parsing;
 
 /***********************************************************************
 observing expressions:
@@ -410,24 +411,49 @@ CreateBindContext
 Copy(Type|Expression|Statement|Declaration)
 ***********************************************************************/
 
+			CopyWithExpandVirtualVisitor::CopyWithExpandVirtualVisitor(bool _expandVirtualExprStat)
+				:expandVirtualExprStat(_expandVirtualExprStat)
+			{
+			}
+
+			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualExpression* node)
+			{
+				if (!expandVirtualExprStat)
+				{
+					return copy_visitor::ModuleVisitor::Dispatch(node);
+				}
+				node->expandedExpression->Accept(this);
+				return result;
+			}
+
+			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualStatement* node)
+			{
+				if (!expandVirtualExprStat)
+				{
+					return copy_visitor::ModuleVisitor::Dispatch(node);
+				}
+				node->expandedStatement->Accept(this);
+				return result;
+			}
+
 			Ptr<WfType> CopyType(Ptr<WfType> type)
 			{
-				return copy_visitor::ModuleVisitor().CreateField(type);
+				return CopyWithExpandVirtualVisitor(false).CreateField(type);
 			}
 
-			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression)
+			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat)
 			{
-				return copy_visitor::ModuleVisitor().CreateField(expression);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(expression);
 			}
 
-			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement)
+			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat)
 			{
-				return copy_visitor::ModuleVisitor().CreateField(statement);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(statement);
 			}
 
-			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration)
+			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat)
 			{
-				return copy_visitor::ModuleVisitor().CreateField(declaration);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(declaration);
 			}
 
 /***********************************************************************
@@ -441,16 +467,20 @@ ExpandObserveExpression
 				return ref;
 			}
 
-			class ExpandObserveExpressionVisitor
-				: public copy_visitor::ExpressionVisitor
-				, public copy_visitor::VirtualExpressionVisitor
+			class ExpandObserveExpressionVisitor : public CopyWithExpandVirtualVisitor
 			{
 			public:
 				BindContext&									context;
 
 				ExpandObserveExpressionVisitor(BindContext& _context)
-					:context(_context)
+					:CopyWithExpandVirtualVisitor(true)
+					, context(_context)
 				{
+				}
+
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				{
+					return Execute(from.Obj(), context);
 				}
 
 				static Ptr<WfExpression> Execute(WfExpression* expression, BindContext& context, bool expandImmediately = true)
@@ -478,32 +508,6 @@ ExpandObserveExpression
 					ExpandObserveExpressionVisitor visitor(context);
 					expression->Accept(&visitor);
 					return visitor.result.Cast<WfExpression>();
-				}
-
-				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
-				{
-					return Execute(from.Obj(), context);
-				}
-
-				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
-				{
-					return CopyType(from);
-				}
-
-				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
-				{
-					return CopyStatement(from);
-				}
-
-				vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from)override
-				{
-					return CopyDeclaration(from);
-				}
-
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node)override
-				{
-					node->Accept((WfVirtualExpression::IVisitor*)this);
-					return result;
 				}
 
 				void Visit(WfLetExpression* node)override

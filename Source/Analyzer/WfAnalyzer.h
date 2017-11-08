@@ -376,10 +376,22 @@ Semantic Analyzing
 Expanding Virtual Nodes
 ***********************************************************************/
 
+			class CopyWithExpandVirtualVisitor : public copy_visitor::ModuleVisitor
+			{
+			private:
+				bool										expandVirtualExprStat;
+
+			public:
+				CopyWithExpandVirtualVisitor(bool _expandVirtualExprStat);
+
+				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualExpression* node)override;
+				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualStatement* node)override;
+			};
+
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
-			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
-			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
-			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration);
+			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat);
+			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat);
+			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat);
 			extern Ptr<WfExpression>						CreateDefaultValue(reflection::description::ITypeInfo* elementType);
 
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);

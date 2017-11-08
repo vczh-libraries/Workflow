@@ -296,14 +296,15 @@ FlowChart
 GenerateFlowChart
 ***********************************************************************/
 
-			class GenerateFlowChartModuleVisitor : public copy_visitor::ModuleVisitor
+			class GenerateFlowChartModuleVisitor : public CopyWithExpandVirtualVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
 				Dictionary<WfLexicalSymbol*, WString>&	referenceRenaming;
 
 				GenerateFlowChartModuleVisitor(WfLexicalScopeManager* _manager, Dictionary<WfLexicalSymbol*, WString>& _referenceRenaming)
-					:manager(_manager)
+					:CopyWithExpandVirtualVisitor(true)
+					, manager(_manager)
 					, referenceRenaming(_referenceRenaming)
 				{
 				}

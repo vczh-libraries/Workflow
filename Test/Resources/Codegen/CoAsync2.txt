@@ -4,7 +4,6 @@ using test::*;
 using CoAsync2_types::*;
 
 var s = "";
-var context = new AsyncContext^(null);
 
 namespace CoAsync2_types
 {
@@ -29,7 +28,7 @@ ${
 
 		if (i == 5)
 		{
-			context.Cancel();
+			$.Cancel();
 		}
 	}
 }
@@ -41,7 +40,7 @@ func main():string
 		GetMultipleString().Execute(func(result: CoroutineResult^): void
 		{
 			s = $"$(s)[$(result.Failure.Message)]";
-		}, context);
+		}, new AsyncContext^(null));
 	});
 	return s;
 }
