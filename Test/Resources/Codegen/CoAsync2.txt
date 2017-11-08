@@ -1,0 +1,43 @@
+module test;
+using system::*;
+using test::*;
+
+var s = "";
+var context = new AsyncContext^();
+
+$interface IStringAsync : Async<string>;
+
+func GetStringAsync(x : int): IStringAsync^
+${
+	if ($.IsCancelled)
+	{
+		raise "Cancelled";
+	}
+	return cast string x;
+}
+
+func GetMultipleString() : Async^
+${
+	for(i in range[1, 10])
+	{
+		var x = $Await GetStringAsync(i);
+		s = $"$(s)[$(x)]";
+
+		if (i == 5)
+		{
+			context.Cancel();
+		}
+	}
+}
+
+func main():string
+{
+	SyncScheduler::Run(func():void
+	{
+		GetMultipleString().Execute(func(result: CoroutineResult^): void
+		{
+			x = $"$(x)[$(result.Failure.Message)]";
+		}, context);
+	});
+	return s;
+}
