@@ -3149,6 +3149,7 @@ ValidateSemantic(Expression)
 							auto implSymbol = providerScope->symbols[L"$IMPL"][0];
 							if (providerSymbol->typeInfo && implSymbol->typeInfo)
 							{
+								List<ResolveExpressionResult> methods;
 								if (auto group = providerSymbol->typeInfo->GetTypeDescriptor()->GetMethodGroupByName(L"QueryContext", true))
 								{
 									vint count = group->GetMethodCount();
@@ -3159,13 +3160,28 @@ ValidateSemantic(Expression)
 										{
 											if (method->GetParameterCount() == 1 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
 											{
-												results.Add(ResolveExpressionResult::Method(method));
+												methods.Add(ResolveExpressionResult::Method(method));
 											}
 										}
 									}
 								}
 
-								if (results.Count() == 0)
+								if (methods.Count() > 1)
+								{
+									manager->errors.Add(WfErrors::CannotPickOverloadedFunctions(node, methods));
+								}
+								else if (methods.Count() == 1)
+								{
+									auto contextType = methods[0].methodInfo->GetReturn();
+									SortedList<ITypeDescriptor*> searchedTypes;
+									manager->ResolveMember(contextType->GetTypeDescriptor(), node->name.value, false, searchedTypes, results);
+
+									if (results.Count() == 0)
+									{
+										manager->errors.Add(WfErrors::MemberNotExists(node, contextType->GetTypeDescriptor(), node->name.value));
+									}
+								}
+								else
 								{
 									manager->errors.Add(WfErrors::CoOperatorNotExists(node, providerSymbol->typeInfo.Obj()));
 								}
