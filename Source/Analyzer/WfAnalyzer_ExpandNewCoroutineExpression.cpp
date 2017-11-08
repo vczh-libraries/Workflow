@@ -1483,6 +1483,39 @@ ExpandNewCoroutineExpression
 					}
 				}
 			}
+
+/***********************************************************************
+ExpandNewCoroutineExpression
+***********************************************************************/
+
+			void ExpandCoOperatorExpression(WfLexicalScopeManager* manager, WfCoOperatorExpression* node)
+			{
+				auto scope = manager->nodeScopes[node].Obj();
+				auto functionScope = scope->FindFunctionScope();
+				auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>();
+				auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
+				auto providerSymbol = providerScope->symbols[L"$PROVIDER"][0];
+				auto providerType = providerSymbol->typeInfo;
+
+				auto refProvider = GetExpressionFromTypeDescriptor(providerType->GetTypeDescriptor());
+
+				auto refQueryContext = MakePtr<WfChildExpression>();
+				refQueryContext->parent = refProvider;
+				refQueryContext->name.value = L"QueryContext";
+
+				auto refImpl = MakePtr<WfReferenceExpression>();
+				refImpl->name.value = L"<co-impl>";
+
+				auto refCall = MakePtr<WfCallExpression>();
+				refCall->function = refQueryContext;
+				refCall->arguments.Add(refImpl);
+
+				auto refOperator = MakePtr<WfMemberExpression>();
+				refOperator->parent = refCall;
+				refOperator->name.value = node->name.value;
+
+				node->expandedExpression = refOperator;
+			}
 		}
 	}
 }
