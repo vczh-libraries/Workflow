@@ -74,7 +74,7 @@ ExpandNewCoroutineExpression
 								{
 									auto parameter = method->GetParameter(l);
 									auto argument = MakePtr<WfFunctionArgument>();
-									argument->name.value = parameter->GetName();
+									argument->name.value = L"<mixin-parameter>" + parameter->GetName();
 									argument->type = GetTypeFromTypeInfo(parameter->GetType());
 									funcDecl->arguments.Add(argument);
 								}
@@ -125,7 +125,7 @@ ExpandNewCoroutineExpression
 										auto parameter = method->GetParameter(l);
 
 										auto argumentExpr = MakePtr<WfReferenceExpression>();
-										argumentExpr->name.value = parameter->GetName();
+										argumentExpr->name.value = L"<mixin-parameter>" + parameter->GetName();
 										callExpr->arguments.Add(argumentExpr);
 									}
 

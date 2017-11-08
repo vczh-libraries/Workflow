@@ -1224,6 +1224,7 @@ ValidateSemantic(Expression)
 			public:
 				WfLexicalScopeManager*				manager;
 				Ptr<ITypeInfo>						expectedType;
+				bool								skipValidation = false;
 
 				ExpandVirtualExpressionVisitor(WfLexicalScopeManager* _manager, Ptr<ITypeInfo> _expectedType)
 					:manager(_manager)
@@ -1262,6 +1263,7 @@ ValidateSemantic(Expression)
 				void Visit(WfCoOperatorExpression* node)override
 				{
 					ExpandCoOperatorExpression(manager, node);
+					skipValidation = true;
 				}
 			};
 
@@ -3034,6 +3036,11 @@ ValidateSemantic(Expression)
 						ContextFreeExpressionDesugar(manager, node->expandedExpression);
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
+						{
+							return;
+						}
+
+						if (visitor.skipValidation)
 						{
 							return;
 						}

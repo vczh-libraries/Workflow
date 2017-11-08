@@ -362,8 +362,7 @@ ExpandCoProviderStatement
 ***********************************************************************/
 
 			class ExpandCoProviderStatementVisitor
-				: public copy_visitor::StatementVisitor
-				, public copy_visitor::CoroutineStatementVisitor
+				: public copy_visitor::ModuleVisitor
 			{
 			public:
 				WfLexicalScopeManager*						manager;
@@ -371,25 +370,6 @@ ExpandCoProviderStatement
 				ExpandCoProviderStatementVisitor(WfLexicalScopeManager* _manager)
 					:manager(_manager)
 				{
-				}
-
-				Ptr<WfExpression> CreateField(Ptr<WfExpression> from)override
-				{
-					if (!from) return nullptr;
-					return CopyExpression(from);
-				}
-
-				Ptr<WfType> CreateField(Ptr<WfType> from)override
-				{
-					if (!from) return nullptr;
-					return CopyType(from);
-				}
-
-				Ptr<WfStatement> CreateField(Ptr<WfStatement> from)override
-				{
-					if (!from) return nullptr;
-					from->Accept(this);
-					return result.Cast<WfStatement>();
 				}
 
 				void Visit(WfReturnStatement* node)override
@@ -572,15 +552,15 @@ ExpandCoProviderStatement
 					result = block;
 				}
 
-				Ptr<ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node)override
+				Ptr<ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node)override
 				{
-					node->expandedStatement->Accept(this);
+					node->expandedExpression->Accept(this);
 					return result;
 				}
 
-				Ptr<ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node)override
+				Ptr<ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node)override
 				{
-					node->Accept((WfCoroutineStatement::IVisitor*)this);
+					node->expandedStatement->Accept(this);
 					return result;
 				}
 			};
