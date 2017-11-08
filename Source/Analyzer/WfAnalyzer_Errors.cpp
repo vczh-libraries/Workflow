@@ -427,7 +427,7 @@ WfErrors
 
 			Ptr<parsing::ParsingError> WfErrors::CoOperatorNotExists(WfCoOperatorExpression* node, reflection::description::ITypeInfo* type)
 			{
-				return new ParsingError(node, L"C10: Static function \"Query" + node->name.value + L"\" does not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\".");
+				return new ParsingError(node, L"C10: Static function \"QueryContext\" does not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::CoOperatorCannotResolveResultType(WfCoOperatorStatement* node, collections::List<reflection::description::ITypeInfo*>& types)

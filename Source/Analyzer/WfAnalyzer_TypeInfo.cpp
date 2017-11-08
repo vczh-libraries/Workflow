@@ -314,6 +314,35 @@ GetTypeFromTypeInfo
 GetScopeNameFromReferenceType
 ***********************************************************************/
 
+			Ptr<WfExpression> GetTypeExpressionFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor)
+			{
+				List<WString> fragments;
+				GetTypeFragments(typeDescriptor, fragments);
+
+				Ptr<WfExpression> parentType;
+				FOREACH(WString, fragment, fragments)
+				{
+					if (!parentType)
+					{
+						auto type = MakePtr<WfTopQualifiedExpression>();
+						type->name.value = fragment;
+						parentType = type;
+					}
+					else
+					{
+						auto type = MakePtr<WfChildExpression>();
+						type->parent = parentType;
+						type->name.value = fragment;
+						parentType = type;
+					}
+				}
+				return parentType;
+			}
+
+/***********************************************************************
+GetScopeNameFromReferenceType
+***********************************************************************/
+
 			class GetScopeNameFromReferenceTypeVisitor : public Object, public WfType::IVisitor
 			{
 			public:

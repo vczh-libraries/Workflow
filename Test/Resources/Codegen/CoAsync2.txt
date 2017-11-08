@@ -3,13 +3,13 @@ using system::*;
 using test::*;
 
 var s = "";
-var context = new AsyncContext^();
+var context = new AsyncContext^(null);
 
 $interface IStringAsync : Async<string>;
 
 func GetStringAsync(x : int): IStringAsync^
 ${
-	if ($.IsCancelled)
+	if ($.IsCancelled())
 	{
 		raise "Cancelled";
 	}
@@ -36,7 +36,7 @@ func main():string
 	{
 		GetMultipleString().Execute(func(result: CoroutineResult^): void
 		{
-			x = $"$(x)[$(result.Failure.Message)]";
+			s = $"$(s)[$(result.Failure.Message)]";
 		}, context);
 	});
 	return s;

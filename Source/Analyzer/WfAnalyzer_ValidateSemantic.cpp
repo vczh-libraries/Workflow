@@ -1261,7 +1261,31 @@ ValidateSemantic(Expression)
 
 				void Visit(WfCoOperatorExpression* node)override
 				{
-					throw 0;
+					auto scope = manager->nodeScopes[node].Obj();
+					auto functionScope = scope->FindFunctionScope();
+					auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>();
+					auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
+					auto providerSymbol = providerScope->symbols[L"$PROVIDER"][0];
+					auto providerType = providerSymbol->typeInfo;
+
+					auto refProvider = GetExpressionFromTypeDescriptor(providerType->GetTypeDescriptor());
+
+					auto refQueryContext = MakePtr<WfChildExpression>();
+					refQueryContext->parent = refProvider;
+					refQueryContext->name.value = L"QueryContext";
+
+					auto refImpl = MakePtr<WfReferenceExpression>();
+					refImpl->name.value = L"<co-impl>";
+
+					auto refCall = MakePtr<WfCallExpression>();
+					refCall->function = refQueryContext;
+					refCall->arguments.Add(refImpl);
+
+					auto refOperator = MakePtr<WfMemberExpression>();
+					refOperator->parent = refCall;
+					refOperator->name.value = node->name.value;
+
+					node->expandedExpression = refOperator;
 				}
 			};
 
@@ -3125,7 +3149,7 @@ ValidateSemantic(Expression)
 							auto implSymbol = providerScope->symbols[L"$IMPL"][0];
 							if (providerSymbol->typeInfo && implSymbol->typeInfo)
 							{
-								if (auto group = providerSymbol->typeInfo->GetTypeDescriptor()->GetMethodGroupByName(L"Query" + node->name.value, true))
+								if (auto group = providerSymbol->typeInfo->GetTypeDescriptor()->GetMethodGroupByName(L"QueryContext", true))
 								{
 									vint count = group->GetMethodCount();
 									for (vint i = 0; i < count; i++)
@@ -3133,7 +3157,7 @@ ValidateSemantic(Expression)
 										auto method = group->GetMethod(i);
 										if (method->IsStatic())
 										{
-											if (method->GetParameterCount() > 0 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
+											if (method->GetParameterCount() == 1 && IsSameType(implSymbol->typeInfo.Obj(), method->GetParameter(0)->GetType()))
 											{
 												results.Add(ResolveExpressionResult::Method(method));
 											}
