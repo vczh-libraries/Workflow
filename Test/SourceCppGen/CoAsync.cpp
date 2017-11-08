@@ -204,9 +204,9 @@ Closures
 		this->__vwsn_mixin_source_ = __vwsnctor___vwsn_co_mixin_source_variable_;
 	}
 
-	bool __vwsnc2_CoAsync_GetStringAsync__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback)
+	bool __vwsnc2_CoAsync_GetStringAsync__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
 	{
-		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->Execute(callback);
+		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->Execute(__vwsn_mixin_parameter_callback, __vwsn_mixin_parameter_context);
 	}
 
 	::vl::reflection::description::AsyncStatus __vwsnc2_CoAsync_GetStringAsync__IStringAsync::GetStatus()
@@ -221,9 +221,9 @@ Closures
 		this->__vwsn_mixin_source_ = ::vl::Ptr<::vl::reflection::description::IAsync>(__vwsnctor_future);
 	}
 
-	bool __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& callback)
+	bool __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
 	{
-		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->Execute(callback);
+		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->Execute(__vwsn_mixin_parameter_callback, __vwsn_mixin_parameter_context);
 	}
 
 	::vl::reflection::description::AsyncStatus __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::GetStatus()

@@ -64,6 +64,7 @@
 #include "CoEnum.h"
 #include "CoEnum2.h"
 #include "CoAsyncReflection.h"
+#include "CoAsync2Reflection.h"
 #include "Overloading.h"
 
 using namespace vl;
@@ -90,6 +91,7 @@ void LoadTestCaseTypes()
 	 LoadWorkflowHintsTypes();
 	 LoadWorkflowAttributesTypes();
 	 LoadCoAsyncTypes();
+	 LoadCoAsync2Types();
 }
 
 TEST_CASE(HelloWorld)
@@ -681,6 +683,15 @@ TEST_CASE(CoAsync)
 {
 	WString expected = L"[0][+0][0][-0]![1][+1][1][-1]!";
 	WString actual = ::vl_workflow_global::CoAsync::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoAsync2)
+{
+	WString expected = L"[1][2][3][4][5][Cancelled]";
+	WString actual = ::vl_workflow_global::CoAsync2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
