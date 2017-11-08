@@ -34,10 +34,10 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::IStringAsync)
+			DECL_TYPE_INFO(::CoAsync2_types::IStringAsync)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IStringAsync, ::vl::reflection::description::IAsync)
-			END_INTERFACE_PROXY(::IStringAsync)
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::CoAsync2_types::IStringAsync, ::vl::reflection::description::IAsync)
+			END_INTERFACE_PROXY(::CoAsync2_types::IStringAsync)
 #endif
 
 			extern bool LoadCoAsync2Types();

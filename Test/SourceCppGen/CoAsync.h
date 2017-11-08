@@ -30,22 +30,25 @@ namespace vl_workflow_global
 	struct __vwsnf3_CoAsync_GetMultipleString_;
 	struct __vwsno4_CoAsync_main_;
 	class __vwsnc1_CoAsync_GetStringAsync___vl_reflection_description_ICoroutine;
-	class __vwsnc2_CoAsync_GetStringAsync__IStringAsync;
-	class __vwsnc3_CoAsync_GetStringAsync2__IStringAsync;
+	class __vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync;
+	class __vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync;
 	class __vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine;
 }
 
-class IStringAsync;
-
-class IStringAsync : public virtual ::vl::reflection::description::IAsync, public ::vl::reflection::Description<IStringAsync>
+namespace CoAsync_types
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
-	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IStringAsync>;
-#endif
-public:
-	static ::vl::WString CastResult(const ::vl::reflection::description::Value& value);
-};
+	class IStringAsync;
 
+	class IStringAsync : public virtual ::vl::reflection::description::IAsync, public ::vl::reflection::Description<IStringAsync>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IStringAsync>;
+#endif
+	public:
+		static ::vl::WString CastResult(const ::vl::reflection::description::Value& value);
+	};
+
+}
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -58,8 +61,8 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 
-		::vl::Ptr<::IStringAsync> GetStringAsync(::vl::vint x);
-		::vl::Ptr<::IStringAsync> GetStringAsync2(::vl::vint x);
+		::vl::Ptr<::CoAsync_types::IStringAsync> GetStringAsync(::vl::vint x);
+		::vl::Ptr<::CoAsync_types::IStringAsync> GetStringAsync2(::vl::vint x);
 		void GetMultipleString();
 		::vl::WString main();
 
@@ -121,20 +124,20 @@ Closures
 		void Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_) override;
 	};
 
-	class __vwsnc2_CoAsync_GetStringAsync__IStringAsync : public ::vl::Object, public virtual ::IStringAsync
+	class __vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync : public ::vl::Object, public virtual ::CoAsync_types::IStringAsync
 	{
 	public:
-		__vwsnc2_CoAsync_GetStringAsync__IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_);
+		__vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_);
 
 		::vl::Ptr<::vl::reflection::description::IAsync> __vwsn_mixin_source_;
 		bool Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context) override;
 		::vl::reflection::description::AsyncStatus GetStatus() override;
 	};
 
-	class __vwsnc3_CoAsync_GetStringAsync2__IStringAsync : public ::vl::Object, public virtual ::IStringAsync
+	class __vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync : public ::vl::Object, public virtual ::CoAsync_types::IStringAsync
 	{
 	public:
-		__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future);
+		__vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future);
 
 		::vl::Ptr<::vl::reflection::description::IAsync> __vwsn_mixin_source_;
 		bool Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context) override;

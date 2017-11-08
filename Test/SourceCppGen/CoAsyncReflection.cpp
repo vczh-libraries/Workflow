@@ -31,12 +31,12 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(IStringAsync)
+			IMPL_CPP_TYPE_INFO(CoAsync_types::IStringAsync)
 
 #define _ ,
-			BEGIN_INTERFACE_MEMBER(::IStringAsync)
+			BEGIN_INTERFACE_MEMBER(::CoAsync_types::IStringAsync)
 				CLASS_MEMBER_STATIC_METHOD(CastResult, { L"value" })
-			END_INTERFACE_MEMBER(::IStringAsync)
+			END_INTERFACE_MEMBER(::CoAsync_types::IStringAsync)
 
 #undef _
 			class CoAsyncTypeLoader : public Object, public ITypeLoader
@@ -44,7 +44,7 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(::IStringAsync)
+					ADD_TYPE_INFO(::CoAsync_types::IStringAsync)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -53,10 +53,10 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::Ptr<::IStringAsync> CoAsync2::GetStringAsync(::vl::vint x)
+	::vl::Ptr<::CoAsync2_types::IStringAsync> CoAsync2::GetStringAsync(::vl::vint x)
 	{
 		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoAsync2_GetStringAsync_(x)));
-		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync2_GetStringAsync__IStringAsync(__vwsn_co_mixin_source_variable_));
+		return ::vl::Ptr<::CoAsync2_types::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync2_GetStringAsync__CoAsync2_types_IStringAsync(__vwsn_co_mixin_source_variable_));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IAsync> CoAsync2::GetMultipleString()
@@ -194,17 +194,17 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_CoAsync2_GetStringAsync__IStringAsync::__vwsnc2_CoAsync2_GetStringAsync__IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_)
+	__vwsnc2_CoAsync2_GetStringAsync__CoAsync2_types_IStringAsync::__vwsnc2_CoAsync2_GetStringAsync__CoAsync2_types_IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_)
 	{
 		this->__vwsn_mixin_source_ = __vwsnctor___vwsn_co_mixin_source_variable_;
 	}
 
-	bool __vwsnc2_CoAsync2_GetStringAsync__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
+	bool __vwsnc2_CoAsync2_GetStringAsync__CoAsync2_types_IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
 	{
 		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->Execute(__vwsn_mixin_parameter_callback, __vwsn_mixin_parameter_context);
 	}
 
-	::vl::reflection::description::AsyncStatus __vwsnc2_CoAsync2_GetStringAsync__IStringAsync::GetStatus()
+	::vl::reflection::description::AsyncStatus __vwsnc2_CoAsync2_GetStringAsync__CoAsync2_types_IStringAsync::GetStatus()
 	{
 		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->GetStatus();
 	}
@@ -277,7 +277,7 @@ Closures
 						{
 							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 						}
-						(__vwsn_co0_x = ::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
+						(__vwsn_co0_x = ::CoAsync2_types::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + __vwsn_co0_x) + ::vl::WString(L"]", false)));
 						if ((__vwsn_co3_i == static_cast<::vl::vint>(5)))
 						{
@@ -321,14 +321,17 @@ Closures
 }
 
 /***********************************************************************
-Class (::IStringAsync)
+Class (::CoAsync2_types::IStringAsync)
 ***********************************************************************/
 
-::vl::WString IStringAsync::CastResult(const ::vl::reflection::description::Value& value)
+namespace CoAsync2_types
 {
-	return ::vl::__vwsn::Unbox<::vl::WString>(value);
-}
+	::vl::WString IStringAsync::CastResult(const ::vl::reflection::description::Value& value)
+	{
+		return ::vl::__vwsn::Unbox<::vl::WString>(value);
+	}
 
+}
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

@@ -1,11 +1,15 @@
 module test;
 using system::*;
 using test::*;
+using CoAsync2_types::*;
 
 var s = "";
 var context = new AsyncContext^(null);
 
-$interface IStringAsync : Async<string>;
+namespace CoAsync2_types
+{
+	$interface IStringAsync : Async<string>;
+}
 
 func GetStringAsync(x : int): IStringAsync^
 ${

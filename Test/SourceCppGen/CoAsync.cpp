@@ -51,17 +51,17 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync(::vl::vint x)
+	::vl::Ptr<::CoAsync_types::IStringAsync> CoAsync::GetStringAsync(::vl::vint x)
 	{
 		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoAsync_GetStringAsync_(x)));
-		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync_GetStringAsync__IStringAsync(__vwsn_co_mixin_source_variable_));
+		return ::vl::Ptr<::CoAsync_types::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync(__vwsn_co_mixin_source_variable_));
 	}
 
-	::vl::Ptr<::IStringAsync> CoAsync::GetStringAsync2(::vl::vint x)
+	::vl::Ptr<::CoAsync_types::IStringAsync> CoAsync::GetStringAsync2(::vl::vint x)
 	{
 		auto future = ::vl::reflection::description::IFuture::Create();
 		::vl::__vwsn::This(::vl::reflection::description::IAsyncScheduler::GetSchedulerForCurrentThread().Obj())->ExecuteInBackground(LAMBDA(::vl_workflow_global::__vwsnf2_CoAsync_GetStringAsync2_(future, x)));
-		return ::vl::Ptr<::IStringAsync>(new ::vl_workflow_global::__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(future));
+		return ::vl::Ptr<::CoAsync_types::IStringAsync>(new ::vl_workflow_global::__vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync(future));
 	}
 
 	void CoAsync::GetMultipleString()
@@ -199,34 +199,34 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_CoAsync_GetStringAsync__IStringAsync::__vwsnc2_CoAsync_GetStringAsync__IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_)
+	__vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync::__vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync(::vl::Ptr<::vl::reflection::description::IAsync> __vwsnctor___vwsn_co_mixin_source_variable_)
 	{
 		this->__vwsn_mixin_source_ = __vwsnctor___vwsn_co_mixin_source_variable_;
 	}
 
-	bool __vwsnc2_CoAsync_GetStringAsync__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
+	bool __vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
 	{
 		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->Execute(__vwsn_mixin_parameter_callback, __vwsn_mixin_parameter_context);
 	}
 
-	::vl::reflection::description::AsyncStatus __vwsnc2_CoAsync_GetStringAsync__IStringAsync::GetStatus()
+	::vl::reflection::description::AsyncStatus __vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync::GetStatus()
 	{
 		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->GetStatus();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_CoAsync_GetStringAsync2__IStringAsync::__vwsnc3_CoAsync_GetStringAsync2__IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future)
+	__vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync::__vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync(::vl::Ptr<::vl::reflection::description::IFuture> __vwsnctor_future)
 	{
 		this->__vwsn_mixin_source_ = ::vl::Ptr<::vl::reflection::description::IAsync>(__vwsnctor_future);
 	}
 
-	bool __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
+	bool __vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync::Execute(const ::vl::Func<void(::vl::Ptr<::vl::reflection::description::CoroutineResult>)>& __vwsn_mixin_parameter_callback, ::vl::Ptr<::vl::reflection::description::AsyncContext> __vwsn_mixin_parameter_context)
 	{
 		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->Execute(__vwsn_mixin_parameter_callback, __vwsn_mixin_parameter_context);
 	}
 
-	::vl::reflection::description::AsyncStatus __vwsnc3_CoAsync_GetStringAsync2__IStringAsync::GetStatus()
+	::vl::reflection::description::AsyncStatus __vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync::GetStatus()
 	{
 		return ::vl::__vwsn::This(__vwsn_mixin_source_.Obj())->GetStatus();
 	}
@@ -328,7 +328,7 @@ Closures
 						{
 							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 						}
-						(__vwsn_co0_x = ::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
+						(__vwsn_co0_x = ::CoAsync_types::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + __vwsn_co0_x) + ::vl::WString(L"]", false)));
 						(__vwsn_co_state_ = static_cast<::vl::vint>(5));
 						continue;
@@ -348,7 +348,7 @@ Closures
 						{
 							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 						}
-						(__vwsn_co1_y = ::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
+						(__vwsn_co1_y = ::CoAsync_types::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[-", false)) + __vwsn_co1_y) + ::vl::WString(L"]", false)));
 						(__vwsn_co_state_ = static_cast<::vl::vint>(7));
 						continue;
@@ -382,14 +382,17 @@ Closures
 }
 
 /***********************************************************************
-Class (::IStringAsync)
+Class (::CoAsync_types::IStringAsync)
 ***********************************************************************/
 
-::vl::WString IStringAsync::CastResult(const ::vl::reflection::description::Value& value)
+namespace CoAsync_types
 {
-	return ::vl::__vwsn::Unbox<::vl::WString>(value);
-}
+	::vl::WString IStringAsync::CastResult(const ::vl::reflection::description::Value& value)
+	{
+		return ::vl::__vwsn::Unbox<::vl::WString>(value);
+	}
 
+}
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
