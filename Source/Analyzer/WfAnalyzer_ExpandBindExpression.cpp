@@ -418,7 +418,7 @@ Copy(Type|Expression|Statement|Declaration)
 
 			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualExpression* node)
 			{
-				if (!expandVirtualExprStat)
+				if (!expandVirtualExprStat || !node->expandedExpression)
 				{
 					return copy_visitor::ModuleVisitor::Dispatch(node);
 				}
@@ -428,7 +428,7 @@ Copy(Type|Expression|Statement|Declaration)
 
 			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualStatement* node)
 			{
-				if (!expandVirtualExprStat)
+				if (!expandVirtualExprStat || !node->expandedStatement)
 				{
 					return copy_visitor::ModuleVisitor::Dispatch(node);
 				}

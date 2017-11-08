@@ -1261,7 +1261,14 @@ ValidateSemantic(Expression)
 
 				void Visit(WfCoOperatorExpression* node)override
 				{
-					ExpandCoOperatorExpression(manager, node);
+					auto scope = manager->nodeScopes[node].Obj();
+					auto functionScope = scope->FindFunctionScope();
+					if (functionScope->ownerNode.Cast<WfNewCoroutineExpression>())
+					{
+						// <co-impl> variable is created after $coroutine{} is generated
+						// so the expanding is delayed until $coroutine{} is ready
+						ExpandCoOperatorExpression(manager, node);
+					}
 				}
 			};
 
@@ -3023,6 +3030,11 @@ ValidateSemantic(Expression)
 					{
 						ExpandVirtualExpressionVisitor visitor(manager, expectedType);
 						node->Accept(&visitor);
+						if (!node->expandedExpression)
+						{
+							return;
+						}
+
 						SetCodeRange(node->expandedExpression, node->codeRange);
 
 						auto parentScope = manager->nodeScopes[node];

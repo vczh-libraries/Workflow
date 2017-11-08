@@ -1493,10 +1493,8 @@ ExpandNewCoroutineExpression
 			{
 				auto scope = manager->nodeScopes[node].Obj();
 				auto functionScope = scope->FindFunctionScope();
-				auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>();
-				auto providerScope = manager->nodeScopes[funcDecl->statement.Obj()];
-				auto providerSymbol = providerScope->symbols[L"$PROVIDER"][0];
-				auto providerType = providerSymbol->typeInfo;
+				auto newCoExpr = functionScope->ownerNode.Cast<WfNewCoroutineExpression>();
+				auto providerType = manager->coNewCoroutineResolvings[newCoExpr.Obj()].type;
 
 				auto refProvider = GetExpressionFromTypeDescriptor(providerType->GetTypeDescriptor());
 

@@ -197,9 +197,10 @@ Scope Manager
 
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
 				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
-				CoOperatorResolvingMap						coOperatorResolvings;			// the resolving result for the co-operator statement
-				CoOperatorResolvingMap						coProviderResolvings;			// the resolving result for the co-provider statement
-				CoOperatorResolvingMap						coCastResultResolvings;			// the resolving result for the co-operator statement's type casting
+				ExpressionResolvingMap						coNewCoroutineResolvings;		// the coroutine type for the WfNewCoroutineExpression (e.g. AsyncCoroutine)
+				CoOperatorResolvingMap						coOperatorResolvings;			// the method for the co-operator statement (e.g. AwaitAndRead)
+				CoOperatorResolvingMap						coProviderResolvings;			// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
+				CoOperatorResolvingMap						coCastResultResolvings;			// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
 				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
 				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
@@ -272,7 +273,6 @@ Type Analyzing
 			extern void										GetTypeFragments(reflection::description::ITypeDescriptor* typeDescriptor, collections::List<WString>& fragments);
 			extern Ptr<WfExpression>						GetExpressionFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor);
 			extern Ptr<WfType>								GetTypeFromTypeInfo(reflection::description::ITypeInfo* typeInfo);
-			extern Ptr<WfExpression>						GetTypeExpressionFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor);
 			extern Ptr<WfLexicalScopeName>					GetScopeNameFromReferenceType(WfLexicalScope* scope, Ptr<WfType> type);
 			extern Ptr<reflection::description::ITypeInfo>	CreateTypeInfoFromType(WfLexicalScope* scope, Ptr<WfType> type);
 

@@ -262,15 +262,8 @@ ExpandForEachStatement
 						}
 						else
 						{
-							auto refSystem = MakePtr<WfTopQualifiedExpression>();
-							refSystem->name.value = L"system";
-
-							auto refSys = MakePtr<WfChildExpression>();
-							refSys->parent = refSystem;
-							refSys->name.value = L"Sys";
-
 							auto refMethod = MakePtr<WfChildExpression>();
-							refMethod->parent = refSys;
+							refMethod->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Sys>());
 							refMethod->name.value = L"ReverseEnumerable";
 
 							auto refCall = MakePtr<WfCallExpression>();
@@ -567,6 +560,7 @@ ExpandCoProviderStatement
 					coroutineExpr->name.value = L"<co-result>";
 					coroutineExpr->statement = ExpandCoProviderStatementVisitor(manager).CreateField(node->statement);
 				}
+				manager->coNewCoroutineResolvings.Add(coroutineExpr, ResolveExpressionResult::ReadonlyType(providerType));
 
 				auto creatorExpr = MakePtr<WfFunctionExpression>();
 				{

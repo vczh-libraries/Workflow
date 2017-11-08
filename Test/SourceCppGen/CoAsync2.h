@@ -59,7 +59,6 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::Ptr<::vl::reflection::description::AsyncContext> context;
 
 		::vl::Ptr<::CoAsync2_types::IStringAsync> GetStringAsync(::vl::vint x);
 		::vl::Ptr<::vl::reflection::description::IAsync> GetMultipleString();

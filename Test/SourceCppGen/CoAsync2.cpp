@@ -40,11 +40,9 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoAsync2)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString(L"", false);
-		instance.context = ::vl::Ptr<::vl::reflection::description::AsyncContext>(new ::vl::reflection::description::AsyncContext(::vl::reflection::description::Value()));
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
-		instance.context = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoAsync2)
 
 namespace vl_workflow_global
@@ -110,7 +108,7 @@ Closures
 
 	void __vwsnf3_CoAsync2_main_::operator()() const
 	{
-		::vl::__vwsn::This(GLOBAL_NAME GetMultipleString().Obj())->Execute(LAMBDA(::vl_workflow_global::__vwsnf4_CoAsync2_main__()), GLOBAL_NAME context);
+		::vl::__vwsn::This(GLOBAL_NAME GetMultipleString().Obj())->Execute(LAMBDA(::vl_workflow_global::__vwsnf4_CoAsync2_main__()), ::vl::Ptr<::vl::reflection::description::AsyncContext>(new ::vl::reflection::description::AsyncContext(::vl::reflection::description::Value())));
 	}
 
 	//-------------------------------------------------------------------
@@ -281,7 +279,7 @@ Closures
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + __vwsn_co0_x) + ::vl::WString(L"]", false)));
 						if ((__vwsn_co3_i == static_cast<::vl::vint>(5)))
 						{
-							::vl::__vwsn::This(GLOBAL_NAME context.Obj())->Cancel();
+							::vl::__vwsn::This(::vl::reflection::description::AsyncCoroutine::QueryContext(__vwsn_co_impl_).Obj())->Cancel();
 						}
 						(__vwsn_co3_i = (__vwsn_co3_i + static_cast<::vl::vint>(1)));
 						if ((__vwsn_co3_i <= __vwsn_co2_for_end_i))
