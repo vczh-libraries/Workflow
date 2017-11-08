@@ -20,11 +20,10 @@ IsExpressionDependOnExpectedType(Expression)
 			{
 			public:
 				WfLexicalScopeManager*				manager;
-				bool								result;
+				bool								result = false;
 
 				IsExpressionDependOnExpectedTypeVisitor(WfLexicalScopeManager* _manager)
 					:manager(_manager)
-					, result(false)
 				{
 				}
 

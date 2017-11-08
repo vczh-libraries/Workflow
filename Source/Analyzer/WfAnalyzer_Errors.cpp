@@ -384,6 +384,11 @@ WfErrors
 				return new ParsingError(node, L"C8: $Operator statement should appear inside a coroutine function (which has a functiona body like ${} or $Provider{}).");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongCoOperator(WfExpression* node)
+			{
+				return new ParsingError(node, L"C8: $.Operator expression should appear inside a coroutine function (which has a functiona body like ${} or $Provider{}).");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates)
 			{
 				WString description;

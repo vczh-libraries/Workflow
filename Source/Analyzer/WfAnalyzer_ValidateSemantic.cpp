@@ -1251,6 +1251,11 @@ ValidateSemantic(Expression)
 					castExpr->type = GetTypeFromTypeInfo(expectedType.Obj());
 					node->expandedExpression = castExpr;
 				}
+
+				void Visit(WfCoOperatorExpression* node)override
+				{
+					throw 0;
+				}
 			};
 
 			class ValidateSemanticExpressionVisitor
@@ -3098,6 +3103,11 @@ ValidateSemantic(Expression)
 					{
 						manager->errors.Add(WfErrors::ExpectedTypeCastCannotResolveType(node));
 					}
+				}
+
+				void Visit(WfCoOperatorExpression* node)override
+				{
+					throw 0;
 				}
 
 				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType, List<ResolveExpressionResult>& results)

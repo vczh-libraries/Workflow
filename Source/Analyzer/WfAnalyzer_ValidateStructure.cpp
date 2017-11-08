@@ -1465,6 +1465,14 @@ ValidateStructure(Expression)
 					ValidateExpressionStructure(manager, context, node->expression);
 				}
 
+				void Visit(WfCoOperatorExpression* node)override
+				{
+					if (!context->currentCoProviderStatement)
+					{
+						manager->errors.Add(WfErrors::WrongCoOperator(node));
+					}
+				}
+
 				static void Execute(Ptr<WfExpression>& expression, WfLexicalScopeManager* manager, ValidateStructureContext* context)
 				{
 					ValidateStructureExpressionVisitor visitor(manager, context);
