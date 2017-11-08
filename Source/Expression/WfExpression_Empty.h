@@ -160,6 +160,7 @@ namespace vl
 				void Visit(WfNewCoroutineExpression* node)override;
 				void Visit(WfMixinCastExpression* node)override;
 				void Visit(WfExpectedTypeCastExpression* node)override;
+				void Visit(WfCoOperatorExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor

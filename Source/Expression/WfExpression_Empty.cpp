@@ -380,6 +380,10 @@ VirtualExpressionVisitor
 			{
 			}
 
+			void VirtualExpressionVisitor::Visit(WfCoOperatorExpression* node)
+			{
+			}
+
 /***********************************************************************
 ModuleUsingFragmentVisitor
 ***********************************************************************/

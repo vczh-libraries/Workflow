@@ -1549,6 +1549,10 @@ VirtualExpressionVisitor
 			{
 			}
 
+			void VirtualExpressionVisitor::Traverse(WfCoOperatorExpression* node)
+			{
+			}
+
 			// Visitor Members -----------------------------------
 
 			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
@@ -1600,6 +1604,16 @@ VirtualExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->expression.Obj());
+				VisitField(node->expandedExpression.Obj());
+			}
+
+			void VirtualExpressionVisitor::Visit(WfCoOperatorExpression* node)
+			{
+				Traverse(static_cast<WfCoOperatorExpression*>(node));
+				Traverse(static_cast<WfVirtualExpression*>(node));
+				Traverse(static_cast<WfExpression*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->name);
 				VisitField(node->expandedExpression.Obj());
 			}
 

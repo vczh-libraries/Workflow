@@ -344,6 +344,7 @@ namespace vl
 				void CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to);
 				void CopyFields(WfMixinCastExpression* from, WfMixinCastExpression* to);
 				void CopyFields(WfExpectedTypeCastExpression* from, WfExpectedTypeCastExpression* to);
+				void CopyFields(WfCoOperatorExpression* from, WfCoOperatorExpression* to);
 
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
@@ -356,6 +357,7 @@ namespace vl
 				void Visit(WfNewCoroutineExpression* node)override;
 				void Visit(WfMixinCastExpression* node)override;
 				void Visit(WfExpectedTypeCastExpression* node)override;
+				void Visit(WfCoOperatorExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public virtual VisitorBase, public WfModuleUsingFragment::IVisitor

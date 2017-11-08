@@ -837,6 +837,14 @@ Print (Expression)
 				}
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfCoOperatorExpression* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"$.");
+				writer.WriteString(node->name.value);
+				writer.AfterPrint(node);
+			}
 		};
 
 /***********************************************************************

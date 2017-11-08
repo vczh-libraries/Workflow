@@ -741,6 +741,11 @@ class ExpectedTypeCastExpression : VirtualExpression
 	Expression				expression;
 }
 
+class CoOperatorExpression : VirtualExpression
+{
+	token					name;
+}
+
 //////////////////////////////////////////////////////////////////
 // AST (Module)
 //////////////////////////////////////////////////////////////////
@@ -946,6 +951,7 @@ rule Expression _VirtualExpression
 	= "bind" "(" _Expression : expression ")" as BindExpression
 	= "$coroutine" ["(" NAME : name ")"] _Block : statement as NewCoroutineExpression
 	= "new" _Type : type "(" "using" _Expression : expression ")" as MixinCastExpression
+	= "$" "." NAME : name as CoOperatorExpression
 	;
 
 rule Expression _ExpPrimitive

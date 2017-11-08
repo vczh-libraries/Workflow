@@ -1654,6 +1654,14 @@ VirtualExpressionVisitor
 				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
 			}
 
+			void VirtualExpressionVisitor::CopyFields(WfCoOperatorExpression* from, WfCoOperatorExpression* to)
+			{
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
+			}
+
 			// Visitor Members -----------------------------------
 
 			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
@@ -1687,6 +1695,13 @@ VirtualExpressionVisitor
 			void VirtualExpressionVisitor::Visit(WfExpectedTypeCastExpression* node)
 			{
 				auto newNode = vl::MakePtr<WfExpectedTypeCastExpression>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualExpressionVisitor::Visit(WfCoOperatorExpression* node)
+			{
+				auto newNode = vl::MakePtr<WfCoOperatorExpression>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}

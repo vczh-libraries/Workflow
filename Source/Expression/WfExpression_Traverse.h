@@ -354,6 +354,7 @@ namespace vl
 				virtual void Traverse(WfNewCoroutineExpression* node);
 				virtual void Traverse(WfMixinCastExpression* node);
 				virtual void Traverse(WfExpectedTypeCastExpression* node);
+				virtual void Traverse(WfCoOperatorExpression* node);
 
 				// VisitField (virtual) ------------------------------
 				virtual void VisitField(WfExpression* node) = 0;
@@ -366,6 +367,7 @@ namespace vl
 				void Visit(WfNewCoroutineExpression* node)override;
 				void Visit(WfMixinCastExpression* node)override;
 				void Visit(WfExpectedTypeCastExpression* node)override;
+				void Visit(WfCoOperatorExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor
