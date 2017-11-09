@@ -45,6 +45,7 @@ namespace CoAsync2_types
 #endif
 	public:
 		static ::vl::WString CastResult(const ::vl::reflection::description::Value& value);
+		static ::vl::reflection::description::Value StoreResult(const ::vl::WString& value);
 	};
 
 }

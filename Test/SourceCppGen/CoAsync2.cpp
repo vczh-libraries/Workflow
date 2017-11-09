@@ -169,7 +169,7 @@ Closures
 						{
 							throw ::vl::Exception(::vl::WString(L"Cancelled", false));
 						}
-						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
+						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::CoAsync2_types::IStringAsync::StoreResult(::vl::__vwsn::ToString(x)));
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
@@ -327,6 +327,11 @@ namespace CoAsync2_types
 	::vl::WString IStringAsync::CastResult(const ::vl::reflection::description::Value& value)
 	{
 		return ::vl::__vwsn::Unbox<::vl::WString>(value);
+	}
+
+	::vl::reflection::description::Value IStringAsync::StoreResult(const ::vl::WString& value)
+	{
+		return ::vl::__vwsn::Box(value);
 	}
 
 }

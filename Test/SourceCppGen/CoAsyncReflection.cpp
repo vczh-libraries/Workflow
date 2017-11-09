@@ -36,6 +36,7 @@ namespace vl
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::CoAsync_types::IStringAsync)
 				CLASS_MEMBER_STATIC_METHOD(CastResult, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(StoreResult, { L"value" })
 			END_INTERFACE_MEMBER(::CoAsync_types::IStringAsync)
 
 #undef _

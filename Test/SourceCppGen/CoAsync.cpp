@@ -176,7 +176,7 @@ Closures
 					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
 					{
 						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
-						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
+						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::CoAsync_types::IStringAsync::StoreResult(::vl::__vwsn::ToString(x)));
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
 					}
@@ -390,6 +390,11 @@ namespace CoAsync_types
 	::vl::WString IStringAsync::CastResult(const ::vl::reflection::description::Value& value)
 	{
 		return ::vl::__vwsn::Unbox<::vl::WString>(value);
+	}
+
+	::vl::reflection::description::Value IStringAsync::StoreResult(const ::vl::WString& value)
+	{
+		return ::vl::__vwsn::Box(value);
 	}
 
 }

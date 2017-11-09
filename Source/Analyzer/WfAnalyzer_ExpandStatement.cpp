@@ -383,7 +383,39 @@ ExpandCoProviderStatement
 						callExpr->arguments.Add(refImpl);
 						if (node->expression)
 						{
-							callExpr->arguments.Add(CreateField(node->expression));
+							auto returnValue = CreateField(node->expression);
+							{
+								auto scope = manager->nodeScopes[node].Obj();
+								auto functionScope = scope->FindFunctionScope();
+								if (auto funcDecl = functionScope->ownerNode.Cast<WfFunctionDeclaration>())
+								{
+									auto returnType = CreateTypeInfoFromType(scope, funcDecl->returnType);
+									if (auto group = returnType->GetTypeDescriptor()->GetMethodGroupByName(L"StoreResult", true))
+									{
+										vint count = group->GetMethodCount();
+										for (vint i = 0; i < count; i++)
+										{
+											auto method = group->GetMethod(i);
+											if (method->IsStatic() && method->GetParameterCount() == 1)
+											{
+												auto refType = GetExpressionFromTypeDescriptor(returnType->GetTypeDescriptor());
+
+												auto refStoreResult = MakePtr<WfChildExpression>();
+												refStoreResult->parent = refType;
+												refStoreResult->name.value = L"StoreResult";
+
+												auto callExpr = MakePtr<WfCallExpression>();
+												callExpr->function = refStoreResult;
+												callExpr->arguments.Add(returnValue);
+
+												returnValue = callExpr;
+												break;
+											}
+										}
+									}
+								}
+							}
+							callExpr->arguments.Add(returnValue);
 						}
 
 						auto stat = MakePtr<WfExpressionStatement>();
