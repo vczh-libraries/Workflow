@@ -556,6 +556,7 @@ Print (Expression)
 						writer.WriteString(L" : ");
 						WfPrint(argument->value, indent, writer);
 					}
+					writer.WriteString(L";");
 				}
 				writer.WriteString(L"}");
 				writer.AfterPrint(node);

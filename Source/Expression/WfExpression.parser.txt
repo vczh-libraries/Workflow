@@ -973,7 +973,7 @@ rule Expression _ExpPrimitive
 		_Expression : begin "," _Expression : end
 		((")" with {endBoundary = "Exclusive"}) | ("]" with {endBoundary = "Inclusive"}))
 		as RangeExpression
-	= "{" {_CtorFragment : arguments} "}" as ConstructorExpression
+	= "{" ({_CtorFragment : arguments} | {_CtorFragment : arguments ";"}) "}" as ConstructorExpression
 	= "new" _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as NewClassExpression
 	= "new" _Type : type "{" {_MemberDeclaration : declarations} "}" as NewInterfaceExpression
 	= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
