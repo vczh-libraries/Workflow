@@ -46,15 +46,24 @@ GenerateInstructions(Statement)
 					ApplyExitCode(scopeContext);
 				}
 
-				void InlineScopeExitCode(WfCodegenScopeType untilScopeType, bool exclusive)
+				void InlineScopeExitCode(WfCodegenScopeType untilScopeType, bool exclusive, const WString& name = L"")
 				{
 					vint index = context.functionContext->scopeContextStack.Count() - 1;
 					while (index >= 0)
 					{
 						auto scopeContext = context.functionContext->scopeContextStack[index];
-						if (exclusive && scopeContext->type == untilScopeType) break;
+						bool found = false;
+						if (scopeContext->type == untilScopeType)
+						{
+							if (name == L"" || scopeContext->name == name)
+							{
+								found = true;
+							}
+						}
+
+						if (exclusive && found) break;
 						ApplyExitCode(scopeContext);
-						if (!exclusive && scopeContext->type == untilScopeType) break;
+						if (!exclusive && found) break;
 						index--;
 					}
 				}
@@ -283,15 +292,32 @@ GenerateInstructions(Statement)
 
 				void Visit(WfBlockStatement* node)override
 				{
+					Ptr<WfCodegenScopeContext> blockContext;
+					if (node->endLabel.value != L"")
+					{
+						blockContext = context.functionContext->PushScopeContext(WfCodegenScopeType::Block, node->endLabel.value);
+					}
+
 					FOREACH(Ptr<WfStatement>, statement, node->statements)
 					{
 						GenerateStatementInstructions(context, statement);
+					}
+
+					if (blockContext)
+					{
+						vint breakLabelIndex = context.assembly->instructions.Count();
+						FOREACH(vint, index, blockContext->breakInstructions)
+						{
+							context.assembly->instructions[index].indexParameter = breakLabelIndex;
+						}
+						context.functionContext->PopScopeContext();
 					}
 				}
 
 				void Visit(WfGotoStatement* node)override
 				{
-					throw 0;
+					InlineScopeExitCode(WfCodegenScopeType::Block, false, node->label.value);
+					context.functionContext->GetCurrentScopeContext(WfCodegenScopeType::Loop, node->label.value)->breakInstructions.Add(INSTRUCTION(Ins::Jump(-1)));
 				}
 
 				void Visit(WfExpressionStatement* node)override

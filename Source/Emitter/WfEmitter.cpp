@@ -109,23 +109,27 @@ WfCodegenFunctionContext
 				return scopeContextStack[scopeContextStack.Count() - 1];
 			}
 
-			Ptr<WfCodegenScopeContext> WfCodegenFunctionContext::GetCurrentScopeContext(WfCodegenScopeType type)
+			Ptr<WfCodegenScopeContext> WfCodegenFunctionContext::GetCurrentScopeContext(WfCodegenScopeType type, const WString& name)
 			{
 				for (vint i = scopeContextStack.Count() - 1; i >= 0; i--)
 				{
 					auto context = scopeContextStack[i];
 					if (context->type == type)
 					{
-						return context;
+						if (name == L"" || context->name == name)
+						{
+							return context;
+						}
 					}
 				}
 				return 0;
 			}
 
-			Ptr<WfCodegenScopeContext> WfCodegenFunctionContext::PushScopeContext(WfCodegenScopeType type)
+			Ptr<WfCodegenScopeContext> WfCodegenFunctionContext::PushScopeContext(WfCodegenScopeType type, const WString& name)
 			{
 				auto context = MakePtr<WfCodegenScopeContext>();
 				context->type = type;
+				context->name = name;
 				scopeContextStack.Add(context);
 				return context;
 			}

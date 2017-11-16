@@ -57,6 +57,7 @@ Code Generation
 				Function,	// contains the whole function
 				Loop,		// contains all loops
 				TryCatch,	// contains try and catch, not finally
+				Block,		// contains labeled blocks
 			};
 
 			class WfCodegenScopeContext : public Object
@@ -68,6 +69,7 @@ Code Generation
 				WfCodegenScopeType					type = WfCodegenScopeType::Function;
 				InstructionIndexList				continueInstructions;
 				InstructionIndexList				breakInstructions;
+				WString								name;
 				
 				InstructionList						exitInstructions;
 				RangeMap							instructionCodeMappingBeforeCodegen;
@@ -91,8 +93,8 @@ Code Generation
 				WfCodegenFunctionContext();
 				
 				Ptr<WfCodegenScopeContext>			GetCurrentScopeContext();
-				Ptr<WfCodegenScopeContext>			GetCurrentScopeContext(WfCodegenScopeType type);
-				Ptr<WfCodegenScopeContext>			PushScopeContext(WfCodegenScopeType type);
+				Ptr<WfCodegenScopeContext>			GetCurrentScopeContext(WfCodegenScopeType type, const WString& name = L"");
+				Ptr<WfCodegenScopeContext>			PushScopeContext(WfCodegenScopeType type, const WString& name = L"");
 				void								PopScopeContext();
 			};
 
