@@ -492,6 +492,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CoOperatorCannotResolveResultType(WfCoOperatorStatement* node, collections::List<reflection::description::ITypeInfo*>& types);
 				static Ptr<parsing::ParsingError>			CoProviderCreateNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			CoProviderCreateAndRunNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			GotoLabelNotExists(WfGotoStatement* node);
+				static Ptr<parsing::ParsingError>			TooManyGotoLabel(WfGotoStatement* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);

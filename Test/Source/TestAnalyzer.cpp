@@ -108,6 +108,7 @@ TEST_CASE(TestAnalyzerError)
 		WString sample = LoadSample(L"AnalyzerError", itemName);
 		List<Ptr<ParsingError>> errors;
 		Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
+		TEST_ASSERT(errors.Count() == 0);
 		TEST_ASSERT(node);
 
 		manager.Clear(true, true);

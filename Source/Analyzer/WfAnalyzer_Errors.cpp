@@ -459,6 +459,16 @@ WfErrors
 				return new ParsingError(node, L"C12: The required static function \"CreateAndRun\" does not exist in coroutine provider \"" + type->GetTypeFriendlyName() + L"\". It is required to have exactly one argument of a function type, which consumes a pointer type and returns system::Coroutine^");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::GotoLabelNotExists(WfGotoStatement* node)
+			{
+				return new ParsingError(node, L"C13: Goto label \"" + node->label.value + L"\" does not exists. A goto label can only jump to the end of any block statement that contains this goto statement in the current function.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::TooManyGotoLabel(WfGotoStatement* node)
+			{
+				return new ParsingError(node, L"C14: Too many goto targets \"" + node->label.value + L"\" found.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");

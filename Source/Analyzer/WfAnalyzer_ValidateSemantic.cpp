@@ -794,7 +794,6 @@ ValidateSemantic(Statement)
 
 				void Visit(WfGotoStatement* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfExpressionStatement* node)override
