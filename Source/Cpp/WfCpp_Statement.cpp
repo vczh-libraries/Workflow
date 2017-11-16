@@ -223,6 +223,16 @@ namespace vl
 				{
 					writer.WriteString(prefixBlock);
 					writer.WriteLine(L"{");
+
+					auto oldPrefix = prefix;
+					if (node->endLabel.value != L"")
+					{
+						functionRecord->labelNames.Add(node->endLabel.value, L"__vwsnl_" + itow(functionRecord->labelCounter++) + L"_" + node->endLabel.value);
+						writer.WriteString(prefixBlock);
+						writer.WriteLine(L"\t{");
+						prefix += L"\t";
+					}
+
 					FOREACH(Ptr<WfStatement>, statement, node->statements)
 					{
 						while (auto virtualStat = statement.Cast<WfVirtualStatement>())
@@ -239,13 +249,28 @@ namespace vl
 							Call(statement, WString::Empty);
 						}
 					}
+
+					if (node->endLabel.value != L"")
+					{
+						prefix = oldPrefix;
+						writer.WriteString(prefixBlock);
+						writer.WriteLine(L"\t}");
+						writer.WriteString(prefixBlock);
+						writer.WriteString(L"\t");
+						writer.WriteString(functionRecord->labelNames[node->endLabel.value]);
+						writer.WriteLine(L":;");
+						functionRecord->labelNames.Remove(node->endLabel.value);
+					}
 					writer.WriteString(prefixBlock);
 					writer.WriteLine(L"}");
 				}
 
 				void Visit(WfGotoStatement* node)override
 				{
-					//throw 0;
+					writer.WriteString(prefix);
+					writer.WriteString(L"goto ");
+					writer.WriteString(functionRecord->labelNames[node->label.value]);
+					writer.WriteLine(L";");
 				}
 
 				void Visit(WfExpressionStatement* node)override

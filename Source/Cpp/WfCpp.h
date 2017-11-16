@@ -32,6 +32,7 @@ namespace vl
 				__vwsnt_#				: Temporary type
 				__vwsne_#				: Temporary variable (not for lambda)
 				__vwsnb_#				: Temporary block
+				__vwnsl_#_LABEL_NAME	: Goto label
 			*/
 
 			class WfCppConfig : public Object
@@ -169,9 +170,12 @@ WfCppConfig::Write
 
 			class FunctionRecord : public Object
 			{
+				using LabelMap = collections::Dictionary<WString, WString>;
 			public:
 				vint					exprCounter = 0;
 				vint					blockCounter = 0;
+				vint					labelCounter = 0;
+				LabelMap				labelNames;
 			};
 
 			extern void					GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);

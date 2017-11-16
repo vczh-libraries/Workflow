@@ -32,6 +32,7 @@
 #include "NamedLambda.h"
 #include "OrderedLambda.h"
 #include "TryFinally.h"
+#include "TryFinally2.h"
 #include "TryCatch.h"
 #include "Delete.h"
 #include "FailedThen.h"
@@ -395,6 +396,15 @@ TEST_CASE(TryFinally)
 {
 	WString expected = L"3115";
 	WString actual = ::vl_workflow_global::TryFinally::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(TryFinally2)
+{
+	WString expected = L"3115";
+	WString actual = ::vl_workflow_global::TryFinally2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
