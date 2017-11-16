@@ -317,7 +317,7 @@ GenerateInstructions(Statement)
 				void Visit(WfGotoStatement* node)override
 				{
 					InlineScopeExitCode(WfCodegenScopeType::Block, false, node->label.value);
-					context.functionContext->GetCurrentScopeContext(WfCodegenScopeType::Loop, node->label.value)->breakInstructions.Add(INSTRUCTION(Ins::Jump(-1)));
+					context.functionContext->GetCurrentScopeContext(WfCodegenScopeType::Block, node->label.value)->breakInstructions.Add(INSTRUCTION(Ins::Jump(-1)));
 				}
 
 				void Visit(WfExpressionStatement* node)override
