@@ -1008,6 +1008,13 @@ Print (Statement)
 					WfPrint(statement, indent + L"    ", writer);
 					writer.WriteLine(L"");
 				}
+
+				if (node->endLabel.value != L"")
+				{
+					writer.WriteString(indent + L"    ");
+					writer.WriteString(node->endLabel.value);
+					writer.WriteLine(L":;");
+				}
 				writer.WriteString(indent);
 				writer.WriteString(L"}");
 				writer.AfterPrint(node);

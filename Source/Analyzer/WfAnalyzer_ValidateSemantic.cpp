@@ -794,6 +794,28 @@ ValidateSemantic(Statement)
 
 				void Visit(WfGotoStatement* node)override
 				{
+					auto scope = manager->nodeScopes[node].Obj();
+					vint counter = 0;
+					while (scope && !scope->functionConfig)
+					{
+						if (auto block = scope->ownerNode.Cast<WfBlockStatement>())
+						{
+							if (block->endLabel.value == node->label.value)
+							{
+								counter++;
+							}
+						}
+						scope = scope->parentScope.Obj();
+					}
+
+					if (counter == 0)
+					{
+						manager->errors.Add(WfErrors::GotoLabelNotExists(node));
+					}
+					else if (counter > 1)
+					{
+						manager->errors.Add(WfErrors::TooManyGotoLabel(node));
+					}
 				}
 
 				void Visit(WfExpressionStatement* node)override
