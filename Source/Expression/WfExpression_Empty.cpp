@@ -239,6 +239,10 @@ StatementVisitor
 			{
 			}
 
+			void StatementVisitor::Visit(WfGotoStatement* node)
+			{
+			}
+
 			void StatementVisitor::Visit(WfVariableStatement* node)
 			{
 			}

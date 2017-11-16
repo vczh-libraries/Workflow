@@ -714,6 +714,11 @@ GenerateFlowChart
 					}
 				}
 
+				void Visit(WfGotoStatement* node)override
+				{
+					throw 0;
+				}
+
 				void Visit(WfVariableStatement* node)override
 				{
 					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);

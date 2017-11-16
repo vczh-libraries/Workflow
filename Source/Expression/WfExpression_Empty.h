@@ -95,6 +95,7 @@ namespace vl
 				void Visit(WfWhileStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
+				void Visit(WfGotoStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
 				void Visit(WfVirtualStatement* node)override;

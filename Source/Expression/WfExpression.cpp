@@ -1013,6 +1013,15 @@ Print (Statement)
 				writer.AfterPrint(node);
 			}
 
+			void Visit(WfGotoStatement* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"goto ");
+				writer.WriteString(node->label.value);
+				writer.WriteString(L";");
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfExpressionStatement* node)override
 			{
 				writer.BeforePrint(node);

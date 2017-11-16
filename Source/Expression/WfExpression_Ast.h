@@ -83,48 +83,49 @@ namespace vl
 			KEYWORD_ON = 63,
 			KEYWORD_ATTACH = 64,
 			KEYWORD_DETACH = 65,
-			KEYWORD_VAR = 66,
-			KEYWORD_BREAK = 67,
-			KEYWORD_CONTINUE = 68,
-			KEYWORD_RETURN = 69,
-			KEYWORD_DELETE = 70,
-			KEYWORD_RAISE = 71,
-			KEYWORD_IF = 72,
-			KEYWORD_ELSE = 73,
-			KEYWORD_SWITCH = 74,
-			KEYWORD_CASE = 75,
-			KEYWORD_DEFAULT = 76,
-			KEYWORD_WHILE = 77,
-			KEYWORD_FOR = 78,
-			KEYWORD_REVERSED = 79,
-			KEYWORD_TRY = 80,
-			KEYWORD_CATCH = 81,
-			KEYWORD_FINALLY = 82,
-			KEYWORD_CLASS = 83,
-			KEYWORD_ENUM = 84,
-			KEYWORD_FLAGENUM = 85,
-			KEYWORD_STRUCT = 86,
-			KEYWORD_PROP = 87,
-			KEYWORD_EVENT = 88,
-			KEYWORD_STATIC = 89,
-			KEYWORD_OVERRIDE = 90,
-			KEYWORD_USING = 91,
-			KEYWORD_NAMESPACE = 92,
-			KEYWORD_MODULE = 93,
-			KEYWORD_UNIT = 94,
-			COROUTINE_COROUTINE = 95,
-			COROUTINE_PAUSE = 96,
-			COROUTINE_INTERFACE = 97,
-			COROUTINE_OPERATOR = 98,
-			COROUTINE_SIGN = 99,
-			NAME = 100,
-			ORDERED_NAME = 101,
-			FLOAT = 102,
-			INTEGER = 103,
-			STRING = 104,
-			FORMATSTRING = 105,
-			SPACE = 106,
-			COMMENT = 107,
+			KEYWORD_GOTO = 66,
+			KEYWORD_VAR = 67,
+			KEYWORD_BREAK = 68,
+			KEYWORD_CONTINUE = 69,
+			KEYWORD_RETURN = 70,
+			KEYWORD_DELETE = 71,
+			KEYWORD_RAISE = 72,
+			KEYWORD_IF = 73,
+			KEYWORD_ELSE = 74,
+			KEYWORD_SWITCH = 75,
+			KEYWORD_CASE = 76,
+			KEYWORD_DEFAULT = 77,
+			KEYWORD_WHILE = 78,
+			KEYWORD_FOR = 79,
+			KEYWORD_REVERSED = 80,
+			KEYWORD_TRY = 81,
+			KEYWORD_CATCH = 82,
+			KEYWORD_FINALLY = 83,
+			KEYWORD_CLASS = 84,
+			KEYWORD_ENUM = 85,
+			KEYWORD_FLAGENUM = 86,
+			KEYWORD_STRUCT = 87,
+			KEYWORD_PROP = 88,
+			KEYWORD_EVENT = 89,
+			KEYWORD_STATIC = 90,
+			KEYWORD_OVERRIDE = 91,
+			KEYWORD_USING = 92,
+			KEYWORD_NAMESPACE = 93,
+			KEYWORD_MODULE = 94,
+			KEYWORD_UNIT = 95,
+			COROUTINE_COROUTINE = 96,
+			COROUTINE_PAUSE = 97,
+			COROUTINE_INTERFACE = 98,
+			COROUTINE_OPERATOR = 99,
+			COROUTINE_SIGN = 100,
+			NAME = 101,
+			ORDERED_NAME = 102,
+			FLOAT = 103,
+			INTEGER = 104,
+			STRING = 105,
+			FORMATSTRING = 106,
+			SPACE = 107,
+			COMMENT = 108,
 		};
 		class WfClassMember;
 		class WfType;
@@ -170,6 +171,7 @@ namespace vl
 		class WfWhileStatement;
 		class WfTryStatement;
 		class WfBlockStatement;
+		class WfGotoStatement;
 		class WfVariableStatement;
 		class WfExpressionStatement;
 		class WfVirtualStatement;
@@ -322,6 +324,7 @@ namespace vl
 				virtual void Visit(WfWhileStatement* node)=0;
 				virtual void Visit(WfTryStatement* node)=0;
 				virtual void Visit(WfBlockStatement* node)=0;
+				virtual void Visit(WfGotoStatement* node)=0;
 				virtual void Visit(WfVariableStatement* node)=0;
 				virtual void Visit(WfExpressionStatement* node)=0;
 				virtual void Visit(WfVirtualStatement* node)=0;
@@ -839,10 +842,21 @@ namespace vl
 		{
 		public:
 			vl::collections::List<vl::Ptr<WfStatement>> statements;
+			vl::parsing::ParsingToken endLabel;
 
 			void Accept(WfStatement::IVisitor* visitor)override;
 
 			static vl::Ptr<WfBlockStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfGotoStatement : public WfStatement, vl::reflection::Description<WfGotoStatement>
+		{
+		public:
+			vl::parsing::ParsingToken label;
+
+			void Accept(WfStatement::IVisitor* visitor)override;
+
+			static vl::Ptr<WfGotoStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfVariableStatement : public WfStatement, vl::reflection::Description<WfVariableStatement>
@@ -1601,6 +1615,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfWhileStatement)
 			DECL_TYPE_INFO(vl::workflow::WfTryStatement)
 			DECL_TYPE_INFO(vl::workflow::WfBlockStatement)
+			DECL_TYPE_INFO(vl::workflow::WfGotoStatement)
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
 			DECL_TYPE_INFO(vl::workflow::WfExpressionStatement)
 			DECL_TYPE_INFO(vl::workflow::WfVirtualStatement)
@@ -1934,6 +1949,11 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfBlockStatement* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfGotoStatement* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}

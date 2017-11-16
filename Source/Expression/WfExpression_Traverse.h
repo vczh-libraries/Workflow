@@ -169,6 +169,7 @@ namespace vl
 				virtual void Traverse(WfWhileStatement* node);
 				virtual void Traverse(WfTryStatement* node);
 				virtual void Traverse(WfBlockStatement* node);
+				virtual void Traverse(WfGotoStatement* node);
 				virtual void Traverse(WfVariableStatement* node);
 				virtual void Traverse(WfVariableDeclaration* node);
 				virtual void Traverse(WfDeclaration* node);
@@ -200,6 +201,7 @@ namespace vl
 				void Visit(WfWhileStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
+				void Visit(WfGotoStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
 				void Visit(WfVirtualStatement* node)override;

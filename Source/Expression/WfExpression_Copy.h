@@ -169,6 +169,7 @@ namespace vl
 				void CopyFields(WfWhileStatement* from, WfWhileStatement* to);
 				void CopyFields(WfTryStatement* from, WfTryStatement* to);
 				void CopyFields(WfBlockStatement* from, WfBlockStatement* to);
+				void CopyFields(WfGotoStatement* from, WfGotoStatement* to);
 				void CopyFields(WfVariableStatement* from, WfVariableStatement* to);
 				void CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to);
 				void CopyFields(WfDeclaration* from, WfDeclaration* to);
@@ -200,6 +201,7 @@ namespace vl
 				void Visit(WfWhileStatement* node)override;
 				void Visit(WfTryStatement* node)override;
 				void Visit(WfBlockStatement* node)override;
+				void Visit(WfGotoStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
 				void Visit(WfVirtualStatement* node)override;

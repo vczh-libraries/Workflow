@@ -182,6 +182,11 @@ Visitor Pattern Implementation
 			visitor->Visit(this);
 		}
 
+		void WfGotoStatement::Accept(WfStatement::IVisitor* visitor)
+		{
+			visitor->Visit(this);
+		}
+
 		void WfVariableStatement::Accept(WfStatement::IVisitor* visitor)
 		{
 			visitor->Visit(this);
@@ -492,6 +497,7 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfWhileStatement, workflow::WfWhileStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfTryStatement, workflow::WfTryStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfBlockStatement, workflow::WfBlockStatement)
+			IMPL_TYPE_INFO_RENAME(vl::workflow::WfGotoStatement, workflow::WfGotoStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVariableStatement, workflow::WfVariableStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfExpressionStatement, workflow::WfExpressionStatement)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualStatement, workflow::WfVirtualStatement)
@@ -998,7 +1004,16 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfBlockStatement>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(statements)
+				PARSING_TOKEN_FIELD(endLabel)
 			END_CLASS_MEMBER(WfBlockStatement)
+
+			BEGIN_CLASS_MEMBER(WfGotoStatement)
+				CLASS_MEMBER_BASE(WfStatement)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<WfGotoStatement>(), NO_PARAMETER)
+
+				PARSING_TOKEN_FIELD(label)
+			END_CLASS_MEMBER(WfGotoStatement)
 
 			BEGIN_CLASS_MEMBER(WfVariableStatement)
 				CLASS_MEMBER_BASE(WfStatement)
@@ -1604,6 +1619,7 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfWhileStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfTryStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfBlockStatement* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfGotoStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfVariableStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfExpressionStatement* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfStatement::IVisitor::*)(WfVirtualStatement* node))
@@ -1715,6 +1731,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfWhileStatement)
 					ADD_TYPE_INFO(vl::workflow::WfTryStatement)
 					ADD_TYPE_INFO(vl::workflow::WfBlockStatement)
+					ADD_TYPE_INFO(vl::workflow::WfGotoStatement)
 					ADD_TYPE_INFO(vl::workflow::WfVariableStatement)
 					ADD_TYPE_INFO(vl::workflow::WfExpressionStatement)
 					ADD_TYPE_INFO(vl::workflow::WfVirtualStatement)

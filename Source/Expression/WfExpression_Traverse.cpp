@@ -745,6 +745,10 @@ StatementVisitor
 			{
 			}
 
+			void StatementVisitor::Traverse(WfGotoStatement* node)
+			{
+			}
+
 			void StatementVisitor::Traverse(WfVariableStatement* node)
 			{
 			}
@@ -885,6 +889,15 @@ StatementVisitor
 				{
 					VisitField(listItem.Obj());
 				}
+				Traverse(node->endLabel);
+			}
+
+			void StatementVisitor::Visit(WfGotoStatement* node)
+			{
+				Traverse(static_cast<WfGotoStatement*>(node));
+				Traverse(static_cast<WfStatement*>(node));
+				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
+				Traverse(node->label);
 			}
 
 			void StatementVisitor::Visit(WfVariableStatement* node)

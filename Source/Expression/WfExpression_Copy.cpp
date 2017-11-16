@@ -852,6 +852,17 @@ StatementVisitor
 				{
 					to->statements.Add(CreateField(listItem));
 				}
+				to->endLabel.codeRange = from->endLabel.codeRange;
+				to->endLabel.tokenIndex = from->endLabel.tokenIndex;
+				to->endLabel.value = from->endLabel.value;
+				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+			}
+
+			void StatementVisitor::CopyFields(WfGotoStatement* from, WfGotoStatement* to)
+			{
+				to->label.codeRange = from->label.codeRange;
+				to->label.tokenIndex = from->label.tokenIndex;
+				to->label.value = from->label.value;
 				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
 			}
 
@@ -992,6 +1003,13 @@ StatementVisitor
 			void StatementVisitor::Visit(WfBlockStatement* node)
 			{
 				auto newNode = vl::MakePtr<WfBlockStatement>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void StatementVisitor::Visit(WfGotoStatement* node)
+			{
+				auto newNode = vl::MakePtr<WfGotoStatement>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}

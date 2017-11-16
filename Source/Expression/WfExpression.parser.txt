@@ -366,6 +366,12 @@ class TryStatement : Statement
 class BlockStatement : Statement
 {
 	Statement[]				statements;
+	token					endLabel;
+}
+
+class GotoStatement : Statement
+{
+	token					label;
 }
 
 class VariableStatement : Statement
@@ -859,6 +865,7 @@ token KEYWORD_OBSERVE = "observe";
 token KEYWORD_ON = "on";
 token KEYWORD_ATTACH = "attach";
 token KEYWORD_DETACH = "detach";
+token KEYWORD_GOTO = "goto";
 token KEYWORD_VAR = "var";
 token KEYWORD_BREAK = "break";
 token KEYWORD_CONTINUE = "continue";
@@ -1085,7 +1092,7 @@ rule SwitchCase _SwitchCase
 	;
 
 rule Statement _Block
-	= "{" {_Statement : statements} "}" as BlockStatement
+	= "{" {_Statement : statements} [NAME : endLabel ":" ";"] "}" as BlockStatement
 	;
 
 rule IfStatement _If
@@ -1110,6 +1117,7 @@ rule Statement _CoProvider
 
 rule Statement _Statement
 	= !_Block
+	= "goto" NAME : label ";" as GotoStatement
 	= _Variable : variable as VariableStatement
 	= "break" ";" as BreakStatement
 	= "continue" ";" as ContinueStatement

@@ -1072,6 +1072,10 @@ ValidateStructure(Statement)
 					}
 				}
 
+				void Visit(WfGotoStatement* node)override
+				{
+				}
+
 				void Visit(WfExpressionStatement* node)override
 				{
 					ValidateExpressionStructure(manager, context, node->expression);

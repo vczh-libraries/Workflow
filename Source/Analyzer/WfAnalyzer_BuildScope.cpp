@@ -388,6 +388,10 @@ BuildScopeForStatement
 					}
 				}
 
+				void Visit(WfGotoStatement* node)override
+				{
+				}
+
 				void Visit(WfExpressionStatement* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->expression);
