@@ -415,9 +415,9 @@ GenerateFlowChart
 					while (current)
 					{
 						bool found = false;
-						if (scopeContext->type == untilScopeType)
+						if (current->type == untilScopeType)
 						{
-							if (name == L"" || scopeContext->name == name)
+							if (name == L"" || current->name == name)
 							{
 								found = true;
 							}
@@ -456,24 +456,33 @@ GenerateFlowChart
 				void Visit(WfBreakStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Loop, false);
-					resultHead = flowChart->CreateNode(catchNode);
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
 					resultLast = resultHead;
-					resultLast->destination = targetContext->leaveNode;
+
+					auto branch = MakePtr<FlowChartBranch>();
+					branch->destination = targetContext->leaveNode;
+					resultLast->branches.Add(branch);
 				}
 
 				void Visit(WfContinueStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Loop, true);
-					resultHead = flowChart->CreateNode(catchNode);
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
 					resultLast = resultHead;
-					resultLast->destination = targetContext->enterNode;
+
+					auto branch = MakePtr<FlowChartBranch>();
+					branch->destination = targetContext->enterNode;
+					resultLast->branches.Add(branch);
 				}
 
 				void Visit(WfReturnStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Function, false);
 					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
-					resultLast->destination = targetContext->leaveNode;
+
+					auto branch = MakePtr<FlowChartBranch>();
+					branch->destination = targetContext->leaveNode;
+					resultLast->branches.Add(branch);
 				}
 
 				void Visit(WfDeleteStatement* node)override
@@ -751,15 +760,16 @@ GenerateFlowChart
 						auto blockEnd = flowChart->CreateNode(catchNode);
 						resultLast = resultHead;
 
-						ScopeContext loopContext;
-						loopContext.parent = scopeContext;
-						loopContext.type = ScopeType::Loop;
-						loopContext.enterNode = resultHead;
-						loopContext.leaveNode = blockEnd;
+						ScopeContext blockContext;
+						blockContext.parent = scopeContext;
+						blockContext.type = ScopeType::Block;
+						blockContext.name = node->endLabel.value;
+						blockContext.enterNode = resultHead;
+						blockContext.leaveNode = blockEnd;
 
 						FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
 						{
-							auto pair = Execute(resultLast, catchNode, scopeContext, stat);
+							auto pair = Execute(resultLast, catchNode, &blockContext, stat);
 							resultLast = pair.value;
 						}
 
@@ -771,9 +781,12 @@ GenerateFlowChart
 				void Visit(WfGotoStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Block, false, node->label.value);
-					resultHead = flowChart->CreateNode(catchNode);
+					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
 					resultLast = resultHead;
-					resultLast->destination = targetContext->leaveNode;
+
+					auto branch = MakePtr<FlowChartBranch>();
+					branch->destination = targetContext->leaveNode;
+					resultLast->branches.Add(branch);
 				}
 
 				void Visit(WfVariableStatement* node)override
@@ -1170,11 +1183,22 @@ ExpandFlowChartNode
 
 				FOREACH(Ptr<FlowChartBranch>, branch, flowChartNode->branches)
 				{
-					auto ifStat = MakePtr<WfIfStatement>();
-					ifStat->expression = branch->condition;
+					Ptr<WfBlockStatement> trueBlock;
 
-					auto trueBlock = MakePtr<WfBlockStatement>();
-					ifStat->trueBranch = trueBlock;
+					if (branch->condition)
+					{
+						auto ifStat = MakePtr<WfIfStatement>();
+						ifStat->expression = branch->condition;
+
+						trueBlock = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = trueBlock;
+
+						nodeBlock->statements.Add(ifStat);
+					}
+					else
+					{
+						trueBlock = nodeBlock;
+					}
 
 					if (branch->destination->embedInBranch)
 					{
@@ -1185,8 +1209,6 @@ ExpandFlowChartNode
 						trueBlock->statements.Add(GenerateSetCoState(nodeOrders, branch->destination));
 						trueBlock->statements.Add(MakePtr<WfContinueStatement>());
 					}
-
-					nodeBlock->statements.Add(ifStat);
 				}
 
 				if (!exited)
