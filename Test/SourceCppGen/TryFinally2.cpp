@@ -64,7 +64,7 @@ Global Functions
 							try
 							{
 								{
-									goto CONTINUE;
+									goto __vwsnl_0_CONTINUE;
 								}
 							}
 							catch(const ::vl::Exception&)
@@ -72,7 +72,7 @@ Global Functions
 							}
 						}
 					}
-					CONTINUE:;
+					__vwsnl_0_CONTINUE:;
 				}
 				(x = (x + static_cast<::vl::vint>(1)));
 			}
@@ -99,7 +99,7 @@ Global Functions
 							try
 							{
 								{
-									goto BREAK;
+									goto __vwsnl_0_BREAK;
 								}
 							}
 							catch(const ::vl::Exception&)
@@ -111,7 +111,7 @@ Global Functions
 				}
 			}
 		}
-		BREAK:;
+		__vwsnl_0_BREAK:;
 	}
 
 	void TryFinally2::test3()
@@ -127,7 +127,7 @@ Global Functions
 				try
 				{
 					{
-						goto RETURN;
+						goto __vwsnl_0_RETURN;
 					}
 				}
 				catch(const ::vl::Exception&)
@@ -135,7 +135,7 @@ Global Functions
 				}
 			}
 		}
-		RETURN:;
+		__vwsnl_0_RETURN:;
 	}
 
 	void TryFinally2::test4()
@@ -171,7 +171,7 @@ Global Functions
 										try
 										{
 											{
-												goto RETURN;
+												goto __vwsnl_0_RETURN;
 											}
 										}
 										catch(const ::vl::Exception&)
@@ -191,7 +191,7 @@ Global Functions
 				}
 			}
 		}
-		RETURN:;
+		__vwsnl_0_RETURN:;
 	}
 
 	::vl::WString TryFinally2::main()

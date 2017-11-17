@@ -117,7 +117,7 @@ WfCppConfig
 				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString(L"\t", false), expectedType);
 			}
 
-			WString WfCppConfig::ConvertName(const WString& name, const WString& specialNameCategory)
+			WString WfCppConfig::ConvertNameInternal(const WString& name, const WString& specialNameCategory, bool alwaysUseCategory)
 			{
 				if (name.Length() > 0 && name[0] == L'$')
 				{
@@ -139,10 +139,23 @@ WfCppConfig
 							})
 						+ L"_" + match->Groups()[L"name"][0].Value();
 				}
-				else
+				else if (alwaysUseCategory)
+				{
+					return specialNameCategory + name;
+				}
 				{
 					return name;
 				}
+			}
+
+			WString WfCppConfig::ConvertName(const WString& name)
+			{
+				return ConvertNameInternal(name, WString(L"__vwsn_", false), false);
+			}
+
+			WString WfCppConfig::ConvertName(const WString& name, const WString& specialNameCategory)
+			{
+				return ConvertNameInternal(name, specialNameCategory, true);
 			}
 
 			WString WfCppConfig::ConvertFullName(const WString& fullName, WString delimiter)
