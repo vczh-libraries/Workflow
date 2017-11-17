@@ -179,6 +179,13 @@ Closures
 						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::CoAsync_types::IStringAsync::StoreResult(::vl::__vwsn::ToString(x)));
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
+						continue;
+					}
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(1)))
+					{
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						return;
 					}
 				}
 			}

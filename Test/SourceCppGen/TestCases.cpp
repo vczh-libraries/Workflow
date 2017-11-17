@@ -62,6 +62,9 @@
 #include "CoRawCoroutine2.h"
 #include "CoRawCoroutine3.h"
 #include "CoRawCoroutine4.h"
+#include "CoRawCoroutine5.h"
+#include "CoRawCoroutine6.h"
+#include "CoRawCoroutine7.h"
 #include "CoEnum.h"
 #include "CoEnum2.h"
 #include "CoAsyncReflection.h"
@@ -666,6 +669,33 @@ TEST_CASE(CoRawCoroutine4)
 {
 	WString expected = L"[+0][-0][+1][-1][-2][*]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine4::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoRawCoroutine5)
+{
+	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
+	WString actual = ::vl_workflow_global::CoRawCoroutine5::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoRawCoroutine6)
+{
+	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
+	WString actual = ::vl_workflow_global::CoRawCoroutine6::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoRawCoroutine7)
+{
+	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
+	WString actual = ::vl_workflow_global::CoRawCoroutine7::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
