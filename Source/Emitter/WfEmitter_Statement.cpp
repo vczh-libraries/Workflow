@@ -46,7 +46,7 @@ GenerateInstructions(Statement)
 					ApplyExitCode(scopeContext);
 				}
 
-				void InlineScopeExitCode(WfCodegenScopeType untilScopeType, bool exclusive, const WString& name = L"")
+				void InlineScopeExitCode(WfCodegenScopeType untilScopeType, bool exclusive, const WString& name = WString::Empty)
 				{
 					vint index = context.functionContext->scopeContextStack.Count() - 1;
 					while (index >= 0)

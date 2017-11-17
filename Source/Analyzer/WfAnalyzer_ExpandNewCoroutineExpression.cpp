@@ -48,6 +48,16 @@ FindCoroutineAwaredStatements
 					awared = true;
 				}
 
+				void Visit(WfBreakStatement* node)override
+				{
+					awared = true;
+				}
+
+				void Visit(WfContinueStatement* node)override
+				{
+					awared = true;
+				}
+
 				void Visit(WfReturnStatement* node)override
 				{
 					awared = true;
@@ -82,6 +92,11 @@ FindCoroutineAwaredStatements
 						result |= a;
 					}
 					awared = result;
+				}
+
+				void Visit(WfGotoStatement* node)override
+				{
+					awared = true;
 				}
 			};
 
@@ -336,12 +351,14 @@ GenerateFlowChart
 					Function,
 					Loop,
 					TryCatch,
+					Block,
 				};
 
 				struct ScopeContext
 				{
 					ScopeContext*						parent = nullptr;
 					ScopeType							type = ScopeType::Function;
+					WString								name;
 					FlowChartNode*						enterNode = nullptr;
 					FlowChartNode*						leaveNode = nullptr;
 					ScopeContext*						exitStatementScope = nullptr;
@@ -392,17 +409,26 @@ GenerateFlowChart
 					resultHead->statements.Add(statement);
 				}
 
-				ScopeContext* InlineScopeExitCode(ScopeType untilScopeType, bool exclusive)
+				ScopeContext* InlineScopeExitCode(ScopeType untilScopeType, bool exclusive, const WString name = WString::Empty)
 				{
 					auto current = scopeContext;
 					while (current)
 					{
-						if (exclusive && current->type == untilScopeType) break;
+						bool found = false;
+						if (scopeContext->type == untilScopeType)
+						{
+							if (name == L"" || scopeContext->name == name)
+							{
+								found = true;
+							}
+						}
+
+						if (exclusive && found) break;
 						if (current->exitStatement)
 						{
 							AppendAwaredStatement(catchNode, current->exitStatementScope, current->exitStatement);
 						}
-						if (!exclusive && current->type == untilScopeType) break;
+						if (!exclusive && found) break;
 						current = current->parent;
 					}
 					return current;
@@ -430,12 +456,16 @@ GenerateFlowChart
 				void Visit(WfBreakStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Loop, false);
+					resultHead = flowChart->CreateNode(catchNode);
+					resultLast = resultHead;
 					resultLast->destination = targetContext->leaveNode;
 				}
 
 				void Visit(WfContinueStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Loop, true);
+					resultHead = flowChart->CreateNode(catchNode);
+					resultLast = resultHead;
 					resultLast->destination = targetContext->enterNode;
 				}
 
@@ -704,19 +734,46 @@ GenerateFlowChart
 
 				void Visit(WfBlockStatement* node)override
 				{
-					resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
-					resultLast = resultHead;
-
-					FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
+					if (node->endLabel.value == L"")
 					{
-						auto pair = Execute(resultLast, catchNode, scopeContext, stat);
-						resultLast = pair.value;
+						resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+						resultLast = resultHead;
+
+						FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
+						{
+							auto pair = Execute(resultLast, catchNode, scopeContext, stat);
+							resultLast = pair.value;
+						}
+					}
+					else
+					{
+						resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
+						auto blockEnd = flowChart->CreateNode(catchNode);
+						resultLast = resultHead;
+
+						ScopeContext loopContext;
+						loopContext.parent = scopeContext;
+						loopContext.type = ScopeType::Loop;
+						loopContext.enterNode = resultHead;
+						loopContext.leaveNode = blockEnd;
+
+						FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
+						{
+							auto pair = Execute(resultLast, catchNode, scopeContext, stat);
+							resultLast = pair.value;
+						}
+
+						resultLast->destination = blockEnd;
+						resultLast = blockEnd;
 					}
 				}
 
 				void Visit(WfGotoStatement* node)override
 				{
-					throw 0;
+					auto targetContext = InlineScopeExitCode(ScopeType::Block, false, node->label.value);
+					resultHead = flowChart->CreateNode(catchNode);
+					resultLast = resultHead;
+					resultLast->destination = targetContext->leaveNode;
 				}
 
 				void Visit(WfVariableStatement* node)override

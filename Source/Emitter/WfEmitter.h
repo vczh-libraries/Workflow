@@ -93,8 +93,8 @@ Code Generation
 				WfCodegenFunctionContext();
 				
 				Ptr<WfCodegenScopeContext>			GetCurrentScopeContext();
-				Ptr<WfCodegenScopeContext>			GetCurrentScopeContext(WfCodegenScopeType type, const WString& name = L"");
-				Ptr<WfCodegenScopeContext>			PushScopeContext(WfCodegenScopeType type, const WString& name = L"");
+				Ptr<WfCodegenScopeContext>			GetCurrentScopeContext(WfCodegenScopeType type, const WString& name = WString::Empty);
+				Ptr<WfCodegenScopeContext>			PushScopeContext(WfCodegenScopeType type, const WString& name = WString::Empty);
 				void								PopScopeContext();
 			};
 
