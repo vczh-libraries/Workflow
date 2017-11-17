@@ -227,7 +227,8 @@ namespace vl
 					auto oldPrefix = prefix;
 					if (node->endLabel.value != L"")
 					{
-						functionRecord->labelNames.Add(node->endLabel.value, L"__vwsnl_" + itow(functionRecord->labelCounter++) + L"_" + node->endLabel.value);
+						auto name = config->ConvertName(node->endLabel.value, L"__vwsnl_" + itow(functionRecord->labelCounter++) + L"_");
+						functionRecord->labelNames.Add(node->endLabel.value, name);
 						writer.WriteString(prefixBlock);
 						writer.WriteLine(L"\t{");
 						prefix += L"\t";

@@ -89,7 +89,7 @@ namespace vl
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix, ITypeInfo* expectedType);
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType);
 
-				WString					ConvertName(const WString& name);
+				WString					ConvertName(const WString& name, const WString& specialNameCategory = WString(L"__vwsn_", false));
 				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
 				WString					ConvertFunctionType(IMethodInfo* methodInfo, WString name = WString::Empty);
 				WString					ConvertFunctionType(ITypeInfo* typeInfo);

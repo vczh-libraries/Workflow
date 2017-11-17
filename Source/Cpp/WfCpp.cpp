@@ -117,7 +117,7 @@ WfCppConfig
 				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString(L"\t", false), expectedType);
 			}
 
-			WString WfCppConfig::ConvertName(const WString& name)
+			WString WfCppConfig::ConvertName(const WString& name, const WString& specialNameCategory)
 			{
 				if (name.Length() > 0 && name[0] == L'$')
 				{
@@ -127,7 +127,7 @@ WfCppConfig
 				auto match = regexSpecialName.Match(name);
 				if (match)
 				{
-					return L"__vwsn_" 
+					return specialNameCategory
 						+ From(match->Groups()[L"category"])
 							.Select([](const RegexString& rs)
 							{
