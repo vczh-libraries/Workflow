@@ -1,0 +1,56 @@
+module test;
+using system::*;
+
+var s = "";
+
+func main():string
+{
+	var coroutine = $coroutine
+	{
+		var i = 0;
+		while (true)
+		{
+			if (i == 4)
+			{
+				goto BREAK;
+			}
+			{
+				try
+				{
+					switch (i % 2)
+					{
+					case 0:
+						{
+							s = $"$(s)[+$(i)]";
+							$pause;
+						}
+					case 1:
+						{
+							s = $"$(s)*";
+							goto CONTINUE;
+						}
+					}
+				}
+				finally
+				{
+					s = $"$(s)!";
+				}
+				CONTINUE:;
+			}
+			i = i + 1;
+		}
+		BREAK:;
+	};
+
+	{
+		var i = 0;
+		while(coroutine.Status != CoroutineStatus::Stopped)
+		{
+			coroutine.Resume(true, null);
+			s = $"$(s)[-$(i)]";
+			i = i + 1;
+		}
+	}
+
+	return s;
+}
