@@ -170,6 +170,7 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfStatement>, ResolveExpressionResult>					CoOperatorResolvingMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
+				typedef collections::Dictionary<Ptr<WfDeclaration>, parsing::ParsingTreeCustomBase*>		DeclarationSourceMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
@@ -203,6 +204,7 @@ Scope Manager
 				CoOperatorResolvingMap						coCastResultResolvings;			// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
 				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
+				DeclarationSourceMap						declaractionScopeSources;		// the source used to build the scope for a declaration
 				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
 				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings

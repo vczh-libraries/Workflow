@@ -613,7 +613,7 @@ ValidateSemantic(Declaration)
 						}
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
-							BuildScopeForDeclaration(manager, parentScope, decl);
+							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[decl.Obj()]);
 						}
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{

@@ -273,6 +273,8 @@ BuildScopeForDeclaration
 					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source);
 					declaration->Accept(&visitor);
 					visitor.Visit(parentScope, declaration->attributes);
+
+					manager->declaractionScopeSources.Add(declaration, source);
 					if (visitor.resultScope)
 					{
 						manager->nodeScopes.Add(declaration.Obj(), visitor.resultScope);
