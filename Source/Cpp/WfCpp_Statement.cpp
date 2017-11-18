@@ -315,6 +315,11 @@ namespace vl
 				{
 					CHECK_FAIL(L"WfGenerateStatementVisitor::Visit(WfCoroutineStatement*)#Internal error, All coroutine statements do not generate C++ code.");
 				}
+
+				void Visit(WfStateMachineStatement* node)override
+				{
+					CHECK_FAIL(L"WfGenerateStatementVisitor::Visit(WfStateMachineStatement*)#Internal error, All state machine statements do not generate C++ code.");
+				}
 			};
 
 			void GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType)

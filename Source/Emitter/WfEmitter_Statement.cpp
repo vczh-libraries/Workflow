@@ -348,6 +348,11 @@ GenerateInstructions(Statement)
 				{
 					CHECK_FAIL(L"GenerateStatementInstructionsVisitor::Visit(WfCoroutineStatement*)#Internal error, All coroutine statements do not emit instructions.");
 				}
+
+				void Visit(WfStateMachineStatement* node)override
+				{
+					CHECK_FAIL(L"GenerateStatementInstructionsVisitor::Visit(WfStateMachineStatement*)#Internal error, All state machine statements do not emit instructions.");
+				}
 			};
 
 #undef EXIT_CODE

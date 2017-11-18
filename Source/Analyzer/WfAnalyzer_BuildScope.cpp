@@ -278,6 +278,7 @@ BuildScopeForStatement
 				, public WfStatement::IVisitor
 				, public WfVirtualStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
+				, public WfStateMachineStatement::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -483,6 +484,21 @@ BuildScopeForStatement
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
+				}
+
+				void Visit(WfStateMachineStatement* node)override
+				{
+					node->Accept((WfStateMachineStatement::IVisitor*)this);
+				}
+
+				void Visit(WfStateSwitchStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfStateInvokeStatement* node)override
+				{
+					throw 0;
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)

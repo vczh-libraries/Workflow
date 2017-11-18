@@ -48,6 +48,11 @@ FindCoroutineAwaredStatements
 					awared = true;
 				}
 
+				void Dispatch(WfStateMachineStatement* node)override
+				{
+					CHECK_FAIL(L"FindCoroutineAwaredStatementVisitor::Visit(WfStateMachineStatement*)#Internal error, state machine statement is not allowed in $coroutine expression.");
+				}
+
 				void Visit(WfBreakStatement* node)override
 				{
 					awared = true;
@@ -128,6 +133,11 @@ FindCoroutineAwaredVariables
 				{
 				}
 
+				void Dispatch(WfStateMachineStatement* node)override
+				{
+					CHECK_FAIL(L"FindCoroutineAwaredVariableVisitor::Visit(WfStateMachineStatement*)#Internal error, state machine statement is not allowed in $coroutine expression.");
+				}
+
 				void Visit(WfVariableStatement* node)override
 				{
 					awaredVariables.Add(node);
@@ -153,6 +163,11 @@ FindCoroutineAwaredVariables
 
 				void Dispatch(WfCoroutineStatement* node)override
 				{
+				}
+
+				void Dispatch(WfStateMachineStatement* node)override
+				{
+					CHECK_FAIL(L"FindCoroutineAwaredBlockVisitor::Visit(WfStateMachineStatement*)#Internal error, state machine statement is not allowed in $coroutine expression.");
 				}
 
 				void Visit(WfBlockStatement* node)override
@@ -849,6 +864,11 @@ GenerateFlowChart
 				void Visit(WfCoOperatorStatement* node)override
 				{
 					CHECK_FAIL(L"GenerateFlowChartStatementVisitor::Visit(WfCoOperatorStatement*)#Internal error, co-operator statement is not allowed in $coroutine expression.");
+				}
+
+				void Visit(WfStateMachineStatement* node)override
+				{
+					CHECK_FAIL(L"GenerateFlowChartStatementVisitor::Visit(WfStateMachineStatement*)#Internal error, state machine statement is not allowed in $coroutine expression.");
 				}
 
 #undef COPY_STATEMENT

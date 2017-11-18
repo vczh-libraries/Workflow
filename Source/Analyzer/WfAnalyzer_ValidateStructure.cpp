@@ -968,6 +968,7 @@ ValidateStructure(Statement)
 				, public WfStatement::IVisitor
 				, public WfVirtualStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
+				, public WfStateMachineStatement::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -1152,6 +1153,21 @@ ValidateStructure(Statement)
 					{
 						manager->errors.Add(WfErrors::WrongCoOperator(node));
 					}
+				}
+
+				void Visit(WfStateMachineStatement* node)override
+				{
+					node->Accept((WfStateMachineStatement::IVisitor*)this);
+				}
+
+				void Visit(WfStateSwitchStatement* node)override
+				{
+					throw 0;
+				}
+
+				void Visit(WfStateInvokeStatement* node)override
+				{
+					throw 0;
 				}
 
 				static void Execute(Ptr<WfStatement>& statement, WfLexicalScopeManager* manager, ValidateStructureContext* context)
