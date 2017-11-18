@@ -261,6 +261,11 @@ StatementVisitor
 				Dispatch(node);
 			}
 
+			void StatementVisitor::Visit(WfStateMachineStatement* node)
+			{
+				Dispatch(node);
+			}
+
 /***********************************************************************
 DeclarationVisitor
 ***********************************************************************/
@@ -287,18 +292,6 @@ DeclarationVisitor
 			{
 			}
 
-			void DeclarationVisitor::Visit(WfConstructorDeclaration* node)
-			{
-			}
-
-			void DeclarationVisitor::Visit(WfDestructorDeclaration* node)
-			{
-			}
-
-			void DeclarationVisitor::Visit(WfClassDeclaration* node)
-			{
-			}
-
 			void DeclarationVisitor::Visit(WfEnumDeclaration* node)
 			{
 			}
@@ -312,6 +305,18 @@ DeclarationVisitor
 				Dispatch(node);
 			}
 
+			void DeclarationVisitor::Visit(WfConstructorDeclaration* node)
+			{
+			}
+
+			void DeclarationVisitor::Visit(WfDestructorDeclaration* node)
+			{
+			}
+
+			void DeclarationVisitor::Visit(WfClassDeclaration* node)
+			{
+			}
+
 /***********************************************************************
 VirtualDeclarationVisitor
 ***********************************************************************/
@@ -323,6 +328,10 @@ VirtualDeclarationVisitor
 			}
 
 			void VirtualDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+			{
+			}
+
+			void VirtualDeclarationVisitor::Visit(WfStateMachine* node)
 			{
 			}
 
@@ -355,6 +364,20 @@ CoroutineStatementVisitor
 			}
 
 			void CoroutineStatementVisitor::Visit(WfCoOperatorStatement* node)
+			{
+			}
+
+/***********************************************************************
+StateMachineStatementVisitor
+***********************************************************************/
+
+			// Visitor Members -----------------------------------
+
+			void StateMachineStatementVisitor::Visit(WfStateSwitchStatement* node)
+			{
+			}
+
+			void StateMachineStatementVisitor::Visit(WfStateInvokeStatement* node)
 			{
 			}
 

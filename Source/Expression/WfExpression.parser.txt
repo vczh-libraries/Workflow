@@ -194,6 +194,120 @@ class PropertyDeclaration : Declaration
 	token					valueChangedEvent;
 }
 
+//////////////////////////////////////////////////////////////////
+// AST (Enum)
+//////////////////////////////////////////////////////////////////
+
+enum EnumKind
+{
+	Normal,
+	Flag,
+}
+
+enum EnumItemKind
+{
+	Constant,
+	Intersection,
+}
+
+class EnumItemIntersection
+{
+	token					name;
+}
+
+class EnumItem
+{
+	Attribute[]				attributes;
+	token					name;
+	EnumItemKind			kind;
+	token					number;
+	EnumItemIntersection[]	intersections;
+}
+
+class EnumDeclaration : Declaration
+{
+	EnumKind				kind;
+	EnumItem[]				items;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Struct)
+//////////////////////////////////////////////////////////////////
+
+class StructMember
+{
+	Attribute[]				attributes;
+	token					name;
+	Type					type;
+}
+
+class StructDeclaration : Declaration
+{
+	StructMember[]			members;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Virtual Declarations)
+//////////////////////////////////////////////////////////////////
+
+class VirtualDeclaration : Declaration
+{
+	Declaration[]			expandedDeclarations;
+}
+
+enum APConst
+{
+	Readonly,
+	Writable,
+}
+
+enum APObserve
+{
+	Observable,
+	NotObservable,
+}
+
+class AutoPropertyDeclaration : VirtualDeclaration
+{
+	Type					type;
+	APConst					configConst;
+	APObserve				configObserve;
+	Expression				expression;
+}
+
+class CastResultInterfaceDeclaration : VirtualDeclaration
+{
+	Type					baseType;
+	Type					elementType;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (State Machine)
+//////////////////////////////////////////////////////////////////
+
+class StateInput
+{
+	token					name;
+	FunctionArgument[]		arguments;
+}
+
+class StateDeclaration
+{
+	token					name;
+	FunctionArgument[]		arguments;
+	Statement				statement;
+}
+
+class StateMachine : VirtualDeclaration
+{
+	StateInput[]			inputs;
+	StateDeclaration[]		states;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Class)
+//////////////////////////////////////////////////////////////////
+
 enum ClassKind
 {
 	Class,
@@ -232,85 +346,7 @@ class ClassDeclaration : Declaration
 	ConstructorType			constructorType;
 	Type[]					baseTypes;
 	Declaration[]			declarations (SetDefaultClassMember);
-}
-
-enum EnumKind
-{
-	Normal,
-	Flag,
-}
-
-enum EnumItemKind
-{
-	Constant,
-	Intersection,
-}
-
-class EnumItemIntersection
-{
-	token					name;
-}
-
-class EnumItem
-{
-	Attribute[]				attributes;
-	token					name;
-	EnumItemKind			kind;
-	token					number;
-	EnumItemIntersection[]	intersections;
-}
-
-class EnumDeclaration : Declaration
-{
-	EnumKind				kind;
-	EnumItem[]				items;
-}
-
-class StructMember
-{
-	Attribute[]				attributes;
-	token					name;
-	Type					type;
-}
-
-class StructDeclaration : Declaration
-{
-	StructMember[]			members;
-}
-
-//////////////////////////////////////////////////////////////////
-// AST (VirtualDeclarations)
-//////////////////////////////////////////////////////////////////
-
-class VirtualDeclaration : Declaration
-{
-	Declaration[]			expandedDeclarations;
-}
-
-enum APConst
-{
-	Readonly,
-	Writable,
-}
-
-enum APObserve
-{
-	Observable,
-	NotObservable,
-}
-
-class AutoPropertyDeclaration : VirtualDeclaration
-{
-	Type					type;
-	APConst					configConst;
-	APObserve				configObserve;
-	Expression				expression;
-}
-
-class CastResultInterfaceDeclaration : VirtualDeclaration
-{
-	Type					baseType;
-	Type					elementType;
+	StateMachine			stateMachine;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -385,7 +421,7 @@ class ExpressionStatement : Statement
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (VirtualStatements)
+// AST (Virtual Statements)
 //////////////////////////////////////////////////////////////////
 
 class VirtualStatement : Statement
@@ -427,7 +463,7 @@ class CoProviderStatement : VirtualStatement
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (CoroutineStatements)
+// AST (Coroutine Statements)
 //////////////////////////////////////////////////////////////////
 
 class CoroutineStatement : Statement
@@ -443,6 +479,54 @@ class CoOperatorStatement : CoroutineStatement
 {
 	token					varName;
 	token					opName;
+	Expression[]			arguments;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (State Machine Statements)
+//////////////////////////////////////////////////////////////////
+
+enum StateSwitchType
+{
+	Default,
+	Pass,
+	PassAndReturn,
+	Ignore,
+	IgnoreAndReturn,
+}
+
+enum StateInvokeType
+{
+	Goto,
+	Push,
+}
+
+class StateMachineStatement : Statement
+{
+}
+
+class StateSwitchArgument
+{
+	token					name;
+}
+
+class StateSwitchCase
+{
+	token					name;
+	StateSwitchArgument[]	arguments;
+	Statement				statement;
+}
+
+class StateSwitchStatement : StateMachineStatement
+{
+	StateSwitchType			type;
+	StateSwitchCase			caseBranches;
+}
+
+class StateInvokeStatement : StateMachineStatement
+{
+	StateInvokeType			type;
+	token					name;
 	Expression[]			arguments;
 }
 
@@ -708,10 +792,11 @@ class NewInterfaceExpression : Expression
 {
 	Type					type;
 	Declaration[]			declarations (SetDefaultClassMember);
+	StateMachine			stateMachine;
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (VirtualExpressions)
+// AST (Virtual Expressions)
 //////////////////////////////////////////////////////////////////
 
 class VirtualExpression : Expression
@@ -896,6 +981,17 @@ token KEYWORD_NAMESPACE = "namespace";
 token KEYWORD_MODULE = "module";
 token KEYWORD_UNIT = "unit";
 
+token STATE_MACHINE = "/$state_machine";
+token STATE_INPUT = "/$state_input";
+token STATE_SWITCH_PASS = "/$switch/s*/(/s*pass/*/)";
+token STATE_SWITCH_PASSRETURN = "/$switch/s*/(/s*pass_and_return/s*/)";
+token STATE_SWITCH_IGNORE = "/$switch/s*/(/s*ignore/s*/)";
+token STATE_SWITCH_IGNORERETURN = "/$switch/s*/(/s*ignore_and_return/s*/)";
+token STATE_SWITCH_DEFAULT = "/$switch";
+token STATE_GOTO = "/$goto_state";
+token STATE_PUSH = "/$push_state";
+token STATE_DECL = "/$state";
+
 token COROUTINE_COROUTINE = "/$coroutine";
 token COROUTINE_PAUSE = "/$pause";
 token COROUTINE_INTERFACE = "/$interface";
@@ -982,7 +1078,7 @@ rule Expression _ExpPrimitive
 		as RangeExpression
 	= "{" ({_CtorFragment : arguments} | {_CtorFragment : arguments ";"}) "}" as ConstructorExpression
 	= "new" _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as NewClassExpression
-	= "new" _Type : type "{" {_MemberDeclaration : declarations} "}" as NewInterfaceExpression
+	= "new" _Type : type "{" {_MemberDeclaration : declarations} [_StateMachine : stateMachine] "}" as NewInterfaceExpression
 	= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
 	= _ExpPrimitive : parent "." "observe" "as" NAME : name "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "ExtendedObserve"}
 	= _ExpPrimitive : function "(" [_Expression : arguments {"," _Expression : arguments}] ")" as CallExpression
@@ -1104,15 +1200,37 @@ rule Statement _VirtualStatement
 	= "for" "(" NAME : name 
 		(("in" with {direction="Normal"}) | ("in" "reversed" with {direction="Reversed"}))
 		_Expression : collection ")" _Block : statement as ForEachStatement
-	= ["var" NAME : varName "="] COROUTINE_OPERATOR : opName [_Expression : arguments {"," _Expression : arguments}] ";" as CoOperatorStatement
 	;
 
 rule Statement _CoStatement
 	= "$pause" (";" | _Block : statement) as CoPauseStatement
+	= ["var" NAME : varName "="] COROUTINE_OPERATOR : opName [_Expression : arguments {"," _Expression : arguments}] ";" as CoOperatorStatement
 	;
 
 rule Statement _CoProvider
 	= ("$" | COROUTINE_OPERATOR : name) _Block : statement as CoProviderStatement
+	;
+
+rule StateSwitchStatement _StateSwitchHead
+	= STATE_SWITCH_DEFAULT as StateSwitchStatement with {type = "Default"}
+	= STATE_SWITCH_PASS as StateSwitchStatement with {type = "Pass"}
+	= STATE_SWITCH_PASSRETURN as StateSwitchStatement with {type = "PassAndReturn"}
+	= STATE_SWITCH_IGNORE as StateSwitchStatement with {type = "Ignore"}
+	= STATE_SWITCH_IGNORERETURN as StateSwitchStatement with {type = "IgnoreAndReturn"}
+	;
+
+rule StateSwitchArgument _StateSwitchArgument
+	= NAME : name as StateSwitchArgument
+	;
+
+rule StateSwitchCase _StateSwitchCase
+	= "case" NAME : name "(" [_StateSwitchArgument : arguments {"," _StateSwitchArgument : arguments}] ")" ":" _Block : statement as StateSwitchCase
+	;
+
+rule Statement _StateStatement
+	= !_StateSwitchHead "{" {_StateSwitchCase : caseBranches} "}"
+	= ( ("$goto_state" with {type = "Goto"}) | ("$push_state" with {type = "Push"}) )
+		NAME : name [_Expression : arguments {"," _Expression : arguments}] ";" as StateInvokeStatement
 	;
 
 rule Statement _Statement
@@ -1130,6 +1248,23 @@ rule Statement _Statement
 	= _Expression : expression ";" as ExpressionStatement
 	= !_VirtualStatement
 	= !_CoStatement
+	= !_StateStatement
+	;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- State Machine)
+//////////////////////////////////////////////////////////////////
+
+rule StateInput _StateInput
+	= "$state_input" NAME : name "(" [_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" as StateInput
+	;
+
+rule StateDeclaration _StateDecl
+	= "$state" NAME : name "(" [_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" _Block : statement as StateDeclaration
+	;
+
+rule StateMachine _StateMachine
+	= "$state_machine" "{" { _StateInput : inputs | _StateDecl : states} "}" as StateMachine
 	;
 
 //////////////////////////////////////////////////////////////////
@@ -1186,7 +1321,7 @@ rule DestructorDeclaration _Destructor
 	;
 
 rule ClassDeclaration _ClassBody
-	= [":" _Type : baseTypes {"," _Type : baseTypes}] "{" {_MemberDeclaration : declarations} "}" as ClassDeclaration
+	= [":" _Type : baseTypes {"," _Type : baseTypes}] "{" {_MemberDeclaration : declarations} [_StateMachine : stateMachine] "}" as ClassDeclaration
 	;
 
 rule ClassDeclaration _Class
