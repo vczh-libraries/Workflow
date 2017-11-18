@@ -1435,7 +1435,7 @@ const wchar_t* const parserTextBuffer[] = {
 , L"\t\t) NAME : name \";\" {_UsingPath : paths} {_Declaration : declarations} as Module" L"\r\n"
 , L"\t;" L"\r\n"
 };
-const int lengthTextBuffer[] = {
+const vint lengthTextBuffer[] = {
   2, 68, 21, 68, 2, 22, 3, 10, 12, 10, 3, 2, 19, 3, 26, 3, 2, 12, 3, 3, 2, 18, 3, 3, 2, 17, 3, 3, 2, 17, 3, 22
 , 18, 23, 3, 2, 19, 3, 29, 18, 30, 3, 2, 68, 16, 68, 2, 25, 3, 8, 10, 13, 7, 8, 9, 10, 10, 8, 8, 3, 2, 29, 3, 28
 , 3, 2, 31, 3, 18, 3, 2, 28, 3, 18, 3, 2, 29, 3, 20, 3, 2, 32, 3, 20, 3, 2, 27, 3, 20, 3, 2, 29, 3, 20, 3, 2
@@ -1482,7 +1482,7 @@ const int lengthTextBuffer[] = {
 , 43, 15, 19, 4, 2, 31, 56, 56, 4, 2, 31, 51, 55, 4, 2, 37, 56, 85, 4, 2, 68, 18, 68, 2, 41, 43, 39, 4, 33, 79, 4, 33
 , 80, 4, 21, 6, 41, 39, 82, 4
 };
-const int lengthTextBufferTotal = 34801;
+const vint lengthTextBufferTotal = 34801;
 
 		vl::WString WfGetParserTextBuffer()
 		{
