@@ -292,6 +292,18 @@ DeclarationVisitor
 			{
 			}
 
+			void DeclarationVisitor::Visit(WfConstructorDeclaration* node)
+			{
+			}
+
+			void DeclarationVisitor::Visit(WfDestructorDeclaration* node)
+			{
+			}
+
+			void DeclarationVisitor::Visit(WfClassDeclaration* node)
+			{
+			}
+
 			void DeclarationVisitor::Visit(WfEnumDeclaration* node)
 			{
 			}
@@ -305,18 +317,6 @@ DeclarationVisitor
 				Dispatch(node);
 			}
 
-			void DeclarationVisitor::Visit(WfConstructorDeclaration* node)
-			{
-			}
-
-			void DeclarationVisitor::Visit(WfDestructorDeclaration* node)
-			{
-			}
-
-			void DeclarationVisitor::Visit(WfClassDeclaration* node)
-			{
-			}
-
 /***********************************************************************
 VirtualDeclarationVisitor
 ***********************************************************************/
@@ -328,10 +328,6 @@ VirtualDeclarationVisitor
 			}
 
 			void VirtualDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
-			{
-			}
-
-			void VirtualDeclarationVisitor::Visit(WfStateMachine* node)
 			{
 			}
 

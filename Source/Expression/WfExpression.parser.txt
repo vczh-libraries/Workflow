@@ -195,6 +195,74 @@ class PropertyDeclaration : Declaration
 }
 
 //////////////////////////////////////////////////////////////////
+// AST (State Machine)
+//////////////////////////////////////////////////////////////////
+
+class StateInput
+{
+	token					name;
+	FunctionArgument[]		arguments;
+}
+
+class StateDeclaration
+{
+	token					name;
+	FunctionArgument[]		arguments;
+	Statement				statement;
+}
+
+class StateMachine
+{
+	StateInput[]			inputs;
+	StateDeclaration[]		states;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Class)
+//////////////////////////////////////////////////////////////////
+
+enum ClassKind
+{
+	Class,
+	Interface,
+}
+
+enum ConstructorType
+{
+	Undefined,
+	SharedPtr,
+	RawPtr,
+}
+
+class BaseConstructorCall
+{
+	Type					type;
+	Expression[]			arguments;
+}
+
+class ConstructorDeclaration : Declaration
+{
+	ConstructorType			constructorType;
+	BaseConstructorCall[]	baseConstructorCalls;
+	FunctionArgument[]		arguments;
+	Statement				statement;
+}
+
+class DestructorDeclaration : Declaration
+{
+	Statement				statement;
+}
+
+class ClassDeclaration : Declaration
+{
+	ClassKind				kind;
+	ConstructorType			constructorType;
+	Type[]					baseTypes;
+	Declaration[]			declarations (SetDefaultClassMember);
+	StateMachine			stateMachine;
+}
+
+//////////////////////////////////////////////////////////////////
 // AST (Enum)
 //////////////////////////////////////////////////////////////////
 
@@ -279,74 +347,6 @@ class CastResultInterfaceDeclaration : VirtualDeclaration
 {
 	Type					baseType;
 	Type					elementType;
-}
-
-//////////////////////////////////////////////////////////////////
-// AST (State Machine)
-//////////////////////////////////////////////////////////////////
-
-class StateInput
-{
-	token					name;
-	FunctionArgument[]		arguments;
-}
-
-class StateDeclaration
-{
-	token					name;
-	FunctionArgument[]		arguments;
-	Statement				statement;
-}
-
-class StateMachine : VirtualDeclaration
-{
-	StateInput[]			inputs;
-	StateDeclaration[]		states;
-}
-
-//////////////////////////////////////////////////////////////////
-// AST (Class)
-//////////////////////////////////////////////////////////////////
-
-enum ClassKind
-{
-	Class,
-	Interface,
-}
-
-enum ConstructorType
-{
-	Undefined,
-	SharedPtr,
-	RawPtr,
-}
-
-class BaseConstructorCall
-{
-	Type					type;
-	Expression[]			arguments;
-}
-
-class ConstructorDeclaration : Declaration
-{
-	ConstructorType			constructorType;
-	BaseConstructorCall[]	baseConstructorCalls;
-	FunctionArgument[]		arguments;
-	Statement				statement;
-}
-
-class DestructorDeclaration : Declaration
-{
-	Statement				statement;
-}
-
-class ClassDeclaration : Declaration
-{
-	ClassKind				kind;
-	ConstructorType			constructorType;
-	Type[]					baseTypes;
-	Declaration[]			declarations (SetDefaultClassMember);
-	StateMachine			stateMachine;
 }
 
 //////////////////////////////////////////////////////////////////

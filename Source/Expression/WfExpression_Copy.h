@@ -103,7 +103,6 @@ namespace vl
 				void CopyFields(WfNewClassExpression* from, WfNewClassExpression* to);
 				void CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to);
 				void CopyFields(WfStateMachine* from, WfStateMachine* to);
-				void CopyFields(WfVirtualDeclaration* from, WfVirtualDeclaration* to);
 				void CopyFields(WfStateInput* from, WfStateInput* to);
 				void CopyFields(WfStateDeclaration* from, WfStateDeclaration* to);
 
@@ -231,31 +230,30 @@ namespace vl
 				void CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to);
 				void CopyFields(WfEventDeclaration* from, WfEventDeclaration* to);
 				void CopyFields(WfPropertyDeclaration* from, WfPropertyDeclaration* to);
-				void CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to);
-				void CopyFields(WfEnumItem* from, WfEnumItem* to);
-				void CopyFields(WfEnumItemIntersection* from, WfEnumItemIntersection* to);
-				void CopyFields(WfStructDeclaration* from, WfStructDeclaration* to);
-				void CopyFields(WfStructMember* from, WfStructMember* to);
 				void CopyFields(WfConstructorDeclaration* from, WfConstructorDeclaration* to);
 				void CopyFields(WfBaseConstructorCall* from, WfBaseConstructorCall* to);
 				void CopyFields(WfDestructorDeclaration* from, WfDestructorDeclaration* to);
 				void CopyFields(WfClassDeclaration* from, WfClassDeclaration* to);
 				void CopyFields(WfStateMachine* from, WfStateMachine* to);
-				void CopyFields(WfVirtualDeclaration* from, WfVirtualDeclaration* to);
 				void CopyFields(WfStateInput* from, WfStateInput* to);
 				void CopyFields(WfStateDeclaration* from, WfStateDeclaration* to);
+				void CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to);
+				void CopyFields(WfEnumItem* from, WfEnumItem* to);
+				void CopyFields(WfEnumItemIntersection* from, WfEnumItemIntersection* to);
+				void CopyFields(WfStructDeclaration* from, WfStructDeclaration* to);
+				void CopyFields(WfStructMember* from, WfStructMember* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
 				vl::Ptr<WfClassMember> CreateField(vl::Ptr<WfClassMember> from);
 				vl::Ptr<WfFunctionArgument> CreateField(vl::Ptr<WfFunctionArgument> from);
-				vl::Ptr<WfEnumItem> CreateField(vl::Ptr<WfEnumItem> from);
-				vl::Ptr<WfEnumItemIntersection> CreateField(vl::Ptr<WfEnumItemIntersection> from);
-				vl::Ptr<WfStructMember> CreateField(vl::Ptr<WfStructMember> from);
 				vl::Ptr<WfBaseConstructorCall> CreateField(vl::Ptr<WfBaseConstructorCall> from);
 				vl::Ptr<WfStateMachine> CreateField(vl::Ptr<WfStateMachine> from);
 				vl::Ptr<WfStateInput> CreateField(vl::Ptr<WfStateInput> from);
 				vl::Ptr<WfStateDeclaration> CreateField(vl::Ptr<WfStateDeclaration> from);
+				vl::Ptr<WfEnumItem> CreateField(vl::Ptr<WfEnumItem> from);
+				vl::Ptr<WfEnumItemIntersection> CreateField(vl::Ptr<WfEnumItemIntersection> from);
+				vl::Ptr<WfStructMember> CreateField(vl::Ptr<WfStructMember> from);
 
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
@@ -272,12 +270,12 @@ namespace vl
 				void Visit(WfVariableDeclaration* node)override;
 				void Visit(WfEventDeclaration* node)override;
 				void Visit(WfPropertyDeclaration* node)override;
-				void Visit(WfEnumDeclaration* node)override;
-				void Visit(WfStructDeclaration* node)override;
-				void Visit(WfVirtualDeclaration* node)override;
 				void Visit(WfConstructorDeclaration* node)override;
 				void Visit(WfDestructorDeclaration* node)override;
 				void Visit(WfClassDeclaration* node)override;
+				void Visit(WfEnumDeclaration* node)override;
+				void Visit(WfStructDeclaration* node)override;
+				void Visit(WfVirtualDeclaration* node)override;
 			};
 
 			class VirtualDeclarationVisitor : public virtual VisitorBase, public WfVirtualDeclaration::IVisitor
@@ -291,28 +289,19 @@ namespace vl
 				void CopyFields(WfAttribute* from, WfAttribute* to);
 				void CopyFields(WfClassMember* from, WfClassMember* to);
 				void CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to);
-				void CopyFields(WfStateMachine* from, WfStateMachine* to);
-				void CopyFields(WfStateInput* from, WfStateInput* to);
-				void CopyFields(WfFunctionArgument* from, WfFunctionArgument* to);
-				void CopyFields(WfStateDeclaration* from, WfStateDeclaration* to);
 
 				// CreateField ---------------------------------------
 				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
 				vl::Ptr<WfClassMember> CreateField(vl::Ptr<WfClassMember> from);
-				vl::Ptr<WfStateInput> CreateField(vl::Ptr<WfStateInput> from);
-				vl::Ptr<WfFunctionArgument> CreateField(vl::Ptr<WfFunctionArgument> from);
-				vl::Ptr<WfStateDeclaration> CreateField(vl::Ptr<WfStateDeclaration> from);
 
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
 				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
 				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
-				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfAutoPropertyDeclaration* node)override;
 				void Visit(WfCastResultInterfaceDeclaration* node)override;
-				void Visit(WfStateMachine* node)override;
 			};
 
 			class VirtualStatementVisitor : public virtual VisitorBase, public WfVirtualStatement::IVisitor

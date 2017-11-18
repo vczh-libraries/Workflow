@@ -857,6 +857,7 @@ Print (Statement)
 			, public WfStatement::IVisitor
 			, public WfVirtualStatement::IVisitor
 			, public WfCoroutineStatement::IVisitor
+			, public WfStateMachineStatement::IVisitor
 		{
 		public:
 			WString								indent;
@@ -1162,6 +1163,21 @@ Print (Statement)
 					WfPrint(argument, indent, writer);
 				}
 				writer.WriteString(L";");
+			}
+
+			void Visit(WfStateMachineStatement* node)override
+			{
+				node->Accept((WfStateMachineStatement::IVisitor*)this);
+			}
+
+			void Visit(WfStateSwitchStatement* node)override
+			{
+				throw 0;
+			}
+
+			void Visit(WfStateInvokeStatement* node)override
+			{
+				throw 0;
 			}
 		};
 

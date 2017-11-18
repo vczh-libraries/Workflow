@@ -117,12 +117,12 @@ namespace vl
 				void Visit(WfVariableDeclaration* node)override;
 				void Visit(WfEventDeclaration* node)override;
 				void Visit(WfPropertyDeclaration* node)override;
-				void Visit(WfEnumDeclaration* node)override;
-				void Visit(WfStructDeclaration* node)override;
-				void Visit(WfVirtualDeclaration* node)override;
 				void Visit(WfConstructorDeclaration* node)override;
 				void Visit(WfDestructorDeclaration* node)override;
 				void Visit(WfClassDeclaration* node)override;
+				void Visit(WfEnumDeclaration* node)override;
+				void Visit(WfStructDeclaration* node)override;
+				void Visit(WfVirtualDeclaration* node)override;
 			};
 
 			class VirtualDeclarationVisitor : public Object, public WfVirtualDeclaration::IVisitor
@@ -132,7 +132,6 @@ namespace vl
 				// Visitor Members -----------------------------------
 				void Visit(WfAutoPropertyDeclaration* node)override;
 				void Visit(WfCastResultInterfaceDeclaration* node)override;
-				void Visit(WfStateMachine* node)override;
 			};
 
 			class VirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor

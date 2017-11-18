@@ -101,7 +101,6 @@ namespace vl
 				virtual void Traverse(WfNewClassExpression* node);
 				virtual void Traverse(WfNewInterfaceExpression* node);
 				virtual void Traverse(WfStateMachine* node);
-				virtual void Traverse(WfVirtualDeclaration* node);
 				virtual void Traverse(WfStateInput* node);
 				virtual void Traverse(WfStateDeclaration* node);
 
@@ -233,31 +232,30 @@ namespace vl
 				virtual void Traverse(WfVariableDeclaration* node);
 				virtual void Traverse(WfEventDeclaration* node);
 				virtual void Traverse(WfPropertyDeclaration* node);
-				virtual void Traverse(WfEnumDeclaration* node);
-				virtual void Traverse(WfEnumItem* node);
-				virtual void Traverse(WfEnumItemIntersection* node);
-				virtual void Traverse(WfStructDeclaration* node);
-				virtual void Traverse(WfStructMember* node);
 				virtual void Traverse(WfConstructorDeclaration* node);
 				virtual void Traverse(WfBaseConstructorCall* node);
 				virtual void Traverse(WfDestructorDeclaration* node);
 				virtual void Traverse(WfClassDeclaration* node);
 				virtual void Traverse(WfStateMachine* node);
-				virtual void Traverse(WfVirtualDeclaration* node);
 				virtual void Traverse(WfStateInput* node);
 				virtual void Traverse(WfStateDeclaration* node);
+				virtual void Traverse(WfEnumDeclaration* node);
+				virtual void Traverse(WfEnumItem* node);
+				virtual void Traverse(WfEnumItemIntersection* node);
+				virtual void Traverse(WfStructDeclaration* node);
+				virtual void Traverse(WfStructMember* node);
 
 				// VisitField ----------------------------------------
 				void VisitField(WfAttribute* node);
 				void VisitField(WfClassMember* node);
 				void VisitField(WfFunctionArgument* node);
-				void VisitField(WfEnumItem* node);
-				void VisitField(WfEnumItemIntersection* node);
-				void VisitField(WfStructMember* node);
 				void VisitField(WfBaseConstructorCall* node);
 				void VisitField(WfStateMachine* node);
 				void VisitField(WfStateInput* node);
 				void VisitField(WfStateDeclaration* node);
+				void VisitField(WfEnumItem* node);
+				void VisitField(WfEnumItemIntersection* node);
+				void VisitField(WfStructMember* node);
 
 				// VisitField (virtual) ------------------------------
 				virtual void VisitField(WfExpression* node) = 0;
@@ -274,12 +272,12 @@ namespace vl
 				void Visit(WfVariableDeclaration* node)override;
 				void Visit(WfEventDeclaration* node)override;
 				void Visit(WfPropertyDeclaration* node)override;
-				void Visit(WfEnumDeclaration* node)override;
-				void Visit(WfStructDeclaration* node)override;
-				void Visit(WfVirtualDeclaration* node)override;
 				void Visit(WfConstructorDeclaration* node)override;
 				void Visit(WfDestructorDeclaration* node)override;
 				void Visit(WfClassDeclaration* node)override;
+				void Visit(WfEnumDeclaration* node)override;
+				void Visit(WfStructDeclaration* node)override;
+				void Visit(WfVirtualDeclaration* node)override;
 			};
 
 			class VirtualDeclarationVisitor : public Object, public WfVirtualDeclaration::IVisitor
@@ -295,28 +293,19 @@ namespace vl
 				virtual void Traverse(WfAttribute* node);
 				virtual void Traverse(WfClassMember* node);
 				virtual void Traverse(WfCastResultInterfaceDeclaration* node);
-				virtual void Traverse(WfStateMachine* node);
-				virtual void Traverse(WfStateInput* node);
-				virtual void Traverse(WfFunctionArgument* node);
-				virtual void Traverse(WfStateDeclaration* node);
 
 				// VisitField ----------------------------------------
 				void VisitField(WfAttribute* node);
 				void VisitField(WfClassMember* node);
-				void VisitField(WfStateInput* node);
-				void VisitField(WfFunctionArgument* node);
-				void VisitField(WfStateDeclaration* node);
 
 				// VisitField (virtual) ------------------------------
 				virtual void VisitField(WfExpression* node) = 0;
 				virtual void VisitField(WfDeclaration* node) = 0;
 				virtual void VisitField(WfType* node) = 0;
-				virtual void VisitField(WfStatement* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfAutoPropertyDeclaration* node)override;
 				void Visit(WfCastResultInterfaceDeclaration* node)override;
-				void Visit(WfStateMachine* node)override;
 			};
 
 			class VirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor
