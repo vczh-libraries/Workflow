@@ -462,6 +462,7 @@ ValidateStructure(Declaration)
 
 				class FindPropertyRelatedDeclVisitor
 					: public empty_visitor::DeclarationVisitor
+					, public empty_visitor::VirtualDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*				manager;
@@ -483,6 +484,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualDeclaration* node)override
 					{
+						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							Execute(decl);
@@ -649,12 +651,14 @@ ValidateStructure(Declaration)
 
 				class FindCtorVisitor
 					: public empty_visitor::DeclarationVisitor
+					, public empty_visitor::VirtualDeclarationVisitor
 				{
 				public:
 					WfConstructorDeclaration*			ctor = nullptr;
 
 					void Dispatch(WfVirtualDeclaration* node)override
 					{
+						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);
@@ -669,6 +673,7 @@ ValidateStructure(Declaration)
 
 				class TooManyDtorVisitor
 					: public empty_visitor::DeclarationVisitor
+					, public empty_visitor::VirtualDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*				manager;
@@ -683,6 +688,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualDeclaration* node)override
 					{
+						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);

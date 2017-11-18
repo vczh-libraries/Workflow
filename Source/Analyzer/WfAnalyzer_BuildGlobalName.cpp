@@ -240,6 +240,7 @@ BuildGlobalNameFromModules
 
 			class BuildNameDeclarationVisitor
 				: public empty_visitor::DeclarationVisitor
+				, public empty_visitor::VirtualDeclarationVisitor
 			{
 			public:
 				WfLexicalScopeManager*			manager;
@@ -253,6 +254,7 @@ BuildGlobalNameFromModules
 
 				void Dispatch(WfVirtualDeclaration* node)override
 				{
+					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);

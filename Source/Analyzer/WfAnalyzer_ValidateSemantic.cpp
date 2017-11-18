@@ -613,7 +613,7 @@ ValidateSemantic(Declaration)
 						}
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
-							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[decl.Obj()]);
+							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[node]);
 						}
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
@@ -2848,7 +2848,9 @@ ValidateSemantic(Expression)
 					return symbol->typeInfo;
 				}
 
-				class NewInterfaceExpressionVisitor : public empty_visitor::DeclarationVisitor
+				class NewInterfaceExpressionVisitor
+					: public empty_visitor::DeclarationVisitor
+					, public empty_visitor::VirtualDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*							manager;
@@ -2863,6 +2865,7 @@ ValidateSemantic(Expression)
 
 					void Dispatch(WfVirtualDeclaration* node)override
 					{
+						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);

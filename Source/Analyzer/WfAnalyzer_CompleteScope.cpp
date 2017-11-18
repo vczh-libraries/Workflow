@@ -335,7 +335,9 @@ CompleteScopeForDeclaration
 CheckBaseClass
 ***********************************************************************/
 
-			class CheckBaseClassDeclarationVisitor : public empty_visitor::DeclarationVisitor
+			class CheckBaseClassDeclarationVisitor
+				: public empty_visitor::DeclarationVisitor
+				, public empty_visitor::VirtualDeclarationVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -349,6 +351,7 @@ CheckBaseClass
 
 				void Dispatch(WfVirtualDeclaration* node)override
 				{
+					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);

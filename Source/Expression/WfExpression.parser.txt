@@ -1076,7 +1076,7 @@ rule Expression _ExpPrimitive
 		as RangeExpression
 	= "{" ({_CtorFragment : arguments} | {_CtorFragment : arguments ";"}) "}" as ConstructorExpression
 	= "new" _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as NewClassExpression
-	= "new" _Type : type "{" {_MemberDeclaration : declarations} [_StateMachine : declarations] "}" as NewInterfaceExpression
+	= "new" _Type : type "{" {_MemberDeclaration : declarations} "}" as NewInterfaceExpression
 	= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
 	= _ExpPrimitive : parent "." "observe" "as" NAME : name "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "ExtendedObserve"}
 	= _ExpPrimitive : function "(" [_Expression : arguments {"," _Expression : arguments}] ")" as CallExpression

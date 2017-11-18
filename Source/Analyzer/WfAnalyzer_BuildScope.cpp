@@ -775,6 +775,7 @@ BuildScopeForExpression
 
 				class CreateLambdaCaptureVisitor
 					: public empty_visitor::DeclarationVisitor
+					, public empty_visitor::VirtualDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*				manager;
@@ -788,6 +789,7 @@ BuildScopeForExpression
 
 					void Dispatch(WfVirtualDeclaration* node)override
 					{
+						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);
