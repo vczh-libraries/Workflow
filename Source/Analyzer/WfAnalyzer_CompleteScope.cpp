@@ -19,6 +19,7 @@ CompleteScopeForClassMember
 			class CompleteScopeForClassMemberVisitor
 				: public Object
 				, public WfDeclaration::IVisitor
+				, public WfVirtualDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -143,7 +144,24 @@ CompleteScopeForClassMember
 
 				void Visit(WfVirtualDeclaration* node)override
 				{
-					CompleteScopeForDeclaration(manager, node);
+					node->Accept((WfVirtualDeclaration::IVisitor*)this);
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfAutoPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfCastResultInterfaceDeclaration* node)
+				{
+				}
+
+				void Visit(WfStateMachineDeclaration* node)
+				{
+					throw 0;
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
