@@ -16,7 +16,10 @@ namespace vl
 BuildScopeForDeclaration
 ***********************************************************************/
 
-			class BuildScopeForDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			class BuildScopeForDeclarationVisitor
+				: public Object
+				, public WfDeclaration::IVisitor
+				, public WfVirtualDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -245,10 +248,24 @@ BuildScopeForDeclaration
 
 				void Visit(WfVirtualDeclaration* node)override
 				{
+					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						Execute(manager, parentScope, source, decl);
 					}
+				}
+
+				void Visit(WfAutoPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfCastResultInterfaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStateMachineDeclaration* node)override
+				{
+					throw 0;
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)

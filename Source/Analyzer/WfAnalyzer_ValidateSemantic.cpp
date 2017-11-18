@@ -203,7 +203,9 @@ Helper Functions
 ValidateSemantic(ClassMember)
 ***********************************************************************/
 
-			class ValidateSemanticClassMemberVisitor : public Object, public WfDeclaration::IVisitor
+			class ValidateSemanticClassMemberVisitor
+				: public Object
+				, public WfDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -374,10 +376,7 @@ ValidateSemantic(ClassMember)
 
 				void Visit(WfVirtualDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
-					{
-						decl->Accept(this);
-					}
+					ValidateDeclarationSemantic(manager, node);
 				}
 
 				static void Execute(Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl, WfLexicalScopeManager* manager)
@@ -391,7 +390,34 @@ ValidateSemantic(ClassMember)
 ValidateSemantic(Declaration)
 ***********************************************************************/
 
-			class ValidateSemanticDeclarationVisitor : public Object, public WfDeclaration::IVisitor
+			class ExpandVirtualDeclarationVisitor : public Object, public WfVirtualDeclaration::IVisitor
+			{
+			public:
+				WfLexicalScopeManager*				manager;
+
+				ExpandVirtualDeclarationVisitor(WfLexicalScopeManager* _manager)
+					:manager(_manager)
+				{
+				}
+
+				void Visit(WfAutoPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfCastResultInterfaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStateMachineDeclaration* node)override
+				{
+					throw 0;
+				}
+			};
+
+			class ValidateSemanticDeclarationVisitor
+				: public Object
+				, public WfDeclaration::IVisitor
+				, public WfVirtualDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -561,10 +587,57 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfVirtualDeclaration* node)override
 				{
+					bool expanded = node->expandedDeclarations.Count() > 0;
+					vint errorCount = manager->errors.Count();
+					node->Accept((WfVirtualDeclaration::IVisitor*)this);
+
+					if (!expanded && manager->errors.Count() == errorCount)
+					{
+						ExpandVirtualDeclarationVisitor visitor(manager);
+						node->Accept(&visitor);
+
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							SetCodeRange(decl, node->codeRange);
+						}
+
+						auto parentScope = manager->nodeScopes[node];
+						if (parentScope->ownerNode == node)
+						{
+							parentScope = parentScope->parentScope;
+						}
+
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							ContextFreeDeclarationDesugar(manager, decl);
+						}
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							BuildScopeForDeclaration(manager, parentScope, decl);
+						}
+						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
+						{
+							return;
+						}
+					}
+
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
-						decl->Accept(this);
+						ValidateDeclarationSemantic(manager, decl);
 					}
+				}
+
+				void Visit(WfAutoPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfCastResultInterfaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStateMachineDeclaration* node)override
+				{
+					throw 0;
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)

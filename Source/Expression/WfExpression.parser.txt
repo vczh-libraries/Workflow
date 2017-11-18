@@ -195,29 +195,6 @@ class PropertyDeclaration : Declaration
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (State Machine)
-//////////////////////////////////////////////////////////////////
-
-class StateInput
-{
-	token					name;
-	FunctionArgument[]		arguments;
-}
-
-class StateDeclaration
-{
-	token					name;
-	FunctionArgument[]		arguments;
-	Statement				statement;
-}
-
-class StateMachine
-{
-	StateInput[]			inputs;
-	StateDeclaration[]		states;
-}
-
-//////////////////////////////////////////////////////////////////
 // AST (Class)
 //////////////////////////////////////////////////////////////////
 
@@ -259,7 +236,6 @@ class ClassDeclaration : Declaration
 	ConstructorType			constructorType;
 	Type[]					baseTypes;
 	Declaration[]			declarations (SetDefaultClassMember);
-	StateMachine			stateMachine;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -347,6 +323,29 @@ class CastResultInterfaceDeclaration : VirtualDeclaration
 {
 	Type					baseType;
 	Type					elementType;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (State Machine)
+//////////////////////////////////////////////////////////////////
+
+class StateInput
+{
+	token					name;
+	FunctionArgument[]		arguments;
+}
+
+class StateDeclaration
+{
+	token					name;
+	FunctionArgument[]		arguments;
+	Statement				statement;
+}
+
+class StateMachineDeclaration : VirtualDeclaration
+{
+	StateInput[]			inputs;
+	StateDeclaration[]		states;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -792,7 +791,6 @@ class NewInterfaceExpression : Expression
 {
 	Type					type;
 	Declaration[]			declarations (SetDefaultClassMember);
-	StateMachine			stateMachine;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1078,7 +1076,7 @@ rule Expression _ExpPrimitive
 		as RangeExpression
 	= "{" ({_CtorFragment : arguments} | {_CtorFragment : arguments ";"}) "}" as ConstructorExpression
 	= "new" _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as NewClassExpression
-	= "new" _Type : type "{" {_MemberDeclaration : declarations} [_StateMachine : stateMachine] "}" as NewInterfaceExpression
+	= "new" _Type : type "{" {_MemberDeclaration : declarations} [_StateMachine : declarations] "}" as NewInterfaceExpression
 	= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "SimpleObserve"}
 	= _ExpPrimitive : parent "." "observe" "as" NAME : name "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression with {observeType = "ExtendedObserve"}
 	= _ExpPrimitive : function "(" [_Expression : arguments {"," _Expression : arguments}] ")" as CallExpression
@@ -1263,8 +1261,8 @@ rule StateDeclaration _StateDecl
 	= "$state" NAME : name "(" [_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" _Block : statement as StateDeclaration
 	;
 
-rule StateMachine _StateMachine
-	= "$state_machine" "{" { _StateInput : inputs | _StateDecl : states} "}" as StateMachine
+rule StateMachineDeclaration _StateMachine
+	= "$state_machine" "{" { _StateInput : inputs | _StateDecl : states} "}" as StateMachineDeclaration
 	;
 
 //////////////////////////////////////////////////////////////////
@@ -1321,7 +1319,7 @@ rule DestructorDeclaration _Destructor
 	;
 
 rule ClassDeclaration _ClassBody
-	= [":" _Type : baseTypes {"," _Type : baseTypes}] "{" {_MemberDeclaration : declarations} [_StateMachine : stateMachine] "}" as ClassDeclaration
+	= [":" _Type : baseTypes {"," _Type : baseTypes}] "{" {_MemberDeclaration : declarations} [_StateMachine : declarations] "}" as ClassDeclaration
 	;
 
 rule ClassDeclaration _Class

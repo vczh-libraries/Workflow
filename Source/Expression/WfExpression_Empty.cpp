@@ -331,6 +331,10 @@ VirtualDeclarationVisitor
 			{
 			}
 
+			void VirtualDeclarationVisitor::Visit(WfStateMachineDeclaration* node)
+			{
+			}
+
 /***********************************************************************
 VirtualStatementVisitor
 ***********************************************************************/

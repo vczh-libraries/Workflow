@@ -952,6 +952,11 @@ ValidateStructure(Declaration)
 				{
 				}
 
+				void Visit(WfStateMachineDeclaration* node)override
+				{
+					throw 0;
+				}
+
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager, WfClassDeclaration* classDecl, WfExpression* surroundingLambda)
 				{
 					ValidateStructureDeclarationVisitor visitor(manager, classDecl, surroundingLambda);

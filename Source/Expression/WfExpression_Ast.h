@@ -160,9 +160,6 @@ namespace vl
 		class WfVariableDeclaration;
 		class WfEventDeclaration;
 		class WfPropertyDeclaration;
-		class WfStateInput;
-		class WfStateDeclaration;
-		class WfStateMachine;
 		class WfBaseConstructorCall;
 		class WfConstructorDeclaration;
 		class WfDestructorDeclaration;
@@ -175,6 +172,9 @@ namespace vl
 		class WfVirtualDeclaration;
 		class WfAutoPropertyDeclaration;
 		class WfCastResultInterfaceDeclaration;
+		class WfStateInput;
+		class WfStateDeclaration;
+		class WfStateMachineDeclaration;
 		class WfBreakStatement;
 		class WfContinueStatement;
 		class WfReturnStatement;
@@ -597,34 +597,6 @@ namespace vl
 			static vl::Ptr<WfPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfStateInput : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStateInput>
-		{
-		public:
-			vl::parsing::ParsingToken name;
-			vl::collections::List<vl::Ptr<WfFunctionArgument>> arguments;
-
-			static vl::Ptr<WfStateInput> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
-		class WfStateDeclaration : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStateDeclaration>
-		{
-		public:
-			vl::parsing::ParsingToken name;
-			vl::collections::List<vl::Ptr<WfFunctionArgument>> arguments;
-			vl::Ptr<WfStatement> statement;
-
-			static vl::Ptr<WfStateDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
-		class WfStateMachine : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStateMachine>
-		{
-		public:
-			vl::collections::List<vl::Ptr<WfStateInput>> inputs;
-			vl::collections::List<vl::Ptr<WfStateDeclaration>> states;
-
-			static vl::Ptr<WfStateMachine> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
 		enum class WfClassKind
 		{
 			Class,
@@ -677,7 +649,6 @@ namespace vl
 			WfConstructorType constructorType;
 			vl::collections::List<vl::Ptr<WfType>> baseTypes;
 			vl::collections::List<vl::Ptr<WfDeclaration>> declarations;
-			vl::Ptr<WfStateMachine> stateMachine;
 
 			void Accept(WfDeclaration::IVisitor* visitor)override;
 
@@ -755,6 +726,7 @@ namespace vl
 			public:
 				virtual void Visit(WfAutoPropertyDeclaration* node)=0;
 				virtual void Visit(WfCastResultInterfaceDeclaration* node)=0;
+				virtual void Visit(WfStateMachineDeclaration* node)=0;
 			};
 
 			virtual void Accept(WfVirtualDeclaration::IVisitor* visitor)=0;
@@ -798,6 +770,36 @@ namespace vl
 			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfCastResultInterfaceDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfStateInput : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStateInput>
+		{
+		public:
+			vl::parsing::ParsingToken name;
+			vl::collections::List<vl::Ptr<WfFunctionArgument>> arguments;
+
+			static vl::Ptr<WfStateInput> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfStateDeclaration : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStateDeclaration>
+		{
+		public:
+			vl::parsing::ParsingToken name;
+			vl::collections::List<vl::Ptr<WfFunctionArgument>> arguments;
+			vl::Ptr<WfStatement> statement;
+
+			static vl::Ptr<WfStateDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfStateMachineDeclaration : public WfVirtualDeclaration, vl::reflection::Description<WfStateMachineDeclaration>
+		{
+		public:
+			vl::collections::List<vl::Ptr<WfStateInput>> inputs;
+			vl::collections::List<vl::Ptr<WfStateDeclaration>> states;
+
+			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfStateMachineDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfBreakStatement : public WfStatement, vl::reflection::Description<WfBreakStatement>
@@ -1516,7 +1518,6 @@ namespace vl
 		public:
 			vl::Ptr<WfType> type;
 			vl::collections::List<vl::Ptr<WfDeclaration>> declarations;
-			vl::Ptr<WfStateMachine> stateMachine;
 
 			void Accept(WfExpression::IVisitor* visitor)override;
 
@@ -1709,9 +1710,6 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfVariableDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
-			DECL_TYPE_INFO(vl::workflow::WfStateInput)
-			DECL_TYPE_INFO(vl::workflow::WfStateDeclaration)
-			DECL_TYPE_INFO(vl::workflow::WfStateMachine)
 			DECL_TYPE_INFO(vl::workflow::WfClassKind)
 			DECL_TYPE_INFO(vl::workflow::WfConstructorType)
 			DECL_TYPE_INFO(vl::workflow::WfBaseConstructorCall)
@@ -1730,6 +1728,9 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfAPObserve)
 			DECL_TYPE_INFO(vl::workflow::WfAutoPropertyDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfCastResultInterfaceDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfStateInput)
+			DECL_TYPE_INFO(vl::workflow::WfStateDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfStateMachineDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfBreakStatement)
 			DECL_TYPE_INFO(vl::workflow::WfContinueStatement)
 			DECL_TYPE_INFO(vl::workflow::WfReturnStatement)
@@ -2182,6 +2183,11 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfCastResultInterfaceDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfStateMachineDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}

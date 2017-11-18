@@ -1582,6 +1582,11 @@ Print (Declaration)
 				writer.WriteString(L">;");
 				writer.AfterPrint(node);
 			}
+
+			void Visit(WfStateMachineDeclaration* node)override
+			{
+				throw 0;
+			}
 		};
 
 /***********************************************************************

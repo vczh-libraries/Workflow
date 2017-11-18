@@ -53,7 +53,10 @@ BuildGlobalNameFromTypeDescriptors
 BuildGlobalNameFromModules
 ***********************************************************************/
 
-			class BuildClassMemberVisitor : public Object, public WfDeclaration::IVisitor
+			class BuildClassMemberVisitor
+				: public Object
+				, public WfDeclaration::IVisitor
+				, public WfVirtualDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*			manager;
@@ -214,10 +217,24 @@ BuildGlobalNameFromModules
 
 				void Visit(WfVirtualDeclaration* node)override
 				{
+					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
+				}
+
+				void Visit(WfAutoPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfCastResultInterfaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStateMachineDeclaration* node)override
+				{
+					throw 0;
 				}
 			};
 
@@ -296,6 +313,7 @@ ValidateScopeName
 			class ValidateScopeNameDeclarationVisitor
 				: public Object
 				, public WfDeclaration::IVisitor
+				, public WfVirtualDeclaration::IVisitor
 			{
 			public:
 				enum Category
@@ -455,10 +473,24 @@ ValidateScopeName
 
 				void Visit(WfVirtualDeclaration* node)override
 				{
+					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
+				}
+
+				void Visit(WfAutoPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfCastResultInterfaceDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStateMachineDeclaration* node)override
+				{
+					throw 0;
 				}
 			};
 
