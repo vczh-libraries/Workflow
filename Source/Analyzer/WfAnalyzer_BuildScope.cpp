@@ -812,10 +812,7 @@ BuildScopeForExpression
 
 				void Visit(WfVirtualCfeExpression* node)override
 				{
-					if (node->expandedExpression)
-					{
-						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-					}
+					BuildScopeForExpression(manager, parentScope, node->expandedExpression);
 				}
 
 				void Visit(WfVirtualCseExpression* node)override

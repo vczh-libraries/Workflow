@@ -1468,10 +1468,7 @@ ValidateStructure(Expression)
 
 				void Visit(WfVirtualCfeExpression* node)override
 				{
-					if (node->expandedExpression)
-					{
-						ValidateExpressionStructure(manager, context, node->expandedExpression);
-					}
+					ValidateExpressionStructure(manager, context, node->expandedExpression);
 				}
 
 				void Visit(WfVirtualCseExpression* node)override

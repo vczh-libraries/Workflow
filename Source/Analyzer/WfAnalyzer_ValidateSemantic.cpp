@@ -374,7 +374,12 @@ ValidateSemantic(ClassMember)
 					ValidateDeclarationSemantic(manager, node);
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					ValidateDeclarationSemantic(manager, node);
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					ValidateDeclarationSemantic(manager, node);
 				}
@@ -390,21 +395,13 @@ ValidateSemantic(ClassMember)
 ValidateSemantic(Declaration)
 ***********************************************************************/
 
-			class ExpandVirtualDeclarationVisitor : public Object, public WfVirtualDeclaration::IVisitor
+			class ExpandVirtualDeclarationVisitor : public Object, public WfVirtualCseDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
 
 				ExpandVirtualDeclarationVisitor(WfLexicalScopeManager* _manager)
 					:manager(_manager)
-				{
-				}
-
-				void Visit(WfAutoPropertyDeclaration* node)override
-				{
-				}
-
-				void Visit(WfCastResultInterfaceDeclaration* node)override
 				{
 				}
 
@@ -417,7 +414,7 @@ ValidateSemantic(Declaration)
 			class ValidateSemanticDeclarationVisitor
 				: public Object
 				, public WfDeclaration::IVisitor
-				, public WfVirtualDeclaration::IVisitor
+				, public WfVirtualCseDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -585,11 +582,19 @@ ValidateSemantic(Declaration)
 					}
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						ValidateDeclarationSemantic(manager, decl);
+					}
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					bool expanded = node->expandedDeclarations.Count() > 0;
 					vint errorCount = manager->errors.Count();
-					node->Accept((WfVirtualDeclaration::IVisitor*)this);
+					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 
 					if (!expanded && manager->errors.Count() == errorCount)
 					{
@@ -627,14 +632,6 @@ ValidateSemantic(Declaration)
 					}
 				}
 
-				void Visit(WfAutoPropertyDeclaration* node)override
-				{
-				}
-
-				void Visit(WfCastResultInterfaceDeclaration* node)override
-				{
-				}
-
 				void Visit(WfStateMachineDeclaration* node)override
 				{
 					throw 0;
@@ -652,7 +649,7 @@ ValidateSemantic(Declaration)
 ValidateSemantic(Statement)
 ***********************************************************************/
 
-			class ExpandVirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor
+			class ExpandVirtualStatementVisitor : public Object, public WfVirtualCseStatement::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -681,7 +678,7 @@ ValidateSemantic(Statement)
 			class ValidateSemanticStatementVisitor
 				: public Object
 				, public WfStatement::IVisitor
-				, public WfVirtualStatement::IVisitor
+				, public WfVirtualCseStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
 				, public WfStateMachineStatement::IVisitor
 			{
@@ -902,11 +899,11 @@ ValidateSemantic(Statement)
 					ValidateDeclarationSemantic(manager, node->variable);
 				}
 
-				void Visit(WfVirtualStatement* node)override
+				void Visit(WfVirtualCseStatement* node)override
 				{
 					bool expanded = node->expandedStatement;
 					vint errorCount = manager->errors.Count();
-					node->Accept((WfVirtualStatement::IVisitor*)this);
+					node->Accept((WfVirtualCseStatement::IVisitor*)this);
 
 					if (!expanded && manager->errors.Count() == errorCount)
 					{
@@ -1334,7 +1331,7 @@ ValidateSemantic(Statement)
 ValidateSemantic(Expression)
 ***********************************************************************/
 
-			class ExpandVirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
+			class ExpandVirtualExpressionVisitor : public Object, public WfVirtualCseExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -1349,10 +1346,6 @@ ValidateSemantic(Expression)
 				void Visit(WfBindExpression* node)override
 				{
 					ExpandBindExpression(manager, node);
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
 				}
 
 				void Visit(WfNewCoroutineExpression* node)override
@@ -1390,7 +1383,7 @@ ValidateSemantic(Expression)
 			class ValidateSemanticExpressionVisitor
 				: public Object
 				, public WfExpression::IVisitor
-				, public WfVirtualExpression::IVisitor
+				, public WfVirtualCseExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -2850,7 +2843,6 @@ ValidateSemantic(Expression)
 
 				class NewInterfaceExpressionVisitor
 					: public empty_visitor::DeclarationVisitor
-					, public empty_visitor::VirtualDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*							manager;
@@ -2863,13 +2855,17 @@ ValidateSemantic(Expression)
 					{
 					}
 
-					void Dispatch(WfVirtualDeclaration* node)override
+					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						CHECK_FAIL(L"NewInterfaceExpressionVisitor::Visit(WfVirtualCseDeclaration*)#Internal error, Temporary not supported.");
 					}
 
 					void Visit(WfFunctionDeclaration* node)override
@@ -3138,11 +3134,16 @@ ValidateSemantic(Expression)
 					}
 				}
 
-				void Visit(WfVirtualExpression* node)override
+				void Visit(WfVirtualCfeExpression* node)override
+				{
+					GetExpressionType(manager, node->expandedExpression, results[0].type);
+				}
+
+				void Visit(WfVirtualCseExpression* node)override
 				{
 					bool expanded = node->expandedExpression;
 					vint errorCount = manager->errors.Count();
-					node->Accept((WfVirtualExpression::IVisitor*)this);
+					node->Accept((WfVirtualCseExpression::IVisitor*)this);
 
 					if (!expanded && manager->errors.Count() == errorCount)
 					{
@@ -3186,12 +3187,6 @@ ValidateSemantic(Expression)
 				{
 					GetExpressionType(manager, node->expression, 0);
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo()));
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
-					Ptr<ITypeInfo> typeInfo = TypeInfoRetriver<WString>::CreateTypeInfo();
-					results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
 				}
 
 				void Visit(WfNewCoroutineExpression* node)override
@@ -3308,8 +3303,8 @@ IsConstantExpression
 ***********************************************************************/
 
 			class ValidateConstantExpressionVisitor
-				: public Object
-				, public WfExpression::IVisitor
+				: public empty_visitor::ExpressionVisitor
+				, public empty_visitor::VirtualCseExpressionVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -3343,29 +3338,19 @@ IsConstantExpression
 					}
 				}
 
-				void Visit(WfThisExpression* node)override
+				void Dispatch(WfVirtualCfeExpression* node)override
 				{
+					node->expandedExpression->Accept(this);
 				}
 
-				void Visit(WfTopQualifiedExpression* node)override
+				void Dispatch(WfVirtualCseExpression* node)override
 				{
+					node->Accept((WfVirtualCseExpression::IVisitor*)this);
 				}
 
 				void Visit(WfReferenceExpression* node)override
 				{
 					VisitReferenceExpression(node, node->name.value);
-				}
-
-				void Visit(WfOrderedNameExpression* node)override
-				{
-				}
-
-				void Visit(WfOrderedLambdaExpression* node)override
-				{
-				}
-
-				void Visit(WfMemberExpression* node)override
-				{
 				}
 
 				void Visit(WfChildExpression* node)override
@@ -3406,21 +3391,9 @@ IsConstantExpression
 					}
 				}
 
-				void Visit(WfLetExpression* node)override
-				{
-				}
-
-				void Visit(WfIfExpression* node)override
-				{
-				}
-
 				void Visit(WfRangeExpression* node)override
 				{
 					isConstant = Call(node->begin) && Call(node->end);
-				}
-
-				void Visit(WfSetTestingExpression* node)override
-				{
 				}
 
 				void Visit(WfConstructorExpression* node)override
@@ -3442,18 +3415,6 @@ IsConstantExpression
 					isConstant = true;
 				}
 
-				void Visit(WfInferExpression* node)override
-				{
-				}
-
-				void Visit(WfTypeCastingExpression* node)override
-				{
-				}
-
-				void Visit(WfTypeTestingExpression* node)override
-				{
-				}
-
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
 					isConstant = true;
@@ -3462,42 +3423,6 @@ IsConstantExpression
 				void Visit(WfTypeOfExpressionExpression* node)override
 				{
 					isConstant = true;
-				}
-
-				void Visit(WfAttachEventExpression* node)override
-				{
-				}
-
-				void Visit(WfDetachEventExpression* node)override
-				{
-				}
-
-				void Visit(WfObserveExpression* node)override
-				{
-				}
-
-				void Visit(WfCallExpression* node)override
-				{
-				}
-
-				void Visit(WfFunctionExpression* node)override
-				{
-				}
-
-				void Visit(WfNewClassExpression* node)override
-				{
-				}
-
-				void Visit(WfNewInterfaceExpression* node)override
-				{
-				}
-
-				void Visit(WfVirtualExpression* node)override
-				{
-					if (node->expandedExpression)
-					{
-						isConstant = Call(node->expandedExpression);
-					}
 				}
 
 				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType)
