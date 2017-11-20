@@ -16,7 +16,7 @@ IsExpressionDependOnExpectedType(Expression)
 
 			class IsExpressionDependOnExpectedTypeVisitor
 				: public empty_visitor::ExpressionVisitor
-				, public empty_visitor::VirtualExpressionVisitor
+				, public empty_visitor::VirtualCseExpressionVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
@@ -27,9 +27,14 @@ IsExpressionDependOnExpectedType(Expression)
 				{
 				}
 
-				void Dispatch(WfVirtualExpression* node)override
+				void Dispatch(WfVirtualCfeExpression* node)override
 				{
-					node->Accept(static_cast<empty_visitor::VirtualExpressionVisitor*>(this));
+					node->expandedExpression->Accept(this);
+				}
+
+				void Dispatch(WfVirtualCseExpression* node)override
+				{
+					node->Accept((WfVirtualCseExpression::IVisitor*)this);
 				}
 
 				bool Execute(Ptr<WfExpression> expression)
@@ -121,14 +126,19 @@ GetExpressionName(Expression)
 
 			class GetExpressionNameVisitor
 				: public empty_visitor::ExpressionVisitor
-				, public empty_visitor::VirtualExpressionVisitor
+				, public empty_visitor::VirtualCseExpressionVisitor
 			{
 			public:
 				WString								result;
 
-				void Dispatch(WfVirtualExpression* node)override
+				void Dispatch(WfVirtualCfeExpression* node)override
 				{
-					node->Accept(static_cast<empty_visitor::VirtualExpressionVisitor*>(this));
+					node->expandedExpression->Accept(this);
+				}
+
+				void Dispatch(WfVirtualCseExpression* node)override
+				{
+					node->Accept((WfVirtualCseExpression::IVisitor*)this);
 				}
 
 				void Visit(WfTopQualifiedExpression* node)override
