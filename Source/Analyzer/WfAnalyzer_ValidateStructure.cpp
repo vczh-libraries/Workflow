@@ -283,7 +283,8 @@ ValidateStructure(Declaration)
 			class ValidateStructureDeclarationVisitor
 				: public Object
 				, public WfDeclaration::IVisitor
-				, public WfVirtualDeclaration::IVisitor
+				, public WfVirtualCfeDeclaration::IVisitor
+				, public WfVirtualCseDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -462,7 +463,7 @@ ValidateStructure(Declaration)
 
 				class FindPropertyRelatedDeclVisitor
 					: public empty_visitor::DeclarationVisitor
-					, public empty_visitor::VirtualDeclarationVisitor
+					, public empty_visitor::VirtualCseDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*				manager;
@@ -482,13 +483,17 @@ ValidateStructure(Declaration)
 					{
 					}
 
-					void Dispatch(WfVirtualDeclaration* node)override
+					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							Execute(decl);
 						}
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 					}
 
 					void Execute(Ptr<WfDeclaration> memberDecl)
@@ -651,18 +656,22 @@ ValidateStructure(Declaration)
 
 				class FindCtorVisitor
 					: public empty_visitor::DeclarationVisitor
-					, public empty_visitor::VirtualDeclarationVisitor
+					, public empty_visitor::VirtualCseDeclarationVisitor
 				{
 				public:
 					WfConstructorDeclaration*			ctor = nullptr;
 
-					void Dispatch(WfVirtualDeclaration* node)override
+					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 					}
 
 					void Visit(WfConstructorDeclaration* node)override
@@ -673,7 +682,7 @@ ValidateStructure(Declaration)
 
 				class TooManyDtorVisitor
 					: public empty_visitor::DeclarationVisitor
-					, public empty_visitor::VirtualDeclarationVisitor
+					, public empty_visitor::VirtualCseDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*				manager;
@@ -686,13 +695,17 @@ ValidateStructure(Declaration)
 					{
 					}
 
-					void Dispatch(WfVirtualDeclaration* node)override
+					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 					}
 
 					void Visit(WfDestructorDeclaration* node)override
@@ -886,9 +899,9 @@ ValidateStructure(Declaration)
 					}
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					node->Accept(static_cast<WfVirtualDeclaration::IVisitor*>(this));
+					node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);
@@ -958,6 +971,11 @@ ValidateStructure(Declaration)
 				{
 				}
 
+				void Visit(WfVirtualCseDeclaration* node)override
+				{
+					node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
+				}
+
 				void Visit(WfStateMachineDeclaration* node)override
 				{
 					throw 0;
@@ -977,7 +995,7 @@ ValidateStructure(Statement)
 			class ValidateStructureStatementVisitor
 				: public Object
 				, public WfStatement::IVisitor
-				, public WfVirtualStatement::IVisitor
+				, public WfVirtualCseStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
 				, public WfStateMachineStatement::IVisitor
 			{
@@ -1098,13 +1116,9 @@ ValidateStructure(Statement)
 					ValidateDeclarationStructure(manager, node->variable);
 				}
 
-				void Visit(WfVirtualStatement* node)override
+				void Visit(WfVirtualCseStatement* node)override
 				{
-					node->Accept((WfVirtualStatement::IVisitor*)this);
-					if (node->expandedStatement)
-					{
-						ValidateStatementStructure(manager, context, node->expandedStatement);
-					}
+					node->Accept((WfVirtualCseStatement::IVisitor*)this);
 				}
 
 				void Visit(WfSwitchStatement* node)override
@@ -1199,7 +1213,7 @@ ValidateStructure(Expression)
 			class ValidateStructureExpressionVisitor
 				: public Object
 				, public WfExpression::IVisitor
-				, public WfVirtualExpression::IVisitor
+				, public WfVirtualCseExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -1452,13 +1466,17 @@ ValidateStructure(Expression)
 					}
 				}
 
-				void Visit(WfVirtualExpression* node)override
+				void Visit(WfVirtualCfeExpression* node)override
 				{
-					node->Accept((WfVirtualExpression::IVisitor*)this);
 					if (node->expandedExpression)
 					{
 						ValidateExpressionStructure(manager, context, node->expandedExpression);
 					}
+				}
+
+				void Visit(WfVirtualCseExpression* node)override
+				{
+					node->Accept((WfVirtualCseExpression::IVisitor*)this);
 				}
 
 				void Visit(WfBindExpression* node)override
@@ -1472,10 +1490,6 @@ ValidateStructure(Expression)
 					context->currentBindExpression = node;
 					ValidateExpressionStructure(manager, context, node->expression);
 					context->currentBindExpression = bind;
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
 				}
 
 				void Visit(WfNewCoroutineExpression* node)override
