@@ -192,7 +192,12 @@ ExpressionVisitor
 			{
 			}
 
-			void ExpressionVisitor::Visit(WfVirtualExpression* node)
+			void ExpressionVisitor::Visit(WfVirtualCfeExpression* node)
+			{
+				Dispatch(node);
+			}
+
+			void ExpressionVisitor::Visit(WfVirtualCseExpression* node)
 			{
 				Dispatch(node);
 			}
@@ -251,7 +256,7 @@ StatementVisitor
 			{
 			}
 
-			void StatementVisitor::Visit(WfVirtualStatement* node)
+			void StatementVisitor::Visit(WfVirtualCseStatement* node)
 			{
 				Dispatch(node);
 			}
@@ -312,44 +317,55 @@ DeclarationVisitor
 			{
 			}
 
-			void DeclarationVisitor::Visit(WfVirtualDeclaration* node)
+			void DeclarationVisitor::Visit(WfVirtualCfeDeclaration* node)
+			{
+				Dispatch(node);
+			}
+
+			void DeclarationVisitor::Visit(WfVirtualCseDeclaration* node)
 			{
 				Dispatch(node);
 			}
 
 /***********************************************************************
-VirtualDeclarationVisitor
+VirtualCfeDeclarationVisitor
 ***********************************************************************/
 
 			// Visitor Members -----------------------------------
 
-			void VirtualDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
+			void VirtualCfeDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
 			{
 			}
 
-			void VirtualDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
-			{
-			}
-
-			void VirtualDeclarationVisitor::Visit(WfStateMachineDeclaration* node)
+			void VirtualCfeDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
 			{
 			}
 
 /***********************************************************************
-VirtualStatementVisitor
+VirtualCseDeclarationVisitor
 ***********************************************************************/
 
 			// Visitor Members -----------------------------------
 
-			void VirtualStatementVisitor::Visit(WfForEachStatement* node)
+			void VirtualCseDeclarationVisitor::Visit(WfStateMachineDeclaration* node)
 			{
 			}
 
-			void VirtualStatementVisitor::Visit(WfSwitchStatement* node)
+/***********************************************************************
+VirtualCseStatementVisitor
+***********************************************************************/
+
+			// Visitor Members -----------------------------------
+
+			void VirtualCseStatementVisitor::Visit(WfForEachStatement* node)
 			{
 			}
 
-			void VirtualStatementVisitor::Visit(WfCoProviderStatement* node)
+			void VirtualCseStatementVisitor::Visit(WfSwitchStatement* node)
+			{
+			}
+
+			void VirtualCseStatementVisitor::Visit(WfCoProviderStatement* node)
 			{
 			}
 
@@ -382,32 +398,38 @@ StateMachineStatementVisitor
 			}
 
 /***********************************************************************
-VirtualExpressionVisitor
+VirtualCfeExpressionVisitor
 ***********************************************************************/
 
 			// Visitor Members -----------------------------------
 
-			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
+			void VirtualCfeExpressionVisitor::Visit(WfFormatExpression* node)
 			{
 			}
 
-			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
+/***********************************************************************
+VirtualCseExpressionVisitor
+***********************************************************************/
+
+			// Visitor Members -----------------------------------
+
+			void VirtualCseExpressionVisitor::Visit(WfBindExpression* node)
 			{
 			}
 
-			void VirtualExpressionVisitor::Visit(WfNewCoroutineExpression* node)
+			void VirtualCseExpressionVisitor::Visit(WfNewCoroutineExpression* node)
 			{
 			}
 
-			void VirtualExpressionVisitor::Visit(WfMixinCastExpression* node)
+			void VirtualCseExpressionVisitor::Visit(WfMixinCastExpression* node)
 			{
 			}
 
-			void VirtualExpressionVisitor::Visit(WfExpectedTypeCastExpression* node)
+			void VirtualCseExpressionVisitor::Visit(WfExpectedTypeCastExpression* node)
 			{
 			}
 
-			void VirtualExpressionVisitor::Visit(WfCoOperatorExpression* node)
+			void VirtualCseExpressionVisitor::Visit(WfCoOperatorExpression* node)
 			{
 			}
 

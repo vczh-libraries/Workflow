@@ -118,7 +118,8 @@ namespace vl
 				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
-				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node) = 0;
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCfeExpression* node) = 0;
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseExpression* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfThisExpression* node)override;
@@ -151,7 +152,8 @@ namespace vl
 				void Visit(WfFunctionExpression* node)override;
 				void Visit(WfNewClassExpression* node)override;
 				void Visit(WfNewInterfaceExpression* node)override;
-				void Visit(WfVirtualExpression* node)override;
+				void Visit(WfVirtualCfeExpression* node)override;
+				void Visit(WfVirtualCseExpression* node)override;
 			};
 
 			class StatementVisitor : public virtual VisitorBase, public WfStatement::IVisitor
@@ -188,7 +190,7 @@ namespace vl
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
-				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node) = 0;
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseStatement* node) = 0;
 				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node) = 0;
 				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfStateMachineStatement* node) = 0;
 
@@ -205,7 +207,7 @@ namespace vl
 				void Visit(WfGotoStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
-				void Visit(WfVirtualStatement* node)override;
+				void Visit(WfVirtualCseStatement* node)override;
 				void Visit(WfCoroutineStatement* node)override;
 				void Visit(WfStateMachineStatement* node)override;
 			};
@@ -250,7 +252,8 @@ namespace vl
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
 
 				// Dispatch (virtual) --------------------------------
-				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualDeclaration* node) = 0;
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCfeDeclaration* node) = 0;
+				virtual vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseDeclaration* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfNamespaceDeclaration* node)override;
@@ -263,21 +266,46 @@ namespace vl
 				void Visit(WfClassDeclaration* node)override;
 				void Visit(WfEnumDeclaration* node)override;
 				void Visit(WfStructDeclaration* node)override;
-				void Visit(WfVirtualDeclaration* node)override;
+				void Visit(WfVirtualCfeDeclaration* node)override;
+				void Visit(WfVirtualCseDeclaration* node)override;
 			};
 
-			class VirtualDeclarationVisitor : public virtual VisitorBase, public WfVirtualDeclaration::IVisitor
+			class VirtualCfeDeclarationVisitor : public virtual VisitorBase, public WfVirtualCfeDeclaration::IVisitor
 			{
 			public:
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfAutoPropertyDeclaration* from, WfAutoPropertyDeclaration* to);
-				void CopyFields(WfVirtualDeclaration* from, WfVirtualDeclaration* to);
+				void CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to);
 				void CopyFields(WfDeclaration* from, WfDeclaration* to);
 				void CopyFields(WfAttribute* from, WfAttribute* to);
 				void CopyFields(WfClassMember* from, WfClassMember* to);
 				void CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to);
+
+				// CreateField ---------------------------------------
+				vl::Ptr<WfAttribute> CreateField(vl::Ptr<WfAttribute> from);
+				vl::Ptr<WfClassMember> CreateField(vl::Ptr<WfClassMember> from);
+
+				// CreateField (virtual) -----------------------------
+				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
+				virtual vl::Ptr<WfDeclaration> CreateField(vl::Ptr<WfDeclaration> from) = 0;
+				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfAutoPropertyDeclaration* node)override;
+				void Visit(WfCastResultInterfaceDeclaration* node)override;
+			};
+
+			class VirtualCseDeclarationVisitor : public virtual VisitorBase, public WfVirtualCseDeclaration::IVisitor
+			{
+			public:
+
+				// CopyFields ----------------------------------------
 				void CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to);
+				void CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to);
+				void CopyFields(WfDeclaration* from, WfDeclaration* to);
+				void CopyFields(WfAttribute* from, WfAttribute* to);
+				void CopyFields(WfClassMember* from, WfClassMember* to);
 				void CopyFields(WfStateInput* from, WfStateInput* to);
 				void CopyFields(WfFunctionArgument* from, WfFunctionArgument* to);
 				void CopyFields(WfStateDeclaration* from, WfStateDeclaration* to);
@@ -296,18 +324,16 @@ namespace vl
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
 
 				// Visitor Members -----------------------------------
-				void Visit(WfAutoPropertyDeclaration* node)override;
-				void Visit(WfCastResultInterfaceDeclaration* node)override;
 				void Visit(WfStateMachineDeclaration* node)override;
 			};
 
-			class VirtualStatementVisitor : public virtual VisitorBase, public WfVirtualStatement::IVisitor
+			class VirtualCseStatementVisitor : public virtual VisitorBase, public WfVirtualCseStatement::IVisitor
 			{
 			public:
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfForEachStatement* from, WfForEachStatement* to);
-				void CopyFields(WfVirtualStatement* from, WfVirtualStatement* to);
+				void CopyFields(WfVirtualCseStatement* from, WfVirtualCseStatement* to);
 				void CopyFields(WfStatement* from, WfStatement* to);
 				void CopyFields(WfSwitchStatement* from, WfSwitchStatement* to);
 				void CopyFields(WfSwitchCase* from, WfSwitchCase* to);
@@ -370,15 +396,30 @@ namespace vl
 				void Visit(WfStateInvokeStatement* node)override;
 			};
 
-			class VirtualExpressionVisitor : public virtual VisitorBase, public WfVirtualExpression::IVisitor
+			class VirtualCfeExpressionVisitor : public virtual VisitorBase, public WfVirtualCfeExpression::IVisitor
+			{
+			public:
+
+				// CopyFields ----------------------------------------
+				void CopyFields(WfFormatExpression* from, WfFormatExpression* to);
+				void CopyFields(WfVirtualCfeExpression* from, WfVirtualCfeExpression* to);
+				void CopyFields(WfExpression* from, WfExpression* to);
+
+				// CreateField (virtual) -----------------------------
+				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
+
+				// Visitor Members -----------------------------------
+				void Visit(WfFormatExpression* node)override;
+			};
+
+			class VirtualCseExpressionVisitor : public virtual VisitorBase, public WfVirtualCseExpression::IVisitor
 			{
 			public:
 
 				// CopyFields ----------------------------------------
 				void CopyFields(WfBindExpression* from, WfBindExpression* to);
-				void CopyFields(WfVirtualExpression* from, WfVirtualExpression* to);
+				void CopyFields(WfVirtualCseExpression* from, WfVirtualCseExpression* to);
 				void CopyFields(WfExpression* from, WfExpression* to);
-				void CopyFields(WfFormatExpression* from, WfFormatExpression* to);
 				void CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to);
 				void CopyFields(WfMixinCastExpression* from, WfMixinCastExpression* to);
 				void CopyFields(WfExpectedTypeCastExpression* from, WfExpectedTypeCastExpression* to);
@@ -391,7 +432,6 @@ namespace vl
 
 				// Visitor Members -----------------------------------
 				void Visit(WfBindExpression* node)override;
-				void Visit(WfFormatExpression* node)override;
 				void Visit(WfNewCoroutineExpression* node)override;
 				void Visit(WfMixinCastExpression* node)override;
 				void Visit(WfExpectedTypeCastExpression* node)override;
@@ -417,11 +457,13 @@ namespace vl
 				, public ExpressionVisitor
 				, public StatementVisitor
 				, public DeclarationVisitor
-				, public VirtualDeclarationVisitor
-				, public VirtualStatementVisitor
+				, public VirtualCfeDeclarationVisitor
+				, public VirtualCseDeclarationVisitor
+				, public VirtualCseStatementVisitor
 				, public CoroutineStatementVisitor
 				, public StateMachineStatementVisitor
-				, public VirtualExpressionVisitor
+				, public VirtualCfeExpressionVisitor
+				, public VirtualCseExpressionVisitor
 				, public ModuleUsingFragmentVisitor
 			{
 			public:
@@ -444,11 +486,13 @@ namespace vl
 				vl::Ptr<WfModuleUsingFragment> CreateField(vl::Ptr<WfModuleUsingFragment> from);
 
 				// Dispatch (virtual) --------------------------------
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualExpression* node);
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualStatement* node);
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCfeExpression* node);
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseExpression* node);
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseStatement* node);
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node);
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfStateMachineStatement* node);
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualDeclaration* node);
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCfeDeclaration* node);
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseDeclaration* node);
 			};
 		}
 	}

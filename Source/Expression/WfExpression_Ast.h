@@ -169,9 +169,10 @@ namespace vl
 		class WfEnumDeclaration;
 		class WfStructMember;
 		class WfStructDeclaration;
-		class WfVirtualDeclaration;
+		class WfVirtualCfeDeclaration;
 		class WfAutoPropertyDeclaration;
 		class WfCastResultInterfaceDeclaration;
+		class WfVirtualCseDeclaration;
 		class WfStateInput;
 		class WfStateDeclaration;
 		class WfStateMachineDeclaration;
@@ -187,7 +188,7 @@ namespace vl
 		class WfGotoStatement;
 		class WfVariableStatement;
 		class WfExpressionStatement;
-		class WfVirtualStatement;
+		class WfVirtualCseStatement;
 		class WfForEachStatement;
 		class WfSwitchCase;
 		class WfSwitchStatement;
@@ -232,9 +233,10 @@ namespace vl
 		class WfFunctionExpression;
 		class WfNewClassExpression;
 		class WfNewInterfaceExpression;
-		class WfVirtualExpression;
-		class WfBindExpression;
+		class WfVirtualCfeExpression;
 		class WfFormatExpression;
+		class WfVirtualCseExpression;
+		class WfBindExpression;
 		class WfNewCoroutineExpression;
 		class WfMixinCastExpression;
 		class WfExpectedTypeCastExpression;
@@ -320,7 +322,8 @@ namespace vl
 				virtual void Visit(WfFunctionExpression* node)=0;
 				virtual void Visit(WfNewClassExpression* node)=0;
 				virtual void Visit(WfNewInterfaceExpression* node)=0;
-				virtual void Visit(WfVirtualExpression* node)=0;
+				virtual void Visit(WfVirtualCfeExpression* node)=0;
+				virtual void Visit(WfVirtualCseExpression* node)=0;
 			};
 
 			virtual void Accept(WfExpression::IVisitor* visitor)=0;
@@ -345,7 +348,7 @@ namespace vl
 				virtual void Visit(WfGotoStatement* node)=0;
 				virtual void Visit(WfVariableStatement* node)=0;
 				virtual void Visit(WfExpressionStatement* node)=0;
-				virtual void Visit(WfVirtualStatement* node)=0;
+				virtual void Visit(WfVirtualCseStatement* node)=0;
 				virtual void Visit(WfCoroutineStatement* node)=0;
 				virtual void Visit(WfStateMachineStatement* node)=0;
 			};
@@ -380,7 +383,8 @@ namespace vl
 				virtual void Visit(WfClassDeclaration* node)=0;
 				virtual void Visit(WfEnumDeclaration* node)=0;
 				virtual void Visit(WfStructDeclaration* node)=0;
-				virtual void Visit(WfVirtualDeclaration* node)=0;
+				virtual void Visit(WfVirtualCfeDeclaration* node)=0;
+				virtual void Visit(WfVirtualCseDeclaration* node)=0;
 			};
 
 			virtual void Accept(WfDeclaration::IVisitor* visitor)=0;
@@ -718,7 +722,7 @@ namespace vl
 			static vl::Ptr<WfStructDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfVirtualDeclaration abstract : public WfDeclaration, vl::reflection::Description<WfVirtualDeclaration>
+		class WfVirtualCfeDeclaration abstract : public WfDeclaration, vl::reflection::Description<WfVirtualCfeDeclaration>
 		{
 		public:
 			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
@@ -726,10 +730,9 @@ namespace vl
 			public:
 				virtual void Visit(WfAutoPropertyDeclaration* node)=0;
 				virtual void Visit(WfCastResultInterfaceDeclaration* node)=0;
-				virtual void Visit(WfStateMachineDeclaration* node)=0;
 			};
 
-			virtual void Accept(WfVirtualDeclaration::IVisitor* visitor)=0;
+			virtual void Accept(WfVirtualCfeDeclaration::IVisitor* visitor)=0;
 
 			vl::collections::List<vl::Ptr<WfDeclaration>> expandedDeclarations;
 
@@ -748,7 +751,7 @@ namespace vl
 			NotObservable,
 		};
 
-		class WfAutoPropertyDeclaration : public WfVirtualDeclaration, vl::reflection::Description<WfAutoPropertyDeclaration>
+		class WfAutoPropertyDeclaration : public WfVirtualCfeDeclaration, vl::reflection::Description<WfAutoPropertyDeclaration>
 		{
 		public:
 			vl::Ptr<WfType> type;
@@ -756,20 +759,36 @@ namespace vl
 			WfAPObserve configObserve;
 			vl::Ptr<WfExpression> expression;
 
-			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
+			void Accept(WfVirtualCfeDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfAutoPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfCastResultInterfaceDeclaration : public WfVirtualDeclaration, vl::reflection::Description<WfCastResultInterfaceDeclaration>
+		class WfCastResultInterfaceDeclaration : public WfVirtualCfeDeclaration, vl::reflection::Description<WfCastResultInterfaceDeclaration>
 		{
 		public:
 			vl::Ptr<WfType> baseType;
 			vl::Ptr<WfType> elementType;
 
-			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
+			void Accept(WfVirtualCfeDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfCastResultInterfaceDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfVirtualCseDeclaration abstract : public WfDeclaration, vl::reflection::Description<WfVirtualCseDeclaration>
+		{
+		public:
+			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+			{
+			public:
+				virtual void Visit(WfStateMachineDeclaration* node)=0;
+			};
+
+			virtual void Accept(WfVirtualCseDeclaration::IVisitor* visitor)=0;
+
+			vl::collections::List<vl::Ptr<WfDeclaration>> expandedDeclarations;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
 		};
 
 		class WfStateInput : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStateInput>
@@ -791,13 +810,13 @@ namespace vl
 			static vl::Ptr<WfStateDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfStateMachineDeclaration : public WfVirtualDeclaration, vl::reflection::Description<WfStateMachineDeclaration>
+		class WfStateMachineDeclaration : public WfVirtualCseDeclaration, vl::reflection::Description<WfStateMachineDeclaration>
 		{
 		public:
 			vl::collections::List<vl::Ptr<WfStateInput>> inputs;
 			vl::collections::List<vl::Ptr<WfStateDeclaration>> states;
 
-			void Accept(WfVirtualDeclaration::IVisitor* visitor)override;
+			void Accept(WfVirtualCseDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfStateMachineDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
@@ -929,7 +948,7 @@ namespace vl
 			static vl::Ptr<WfExpressionStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfVirtualStatement abstract : public WfStatement, vl::reflection::Description<WfVirtualStatement>
+		class WfVirtualCseStatement abstract : public WfStatement, vl::reflection::Description<WfVirtualCseStatement>
 		{
 		public:
 			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
@@ -940,7 +959,7 @@ namespace vl
 				virtual void Visit(WfCoProviderStatement* node)=0;
 			};
 
-			virtual void Accept(WfVirtualStatement::IVisitor* visitor)=0;
+			virtual void Accept(WfVirtualCseStatement::IVisitor* visitor)=0;
 
 			vl::Ptr<WfStatement> expandedStatement;
 
@@ -953,7 +972,7 @@ namespace vl
 			Reversed,
 		};
 
-		class WfForEachStatement : public WfVirtualStatement, vl::reflection::Description<WfForEachStatement>
+		class WfForEachStatement : public WfVirtualCseStatement, vl::reflection::Description<WfForEachStatement>
 		{
 		public:
 			vl::parsing::ParsingToken name;
@@ -961,7 +980,7 @@ namespace vl
 			vl::Ptr<WfExpression> collection;
 			vl::Ptr<WfStatement> statement;
 
-			void Accept(WfVirtualStatement::IVisitor* visitor)override;
+			void Accept(WfVirtualCseStatement::IVisitor* visitor)override;
 
 			static vl::Ptr<WfForEachStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
@@ -975,25 +994,25 @@ namespace vl
 			static vl::Ptr<WfSwitchCase> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfSwitchStatement : public WfVirtualStatement, vl::reflection::Description<WfSwitchStatement>
+		class WfSwitchStatement : public WfVirtualCseStatement, vl::reflection::Description<WfSwitchStatement>
 		{
 		public:
 			vl::Ptr<WfExpression> expression;
 			vl::collections::List<vl::Ptr<WfSwitchCase>> caseBranches;
 			vl::Ptr<WfStatement> defaultBranch;
 
-			void Accept(WfVirtualStatement::IVisitor* visitor)override;
+			void Accept(WfVirtualCseStatement::IVisitor* visitor)override;
 
 			static vl::Ptr<WfSwitchStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfCoProviderStatement : public WfVirtualStatement, vl::reflection::Description<WfCoProviderStatement>
+		class WfCoProviderStatement : public WfVirtualCseStatement, vl::reflection::Description<WfCoProviderStatement>
 		{
 		public:
 			vl::parsing::ParsingToken name;
 			vl::Ptr<WfStatement> statement;
 
-			void Accept(WfVirtualStatement::IVisitor* visitor)override;
+			void Accept(WfVirtualCseStatement::IVisitor* visitor)override;
 
 			static vl::Ptr<WfCoProviderStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
@@ -1524,86 +1543,101 @@ namespace vl
 			static vl::Ptr<WfNewInterfaceExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfVirtualExpression abstract : public WfExpression, vl::reflection::Description<WfVirtualExpression>
+		class WfVirtualCfeExpression abstract : public WfExpression, vl::reflection::Description<WfVirtualCfeExpression>
 		{
 		public:
 			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 			{
 			public:
-				virtual void Visit(WfBindExpression* node)=0;
 				virtual void Visit(WfFormatExpression* node)=0;
-				virtual void Visit(WfNewCoroutineExpression* node)=0;
-				virtual void Visit(WfMixinCastExpression* node)=0;
-				virtual void Visit(WfExpectedTypeCastExpression* node)=0;
-				virtual void Visit(WfCoOperatorExpression* node)=0;
 			};
 
-			virtual void Accept(WfVirtualExpression::IVisitor* visitor)=0;
+			virtual void Accept(WfVirtualCfeExpression::IVisitor* visitor)=0;
 
 			vl::Ptr<WfExpression> expandedExpression;
 
 			void Accept(WfExpression::IVisitor* visitor)override;
 		};
 
-		class WfBindExpression : public WfVirtualExpression, vl::reflection::Description<WfBindExpression>
-		{
-		public:
-			vl::Ptr<WfExpression> expression;
-
-			void Accept(WfVirtualExpression::IVisitor* visitor)override;
-
-			static vl::Ptr<WfBindExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
-		class WfFormatExpression : public WfVirtualExpression, vl::reflection::Description<WfFormatExpression>
+		class WfFormatExpression : public WfVirtualCfeExpression, vl::reflection::Description<WfFormatExpression>
 		{
 		public:
 			vl::parsing::ParsingToken value;
 
-			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+			void Accept(WfVirtualCfeExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfFormatExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfNewCoroutineExpression : public WfVirtualExpression, vl::reflection::Description<WfNewCoroutineExpression>
+		class WfVirtualCseExpression abstract : public WfExpression, vl::reflection::Description<WfVirtualCseExpression>
+		{
+		public:
+			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+			{
+			public:
+				virtual void Visit(WfBindExpression* node)=0;
+				virtual void Visit(WfNewCoroutineExpression* node)=0;
+				virtual void Visit(WfMixinCastExpression* node)=0;
+				virtual void Visit(WfExpectedTypeCastExpression* node)=0;
+				virtual void Visit(WfCoOperatorExpression* node)=0;
+			};
+
+			virtual void Accept(WfVirtualCseExpression::IVisitor* visitor)=0;
+
+			vl::Ptr<WfExpression> expandedExpression;
+
+			void Accept(WfExpression::IVisitor* visitor)override;
+		};
+
+		class WfBindExpression : public WfVirtualCseExpression, vl::reflection::Description<WfBindExpression>
+		{
+		public:
+			vl::Ptr<WfExpression> expression;
+
+			void Accept(WfVirtualCseExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfBindExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfNewCoroutineExpression : public WfVirtualCseExpression, vl::reflection::Description<WfNewCoroutineExpression>
 		{
 		public:
 			vl::parsing::ParsingToken name;
 			vl::Ptr<WfStatement> statement;
 
-			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+			void Accept(WfVirtualCseExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfNewCoroutineExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfMixinCastExpression : public WfVirtualExpression, vl::reflection::Description<WfMixinCastExpression>
+		class WfMixinCastExpression : public WfVirtualCseExpression, vl::reflection::Description<WfMixinCastExpression>
 		{
 		public:
 			vl::Ptr<WfType> type;
 			vl::Ptr<WfExpression> expression;
 
-			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+			void Accept(WfVirtualCseExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfMixinCastExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfExpectedTypeCastExpression : public WfVirtualExpression, vl::reflection::Description<WfExpectedTypeCastExpression>
+		class WfExpectedTypeCastExpression : public WfVirtualCseExpression, vl::reflection::Description<WfExpectedTypeCastExpression>
 		{
 		public:
 			WfTypeCastingStrategy strategy;
 			vl::Ptr<WfExpression> expression;
 
-			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+			void Accept(WfVirtualCseExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfExpectedTypeCastExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfCoOperatorExpression : public WfVirtualExpression, vl::reflection::Description<WfCoOperatorExpression>
+		class WfCoOperatorExpression : public WfVirtualCseExpression, vl::reflection::Description<WfCoOperatorExpression>
 		{
 		public:
 			vl::parsing::ParsingToken name;
 
-			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+			void Accept(WfVirtualCseExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfCoOperatorExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
@@ -1723,11 +1757,12 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfEnumDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfStructMember)
 			DECL_TYPE_INFO(vl::workflow::WfStructDeclaration)
-			DECL_TYPE_INFO(vl::workflow::WfVirtualDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCfeDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfAPConst)
 			DECL_TYPE_INFO(vl::workflow::WfAPObserve)
 			DECL_TYPE_INFO(vl::workflow::WfAutoPropertyDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfCastResultInterfaceDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCseDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfStateInput)
 			DECL_TYPE_INFO(vl::workflow::WfStateDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfStateMachineDeclaration)
@@ -1743,7 +1778,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfGotoStatement)
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
 			DECL_TYPE_INFO(vl::workflow::WfExpressionStatement)
-			DECL_TYPE_INFO(vl::workflow::WfVirtualStatement)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCseStatement)
 			DECL_TYPE_INFO(vl::workflow::WfForEachDirection)
 			DECL_TYPE_INFO(vl::workflow::WfForEachStatement)
 			DECL_TYPE_INFO(vl::workflow::WfSwitchCase)
@@ -1799,9 +1834,10 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfFunctionExpression)
 			DECL_TYPE_INFO(vl::workflow::WfNewClassExpression)
 			DECL_TYPE_INFO(vl::workflow::WfNewInterfaceExpression)
-			DECL_TYPE_INFO(vl::workflow::WfVirtualExpression)
-			DECL_TYPE_INFO(vl::workflow::WfBindExpression)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCfeExpression)
 			DECL_TYPE_INFO(vl::workflow::WfFormatExpression)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCseExpression)
+			DECL_TYPE_INFO(vl::workflow::WfBindExpression)
 			DECL_TYPE_INFO(vl::workflow::WfNewCoroutineExpression)
 			DECL_TYPE_INFO(vl::workflow::WfMixinCastExpression)
 			DECL_TYPE_INFO(vl::workflow::WfExpectedTypeCastExpression)
@@ -1817,11 +1853,13 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfExpression::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfStatement::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfDeclaration::IVisitor)
-			DECL_TYPE_INFO(vl::workflow::WfVirtualDeclaration::IVisitor)
-			DECL_TYPE_INFO(vl::workflow::WfVirtualStatement::IVisitor)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCfeDeclaration::IVisitor)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCseDeclaration::IVisitor)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCseStatement::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfCoroutineStatement::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfStateMachineStatement::IVisitor)
-			DECL_TYPE_INFO(vl::workflow::WfVirtualExpression::IVisitor)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCfeExpression::IVisitor)
+			DECL_TYPE_INFO(vl::workflow::WfVirtualCseExpression::IVisitor)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfType::IVisitor)
@@ -2033,7 +2071,12 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::workflow::WfVirtualExpression* node)override
+				void Visit(vl::workflow::WfVirtualCfeExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfVirtualCseExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -2101,7 +2144,7 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::workflow::WfVirtualStatement* node)override
+				void Visit(vl::workflow::WfVirtualCseStatement* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -2169,14 +2212,19 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::workflow::WfVirtualDeclaration* node)override
+				void Visit(vl::workflow::WfVirtualCfeDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfVirtualCseDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
 			END_INTERFACE_PROXY(vl::workflow::WfDeclaration::IVisitor)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualDeclaration::IVisitor)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualCfeDeclaration::IVisitor)
 				void Visit(vl::workflow::WfAutoPropertyDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
@@ -2187,14 +2235,17 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
+			END_INTERFACE_PROXY(vl::workflow::WfVirtualCfeDeclaration::IVisitor)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualCseDeclaration::IVisitor)
 				void Visit(vl::workflow::WfStateMachineDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-			END_INTERFACE_PROXY(vl::workflow::WfVirtualDeclaration::IVisitor)
+			END_INTERFACE_PROXY(vl::workflow::WfVirtualCseDeclaration::IVisitor)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualStatement::IVisitor)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualCseStatement::IVisitor)
 				void Visit(vl::workflow::WfForEachStatement* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
@@ -2210,7 +2261,7 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-			END_INTERFACE_PROXY(vl::workflow::WfVirtualStatement::IVisitor)
+			END_INTERFACE_PROXY(vl::workflow::WfVirtualCseStatement::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfCoroutineStatement::IVisitor)
 				void Visit(vl::workflow::WfCoPauseStatement* node)override
@@ -2238,13 +2289,16 @@ namespace vl
 
 			END_INTERFACE_PROXY(vl::workflow::WfStateMachineStatement::IVisitor)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualExpression::IVisitor)
-				void Visit(vl::workflow::WfBindExpression* node)override
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualCfeExpression::IVisitor)
+				void Visit(vl::workflow::WfFormatExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::workflow::WfFormatExpression* node)override
+			END_INTERFACE_PROXY(vl::workflow::WfVirtualCfeExpression::IVisitor)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfVirtualCseExpression::IVisitor)
+				void Visit(vl::workflow::WfBindExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -2269,7 +2323,7 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-			END_INTERFACE_PROXY(vl::workflow::WfVirtualExpression::IVisitor)
+			END_INTERFACE_PROXY(vl::workflow::WfVirtualCseExpression::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfModuleUsingFragment::IVisitor)
 				void Visit(vl::workflow::WfModuleUsingNameFragment* node)override
