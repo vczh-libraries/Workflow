@@ -763,7 +763,16 @@ Print (Expression)
 
 			void Visit(WfVirtualCfeExpression* node)override
 			{
-				node->Accept((WfVirtualCfeExpression::IVisitor*)this);
+				if (node->expandedExpression)
+				{
+					writer.BeforePrint(node);
+					WfPrint(node->expandedExpression, indent, writer);
+					writer.AfterPrint(node);
+				}
+				else
+				{
+					node->Accept((WfVirtualCfeExpression::IVisitor*)this);
+				}
 			}
 
 			void Visit(WfFormatExpression* node)override
@@ -776,7 +785,16 @@ Print (Expression)
 
 			void Visit(WfVirtualCseExpression* node)override
 			{
-				node->Accept((WfVirtualCseExpression::IVisitor*)this);
+				if (node->expandedExpression)
+				{
+					writer.BeforePrint(node);
+					WfPrint(node->expandedExpression, indent, writer);
+					writer.AfterPrint(node);
+				}
+				else
+				{
+					node->Accept((WfVirtualCseExpression::IVisitor*)this);
+				}
 			}
 
 			void Visit(WfBindExpression* node)override
@@ -1044,7 +1062,16 @@ Print (Statement)
 
 			void Visit(WfVirtualCseStatement* node)override
 			{
-				node->Accept((WfVirtualCseStatement::IVisitor*)this);
+				if (node->expandedStatement)
+				{
+					writer.BeforePrint(node);
+					WfPrint(node->expandedStatement, indent, writer);
+					writer.AfterPrint(node);
+				}
+				else
+				{
+					node->Accept((WfVirtualCseStatement::IVisitor*)this);
+				}
 			}
 
 			void Visit(WfSwitchStatement* node)override
@@ -1498,9 +1525,35 @@ Print (Declaration)
 				writer.AfterPrint(node);
 			}
 
+			void PrintExpandedDeclarations(List<Ptr<WfDeclaration>>& decls)
+			{
+				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, decls)
+				{
+					if (index > 0)
+					{
+						writer.WriteLine(L"");
+						writer.WriteString(indent);
+					}
+					WfPrint(decl, indent, writer);
+					if (index < decls.Count() - 1)
+					{
+						writer.WriteLine(L"");
+					}
+				}
+			}
+
 			void Visit(WfVirtualCfeDeclaration* node)override
 			{
-				node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
+				if (node->expandedDeclarations.Count() > 0)
+				{
+					writer.BeforePrint(node);
+					PrintExpandedDeclarations(node->expandedDeclarations);
+					writer.AfterPrint(node);
+				}
+				else
+				{
+					node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
+				}
 			}
 
 			void Visit(WfAutoPropertyDeclaration* node)override
@@ -1553,7 +1606,16 @@ Print (Declaration)
 
 			void Visit(WfVirtualCseDeclaration* node)override
 			{
-				node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
+				if (node->expandedDeclarations.Count() > 0)
+				{
+					writer.BeforePrint(node);
+					PrintExpandedDeclarations(node->expandedDeclarations);
+					writer.AfterPrint(node);
+				}
+				else
+				{
+					node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
+				}
 			}
 
 			void Visit(WfStateMachineDeclaration* node)override
