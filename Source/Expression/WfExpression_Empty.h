@@ -41,7 +41,8 @@ namespace vl
 			public:
 
 				// Dispatch (virtual) --------------------------------
-				virtual void Dispatch(WfVirtualExpression* node) = 0;
+				virtual void Dispatch(WfVirtualCfeExpression* node) = 0;
+				virtual void Dispatch(WfVirtualCseExpression* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfThisExpression* node)override;
@@ -74,7 +75,8 @@ namespace vl
 				void Visit(WfFunctionExpression* node)override;
 				void Visit(WfNewClassExpression* node)override;
 				void Visit(WfNewInterfaceExpression* node)override;
-				void Visit(WfVirtualExpression* node)override;
+				void Visit(WfVirtualCfeExpression* node)override;
+				void Visit(WfVirtualCseExpression* node)override;
 			};
 
 			class StatementVisitor : public Object, public WfStatement::IVisitor
@@ -82,7 +84,7 @@ namespace vl
 			public:
 
 				// Dispatch (virtual) --------------------------------
-				virtual void Dispatch(WfVirtualStatement* node) = 0;
+				virtual void Dispatch(WfVirtualCseStatement* node) = 0;
 				virtual void Dispatch(WfCoroutineStatement* node) = 0;
 				virtual void Dispatch(WfStateMachineStatement* node) = 0;
 
@@ -99,7 +101,7 @@ namespace vl
 				void Visit(WfGotoStatement* node)override;
 				void Visit(WfVariableStatement* node)override;
 				void Visit(WfExpressionStatement* node)override;
-				void Visit(WfVirtualStatement* node)override;
+				void Visit(WfVirtualCseStatement* node)override;
 				void Visit(WfCoroutineStatement* node)override;
 				void Visit(WfStateMachineStatement* node)override;
 			};
@@ -109,7 +111,8 @@ namespace vl
 			public:
 
 				// Dispatch (virtual) --------------------------------
-				virtual void Dispatch(WfVirtualDeclaration* node) = 0;
+				virtual void Dispatch(WfVirtualCfeDeclaration* node) = 0;
+				virtual void Dispatch(WfVirtualCseDeclaration* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfNamespaceDeclaration* node)override;
@@ -122,20 +125,28 @@ namespace vl
 				void Visit(WfClassDeclaration* node)override;
 				void Visit(WfEnumDeclaration* node)override;
 				void Visit(WfStructDeclaration* node)override;
-				void Visit(WfVirtualDeclaration* node)override;
+				void Visit(WfVirtualCfeDeclaration* node)override;
+				void Visit(WfVirtualCseDeclaration* node)override;
 			};
 
-			class VirtualDeclarationVisitor : public Object, public WfVirtualDeclaration::IVisitor
+			class VirtualCfeDeclarationVisitor : public Object, public WfVirtualCfeDeclaration::IVisitor
 			{
 			public:
 
 				// Visitor Members -----------------------------------
 				void Visit(WfAutoPropertyDeclaration* node)override;
 				void Visit(WfCastResultInterfaceDeclaration* node)override;
+			};
+
+			class VirtualCseDeclarationVisitor : public Object, public WfVirtualCseDeclaration::IVisitor
+			{
+			public:
+
+				// Visitor Members -----------------------------------
 				void Visit(WfStateMachineDeclaration* node)override;
 			};
 
-			class VirtualStatementVisitor : public Object, public WfVirtualStatement::IVisitor
+			class VirtualCseStatementVisitor : public Object, public WfVirtualCseStatement::IVisitor
 			{
 			public:
 
@@ -163,13 +174,20 @@ namespace vl
 				void Visit(WfStateInvokeStatement* node)override;
 			};
 
-			class VirtualExpressionVisitor : public Object, public WfVirtualExpression::IVisitor
+			class VirtualCfeExpressionVisitor : public Object, public WfVirtualCfeExpression::IVisitor
+			{
+			public:
+
+				// Visitor Members -----------------------------------
+				void Visit(WfFormatExpression* node)override;
+			};
+
+			class VirtualCseExpressionVisitor : public Object, public WfVirtualCseExpression::IVisitor
 			{
 			public:
 
 				// Visitor Members -----------------------------------
 				void Visit(WfBindExpression* node)override;
-				void Visit(WfFormatExpression* node)override;
 				void Visit(WfNewCoroutineExpression* node)override;
 				void Visit(WfMixinCastExpression* node)override;
 				void Visit(WfExpectedTypeCastExpression* node)override;

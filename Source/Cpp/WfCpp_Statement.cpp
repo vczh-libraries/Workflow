@@ -236,10 +236,7 @@ namespace vl
 
 					FOREACH(Ptr<WfStatement>, statement, node->statements)
 					{
-						while (auto virtualStat = statement.Cast<WfVirtualStatement>())
-						{
-							statement = virtualStat->expandedStatement;
-						}
+						statement = SearchUntilNonVirtualStatement(statement);
 
 						if (statement.Cast<WfBlockStatement>())
 						{
@@ -306,7 +303,7 @@ namespace vl
 					writer.WriteLine(L";");
 				}
 
-				void Visit(WfVirtualStatement* node)override
+				void Visit(WfVirtualCseStatement* node)override
 				{
 					node->expandedStatement->Accept(this);
 				}

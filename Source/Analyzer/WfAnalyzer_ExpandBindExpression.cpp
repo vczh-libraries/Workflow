@@ -12,6 +12,174 @@ namespace vl
 			using namespace parsing;
 
 /***********************************************************************
+SearchUntilNonVirtualStatement
+***********************************************************************/
+
+			class SearchUntilNonVirtualStatementVisitor : public empty_visitor::StatementVisitor
+			{
+			public:
+				Ptr<WfStatement>		result;
+
+				SearchUntilNonVirtualStatementVisitor(Ptr<WfStatement> _result)
+					:result(_result)
+				{
+				}
+
+				void Dispatch(WfVirtualCseStatement* node)override
+				{
+					result = node->expandedStatement;
+					result->Accept(this);
+				}
+
+				void Dispatch(WfCoroutineStatement* node)override
+				{
+				}
+
+				void Dispatch(WfStateMachineStatement* node)override
+				{
+				}
+			};
+
+			Ptr<WfStatement> SearchUntilNonVirtualStatement(Ptr<WfStatement> statement)
+			{
+				SearchUntilNonVirtualStatementVisitor visitor(statement);
+				statement->Accept(&visitor);
+				return visitor.result;
+			}
+
+/***********************************************************************
+Copy(Type|Expression|Statement|Declaration)
+***********************************************************************/
+
+			class CopyDeclarationWithExpandVirtualVisitor : empty_visitor::DeclarationVisitor
+			{
+			public:
+				bool						expanded = false;
+				List<Ptr<WfDeclaration>>&	decls;
+
+				CopyDeclarationWithExpandVirtualVisitor(List<Ptr<WfDeclaration>>& _decls)
+					:decls(_decls)
+				{
+				}
+
+				void Dispatch(WfVirtualCfeDeclaration* node)override
+				{
+					expanded = true;
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						Execute(decls, decl);
+					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
+				{
+					expanded = true;
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						Execute(decls, decl);
+					}
+				}
+
+				static void Execute(List<Ptr<WfDeclaration>>& decls, Ptr<WfDeclaration> decl)
+				{
+					CopyDeclarationWithExpandVirtualVisitor visitor(decls);
+					decl->Accept(&visitor);
+					if (!visitor.expanded)
+					{
+						decls.Add(decl);
+					}
+				}
+			};
+
+			void CopyWithExpandVirtualVisitor::Expand(collections::List<Ptr<WfDeclaration>>& decls)
+			{
+				if (expandVirtualAst)
+				{
+					List<Ptr<WfDeclaration>> copied;
+					CopyFrom(copied, decls);
+					decls.Clear();
+
+					FOREACH(Ptr<WfDeclaration>, decl, copied)
+					{
+						CopyDeclarationWithExpandVirtualVisitor::Execute(decls, decl);
+					}
+				}
+			}
+
+			CopyWithExpandVirtualVisitor::CopyWithExpandVirtualVisitor(bool _expandVirtualAst)
+				:expandVirtualAst(_expandVirtualAst)
+			{
+			}
+
+			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualCfeExpression* node)
+			{
+				if (!expandVirtualAst || !node->expandedExpression)
+				{
+					return copy_visitor::ModuleVisitor::Dispatch(node);
+				}
+				node->expandedExpression->Accept(this);
+				return result;
+			}
+
+			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualCseExpression* node)
+			{
+				if (!expandVirtualAst || !node->expandedExpression)
+				{
+					return copy_visitor::ModuleVisitor::Dispatch(node);
+				}
+				node->expandedExpression->Accept(this);
+				return result;
+			}
+
+			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualCseStatement* node)
+			{
+				if (!expandVirtualAst || !node->expandedStatement)
+				{
+					return copy_visitor::ModuleVisitor::Dispatch(node);
+				}
+				node->expandedStatement->Accept(this);
+				return result;
+			}
+
+			void CopyWithExpandVirtualVisitor::Visit(WfNamespaceDeclaration* node)
+			{
+				copy_visitor::DeclarationVisitor::Visit(node);
+				Expand(node->declarations);
+			}
+
+			void CopyWithExpandVirtualVisitor::Visit(WfClassDeclaration* node)
+			{
+				copy_visitor::DeclarationVisitor::Visit(node);
+				Expand(node->declarations);
+			}
+
+			void CopyWithExpandVirtualVisitor::Visit(WfNewInterfaceExpression* node)
+			{
+				copy_visitor::ExpressionVisitor::Visit(node);
+				Expand(node->declarations);
+			}
+
+			Ptr<WfType> CopyType(Ptr<WfType> type)
+			{
+				return CopyWithExpandVirtualVisitor(false).CreateField(type);
+			}
+
+			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(expression);
+			}
+
+			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(statement);
+			}
+
+			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(declaration);
+			}
+
+/***********************************************************************
 observing expressions:
 	WfObserveExpression
 	WfMemberExpression that detects the event
@@ -401,60 +569,16 @@ CreateBindContext
 					// root expression, nothing to do
 				}
 
-				void Visit(WfVirtualExpression* node)override
+				void Visit(WfVirtualCfeExpression* node)override
+				{
+					DirectDepend(node, node->expandedExpression.Obj());
+				}
+
+				void Visit(WfVirtualCseExpression* node)override
 				{
 					DirectDepend(node, node->expandedExpression.Obj());
 				}
 			};
-
-/***********************************************************************
-Copy(Type|Expression|Statement|Declaration)
-***********************************************************************/
-
-			CopyWithExpandVirtualVisitor::CopyWithExpandVirtualVisitor(bool _expandVirtualExprStat)
-				:expandVirtualExprStat(_expandVirtualExprStat)
-			{
-			}
-
-			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualExpression* node)
-			{
-				if (!expandVirtualExprStat || !node->expandedExpression)
-				{
-					return copy_visitor::ModuleVisitor::Dispatch(node);
-				}
-				node->expandedExpression->Accept(this);
-				return result;
-			}
-
-			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualStatement* node)
-			{
-				if (!expandVirtualExprStat || !node->expandedStatement)
-				{
-					return copy_visitor::ModuleVisitor::Dispatch(node);
-				}
-				node->expandedStatement->Accept(this);
-				return result;
-			}
-
-			Ptr<WfType> CopyType(Ptr<WfType> type)
-			{
-				return CopyWithExpandVirtualVisitor(false).CreateField(type);
-			}
-
-			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat)
-			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(expression);
-			}
-
-			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat)
-			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(statement);
-			}
-
-			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat)
-			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(declaration);
-			}
 
 /***********************************************************************
 ExpandObserveExpression

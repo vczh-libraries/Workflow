@@ -772,7 +772,12 @@ ExpressionVisitor
 				this->result = newNode;
 			}
 
-			void ExpressionVisitor::Visit(WfVirtualExpression* node)
+			void ExpressionVisitor::Visit(WfVirtualCfeExpression* node)
+			{
+				this->result = Dispatch(node);
+			}
+
+			void ExpressionVisitor::Visit(WfVirtualCseExpression* node)
 			{
 				this->result = Dispatch(node);
 			}
@@ -1028,7 +1033,7 @@ StatementVisitor
 				this->result = newNode;
 			}
 
-			void StatementVisitor::Visit(WfVirtualStatement* node)
+			void StatementVisitor::Visit(WfVirtualCseStatement* node)
 			{
 				this->result = Dispatch(node);
 			}
@@ -1381,27 +1386,32 @@ DeclarationVisitor
 				this->result = newNode;
 			}
 
-			void DeclarationVisitor::Visit(WfVirtualDeclaration* node)
+			void DeclarationVisitor::Visit(WfVirtualCfeDeclaration* node)
+			{
+				this->result = Dispatch(node);
+			}
+
+			void DeclarationVisitor::Visit(WfVirtualCseDeclaration* node)
 			{
 				this->result = Dispatch(node);
 			}
 
 /***********************************************************************
-VirtualDeclarationVisitor
+VirtualCfeDeclarationVisitor
 ***********************************************************************/
 
 			// CopyFields ----------------------------------------
 
-			void VirtualDeclarationVisitor::CopyFields(WfAutoPropertyDeclaration* from, WfAutoPropertyDeclaration* to)
+			void VirtualCfeDeclarationVisitor::CopyFields(WfAutoPropertyDeclaration* from, WfAutoPropertyDeclaration* to)
 			{
 				to->type = CreateField(from->type);
 				to->configConst = from->configConst;
 				to->configObserve = from->configObserve;
 				to->expression = CreateField(from->expression);
-				CopyFields(static_cast<WfVirtualDeclaration*>(from), static_cast<WfVirtualDeclaration*>(to));
+				CopyFields(static_cast<WfVirtualCfeDeclaration*>(from), static_cast<WfVirtualCfeDeclaration*>(to));
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfVirtualDeclaration* from, WfVirtualDeclaration* to)
+			void VirtualCfeDeclarationVisitor::CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to)
 			{
 				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
 				{
@@ -1410,7 +1420,7 @@ VirtualDeclarationVisitor
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
+			void VirtualCfeDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
 				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
@@ -1423,7 +1433,7 @@ VirtualDeclarationVisitor
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfAttribute* from, WfAttribute* to)
+			void VirtualCfeDeclarationVisitor::CopyFields(WfAttribute* from, WfAttribute* to)
 			{
 				to->category.codeRange = from->category.codeRange;
 				to->category.tokenIndex = from->category.tokenIndex;
@@ -1435,20 +1445,60 @@ VirtualDeclarationVisitor
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
+			void VirtualCfeDeclarationVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
 			{
 				to->kind = from->kind;
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to)
+			void VirtualCfeDeclarationVisitor::CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to)
 			{
 				to->baseType = CreateField(from->baseType);
 				to->elementType = CreateField(from->elementType);
-				CopyFields(static_cast<WfVirtualDeclaration*>(from), static_cast<WfVirtualDeclaration*>(to));
+				CopyFields(static_cast<WfVirtualCfeDeclaration*>(from), static_cast<WfVirtualCfeDeclaration*>(to));
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to)
+			// CreateField ---------------------------------------
+
+			vl::Ptr<WfAttribute> VirtualCfeDeclarationVisitor::CreateField(vl::Ptr<WfAttribute> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfAttribute>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			vl::Ptr<WfClassMember> VirtualCfeDeclarationVisitor::CreateField(vl::Ptr<WfClassMember> from)
+			{
+				if (!from) return nullptr;
+				auto to = vl::MakePtr<WfClassMember>();
+				CopyFields(from.Obj(), to.Obj());
+				return to;
+			}
+
+			// Visitor Members -----------------------------------
+
+			void VirtualCfeDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
+			{
+				auto newNode = vl::MakePtr<WfAutoPropertyDeclaration>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualCfeDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+			{
+				auto newNode = vl::MakePtr<WfCastResultInterfaceDeclaration>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+/***********************************************************************
+VirtualCseDeclarationVisitor
+***********************************************************************/
+
+			// CopyFields ----------------------------------------
+
+			void VirtualCseDeclarationVisitor::CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to)
 			{
 				FOREACH(vl::Ptr<WfStateInput>, listItem, from->inputs)
 				{
@@ -1458,10 +1508,50 @@ VirtualDeclarationVisitor
 				{
 					to->states.Add(CreateField(listItem));
 				}
-				CopyFields(static_cast<WfVirtualDeclaration*>(from), static_cast<WfVirtualDeclaration*>(to));
+				CopyFields(static_cast<WfVirtualCseDeclaration*>(from), static_cast<WfVirtualCseDeclaration*>(to));
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfStateInput* from, WfStateInput* to)
+			void VirtualCseDeclarationVisitor::CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to)
+			{
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
+				{
+					to->expandedDeclarations.Add(CreateField(listItem));
+				}
+				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+			}
+
+			void VirtualCseDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
+			{
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				{
+					to->attributes.Add(CreateField(listItem));
+				}
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				to->classMember = CreateField(from->classMember);
+				to->codeRange = from->codeRange;
+			}
+
+			void VirtualCseDeclarationVisitor::CopyFields(WfAttribute* from, WfAttribute* to)
+			{
+				to->category.codeRange = from->category.codeRange;
+				to->category.tokenIndex = from->category.tokenIndex;
+				to->category.value = from->category.value;
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				to->value = CreateField(from->value);
+				to->codeRange = from->codeRange;
+			}
+
+			void VirtualCseDeclarationVisitor::CopyFields(WfClassMember* from, WfClassMember* to)
+			{
+				to->kind = from->kind;
+				to->codeRange = from->codeRange;
+			}
+
+			void VirtualCseDeclarationVisitor::CopyFields(WfStateInput* from, WfStateInput* to)
 			{
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
@@ -1473,7 +1563,7 @@ VirtualDeclarationVisitor
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
+			void VirtualCseDeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
 				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
@@ -1486,7 +1576,7 @@ VirtualDeclarationVisitor
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualDeclarationVisitor::CopyFields(WfStateDeclaration* from, WfStateDeclaration* to)
+			void VirtualCseDeclarationVisitor::CopyFields(WfStateDeclaration* from, WfStateDeclaration* to)
 			{
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
@@ -1501,7 +1591,7 @@ VirtualDeclarationVisitor
 
 			// CreateField ---------------------------------------
 
-			vl::Ptr<WfAttribute> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfAttribute> from)
+			vl::Ptr<WfAttribute> VirtualCseDeclarationVisitor::CreateField(vl::Ptr<WfAttribute> from)
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfAttribute>();
@@ -1509,7 +1599,7 @@ VirtualDeclarationVisitor
 				return to;
 			}
 
-			vl::Ptr<WfClassMember> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfClassMember> from)
+			vl::Ptr<WfClassMember> VirtualCseDeclarationVisitor::CreateField(vl::Ptr<WfClassMember> from)
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfClassMember>();
@@ -1517,7 +1607,7 @@ VirtualDeclarationVisitor
 				return to;
 			}
 
-			vl::Ptr<WfStateInput> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfStateInput> from)
+			vl::Ptr<WfStateInput> VirtualCseDeclarationVisitor::CreateField(vl::Ptr<WfStateInput> from)
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfStateInput>();
@@ -1525,7 +1615,7 @@ VirtualDeclarationVisitor
 				return to;
 			}
 
-			vl::Ptr<WfFunctionArgument> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfFunctionArgument> from)
+			vl::Ptr<WfFunctionArgument> VirtualCseDeclarationVisitor::CreateField(vl::Ptr<WfFunctionArgument> from)
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfFunctionArgument>();
@@ -1533,7 +1623,7 @@ VirtualDeclarationVisitor
 				return to;
 			}
 
-			vl::Ptr<WfStateDeclaration> VirtualDeclarationVisitor::CreateField(vl::Ptr<WfStateDeclaration> from)
+			vl::Ptr<WfStateDeclaration> VirtualCseDeclarationVisitor::CreateField(vl::Ptr<WfStateDeclaration> from)
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfStateDeclaration>();
@@ -1543,21 +1633,7 @@ VirtualDeclarationVisitor
 
 			// Visitor Members -----------------------------------
 
-			void VirtualDeclarationVisitor::Visit(WfAutoPropertyDeclaration* node)
-			{
-				auto newNode = vl::MakePtr<WfAutoPropertyDeclaration>();
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void VirtualDeclarationVisitor::Visit(WfCastResultInterfaceDeclaration* node)
-			{
-				auto newNode = vl::MakePtr<WfCastResultInterfaceDeclaration>();
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void VirtualDeclarationVisitor::Visit(WfStateMachineDeclaration* node)
+			void VirtualCseDeclarationVisitor::Visit(WfStateMachineDeclaration* node)
 			{
 				auto newNode = vl::MakePtr<WfStateMachineDeclaration>();
 				CopyFields(node, newNode.Obj());
@@ -1565,12 +1641,12 @@ VirtualDeclarationVisitor
 			}
 
 /***********************************************************************
-VirtualStatementVisitor
+VirtualCseStatementVisitor
 ***********************************************************************/
 
 			// CopyFields ----------------------------------------
 
-			void VirtualStatementVisitor::CopyFields(WfForEachStatement* from, WfForEachStatement* to)
+			void VirtualCseStatementVisitor::CopyFields(WfForEachStatement* from, WfForEachStatement* to)
 			{
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
@@ -1578,21 +1654,21 @@ VirtualStatementVisitor
 				to->direction = from->direction;
 				to->collection = CreateField(from->collection);
 				to->statement = CreateField(from->statement);
-				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
+				CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
 			}
 
-			void VirtualStatementVisitor::CopyFields(WfVirtualStatement* from, WfVirtualStatement* to)
+			void VirtualCseStatementVisitor::CopyFields(WfVirtualCseStatement* from, WfVirtualCseStatement* to)
 			{
 				to->expandedStatement = CreateField(from->expandedStatement);
 				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
 			}
 
-			void VirtualStatementVisitor::CopyFields(WfStatement* from, WfStatement* to)
+			void VirtualCseStatementVisitor::CopyFields(WfStatement* from, WfStatement* to)
 			{
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualStatementVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
+			void VirtualCseStatementVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
 			{
 				to->expression = CreateField(from->expression);
 				FOREACH(vl::Ptr<WfSwitchCase>, listItem, from->caseBranches)
@@ -1600,28 +1676,28 @@ VirtualStatementVisitor
 					to->caseBranches.Add(CreateField(listItem));
 				}
 				to->defaultBranch = CreateField(from->defaultBranch);
-				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
+				CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
 			}
 
-			void VirtualStatementVisitor::CopyFields(WfSwitchCase* from, WfSwitchCase* to)
+			void VirtualCseStatementVisitor::CopyFields(WfSwitchCase* from, WfSwitchCase* to)
 			{
 				to->expression = CreateField(from->expression);
 				to->statement = CreateField(from->statement);
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualStatementVisitor::CopyFields(WfCoProviderStatement* from, WfCoProviderStatement* to)
+			void VirtualCseStatementVisitor::CopyFields(WfCoProviderStatement* from, WfCoProviderStatement* to)
 			{
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
 				to->statement = CreateField(from->statement);
-				CopyFields(static_cast<WfVirtualStatement*>(from), static_cast<WfVirtualStatement*>(to));
+				CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
 			}
 
 			// CreateField ---------------------------------------
 
-			vl::Ptr<WfSwitchCase> VirtualStatementVisitor::CreateField(vl::Ptr<WfSwitchCase> from)
+			vl::Ptr<WfSwitchCase> VirtualCseStatementVisitor::CreateField(vl::Ptr<WfSwitchCase> from)
 			{
 				if (!from) return nullptr;
 				auto to = vl::MakePtr<WfSwitchCase>();
@@ -1631,21 +1707,21 @@ VirtualStatementVisitor
 
 			// Visitor Members -----------------------------------
 
-			void VirtualStatementVisitor::Visit(WfForEachStatement* node)
+			void VirtualCseStatementVisitor::Visit(WfForEachStatement* node)
 			{
 				auto newNode = vl::MakePtr<WfForEachStatement>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
 
-			void VirtualStatementVisitor::Visit(WfSwitchStatement* node)
+			void VirtualCseStatementVisitor::Visit(WfSwitchStatement* node)
 			{
 				auto newNode = vl::MakePtr<WfSwitchStatement>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
 
-			void VirtualStatementVisitor::Visit(WfCoProviderStatement* node)
+			void VirtualCseStatementVisitor::Visit(WfCoProviderStatement* node)
 			{
 				auto newNode = vl::MakePtr<WfCoProviderStatement>();
 				CopyFields(node, newNode.Obj());
@@ -1797,105 +1873,124 @@ StateMachineStatementVisitor
 			}
 
 /***********************************************************************
-VirtualExpressionVisitor
+VirtualCfeExpressionVisitor
 ***********************************************************************/
 
 			// CopyFields ----------------------------------------
 
-			void VirtualExpressionVisitor::CopyFields(WfBindExpression* from, WfBindExpression* to)
+			void VirtualCfeExpressionVisitor::CopyFields(WfFormatExpression* from, WfFormatExpression* to)
 			{
-				to->expression = CreateField(from->expression);
-				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
+				to->value.codeRange = from->value.codeRange;
+				to->value.tokenIndex = from->value.tokenIndex;
+				to->value.value = from->value.value;
+				CopyFields(static_cast<WfVirtualCfeExpression*>(from), static_cast<WfVirtualCfeExpression*>(to));
 			}
 
-			void VirtualExpressionVisitor::CopyFields(WfVirtualExpression* from, WfVirtualExpression* to)
+			void VirtualCfeExpressionVisitor::CopyFields(WfVirtualCfeExpression* from, WfVirtualCfeExpression* to)
 			{
 				to->expandedExpression = CreateField(from->expandedExpression);
 				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
 			}
 
-			void VirtualExpressionVisitor::CopyFields(WfExpression* from, WfExpression* to)
+			void VirtualCfeExpressionVisitor::CopyFields(WfExpression* from, WfExpression* to)
 			{
 				to->codeRange = from->codeRange;
 			}
 
-			void VirtualExpressionVisitor::CopyFields(WfFormatExpression* from, WfFormatExpression* to)
-			{
-				to->value.codeRange = from->value.codeRange;
-				to->value.tokenIndex = from->value.tokenIndex;
-				to->value.value = from->value.value;
-				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
-			}
-
-			void VirtualExpressionVisitor::CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to)
-			{
-				to->name.codeRange = from->name.codeRange;
-				to->name.tokenIndex = from->name.tokenIndex;
-				to->name.value = from->name.value;
-				to->statement = CreateField(from->statement);
-				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
-			}
-
-			void VirtualExpressionVisitor::CopyFields(WfMixinCastExpression* from, WfMixinCastExpression* to)
-			{
-				to->type = CreateField(from->type);
-				to->expression = CreateField(from->expression);
-				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
-			}
-
-			void VirtualExpressionVisitor::CopyFields(WfExpectedTypeCastExpression* from, WfExpectedTypeCastExpression* to)
-			{
-				to->strategy = from->strategy;
-				to->expression = CreateField(from->expression);
-				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
-			}
-
-			void VirtualExpressionVisitor::CopyFields(WfCoOperatorExpression* from, WfCoOperatorExpression* to)
-			{
-				to->name.codeRange = from->name.codeRange;
-				to->name.tokenIndex = from->name.tokenIndex;
-				to->name.value = from->name.value;
-				CopyFields(static_cast<WfVirtualExpression*>(from), static_cast<WfVirtualExpression*>(to));
-			}
-
 			// Visitor Members -----------------------------------
 
-			void VirtualExpressionVisitor::Visit(WfBindExpression* node)
-			{
-				auto newNode = vl::MakePtr<WfBindExpression>();
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void VirtualExpressionVisitor::Visit(WfFormatExpression* node)
+			void VirtualCfeExpressionVisitor::Visit(WfFormatExpression* node)
 			{
 				auto newNode = vl::MakePtr<WfFormatExpression>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
 
-			void VirtualExpressionVisitor::Visit(WfNewCoroutineExpression* node)
+/***********************************************************************
+VirtualCseExpressionVisitor
+***********************************************************************/
+
+			// CopyFields ----------------------------------------
+
+			void VirtualCseExpressionVisitor::CopyFields(WfBindExpression* from, WfBindExpression* to)
+			{
+				to->expression = CreateField(from->expression);
+				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+			}
+
+			void VirtualCseExpressionVisitor::CopyFields(WfVirtualCseExpression* from, WfVirtualCseExpression* to)
+			{
+				to->expandedExpression = CreateField(from->expandedExpression);
+				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+			}
+
+			void VirtualCseExpressionVisitor::CopyFields(WfExpression* from, WfExpression* to)
+			{
+				to->codeRange = from->codeRange;
+			}
+
+			void VirtualCseExpressionVisitor::CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to)
+			{
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				to->statement = CreateField(from->statement);
+				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+			}
+
+			void VirtualCseExpressionVisitor::CopyFields(WfMixinCastExpression* from, WfMixinCastExpression* to)
+			{
+				to->type = CreateField(from->type);
+				to->expression = CreateField(from->expression);
+				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+			}
+
+			void VirtualCseExpressionVisitor::CopyFields(WfExpectedTypeCastExpression* from, WfExpectedTypeCastExpression* to)
+			{
+				to->strategy = from->strategy;
+				to->expression = CreateField(from->expression);
+				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+			}
+
+			void VirtualCseExpressionVisitor::CopyFields(WfCoOperatorExpression* from, WfCoOperatorExpression* to)
+			{
+				to->name.codeRange = from->name.codeRange;
+				to->name.tokenIndex = from->name.tokenIndex;
+				to->name.value = from->name.value;
+				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+			}
+
+			// Visitor Members -----------------------------------
+
+			void VirtualCseExpressionVisitor::Visit(WfBindExpression* node)
+			{
+				auto newNode = vl::MakePtr<WfBindExpression>();
+				CopyFields(node, newNode.Obj());
+				this->result = newNode;
+			}
+
+			void VirtualCseExpressionVisitor::Visit(WfNewCoroutineExpression* node)
 			{
 				auto newNode = vl::MakePtr<WfNewCoroutineExpression>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
 
-			void VirtualExpressionVisitor::Visit(WfMixinCastExpression* node)
+			void VirtualCseExpressionVisitor::Visit(WfMixinCastExpression* node)
 			{
 				auto newNode = vl::MakePtr<WfMixinCastExpression>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
 
-			void VirtualExpressionVisitor::Visit(WfExpectedTypeCastExpression* node)
+			void VirtualCseExpressionVisitor::Visit(WfExpectedTypeCastExpression* node)
 			{
 				auto newNode = vl::MakePtr<WfExpectedTypeCastExpression>();
 				CopyFields(node, newNode.Obj());
 				this->result = newNode;
 			}
 
-			void VirtualExpressionVisitor::Visit(WfCoOperatorExpression* node)
+			void VirtualCseExpressionVisitor::Visit(WfCoOperatorExpression* node)
 			{
 				auto newNode = vl::MakePtr<WfCoOperatorExpression>();
 				CopyFields(node, newNode.Obj());
@@ -2047,15 +2142,21 @@ ModuleVisitor
 
 			// Dispatch (virtual) --------------------------------
 
-			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualExpression* node)
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualCfeExpression* node)
 			{
-				node->Accept(static_cast<VirtualExpressionVisitor*>(this));
+				node->Accept(static_cast<VirtualCfeExpressionVisitor*>(this));
 				return this->result;
 			}
 
-			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualStatement* node)
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualCseExpression* node)
 			{
-				node->Accept(static_cast<VirtualStatementVisitor*>(this));
+				node->Accept(static_cast<VirtualCseExpressionVisitor*>(this));
+				return this->result;
+			}
+
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualCseStatement* node)
+			{
+				node->Accept(static_cast<VirtualCseStatementVisitor*>(this));
 				return this->result;
 			}
 
@@ -2071,9 +2172,15 @@ ModuleVisitor
 				return this->result;
 			}
 
-			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualDeclaration* node)
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualCfeDeclaration* node)
 			{
-				node->Accept(static_cast<VirtualDeclarationVisitor*>(this));
+				node->Accept(static_cast<VirtualCfeDeclarationVisitor*>(this));
+				return this->result;
+			}
+
+			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ModuleVisitor::Dispatch(WfVirtualCseDeclaration* node)
+			{
+				node->Accept(static_cast<VirtualCseDeclarationVisitor*>(this));
 				return this->result;
 			}
 		}

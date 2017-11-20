@@ -381,15 +381,22 @@ Expanding Virtual Nodes
 			class CopyWithExpandVirtualVisitor : public copy_visitor::ModuleVisitor
 			{
 			private:
-				bool										expandVirtualExprStat;
+				bool										expandVirtualAst;
 
+				void										Expand(collections::List<Ptr<WfDeclaration>>& decls);
 			public:
-				CopyWithExpandVirtualVisitor(bool _expandVirtualExprStat);
+				CopyWithExpandVirtualVisitor(bool _expandVirtualAst);
 
-				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualExpression* node)override;
-				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualStatement* node)override;
+				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualCfeExpression* node)override;
+				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualCseExpression* node)override;
+				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualCseStatement* node)override;
+
+				void										Visit(WfNamespaceDeclaration* node)override;
+				void										Visit(WfClassDeclaration* node)override;
+				void										Visit(WfNewInterfaceExpression* node)override;
 			};
 
+			extern Ptr<WfStatement>							SearchUntilNonVirtualStatement(Ptr<WfStatement> statement);
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat);

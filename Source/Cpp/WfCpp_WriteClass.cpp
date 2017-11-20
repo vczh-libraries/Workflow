@@ -34,7 +34,15 @@ namespace vl
 				{
 				}
 
-				void Dispatch(WfVirtualDeclaration* node)override
+				void Dispatch(WfVirtualCseDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{

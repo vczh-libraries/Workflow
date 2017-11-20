@@ -339,7 +339,7 @@ GenerateInstructions(Statement)
 					INSTRUCTION(Ins::StoreLocalVar(index));
 				}
 
-				void Visit(WfVirtualStatement* node)override
+				void Visit(WfVirtualCseStatement* node)override
 				{
 					GenerateStatementInstructions(context, node->expandedStatement);
 				}

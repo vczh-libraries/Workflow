@@ -146,7 +146,15 @@ WfGenerateClassMemberDeclVisitor
 				{
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
@@ -338,7 +346,15 @@ WfGenerateClassMemberImplVisitor
 				{
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{

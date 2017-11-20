@@ -19,7 +19,7 @@ BuildScopeForDeclaration
 			class BuildScopeForDeclarationVisitor
 				: public Object
 				, public WfDeclaration::IVisitor
-				, public WfVirtualDeclaration::IVisitor
+				, public WfVirtualCseDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -246,21 +246,17 @@ BuildScopeForDeclaration
 					}
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						Execute(manager, parentScope, source, decl);
 					}
 				}
 
-				void Visit(WfAutoPropertyDeclaration* node)override
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
-				}
-
-				void Visit(WfCastResultInterfaceDeclaration* node)override
-				{
+					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 				}
 
 				void Visit(WfStateMachineDeclaration* node)override
@@ -295,7 +291,7 @@ BuildScopeForStatement
 			class BuildScopeForStatementVisitor
 				: public Object
 				, public WfStatement::IVisitor
-				, public WfVirtualStatement::IVisitor
+				, public WfVirtualCseStatement::IVisitor
 				, public WfCoroutineStatement::IVisitor
 				, public WfStateMachineStatement::IVisitor
 			{
@@ -422,13 +418,9 @@ BuildScopeForStatement
 					BuildScopeForDeclaration(manager, parentScope, node->variable, node);
 				}
 
-				void Visit(WfVirtualStatement* node)override
+				void Visit(WfVirtualCseStatement* node)override
 				{
-					node->Accept((WfVirtualStatement::IVisitor*)this);
-					if (node->expandedStatement)
-					{
-						BuildScopeForStatement(manager, parentScope, node->expandedStatement);
-					}
+					node->Accept((WfVirtualCseStatement::IVisitor*)this);
 				}
 
 				void Visit(WfSwitchStatement* node)override
@@ -544,7 +536,7 @@ BuildScopeForExpression
 			class BuildScopeForExpressionVisitor
 				: public Object
 				, public WfExpression::IVisitor
-				, public WfVirtualExpression::IVisitor
+				, public WfVirtualCseExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -775,7 +767,6 @@ BuildScopeForExpression
 
 				class CreateLambdaCaptureVisitor
 					: public empty_visitor::DeclarationVisitor
-					, public empty_visitor::VirtualDeclarationVisitor
 				{
 				public:
 					WfLexicalScopeManager*				manager;
@@ -787,13 +778,16 @@ BuildScopeForExpression
 					{
 					}
 
-					void Dispatch(WfVirtualDeclaration* node)override
+					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						node->Accept((WfVirtualDeclaration::IVisitor*)this);
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
 					}
 
 					void Visit(WfFunctionDeclaration* node)override
@@ -816,22 +810,19 @@ BuildScopeForExpression
 					}
 				}
 
-				void Visit(WfVirtualExpression* node)override
+				void Visit(WfVirtualCfeExpression* node)override
 				{
-					node->Accept((WfVirtualExpression::IVisitor*)this);
-					if (node->expandedExpression)
-					{
-						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
-					}
+					BuildScopeForExpression(manager, parentScope, node->expandedExpression);
+				}
+
+				void Visit(WfVirtualCseExpression* node)override
+				{
+					node->Accept((WfVirtualCseExpression::IVisitor*)this);
 				}
 
 				void Visit(WfBindExpression* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->expression);
-				}
-
-				void Visit(WfFormatExpression* node)override
-				{
 				}
 
 				void Visit(WfNewCoroutineExpression* node)override

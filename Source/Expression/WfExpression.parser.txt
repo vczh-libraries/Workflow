@@ -291,10 +291,10 @@ class StructDeclaration : Declaration
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (Virtual Declarations)
+// AST (Virtual Context Free Expandable Declarations)
 //////////////////////////////////////////////////////////////////
 
-class VirtualDeclaration : Declaration
+class VirtualCfeDeclaration : Declaration
 {
 	Declaration[]			expandedDeclarations;
 }
@@ -311,7 +311,7 @@ enum APObserve
 	NotObservable,
 }
 
-class AutoPropertyDeclaration : VirtualDeclaration
+class AutoPropertyDeclaration : VirtualCfeDeclaration
 {
 	Type					type;
 	APConst					configConst;
@@ -319,15 +319,20 @@ class AutoPropertyDeclaration : VirtualDeclaration
 	Expression				expression;
 }
 
-class CastResultInterfaceDeclaration : VirtualDeclaration
+class CastResultInterfaceDeclaration : VirtualCfeDeclaration
 {
 	Type					baseType;
 	Type					elementType;
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (State Machine)
+// AST (Virtual Context Sensitive Expandable Declarations)
 //////////////////////////////////////////////////////////////////
+
+class VirtualCseDeclaration : Declaration
+{
+	Declaration[]			expandedDeclarations;
+}
 
 class StateInput
 {
@@ -342,7 +347,7 @@ class StateDeclaration
 	Statement				statement;
 }
 
-class StateMachineDeclaration : VirtualDeclaration
+class StateMachineDeclaration : VirtualCseDeclaration
 {
 	StateInput[]			inputs;
 	StateDeclaration[]		states;
@@ -420,10 +425,10 @@ class ExpressionStatement : Statement
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (Virtual Statements)
+// AST (Virtual Context Sensitive Expandable Statements)
 //////////////////////////////////////////////////////////////////
 
-class VirtualStatement : Statement
+class VirtualCseStatement : Statement
 {
 	Statement				expandedStatement;
 }
@@ -434,7 +439,7 @@ enum ForEachDirection
 	Reversed,
 }
 
-class ForEachStatement : VirtualStatement
+class ForEachStatement : VirtualCseStatement
 {
 	token					name;
 	ForEachDirection		direction;
@@ -448,14 +453,14 @@ class SwitchCase
 	Statement				statement;
 }
 
-class SwitchStatement : VirtualStatement
+class SwitchStatement : VirtualCseStatement
 {
 	Expression				expression;
 	SwitchCase[]			caseBranches;
 	Statement				defaultBranch;
 }
 
-class CoProviderStatement : VirtualStatement
+class CoProviderStatement : VirtualCseStatement
 {
 	token					name;
 	Statement				statement;
@@ -794,43 +799,52 @@ class NewInterfaceExpression : Expression
 }
 
 //////////////////////////////////////////////////////////////////
-// AST (Virtual Expressions)
+// AST (Virtual Context Free Expandable Expressions)
 //////////////////////////////////////////////////////////////////
 
-class VirtualExpression : Expression
+class VirtualCfeExpression : Expression
 {
 	Expression				expandedExpression;
 }
 
-class BindExpression : VirtualExpression
-{
-	Expression				expression;
-}
-
-class FormatExpression : VirtualExpression
+class FormatExpression : VirtualCfeExpression
 {
 	token					value(UnescapeFormatString);
 }
 
-class NewCoroutineExpression : VirtualExpression
+//////////////////////////////////////////////////////////////////
+// AST (Virtual Context Sensitive Expandable Expressions)
+//////////////////////////////////////////////////////////////////
+
+class VirtualCseExpression : Expression
+{
+	Expression				expandedExpression;
+}
+
+class BindExpression : VirtualCseExpression
+{
+	Expression				expression;
+}
+
+class NewCoroutineExpression : VirtualCseExpression
 {
 	token					name;
 	Statement				statement;
 }
 
-class MixinCastExpression : VirtualExpression
+class MixinCastExpression : VirtualCseExpression
 {
 	Type					type;
 	Expression				expression;
 }
 
-class ExpectedTypeCastExpression : VirtualExpression
+class ExpectedTypeCastExpression : VirtualCseExpression
 {
 	TypeCastingStrategy		strategy;
 	Expression				expression;
 }
 
-class CoOperatorExpression : VirtualExpression
+class CoOperatorExpression : VirtualCseExpression
 {
 	token					name;
 }

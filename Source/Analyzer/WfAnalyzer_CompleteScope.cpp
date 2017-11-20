@@ -19,7 +19,7 @@ CompleteScopeForClassMember
 			class CompleteScopeForClassMemberVisitor
 				: public Object
 				, public WfDeclaration::IVisitor
-				, public WfVirtualDeclaration::IVisitor
+				, public WfVirtualCseDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -142,21 +142,17 @@ CompleteScopeForClassMember
 					CompleteScopeForDeclaration(manager, node);
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
 				}
 
-				void Visit(WfAutoPropertyDeclaration* node)override
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
-				}
-
-				void Visit(WfCastResultInterfaceDeclaration* node)
-				{
+					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 				}
 
 				void Visit(WfStateMachineDeclaration* node)
@@ -178,7 +174,7 @@ CompleteScopeForDeclaration
 			class CompleteScopeForDeclarationVisitor
 				: public Object
 				, public WfDeclaration::IVisitor
-				, public WfVirtualDeclaration::IVisitor
+				, public WfVirtualCseDeclaration::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -320,21 +316,21 @@ CompleteScopeForDeclaration
 					}
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
 				}
 
-				void Visit(WfAutoPropertyDeclaration* node)override
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
-				}
-
-				void Visit(WfCastResultInterfaceDeclaration* node)override
-				{
+					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
 				}
 
 				void Visit(WfStateMachineDeclaration* node)override
@@ -355,7 +351,7 @@ CheckBaseClass
 
 			class CheckBaseClassDeclarationVisitor
 				: public empty_visitor::DeclarationVisitor
-				, public empty_visitor::VirtualDeclarationVisitor
+				, public empty_visitor::VirtualCseDeclarationVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -367,13 +363,17 @@ CheckBaseClass
 				{
 				}
 
-				void Dispatch(WfVirtualDeclaration* node)override
+				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					node->Accept((WfVirtualDeclaration::IVisitor*)this);
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
+				{
+					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 				}
 
 				void Visit(WfNamespaceDeclaration* node)override
@@ -493,14 +493,6 @@ CheckBaseClass
 					{
 						memberDecl->Accept(this);
 					}
-				}
-
-				void Visit(WfEnumDeclaration* node)override
-				{
-				}
-
-				void Visit(WfStructDeclaration* node)override
-				{
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
