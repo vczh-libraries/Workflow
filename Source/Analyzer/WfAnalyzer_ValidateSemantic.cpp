@@ -3136,7 +3136,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfVirtualCfeExpression* node)override
 				{
-					GetExpressionType(manager, node->expandedExpression, results[0].type);
+					GetExpressionType(manager, node->expandedExpression, expectedType);
 				}
 
 				void Visit(WfVirtualCseExpression* node)override

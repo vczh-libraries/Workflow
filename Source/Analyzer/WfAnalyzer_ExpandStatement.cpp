@@ -558,10 +558,8 @@ ExpandCoProviderStatement
 
 					FOREACH(Ptr<WfStatement>, statement, node->statements)
 					{
-						while (auto virtualStat = statement.Cast<WfVirtualStatement>())
-						{
-							statement = virtualStat->expandedStatement;
-						}
+						statement = SearchUntilNonVirtualStatement(statement);
+
 						if (auto coOperatorStat = statement.Cast<WfCoOperatorStatement>())
 						{
 							coOperatorStat->Accept(this);

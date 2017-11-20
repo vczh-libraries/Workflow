@@ -219,31 +219,6 @@ namespace vl
 					}
 				}
 
-				class SearchUntilNonVirtualStatementVisitor : public empty_visitor::StatementVisitor
-				{
-				public:
-					Ptr<WfStatement>		result;
-
-					SearchUntilNonVirtualStatementVisitor(Ptr<WfStatement> _result)
-						:result(_result)
-					{
-					}
-
-					void Dispatch(WfVirtualCseStatement* node)override
-					{
-						result = node->expandedStatement;
-						result->Accept(this);
-					}
-
-					void Dispatch(WfCoroutineStatement* node)override
-					{
-					}
-
-					void Dispatch(WfStateMachineStatement* node)override
-					{
-					}
-				};
-
 				void Visit(WfBlockStatement* node)override
 				{
 					writer.WriteString(prefixBlock);
@@ -261,9 +236,7 @@ namespace vl
 
 					FOREACH(Ptr<WfStatement>, statement, node->statements)
 					{
-						SearchUntilNonVirtualStatementVisitor visitor(statement);
-						statement->Accept(&visitor);
-						statement = visitor.result;
+						statement = SearchUntilNonVirtualStatement(statement);
 
 						if (statement.Cast<WfBlockStatement>())
 						{

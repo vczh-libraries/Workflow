@@ -38,7 +38,7 @@ FindCoroutineAwaredStatements
 					return awared;
 				}
 
-				void Dispatch(WfVirtualStatement* node)override
+				void Dispatch(WfVirtualCseStatement* node)override
 				{
 					awared = Call(node->expandedStatement);
 				}
@@ -124,7 +124,7 @@ FindCoroutineAwaredVariables
 				{
 				}
 
-				void Dispatch(WfVirtualStatement* node)override
+				void Dispatch(WfVirtualCseStatement* node)override
 				{
 					node->expandedStatement->Accept(this);
 				}
@@ -154,7 +154,7 @@ FindCoroutineAwaredVariables
 				{
 				}
 
-				void Dispatch(WfVirtualStatement* node)override
+				void Dispatch(WfVirtualCseStatement* node)override
 				{
 					// If an virtual node is coroutine awared
 					// than its expandedStatement is also in the list
@@ -832,7 +832,7 @@ GenerateFlowChart
 					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
 				}
 
-				void Visit(WfVirtualStatement* node)override
+				void Visit(WfVirtualCseStatement* node)override
 				{
 					node->expandedStatement->Accept(this);
 				}
