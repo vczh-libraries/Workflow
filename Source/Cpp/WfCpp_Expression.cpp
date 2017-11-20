@@ -2207,7 +2207,12 @@ WfGenerateExpressionVisitor
 					writer.WriteString(L"))");
 				}
 
-				void Visit(WfVirtualExpression* node)override
+				void Visit(WfVirtualCfeExpression* node)override
+				{
+					Call(node->expandedExpression);
+				}
+
+				void Visit(WfVirtualCseExpression* node)override
 				{
 					Call(node->expandedExpression);
 				}

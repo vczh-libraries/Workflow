@@ -33,7 +33,15 @@ WfCppConfig::CollectClosureInfo
 					variableCount++;
 				}
 
-				void Dispatch(WfVirtualDeclaration* node)override
+				void Dispatch(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
@@ -384,7 +392,15 @@ WfCppConfig::WriteCpp
 				{
 				}
 
-				void Dispatch(WfVirtualDeclaration* node)override
+				void Dispatch(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{

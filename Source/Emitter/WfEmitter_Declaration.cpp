@@ -80,7 +80,15 @@ GenerateInstructions(Initialize)
 				{
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
@@ -240,7 +248,15 @@ GenerateInstructions(Declaration)
 					{
 					}
 
-					void Dispatch(WfVirtualDeclaration* node)override
+					void Dispatch(WfVirtualCfeDeclaration* node)override
+					{
+						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						{
+							decl->Accept(this);
+						}
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
 					{
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
@@ -347,7 +363,15 @@ GenerateInstructions(Declaration)
 				{
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
@@ -419,7 +443,15 @@ GenerateInstructions(Declaration)
 				{
 				}
 
-				void Visit(WfVirtualDeclaration* node)override
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{

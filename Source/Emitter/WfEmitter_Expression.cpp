@@ -1026,12 +1026,17 @@ GenerateInstructions(Expression)
 					{
 					}
 
-					void Dispatch(WfVirtualDeclaration* node)override
+					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
 						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						CHECK_FAIL(L"NewInterfaceExpressionVisitor::Visit(WfVirtualCseDeclaration*)#Internal error, Temporary not supported.");
 					}
 
 					void Visit(WfFunctionDeclaration* node)override
@@ -1136,7 +1141,12 @@ GenerateInstructions(Expression)
 					INSTRUCTION(Ins::CreateInterface(result.constructorInfo, declVisitor.overrideFunctions.Count() * 2));
 				}
 
-				void Visit(WfVirtualExpression* node)override
+				void Visit(WfVirtualCfeExpression* node)override
+				{
+					GenerateExpressionInstructions(context, node->expandedExpression);
+				}
+
+				void Visit(WfVirtualCseExpression* node)override
 				{
 					GenerateExpressionInstructions(context, node->expandedExpression);
 				}
