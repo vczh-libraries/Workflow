@@ -1104,7 +1104,7 @@ namespace vl
 		{
 		public:
 			WfStateSwitchType type;
-			vl::Ptr<WfStateSwitchCase> caseBranches;
+			vl::collections::List<vl::Ptr<WfStateSwitchCase>> caseBranches;
 
 			void Accept(WfStateMachineStatement::IVisitor* visitor)override;
 

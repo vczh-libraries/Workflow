@@ -1735,7 +1735,10 @@ StateMachineStatementVisitor
 				Traverse(static_cast<WfStateMachineStatement*>(node));
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				VisitField(node->caseBranches.Obj());
+				FOREACH(vl::Ptr<WfStateSwitchCase>, listItem, node->caseBranches)
+				{
+					VisitField(listItem.Obj());
+				}
 			}
 
 			void StateMachineStatementVisitor::Visit(WfStateInvokeStatement* node)

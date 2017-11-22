@@ -1790,7 +1790,10 @@ StateMachineStatementVisitor
 			void StateMachineStatementVisitor::CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to)
 			{
 				to->type = from->type;
-				to->caseBranches = CreateField(from->caseBranches);
+				FOREACH(vl::Ptr<WfStateSwitchCase>, listItem, from->caseBranches)
+				{
+					to->caseBranches.Add(CreateField(listItem));
+				}
 				CopyFields(static_cast<WfStateMachineStatement*>(from), static_cast<WfStateMachineStatement*>(to));
 			}
 
