@@ -782,8 +782,20 @@ ValidateStructure(Declaration)
 
 					{
 						TooManyDtorVisitor visitor(manager, node);
+						bool hasStateMachine = false;
 						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 						{
+							if (auto smDecl = memberDecl.Cast<WfStateMachineDeclaration>())
+							{
+								if (!hasStateMachine)
+								{
+									hasStateMachine = true;
+								}
+								else
+								{
+									manager->errors.Add(WfErrors::DuplicatedDeclaration(smDecl.Obj()));
+								}
+							}
 							ValidateDeclarationStructure(manager, memberDecl, node);
 							memberDecl->Accept(&visitor);
 						}

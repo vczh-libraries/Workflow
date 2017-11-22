@@ -499,6 +499,11 @@ WfErrors
 				return new ParsingError(node, L"D1: Duplicated declaration \"" + node->name.value + L"\", it has already beed defined as a " + firstDeclarationCategory + L".");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedDeclaration(WfStateMachineDeclaration* node)
+			{
+				return new ParsingError(node, L"D1: Duplicated $state_machine declaration.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfDeclaration* node, Ptr<WfLexicalSymbol> symbol)
 			{
 				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");

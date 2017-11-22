@@ -527,6 +527,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveImplementation(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			InterfaceMethodShouldNotHaveImplementation(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedDeclaration(WfDeclaration* node, const WString& firstDeclarationCategory);
+				static Ptr<parsing::ParsingError>			DuplicatedDeclaration(WfStateMachineDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfDeclaration* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStatement* node, Ptr<WfLexicalSymbol> symbol);
