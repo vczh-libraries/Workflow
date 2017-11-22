@@ -376,6 +376,9 @@ Scope Analyzing
 Semantic Analyzing
 ***********************************************************************/
 
+			extern reflection::description::IMethodInfo*	FindInterfaceConstructor(reflection::description::ITypeDescriptor* type);
+			extern Ptr<reflection::description::ITypeInfo>	SelectFunction(WfLexicalScopeManager* manager, parsing::ParsingTreeCustomBase* node, Ptr<WfExpression> functionExpression, collections::List<ResolveExpressionResult>& functions, collections::List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex);
+
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
