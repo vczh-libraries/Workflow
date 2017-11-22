@@ -539,6 +539,7 @@ BuildScopeForStatement
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
+					throw 0;
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
