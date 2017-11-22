@@ -365,8 +365,6 @@ ValidateScopeName
 					Type,
 					Variable,
 					Function,
-					Event,
-					Property,
 					Namespace,
 				};
 
@@ -394,12 +392,6 @@ ValidateScopeName
 						break;
 					case Function:
 						categoryName = L"function";
-						break;
-					case Event:
-						categoryName = L"event";
-						break;
-					case Property:
-						categoryName = L"property";
 						break;
 					case Namespace:
 						categoryName = L"namespace";
@@ -448,34 +440,22 @@ ValidateScopeName
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					if (category == None)
-					{
-						category = Event;
-					}
-					else
-					{
-						AddError(node);
-					}
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfEventDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					if (category == None)
-					{
-						category = Property;
-					}
-					else
-					{
-						AddError(node);
-					}
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfPropertyDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfConstructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 				
 				void Visit(WfDestructorDeclaration* node)override
 				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfDestructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -529,6 +509,7 @@ ValidateScopeName
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfStateMachineDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 			};
 
