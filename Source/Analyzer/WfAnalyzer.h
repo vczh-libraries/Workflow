@@ -318,6 +318,7 @@ Structure Analyzing
 				WfCoProviderStatement*						currentCoProviderStatement = nullptr;
 				WfNewCoroutineExpression*					currentNewCoroutineExpression = nullptr;
 				WfCoPauseStatement*							currentCoPauseStatement = nullptr;
+				WfStateDeclaration*							currentStateDeclaration = nullptr;
 
 				ValidateStructureContext();
 			};
@@ -518,6 +519,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CoProviderCreateAndRunNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			GotoLabelNotExists(WfGotoStatement* node);
 				static Ptr<parsing::ParsingError>			TooManyGotoLabel(WfGotoStatement* node);
+				static Ptr<parsing::ParsingError>			WrongStateSwitchStatement(WfStateSwitchStatement* node);
+				static Ptr<parsing::ParsingError>			WrongStateInvokeStatement(WfStateInvokeStatement* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);

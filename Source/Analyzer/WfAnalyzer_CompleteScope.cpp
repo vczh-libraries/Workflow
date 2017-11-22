@@ -370,7 +370,6 @@ CompleteScopeForDeclaration
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)

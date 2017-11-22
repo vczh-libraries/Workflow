@@ -539,12 +539,10 @@ BuildScopeForStatement
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					throw 0;
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
-					throw 0;
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)

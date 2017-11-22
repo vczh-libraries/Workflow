@@ -983,6 +983,7 @@ ValidateStructure(Declaration)
 						FOREACH(Ptr<WfStateDeclaration>, state, node->states)
 						{
 							ValidateStructureContext context;
+							context.currentStateDeclaration = state.Obj();
 							ValidateStatementStructure(manager, &context, state->statement);
 						}
 					}
@@ -1198,12 +1199,28 @@ ValidateStructure(Statement)
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					throw 0;
+					if (!context->currentStateDeclaration)
+					{
+						manager->errors.Add(WfErrors::WrongStateSwitchStatement(node));
+					}
+
+					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					{
+						ValidateStatementStructure(manager, context, switchCase->statement);
+					}
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
-					throw 0;
+					if (!context->currentStateDeclaration)
+					{
+						manager->errors.Add(WfErrors::WrongStateInvokeStatement(node));
+					}
+
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						ValidateExpressionStructure(manager, context, argument);
+					}
 				}
 
 				static void Execute(Ptr<WfStatement>& statement, WfLexicalScopeManager* manager, ValidateStructureContext* context)

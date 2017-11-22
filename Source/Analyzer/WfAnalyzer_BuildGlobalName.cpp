@@ -529,7 +529,6 @@ ValidateScopeName
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
 				}
 			};
 

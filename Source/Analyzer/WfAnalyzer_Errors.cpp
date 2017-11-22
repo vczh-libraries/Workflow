@@ -469,6 +469,16 @@ WfErrors
 				return new ParsingError(node, L"C14: Too many goto targets \"" + node->label.value + L"\" found.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongStateSwitchStatement(WfStateSwitchStatement* node)
+			{
+				return new ParsingError(node, L"C15: $switch statement should appear inside a $state declaration.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongStateInvokeStatement(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C16: $goto_state or $push_state statement should appear inside a $state declaration.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
