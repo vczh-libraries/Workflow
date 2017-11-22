@@ -620,7 +620,7 @@ ValidateSemantic(Declaration)
 						{
 							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[node]);
 						}
-						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
+						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_BaseType(manager) || !CheckScopes_SymbolType(manager))
 						{
 							return;
 						}
