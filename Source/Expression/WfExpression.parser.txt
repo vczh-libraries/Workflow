@@ -995,11 +995,7 @@ token KEYWORD_UNIT = "unit";
 
 token STATE_MACHINE = "/$state_machine";
 token STATE_INPUT = "/$state_input";
-token STATE_SWITCH_PASS = "/$switch/s*/(/s*pass/*/)";
-token STATE_SWITCH_PASSRETURN = "/$switch/s*/(/s*pass_and_return/s*/)";
-token STATE_SWITCH_IGNORE = "/$switch/s*/(/s*ignore/s*/)";
-token STATE_SWITCH_IGNORERETURN = "/$switch/s*/(/s*ignore_and_return/s*/)";
-token STATE_SWITCH_DEFAULT = "/$switch";
+token STATE_SWITCH = "/$switch";
 token STATE_GOTO = "/$goto_state";
 token STATE_PUSH = "/$push_state";
 token STATE_DECL = "/$state";
@@ -1224,11 +1220,11 @@ rule Statement _CoProvider
 	;
 
 rule StateSwitchStatement _StateSwitchHead
-	= STATE_SWITCH_DEFAULT as StateSwitchStatement with {type = "Default"}
-	= STATE_SWITCH_PASS as StateSwitchStatement with {type = "Pass"}
-	= STATE_SWITCH_PASSRETURN as StateSwitchStatement with {type = "PassAndReturn"}
-	= STATE_SWITCH_IGNORE as StateSwitchStatement with {type = "Ignore"}
-	= STATE_SWITCH_IGNORERETURN as StateSwitchStatement with {type = "IgnoreAndReturn"}
+	= "$switch" "(" "raise" ")" as StateSwitchStatement with {type = "Default"}
+	= "$switch" "(" "continue" ")" as StateSwitchStatement with {type = "Pass"}
+	= "$switch" "(" "continue" "," "return" ")" as StateSwitchStatement with {type = "PassAndReturn"}
+	= "$switch" "(" ")" as StateSwitchStatement with {type = "Ignore"}
+	= "$switch" "(" "return" ")" as StateSwitchStatement with {type = "IgnoreAndReturn"}
 	;
 
 rule StateSwitchArgument _StateSwitchArgument
@@ -1242,7 +1238,7 @@ rule StateSwitchCase _StateSwitchCase
 rule Statement _StateStatement
 	= !_StateSwitchHead "{" {_StateSwitchCase : caseBranches} "}"
 	= ( ("$goto_state" with {type = "Goto"}) | ("$push_state" with {type = "Push"}) )
-		NAME : name [_Expression : arguments {"," _Expression : arguments}] ";" as StateInvokeStatement
+		NAME : name "(" [_Expression : arguments {"," _Expression : arguments}] ")" ";" as StateInvokeStatement
 	;
 
 rule Statement _Statement
@@ -1268,11 +1264,11 @@ rule Statement _Statement
 //////////////////////////////////////////////////////////////////
 
 rule StateInput _StateInput
-	= "$state_input" NAME : name "(" [_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" as StateInput
+	= "$state_input" NAME : name "(" [_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" ";" as StateInput
 	;
 
 rule StateDeclaration _StateDecl
-	= "$state" NAME : name "(" [_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" _Block : statement as StateDeclaration
+	= "$state" ("default" | NAME : name) "(" [_FunctionArgument : arguments {"," _FunctionArgument : arguments}] ")" _Block : statement as StateDeclaration
 	;
 
 rule StateMachineDeclaration _StateMachine
