@@ -230,7 +230,48 @@ BuildGlobalNameFromModules
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					{
+						auto info = MakePtr<WfClassMethod>();
+						td->AddMember(input->name.value, info);
+						manager->stateInputMethods.Add(input, info);
+
+						FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+						{
+							auto info = MakePtr<WfField>(td.Obj(), L"<stateip-" + input->name.value + L">" + argument->name.value);
+							td->AddMember(info);
+							manager->stateInputArguments.Add(argument.Obj(), info);
+						}
+					}
+					
+					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					{
+						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						{
+							auto info = MakePtr<WfField>(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value);
+							td->AddMember(info);
+							manager->stateInputArguments.Add(argument.Obj(), info);
+						}
+					}
+
+					WfStateMachineInfo smInfo;
+					{
+						smInfo.inputField = MakePtr<WfField>(td.Obj(), L"<state>input");
+						td->AddMember(smInfo.inputField);
+					}
+					{
+						smInfo.coroutineField = MakePtr<WfField>(td.Obj(), L"<state>coroutine");
+						td->AddMember(smInfo.coroutineField);
+					}
+					{
+						smInfo.resumeMethod = MakePtr<WfClassMethod>();
+						td->AddMember(L"<state>Resume", smInfo.resumeMethod);
+					}
+					{
+						smInfo.createCoroutineMethod = MakePtr<WfClassMethod>();
+						td->AddMember(L"<state>CreateCoroutine", smInfo.createCoroutineMethod);
+					}
+					manager->stateMachineInfos.Add(node, smInfo);
 				}
 			};
 

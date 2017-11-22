@@ -978,7 +978,18 @@ ValidateStructure(Declaration)
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					if (classDecl)
+					{
+						FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+						{
+							ValidateStructureContext context;
+							ValidateStatementStructure(manager, &context, state->statement);
+						}
+					}
+					else
+					{
+						manager->errors.Add(WfErrors::WrongDeclaration(node));
+					}
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager, WfClassDeclaration* classDecl, WfExpression* surroundingLambda)

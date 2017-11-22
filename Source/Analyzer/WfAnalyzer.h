@@ -151,6 +151,14 @@ Scope Manager
 				collections::List<Ptr<WfLexicalSymbol>>		ctorArgumentSymbols;
 			};
 
+			struct WfStateMachineInfo
+			{
+				Ptr<typeimpl::WfField>						inputField;
+				Ptr<typeimpl::WfField>						coroutineField;
+				Ptr<typeimpl::WfClassMethod>				resumeMethod;
+				Ptr<typeimpl::WfClassMethod>				createCoroutineMethod;
+			};
+
 			/// <summary>Workflow compiler.</summary>
 			class WfLexicalScopeManager : public Object
 			{
@@ -177,6 +185,9 @@ Scope Manager
 				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
+				typedef collections::Dictionary<Ptr<WfStateInput>, Ptr<typeimpl::WfClassMethod>>			StateInputMethodMap;
+				typedef collections::Dictionary<Ptr<WfFunctionArgument>, Ptr<typeimpl::WfField>>			StateArgumentFieldMap;
+				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, WfStateMachineInfo>			StateMachineInfoMap;
 
 				typedef collections::Pair<WString, WString>													AttributeKey;
 				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
@@ -208,6 +219,10 @@ Scope Manager
 				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
 				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
+				StateInputMethodMap							stateInputMethods;				// IMethodInfo* for state input
+				StateArgumentFieldMap						stateInputArguments;			// IPropertyInfo* for state input argument temporary cache
+				StateArgumentFieldMap						stateDeclArguments;				// IPropertyInfo* for state argument temporary cache
+				StateMachineInfoMap							stateMachineInfos;				// members of state machine
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
@@ -513,6 +528,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStatement* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
@@ -522,6 +539,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfAutoPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfStateMachineDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
 				static Ptr<parsing::ParsingError>			FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);

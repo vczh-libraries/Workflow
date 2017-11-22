@@ -509,6 +509,16 @@ WfErrors
 				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol)
+			{
+				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol)
+			{
+				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method)
 			{
 				auto result = ResolveExpressionResult::Method(method);
@@ -559,6 +569,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfAutoPropertyDeclaration* node)
 			{
 				return new ParsingError(node, L"D7: Auto-property cannot be defined outside of classes.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfStateMachineDeclaration* node)
+			{
+				return new ParsingError(node, L"D7: State machine cannot be defined outside of classes.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
