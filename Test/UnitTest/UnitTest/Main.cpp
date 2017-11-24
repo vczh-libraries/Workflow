@@ -11,6 +11,7 @@ void LoadTypes()
 	LoadParsingTypes();
 	XmlLoadTypes();
 	JsonLoadTypes();
+	WfLoadLibraryTypes();
 	WfLoadTypes();
 	LoadCppTypes();
 	TEST_ASSERT(GetGlobalTypeManager()->Load());

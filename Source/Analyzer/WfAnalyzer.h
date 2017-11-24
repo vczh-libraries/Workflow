@@ -9,6 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_ANALYZER_WFANALYZER
 #define VCZH_WORKFLOW_ANALYZER_WFANALYZER
 
+#include "../Library/WfLibraryReflection.h"
 #include "../Expression/WfExpression.h"
 #include "../Runtime/WfRuntime.h"
 

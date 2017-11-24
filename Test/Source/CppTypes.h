@@ -2,6 +2,8 @@
 #define VCZH_WORKFLOW_UNITTEST_CPPTYPES
 
 #include "../../Import/Vlpp.h"
+#include "../../Source/Library/WfLibraryCppHelper.h"
+#include "../../Source/Library/WfLibraryReflection.h"
 
 namespace test
 {
