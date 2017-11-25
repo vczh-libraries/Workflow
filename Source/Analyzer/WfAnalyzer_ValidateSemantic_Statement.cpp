@@ -678,14 +678,21 @@ ValidateSemantic(Statement)
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					auto smcScope = manager->nodeScopes[node]->FindFunctionScope();
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
 					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' position.");
 
 					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
 					{
 						auto caseScope = manager->nodeScopes[switchCase.Obj()].Obj();
-						auto inputSymbol = smcScope->symbols[switchCase->name.value][0];
-						if (!inputSymbol->creatorNode.Cast<WfStateInput>())
+						Ptr<WfLexicalSymbol> inputSymbol;
+						{
+							vint index = smcScope->symbols.Keys().IndexOf(switchCase->name.value);
+							if (index != -1)
+							{
+								inputSymbol = smcScope->symbols.GetByIndex(index)[0];
+							}
+						}
+						if (!inputSymbol || !inputSymbol->creatorNode.Cast<WfStateInput>())
 						{
 							manager->errors.Add(WfErrors::StateInputNotExists(switchCase.Obj()));
 						}

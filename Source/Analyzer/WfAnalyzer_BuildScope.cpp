@@ -277,6 +277,15 @@ BuildScopeForDeclaration
 						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
 
 						auto stateScope = MakePtr<WfLexicalScope>(parentScope);
+						{
+							auto config = MakePtr<WfLexicalFunctionConfig>();
+							stateScope->functionConfig = config;
+
+							config->lambda = false;
+							config->thisAccessable = true;
+							config->parentThisAccessable = true;
+						}
+
 						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
 						{
 							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(stateScope.Obj());
@@ -287,14 +296,6 @@ BuildScopeForDeclaration
 						}
 
 						auto bodyScope = MakePtr<WfLexicalScope>(stateScope);
-						{
-							auto config = MakePtr<WfLexicalFunctionConfig>();
-							bodyScope->functionConfig = config;
-
-							config->lambda = false;
-							config->thisAccessable = true;
-							config->parentThisAccessable = true;
-						}
 						BuildScopeForStatement(manager, bodyScope, state->statement);
 					}
 				}
