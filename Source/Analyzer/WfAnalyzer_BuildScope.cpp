@@ -1015,7 +1015,23 @@ CheckScopes_DuplicatedSymbol
 											}
 											else if (auto input = symbol->creatorNode.Cast<WfStateInput>())
 											{
+												if (symbols.Count() == 2)
+												{
+													// Ignore the generated function from the state input
+													auto methodSymbol = symbols[1 - symbols.IndexOf(symbol.Obj())];
+													auto funcDecl = methodSymbol->creatorNode.Cast<WfFunctionDeclaration>();
+													vint index = manager->declarationMemberInfos.Keys().IndexOf(funcDecl.Obj());
+													if (index != -1)
+													{
+														auto methodInfo = manager->declarationMemberInfos.Values()[index];
+														if (manager->stateInputMethods[input.Obj()].Obj() == methodInfo.Obj())
+														{
+															goto NO_ERROR;
+														}
+													}
+												}
 												manager->errors.Add(WfErrors::DuplicatedSymbol(input.Obj(), symbol));
+											NO_ERROR:;
 											}
 											else if (auto state = symbol->creatorNode.Cast<WfStateDeclaration>())
 											{

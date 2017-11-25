@@ -188,8 +188,8 @@ CompleteScopeForClassMember
 					}
 
 					auto& smInfo = manager->stateMachineInfos[node];
-					smInfo.createCoroutineMethod->AddParameter(MakePtr<ParameterInfoImpl>(smInfo.createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo()));
-					smInfo.createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
+					smInfo->createCoroutineMethod->AddParameter(MakePtr<ParameterInfoImpl>(smInfo->createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo()));
+					smInfo->createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)

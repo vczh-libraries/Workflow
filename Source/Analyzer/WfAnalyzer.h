@@ -155,6 +155,8 @@ Scope Manager
 			struct WfStateMachineInfo
 			{
 				Ptr<typeimpl::WfClassMethod>				createCoroutineMethod;
+				collections::Dictionary<WString, vint>		inputIds;
+				collections::Dictionary<WString, vint>		stateIds;
 			};
 
 			/// <summary>Workflow compiler.</summary>
@@ -185,7 +187,7 @@ Scope Manager
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 				typedef collections::Dictionary<Ptr<WfStateInput>, Ptr<typeimpl::WfClassMethod>>			StateInputMethodMap;
 				typedef collections::Dictionary<Ptr<WfFunctionArgument>, Ptr<typeimpl::WfField>>			StateArgumentFieldMap;
-				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, WfStateMachineInfo>			StateMachineInfoMap;
+				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, Ptr<WfStateMachineInfo>>	StateMachineInfoMap;
 
 				typedef collections::Pair<WString, WString>													AttributeKey;
 				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;

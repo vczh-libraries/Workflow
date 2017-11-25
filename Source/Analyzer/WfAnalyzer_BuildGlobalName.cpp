@@ -254,10 +254,10 @@ BuildGlobalNameFromModules
 						}
 					}
 
-					WfStateMachineInfo smInfo;
+					auto smInfo = MakePtr<WfStateMachineInfo>();
 					{
-						smInfo.createCoroutineMethod = MakePtr<WfClassMethod>();
-						td->AddMember(L"<state>CreateCoroutine", smInfo.createCoroutineMethod);
+						smInfo->createCoroutineMethod = MakePtr<WfClassMethod>();
+						td->AddMember(L"<state>CreateCoroutine", smInfo->createCoroutineMethod);
 					}
 					manager->stateMachineInfos.Add(node, smInfo);
 				}
