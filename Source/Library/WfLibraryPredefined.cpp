@@ -574,7 +574,46 @@ StateMachine
 
 			void StateMachine::ResumeStateMachine()
 			{
-				throw 0;
+				Ptr<CoroutineResult> previousResult;
+				while (true)
+				{
+					if (stateMachineCoroutine == nullptr)
+					{
+						CHECK_ERROR(stateMachineInitialized, L"vl::reflection::description::StateMachine::ResumeStateMachine()#The state machine has not been initialized.");
+						CHECK_ERROR(!stateMachineStopped, L"vl::reflection::description::StateMachine::ResumeStateMachine()#The state machine has been stopped.");
+						stateMachineStopped = true;
+
+						if (previousResult && previousResult->GetFailure())
+						{
+							throw Exception(previousResult->GetFailure()->GetMessage());
+						}
+						break;
+					}
+					else if (stateMachineCoroutine->GetStatus() != CoroutineStatus::Stopped)
+					{
+						auto currentCoroutine = stateMachineCoroutine;
+						currentCoroutine->Resume(true, previousResult);
+						if (stateMachineCoroutine == currentCoroutine)
+						{
+							// wait for input
+							break;
+						}
+						else if (currentCoroutine->GetStatus() == CoroutineStatus::Stopped)
+						{
+							// leave a state machine
+							previousResult = MakePtr<CoroutineResult>();
+							if (currentCoroutine->GetFailure())
+							{
+								previousResult->SetFailure(currentCoroutine->GetFailure());
+							}
+						}
+						else
+						{
+							// enter a state machine
+							break;
+						}
+					}
+				}
 			}
 
 			StateMachine::StateMachine()
@@ -584,6 +623,29 @@ StateMachine
 			StateMachine::~StateMachine()
 			{
 				FinalizeAggregation();
+			}
+
+			CoroutineStatus StateMachine::GetStateMachineStatus()
+			{
+				if (stateMachineStopped)
+				{
+					return CoroutineStatus::Stopped;
+				}
+				else if (stateMachineCoroutine)
+				{
+					if (stateMachineCoroutine->GetStatus() == CoroutineStatus::Waiting)
+					{
+						return CoroutineStatus::Waiting;
+					}
+					else
+					{
+						return CoroutineStatus::Executing;
+					}
+				}
+				else
+				{
+					return CoroutineStatus::Waiting;
+				}
 			}
 
 /***********************************************************************

@@ -202,11 +202,14 @@ WfLoadLibraryTypes
 
 			BEGIN_CLASS_MEMBER(StateMachine)
 				CLASS_MEMBER_FIELD(stateMachineInitialized)
+				CLASS_MEMBER_FIELD(stateMachineStopped)
 				CLASS_MEMBER_FIELD(stateMachineInput)
 				CLASS_MEMBER_FIELD(stateMachineCoroutine)
 
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<StateMachine>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ResumeStateMachine, NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(StateMachineStatus)
 			END_CLASS_MEMBER(StateMachine)
 #undef _
 
