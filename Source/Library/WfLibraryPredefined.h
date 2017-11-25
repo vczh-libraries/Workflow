@@ -169,6 +169,7 @@ Coroutine (State Machine)
 			{
 				friend struct CustomTypeDescriptorSelector<StateMachine>;
 			protected:
+				bool									stateMachineInitialized = false;
 				vint									stateMachineInput = -1;
 				Ptr<ICoroutine>							stateMachineCoroutine;
 
