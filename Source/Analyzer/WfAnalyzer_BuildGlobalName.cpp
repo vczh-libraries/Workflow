@@ -256,18 +256,6 @@ BuildGlobalNameFromModules
 
 					WfStateMachineInfo smInfo;
 					{
-						smInfo.inputField = MakePtr<WfField>(td.Obj(), L"<state>input");
-						td->AddMember(smInfo.inputField);
-					}
-					{
-						smInfo.coroutineField = MakePtr<WfField>(td.Obj(), L"<state>coroutine");
-						td->AddMember(smInfo.coroutineField);
-					}
-					{
-						smInfo.resumeMethod = MakePtr<WfClassMethod>();
-						td->AddMember(L"<state>Resume", smInfo.resumeMethod);
-					}
-					{
 						smInfo.createCoroutineMethod = MakePtr<WfClassMethod>();
 						td->AddMember(L"<state>CreateCoroutine", smInfo.createCoroutineMethod);
 					}

@@ -572,6 +572,11 @@ AsyncCoroutine
 StateMachine
 ***********************************************************************/
 
+			void StateMachine::ResumeStateMachine()
+			{
+				throw 0;
+			}
+
 			StateMachine::StateMachine()
 			{
 			}

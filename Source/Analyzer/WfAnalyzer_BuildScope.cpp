@@ -285,6 +285,7 @@ BuildScopeForDeclaration
 							config->thisAccessable = true;
 							config->parentThisAccessable = true;
 						}
+						stateScope->ownerNode = state;
 						manager->nodeScopes.Add(state.Obj(), stateScope);
 
 						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
@@ -296,8 +297,7 @@ BuildScopeForDeclaration
 							stateScope->symbols.Add(argumentSymbol->name, argumentSymbol);
 						}
 
-						auto bodyScope = MakePtr<WfLexicalScope>(stateScope);
-						BuildScopeForStatement(manager, bodyScope, state->statement);
+						BuildScopeForStatement(manager, stateScope, state->statement);
 					}
 				}
 
@@ -546,6 +546,7 @@ BuildScopeForStatement
 					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
 					{
 						auto caseScope = MakePtr<WfLexicalScope>(resultScope);
+						caseScope->ownerNode = switchCase;
 						manager->nodeScopes.Add(switchCase.Obj(), caseScope);
 
 						FOREACH(Ptr<WfStateSwitchArgument>, argument, switchCase->arguments)

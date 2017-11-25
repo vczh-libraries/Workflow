@@ -188,9 +188,6 @@ CompleteScopeForClassMember
 					}
 
 					auto& smInfo = manager->stateMachineInfos[node];
-					smInfo.inputField->SetReturn(TypeInfoRetriver<vint>::CreateTypeInfo());
-					smInfo.coroutineField->SetReturn(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo());
-					smInfo.resumeMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 					smInfo.createCoroutineMethod->AddParameter(MakePtr<ParameterInfoImpl>(smInfo.createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo()));
 					smInfo.createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 				}

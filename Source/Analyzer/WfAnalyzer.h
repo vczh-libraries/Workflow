@@ -154,9 +154,6 @@ Scope Manager
 
 			struct WfStateMachineInfo
 			{
-				Ptr<typeimpl::WfField>						inputField;
-				Ptr<typeimpl::WfField>						coroutineField;
-				Ptr<typeimpl::WfClassMethod>				resumeMethod;
 				Ptr<typeimpl::WfClassMethod>				createCoroutineMethod;
 			};
 

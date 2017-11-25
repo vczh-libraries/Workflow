@@ -263,10 +263,11 @@ ValidateSemantic(Expression)
 										if (firstConfigScope)
 										{
 											bool inMethodBody = lastConfigScope->GetOwnerClassMember() && lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
-											bool inDtorBody = lastConfigScope->GetOwnerClassMember() && lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
-											bool inCtorBody = lastConfigScope->parentScope->GetOwnerClassMember() && lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
+											bool inDtorBody = lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
+											bool inCtorBody = lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
+											bool inStateBody = lastConfigScope->ownerNode.Cast<WfStateDeclaration>();
 
-											if (!inMethodBody && !inDtorBody && !inCtorBody)
+											if (!inMethodBody && !inDtorBody && !inCtorBody && !inStateBody)
 											{
 												manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 											}

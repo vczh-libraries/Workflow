@@ -167,6 +167,12 @@ Coroutine (State Machine)
 
 			class StateMachine : public Object, public AggregatableDescription<StateMachine>
 			{
+				friend struct CustomTypeDescriptorSelector<StateMachine>;
+			protected:
+				vint									stateMachineInput = -1;
+				Ptr<ICoroutine>							stateMachineCoroutine;
+
+				void									ResumeStateMachine();
 			public:
 				StateMachine();
 				~StateMachine();

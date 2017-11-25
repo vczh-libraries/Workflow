@@ -201,6 +201,10 @@ WfLoadLibraryTypes
 			END_CLASS_MEMBER(AsyncCoroutine)
 
 			BEGIN_CLASS_MEMBER(StateMachine)
+				CLASS_MEMBER_FIELD(stateMachineInput)
+				CLASS_MEMBER_FIELD(stateMachineCoroutine)
+
+				CLASS_MEMBER_METHOD(ResumeStateMachine, NO_PARAMETER)
 			END_CLASS_MEMBER(StateMachine)
 #undef _
 
