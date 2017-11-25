@@ -745,7 +745,12 @@ ValidateSemantic(Statement)
 						}
 						else
 						{
-
+							auto stateScope = manager->nodeScopes[stateDecl.Obj()];
+							FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+							{
+								auto typeInfo = stateScope->symbols[stateDecl->arguments[index]->name.value][0]->typeInfo;
+								GetExpressionType(manager, argument, typeInfo);
+							}
 						}
 					}
 				}

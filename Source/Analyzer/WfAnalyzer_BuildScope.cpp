@@ -285,6 +285,7 @@ BuildScopeForDeclaration
 							config->thisAccessable = true;
 							config->parentThisAccessable = true;
 						}
+						manager->nodeScopes.Add(state.Obj(), stateScope);
 
 						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
 						{
