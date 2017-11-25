@@ -721,7 +721,33 @@ ValidateSemantic(Statement)
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
-					throw 0;
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
+					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' position.");
+
+					Ptr<WfLexicalSymbol> stateSymbol;
+					{
+						vint index = smcScope->symbols.Keys().IndexOf(node->name.value);
+						if (index != -1)
+						{
+							stateSymbol = smcScope->symbols.GetByIndex(index)[0];
+						}
+					}
+					if (!stateSymbol || !stateSymbol->creatorNode.Cast<WfStateDeclaration>())
+					{
+						manager->errors.Add(WfErrors::StateNotExists(node));
+					}
+					else
+					{
+						auto stateDecl = stateSymbol->creatorNode.Cast<WfStateDeclaration>();
+						if (stateDecl->arguments.Count() != node->arguments.Count())
+						{
+							manager->errors.Add(WfErrors::StateArgumentCountNotMatch(node));
+						}
+						else
+						{
+
+						}
+					}
 				}
 
 				static void Execute(Ptr<WfStatement> statement, WfLexicalScopeManager* manager)

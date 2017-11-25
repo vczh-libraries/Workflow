@@ -527,6 +527,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongStateInvokeStatement(WfStateInvokeStatement* node);
 				static Ptr<parsing::ParsingError>			StateInputNotExists(WfStateSwitchCase* node);
 				static Ptr<parsing::ParsingError>			StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node);
+				static Ptr<parsing::ParsingError>			StateNotExists(WfStateInvokeStatement* node);
+				static Ptr<parsing::ParsingError>			StateArgumentCountNotMatch(WfStateInvokeStatement* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);

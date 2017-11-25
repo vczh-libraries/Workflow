@@ -489,6 +489,16 @@ WfErrors
 				return new ParsingError(node, L"C18: The number of arguments doesn not match the declaration of state input \"" + node->name.value + L"\".");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::StateNotExists(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C19: State \"" + node->name.value + L"\" does not exist.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateArgumentCountNotMatch(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C20: The number of arguments doesn not match the declaration of state \"" + node->name.value + L"\".");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");

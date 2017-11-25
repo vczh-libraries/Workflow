@@ -250,7 +250,7 @@ BuildGlobalNameFromModules
 						{
 							auto info = MakePtr<WfField>(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value);
 							td->AddMember(info);
-							manager->stateInputArguments.Add(argument.Obj(), info);
+							manager->stateDeclArguments.Add(argument.Obj(), info);
 						}
 					}
 
