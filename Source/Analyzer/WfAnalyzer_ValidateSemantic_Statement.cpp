@@ -678,7 +678,38 @@ ValidateSemantic(Statement)
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					throw 0;
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope();
+					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' position.");
+
+					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					{
+						auto caseScope = manager->nodeScopes[switchCase.Obj()].Obj();
+						auto inputSymbol = smcScope->symbols[switchCase->name.value][0];
+						if (!inputSymbol->creatorNode.Cast<WfStateInput>())
+						{
+							manager->errors.Add(WfErrors::StateInputNotExists(switchCase.Obj()));
+						}
+						else
+						{
+							auto td = manager->declarationTypes[smcScope->ownerNode.Cast<WfClassDeclaration>().Obj()].Obj();
+							auto inputMethod = td->GetMethodGroupByName(switchCase->name.value, false)->GetMethod(0);
+							if (switchCase->arguments.Count() != inputMethod->GetParameterCount())
+							{
+								manager->errors.Add(WfErrors::StateSwitchArgumentCountNotMatch(switchCase.Obj()));
+							}
+							else
+							{
+								FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, switchCase->arguments)
+								{
+									auto argumentSymbol = caseScope->symbols[argument->name.value][0];
+									argumentSymbol->typeInfo = CopyTypeInfo(inputMethod->GetParameter(index)->GetType());
+									argumentSymbol->type = GetTypeFromTypeInfo(argumentSymbol->typeInfo.Obj());
+								}
+							}
+						}
+
+						ValidateStatementSemantic(manager, switchCase->statement);
+					}
 				}
 
 				void Visit(WfStateInvokeStatement* node)override

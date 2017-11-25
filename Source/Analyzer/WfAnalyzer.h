@@ -525,6 +525,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			TooManyGotoLabel(WfGotoStatement* node);
 				static Ptr<parsing::ParsingError>			WrongStateSwitchStatement(WfStateSwitchStatement* node);
 				static Ptr<parsing::ParsingError>			WrongStateInvokeStatement(WfStateInvokeStatement* node);
+				static Ptr<parsing::ParsingError>			StateInputNotExists(WfStateSwitchCase* node);
+				static Ptr<parsing::ParsingError>			StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);
@@ -538,6 +540,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);

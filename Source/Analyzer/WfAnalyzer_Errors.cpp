@@ -479,6 +479,16 @@ WfErrors
 				return new ParsingError(node, L"C16: $goto_state or $push_state statement should appear inside a $state declaration.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::StateInputNotExists(WfStateSwitchCase* node)
+			{
+				return new ParsingError(node, L"C17: State input \"" + node->name.value + L"\" does not exist.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node)
+			{
+				return new ParsingError(node, L"C18: The number of arguments doesn not match the declaration of state input \"" + node->name.value + L"\".");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
@@ -530,6 +540,11 @@ WfErrors
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol)
+			{
+				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol)
 			{
 				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
 			}

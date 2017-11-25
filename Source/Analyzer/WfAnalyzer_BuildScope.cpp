@@ -539,11 +539,31 @@ BuildScopeForStatement
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					throw 0;
+					resultScope = new WfLexicalScope(parentScope);
+
+					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					{
+						auto caseScope = MakePtr<WfLexicalScope>(resultScope);
+						manager->nodeScopes.Add(switchCase.Obj(), caseScope);
+
+						FOREACH(Ptr<WfStateSwitchArgument>, argument, switchCase->arguments)
+						{
+							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(caseScope.Obj());
+							symbol->name = argument->name.value;
+							symbol->creatorNode = argument;
+							caseScope->symbols.Add(symbol->name, symbol);
+						}
+
+						BuildScopeForStatement(manager, caseScope, switchCase->statement);
+					}
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						BuildScopeForExpression(manager, parentScope, argument);
+					}
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
@@ -997,6 +1017,10 @@ CheckScopes_DuplicatedSymbol
 											else if (auto state = symbol->creatorNode.Cast<WfStateDeclaration>())
 											{
 												manager->errors.Add(WfErrors::DuplicatedSymbol(state.Obj(), symbol));
+											}
+											else if (auto sarg = symbol->creatorNode.Cast<WfStateSwitchArgument>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(sarg.Obj(), symbol));
 											}
 										}
 									}

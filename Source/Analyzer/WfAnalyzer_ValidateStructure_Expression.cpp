@@ -52,10 +52,8 @@ ValidateStructure(Expression)
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					auto oldBind = context->currentBindExpression;
-					context->currentBindExpression = 0;
-					ValidateExpressionStructure(manager, context, node->body);
-					context->currentBindExpression = oldBind;
+					ValidateStructureContext context;
+					ValidateExpressionStructure(manager, &context, node->body);
 				}
 
 				void Visit(WfMemberExpression* node)override
