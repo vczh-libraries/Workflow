@@ -427,6 +427,7 @@ Expanding Virtual Nodes
 			extern void										ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node);
 			extern void										ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node);
 			extern void										ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node);
+			extern void										ExpandStateMachine(WfLexicalScopeManager* manager, WfStateMachineDeclaration* node);
 
 /***********************************************************************
 Error Messages

@@ -219,7 +219,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					ExpandStateMachine(manager, node);
 				}
 			};
 
