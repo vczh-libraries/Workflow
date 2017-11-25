@@ -40,6 +40,7 @@ Predefined Types
 			F(IAsyncScheduler)				\
 			F(AsyncCoroutine::IImpl)		\
 			F(AsyncCoroutine)				\
+			F(StateMachine)					\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)
 

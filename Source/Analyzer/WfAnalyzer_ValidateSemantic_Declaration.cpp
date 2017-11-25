@@ -327,6 +327,24 @@ ValidateSemantic(Declaration)
 						}
 					}
 
+					if (auto sm = From(node->declarations)
+						.FindType<WfStateMachineDeclaration>()
+						.First(nullptr)
+						)
+					{
+						auto smtd = description::GetTypeDescriptor<StateMachine>();
+						vint count = td->GetBaseTypeDescriptorCount();
+
+						auto smbc = Range<vint>(0, count)
+							.Select([=](vint index) {return td->GetBaseTypeDescriptor(index); })
+							.Where([=](ITypeDescriptor* td) {return td == smtd; })
+							.First(nullptr);
+						if (!smbc)
+						{
+							manager->errors.Add(WfErrors::StateMachineClassNotInheritFromStateMachine(node));
+						}
+					}
+
 					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 					{
 						ValidateClassMemberSemantic(manager, td, node, memberDecl);
@@ -446,7 +464,21 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					bool foundDefaultState = false;
+
+					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					{
+						if (state->name.value == L"")
+						{
+							foundDefaultState = true;
+						}
+						ValidateStatementSemantic(manager, state->statement);
+					}
+
+					if (!foundDefaultState)
+					{
+						manager->errors.Add(WfErrors::MissingDefaultState(node));
+					}
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)

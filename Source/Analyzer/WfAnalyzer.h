@@ -558,6 +558,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
 				static Ptr<parsing::ParsingError>			AttributeMissValue(WfAttribute* node);
+				static Ptr<parsing::ParsingError>			StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node);
+				static Ptr<parsing::ParsingError>			MissingDefaultState(WfStateMachineDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

@@ -33,6 +33,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IAsyncScheduler, system::AsyncScheduler)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine::IImpl, system::AsyncCoroutine::IImpl)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine, system::AsyncCoroutine)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 
 #endif
 
@@ -198,6 +199,9 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
 				CLASS_MEMBER_STATIC_METHOD(CreateAndRun, { L"creator" })
 			END_CLASS_MEMBER(AsyncCoroutine)
+
+			BEGIN_CLASS_MEMBER(StateMachine)
+			END_CLASS_MEMBER(StateMachine)
 #undef _
 
 			class WfLibraryTypeLoader : public Object, public ITypeLoader

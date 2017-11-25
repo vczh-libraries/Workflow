@@ -641,6 +641,16 @@ WfErrors
 				return new ParsingError(node, L"D15: Value of attribute \"" + node->category.value + L":" + node->name.value + L"\" is missing.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node)
+			{
+				return new ParsingError(node, L"D16: State machine class \"" + node->name.value + L"\" should inherit from \"system::StateMachine\" directly.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::MissingDefaultState(WfStateMachineDeclaration* node)
+			{
+				return new ParsingError(node, L"D17: Missing default state.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
 			{
 				return new ParsingError(node, L"E0: Wild card \"*\" should only appear in the last item of the using path and should appear once.");
