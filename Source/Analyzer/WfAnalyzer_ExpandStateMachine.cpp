@@ -64,6 +64,33 @@ ExpandStateMachineStatementVisitor
 					return result;
 				}
 
+				Ptr<WfStatement> GenerateIngoreInputStatement()
+				{
+					auto refThis = MakePtr<WfReferenceExpression>();
+					refThis->name.value = L"<state>stateMachineObject";
+
+					auto refInput = MakePtr<WfMemberExpression>();
+					refInput->parent = refThis;
+					refInput->name.value = L"stateMachineInput";
+
+					auto refOne = MakePtr<WfIntegerExpression>();
+					refOne->value.value = L"1";
+
+					auto refInvalid = MakePtr<WfUnaryExpression>();
+					refInvalid->op = WfUnaryOperator::Negative;
+					refInvalid->operand = refOne;
+
+					auto assignExpr = MakePtr<WfBinaryExpression>();
+					assignExpr->op = WfBinaryOperator::Assign;
+					assignExpr->first = refInput;
+					assignExpr->second = refInvalid;
+
+					auto exprStat = MakePtr<WfExpressionStatement>();
+					exprStat->expression = assignExpr;
+
+					return exprStat;
+				}
+
 				void GenerateStateSwitchCase(const WString& inputName, WfLexicalScope* smcScope, Ptr<WfSwitchStatement> switchStat, Ptr<WfStateInput>& input, Ptr<WfBlockStatement>& caseBlock)
 				{
 					input = From(smcScope->symbols[inputName])
@@ -87,31 +114,7 @@ ExpandStateMachineStatementVisitor
 
 					caseBlock = MakePtr<WfBlockStatement>();
 					switchCase->statement = caseBlock;
-
-					{
-						auto refThis = MakePtr<WfReferenceExpression>();
-						refThis->name.value = L"<state>stateMachineObject";
-
-						auto refInput = MakePtr<WfMemberExpression>();
-						refInput->parent = refThis;
-						refInput->name.value = L"stateMachineInput";
-
-						auto refOne = MakePtr<WfIntegerExpression>();
-						refOne->value.value = L"1";
-
-						auto refInvalid = MakePtr<WfUnaryExpression>();
-						refInvalid->op = WfUnaryOperator::Negative;
-						refInvalid->operand = refOne;
-
-						auto assignExpr = MakePtr<WfBinaryExpression>();
-						assignExpr->op = WfBinaryOperator::Assign;
-						assignExpr->first = refInput;
-						assignExpr->second = refInvalid;
-
-						auto exprStat = MakePtr<WfExpressionStatement>();
-						exprStat->expression = assignExpr;
-						caseBlock->statements.Add(exprStat);
-					}
+					caseBlock->statements.Add(GenerateIngoreInputStatement());
 				}
 
 				void Visit(WfStateSwitchStatement* node)override
@@ -174,29 +177,38 @@ ExpandStateMachineStatementVisitor
 					}
 
 					auto defaultBlock = MakePtr<WfBlockStatement>();
-					switchStat->defaultBranch = defaultBlock;
+
 					switch (node->type)
 					{
 					case WfStateSwitchType::Default:
-						{
-						}
-						break;
 					case WfStateSwitchType::Pass:
-						{
-						}
 						break;
 					case WfStateSwitchType::PassAndReturn:
 						{
+							auto gotoStat = MakePtr<WfGotoStatement>();
+							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
 					case WfStateSwitchType::Ignore:
 						{
+							defaultBlock->statements.Add(GenerateIngoreInputStatement());
 						}
 						break;
 					case WfStateSwitchType::IgnoreAndReturn:
 						{
+							defaultBlock->statements.Add(GenerateIngoreInputStatement());
+
+							auto gotoStat = MakePtr<WfGotoStatement>();
+							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
+					}
+
+					if (defaultBlock->statements.Count() > 0)
+					{
+						switchStat->defaultBranch = defaultBlock;
 					}
 				}
 
