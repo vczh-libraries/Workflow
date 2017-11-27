@@ -66,8 +66,109 @@ ExpandStateMachineStatementVisitor
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
-					result = block;
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
+
+					auto switchStat = MakePtr<WfSwitchStatement>();
+					result = switchStat;
+
+					FOREACH(Ptr<WfStateSwitchCase>, stateSwitchCase, node->caseBranches)
+					{
+						auto input = From(smcScope->symbols[stateSwitchCase->name.value])
+							.Select([=](Ptr<WfLexicalSymbol> symbol)
+							{
+								return symbol->creatorNode.Cast<WfStateInput>();
+							})
+							.Where([=](Ptr<WfStateInput> decl)
+							{
+								return decl != nullptr;
+							})
+							.First();
+
+						auto switchCase = MakePtr<WfSwitchCase>();
+						switchStat->caseBranches.Add(switchCase);
+						{
+							auto refInputId = MakePtr<WfIntegerExpression>();
+							refInputId->value.value = itow(smInfo->inputIds[stateSwitchCase->name.value]);
+							switchCase->expression = refInputId;
+						}
+
+						auto caseBlock = MakePtr<WfBlockStatement>();
+						switchCase->statement = caseBlock;
+
+						{
+							auto refThis = MakePtr<WfReferenceExpression>();
+							refThis->name.value = L"<state>stateMachineObject";
+
+							auto refInput = MakePtr<WfMemberExpression>();
+							refInput->parent = refThis;
+							refInput->name.value = L"stateMachineInput";
+
+							auto refOne = MakePtr<WfIntegerExpression>();
+							refOne->value.value = L"1";
+
+							auto refInvalid = MakePtr<WfUnaryExpression>();
+							refInvalid->op = WfUnaryOperator::Negative;
+							refInvalid->operand = refOne;
+
+							auto assignExpr = MakePtr<WfBinaryExpression>();
+							assignExpr->op = WfBinaryOperator::Assign;
+							assignExpr->first = refInput;
+							assignExpr->second = refInvalid;
+
+							auto exprStat = MakePtr<WfExpressionStatement>();
+							exprStat->expression = assignExpr;
+							caseBlock->statements.Add(exprStat);
+						}
+						FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, stateSwitchCase->arguments)
+						{
+							auto refThis = MakePtr<WfReferenceExpression>();
+							refThis->name.value = L"<state>stateMachineObject";
+
+							auto refArgument = MakePtr<WfMemberExpression>();
+							refArgument->parent = refThis;
+							refArgument->name.value = manager->stateInputArguments[input->arguments[index].Obj()]->GetName();
+
+							auto varDecl = MakePtr<WfVariableDeclaration>();
+							varDecl->name.value = argument->name.value;
+							varDecl->expression = refArgument;
+
+							auto varStat = MakePtr<WfVariableStatement>();
+							varStat->variable = varDecl;
+							caseBlock->statements.Add(varStat);
+						}
+						caseBlock->statements.Add(CreateField(stateSwitchCase->statement));
+					}
+
+					if (node->type == WfStateSwitchType::Default)
+					{
+
+					}
+
+					auto defaultBlock = MakePtr<WfBlockStatement>();
+					switchStat->defaultBranch = defaultBlock;
+					switch (node->type)
+					{
+					case WfStateSwitchType::Default:
+						{
+						}
+						break;
+					case WfStateSwitchType::Pass:
+						{
+						}
+						break;
+					case WfStateSwitchType::PassAndReturn:
+						{
+						}
+						break;
+					case WfStateSwitchType::Ignore:
+						{
+						}
+						break;
+					case WfStateSwitchType::IgnoreAndReturn:
+						{
+						}
+						break;
+					}
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
