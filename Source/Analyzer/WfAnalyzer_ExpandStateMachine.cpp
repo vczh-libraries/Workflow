@@ -161,6 +161,7 @@ ExpandStateMachineStatementVisitor
 							caseBlock->statements.Add(varStat);
 						}
 						caseBlock->statements.Add(CreateField(stateSwitchCase->statement));
+						SetCodeRange(Ptr<WfStatement>(caseBlock), stateSwitchCase->codeRange);
 					}
 
 					if (node->type == WfStateSwitchType::Default)
@@ -224,6 +225,7 @@ ExpandStateMachineStatementVisitor
 					{
 						switchStat->defaultBranch = defaultBlock;
 					}
+					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
 					result = block;
 				}
 
@@ -316,6 +318,7 @@ ExpandStateMachineStatementVisitor
 						}
 						break;
 					}
+					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
 					result = block;
 				}
 			};
@@ -731,6 +734,7 @@ ExpandStateMachine
 											gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
 											caseBlock->statements.Add(gotoStat);
 										}
+										SetCodeRange(Ptr<WfStatement>(caseBlock), state->codeRange);
 									}
 								}
 							}
