@@ -122,11 +122,19 @@ ExpandStateMachineStatementVisitor
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
 
 					auto block = MakePtr<WfBlockStatement>();
-					result = block;
-
 					block->statements.Add(MakePtr<WfCoPauseStatement>());
 
 					auto switchStat = MakePtr<WfSwitchStatement>();
+					{
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+
+						auto refInput = MakePtr<WfMemberExpression>();
+						refInput->parent = refThis;
+						refInput->name.value = L"stateMachineInput";
+
+						switchStat->expression = refInput;
+					}
 					block->statements.Add(switchStat);
 
 					FOREACH(Ptr<WfStateSwitchCase>, stateSwitchCase, node->caseBranches)
@@ -216,6 +224,7 @@ ExpandStateMachineStatementVisitor
 					{
 						switchStat->defaultBranch = defaultBlock;
 					}
+					result = block;
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
@@ -233,7 +242,6 @@ ExpandStateMachineStatementVisitor
 						.First();
 
 					auto block = MakePtr<WfBlockStatement>();
-					result = block;
 
 					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, stateDecl->arguments)
 					{
@@ -308,6 +316,7 @@ ExpandStateMachineStatementVisitor
 						}
 						break;
 					}
+					result = block;
 				}
 			};
 
@@ -699,6 +708,23 @@ ExpandStateMachine
 										auto caseBlock = MakePtr<WfBlockStatement>();
 										switchCase->statement = caseBlock;
 
+										FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+										{
+											auto refThis = MakePtr<WfReferenceExpression>();
+											refThis->name.value = L"<state>stateMachineObject";
+
+											auto refArgument = MakePtr<WfMemberExpression>();
+											refArgument->parent = refThis;
+											refArgument->name.value = manager->stateDeclArguments[argument.Obj()]->GetName();
+
+											auto varDecl = MakePtr<WfVariableDeclaration>();
+											varDecl->name.value = argument->name.value;
+											varDecl->expression = refArgument;
+
+											auto varStat = MakePtr<WfVariableStatement>();
+											varStat->variable = varDecl;
+											caseBlock->statements.Add(varStat);
+										}
 										caseBlock->statements.Add(ExpandStateMachineStatementVisitor(manager, smInfo.Obj()).CreateField(state->statement));
 										{
 											auto gotoStat = MakePtr<WfGotoStatement>();
