@@ -121,8 +121,13 @@ ExpandStateMachineStatementVisitor
 				{
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
 
+					auto block = MakePtr<WfBlockStatement>();
+					result = block;
+
+					block->statements.Add(MakePtr<WfCoPauseStatement>());
+
 					auto switchStat = MakePtr<WfSwitchStatement>();
-					result = switchStat;
+					block->statements.Add(switchStat);
 
 					FOREACH(Ptr<WfStateSwitchCase>, stateSwitchCase, node->caseBranches)
 					{
@@ -164,6 +169,7 @@ ExpandStateMachineStatementVisitor
 							Ptr<WfBlockStatement> caseBlock;
 							GenerateStateSwitchCase(inputName, smcScope, switchStat, input, caseBlock);
 
+							caseBlock->statements.Add(GenerateIngoreInputStatement());
 							{
 								auto refException = MakePtr<WfStringExpression>();
 								refException->value.value = L"Method \"" + inputName + L"\" of class \"" + manager->stateInputMethods[input.Obj()]->GetOwnerTypeDescriptor()->GetTypeName() + L"\" cannot be called at this moment.";
@@ -186,7 +192,7 @@ ExpandStateMachineStatementVisitor
 					case WfStateSwitchType::PassAndReturn:
 						{
 							auto gotoStat = MakePtr<WfGotoStatement>();
-							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+							gotoStat->label.value = L"<state-label>OUT_OF_CURRENT_STATE";
 							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
@@ -200,7 +206,7 @@ ExpandStateMachineStatementVisitor
 							defaultBlock->statements.Add(GenerateIngoreInputStatement());
 
 							auto gotoStat = MakePtr<WfGotoStatement>();
-							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+							gotoStat->label.value = L"<state-label>OUT_OF_CURRENT_STATE";
 							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
