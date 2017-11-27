@@ -64,6 +64,56 @@ ExpandStateMachineStatementVisitor
 					return result;
 				}
 
+				void GenerateStateSwitchCase(const WString& inputName, WfLexicalScope* smcScope, Ptr<WfSwitchStatement> switchStat, Ptr<WfStateInput>& input, Ptr<WfBlockStatement>& caseBlock)
+				{
+					input = From(smcScope->symbols[inputName])
+						.Select([=](Ptr<WfLexicalSymbol> symbol)
+						{
+							return symbol->creatorNode.Cast<WfStateInput>();
+						})
+							.Where([=](Ptr<WfStateInput> decl)
+						{
+							return decl != nullptr;
+						})
+						.First();
+
+					auto switchCase = MakePtr<WfSwitchCase>();
+					switchStat->caseBranches.Add(switchCase);
+					{
+						auto refInputId = MakePtr<WfIntegerExpression>();
+						refInputId->value.value = itow(smInfo->inputIds[inputName]);
+						switchCase->expression = refInputId;
+					}
+
+					caseBlock = MakePtr<WfBlockStatement>();
+					switchCase->statement = caseBlock;
+
+					{
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+
+						auto refInput = MakePtr<WfMemberExpression>();
+						refInput->parent = refThis;
+						refInput->name.value = L"stateMachineInput";
+
+						auto refOne = MakePtr<WfIntegerExpression>();
+						refOne->value.value = L"1";
+
+						auto refInvalid = MakePtr<WfUnaryExpression>();
+						refInvalid->op = WfUnaryOperator::Negative;
+						refInvalid->operand = refOne;
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refInput;
+						assignExpr->second = refInvalid;
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = assignExpr;
+						caseBlock->statements.Add(exprStat);
+					}
+				}
+
 				void Visit(WfStateSwitchStatement* node)override
 				{
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
@@ -73,52 +123,10 @@ ExpandStateMachineStatementVisitor
 
 					FOREACH(Ptr<WfStateSwitchCase>, stateSwitchCase, node->caseBranches)
 					{
-						auto input = From(smcScope->symbols[stateSwitchCase->name.value])
-							.Select([=](Ptr<WfLexicalSymbol> symbol)
-							{
-								return symbol->creatorNode.Cast<WfStateInput>();
-							})
-							.Where([=](Ptr<WfStateInput> decl)
-							{
-								return decl != nullptr;
-							})
-							.First();
+						Ptr<WfStateInput> input;
+						Ptr<WfBlockStatement> caseBlock;
+						GenerateStateSwitchCase(stateSwitchCase->name.value, smcScope, switchStat, input, caseBlock);
 
-						auto switchCase = MakePtr<WfSwitchCase>();
-						switchStat->caseBranches.Add(switchCase);
-						{
-							auto refInputId = MakePtr<WfIntegerExpression>();
-							refInputId->value.value = itow(smInfo->inputIds[stateSwitchCase->name.value]);
-							switchCase->expression = refInputId;
-						}
-
-						auto caseBlock = MakePtr<WfBlockStatement>();
-						switchCase->statement = caseBlock;
-
-						{
-							auto refThis = MakePtr<WfReferenceExpression>();
-							refThis->name.value = L"<state>stateMachineObject";
-
-							auto refInput = MakePtr<WfMemberExpression>();
-							refInput->parent = refThis;
-							refInput->name.value = L"stateMachineInput";
-
-							auto refOne = MakePtr<WfIntegerExpression>();
-							refOne->value.value = L"1";
-
-							auto refInvalid = MakePtr<WfUnaryExpression>();
-							refInvalid->op = WfUnaryOperator::Negative;
-							refInvalid->operand = refOne;
-
-							auto assignExpr = MakePtr<WfBinaryExpression>();
-							assignExpr->op = WfBinaryOperator::Assign;
-							assignExpr->first = refInput;
-							assignExpr->second = refInvalid;
-
-							auto exprStat = MakePtr<WfExpressionStatement>();
-							exprStat->expression = assignExpr;
-							caseBlock->statements.Add(exprStat);
-						}
 						FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, stateSwitchCase->arguments)
 						{
 							auto refThis = MakePtr<WfReferenceExpression>();
@@ -141,7 +149,28 @@ ExpandStateMachineStatementVisitor
 
 					if (node->type == WfStateSwitchType::Default)
 					{
+						auto invalidInputs=
+							From(smInfo->inputIds.Keys())
+							.Except(
+								From(node->caseBranches)
+								.Select([](Ptr<WfStateSwitchCase> switchCase) {return switchCase->name.value; })
+								);
+						FOREACH(WString, inputName, invalidInputs)
+						{
+							Ptr<WfStateInput> input;
+							Ptr<WfBlockStatement> caseBlock;
+							GenerateStateSwitchCase(inputName, smcScope, switchStat, input, caseBlock);
 
+							{
+								auto refException = MakePtr<WfStringExpression>();
+								refException->value.value = L"Method \"" + inputName + L"\" of class \"" + manager->stateInputMethods[input.Obj()]->GetOwnerTypeDescriptor()->GetTypeName() + L"\" cannot be called at this moment.";
+
+								auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+								raiseStat->expression = refException;
+
+								caseBlock->statements.Add(raiseStat);
+							}
+						}
 					}
 
 					auto defaultBlock = MakePtr<WfBlockStatement>();
