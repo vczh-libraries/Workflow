@@ -679,7 +679,7 @@ ValidateSemantic(Statement)
 				void Visit(WfStateSwitchStatement* node)override
 				{
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
-					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' position.");
+					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' location.");
 
 					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
 					{
@@ -722,7 +722,7 @@ ValidateSemantic(Statement)
 				void Visit(WfStateInvokeStatement* node)override
 				{
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
-					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' position.");
+					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' location.");
 
 					Ptr<WfLexicalSymbol> stateSymbol;
 					{

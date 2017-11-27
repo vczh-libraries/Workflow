@@ -11,6 +11,159 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
+ExpandStateMachineStatementVisitor
+***********************************************************************/
+
+			class ExpandStateMachineStatementVisitor
+				: public copy_visitor::StatementVisitor
+				, public copy_visitor::VirtualCseStatementVisitor
+				, public WfStateMachineStatement::IVisitor
+			{
+			protected:
+				WfLexicalScopeManager*							manager;
+				WfStateMachineInfo*								smInfo;
+
+			public:
+				ExpandStateMachineStatementVisitor(WfLexicalScopeManager* _manager, WfStateMachineInfo* _smInfo)
+					:manager(_manager)
+					, smInfo(_smInfo)
+				{
+				}
+
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				{
+					return CopyExpression(from, true);
+				}
+
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
+				{
+					return CopyType(from);
+				}
+
+				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
+				{
+					if (!from) return nullptr;
+					from->Accept(this);
+					return result.Cast<WfStatement>();
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseStatement* node)override
+				{
+					node->Accept((WfVirtualCseStatement::IVisitor*)this);
+					return result;
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node)override
+				{
+					CHECK_FAIL(L"ExpandStateMachineStatementVisitor::Dispatch(WfCoroutineStatement*)#ValidateStatementStructure should check coroutine statement's location.");
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfStateMachineStatement* node)override
+				{
+					node->Accept((WfStateMachineStatement::IVisitor*)this);
+					return result;
+				}
+
+				void Visit(WfStateSwitchStatement* node)override
+				{
+					auto block = MakePtr<WfBlockStatement>();
+					result = block;
+				}
+
+				void Visit(WfStateInvokeStatement* node)override
+				{
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
+					auto stateDecl = From(smcScope->symbols[node->name.value])
+						.Select([=](Ptr<WfLexicalSymbol> symbol)
+						{
+							return symbol->creatorNode.Cast<WfStateDeclaration>();
+						})
+						.Where([=](Ptr<WfStateDeclaration> decl)
+						{
+							return decl != nullptr;
+						})
+						.First();
+
+					auto block = MakePtr<WfBlockStatement>();
+					result = block;
+
+					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, stateDecl->arguments)
+					{
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+						
+						auto refArgument = MakePtr<WfMemberExpression>();
+						refArgument->parent = refThis;
+						refArgument->name.value = manager->stateDeclArguments[argument.Obj()]->GetName();
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refArgument;
+						assignExpr->second = CreateField(node->arguments[index]);
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = assignExpr;
+						block->statements.Add(exprStat);
+					}
+
+					switch (node->type)
+					{
+					case WfStateInvokeType::Goto:
+						{
+							{
+								auto refState = MakePtr<WfReferenceExpression>();
+								refState->name.value = L"<state>state";
+
+								auto refStateId = MakePtr<WfIntegerExpression>();
+								refStateId->value.value = itow(smInfo->stateIds[node->name.value]);
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->op = WfBinaryOperator::Assign;
+								assignExpr->first = refState;
+								assignExpr->second = refStateId;
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = assignExpr;
+								block->statements.Add(exprStat);
+							}
+							{
+								auto gotoStat = MakePtr<WfGotoStatement>();
+								gotoStat->label.value = L"<state-label>OUT_OF_CURRENT_STATE";
+								block->statements.Add(gotoStat);
+							}
+						}
+						break;
+					case WfStateInvokeType::Push:
+						{
+							{
+								auto refThis = MakePtr<WfReferenceExpression>();
+								refThis->name.value = L"<state>stateMachineObject";
+
+								auto refCoroutine = MakePtr<WfMemberExpression>();
+								refCoroutine->parent = refThis;
+								refCoroutine->name.value = L"<state>CreateCoroutine";
+
+								auto refStateId = MakePtr<WfIntegerExpression>();
+								refStateId->value.value = itow(smInfo->stateIds[node->name.value]);
+
+								auto callExpr = MakePtr<WfCallExpression>();
+								callExpr->function = refCoroutine;
+								callExpr->arguments.Add(refStateId);
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = callExpr;
+								block->statements.Add(exprStat);
+							}
+							{
+								block->statements.Add(MakePtr<WfCoPauseStatement>());
+							}
+						}
+						break;
+					}
+				}
+			};
+
+/***********************************************************************
 ExpandStateMachine
 ***********************************************************************/
 
@@ -378,7 +531,7 @@ ExpandStateMachine
 									whileBlock->statements.Add(exprStat);
 								}
 								{
-									// switch(<state>currentState) { case STATE:{...} ... }
+									// switch(<state>currentState) { case STATE:{... goto <state-label>OUT_OF_STATE_MACHINE;} ... }
 									auto refCurrentState = MakePtr<WfReferenceExpression>();
 									refCurrentState->name.value = L"<state>currentState";
 
@@ -397,6 +550,13 @@ ExpandStateMachine
 
 										auto caseBlock = MakePtr<WfBlockStatement>();
 										switchCase->statement = caseBlock;
+
+										caseBlock->statements.Add(ExpandStateMachineStatementVisitor(manager, smInfo.Obj()).CreateField(state->statement));
+										{
+											auto gotoStat = MakePtr<WfGotoStatement>();
+											gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+											caseBlock->statements.Add(gotoStat);
+										}
 									}
 								}
 							}
