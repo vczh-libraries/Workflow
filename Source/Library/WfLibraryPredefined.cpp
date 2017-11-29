@@ -579,8 +579,14 @@ StateMachine
 				{
 					if (stateMachineCoroutine == nullptr)
 					{
-						CHECK_ERROR(stateMachineInitialized, L"vl::reflection::description::StateMachine::ResumeStateMachine()#The state machine has not been initialized.");
-						CHECK_ERROR(!stateMachineStopped, L"vl::reflection::description::StateMachine::ResumeStateMachine()#The state machine has been stopped.");
+						if (!stateMachineInitialized)
+						{
+							throw Exception(L"The state machine has not been initialized.");
+						}
+						if (stateMachineStopped)
+						{
+							throw Exception(L"The state machine has been stopped.");
+						}
 						stateMachineStopped = true;
 
 						if (previousResult && previousResult->GetFailure())
