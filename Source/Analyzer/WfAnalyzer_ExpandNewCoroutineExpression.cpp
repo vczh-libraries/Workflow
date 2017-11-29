@@ -1108,6 +1108,22 @@ GenerateSetCoState
 				return stat;
 			}
 
+			Ptr<WfStatement> GenerateSetCoStateBeforePauseToInvalid()
+			{
+				auto refBefore = MakePtr<WfReferenceExpression>();
+				refBefore->name.value = L"<co-state-before-pause>";
+
+				auto assignExpr = MakePtr<WfBinaryExpression>();
+				assignExpr->op = WfBinaryOperator::Assign;
+				assignExpr->first = refBefore;
+				assignExpr->second = GenerateCoroutineInvalidId();
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = assignExpr;
+
+				return stat;
+			}
+
 			Ptr<WfStatement> GenerateSetCoState(List<FlowChartNode*>& nodeOrders, FlowChartNode* node)
 			{
 				auto refState = MakePtr<WfReferenceExpression>();
@@ -1561,21 +1577,8 @@ ExpandNewCoroutineExpression
 									ifStat->expression = testNullExpr;
 
 									ifStat->trueBranch = nullTrueBlock;
+									nullTrueBlock->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
 									nullFalseBlock = &ifStat->falseBranch;
-
-									{
-										auto refBefore = MakePtr<WfReferenceExpression>();
-										refBefore->name.value = L"<co-state-before-pause>";
-
-										auto assignExpr = MakePtr<WfBinaryExpression>();
-										assignExpr->op = WfBinaryOperator::Assign;
-										assignExpr->first = refBefore;
-										assignExpr->second = GenerateCoroutineInvalidId();
-
-										auto exprStat = MakePtr<WfExpressionStatement>();
-										exprStat->expression = assignExpr;
-										nullTrueBlock->statements.Add(exprStat);
-									}
 								}
 								{
 									auto refOutput = MakePtr<WfReferenceExpression>();
@@ -1594,21 +1597,114 @@ ExpandNewCoroutineExpression
 									ifStat->expression = testNullExpr;
 
 									ifStat->trueBranch = exTrueBlock;
+									exTrueBlock->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
 									ifStat->falseBranch = exFalseBlock;
+								}
+								{
+									/////////////////////////////////////////////////////////////////////////////
+									// Handle exception from <coroutine-output>
+									/////////////////////////////////////////////////////////////////////////////
+
+									Ptr<WfStatement> firstIfStatement;
+									Ptr<WfStatement>* currentIfVar = &firstIfStatement;
+
+									using GroupPair = Pair<FlowChartNode*, LazyList<FlowChartNode*>>;
+									auto nodeByCatches = From(nodeOrders)
+										.GroupBy([](FlowChartNode* node)
+										{
+											return node->exceptionDestination;
+										})
+										.OrderBy([&](const GroupPair& p1, const GroupPair& p2)
+										{
+											return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
+										});
+
+									FOREACH(GroupPair, group, nodeByCatches)
+									{
+										auto catchNode = group.key;
+										if (!catchNode) continue;
+
+										Ptr<WfExpression> condition;
+										FOREACH(FlowChartNode*, flowChartNode, group.value)
+										{
+											auto refState = MakePtr<WfReferenceExpression>();
+											refState->name.value = L"<co-state-before-pause>";
+
+											auto intState = MakePtr<WfIntegerExpression>();
+											intState->value.value = itow(nodeOrders.IndexOf(flowChartNode));
+
+											auto compExpr = MakePtr<WfBinaryExpression>();
+											compExpr->op = WfBinaryOperator::EQ;
+											compExpr->first = refState;
+											compExpr->second = intState;
+
+											if (condition)
+											{
+												auto orExpr = MakePtr<WfBinaryExpression>();
+												orExpr->op = WfBinaryOperator::Or;
+												orExpr->first = condition;
+												orExpr->second = compExpr;
+												condition = orExpr;
+											}
+											else
+											{
+												condition = compExpr;
+											}
+										}
+
+										auto ifStat = MakePtr<WfIfStatement>();
+										*currentIfVar = ifStat;
+										currentIfVar = &ifStat->falseBranch;
+										ifStat->expression = condition;
+
+										auto catchBlock = MakePtr<WfBlockStatement>();
+										ifStat->trueBranch = catchBlock;
+
+										catchBlock->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
+										{
+											auto refTarget = MakePtr<WfReferenceExpression>();
+											refTarget->name.value = referenceRenaming[catchNode->exceptionVariable];
+
+											auto refOutput = MakePtr<WfReferenceExpression>();
+											refOutput->name.value = coResultName;
+
+											auto refFailure = MakePtr<WfMemberExpression>();
+											refFailure->parent = refOutput;
+											refFailure->name.value = L"Failure";
+
+											auto assignExpr = MakePtr<WfBinaryExpression>();
+											assignExpr->op = WfBinaryOperator::Assign;
+											assignExpr->first = refTarget;
+											assignExpr->second = refFailure;
+
+											auto stat = MakePtr<WfExpressionStatement>();
+											stat->expression = assignExpr;
+											catchBlock->statements.Add(stat);
+										}
+										catchBlock->statements.Add(GenerateSetCoState(nodeOrders, catchNode));
+									}
 
 									{
-										auto refBefore = MakePtr<WfReferenceExpression>();
-										refBefore->name.value = L"<co-state-before-pause>";
+										auto block = MakePtr<WfBlockStatement>();
+										*currentIfVar = block;
 
-										auto assignExpr = MakePtr<WfBinaryExpression>();
-										assignExpr->op = WfBinaryOperator::Assign;
-										assignExpr->first = refBefore;
-										assignExpr->second = GenerateCoroutineInvalidId();
+										block->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
+										{
+											auto refOutput = MakePtr<WfReferenceExpression>();
+											refOutput->name.value = coResultName;
 
-										auto exprStat = MakePtr<WfExpressionStatement>();
-										exprStat->expression = assignExpr;
-										exTrueBlock->statements.Add(exprStat);
+											auto refFailure = MakePtr<WfMemberExpression>();
+											refFailure->parent = refOutput;
+											refFailure->name.value = L"Failure";
+
+											auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+											raiseStat->expression = refFailure;
+
+											block->statements.Add(raiseStat);
+										}
 									}
+
+									exFalseBlock->statements.Add(firstIfStatement);
 								}
 							}
 						}
