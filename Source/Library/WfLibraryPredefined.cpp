@@ -589,16 +589,19 @@ StateMachine
 						}
 						stateMachineStopped = true;
 
-						if (previousResult && previousResult->GetFailure())
+						if (previousResult)
 						{
-							throw Exception(previousResult->GetFailure()->GetMessage());
+							if (auto failure = previousResult->GetFailure())
+							{
+								throw Exception(failure->GetMessage());
+							}
 						}
 						break;
 					}
 					else if (stateMachineCoroutine->GetStatus() != CoroutineStatus::Stopped)
 					{
 						auto currentCoroutine = stateMachineCoroutine;
-						currentCoroutine->Resume(true, previousResult);
+						currentCoroutine->Resume(false, previousResult);
 						if (stateMachineCoroutine == currentCoroutine)
 						{
 							// wait for input
@@ -608,9 +611,9 @@ StateMachine
 						{
 							// leave a state machine
 							previousResult = MakePtr<CoroutineResult>();
-							if (currentCoroutine->GetFailure())
+							if (auto failure = currentCoroutine->GetFailure())
 							{
-								previousResult->SetFailure(currentCoroutine->GetFailure());
+								previousResult->SetFailure(failure);
 							}
 						}
 						else

@@ -204,7 +204,6 @@ ExpandStateMachineStatementVisitor
 							Ptr<WfBlockStatement> caseBlock;
 							GenerateStateSwitchCase(inputName, smcScope, switchStat, input, caseBlock);
 
-							caseBlock->statements.Add(GenerateIngoreInputStatement());
 							{
 								auto refException = MakePtr<WfStringExpression>();
 								refException->value.value = L"Method \"" + inputName + L"\" of class \"" + manager->stateInputMethods[input.Obj()]->GetOwnerTypeDescriptor()->GetTypeName() + L"\" cannot be called at this moment.";
