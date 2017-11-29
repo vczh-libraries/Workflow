@@ -14,6 +14,18 @@ namespace vl
 ExpandStateMachineStatementVisitor
 ***********************************************************************/
 
+			Ptr<WfExpression> GenerateStateMachineInvalidId()
+			{
+				auto refOne = MakePtr<WfIntegerExpression>();
+				refOne->value.value = L"1";
+
+				auto refInvalid = MakePtr<WfUnaryExpression>();
+				refInvalid->op = WfUnaryOperator::Negative;
+				refInvalid->operand = refOne;
+
+				return refInvalid;
+			}
+
 			class ExpandStateMachineStatementVisitor
 				: public copy_visitor::StatementVisitor
 				, public copy_visitor::VirtualCseStatementVisitor
@@ -73,17 +85,10 @@ ExpandStateMachineStatementVisitor
 					refInput->parent = refThis;
 					refInput->name.value = L"stateMachineInput";
 
-					auto refOne = MakePtr<WfIntegerExpression>();
-					refOne->value.value = L"1";
-
-					auto refInvalid = MakePtr<WfUnaryExpression>();
-					refInvalid->op = WfUnaryOperator::Negative;
-					refInvalid->operand = refOne;
-
 					auto assignExpr = MakePtr<WfBinaryExpression>();
 					assignExpr->op = WfBinaryOperator::Assign;
 					assignExpr->first = refInput;
-					assignExpr->second = refInvalid;
+					assignExpr->second = GenerateStateMachineInvalidId();
 
 					auto exprStat = MakePtr<WfExpressionStatement>();
 					exprStat->expression = assignExpr;
@@ -122,7 +127,28 @@ ExpandStateMachineStatementVisitor
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
 
 					auto block = MakePtr<WfBlockStatement>();
-					block->statements.Add(MakePtr<WfCoPauseStatement>());
+					{
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+
+						auto refInput = MakePtr<WfMemberExpression>();
+						refInput->parent = refThis;
+						refInput->name.value = L"stateMachineInput";
+
+						auto compareInput = MakePtr<WfBinaryExpression>();
+						compareInput->op = WfBinaryOperator::EQ;
+						compareInput->first = refInput;
+						compareInput->second = GenerateStateMachineInvalidId();
+
+						auto ifStat = MakePtr<WfIfStatement>();
+						block->statements.Add(ifStat);
+						ifStat->expression = compareInput;
+
+						auto trueBlock = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = trueBlock;
+
+						trueBlock->statements.Add(MakePtr<WfCoPauseStatement>());
+					}
 
 					auto switchStat = MakePtr<WfSwitchStatement>();
 					{
@@ -674,17 +700,10 @@ ExpandStateMachine
 									auto refState = MakePtr<WfReferenceExpression>();
 									refState->name.value = L"<state>state";
 
-									auto refOne = MakePtr<WfIntegerExpression>();
-									refOne->value.value = L"1";
-
-									auto refInvalid = MakePtr<WfUnaryExpression>();
-									refInvalid->op = WfUnaryOperator::Negative;
-									refInvalid->operand = refOne;
-
 									auto assignExpr = MakePtr<WfBinaryExpression>();
 									assignExpr->op = WfBinaryOperator::Assign;
 									assignExpr->first = refState;
-									assignExpr->second = refInvalid;
+									assignExpr->second = GenerateStateMachineInvalidId();
 
 									auto exprStat = MakePtr<WfExpressionStatement>();
 									exprStat->expression = assignExpr;
