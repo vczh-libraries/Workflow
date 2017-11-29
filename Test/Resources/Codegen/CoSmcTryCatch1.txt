@@ -1,0 +1,74 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+class SM : StateMachine
+{	
+	$state_machine
+	{
+		$state_input A();
+		$state_input B();
+
+		$state ProcessA()
+		{
+			$switch (raise)
+			{
+			case A():
+				{
+					s = $"$(s)[A]";
+				}
+			}
+			s = $"$(s).A";
+		}
+
+		$state ProcessB()
+		{
+			$switch (raise)
+			{
+			case B():
+				{
+					s = $"$(s)[B]";
+				}
+			}
+			s = $"$(s).B";
+		}
+		
+		$state default()
+		{
+			try
+			{
+				$goto_state ProcessA();
+			}
+			catch (ex)
+			{
+				s = $"$(s)!A";
+			}
+			try
+			{
+				$goto_state ProcessB();
+			}
+			catch (ex)
+			{
+				s = $"$(s)!B";
+			}
+			s = $"$(s).";
+		}
+	}
+}
+
+func main():string
+{
+	var sm = new SM^();
+	try
+	{
+		sm.A();
+		sm.B();
+	}
+	catch (ex)
+	{
+		s = $"$(s)!";
+	}
+	return s;
+}
