@@ -201,7 +201,7 @@ ExpandStateMachineStatementVisitor
 					case WfStateSwitchType::PassAndReturn:
 						{
 							auto gotoStat = MakePtr<WfGotoStatement>();
-							gotoStat->label.value = L"<state-label>OUT_OF_CURRENT_STATE";
+							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
 							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
@@ -215,7 +215,7 @@ ExpandStateMachineStatementVisitor
 							defaultBlock->statements.Add(GenerateIngoreInputStatement());
 
 							auto gotoStat = MakePtr<WfGotoStatement>();
-							gotoStat->label.value = L"<state-label>OUT_OF_CURRENT_STATE";
+							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
 							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
