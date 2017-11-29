@@ -1625,30 +1625,82 @@ ExpandNewCoroutineExpression
 										if (!catchNode) continue;
 
 										Ptr<WfExpression> condition;
-										FOREACH(FlowChartNode*, flowChartNode, group.value)
 										{
-											auto refState = MakePtr<WfReferenceExpression>();
-											refState->name.value = L"<co-state-before-pause>";
-
-											auto intState = MakePtr<WfIntegerExpression>();
-											intState->value.value = itow(nodeOrders.IndexOf(flowChartNode));
-
-											auto compExpr = MakePtr<WfBinaryExpression>();
-											compExpr->op = WfBinaryOperator::EQ;
-											compExpr->first = refState;
-											compExpr->second = intState;
-
-											if (condition)
+											List<Tuple<vint, vint>> conditionRanges;
+											FOREACH(FlowChartNode*, flowChartNode, group.value)
 											{
-												auto orExpr = MakePtr<WfBinaryExpression>();
-												orExpr->op = WfBinaryOperator::Or;
-												orExpr->first = condition;
-												orExpr->second = compExpr;
-												condition = orExpr;
+												vint state = nodeOrders.IndexOf(flowChartNode);
+												if (conditionRanges.Count() == 0)
+												{
+													conditionRanges.Add({ state,state });
+												}
+												else if (conditionRanges[conditionRanges.Count() - 1].f1 == state - 1)
+												{
+													conditionRanges[conditionRanges.Count() - 1].f1 = state;
+												}
+												else
+												{
+													conditionRanges.Add({ state,state });
+												}
 											}
-											else
+
+											for (vint i = 0; i < conditionRanges.Count(); i++)
 											{
-												condition = compExpr;
+												auto range = conditionRanges[i];
+
+												Ptr<WfExpression> singleCondition;
+												if (range.f0 == range.f1)
+												{
+													auto refState = MakePtr<WfReferenceExpression>();
+													refState->name.value = L"<co-state-before-pause>";
+
+													auto intState = MakePtr<WfIntegerExpression>();
+													intState->value.value = itow(range.f0);
+
+													auto compExpr = MakePtr<WfBinaryExpression>();
+													compExpr->op = WfBinaryOperator::EQ;
+													compExpr->first = refState;
+													compExpr->second = intState;
+
+													singleCondition = compExpr;
+												}
+												else
+												{
+													auto refState = MakePtr<WfReferenceExpression>();
+													refState->name.value = L"<co-state-before-pause>";
+
+													auto intState1 = MakePtr<WfIntegerExpression>();
+													intState1->value.value = itow(range.f0);
+
+													auto intState2 = MakePtr<WfIntegerExpression>();
+													intState2->value.value = itow(range.f1);
+
+													auto rangeExpr = MakePtr<WfRangeExpression>();
+													rangeExpr->begin = intState1;
+													rangeExpr->beginBoundary = WfRangeBoundary::Inclusive;
+													rangeExpr->end = intState2;
+													rangeExpr->endBoundary = WfRangeBoundary::Inclusive;
+
+													auto compExpr = MakePtr<WfSetTestingExpression>();
+													compExpr->test = WfSetTesting::In;
+													compExpr->element = refState;
+													compExpr->collection = rangeExpr;
+
+													singleCondition = compExpr;
+												}
+
+												if (condition)
+												{
+													auto orExpr = MakePtr<WfBinaryExpression>();
+													orExpr->op = WfBinaryOperator::Or;
+													orExpr->first = condition;
+													orExpr->second = singleCondition;
+													condition = orExpr;
+												}
+												else
+												{
+													condition = singleCondition;
+												}
 											}
 										}
 
