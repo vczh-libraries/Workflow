@@ -422,6 +422,7 @@ ExpandStateMachine
 
 					// func INPUT(ARGUMENTS ...): void
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = methodInfo->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
 					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
@@ -563,6 +564,7 @@ ExpandStateMachine
 				{
 					// func <state>CreateCoroutine(<state>startState: int): void
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = smInfo->createCoroutineMethod->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					{

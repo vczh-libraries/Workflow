@@ -1466,6 +1466,7 @@ ExpandNewCoroutineExpression
 						funcDecl->classMember = member;
 					}
 
+					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = L"Resume";
 					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					{
