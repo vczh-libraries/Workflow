@@ -179,6 +179,11 @@ Copy(Type|Expression|Statement|Declaration)
 				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(declaration);
 			}
 
+			Ptr<WfModule> CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(module);
+			}
+
 /***********************************************************************
 observing expressions:
 	WfObserveExpression

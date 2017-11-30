@@ -13326,11 +13326,20 @@ WfLexicalScopeManager
 
 				nodeScopes.Clear();
 				expressionResolvings.Clear();
+				coNewCoroutineResolvings.Clear();
+				coOperatorResolvings.Clear();
+				coProviderResolvings.Clear();
+				coCastResultResolvings.Clear();
 				lambdaCaptures.Clear();
 				interfaceMethodImpls.Clear();
+				declaractionScopeSources.Clear();
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();
 				baseConstructorCallResolvings.Clear();
+				stateInputMethods.Clear();
+				stateInputArguments.Clear();
+				stateDeclArguments.Clear();
+				stateMachineInfos.Clear();
 			}
 
 #define CALLBACK(EXPR) if (callback) callback->EXPR
@@ -17512,6 +17521,11 @@ Copy(Type|Expression|Statement|Declaration)
 				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(declaration);
 			}
 
+			Ptr<WfModule> CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(module);
+			}
+
 /***********************************************************************
 observing expressions:
 	WfObserveExpression
@@ -20346,6 +20360,7 @@ ExpandNewCoroutineExpression
 						funcDecl->classMember = member;
 					}
 
+					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = L"Resume";
 					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					{
@@ -21217,6 +21232,7 @@ ExpandStateMachine
 
 					// func INPUT(ARGUMENTS ...): void
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = methodInfo->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
 					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
@@ -21358,6 +21374,7 @@ ExpandStateMachine
 				{
 					// func <state>CreateCoroutine(<state>startState: int): void
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = smInfo->createCoroutineMethod->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					{
