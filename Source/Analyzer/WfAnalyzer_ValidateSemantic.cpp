@@ -164,9 +164,14 @@ Helper Functions
 						ITypeInfo* argumentType = genericType->GetGenericArgument(i + 1);
 						if (resolvables[i])
 						{
-							auto resolvingResult = manager->expressionResolvings.Get(arguments[i].Obj());
-							resolvingResult.expectedType = CopyTypeInfo(argumentType);
-							manager->expressionResolvings.Set(arguments[i].Obj(), resolvingResult);
+							vint index = manager->expressionResolvings.Keys().IndexOf(arguments[i].Obj());
+							if (index != -1)
+							{
+								auto resolvingResult = manager->expressionResolvings.Values()[index];
+								CHECK_ERROR(resolvingResult.expectedType == nullptr, L"GetExpressionType should not set expectedType if it is null");
+								resolvingResult.expectedType = CopyTypeInfo(argumentType);
+								manager->expressionResolvings.Set(arguments[i].Obj(), resolvingResult);
+							}
 						}
 						else
 						{
