@@ -116,5 +116,26 @@ var s = "";
 
 func main():string
 {
+	var c = new Calculator^();
+	s=$"[$(c.Value)]";
+	attach(c.ValueChanged, func():void
+	{
+		s=$"$(s)[$(c.Value)]";
+	});
+
+	c.Digit(1);
+	c.Dot();
+	c.Digit(5);
+	c.Add();
+	c.Digit(2);
+	c.Digit(1);
+	c.Dot();
+	c.Digit(2);
+	c.Digit(5);
+	c.Mul();
+	c.Digit(2);
+	c.Equal();
+	c.Clear();
+
 	return s;
 }
