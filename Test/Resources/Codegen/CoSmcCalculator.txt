@@ -118,7 +118,7 @@ func main():string
 {
 	var c = new SMCalculator^();
 	s=$"[$(c.Value)]";
-	attach(c.ValueChanged, func():void
+	var handler = attach(c.ValueChanged, func():void
 	{
 		s=$"$(s)[$(c.Value)]";
 	});
@@ -137,5 +137,6 @@ func main():string
 	c.Equal();
 	c.Clear();
 
+	detach(c.ValueChanged, handler);
 	return s;
 }

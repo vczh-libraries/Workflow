@@ -55,7 +55,7 @@ Global Functions
 	{
 		auto c = ::vl::Ptr<::SMCalculator>(new ::SMCalculator());
 		(GLOBAL_NAME s = ((::vl::WString(L"[", false) + ::vl::__vwsn::This(c.Obj())->GetValue()) + ::vl::WString(L"]", false)));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(c.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_CoSmcCalculator_main_(c)));
+		auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(c.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_CoSmcCalculator_main_(c)));
 		::vl::__vwsn::This(c.Obj())->Digit(static_cast<::vl::vint>(1));
 		::vl::__vwsn::This(c.Obj())->Dot();
 		::vl::__vwsn::This(c.Obj())->Digit(static_cast<::vl::vint>(5));
@@ -69,6 +69,7 @@ Global Functions
 		::vl::__vwsn::This(c.Obj())->Digit(static_cast<::vl::vint>(2));
 		::vl::__vwsn::This(c.Obj())->Equal();
 		::vl::__vwsn::This(c.Obj())->Clear();
+		::vl::__vwsn::EventDetach(::vl::__vwsn::This(c.Obj())->ValueChanged, handler);
 		return GLOBAL_NAME s;
 	}
 
