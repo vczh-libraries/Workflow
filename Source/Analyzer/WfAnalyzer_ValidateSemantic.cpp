@@ -72,7 +72,7 @@ Helper Functions
 					else
 					{
 						resolvables.Add(true);
-						types.Add(GetExpressionType(manager, argument, 0));
+						types.Add(GetExpressionType(manager, argument, nullptr));
 					}
 				}
 
@@ -161,9 +161,15 @@ Helper Functions
 					ITypeInfo* genericType = GetFunctionType(functions[selectedFunctionIndex])->GetElementType();
 					for (vint i = 0; i < types.Count(); i++)
 					{
-						if (!resolvables[i])
+						ITypeInfo* argumentType = genericType->GetGenericArgument(i + 1);
+						if (resolvables[i])
 						{
-							ITypeInfo* argumentType = genericType->GetGenericArgument(i + 1);
+							auto resolvingResult = manager->expressionResolvings.Get(arguments[i].Obj());
+							resolvingResult.expectedType = CopyTypeInfo(argumentType);
+							manager->expressionResolvings.Set(arguments[i].Obj(), resolvingResult);
+						}
+						else
+						{
 							if (arguments[i])
 							{
 								GetExpressionType(manager, arguments[i], CopyTypeInfo(argumentType));

@@ -913,6 +913,13 @@ GenerateInstructions(Expression)
 
 				void Visit(WfCallExpression* node)override
 				{
+					if (auto ref = node->function.Cast<WfReferenceExpression>())
+					{
+						if (ref->name.value == L"Update")
+						{
+							int a = 0;
+						}
+					}
 					FOREACH(Ptr<WfExpression>, argument, node->arguments)
 					{
 						GenerateExpressionInstructions(context, argument);
