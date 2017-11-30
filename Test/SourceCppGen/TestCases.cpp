@@ -904,7 +904,7 @@ TEST_CASE(CoSmcTryCatch2)
 
 TEST_CASE(CoSmcCalculator)
 {
-	WString expected = L"[0][0.][0.5][1][1.][1.2][1.25][1.75][3.0625]";
+	WString expected = L"[0][1][1.][1.5][2][21][21.][21.2][21.25][22.75][2][45.5][0]";
 	WString actual = ::vl_workflow_global::CoSmcCalculator::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);

@@ -619,7 +619,6 @@ StateMachine
 						else
 						{
 							// enter a state machine
-							break;
 						}
 					}
 				}
