@@ -630,6 +630,94 @@ AsyncCoroutine
 			}
 
 /***********************************************************************
+StateMachine
+***********************************************************************/
+
+			void StateMachine::ResumeStateMachine()
+			{
+				Ptr<CoroutineResult> previousResult;
+				while (true)
+				{
+					if (stateMachineCoroutine == nullptr)
+					{
+						if (!stateMachineInitialized)
+						{
+							throw Exception(L"The state machine has not been initialized.");
+						}
+						if (stateMachineStopped)
+						{
+							throw Exception(L"The state machine has been stopped.");
+						}
+						stateMachineStopped = true;
+
+						if (previousResult)
+						{
+							if (auto failure = previousResult->GetFailure())
+							{
+								throw Exception(failure->GetMessage());
+							}
+						}
+						break;
+					}
+					else if (stateMachineCoroutine->GetStatus() != CoroutineStatus::Stopped)
+					{
+						auto currentCoroutine = stateMachineCoroutine;
+						currentCoroutine->Resume(false, previousResult);
+						if (stateMachineCoroutine == currentCoroutine)
+						{
+							// wait for input
+							break;
+						}
+						else if (currentCoroutine->GetStatus() == CoroutineStatus::Stopped)
+						{
+							// leave a state machine
+							previousResult = MakePtr<CoroutineResult>();
+							if (auto failure = currentCoroutine->GetFailure())
+							{
+								previousResult->SetFailure(failure);
+							}
+						}
+						else
+						{
+							// enter a state machine
+						}
+					}
+				}
+			}
+
+			StateMachine::StateMachine()
+			{
+			}
+
+			StateMachine::~StateMachine()
+			{
+				FinalizeAggregation();
+			}
+
+			CoroutineStatus StateMachine::GetStateMachineStatus()
+			{
+				if (stateMachineStopped)
+				{
+					return CoroutineStatus::Stopped;
+				}
+				else if (stateMachineCoroutine)
+				{
+					if (stateMachineCoroutine->GetStatus() == CoroutineStatus::Waiting)
+					{
+						return CoroutineStatus::Waiting;
+					}
+					else
+					{
+						return CoroutineStatus::Executing;
+					}
+				}
+				else
+				{
+					return CoroutineStatus::Waiting;
+				}
+			}
+
+/***********************************************************************
 Libraries
 ***********************************************************************/
 
@@ -766,6 +854,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IAsyncScheduler, system::AsyncScheduler)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine::IImpl, system::AsyncCoroutine::IImpl)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine, system::AsyncCoroutine)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 
 #endif
 
@@ -931,6 +1020,18 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_METHOD(Create, { L"creator" })
 				CLASS_MEMBER_STATIC_METHOD(CreateAndRun, { L"creator" })
 			END_CLASS_MEMBER(AsyncCoroutine)
+
+			BEGIN_CLASS_MEMBER(StateMachine)
+				CLASS_MEMBER_FIELD(stateMachineInitialized)
+				CLASS_MEMBER_FIELD(stateMachineStopped)
+				CLASS_MEMBER_FIELD(stateMachineInput)
+				CLASS_MEMBER_FIELD(stateMachineCoroutine)
+
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<StateMachine>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ResumeStateMachine, NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(StateMachineStatus)
+			END_CLASS_MEMBER(StateMachine)
 #undef _
 
 			class WfLibraryTypeLoader : public Object, public ITypeLoader

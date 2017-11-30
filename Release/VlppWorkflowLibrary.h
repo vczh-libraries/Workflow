@@ -526,6 +526,27 @@ Coroutine (Async)
 			};
 
 /***********************************************************************
+Coroutine (State Machine)
+***********************************************************************/
+
+			class StateMachine : public Object, public AggregatableDescription<StateMachine>
+			{
+				friend struct CustomTypeDescriptorSelector<StateMachine>;
+			protected:
+				bool									stateMachineInitialized = false;
+				bool									stateMachineStopped = false;
+				vint									stateMachineInput = -1;
+				Ptr<ICoroutine>							stateMachineCoroutine;
+
+				void									ResumeStateMachine();
+			public:
+				StateMachine();
+				~StateMachine();
+
+				CoroutineStatus							GetStateMachineStatus();
+			};
+
+/***********************************************************************
 Libraries
 ***********************************************************************/
 
@@ -633,6 +654,7 @@ Predefined Types
 			F(IAsyncScheduler)				\
 			F(AsyncCoroutine::IImpl)		\
 			F(AsyncCoroutine)				\
+			F(StateMachine)					\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)
 

@@ -13930,26 +13930,14 @@ BuildGlobalNameFromModules
 						{
 							auto info = MakePtr<WfField>(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value);
 							td->AddMember(info);
-							manager->stateInputArguments.Add(argument.Obj(), info);
+							manager->stateDeclArguments.Add(argument.Obj(), info);
 						}
 					}
 
-					WfStateMachineInfo smInfo;
+					auto smInfo = MakePtr<WfStateMachineInfo>();
 					{
-						smInfo.inputField = MakePtr<WfField>(td.Obj(), L"<state>input");
-						td->AddMember(smInfo.inputField);
-					}
-					{
-						smInfo.coroutineField = MakePtr<WfField>(td.Obj(), L"<state>coroutine");
-						td->AddMember(smInfo.coroutineField);
-					}
-					{
-						smInfo.resumeMethod = MakePtr<WfClassMethod>();
-						td->AddMember(L"<state>Resume", smInfo.resumeMethod);
-					}
-					{
-						smInfo.createCoroutineMethod = MakePtr<WfClassMethod>();
-						td->AddMember(L"<state>CreateCoroutine", smInfo.createCoroutineMethod);
+						smInfo->createCoroutineMethod = MakePtr<WfClassMethod>();
+						td->AddMember(L"<state>CreateCoroutine", smInfo->createCoroutineMethod);
 					}
 					manager->stateMachineInfos.Add(node, smInfo);
 				}
@@ -14491,6 +14479,17 @@ BuildScopeForDeclaration
 						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
 
 						auto stateScope = MakePtr<WfLexicalScope>(parentScope);
+						{
+							auto config = MakePtr<WfLexicalFunctionConfig>();
+							stateScope->functionConfig = config;
+
+							config->lambda = false;
+							config->thisAccessable = true;
+							config->parentThisAccessable = true;
+						}
+						stateScope->ownerNode = state;
+						manager->nodeScopes.Add(state.Obj(), stateScope);
+
 						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
 						{
 							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(stateScope.Obj());
@@ -14500,16 +14499,7 @@ BuildScopeForDeclaration
 							stateScope->symbols.Add(argumentSymbol->name, argumentSymbol);
 						}
 
-						auto bodyScope = MakePtr<WfLexicalScope>(stateScope);
-						{
-							auto config = MakePtr<WfLexicalFunctionConfig>();
-							bodyScope->functionConfig = config;
-
-							config->lambda = false;
-							config->thisAccessable = true;
-							config->parentThisAccessable = true;
-						}
-						BuildScopeForStatement(manager, bodyScope, state->statement);
+						BuildScopeForStatement(manager, stateScope, state->statement);
 					}
 				}
 
@@ -14753,11 +14743,32 @@ BuildScopeForStatement
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					throw 0;
+					resultScope = new WfLexicalScope(parentScope);
+
+					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					{
+						auto caseScope = MakePtr<WfLexicalScope>(resultScope);
+						caseScope->ownerNode = switchCase;
+						manager->nodeScopes.Add(switchCase.Obj(), caseScope);
+
+						FOREACH(Ptr<WfStateSwitchArgument>, argument, switchCase->arguments)
+						{
+							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(caseScope.Obj());
+							symbol->name = argument->name.value;
+							symbol->creatorNode = argument;
+							caseScope->symbols.Add(symbol->name, symbol);
+						}
+
+						BuildScopeForStatement(manager, caseScope, switchCase->statement);
+					}
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						BuildScopeForExpression(manager, parentScope, argument);
+					}
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
@@ -15206,11 +15217,31 @@ CheckScopes_DuplicatedSymbol
 											}
 											else if (auto input = symbol->creatorNode.Cast<WfStateInput>())
 											{
+												if (symbols.Count() == 2)
+												{
+													// Ignore the generated function from the state input
+													auto methodSymbol = symbols[1 - symbols.IndexOf(symbol.Obj())];
+													auto funcDecl = methodSymbol->creatorNode.Cast<WfFunctionDeclaration>();
+													vint index = manager->declarationMemberInfos.Keys().IndexOf(funcDecl.Obj());
+													if (index != -1)
+													{
+														auto methodInfo = manager->declarationMemberInfos.Values()[index];
+														if (manager->stateInputMethods[input.Obj()].Obj() == methodInfo.Obj())
+														{
+															goto NO_ERROR;
+														}
+													}
+												}
 												manager->errors.Add(WfErrors::DuplicatedSymbol(input.Obj(), symbol));
+											NO_ERROR:;
 											}
 											else if (auto state = symbol->creatorNode.Cast<WfStateDeclaration>())
 											{
 												manager->errors.Add(WfErrors::DuplicatedSymbol(state.Obj(), symbol));
+											}
+											else if (auto sarg = symbol->creatorNode.Cast<WfStateSwitchArgument>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(sarg.Obj(), symbol));
 											}
 										}
 									}
@@ -15418,11 +15449,8 @@ CompleteScopeForClassMember
 					}
 
 					auto& smInfo = manager->stateMachineInfos[node];
-					smInfo.inputField->SetReturn(TypeInfoRetriver<vint>::CreateTypeInfo());
-					smInfo.coroutineField->SetReturn(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo());
-					smInfo.resumeMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
-					smInfo.createCoroutineMethod->AddParameter(MakePtr<ParameterInfoImpl>(smInfo.createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo()));
-					smInfo.createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
+					smInfo->createCoroutineMethod->AddParameter(MakePtr<ParameterInfoImpl>(smInfo->createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo()));
+					smInfo->createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
@@ -16919,6 +16947,26 @@ WfErrors
 				return new ParsingError(node, L"C16: $goto_state or $push_state statement should appear inside a $state declaration.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::StateInputNotExists(WfStateSwitchCase* node)
+			{
+				return new ParsingError(node, L"C17: State input \"" + node->name.value + L"\" does not exist.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node)
+			{
+				return new ParsingError(node, L"C18: The number of arguments doesn not match the declaration of state input \"" + node->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateNotExists(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C19: State \"" + node->name.value + L"\" does not exist.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateArgumentCountNotMatch(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C20: The number of arguments doesn not match the declaration of state \"" + node->name.value + L"\".");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
@@ -16970,6 +17018,11 @@ WfErrors
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol)
+			{
+				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol)
 			{
 				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
 			}
@@ -17079,6 +17132,16 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::AttributeMissValue(WfAttribute* node)
 			{
 				return new ParsingError(node, L"D15: Value of attribute \"" + node->category.value + L":" + node->name.value + L"\" is missing.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node)
+			{
+				return new ParsingError(node, L"D16: State machine class \"" + node->name.value + L"\" should inherit from \"system::StateMachine\" directly.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::MissingDefaultState(WfStateMachineDeclaration* node)
+			{
+				return new ParsingError(node, L"D17: Missing default state.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)
@@ -18827,6 +18890,18 @@ namespace vl
 			using namespace reflection;
 			using namespace reflection::description;
 
+			Ptr<WfExpression> GenerateCoroutineInvalidId()
+			{
+				auto refOne = MakePtr<WfIntegerExpression>();
+				refOne->value.value = L"1";
+
+				auto refInvalid = MakePtr<WfUnaryExpression>();
+				refInvalid->op = WfUnaryOperator::Negative;
+				refInvalid->operand = refOne;
+
+				return refInvalid;
+			}
+
 /***********************************************************************
 FindCoroutineAwaredStatements
 ***********************************************************************/
@@ -19894,6 +19969,41 @@ GenerateSetStatus
 GenerateSetCoState
 ***********************************************************************/
 
+			Ptr<WfStatement> GenerateSetCoStateBeforePause()
+			{
+				auto refBefore = MakePtr<WfReferenceExpression>();
+				refBefore->name.value = L"<co-state-before-pause>";
+
+				auto refState = MakePtr<WfReferenceExpression>();
+				refState->name.value = L"<co-state>";
+
+				auto assignExpr = MakePtr<WfBinaryExpression>();
+				assignExpr->op = WfBinaryOperator::Assign;
+				assignExpr->first = refBefore;
+				assignExpr->second = refState;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = assignExpr;
+
+				return stat;
+			}
+
+			Ptr<WfStatement> GenerateSetCoStateBeforePauseToInvalid()
+			{
+				auto refBefore = MakePtr<WfReferenceExpression>();
+				refBefore->name.value = L"<co-state-before-pause>";
+
+				auto assignExpr = MakePtr<WfBinaryExpression>();
+				assignExpr->op = WfBinaryOperator::Assign;
+				assignExpr->first = refBefore;
+				assignExpr->second = GenerateCoroutineInvalidId();
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = assignExpr;
+
+				return stat;
+			}
+
 			Ptr<WfStatement> GenerateSetCoState(List<FlowChartNode*>& nodeOrders, FlowChartNode* node)
 			{
 				auto refState = MakePtr<WfReferenceExpression>();
@@ -19975,6 +20085,7 @@ ExpandFlowChartNode
 					// SetStatus(Waiting);
 					/////////////////////////////////////////////////////////////////////////////
 					stateBlock->statements.Add(GenerateSetStatus(L"Waiting"));
+					stateBlock->statements.Add(GenerateSetCoStateBeforePause());
 					stateBlock->statements.Add(GenerateSetCoState(nodeOrders, flowChartNode->pauseDestination));
 				}
 
@@ -20157,6 +20268,24 @@ ExpandNewCoroutineExpression
 				}
 
 				/////////////////////////////////////////////////////////////////////////////
+				// <co-state-before-pause>
+				/////////////////////////////////////////////////////////////////////////////
+
+				{
+					auto varDecl = MakePtr<WfVariableDeclaration>();
+					newExpr->declarations.Add(varDecl);
+					{
+						auto member = MakePtr<WfClassMember>();
+						member->kind = WfClassMemberKind::Normal;
+						varDecl->classMember = member;
+					}
+
+					varDecl->name.value = L"<co-state-before-pause>";
+					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+					varDecl->expression = GenerateCoroutineInvalidId();
+				}
+
+				/////////////////////////////////////////////////////////////////////////////
 				// prop Failure : Exception^ {const, not observe}
 				/////////////////////////////////////////////////////////////////////////////
 
@@ -20207,6 +20336,7 @@ ExpandNewCoroutineExpression
 				// func Resume(<raise-exception> : bool, <coroutine-output> : CoroutineResult^) : void
 				/////////////////////////////////////////////////////////////////////////////
 
+				WString coResultName = node->name.value == L"" ? L"<coroutine-output>" : node->name.value;
 				{
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
 					newExpr->declarations.Add(funcDecl);
@@ -20227,14 +20357,7 @@ ExpandNewCoroutineExpression
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
 						funcDecl->arguments.Add(argument);
-						if (node->name.value == L"")
-						{
-							argument->name.value = L"<coroutine-output>";
-						}
-						else
-						{
-							argument->name.value = node->name.value;
-						}
+						argument->name.value = coResultName;
 						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<CoroutineResult>>::CreateTypeInfo().Obj());
 					}
 
@@ -20289,6 +20412,234 @@ ExpandNewCoroutineExpression
 						auto tryStat = MakePtr<WfTryStatement>();
 						auto tryBlock = MakePtr<WfBlockStatement>();
 						tryStat->protectedStatement = tryBlock;
+						{
+							/////////////////////////////////////////////////////////////////////////////
+							// if (<co-state-before-pause != -1) { ... }
+							/////////////////////////////////////////////////////////////////////////////
+
+							auto trueBlock = MakePtr<WfBlockStatement>();
+							{
+								auto refBefore = MakePtr<WfReferenceExpression>();
+								refBefore->name.value = L"<co-state-before-pause>";
+
+								auto compareInput = MakePtr<WfBinaryExpression>();
+								compareInput->op = WfBinaryOperator::NE;
+								compareInput->first = refBefore;
+								compareInput->second = GenerateCoroutineInvalidId();
+
+								auto ifStat = MakePtr<WfIfStatement>();
+								tryBlock->statements.Add(ifStat);
+								ifStat->expression = compareInput;
+								ifStat->trueBranch = trueBlock;
+							}
+
+							/////////////////////////////////////////////////////////////////////////////
+							// if (<coroutine-output> is null) { <co-state-before-pause> = -1; }
+							// else if (<coroutine-output>.Failure is null) { <co-state-before-pause> = -1; }
+							// else { ... }
+							/////////////////////////////////////////////////////////////////////////////
+							{
+								auto nullTrueBlock = MakePtr<WfBlockStatement>();
+								Ptr<WfStatement>* nullFalseBlock = nullptr;
+								auto exTrueBlock = MakePtr<WfBlockStatement>();
+								auto exFalseBlock = MakePtr<WfBlockStatement>();
+
+								{
+									auto refOutput = MakePtr<WfReferenceExpression>();
+									refOutput->name.value = coResultName;
+
+									auto testNullExpr = MakePtr<WfTypeTestingExpression>();
+									testNullExpr->test = WfTypeTesting::IsNull;
+									testNullExpr->expression = refOutput;
+
+									auto ifStat = MakePtr<WfIfStatement>();
+									trueBlock->statements.Add(ifStat);
+									ifStat->expression = testNullExpr;
+
+									ifStat->trueBranch = nullTrueBlock;
+									nullTrueBlock->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
+									nullFalseBlock = &ifStat->falseBranch;
+								}
+								{
+									auto refOutput = MakePtr<WfReferenceExpression>();
+									refOutput->name.value = coResultName;
+
+									auto refFailure = MakePtr<WfMemberExpression>();
+									refFailure->parent = refOutput;
+									refFailure->name.value = L"Failure";
+
+									auto testNullExpr = MakePtr<WfTypeTestingExpression>();
+									testNullExpr->test = WfTypeTesting::IsNull;
+									testNullExpr->expression = refFailure;
+
+									auto ifStat = MakePtr<WfIfStatement>();
+									*nullFalseBlock = ifStat;
+									ifStat->expression = testNullExpr;
+
+									ifStat->trueBranch = exTrueBlock;
+									exTrueBlock->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
+									ifStat->falseBranch = exFalseBlock;
+								}
+								{
+									/////////////////////////////////////////////////////////////////////////////
+									// Handle exception from <coroutine-output>
+									/////////////////////////////////////////////////////////////////////////////
+
+									Ptr<WfStatement> firstIfStatement;
+									Ptr<WfStatement>* currentIfVar = &firstIfStatement;
+
+									using GroupPair = Pair<FlowChartNode*, LazyList<FlowChartNode*>>;
+									auto nodeByCatches = From(nodeOrders)
+										.GroupBy([](FlowChartNode* node)
+										{
+											return node->exceptionDestination;
+										})
+										.OrderBy([&](const GroupPair& p1, const GroupPair& p2)
+										{
+											return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
+										});
+
+									FOREACH(GroupPair, group, nodeByCatches)
+									{
+										auto catchNode = group.key;
+										if (!catchNode) continue;
+
+										Ptr<WfExpression> condition;
+										{
+											List<Tuple<vint, vint>> conditionRanges;
+											FOREACH(FlowChartNode*, flowChartNode, group.value)
+											{
+												vint state = nodeOrders.IndexOf(flowChartNode);
+												if (conditionRanges.Count() == 0)
+												{
+													conditionRanges.Add({ state,state });
+												}
+												else if (conditionRanges[conditionRanges.Count() - 1].f1 == state - 1)
+												{
+													conditionRanges[conditionRanges.Count() - 1].f1 = state;
+												}
+												else
+												{
+													conditionRanges.Add({ state,state });
+												}
+											}
+
+											for (vint i = 0; i < conditionRanges.Count(); i++)
+											{
+												auto range = conditionRanges[i];
+
+												Ptr<WfExpression> singleCondition;
+												if (range.f0 == range.f1)
+												{
+													auto refState = MakePtr<WfReferenceExpression>();
+													refState->name.value = L"<co-state-before-pause>";
+
+													auto intState = MakePtr<WfIntegerExpression>();
+													intState->value.value = itow(range.f0);
+
+													auto compExpr = MakePtr<WfBinaryExpression>();
+													compExpr->op = WfBinaryOperator::EQ;
+													compExpr->first = refState;
+													compExpr->second = intState;
+
+													singleCondition = compExpr;
+												}
+												else
+												{
+													auto refState = MakePtr<WfReferenceExpression>();
+													refState->name.value = L"<co-state-before-pause>";
+
+													auto intState1 = MakePtr<WfIntegerExpression>();
+													intState1->value.value = itow(range.f0);
+
+													auto intState2 = MakePtr<WfIntegerExpression>();
+													intState2->value.value = itow(range.f1);
+
+													auto rangeExpr = MakePtr<WfRangeExpression>();
+													rangeExpr->begin = intState1;
+													rangeExpr->beginBoundary = WfRangeBoundary::Inclusive;
+													rangeExpr->end = intState2;
+													rangeExpr->endBoundary = WfRangeBoundary::Inclusive;
+
+													auto compExpr = MakePtr<WfSetTestingExpression>();
+													compExpr->test = WfSetTesting::In;
+													compExpr->element = refState;
+													compExpr->collection = rangeExpr;
+
+													singleCondition = compExpr;
+												}
+
+												if (condition)
+												{
+													auto orExpr = MakePtr<WfBinaryExpression>();
+													orExpr->op = WfBinaryOperator::Or;
+													orExpr->first = condition;
+													orExpr->second = singleCondition;
+													condition = orExpr;
+												}
+												else
+												{
+													condition = singleCondition;
+												}
+											}
+										}
+
+										auto ifStat = MakePtr<WfIfStatement>();
+										*currentIfVar = ifStat;
+										currentIfVar = &ifStat->falseBranch;
+										ifStat->expression = condition;
+
+										auto catchBlock = MakePtr<WfBlockStatement>();
+										ifStat->trueBranch = catchBlock;
+
+										catchBlock->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
+										{
+											auto refTarget = MakePtr<WfReferenceExpression>();
+											refTarget->name.value = referenceRenaming[catchNode->exceptionVariable];
+
+											auto refOutput = MakePtr<WfReferenceExpression>();
+											refOutput->name.value = coResultName;
+
+											auto refFailure = MakePtr<WfMemberExpression>();
+											refFailure->parent = refOutput;
+											refFailure->name.value = L"Failure";
+
+											auto assignExpr = MakePtr<WfBinaryExpression>();
+											assignExpr->op = WfBinaryOperator::Assign;
+											assignExpr->first = refTarget;
+											assignExpr->second = refFailure;
+
+											auto stat = MakePtr<WfExpressionStatement>();
+											stat->expression = assignExpr;
+											catchBlock->statements.Add(stat);
+										}
+										catchBlock->statements.Add(GenerateSetCoState(nodeOrders, catchNode));
+									}
+
+									{
+										auto block = MakePtr<WfBlockStatement>();
+										*currentIfVar = block;
+
+										block->statements.Add(GenerateSetCoStateBeforePauseToInvalid());
+										{
+											auto refOutput = MakePtr<WfReferenceExpression>();
+											refOutput->name.value = coResultName;
+
+											auto refFailure = MakePtr<WfMemberExpression>();
+											refFailure->parent = refOutput;
+											refFailure->name.value = L"Failure";
+
+											auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+											raiseStat->expression = refFailure;
+
+											block->statements.Add(raiseStat);
+										}
+									}
+
+									exFalseBlock->statements.Add(firstIfStatement);
+								}
+							}
+						}
 						{
 							/////////////////////////////////////////////////////////////////////////////
 							// while (true) { ... }
@@ -20435,6 +20786,795 @@ ExpandNewCoroutineExpression
 				refOperator->name.value = node->name.value;
 
 				node->expandedExpression = refOperator;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\ANALYZER\WFANALYZER_EXPANDSTATEMACHINE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
+
+/***********************************************************************
+ExpandStateMachineStatementVisitor
+***********************************************************************/
+
+			Ptr<WfExpression> GenerateStateMachineInvalidId()
+			{
+				auto refOne = MakePtr<WfIntegerExpression>();
+				refOne->value.value = L"1";
+
+				auto refInvalid = MakePtr<WfUnaryExpression>();
+				refInvalid->op = WfUnaryOperator::Negative;
+				refInvalid->operand = refOne;
+
+				return refInvalid;
+			}
+
+			class ExpandStateMachineStatementVisitor
+				: public copy_visitor::StatementVisitor
+				, public copy_visitor::VirtualCseStatementVisitor
+				, public WfStateMachineStatement::IVisitor
+			{
+			protected:
+				WfLexicalScopeManager*							manager;
+				WfStateMachineInfo*								smInfo;
+
+			public:
+				ExpandStateMachineStatementVisitor(WfLexicalScopeManager* _manager, WfStateMachineInfo* _smInfo)
+					:manager(_manager)
+					, smInfo(_smInfo)
+				{
+				}
+
+				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				{
+					return CopyExpression(from, true);
+				}
+
+				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
+				{
+					return CopyType(from);
+				}
+
+				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
+				{
+					if (!from) return nullptr;
+					from->Accept(this);
+					return result.Cast<WfStatement>();
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseStatement* node)override
+				{
+					node->Accept((WfVirtualCseStatement::IVisitor*)this);
+					return result;
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node)override
+				{
+					CHECK_FAIL(L"ExpandStateMachineStatementVisitor::Dispatch(WfCoroutineStatement*)#ValidateStatementStructure should check coroutine statement's location.");
+				}
+
+				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfStateMachineStatement* node)override
+				{
+					node->Accept((WfStateMachineStatement::IVisitor*)this);
+					return result;
+				}
+
+				Ptr<WfStatement> GenerateIngoreInputStatement()
+				{
+					auto refThis = MakePtr<WfReferenceExpression>();
+					refThis->name.value = L"<state>stateMachineObject";
+
+					auto refInput = MakePtr<WfMemberExpression>();
+					refInput->parent = refThis;
+					refInput->name.value = L"stateMachineInput";
+
+					auto assignExpr = MakePtr<WfBinaryExpression>();
+					assignExpr->op = WfBinaryOperator::Assign;
+					assignExpr->first = refInput;
+					assignExpr->second = GenerateStateMachineInvalidId();
+
+					auto exprStat = MakePtr<WfExpressionStatement>();
+					exprStat->expression = assignExpr;
+
+					return exprStat;
+				}
+
+				void GenerateStateSwitchCase(const WString& inputName, WfLexicalScope* smcScope, Ptr<WfSwitchStatement> switchStat, Ptr<WfStateInput>& input, Ptr<WfBlockStatement>& caseBlock)
+				{
+					input = From(smcScope->symbols[inputName])
+						.Select([=](Ptr<WfLexicalSymbol> symbol)
+						{
+							return symbol->creatorNode.Cast<WfStateInput>();
+						})
+							.Where([=](Ptr<WfStateInput> decl)
+						{
+							return decl != nullptr;
+						})
+						.First();
+
+					auto switchCase = MakePtr<WfSwitchCase>();
+					switchStat->caseBranches.Add(switchCase);
+					{
+						auto refInputId = MakePtr<WfIntegerExpression>();
+						refInputId->value.value = itow(smInfo->inputIds[inputName]);
+						switchCase->expression = refInputId;
+					}
+
+					caseBlock = MakePtr<WfBlockStatement>();
+					switchCase->statement = caseBlock;
+					caseBlock->statements.Add(GenerateIngoreInputStatement());
+				}
+
+				void Visit(WfStateSwitchStatement* node)override
+				{
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
+
+					auto block = MakePtr<WfBlockStatement>();
+					{
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+
+						auto refInput = MakePtr<WfMemberExpression>();
+						refInput->parent = refThis;
+						refInput->name.value = L"stateMachineInput";
+
+						auto compareInput = MakePtr<WfBinaryExpression>();
+						compareInput->op = WfBinaryOperator::EQ;
+						compareInput->first = refInput;
+						compareInput->second = GenerateStateMachineInvalidId();
+
+						auto ifStat = MakePtr<WfIfStatement>();
+						block->statements.Add(ifStat);
+						ifStat->expression = compareInput;
+
+						auto trueBlock = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = trueBlock;
+
+						trueBlock->statements.Add(MakePtr<WfCoPauseStatement>());
+					}
+
+					auto switchStat = MakePtr<WfSwitchStatement>();
+					{
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+
+						auto refInput = MakePtr<WfMemberExpression>();
+						refInput->parent = refThis;
+						refInput->name.value = L"stateMachineInput";
+
+						switchStat->expression = refInput;
+					}
+					block->statements.Add(switchStat);
+
+					FOREACH(Ptr<WfStateSwitchCase>, stateSwitchCase, node->caseBranches)
+					{
+						Ptr<WfStateInput> input;
+						Ptr<WfBlockStatement> caseBlock;
+						GenerateStateSwitchCase(stateSwitchCase->name.value, smcScope, switchStat, input, caseBlock);
+
+						FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, stateSwitchCase->arguments)
+						{
+							auto refThis = MakePtr<WfReferenceExpression>();
+							refThis->name.value = L"<state>stateMachineObject";
+
+							auto refArgument = MakePtr<WfMemberExpression>();
+							refArgument->parent = refThis;
+							refArgument->name.value = manager->stateInputArguments[input->arguments[index].Obj()]->GetName();
+
+							auto varDecl = MakePtr<WfVariableDeclaration>();
+							varDecl->name.value = argument->name.value;
+							varDecl->expression = refArgument;
+
+							auto varStat = MakePtr<WfVariableStatement>();
+							varStat->variable = varDecl;
+							caseBlock->statements.Add(varStat);
+						}
+						caseBlock->statements.Add(CreateField(stateSwitchCase->statement));
+						SetCodeRange(Ptr<WfStatement>(caseBlock), stateSwitchCase->codeRange);
+					}
+
+					if (node->type == WfStateSwitchType::Default)
+					{
+						auto invalidInputs=
+							From(smInfo->inputIds.Keys())
+							.Except(
+								From(node->caseBranches)
+								.Select([](Ptr<WfStateSwitchCase> switchCase) {return switchCase->name.value; })
+								);
+						FOREACH(WString, inputName, invalidInputs)
+						{
+							Ptr<WfStateInput> input;
+							Ptr<WfBlockStatement> caseBlock;
+							GenerateStateSwitchCase(inputName, smcScope, switchStat, input, caseBlock);
+
+							{
+								auto refException = MakePtr<WfStringExpression>();
+								refException->value.value = L"Method \"" + inputName + L"\" of class \"" + manager->stateInputMethods[input.Obj()]->GetOwnerTypeDescriptor()->GetTypeName() + L"\" cannot be called at this moment.";
+
+								auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+								raiseStat->expression = refException;
+
+								caseBlock->statements.Add(raiseStat);
+							}
+						}
+					}
+
+					auto defaultBlock = MakePtr<WfBlockStatement>();
+
+					switch (node->type)
+					{
+					case WfStateSwitchType::Default:
+					case WfStateSwitchType::Pass:
+						break;
+					case WfStateSwitchType::PassAndReturn:
+						{
+							auto gotoStat = MakePtr<WfGotoStatement>();
+							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+							defaultBlock->statements.Add(gotoStat);
+						}
+						break;
+					case WfStateSwitchType::Ignore:
+						{
+							defaultBlock->statements.Add(GenerateIngoreInputStatement());
+						}
+						break;
+					case WfStateSwitchType::IgnoreAndReturn:
+						{
+							defaultBlock->statements.Add(GenerateIngoreInputStatement());
+
+							auto gotoStat = MakePtr<WfGotoStatement>();
+							gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+							defaultBlock->statements.Add(gotoStat);
+						}
+						break;
+					}
+
+					if (defaultBlock->statements.Count() > 0)
+					{
+						switchStat->defaultBranch = defaultBlock;
+					}
+					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
+					result = block;
+				}
+
+				void Visit(WfStateInvokeStatement* node)override
+				{
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
+					auto stateDecl = From(smcScope->symbols[node->name.value])
+						.Select([=](Ptr<WfLexicalSymbol> symbol)
+						{
+							return symbol->creatorNode.Cast<WfStateDeclaration>();
+						})
+						.Where([=](Ptr<WfStateDeclaration> decl)
+						{
+							return decl != nullptr;
+						})
+						.First();
+
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, stateDecl->arguments)
+					{
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+						
+						auto refArgument = MakePtr<WfMemberExpression>();
+						refArgument->parent = refThis;
+						refArgument->name.value = manager->stateDeclArguments[argument.Obj()]->GetName();
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refArgument;
+						assignExpr->second = CreateField(node->arguments[index]);
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = assignExpr;
+						block->statements.Add(exprStat);
+					}
+
+					switch (node->type)
+					{
+					case WfStateInvokeType::Goto:
+						{
+							{
+								auto refState = MakePtr<WfReferenceExpression>();
+								refState->name.value = L"<state>state";
+
+								auto refStateId = MakePtr<WfIntegerExpression>();
+								refStateId->value.value = itow(smInfo->stateIds[node->name.value]);
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->op = WfBinaryOperator::Assign;
+								assignExpr->first = refState;
+								assignExpr->second = refStateId;
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = assignExpr;
+								block->statements.Add(exprStat);
+							}
+							{
+								auto gotoStat = MakePtr<WfGotoStatement>();
+								gotoStat->label.value = L"<state-label>OUT_OF_CURRENT_STATE";
+								block->statements.Add(gotoStat);
+							}
+						}
+						break;
+					case WfStateInvokeType::Push:
+						{
+							{
+								auto refThis = MakePtr<WfReferenceExpression>();
+								refThis->name.value = L"<state>stateMachineObject";
+
+								auto refCoroutine = MakePtr<WfMemberExpression>();
+								refCoroutine->parent = refThis;
+								refCoroutine->name.value = L"<state>CreateCoroutine";
+
+								auto refStateId = MakePtr<WfIntegerExpression>();
+								refStateId->value.value = itow(smInfo->stateIds[node->name.value]);
+
+								auto callExpr = MakePtr<WfCallExpression>();
+								callExpr->function = refCoroutine;
+								callExpr->arguments.Add(refStateId);
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = callExpr;
+								block->statements.Add(exprStat);
+							}
+							{
+								block->statements.Add(MakePtr<WfCoPauseStatement>());
+							}
+						}
+						break;
+					}
+					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
+					result = block;
+				}
+			};
+
+/***********************************************************************
+ExpandStateMachine
+***********************************************************************/
+
+			void ExpandStateMachine(WfLexicalScopeManager* manager, WfStateMachineDeclaration* node)
+			{
+				auto& smInfo = manager->stateMachineInfos[node];
+
+				FOREACH(Ptr<WfStateInput>, input, node->inputs)
+				{
+					smInfo->inputIds.Add(input->name.value, smInfo->inputIds.Count());
+
+					FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+					{
+						// var <stateip-INPUT>NAME = <DEFAULT-VALUE>;
+						auto fieldInfo = manager->stateInputArguments[argument.Obj()];
+
+						auto varDecl = MakePtr<WfVariableDeclaration>();
+						varDecl->name.value = fieldInfo->GetName();
+						varDecl->type = GetTypeFromTypeInfo(fieldInfo->GetReturn());
+						varDecl->expression = CreateDefaultValue(fieldInfo->GetReturn());
+
+						auto classMember = MakePtr<WfClassMember>();
+						classMember->kind = WfClassMemberKind::Normal;
+						varDecl->classMember = classMember;
+
+						auto att = MakePtr<WfAttribute>();
+						att->category.value = L"cpp";
+						att->name.value = L"Private";
+						varDecl->attributes.Add(att);
+
+						node->expandedDeclarations.Add(varDecl);
+						manager->declarationMemberInfos.Add(varDecl, fieldInfo);
+					}
+				}
+
+				smInfo->stateIds.Add(L"", 0);
+				FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+				{
+					if (state->name.value != L"")
+					{
+						smInfo->stateIds.Add(state->name.value, smInfo->stateIds.Count());
+					}
+
+					FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+					{
+						// var <statesp-INPUT>NAME = <DEFAULT-VALUE>;
+						auto fieldInfo = manager->stateDeclArguments[argument.Obj()];
+
+						auto varDecl = MakePtr<WfVariableDeclaration>();
+						varDecl->name.value = fieldInfo->GetName();
+						varDecl->type = GetTypeFromTypeInfo(fieldInfo->GetReturn());
+						varDecl->expression = CreateDefaultValue(fieldInfo->GetReturn());
+
+						auto classMember = MakePtr<WfClassMember>();
+						classMember->kind = WfClassMemberKind::Normal;
+						varDecl->classMember = classMember;
+
+						auto att = MakePtr<WfAttribute>();
+						att->category.value = L"cpp";
+						att->name.value = L"Private";
+						varDecl->attributes.Add(att);
+
+						node->expandedDeclarations.Add(varDecl);
+						manager->declarationMemberInfos.Add(varDecl, fieldInfo);
+					}
+				}
+
+				FOREACH(Ptr<WfStateInput>, input, node->inputs)
+				{
+					auto methodInfo = manager->stateInputMethods[input.Obj()];
+
+					// func INPUT(ARGUMENTS ...): void
+					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->name.value = methodInfo->GetName();
+					funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
+					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					{
+						auto funcArgument = MakePtr<WfFunctionArgument>();
+						funcArgument->name.value = argument->name.value;
+						funcArgument->type = GetTypeFromTypeInfo(methodInfo->GetParameter(index)->GetType());
+						funcDecl->arguments.Add(funcArgument);
+					}
+
+					auto classMember = MakePtr<WfClassMember>();
+					classMember->kind = WfClassMemberKind::Normal;
+					funcDecl->classMember = classMember;
+
+					node->expandedDeclarations.Add(funcDecl);
+					manager->declarationMemberInfos.Add(funcDecl, methodInfo);
+
+					auto block = MakePtr<WfBlockStatement>();
+					funcDecl->statement = block;
+					{
+						// if (not this.stateMachineInitialized)
+						auto trueBlock = MakePtr<WfBlockStatement>();
+						{
+							auto refInit = MakePtr<WfMemberExpression>();
+							refInit->parent = MakePtr<WfThisExpression>();
+							refInit->name.value = L"stateMachineInitialized";
+
+							auto notExpr = MakePtr<WfUnaryExpression>();
+							notExpr->op = WfUnaryOperator::Not;
+							notExpr->operand = refInit;
+
+							auto ifStat = MakePtr<WfIfStatement>();
+							ifStat->expression = notExpr;
+							ifStat->trueBranch = trueBlock;
+
+							block->statements.Add(ifStat);
+						}
+						{
+							// this.stateMachineInitialized = true;
+							auto refInit = MakePtr<WfMemberExpression>();
+							refInit->parent = MakePtr<WfThisExpression>();
+							refInit->name.value = L"stateMachineInitialized";
+
+							auto refTrue = MakePtr<WfLiteralExpression>();
+							refTrue->value = WfLiteralValue::True;
+
+							auto assignExpr = MakePtr<WfBinaryExpression>();
+							assignExpr->op = WfBinaryOperator::Assign;
+							assignExpr->first = refInit;
+							assignExpr->second = refTrue;
+
+							auto exprStat = MakePtr<WfExpressionStatement>();
+							exprStat->expression = assignExpr;
+							trueBlock->statements.Add(exprStat);
+						}
+						{
+							// this.<state>CreateCoroutine(0);
+							auto refCC = MakePtr<WfMemberExpression>();
+							refCC->parent = MakePtr<WfThisExpression>();
+							refCC->name.value = smInfo->createCoroutineMethod->GetName();
+
+							auto refZero = MakePtr<WfIntegerExpression>();
+							refZero->value.value = L"0";
+
+							auto callExpr = MakePtr<WfCallExpression>();
+							callExpr->function = refCC;
+							callExpr->arguments.Add(refZero);
+
+							auto exprStat = MakePtr<WfExpressionStatement>();
+							exprStat->expression = callExpr;
+							trueBlock->statements.Add(exprStat);
+						}
+						{
+							// this.ResumeStateMachine();
+							auto refResume = MakePtr<WfMemberExpression>();
+							refResume->parent = MakePtr<WfThisExpression>();
+							refResume->name.value = L"ResumeStateMachine";
+
+							auto callExpr = MakePtr<WfCallExpression>();
+							callExpr->function = refResume;
+
+							auto exprStat = MakePtr<WfExpressionStatement>();
+							exprStat->expression = callExpr;
+							trueBlock->statements.Add(exprStat);
+						}
+					}
+					{
+						// this.stateMachineInput = <INPUT>
+						auto refInput = MakePtr<WfMemberExpression>();
+						refInput->parent = MakePtr<WfThisExpression>();
+						refInput->name.value = L"stateMachineInput";
+
+						auto refInputId = MakePtr<WfIntegerExpression>();
+						refInputId->value.value = itow(smInfo->inputIds[input->name.value]);
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refInput;
+						assignExpr->second = refInputId;
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = assignExpr;
+						block->statements.Add(exprStat);
+					}
+					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					{
+						// this.<stateip-INPUT>NAME = NAME;
+						auto refField = MakePtr<WfMemberExpression>();
+						refField->parent = MakePtr<WfThisExpression>();
+						refField->name.value = manager->stateInputArguments[argument.Obj()]->GetName();
+
+						auto refArgument = MakePtr<WfReferenceExpression>();
+						refArgument->name.value = methodInfo->GetParameter(index)->GetName();
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refField;
+						assignExpr->second = refArgument;
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = assignExpr;
+						block->statements.Add(exprStat);
+					}
+					{
+						// this.ResumeStateMachine();
+						auto refResume = MakePtr<WfMemberExpression>();
+						refResume->parent = MakePtr<WfThisExpression>();
+						refResume->name.value = L"ResumeStateMachine";
+
+						auto callExpr = MakePtr<WfCallExpression>();
+						callExpr->function = refResume;
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = callExpr;
+						block->statements.Add(exprStat);
+					}
+				}
+
+				{
+					// func <state>CreateCoroutine(<state>startState: int): void
+					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->name.value = smInfo->createCoroutineMethod->GetName();
+					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+					{
+						auto parameterInfo = smInfo->createCoroutineMethod->GetParameter(0);
+
+						auto funcArgument = MakePtr<WfFunctionArgument>();
+						funcArgument->name.value = parameterInfo->GetName();
+						funcArgument->type = GetTypeFromTypeInfo(parameterInfo->GetType());
+						funcDecl->arguments.Add(funcArgument);
+					}
+
+					auto classMember = MakePtr<WfClassMember>();
+					classMember->kind = WfClassMemberKind::Normal;
+					funcDecl->classMember = classMember;
+
+					auto att = MakePtr<WfAttribute>();
+					att->category.value = L"cpp";
+					att->name.value = L"Private";
+					funcDecl->attributes.Add(att);
+
+					node->expandedDeclarations.Add(funcDecl);
+					manager->declarationMemberInfos.Add(funcDecl, smInfo->createCoroutineMethod);
+
+					auto block = MakePtr<WfBlockStatement>();
+					funcDecl->statement = block;
+
+					{
+						// <state>stateMachineObject = this;
+						auto varDecl = MakePtr<WfVariableDeclaration>();
+						varDecl->name.value = L"<state>stateMachineObject";
+						varDecl->expression = MakePtr<WfThisExpression>();
+
+						auto stat = MakePtr<WfVariableStatement>();
+						stat->variable = varDecl;
+
+						block->statements.Add(stat);
+					}
+					{
+						// <state>previousCoroutine = stateMachineCoroutine;
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+
+						auto refCoroutine = MakePtr<WfMemberExpression>();
+						refCoroutine->parent = refThis;
+						refCoroutine->name.value = L"stateMachineCoroutine";
+
+						auto varDecl = MakePtr<WfVariableDeclaration>();
+						varDecl->name.value = L"<state>previousCoroutine";
+						varDecl->expression = refCoroutine;
+
+						auto stat = MakePtr<WfVariableStatement>();
+						stat->variable = varDecl;
+
+						block->statements.Add(stat);
+					}
+					{
+						// stateMachineCoroutine = $coroutine{ ... }
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<state>stateMachineObject";
+
+						auto refCoroutine = MakePtr<WfMemberExpression>();
+						refCoroutine->parent = refThis;
+						refCoroutine->name.value = L"stateMachineCoroutine";
+
+						auto coroutine = MakePtr<WfNewCoroutineExpression>();
+						auto coroutineBlock = MakePtr<WfBlockStatement>();
+						coroutine->statement = coroutineBlock;
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refCoroutine;
+						assignExpr->second = coroutine;
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = assignExpr;
+						block->statements.Add(exprStat);
+
+						{
+							auto tryStat = MakePtr<WfTryStatement>();
+							coroutineBlock->statements.Add(tryStat);
+
+							auto tryBlock = MakePtr<WfBlockStatement>();
+							tryBlock->endLabel.value = L"<state-label>OUT_OF_STATE_MACHINE";
+							tryStat->protectedStatement = tryBlock;
+
+							auto finallyBlock = MakePtr<WfBlockStatement>();
+							tryStat->finallyStatement = finallyBlock;
+
+							// try {... <state-label>OUT_OF_STATE_MACHINE:;}
+							{
+								// var <state>State = <state>startState;
+								auto refStartState = MakePtr<WfReferenceExpression>();
+								refStartState->name.value = L"<state>startState";
+
+								auto varDecl = MakePtr<WfVariableDeclaration>();
+								varDecl->name.value = L"<state>state";
+								varDecl->expression = refStartState;
+
+								auto stat = MakePtr<WfVariableStatement>();
+								stat->variable = varDecl;
+
+								tryBlock->statements.Add(stat);
+							}
+							{
+								// while(true){... <state-label>OUT_OF_CURRENT_STATE:;}
+								auto whileBlock = MakePtr<WfBlockStatement>();
+								whileBlock->endLabel.value = L"<state-label>OUT_OF_CURRENT_STATE";
+								{
+									auto refTrue = MakePtr<WfLiteralExpression>();
+									refTrue->value = WfLiteralValue::True;
+
+									auto whileStat = MakePtr<WfWhileStatement>();
+									whileStat->condition = refTrue;
+									whileStat->statement = whileBlock;
+
+									tryBlock->statements.Add(whileStat);
+								}
+								{
+									// var <state>currentState = <state>state;
+									auto refStartState = MakePtr<WfReferenceExpression>();
+									refStartState->name.value = L"<state>state";
+
+									auto varDecl = MakePtr<WfVariableDeclaration>();
+									varDecl->name.value = L"<state>currentState";
+									varDecl->expression = refStartState;
+
+									auto stat = MakePtr<WfVariableStatement>();
+									stat->variable = varDecl;
+
+									whileBlock->statements.Add(stat);
+								}
+								{
+									// <state>state = -1;
+									auto refState = MakePtr<WfReferenceExpression>();
+									refState->name.value = L"<state>state";
+
+									auto assignExpr = MakePtr<WfBinaryExpression>();
+									assignExpr->op = WfBinaryOperator::Assign;
+									assignExpr->first = refState;
+									assignExpr->second = GenerateStateMachineInvalidId();
+
+									auto exprStat = MakePtr<WfExpressionStatement>();
+									exprStat->expression = assignExpr;
+									whileBlock->statements.Add(exprStat);
+								}
+								{
+									// switch(<state>currentState) { case STATE:{... goto <state-label>OUT_OF_STATE_MACHINE;} ... }
+									auto refCurrentState = MakePtr<WfReferenceExpression>();
+									refCurrentState->name.value = L"<state>currentState";
+
+									auto switchStat = MakePtr<WfSwitchStatement>();
+									switchStat->expression = refCurrentState;
+									whileBlock->statements.Add(switchStat);
+
+									FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+									{
+										auto switchCase = MakePtr<WfSwitchCase>();
+										switchStat->caseBranches.Add(switchCase);
+
+										auto refStateId = MakePtr<WfIntegerExpression>();
+										refStateId->value.value = itow(smInfo->stateIds[state->name.value]);
+										switchCase->expression = refStateId;
+
+										auto caseBlock = MakePtr<WfBlockStatement>();
+										switchCase->statement = caseBlock;
+
+										FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+										{
+											auto refThis = MakePtr<WfReferenceExpression>();
+											refThis->name.value = L"<state>stateMachineObject";
+
+											auto refArgument = MakePtr<WfMemberExpression>();
+											refArgument->parent = refThis;
+											refArgument->name.value = manager->stateDeclArguments[argument.Obj()]->GetName();
+
+											auto varDecl = MakePtr<WfVariableDeclaration>();
+											varDecl->name.value = argument->name.value;
+											varDecl->expression = refArgument;
+
+											auto varStat = MakePtr<WfVariableStatement>();
+											varStat->variable = varDecl;
+											caseBlock->statements.Add(varStat);
+										}
+										caseBlock->statements.Add(ExpandStateMachineStatementVisitor(manager, smInfo.Obj()).CreateField(state->statement));
+										{
+											auto gotoStat = MakePtr<WfGotoStatement>();
+											gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
+											caseBlock->statements.Add(gotoStat);
+										}
+										SetCodeRange(Ptr<WfStatement>(caseBlock), state->codeRange);
+									}
+								}
+							}
+							// finally {stateMachineCoroutine = <state>previousCoroutine;}
+							{
+								auto refThis = MakePtr<WfReferenceExpression>();
+								refThis->name.value = L"<state>stateMachineObject";
+
+								auto refCoroutine = MakePtr<WfMemberExpression>();
+								refCoroutine->parent = refThis;
+								refCoroutine->name.value = L"stateMachineCoroutine";
+
+								auto refPrevious = MakePtr<WfReferenceExpression>();
+								refPrevious->name.value = L"<state>previousCoroutine";
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->op = WfBinaryOperator::Assign;
+								assignExpr->first = refCoroutine;
+								assignExpr->second = refPrevious;
+
+								auto exprStat = MakePtr<WfExpressionStatement>();
+								exprStat->expression = assignExpr;
+								finallyBlock->statements.Add(exprStat);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -22529,7 +23669,7 @@ Helper Functions
 					else
 					{
 						resolvables.Add(true);
-						types.Add(GetExpressionType(manager, argument, 0));
+						types.Add(GetExpressionType(manager, argument, nullptr));
 					}
 				}
 
@@ -22618,9 +23758,20 @@ Helper Functions
 					ITypeInfo* genericType = GetFunctionType(functions[selectedFunctionIndex])->GetElementType();
 					for (vint i = 0; i < types.Count(); i++)
 					{
-						if (!resolvables[i])
+						ITypeInfo* argumentType = genericType->GetGenericArgument(i + 1);
+						if (resolvables[i])
 						{
-							ITypeInfo* argumentType = genericType->GetGenericArgument(i + 1);
+							vint index = manager->expressionResolvings.Keys().IndexOf(arguments[i].Obj());
+							if (index != -1)
+							{
+								auto resolvingResult = manager->expressionResolvings.Values()[index];
+								CHECK_ERROR(resolvingResult.expectedType == nullptr, L"GetExpressionType should not set expectedType if it is null");
+								resolvingResult.expectedType = CopyTypeInfo(argumentType);
+								manager->expressionResolvings.Set(arguments[i].Obj(), resolvingResult);
+							}
+						}
+						else
+						{
 							if (arguments[i])
 							{
 								GetExpressionType(manager, arguments[i], CopyTypeInfo(argumentType));
@@ -23108,7 +24259,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					ExpandStateMachine(manager, node);
 				}
 			};
 
@@ -23213,6 +24364,24 @@ ValidateSemantic(Declaration)
 							{
 								manager->errors.Add(WfErrors::WrongInterfaceBaseType(node, baseTd));
 							}
+						}
+					}
+
+					if (auto sm = From(node->declarations)
+						.FindType<WfStateMachineDeclaration>()
+						.First(nullptr)
+						)
+					{
+						auto smtd = description::GetTypeDescriptor<StateMachine>();
+						vint count = td->GetBaseTypeDescriptorCount();
+
+						auto smbc = Range<vint>(0, count)
+							.Select([=](vint index) {return td->GetBaseTypeDescriptor(index); })
+							.Where([=](ITypeDescriptor* td) {return td == smtd; })
+							.First(nullptr);
+						if (!smbc)
+						{
+							manager->errors.Add(WfErrors::StateMachineClassNotInheritFromStateMachine(node));
 						}
 					}
 
@@ -23335,7 +24504,21 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					bool foundDefaultState = false;
+
+					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					{
+						if (state->name.value == L"")
+						{
+							foundDefaultState = true;
+						}
+						ValidateStatementSemantic(manager, state->statement);
+					}
+
+					if (!foundDefaultState)
+					{
+						manager->errors.Add(WfErrors::MissingDefaultState(node));
+					}
 				}
 
 				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
@@ -23631,10 +24814,11 @@ ValidateSemantic(Expression)
 										if (firstConfigScope)
 										{
 											bool inMethodBody = lastConfigScope->GetOwnerClassMember() && lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
-											bool inDtorBody = lastConfigScope->GetOwnerClassMember() && lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
-											bool inCtorBody = lastConfigScope->parentScope->GetOwnerClassMember() && lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
+											bool inDtorBody = lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
+											bool inCtorBody = lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
+											bool inStateBody = lastConfigScope->ownerNode.Cast<WfStateDeclaration>();
 
-											if (!inMethodBody && !inDtorBody && !inCtorBody)
+											if (!inMethodBody && !inDtorBody && !inCtorBody && !inStateBody)
 											{
 												manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 											}
@@ -26231,12 +27415,81 @@ ValidateSemantic(Statement)
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					throw 0;
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
+					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' location.");
+
+					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					{
+						auto caseScope = manager->nodeScopes[switchCase.Obj()].Obj();
+						Ptr<WfLexicalSymbol> inputSymbol;
+						{
+							vint index = smcScope->symbols.Keys().IndexOf(switchCase->name.value);
+							if (index != -1)
+							{
+								inputSymbol = smcScope->symbols.GetByIndex(index)[0];
+							}
+						}
+						if (!inputSymbol || !inputSymbol->creatorNode.Cast<WfStateInput>())
+						{
+							manager->errors.Add(WfErrors::StateInputNotExists(switchCase.Obj()));
+						}
+						else
+						{
+							auto td = manager->declarationTypes[smcScope->ownerNode.Cast<WfClassDeclaration>().Obj()].Obj();
+							auto inputMethod = td->GetMethodGroupByName(switchCase->name.value, false)->GetMethod(0);
+							if (switchCase->arguments.Count() != inputMethod->GetParameterCount())
+							{
+								manager->errors.Add(WfErrors::StateSwitchArgumentCountNotMatch(switchCase.Obj()));
+							}
+							else
+							{
+								FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, switchCase->arguments)
+								{
+									auto argumentSymbol = caseScope->symbols[argument->name.value][0];
+									argumentSymbol->typeInfo = CopyTypeInfo(inputMethod->GetParameter(index)->GetType());
+									argumentSymbol->type = GetTypeFromTypeInfo(argumentSymbol->typeInfo.Obj());
+								}
+							}
+						}
+
+						ValidateStatementSemantic(manager, switchCase->statement);
+					}
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
-					throw 0;
+					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
+					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' location.");
+
+					Ptr<WfLexicalSymbol> stateSymbol;
+					{
+						vint index = smcScope->symbols.Keys().IndexOf(node->name.value);
+						if (index != -1)
+						{
+							stateSymbol = smcScope->symbols.GetByIndex(index)[0];
+						}
+					}
+					if (!stateSymbol || !stateSymbol->creatorNode.Cast<WfStateDeclaration>())
+					{
+						manager->errors.Add(WfErrors::StateNotExists(node));
+					}
+					else
+					{
+						auto stateDecl = stateSymbol->creatorNode.Cast<WfStateDeclaration>();
+						if (stateDecl->arguments.Count() != node->arguments.Count())
+						{
+							manager->errors.Add(WfErrors::StateArgumentCountNotMatch(node));
+						}
+						else
+						{
+							auto stateScope = manager->nodeScopes[stateDecl.Obj()];
+							FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+							{
+								auto typeInfo = stateScope->symbols[stateDecl->arguments[index]->name.value][0]->typeInfo;
+								GetExpressionType(manager, argument, typeInfo);
+							}
+						}
+					}
 				}
 
 				static void Execute(Ptr<WfStatement> statement, WfLexicalScopeManager* manager)
@@ -27149,10 +28402,8 @@ ValidateStructure(Expression)
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					auto oldBind = context->currentBindExpression;
-					context->currentBindExpression = 0;
-					ValidateExpressionStructure(manager, context, node->body);
-					context->currentBindExpression = oldBind;
+					ValidateStructureContext context;
+					ValidateExpressionStructure(manager, &context, node->body);
 				}
 
 				void Visit(WfMemberExpression* node)override

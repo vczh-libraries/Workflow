@@ -3886,10 +3886,9 @@ Scope Manager
 
 			struct WfStateMachineInfo
 			{
-				Ptr<typeimpl::WfField>						inputField;
-				Ptr<typeimpl::WfField>						coroutineField;
-				Ptr<typeimpl::WfClassMethod>				resumeMethod;
 				Ptr<typeimpl::WfClassMethod>				createCoroutineMethod;
+				collections::Dictionary<WString, vint>		inputIds;
+				collections::Dictionary<WString, vint>		stateIds;
 			};
 
 			/// <summary>Workflow compiler.</summary>
@@ -3920,7 +3919,7 @@ Scope Manager
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 				typedef collections::Dictionary<Ptr<WfStateInput>, Ptr<typeimpl::WfClassMethod>>			StateInputMethodMap;
 				typedef collections::Dictionary<Ptr<WfFunctionArgument>, Ptr<typeimpl::WfField>>			StateArgumentFieldMap;
-				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, WfStateMachineInfo>			StateMachineInfoMap;
+				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, Ptr<WfStateMachineInfo>>	StateMachineInfoMap;
 
 				typedef collections::Pair<WString, WString>													AttributeKey;
 				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
@@ -4162,6 +4161,7 @@ Expanding Virtual Nodes
 			extern void										ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node);
 			extern void										ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node);
 			extern void										ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node);
+			extern void										ExpandStateMachine(WfLexicalScopeManager* manager, WfStateMachineDeclaration* node);
 
 /***********************************************************************
 Error Messages
@@ -4257,6 +4257,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			TooManyGotoLabel(WfGotoStatement* node);
 				static Ptr<parsing::ParsingError>			WrongStateSwitchStatement(WfStateSwitchStatement* node);
 				static Ptr<parsing::ParsingError>			WrongStateInvokeStatement(WfStateInvokeStatement* node);
+				static Ptr<parsing::ParsingError>			StateInputNotExists(WfStateSwitchCase* node);
+				static Ptr<parsing::ParsingError>			StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node);
+				static Ptr<parsing::ParsingError>			StateNotExists(WfStateInvokeStatement* node);
+				static Ptr<parsing::ParsingError>			StateArgumentCountNotMatch(WfStateInvokeStatement* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);
@@ -4270,6 +4274,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
@@ -4290,6 +4295,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
 				static Ptr<parsing::ParsingError>			AttributeMissValue(WfAttribute* node);
+				static Ptr<parsing::ParsingError>			StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node);
+				static Ptr<parsing::ParsingError>			MissingDefaultState(WfStateMachineDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);
