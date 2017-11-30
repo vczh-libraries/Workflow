@@ -495,9 +495,11 @@ Print (Expression)
 					{
 						writer.WriteString(L", ");
 					}
+					writer.BeforePrint(var.Obj());
 					writer.WriteString(var->name.value);
 					writer.WriteString(L" = ");
 					WfPrint(var->value, indent, writer);
+					writer.AfterPrint(var.Obj());
 				}
 				writer.WriteString(L" in (");
 				WfPrint(node->expression, indent, writer);
@@ -1086,12 +1088,14 @@ Print (Statement)
 
 				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
 				{
+					writer.BeforePrint(switchCase.Obj());
 					writer.WriteString(indent);
 					writer.WriteString(L"    case ");
 					WfPrint(switchCase->expression, indent, writer);
 					writer.WriteLine(L":");
 					writer.WriteString(indent + L"    ");
 					WfPrint(switchCase->statement, indent + L"    ", writer);
+					writer.AfterPrint(switchCase.Obj());
 					writer.WriteLine(L"");
 				}
 				if (node->defaultBranch)
@@ -1187,12 +1191,78 @@ Print (Statement)
 
 			void Visit(WfStateSwitchStatement* node)override
 			{
-				throw 0;
+				writer.BeforePrint(node);
+				writer.WriteString(L"switch (");
+				switch (node->type)
+				{
+				case WfStateSwitchType::Default:
+					writer.WriteLine(L"raise)");
+					break;
+				case WfStateSwitchType::Pass:
+					writer.WriteLine(L"continue)");
+					break;
+				case WfStateSwitchType::PassAndReturn:
+					writer.WriteLine(L"continue, return)");
+					break;
+				case WfStateSwitchType::Ignore:
+					writer.WriteLine(L")");
+					break;
+				case WfStateSwitchType::IgnoreAndReturn:
+					writer.WriteLine(L"return)");
+					break;
+				}
+
+				writer.WriteString(indent);
+				writer.WriteLine(L"{");
+
+				FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+				{
+					writer.BeforePrint(switchCase.Obj());
+					writer.WriteString(indent);
+					writer.WriteString(L"    case ");
+					writer.WriteString(switchCase->name.value);
+					writer.WriteString(L"(");
+					FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, switchCase->arguments)
+					{
+						if (index != 0) writer.WriteString(L", ");
+						writer.BeforePrint(argument.Obj());
+						writer.WriteString(argument->name.value);
+						writer.AfterPrint(argument.Obj());
+					}
+					writer.WriteLine(L"):");
+					writer.WriteString(indent + L"    ");
+					WfPrint(switchCase->statement, indent + L"    ", writer);
+					writer.AfterPrint(switchCase.Obj());
+					writer.WriteLine(L"");
+				}
+
+				writer.WriteString(indent);
+				writer.WriteString(L"}");
+				writer.AfterPrint(node);
 			}
 
 			void Visit(WfStateInvokeStatement* node)override
 			{
-				throw 0;
+				writer.BeforePrint(node);
+				switch (node->type)
+				{
+				case WfStateInvokeType::Goto:
+					writer.WriteString(L"$goto_state ");
+					break;
+				case WfStateInvokeType::Push:
+					writer.WriteString(L"push_state ");
+					break;
+				}
+
+				writer.WriteString(node->name.value);
+				writer.WriteString(L"(");
+				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				{
+					if (index != 0) writer.WriteString(L", ");
+					WfPrint(argument, indent, writer);
+				}
+				writer.WriteString(L");");
+				writer.AfterPrint(node);
 			}
 		};
 
@@ -1252,6 +1322,7 @@ Print (Declaration)
 					{
 						writer.WriteString(L", ");
 					}
+					writer.BeforePrint(argument.Obj());
 					FOREACH(Ptr<WfAttribute>, attribute, argument->attributes)
 					{
 						WfPrint(attribute, indent, writer);
@@ -1260,6 +1331,7 @@ Print (Declaration)
 					writer.WriteString(argument->name.value);
 					writer.WriteString(L" : ");
 					WfPrint(argument->type, indent, writer);
+					writer.AfterPrint(argument.Obj());
 				}
 				writer.WriteString(L")");
 
@@ -1356,9 +1428,11 @@ Print (Declaration)
 					{
 						writer.WriteString(L", ");
 					}
+					writer.BeforePrint(argument.Obj());
 					writer.WriteString(argument->name.value);
 					writer.WriteString(L" : ");
 					WfPrint(argument->type, indent, writer);
+					writer.AfterPrint(argument.Obj());
 				}
 				writer.WriteString(L")");
 				FOREACH_INDEXER(Ptr<WfBaseConstructorCall>, call, callIndex, node->baseConstructorCalls)
@@ -1373,6 +1447,7 @@ Print (Declaration)
 					{
 						writer.WriteString(L",");
 					}
+					writer.BeforePrint(call.Obj());
 					WfPrint(call->type, indent + L"    ", writer);
 					writer.WriteString(L"(");
 					FOREACH_INDEXER(Ptr<WfExpression>, argument, argumentIndex, call->arguments)
@@ -1384,6 +1459,7 @@ Print (Declaration)
 						WfPrint(argument, indent + L"    ", writer);
 					}
 					writer.WriteString(L")");
+					writer.AfterPrint(call.Obj());
 				}
 
 				writer.WriteLine(L"");
@@ -1469,6 +1545,7 @@ Print (Declaration)
 				auto newIndent = indent + L"    ";
 				FOREACH(Ptr<WfEnumItem>, item, node->items)
 				{
+					writer.BeforePrint(item.Obj());
 					FOREACH(Ptr<WfAttribute>, attribute, item->attributes)
 					{
 						writer.WriteString(newIndent);
@@ -1491,6 +1568,7 @@ Print (Declaration)
 						}
 						break;
 					}
+					writer.AfterPrint(item.Obj());
 					writer.WriteLine(L",");
 				}
 
@@ -1508,6 +1586,7 @@ Print (Declaration)
 				auto newIndent = indent + L"    ";
 				FOREACH(Ptr<WfStructMember>, member, node->members)
 				{
+					writer.BeforePrint(member.Obj());
 					FOREACH(Ptr<WfAttribute>, attribute, member->attributes)
 					{
 						writer.WriteString(newIndent);
@@ -1519,6 +1598,7 @@ Print (Declaration)
 					writer.WriteString(L" : ");
 					WfPrint(member->type, newIndent, writer);
 					writer.WriteLine(L";");
+					writer.AfterPrint(member.Obj());
 				}
 
 				writer.WriteString(indent + L"}");
@@ -1620,7 +1700,70 @@ Print (Declaration)
 
 			void Visit(WfStateMachineDeclaration* node)override
 			{
-				throw 0;
+				writer.BeforePrint(node);
+				writer.WriteLine(L"$state_machine");
+				writer.WriteLine(indent + L"{");
+
+				FOREACH_INDEXER(Ptr<WfStateInput>, input, index, node->inputs)
+				{
+					if (index != 0) writer.WriteLine(L"");
+
+					writer.BeforePrint(input.Obj());
+					writer.WriteString(indent + L"    $state_input ");
+					writer.WriteString(input->name.value);
+					writer.WriteString(L"(");
+					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					{
+						if (index > 0)
+						{
+							writer.WriteString(L", ");
+						}
+						writer.BeforePrint(argument.Obj());
+						writer.WriteString(argument->name.value);
+						writer.WriteString(L" : ");
+						WfPrint(argument->type, indent, writer);
+						writer.AfterPrint(argument.Obj());
+					}
+					writer.WriteLine(L");");
+					writer.AfterPrint(input.Obj());
+				}
+
+				FOREACH_INDEXER(Ptr<WfStateDeclaration>, state, index, node->states)
+				{
+					if (index != 0 || node->inputs.Count() > 0) writer.WriteLine(L"");
+
+					writer.BeforePrint(state.Obj());
+					writer.WriteString(indent + L"    $state ");
+					if (state->name.value == L"")
+					{
+						writer.WriteString(L"default");
+					}
+					else
+					{
+						writer.WriteString(state->name.value);
+					}
+					writer.WriteString(L"(");
+					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, state->arguments)
+					{
+						if (index > 0)
+						{
+							writer.WriteString(L", ");
+						}
+						writer.BeforePrint(argument.Obj());
+						writer.WriteString(argument->name.value);
+						writer.WriteString(L" : ");
+						WfPrint(argument->type, indent, writer);
+						writer.AfterPrint(argument.Obj());
+					}
+					writer.WriteLine(L")");
+					writer.WriteString(indent + L"    ");
+					WfPrint(state->statement, indent + L"    ", writer);
+					writer.AfterPrint(state.Obj());
+					writer.WriteLine(L"");
+				}
+
+				writer.WriteString(indent + L"}");
+				writer.AfterPrint(node);
 			}
 		};
 

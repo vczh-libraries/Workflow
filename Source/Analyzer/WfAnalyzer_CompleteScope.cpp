@@ -157,7 +157,39 @@ CompleteScopeForClassMember
 
 				void Visit(WfStateMachineDeclaration* node)
 				{
-					throw 0;
+					auto scope = manager->nodeScopes[node];
+					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					{
+						auto method = manager->stateInputMethods[input.Obj()];
+						method->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
+
+						FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+						{
+							if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
+							{
+								auto field = manager->stateInputArguments[argument.Obj()];
+								field->SetReturn(typeInfo);
+
+								method->AddParameter(MakePtr<ParameterInfoImpl>(method.Obj(), argument->name.value, typeInfo));
+							}
+						}
+					}
+
+					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					{
+						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						{
+							if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
+							{
+								auto field = manager->stateDeclArguments[argument.Obj()];
+								field->SetReturn(typeInfo);
+							}
+						}
+					}
+
+					auto& smInfo = manager->stateMachineInfos[node];
+					smInfo->createCoroutineMethod->AddParameter(MakePtr<ParameterInfoImpl>(smInfo->createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo()));
+					smInfo->createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
@@ -335,7 +367,6 @@ CompleteScopeForDeclaration
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
 				}
 
 				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)

@@ -60,6 +60,7 @@ Closures
 		::vl::vint __vwsn_co2_for_end_i = 0;
 		::vl::vint __vwsn_co3_i = 0;
 		::vl::vint __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co_state_before_pause_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
 		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);

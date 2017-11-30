@@ -1,0 +1,48 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+class SMSwitchPR1 : StateMachine
+{	
+	$state_machine
+	{
+		$state_input A();
+		$state_input B();
+		
+		$state default()
+		{
+			$switch (continue, return)
+			{
+			case A():
+				{
+					s = $"$(s)[A]";
+				}
+			}
+			$switch (continue, return)
+			{
+			case B():
+				{
+					s = $"$(s)[B]";
+				}
+			}
+			s = $"$(s).";
+		}
+	}
+}
+
+func main():string
+{
+	var sm = new SMSwitchPR1^();
+	try
+	{
+		sm.A();
+		sm.B();
+	}
+	catch (ex)
+	{
+		s = $"$(s)!";
+	}
+	return s;
+}

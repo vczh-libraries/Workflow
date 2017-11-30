@@ -77,6 +77,7 @@ Closures
 		this->__vwsn_co1_for_end_i = static_cast<::vl::vint>(0);
 		this->__vwsn_co2_i = static_cast<::vl::vint>(0);
 		this->__vwsn_co_state_ = static_cast<::vl::vint>(0);
+		this->__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1));
 		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}
@@ -109,6 +110,24 @@ Closures
 		try
 		{
 			{
+				if ((__vwsn_co_state_before_pause_ != (- static_cast<::vl::vint>(1))))
+				{
+					if ((! static_cast<bool>(__vwsn_coroutine_output_)))
+					{
+						(__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1)));
+					}
+					else if ((! static_cast<bool>(::vl::__vwsn::This(__vwsn_coroutine_output_.Obj())->GetFailure())))
+					{
+						(__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1)));
+					}
+					else
+					{
+						{
+							(__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1)));
+							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_coroutine_output_.Obj())->GetFailure().Obj())->GetMessage());
+						}
+					}
+				}
 				while (true)
 				{
 					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
@@ -149,6 +168,7 @@ Closures
 					if ((__vwsn_co_state_ == static_cast<::vl::vint>(4)))
 					{
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+						(__vwsn_co_state_before_pause_ = __vwsn_co_state_);
 						(__vwsn_co_state_ = static_cast<::vl::vint>(5));
 						return;
 					}

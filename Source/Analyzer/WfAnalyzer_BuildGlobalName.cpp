@@ -230,7 +230,36 @@ BuildGlobalNameFromModules
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					{
+						auto info = MakePtr<WfClassMethod>();
+						td->AddMember(input->name.value, info);
+						manager->stateInputMethods.Add(input, info);
+
+						FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+						{
+							auto info = MakePtr<WfField>(td.Obj(), L"<stateip-" + input->name.value + L">" + argument->name.value);
+							td->AddMember(info);
+							manager->stateInputArguments.Add(argument.Obj(), info);
+						}
+					}
+					
+					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					{
+						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						{
+							auto info = MakePtr<WfField>(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value);
+							td->AddMember(info);
+							manager->stateDeclArguments.Add(argument.Obj(), info);
+						}
+					}
+
+					auto smInfo = MakePtr<WfStateMachineInfo>();
+					{
+						smInfo->createCoroutineMethod = MakePtr<WfClassMethod>();
+						td->AddMember(L"<state>CreateCoroutine", smInfo->createCoroutineMethod);
+					}
+					manager->stateMachineInfos.Add(node, smInfo);
 				}
 			};
 
@@ -324,8 +353,6 @@ ValidateScopeName
 					Type,
 					Variable,
 					Function,
-					Event,
-					Property,
 					Namespace,
 				};
 
@@ -353,12 +380,6 @@ ValidateScopeName
 						break;
 					case Function:
 						categoryName = L"function";
-						break;
-					case Event:
-						categoryName = L"event";
-						break;
-					case Property:
-						categoryName = L"property";
 						break;
 					case Namespace:
 						categoryName = L"namespace";
@@ -407,34 +428,22 @@ ValidateScopeName
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					if (category == None)
-					{
-						category = Event;
-					}
-					else
-					{
-						AddError(node);
-					}
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfEventDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					if (category == None)
-					{
-						category = Property;
-					}
-					else
-					{
-						AddError(node);
-					}
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfPropertyDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfConstructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 				
 				void Visit(WfDestructorDeclaration* node)override
 				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfDestructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -488,7 +497,7 @@ ValidateScopeName
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfStateMachineDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 			};
 

@@ -261,7 +261,44 @@ BuildScopeForDeclaration
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					throw 0;
+					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					{
+						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
+						stateSymbol->name = input->name.value;
+						stateSymbol->creatorNode = input;
+						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
+					}
+
+					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					{
+						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
+						stateSymbol->name = state->name.value;
+						stateSymbol->creatorNode = state;
+						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
+
+						auto stateScope = MakePtr<WfLexicalScope>(parentScope);
+						{
+							auto config = MakePtr<WfLexicalFunctionConfig>();
+							stateScope->functionConfig = config;
+
+							config->lambda = false;
+							config->thisAccessable = true;
+							config->parentThisAccessable = true;
+						}
+						stateScope->ownerNode = state;
+						manager->nodeScopes.Add(state.Obj(), stateScope);
+
+						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						{
+							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(stateScope.Obj());
+							argumentSymbol->name = argument->name.value;
+							argumentSymbol->type = argument->type;
+							argumentSymbol->creatorNode = argument;
+							stateScope->symbols.Add(argumentSymbol->name, argumentSymbol);
+						}
+
+						BuildScopeForStatement(manager, stateScope, state->statement);
+					}
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)
@@ -504,12 +541,32 @@ BuildScopeForStatement
 
 				void Visit(WfStateSwitchStatement* node)override
 				{
-					throw 0;
+					resultScope = new WfLexicalScope(parentScope);
+
+					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					{
+						auto caseScope = MakePtr<WfLexicalScope>(resultScope);
+						caseScope->ownerNode = switchCase;
+						manager->nodeScopes.Add(switchCase.Obj(), caseScope);
+
+						FOREACH(Ptr<WfStateSwitchArgument>, argument, switchCase->arguments)
+						{
+							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(caseScope.Obj());
+							symbol->name = argument->name.value;
+							symbol->creatorNode = argument;
+							caseScope->symbols.Add(symbol->name, symbol);
+						}
+
+						BuildScopeForStatement(manager, caseScope, switchCase->statement);
+					}
 				}
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
-					throw 0;
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						BuildScopeForExpression(manager, parentScope, argument);
+					}
 				}
 
 				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement)
@@ -955,6 +1012,34 @@ CheckScopes_DuplicatedSymbol
 											else if (auto expr = symbol->creatorNode.Cast<WfExpression>())
 											{
 												manager->errors.Add(WfErrors::DuplicatedSymbol(expr.Obj(), symbol));
+											}
+											else if (auto input = symbol->creatorNode.Cast<WfStateInput>())
+											{
+												if (symbols.Count() == 2)
+												{
+													// Ignore the generated function from the state input
+													auto methodSymbol = symbols[1 - symbols.IndexOf(symbol.Obj())];
+													auto funcDecl = methodSymbol->creatorNode.Cast<WfFunctionDeclaration>();
+													vint index = manager->declarationMemberInfos.Keys().IndexOf(funcDecl.Obj());
+													if (index != -1)
+													{
+														auto methodInfo = manager->declarationMemberInfos.Values()[index];
+														if (manager->stateInputMethods[input.Obj()].Obj() == methodInfo.Obj())
+														{
+															goto NO_ERROR;
+														}
+													}
+												}
+												manager->errors.Add(WfErrors::DuplicatedSymbol(input.Obj(), symbol));
+											NO_ERROR:;
+											}
+											else if (auto state = symbol->creatorNode.Cast<WfStateDeclaration>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(state.Obj(), symbol));
+											}
+											else if (auto sarg = symbol->creatorNode.Cast<WfStateSwitchArgument>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(sarg.Obj(), symbol));
 											}
 										}
 									}

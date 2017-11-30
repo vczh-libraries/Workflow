@@ -1,0 +1,40 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+class SMSwitchI1 : StateMachine
+{	
+	$state_machine
+	{
+		$state_input A();
+		$state_input B();
+		
+		$state default()
+		{
+			$switch ()
+			{
+			case A():
+				{
+					s = $"$(s)[A]";
+				}
+			}
+			s = $"$(s).";
+		}
+	}
+}
+
+func main():string
+{
+	var sm = new SMSwitchI1^();
+	try
+	{
+		sm.A();
+	}
+	catch (ex)
+	{
+		s = $"$(s)!";
+	}
+	return s;
+}

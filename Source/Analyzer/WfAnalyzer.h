@@ -9,6 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_ANALYZER_WFANALYZER
 #define VCZH_WORKFLOW_ANALYZER_WFANALYZER
 
+#include "../Library/WfLibraryReflection.h"
 #include "../Expression/WfExpression.h"
 #include "../Runtime/WfRuntime.h"
 
@@ -151,6 +152,13 @@ Scope Manager
 				collections::List<Ptr<WfLexicalSymbol>>		ctorArgumentSymbols;
 			};
 
+			struct WfStateMachineInfo
+			{
+				Ptr<typeimpl::WfClassMethod>				createCoroutineMethod;
+				collections::Dictionary<WString, vint>		inputIds;
+				collections::Dictionary<WString, vint>		stateIds;
+			};
+
 			/// <summary>Workflow compiler.</summary>
 			class WfLexicalScopeManager : public Object
 			{
@@ -177,6 +185,9 @@ Scope Manager
 				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
+				typedef collections::Dictionary<Ptr<WfStateInput>, Ptr<typeimpl::WfClassMethod>>			StateInputMethodMap;
+				typedef collections::Dictionary<Ptr<WfFunctionArgument>, Ptr<typeimpl::WfField>>			StateArgumentFieldMap;
+				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, Ptr<WfStateMachineInfo>>	StateMachineInfoMap;
 
 				typedef collections::Pair<WString, WString>													AttributeKey;
 				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
@@ -208,6 +219,10 @@ Scope Manager
 				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
 				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
+				StateInputMethodMap							stateInputMethods;				// IMethodInfo* for state input
+				StateArgumentFieldMap						stateInputArguments;			// IPropertyInfo* for state input argument temporary cache
+				StateArgumentFieldMap						stateDeclArguments;				// IPropertyInfo* for state argument temporary cache
+				StateMachineInfoMap							stateMachineInfos;				// members of state machine
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
@@ -303,6 +318,7 @@ Structure Analyzing
 				WfCoProviderStatement*						currentCoProviderStatement = nullptr;
 				WfNewCoroutineExpression*					currentNewCoroutineExpression = nullptr;
 				WfCoPauseStatement*							currentCoPauseStatement = nullptr;
+				WfStateDeclaration*							currentStateDeclaration = nullptr;
 
 				ValidateStructureContext();
 			};
@@ -360,6 +376,9 @@ Scope Analyzing
 Semantic Analyzing
 ***********************************************************************/
 
+			extern reflection::description::IMethodInfo*	FindInterfaceConstructor(reflection::description::ITypeDescriptor* type);
+			extern Ptr<reflection::description::ITypeInfo>	SelectFunction(WfLexicalScopeManager* manager, parsing::ParsingTreeCustomBase* node, Ptr<WfExpression> functionExpression, collections::List<ResolveExpressionResult>& functions, collections::List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex);
+
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
@@ -410,6 +429,7 @@ Expanding Virtual Nodes
 			extern void										ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node);
 			extern void										ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node);
 			extern void										ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node);
+			extern void										ExpandStateMachine(WfLexicalScopeManager* manager, WfStateMachineDeclaration* node);
 
 /***********************************************************************
 Error Messages
@@ -503,16 +523,26 @@ Error Messages
 				static Ptr<parsing::ParsingError>			CoProviderCreateAndRunNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			GotoLabelNotExists(WfGotoStatement* node);
 				static Ptr<parsing::ParsingError>			TooManyGotoLabel(WfGotoStatement* node);
+				static Ptr<parsing::ParsingError>			WrongStateSwitchStatement(WfStateSwitchStatement* node);
+				static Ptr<parsing::ParsingError>			WrongStateInvokeStatement(WfStateInvokeStatement* node);
+				static Ptr<parsing::ParsingError>			StateInputNotExists(WfStateSwitchCase* node);
+				static Ptr<parsing::ParsingError>			StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node);
+				static Ptr<parsing::ParsingError>			StateNotExists(WfStateInvokeStatement* node);
+				static Ptr<parsing::ParsingError>			StateArgumentCountNotMatch(WfStateInvokeStatement* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveImplementation(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			InterfaceMethodShouldNotHaveImplementation(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedDeclaration(WfDeclaration* node, const WString& firstDeclarationCategory);
+				static Ptr<parsing::ParsingError>			DuplicatedDeclaration(WfStateMachineDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfDeclaration* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStatement* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
@@ -522,6 +552,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfAutoPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfStateMachineDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
 				static Ptr<parsing::ParsingError>			FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
@@ -532,6 +563,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
 				static Ptr<parsing::ParsingError>			AttributeMissValue(WfAttribute* node);
+				static Ptr<parsing::ParsingError>			StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node);
+				static Ptr<parsing::ParsingError>			MissingDefaultState(WfStateMachineDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

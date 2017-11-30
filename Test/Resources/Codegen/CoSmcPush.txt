@@ -1,0 +1,60 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+class SMPush : StateMachine
+{	
+	$state_machine
+	{
+		$state_input A();
+		$state_input B();
+
+		$state ProcessA()
+		{
+			$switch ()
+			{
+			case A():
+				{
+					s = $"$(s)[A]";
+				}
+			}
+			s = $"$(s).A";
+		}
+
+		$state ProcessB()
+		{
+			$switch ()
+			{
+			case B():
+				{
+					s = $"$(s)[B]";
+				}
+			}
+			s = $"$(s).B";
+		}
+		
+		$state default()
+		{
+			$push_state ProcessA();
+			$push_state ProcessB();
+			s = $"$(s).";
+		}
+	}
+}
+
+func main():string
+{
+	var sm = new SMPush^();
+	try
+	{
+		sm.A();
+		sm.B();
+	}
+	catch (ex)
+	{
+		s = $"$(s)!";
+	}
+	return s;
+}

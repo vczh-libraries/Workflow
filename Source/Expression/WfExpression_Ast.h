@@ -115,27 +115,23 @@ namespace vl
 			KEYWORD_UNIT = 95,
 			STATE_MACHINE = 96,
 			STATE_INPUT = 97,
-			STATE_SWITCH_PASS = 98,
-			STATE_SWITCH_PASSRETURN = 99,
-			STATE_SWITCH_IGNORE = 100,
-			STATE_SWITCH_IGNORERETURN = 101,
-			STATE_SWITCH_DEFAULT = 102,
-			STATE_GOTO = 103,
-			STATE_PUSH = 104,
-			STATE_DECL = 105,
-			COROUTINE_COROUTINE = 106,
-			COROUTINE_PAUSE = 107,
-			COROUTINE_INTERFACE = 108,
-			COROUTINE_OPERATOR = 109,
-			COROUTINE_SIGN = 110,
-			NAME = 111,
-			ORDERED_NAME = 112,
-			FLOAT = 113,
-			INTEGER = 114,
-			STRING = 115,
-			FORMATSTRING = 116,
-			SPACE = 117,
-			COMMENT = 118,
+			STATE_SWITCH = 98,
+			STATE_GOTO = 99,
+			STATE_PUSH = 100,
+			STATE_DECL = 101,
+			COROUTINE_COROUTINE = 102,
+			COROUTINE_PAUSE = 103,
+			COROUTINE_INTERFACE = 104,
+			COROUTINE_OPERATOR = 105,
+			COROUTINE_SIGN = 106,
+			NAME = 107,
+			ORDERED_NAME = 108,
+			FLOAT = 109,
+			INTEGER = 110,
+			STRING = 111,
+			FORMATSTRING = 112,
+			SPACE = 113,
+			COMMENT = 114,
 		};
 		class WfClassMember;
 		class WfType;
@@ -1108,7 +1104,7 @@ namespace vl
 		{
 		public:
 			WfStateSwitchType type;
-			vl::Ptr<WfStateSwitchCase> caseBranches;
+			vl::collections::List<vl::Ptr<WfStateSwitchCase>> caseBranches;
 
 			void Accept(WfStateMachineStatement::IVisitor* visitor)override;
 

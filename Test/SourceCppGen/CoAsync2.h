@@ -111,6 +111,7 @@ Closures
 		__vwsnc1_CoAsync2_GetStringAsync___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::vl::vint __vwsnctor_x);
 
 		::vl::vint __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co_state_before_pause_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
 		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);
@@ -142,6 +143,7 @@ Closures
 		::vl::vint __vwsn_co2_for_end_i = 0;
 		::vl::vint __vwsn_co3_i = 0;
 		::vl::vint __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co_state_before_pause_ = 0;
 		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
 		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
 		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);

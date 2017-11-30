@@ -469,6 +469,36 @@ WfErrors
 				return new ParsingError(node, L"C14: Too many goto targets \"" + node->label.value + L"\" found.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongStateSwitchStatement(WfStateSwitchStatement* node)
+			{
+				return new ParsingError(node, L"C15: $switch statement should appear inside a $state declaration.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongStateInvokeStatement(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C16: $goto_state or $push_state statement should appear inside a $state declaration.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateInputNotExists(WfStateSwitchCase* node)
+			{
+				return new ParsingError(node, L"C17: State input \"" + node->name.value + L"\" does not exist.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node)
+			{
+				return new ParsingError(node, L"C18: The number of arguments doesn not match the declaration of state input \"" + node->name.value + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateNotExists(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C19: State \"" + node->name.value + L"\" does not exist.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateArgumentCountNotMatch(WfStateInvokeStatement* node)
+			{
+				return new ParsingError(node, L"C20: The number of arguments doesn not match the declaration of state \"" + node->name.value + L"\".");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::FunctionShouldHaveName(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D0: Function should have a name.");
@@ -489,6 +519,11 @@ WfErrors
 				return new ParsingError(node, L"D1: Duplicated declaration \"" + node->name.value + L"\", it has already beed defined as a " + firstDeclarationCategory + L".");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedDeclaration(WfStateMachineDeclaration* node)
+			{
+				return new ParsingError(node, L"D1: Duplicated $state_machine declaration.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfDeclaration* node, Ptr<WfLexicalSymbol> symbol)
 			{
 				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
@@ -505,6 +540,21 @@ WfErrors
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol)
+			{
+				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol)
+			{
+				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol)
+			{
+				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol)
 			{
 				return new ParsingError(node, L"D2: Duplicated symbol \"" + symbol->name + L"\".");
 			}
@@ -561,6 +611,11 @@ WfErrors
 				return new ParsingError(node, L"D7: Auto-property cannot be defined outside of classes.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::WrongDeclaration(WfStateMachineDeclaration* node)
+			{
+				return new ParsingError(node, L"D7: State machine cannot be defined outside of classes.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
 			{
 				return new ParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions, variables and auto-properties are allowed.");
@@ -609,6 +664,16 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::AttributeMissValue(WfAttribute* node)
 			{
 				return new ParsingError(node, L"D15: Value of attribute \"" + node->category.value + L":" + node->name.value + L"\" is missing.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node)
+			{
+				return new ParsingError(node, L"D16: State machine class \"" + node->name.value + L"\" should inherit from \"system::StateMachine\" directly.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::MissingDefaultState(WfStateMachineDeclaration* node)
+			{
+				return new ParsingError(node, L"D17: Missing default state.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongUsingPathWildCard(WfModuleUsingPath* node)

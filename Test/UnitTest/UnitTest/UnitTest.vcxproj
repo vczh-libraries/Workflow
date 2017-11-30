@@ -157,6 +157,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\TestLibrary.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="..\..\Source\CppTypes.cpp" />
     <ClCompile Include="..\..\Source\Helper.cpp" />
@@ -173,6 +174,7 @@
     <Text Include="..\..\Resources\AnalyzerError\A10_AssignToVariable.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A10_BaseToDerived.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A10_ConstructorToStruct.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\A10_WrongStateArgument.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A21_CoroutineReturnTypeNotCompatible.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A10_FunctionLambdaToStruct.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A10_FunctionLambdaToWrongFunctionType.txt" />
@@ -279,6 +281,7 @@
     <Text Include="..\..\Resources\AnalyzerError\A25_AssignToOrderedLambdaArgument.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A25_AssignToReadonlyList.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A25_AssignToReadonlyProperty.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\A25_AssignToSmcSwitchArgument.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A25_AssignToStructField.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A25_AssignToThis.txt" />
     <Text Include="..\..\Resources\AnalyzerError\A26_CallEventOutsideOfInterface.txt" />
@@ -374,7 +377,14 @@
     <Text Include="..\..\Resources\AnalyzerError\C13_GotoLabelNotExists.txt" />
     <Text Include="..\..\Resources\AnalyzerError\C13_GotoLabelNotExists2.txt" />
     <Text Include="..\..\Resources\AnalyzerError\C14_TooManyGotoTargets.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\C15_StateSwitchNotInStateDecl.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\C16_GotoStateNotInStateDecl.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\C16_PushStateNotInStateDecl.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\C17_StateInputNotExists.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\C18_StateInputArgumentNotMatch.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\C19_StateNotExists.txt" />
     <Text Include="..\..\Resources\AnalyzerError\C1_ContinueNotInLoop.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\C20_StateArgumentNotMatch.txt" />
     <Text Include="..\..\Resources\AnalyzerError\C2_RethrowNotInCatch.txt" />
     <Text Include="..\..\Resources\AnalyzerError\C3_TryMissCatchAndFinally.txt" />
     <Text Include="..\..\Resources\AnalyzerError\C4_ReturnMissExpression.txt" />
@@ -412,6 +422,8 @@
     <Text Include="..\..\Resources\AnalyzerError\D13_StructRecursivelyIncludeItself.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D14_DuplicatedStructMember.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D15_AttributeNotExists.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\D16_SmcNotInheritFromStateMachine.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\D17_SmcMissingDefaultState.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D1_DuplicatedClass.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D1_DuplicatedFunction.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D1_DuplicatedNamespace.txt" />
@@ -423,6 +435,9 @@
     <Text Include="..\..\Resources\AnalyzerError\D2_DuplicatedFunctionArgument.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D2_DuplicatedLambdaFunctionArgument.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D2_DuplicatedLetVariable.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\D2_DuplicatedState.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\D2_DuplicatedStateInput.txt" />
+    <Text Include="..\..\Resources\AnalyzerError\D2_DuplicatedStateSwitchArgument.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D2_DuplicatedVariable.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D3_ImplementMissFunction.txt" />
     <Text Include="..\..\Resources\AnalyzerError\D4_ImplementUnexistsFunction.txt" />
@@ -532,6 +547,21 @@
     <Text Include="..\..\Resources\Codegen\CoRawCoroutine4.txt" />
     <Text Include="..\..\Resources\Codegen\CoRawCoroutine5.txt" />
     <Text Include="..\..\Resources\Codegen\CoRawCoroutine6.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcCalculator.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcGoto.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcPush.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchD1.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchD2.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchI1.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchI2.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchIR1.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchIR2.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchP1.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchPR1.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchP2.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcSwitchPR2.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcTryCatch1.txt" />
+    <Text Include="..\..\Resources\Codegen\CoSmcTryCatch2.txt" />
     <Text Include="..\..\Resources\Codegen\Delete.txt" />
     <Text Include="..\..\Resources\Codegen\ElementInSet.txt" />
     <Text Include="..\..\Resources\Codegen\EnumCtor.txt" />
@@ -596,6 +626,7 @@
     <Text Include="..\..\Resources\Declaration\Interface.txt" />
     <Text Include="..\..\Resources\Declaration\Namespace.txt" />
     <Text Include="..\..\Resources\Declaration\NestedNamespace.txt" />
+    <Text Include="..\..\Resources\Declaration\StateMachine.txt" />
     <Text Include="..\..\Resources\Declaration\Struct.txt" />
     <Text Include="..\..\Resources\Declaration\Variable.txt" />
     <Text Include="..\..\Resources\Expression\Attach.txt" />
