@@ -70,6 +70,21 @@
 #include "CoAsyncReflection.h"
 #include "CoAsync2Reflection.h"
 #include "Overloading.h"
+#include "CoSmcSwitchD1Reflection.h"
+#include "CoSmcSwitchD2Reflection.h"
+#include "CoSmcSwitchI1Reflection.h"
+#include "CoSmcSwitchI2Reflection.h"
+#include "CoSmcSwitchIR1Reflection.h"
+#include "CoSmcSwitchIR2Reflection.h"
+#include "CoSmcSwitchP1Reflection.h"
+#include "CoSmcSwitchP2Reflection.h"
+#include "CoSmcSwitchPR1Reflection.h"
+#include "CoSmcSwitchPR2Reflection.h"
+#include "CoSmcGotoReflection.h"
+#include "CoSmcPushReflection.h"
+#include "CoSmcTryCatch1Reflection.h"
+#include "CoSmcTryCatch2Reflection.h"
+#include "CoSmcCalculatorReflection.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -96,6 +111,21 @@ void LoadTestCaseTypes()
 	 LoadWorkflowAttributesTypes();
 	 LoadCoAsyncTypes();
 	 LoadCoAsync2Types();
+	 LoadCoSmcSwitchD1Types();
+	 LoadCoSmcSwitchD2Types();
+	 LoadCoSmcSwitchI1Types();
+	 LoadCoSmcSwitchI2Types();
+	 LoadCoSmcSwitchIR1Types();
+	 LoadCoSmcSwitchIR2Types();
+	 LoadCoSmcSwitchP1Types();
+	 LoadCoSmcSwitchP2Types();
+	 LoadCoSmcSwitchPR1Types();
+	 LoadCoSmcSwitchPR2Types();
+	 LoadCoSmcGotoTypes();
+	 LoadCoSmcPushTypes();
+	 LoadCoSmcTryCatch1Types();
+	 LoadCoSmcTryCatch2Types();
+	 LoadCoSmcCalculatorTypes();
 }
 
 TEST_CASE(HelloWorld)
@@ -741,6 +771,141 @@ TEST_CASE(Overloading)
 {
 	WString expected = L"[2][2][2][2][2][2][2][2][2][2]";
 	WString actual = ::vl_workflow_global::Overloading::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchD1)
+{
+	WString expected = L"[A].";
+	WString actual = ::vl_workflow_global::CoSmcSwitchD1::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchD2)
+{
+	WString expected = L"!";
+	WString actual = ::vl_workflow_global::CoSmcSwitchD2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchI1)
+{
+	WString expected = L"[A].";
+	WString actual = ::vl_workflow_global::CoSmcSwitchI1::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchI2)
+{
+	WString expected = L".";
+	WString actual = ::vl_workflow_global::CoSmcSwitchI2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchIR1)
+{
+	WString expected = L"[A].";
+	WString actual = ::vl_workflow_global::CoSmcSwitchIR1::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchIR2)
+{
+	WString expected = L"";
+	WString actual = ::vl_workflow_global::CoSmcSwitchIR2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchP1)
+{
+	WString expected = L"[A][B].";
+	WString actual = ::vl_workflow_global::CoSmcSwitchP1::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchP2)
+{
+	WString expected = L"[B].!";
+	WString actual = ::vl_workflow_global::CoSmcSwitchP2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchPR1)
+{
+	WString expected = L"[A][B].";
+	WString actual = ::vl_workflow_global::CoSmcSwitchPR1::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcSwitchPR2)
+{
+	WString expected = L"!";
+	WString actual = ::vl_workflow_global::CoSmcSwitchPR2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcGoto)
+{
+	WString expected = L"[A].A!";
+	WString actual = ::vl_workflow_global::CoSmcGoto::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcPush)
+{
+	WString expected = L"[A].A[B].B.";
+	WString actual = ::vl_workflow_global::CoSmcPush::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcTryCatch1)
+{
+	WString expected = L"[A].A[B].B.";
+	WString actual = ::vl_workflow_global::CoSmcTryCatch1::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcTryCatch2)
+{
+	WString expected = L"!A!B.";
+	WString actual = ::vl_workflow_global::CoSmcTryCatch2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(CoSmcCalculator)
+{
+	WString expected = L"[0][0.][0.5][1][1.][1.2][1.25][1.75][3.0625]";
+	WString actual = ::vl_workflow_global::CoSmcCalculator::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
