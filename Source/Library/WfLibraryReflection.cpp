@@ -98,6 +98,8 @@ WfLoadLibraryTypes
 			END_CLASS_MEMBER(Sys)
 
 			BEGIN_CLASS_MEMBER(Math)
+				CLASS_MEMBER_STATIC_METHOD(Pi, NO_PARAMETER)
+
 				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint8_t(*)(vint8_t))
 				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint16_t(*)(vint16_t))
 				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint32_t(*)(vint32_t))

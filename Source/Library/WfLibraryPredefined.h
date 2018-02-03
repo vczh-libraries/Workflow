@@ -218,6 +218,8 @@ Libraries
 			class Math : public Description<Math>
 			{
 			public:
+				static double		Pi()							{ return ASin(1) * 2; }
+
 				static vint8_t		Abs(vint8_t value)				{ return value > 0 ? value : -value; }
 				static vint16_t		Abs(vint16_t value)				{ return value > 0 ? value : -value; }
 				static vint32_t		Abs(vint32_t value)				{ return value > 0 ? value : -value; }
