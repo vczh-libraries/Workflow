@@ -84,6 +84,17 @@ WfLoadLibraryTypes
 				DEFINE_COMPARE(DateTime)
 #undef DEFINE_COMPARE
 #pragma pop_macro("CompareString")
+
+				CLASS_MEMBER_STATIC_METHOD(GetLocalTime, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(GetUtcTime, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(ToLocalTime, { L"dt" })
+				CLASS_MEMBER_STATIC_METHOD(ToUtcTime, { L"dt" })
+				CLASS_MEMBER_STATIC_METHOD(Forward, { L"dt" _ L"milliseconds" })
+				CLASS_MEMBER_STATIC_METHOD(Backward, { L"dt" _ L"milliseconds" })
+
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateDateTime, {L"year" _ L"month" _ L"day" }, DateTime(*)(vint, vint, vint))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateDateTime, { L"year" _ L"month" _ L"day" _ L"hour" _ L"minute" _ L"second" _ L"milliseconds" }, DateTime(*)(vint, vint, vint, vint, vint, vint, vint))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(CreateDateTime, { L"filetime" }, DateTime(*)(vuint64_t))
 			END_CLASS_MEMBER(Sys)
 
 			BEGIN_CLASS_MEMBER(Math)
