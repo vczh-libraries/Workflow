@@ -334,7 +334,7 @@ namespace vl
 
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				auto classFullName = CppGetFullName(td);
-				return GenerateClassMemberImpl(this, writer, GetClassBaseName(decl), ConvertName(decl->name.value), classFullName , memberDecl, prefix);
+				return GenerateClassMemberImpl(this, writer, decl.Obj(), GetClassBaseName(decl), ConvertName(decl->name.value), classFullName , memberDecl, prefix);
 			}
 
 			void WfCppConfig::WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)

@@ -123,6 +123,8 @@ Class (::MyClass)
 ***********************************************************************/
 
 MyClass::MyClass(::vl::vint _begin, ::vl::vint _end)
+	: begin((- static_cast<::vl::vint>(1)))
+	, end((- static_cast<::vl::vint>(1)))
 {
 	(this->begin = _begin);
 	(this->end = _end);

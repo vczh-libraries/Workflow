@@ -448,7 +448,7 @@ WfCppConfig::WriteCpp
 				WString classFullName = L"::" + assemblyNamespace + L"::" + name;
 				FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
 				{
-					if (GenerateClassMemberImpl(this, writer, name, name, classFullName, memberDecl, L"\t"))
+					if (GenerateClassMemberImpl(this, writer, nullptr, name, name, classFullName, memberDecl, L"\t"))
 					{
 						writer.WriteLine(L"");
 					}

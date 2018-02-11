@@ -101,10 +101,12 @@ Class (::Methods)
 ***********************************************************************/
 
 Methods::Methods()
+	: x(static_cast<::vl::vint>(0))
 {
 }
 
 Methods::Methods(::vl::vint _x)
+	: x(static_cast<::vl::vint>(0))
 {
 	(this->x = _x);
 	if ((::vl::__vwsn::This(this)->x != this->x))

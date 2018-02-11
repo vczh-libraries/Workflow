@@ -47,6 +47,7 @@ namespace calculator
 	}
 
 	NumberExpression::NumberExpression(::vl::vint _value)
+		: __vwsn_prop_Value(static_cast<::vl::vint>(0))
 	{
 		this->SetValue(_value);
 	}

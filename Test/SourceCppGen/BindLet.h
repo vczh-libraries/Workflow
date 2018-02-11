@@ -37,7 +37,7 @@ class Bar : public ::vl::Object, public ::vl::reflection::Description<Bar>
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Bar>;
 #endif
 public:
-	::vl::vint __vwsn_prop_value = static_cast<::vl::vint>(0);
+	::vl::vint __vwsn_prop_value;
 	::vl::vint Getvalue();
 	void Setvalue(::vl::vint __vwsn_value_);
 	::vl::Event<void()> valueChanged;
@@ -51,7 +51,7 @@ class Foo : public ::vl::Object, public ::vl::reflection::Description<Foo>
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Foo>;
 #endif
 public:
-	::vl::Ptr<::Bar> __vwsn_prop_bar = ::vl::Ptr<::Bar>(new ::Bar());
+	::vl::Ptr<::Bar> __vwsn_prop_bar;
 	::vl::Ptr<::Bar> Getbar();
 	void Setbar(::vl::Ptr<::Bar> __vwsn_value_);
 	::vl::Event<void()> barChanged;

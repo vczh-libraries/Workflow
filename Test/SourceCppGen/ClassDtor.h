@@ -31,8 +31,8 @@ class Dtor : public ::vl::Object, public ::vl::reflection::Description<Dtor>
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Dtor>;
 #endif
 public:
-	::vl::WString name = ::vl::WString(L"", false);
-	::Dtor* next = static_cast<::Dtor*>(nullptr);
+	::vl::WString name;
+	::Dtor* next;
 	Dtor();
 	~Dtor();
 };

@@ -50,8 +50,8 @@ public:
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
 #endif
 	public:
-		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>();
-		::vl::WString s = ::vl::WString(L"", false);
+		::vl::Ptr<::vl::reflection::description::IValueSubscription> subscription;
+		::vl::WString s;
 		void Initialize(::Derived* derived);
 		Base();
 	};
@@ -68,9 +68,9 @@ class Derived : public ::OuterClass::Base, public ::vl::reflection::Description<
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Derived>;
 #endif
 protected:
-	::vl::Ptr<::test::ObservableValue> x = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-	::vl::Ptr<::test::ObservableValue> y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
-	::vl::Ptr<::test::ObservableValue> z = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue());
+	::vl::Ptr<::test::ObservableValue> x;
+	::vl::Ptr<::test::ObservableValue> y;
+	::vl::Ptr<::test::ObservableValue> z;
 public:
 	Derived();
 	void Execute();

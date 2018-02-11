@@ -38,16 +38,16 @@ class SMCalculator : public ::vl::reflection::description::StateMachine, public 
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SMCalculator>;
 #endif
 public:
-	::vl::WString valueFirst = ::vl::WString(L"", false);
-	::vl::WString op = ::vl::WString(L"", false);
-	::vl::WString __vwsn_prop_Value = ::vl::WString(L"0", false);
+	::vl::WString valueFirst;
+	::vl::WString op;
+	::vl::WString __vwsn_prop_Value;
 	::vl::WString GetValue();
 	void SetValue(const ::vl::WString& __vwsn_value_);
 	::vl::Event<void()> ValueChanged;
 	void Update(const ::vl::WString& value);
 	void Calculate();
-	::vl::vint __vwsn_stateip_Digit_i = static_cast<::vl::vint>(0);
-	bool __vwsn_statesp_Integer_newNumber = false;
+	::vl::vint __vwsn_stateip_Digit_i;
+	bool __vwsn_statesp_Integer_newNumber;
 	void Digit(::vl::vint i);
 	void Dot();
 	void Add();

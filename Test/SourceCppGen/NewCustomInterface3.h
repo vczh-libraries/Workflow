@@ -49,8 +49,8 @@ class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClas
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyClass>;
 #endif
 public:
-	::vl::vint begin = (- static_cast<::vl::vint>(1));
-	::vl::vint end = (- static_cast<::vl::vint>(1));
+	::vl::vint begin;
+	::vl::vint end;
 	MyClass(::vl::vint _begin, ::vl::vint _end);
 	static ::vl::vint Get50();
 	::vl::Ptr<::IMyInterface3> CreateMyInterface();

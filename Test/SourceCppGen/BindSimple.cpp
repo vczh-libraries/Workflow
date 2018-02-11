@@ -179,6 +179,8 @@ void OuterClass::Base::Initialize(::Derived* derived)
 }
 
 OuterClass::Base::Base()
+	: subscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>())
+	, s(::vl::WString(L"", false))
 {
 }
 
@@ -187,6 +189,9 @@ Class (::Derived)
 ***********************************************************************/
 
 Derived::Derived()
+	: x(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue()))
+	, y(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue()))
+	, z(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue()))
 {
 	this->Initialize(this);
 }

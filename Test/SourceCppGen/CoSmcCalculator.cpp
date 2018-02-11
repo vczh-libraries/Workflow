@@ -625,6 +625,11 @@ void SMCalculator::__vwsn_state_CreateCoroutine(::vl::vint __vwsn_state_startSta
 }
 
 SMCalculator::SMCalculator()
+	: valueFirst(::vl::WString(L"", false))
+	, op(::vl::WString(L"", false))
+	, __vwsn_prop_Value(::vl::WString(L"0", false))
+	, __vwsn_stateip_Digit_i(static_cast<::vl::vint>(0))
+	, __vwsn_statesp_Integer_newNumber(false)
 {
 }
 

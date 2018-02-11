@@ -76,6 +76,8 @@ Class (::Dtor)
 ***********************************************************************/
 
 Dtor::Dtor()
+	: name(::vl::WString(L"", false))
+	, next(static_cast<::Dtor*>(nullptr))
 {
 }
 

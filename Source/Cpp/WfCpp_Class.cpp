@@ -84,12 +84,7 @@ WfGenerateClassMemberDeclVisitor
 					auto symbol = scope->symbols[node->name.value][0];
 					auto typeInfo = symbol->typeInfo;
 					writer.WriteString(prefix + config->ConvertType(typeInfo.Obj()) + L" " + config->ConvertName(node->name.value));
-					if (!forClassExpr && node->expression)
-					{
-						writer.WriteString(L" = ");
-						GenerateExpression(config, writer, node->expression, typeInfo.Obj());
-					}
-					else
+					if (forClassExpr)
 					{
 						auto defaultValue = config->DefaultValue(typeInfo.Obj());
 						if (defaultValue != L"")
@@ -163,6 +158,78 @@ WfGenerateClassMemberDeclVisitor
 				}
 			};
 
+			class WfGenerateClassMemberInitVisitor : public empty_visitor::DeclarationVisitor
+			{
+			public:
+				WfCppConfig * config;
+				stream::StreamWriter&		writer;
+				WString						prefix;
+				vint&						callIndex;
+
+				WfGenerateClassMemberInitVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _prefix, vint& _callIndex)
+					:config(_config)
+					, writer(_writer)
+					, prefix(_prefix)
+					, callIndex(_callIndex)
+				{
+				}
+
+				void WriteVariableHeader(WfVariableDeclaration* node)
+				{
+					writer.WriteString(prefix);
+					if (callIndex++ == 0)
+					{
+						writer.WriteString(L"\t: ");
+					}
+					else
+					{
+						writer.WriteString(L"\t, ");
+					}
+					writer.WriteString(config->ConvertName(node->name.value));
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+					auto scope = config->manager->nodeScopes[node].Obj();
+					auto symbol = scope->symbols[node->name.value][0];
+					auto typeInfo = symbol->typeInfo;
+					if (node->expression)
+					{
+						WriteVariableHeader(node);
+						writer.WriteString(L"(");
+						GenerateExpression(config, writer, node->expression, typeInfo.Obj());
+						writer.WriteLine(L")");
+					}
+					else
+					{
+						auto defaultValue = config->DefaultValue(typeInfo.Obj());
+						if (defaultValue != L"")
+						{
+							WriteVariableHeader(node);
+							writer.WriteString(L"(");
+							writer.WriteString(defaultValue);
+							writer.WriteLine(L")");
+						}
+					}
+				}
+
+				void Dispatch(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+			};
+
 			void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> memberDecl, const WString& prefix, bool forClassExpr)
 			{
 				WfGenerateClassMemberDeclVisitor visitor(config, writer, className, prefix, forClassExpr);
@@ -178,15 +245,17 @@ WfGenerateClassMemberImplVisitor
 			public:
 				WfCppConfig*				config;
 				stream::StreamWriter&		writer;
+				WfClassDeclaration*			classDef;
 				WString						classBaseName;
 				WString						className;
 				WString						classFullName;
 				WString						prefix;
 				bool						printableMember = false;
 
-				WfGenerateClassMemberImplVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, const WString& _classBaseName, const WString& _className, const WString& _classFullName, const WString& _prefix)
+				WfGenerateClassMemberImplVisitor(WfCppConfig* _config, stream::StreamWriter& _writer, WfClassDeclaration* _classDef, const WString& _classBaseName, const WString& _className, const WString& _classFullName, const WString& _prefix)
 					:config(_config)
 					, writer(_writer)
+					, classDef(_classDef)
 					, classBaseName(_classBaseName)
 					, className(_className)
 					, classFullName(_classFullName)
@@ -274,13 +343,15 @@ WfGenerateClassMemberImplVisitor
 					writer.WriteString(prefix);
 					config->WriteFunctionHeader(writer, methodInfo, arguments, classBaseName + L"::" + className, false);
 					writer.WriteLine(L"");
-					FOREACH_INDEXER(Ptr<WfBaseConstructorCall>, call, callIndex, node->baseConstructorCalls)
+
+					vint callIndex = 0;
+					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
 					{
 						auto callType = CreateTypeInfoFromType(scope, call->type);
 						auto callCtor = config->manager->baseConstructorCallResolvings[{node, callType->GetTypeDescriptor()}].value;
 
 						writer.WriteString(prefix);
-						if (callIndex == 0)
+						if (callIndex++ == 0)
 						{
 							writer.WriteString(L"\t: ");
 						}
@@ -297,6 +368,15 @@ WfGenerateClassMemberImplVisitor
 							GenerateExpression(config, writer, argument, callCtor->GetParameter(argumentIndex)->GetType());
 						}
 						writer.WriteLine(L")");
+					}
+
+					if (classDef)
+					{
+						WfGenerateClassMemberInitVisitor visitor(config, writer, prefix, callIndex);
+						FOREACH(Ptr<WfDeclaration>, member, classDef->declarations)
+						{
+							member->Accept(&visitor);
+						}
 					}
 
 					if (userImpl)
@@ -363,9 +443,9 @@ WfGenerateClassMemberImplVisitor
 				}
 			};
 
-			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> memberDecl, const WString& prefix)
+			bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, WfClassDeclaration* classDef, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> memberDecl, const WString& prefix)
 			{
-				WfGenerateClassMemberImplVisitor visitor(config, writer, classBaseName, className, classFullName, prefix);
+				WfGenerateClassMemberImplVisitor visitor(config, writer, classDef, classBaseName, className, classFullName, prefix);
 				memberDecl->Accept(&visitor);
 				return visitor.printableMember;
 			}

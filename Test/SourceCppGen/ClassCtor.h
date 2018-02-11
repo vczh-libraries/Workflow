@@ -32,7 +32,7 @@ class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
 #endif
 public:
-	::vl::vint x = static_cast<::vl::vint>(0);
+	::vl::vint x;
 	Base();
 	Base(::vl::vint _x);
 	::vl::vint GetX();

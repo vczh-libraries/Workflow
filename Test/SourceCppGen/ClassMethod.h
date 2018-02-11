@@ -36,7 +36,7 @@ class Methods : public ::vl::Object, public ::vl::reflection::Description<Method
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Methods>;
 #endif
 public:
-	::vl::vint x = static_cast<::vl::vint>(0);
+	::vl::vint x;
 	Methods();
 	Methods(::vl::vint _x);
 	::vl::vint GetX();

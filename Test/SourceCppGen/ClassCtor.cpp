@@ -83,10 +83,12 @@ Class (::Base)
 ***********************************************************************/
 
 Base::Base()
+	: x(static_cast<::vl::vint>(0))
 {
 }
 
 Base::Base(::vl::vint _x)
+	: x(static_cast<::vl::vint>(0))
 {
 	(this->x = _x);
 	if ((::vl::__vwsn::This(this)->x != this->x))

@@ -65,6 +65,9 @@ namespace calculator
 	}
 
 	BinaryExpression::BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right)
+		: __vwsn_prop_Operator(::calculator::BinaryExpression::BinaryOperator::Add)
+		, __vwsn_prop_Left(::vl::Ptr<::calculator::Expression>())
+		, __vwsn_prop_Right(::vl::Ptr<::calculator::Expression>())
 	{
 		this->SetLeft(_left);
 		this->SetOperator(_op);

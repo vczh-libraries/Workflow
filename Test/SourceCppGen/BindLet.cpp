@@ -242,10 +242,12 @@ void Bar::Setvalue(::vl::vint __vwsn_value_)
 }
 
 Bar::Bar()
+	: __vwsn_prop_value(static_cast<::vl::vint>(0))
 {
 }
 
 Bar::Bar(::vl::vint _value)
+	: __vwsn_prop_value(static_cast<::vl::vint>(0))
 {
 	::vl::__vwsn::This(this)->Setvalue(_value);
 }
@@ -268,6 +270,7 @@ void Foo::Setbar(::vl::Ptr<::Bar> __vwsn_value_)
 }
 
 Foo::Foo()
+	: __vwsn_prop_bar(::vl::Ptr<::Bar>(new ::Bar()))
 {
 }
 
