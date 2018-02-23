@@ -155,7 +155,7 @@ CompleteScopeForClassMember
 					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
 				}
 
-				void Visit(WfStateMachineDeclaration* node)
+				void Visit(WfStateMachineDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
 					FOREACH(Ptr<WfStateInput>, input, node->inputs)
