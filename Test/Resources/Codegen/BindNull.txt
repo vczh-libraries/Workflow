@@ -1,0 +1,40 @@
+module test;
+using test::*;
+using system::*;
+
+class A
+{
+	prop b: B^ = null {}
+}
+
+class B
+{
+	prop c: C^ = null {}
+}
+
+class C
+{
+	prop x: int = 0 {}
+}
+
+var s = "";
+
+func main() : string
+{
+	var a = new A^();
+	var subscription = bind(a.b.c.x ?? "*");
+	subscription.Open();
+	attach(subscription.ValueChanged, func(value: object): void
+	{
+		s = s & $"[$(cast string value)]";
+	});
+
+	a.b = new B^();
+	a.b.c = new C^();
+	a.b.c.x = 100;
+	a.b.c = null;
+	a.b = null;
+
+	subscription.Close();
+	return s;
+}
