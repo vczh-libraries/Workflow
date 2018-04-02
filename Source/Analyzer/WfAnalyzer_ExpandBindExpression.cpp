@@ -878,10 +878,18 @@ CreateBindAttachStatement
 					attach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
 					attach->function = CreateReference(callbackInfo.callbackName);
 
+					auto nullExpr = MakePtr<WfLiteralExpression>();
+					nullExpr->value = WfLiteralValue::Null;
+
+					auto protect = MakePtr<WfBinaryExpression>();
+					protect->first = attach;
+					protect->second = nullExpr;
+					protect->op = WfBinaryOperator::FailedThen;
+
 					auto assign = MakePtr<WfBinaryExpression>();
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = CreateReference(callbackInfo.handlerName);
-					assign->second = attach;
+					assign->second = protect;
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = assign;
@@ -942,10 +950,18 @@ CreateBindCacheAssignStatement
 				auto parent = context.observeParents[observe];
 				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(parent, true));
 
+				auto nullExpr = MakePtr<WfLiteralExpression>();
+				nullExpr->value = WfLiteralValue::Null;
+
+				auto protect = MakePtr<WfBinaryExpression>();
+				protect->first = ExpandObserveExpressionVisitor::Execute(parent, context, false);
+				protect->second = nullExpr;
+				protect->op = WfBinaryOperator::FailedThen;
+
 				auto assign = MakePtr<WfBinaryExpression>();
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = CreateReference(cacheName);
-				assign->second = ExpandObserveExpressionVisitor::Execute(parent, context, false);
+				assign->second = protect;
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = assign;
