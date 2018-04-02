@@ -897,13 +897,39 @@ CreateBindDetachStatement
 			{
 				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
 				{
-					auto detach = MakePtr<WfDetachEventExpression>();
-					detach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
-					detach->handler = CreateReference(callbackInfo.handlerName);
+					auto testNull = MakePtr<WfTypeTestingExpression>();
+					testNull->expression = CreateReference(callbackInfo.handlerName);
+					testNull->test = WfTypeTesting::IsNotNull;
 
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = detach;
-					block->statements.Add(stat);
+					auto ifStat = MakePtr<WfIfStatement>();
+					ifStat->expression = testNull;
+
+					auto trueBlock = MakePtr<WfBlockStatement>();
+					ifStat->trueBranch = trueBlock;
+
+					block->statements.Add(ifStat);
+					{
+						auto detach = MakePtr<WfDetachEventExpression>();
+						detach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
+						detach->handler = CreateReference(callbackInfo.handlerName);
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = detach;
+						trueBlock->statements.Add(stat);
+					}
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->first = CreateReference(callbackInfo.handlerName);
+						assignExpr->second = nullExpr;
+						assignExpr->op = WfBinaryOperator::Assign;
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assignExpr;
+						trueBlock->statements.Add(stat);
+					}
 				}
 			}
 
