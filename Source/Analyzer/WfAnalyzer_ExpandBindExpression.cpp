@@ -945,17 +945,14 @@ CreateBindDetachStatement
 CreateBindCacheAssignStatement
 ***********************************************************************/
 
-			void CreateBindCacheAssignStatement(Ptr<WfBlockStatement> block, WfExpression* observe, BindContext& context)
+			void CreateBindCacheAssignStatement(WfLexicalScopeManager* manager, Ptr<WfBlockStatement> block, WfExpression* observe, BindContext& context)
 			{
 				auto parent = context.observeParents[observe];
 				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(parent, true));
 
-				auto nullExpr = MakePtr<WfLiteralExpression>();
-				nullExpr->value = WfLiteralValue::Null;
-
 				auto protect = MakePtr<WfBinaryExpression>();
 				protect->first = ExpandObserveExpressionVisitor::Execute(parent, context, false);
-				protect->second = nullExpr;
+				protect->second = CreateDefaultValue(manager->expressionResolvings[parent].type.Obj());
 				protect->op = WfBinaryOperator::FailedThen;
 
 				auto assign = MakePtr<WfBinaryExpression>();
@@ -1039,7 +1036,7 @@ IValueSubscription::Open
 									if (!assignedParents.Contains(parent))
 									{
 										assignedParents.Add(parent);
-										CreateBindCacheAssignStatement(ifBlock, observe, context);
+										CreateBindCacheAssignStatement(manager, ifBlock, observe, context);
 									}
 								}
 							}
@@ -1393,7 +1390,7 @@ ExpandBindExpression
 										if (!assignedParents.Contains(parent))
 										{
 											assignedParents.Add(parent);
-											CreateBindCacheAssignStatement(block, affectedObserve, context);
+											CreateBindCacheAssignStatement(manager, block, affectedObserve, context);
 										}
 									}
 								}
