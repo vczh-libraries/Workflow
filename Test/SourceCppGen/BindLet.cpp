@@ -115,19 +115,31 @@ Closures
 
 	void __vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
-		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_6_0);
-		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_5_0);
-		(__vwsn_bind_cache_5 = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->Getbar());
-		(__vwsn_bind_handler_5_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)));
-		(__vwsn_bind_handler_6_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)));
+		if (static_cast<bool>(__vwsn_bind_handler_6_0))
+		{
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_6_0);
+			(__vwsn_bind_handler_6_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+		}
+		if (static_cast<bool>(__vwsn_bind_handler_5_0))
+		{
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_5_0);
+			(__vwsn_bind_handler_5_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+		}
+		(__vwsn_bind_cache_5 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->Getbar(); } catch(...){ return ::vl::Ptr<::Bar>(); } }());
+		(__vwsn_bind_handler_5_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+		(__vwsn_bind_handler_6_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 		this->__vwsn_bind_activator_();
 	}
 
 	void __vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
 	{
-		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, __vwsn_bind_handler_2_0);
-		(__vwsn_bind_cache_2 = ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->Getbar());
-		(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
+		if (static_cast<bool>(__vwsn_bind_handler_2_0))
+		{
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, __vwsn_bind_handler_2_0);
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+		}
+		(__vwsn_bind_cache_2 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->Getbar(); } catch(...){ return ::vl::Ptr<::Bar>(); } }());
+		(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 		this->__vwsn_bind_activator_();
 	}
 
@@ -138,9 +150,13 @@ Closures
 
 	void __vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0()
 	{
-		::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, __vwsn_bind_handler_4_0);
-		(__vwsn_bind_cache_4 = ::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->Getbar());
-		(__vwsn_bind_handler_4_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)));
+		if (static_cast<bool>(__vwsn_bind_handler_4_0))
+		{
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, __vwsn_bind_handler_4_0);
+			(__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+		}
+		(__vwsn_bind_cache_4 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->Getbar(); } catch(...){ return ::vl::Ptr<::Bar>(); } }());
+		(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 		this->__vwsn_bind_activator_();
 	}
 
@@ -164,19 +180,19 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = this->y);
-			(__vwsn_bind_cache_1 = this->z);
-			(__vwsn_bind_cache_3 = this->x);
-			(__vwsn_bind_cache_2 = ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->Getbar());
-			(__vwsn_bind_cache_4 = ::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->Getbar());
-			(__vwsn_bind_cache_5 = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->Getbar());
-			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->barChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
-			(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->barChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
-			(__vwsn_bind_handler_2_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)));
-			(__vwsn_bind_handler_3_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->barChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)));
-			(__vwsn_bind_handler_4_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)));
-			(__vwsn_bind_handler_5_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)));
-			(__vwsn_bind_handler_6_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)));
+			(__vwsn_bind_cache_0 = [&](){ try{ return this->y; } catch(...){ return ::vl::Ptr<::Foo>(); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return this->z; } catch(...){ return ::vl::Ptr<::Foo>(); } }());
+			(__vwsn_bind_cache_3 = [&](){ try{ return this->x; } catch(...){ return ::vl::Ptr<::Foo>(); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->Getbar(); } catch(...){ return ::vl::Ptr<::Bar>(); } }());
+			(__vwsn_bind_cache_4 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->Getbar(); } catch(...){ return ::vl::Ptr<::Bar>(); } }());
+			(__vwsn_bind_cache_5 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->Getbar(); } catch(...){ return ::vl::Ptr<::Bar>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->barChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->barChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->barChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_5_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_6_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, ::vl::Func<void()>(this, &__vwsnc1_BindLet_main__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -197,13 +213,41 @@ Closures
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->barChanged, __vwsn_bind_handler_0_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->barChanged, __vwsn_bind_handler_1_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, __vwsn_bind_handler_2_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->barChanged, __vwsn_bind_handler_3_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, __vwsn_bind_handler_4_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_5_0);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_6_0);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->barChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->barChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->valueChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_3_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->barChanged, __vwsn_bind_handler_3_0);
+				(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_4_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_4.Obj())->valueChanged, __vwsn_bind_handler_4_0);
+				(__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_5_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_5_0);
+				(__vwsn_bind_handler_5_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_6_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_5.Obj())->valueChanged, __vwsn_bind_handler_6_0);
+				(__vwsn_bind_handler_6_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::Foo>());
 			(__vwsn_bind_cache_1 = ::vl::Ptr<::Foo>());
 			(__vwsn_bind_cache_2 = ::vl::Ptr<::Bar>());

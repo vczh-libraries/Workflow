@@ -46,6 +46,7 @@
 #include "BindFormat.h"
 #include "BindCustomInterfaceReflection.h"
 #include "BindCustomInterface2Reflection.h"
+#include "BindNullReflection.h"
 #include "ClassField.h"
 #include "CallStaticMethodReflection.h"
 #include "NestedLambdaReflection.h"
@@ -100,6 +101,7 @@ void LoadTestCaseTypes()
 	 LoadBindLetTypes();
 	 LoadBindCustomInterfaceTypes();
 	 LoadBindCustomInterface2Types();
+	 LoadBindNullTypes();
 	 LoadCallStaticMethodTypes();
 	 LoadNestedLambdaTypes();
 	 LoadClassMethodTypes();
@@ -555,6 +557,15 @@ TEST_CASE(BindCustomInterface2)
 {
 	WString expected = L"[1][3][6][10][15]";
 	WString actual = ::vl_workflow_global::BindCustomInterface2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(BindNull)
+{
+	WString expected = L"[*][0][100][*][*]";
+	WString actual = ::vl_workflow_global::BindNull::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
