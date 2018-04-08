@@ -20,6 +20,7 @@ TypeName
 
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Sys, system::Sys)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Math, system::Math)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Localization, system::Localization)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::CoroutineStatus, system::CoroutineStatus)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::CoroutineResult, system::CoroutineResult)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ICoroutine, system::Coroutine)
@@ -138,6 +139,29 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_METHOD(Round, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(Trunc, { L"value" })
 			END_CLASS_MEMBER(Math)
+
+			BEGIN_CLASS_MEMBER(Localization)
+				CLASS_MEMBER_STATIC_METHOD(Invariant, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(System, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(User, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(Locales, NO_PARAMETER)
+
+				CLASS_MEMBER_STATIC_METHOD(GetShortDateFormats, { L"locale" })
+				CLASS_MEMBER_STATIC_METHOD(GetLongDateFormats, { L"locale" })
+				CLASS_MEMBER_STATIC_METHOD(GetYearMonthDateFormats, { L"locale" })
+				CLASS_MEMBER_STATIC_METHOD(GetLongTimeFormats, { L"locale" })
+				CLASS_MEMBER_STATIC_METHOD(GetShortTimeFormats, { L"locale" })
+
+				CLASS_MEMBER_STATIC_METHOD(GetShortDayOfWeekName, { L"locale" _ L"dayOfWeek" })
+				CLASS_MEMBER_STATIC_METHOD(GetLongDayOfWeekName, { L"locale" _ L"dayOfWeek" })
+				CLASS_MEMBER_STATIC_METHOD(GetShortMonthName, { L"locale" _ L"month" })
+				CLASS_MEMBER_STATIC_METHOD(GetLongMonthName, { L"locale" _ L"month" })
+
+				CLASS_MEMBER_STATIC_METHOD(FormatDate, { L"locale" _ L"format" _ L"date" })
+				CLASS_MEMBER_STATIC_METHOD(FormatTime, { L"locale" _ L"format" _ L"date" })
+				CLASS_MEMBER_STATIC_METHOD(FormatNumber, { L"locale" _ L"number" })
+				CLASS_MEMBER_STATIC_METHOD(FormatCurrency, { L"locale" _ L"number" })
+			END_CLASS_MEMBER(Localization)
 
 			BEGIN_ENUM_ITEM(CoroutineStatus)
 				ENUM_CLASS_ITEM(Waiting)

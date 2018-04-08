@@ -657,7 +657,7 @@ StateMachine
 			}
 
 /***********************************************************************
-Libraries
+Sys
 ***********************************************************************/
 
 			namespace system_sys
@@ -783,6 +783,10 @@ Libraries
 			DEFINE_COMPARE(DateTime)
 #undef DEFINE_COMPARE
 
+/***********************************************************************
+Math
+***********************************************************************/
+
 #define DEFINE_MINMAX(TYPE)\
 			TYPE Math::Min(TYPE a, TYPE b)\
 			{\
@@ -796,6 +800,107 @@ Libraries
 			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_MINMAX)
 			DEFINE_MINMAX(DateTime)
 #undef DEFINE_MINMAX
+
+/***********************************************************************
+Localization
+***********************************************************************/
+
+			Locale Localization::Invariant()
+			{
+				return Locale::Invariant();
+			}
+
+			Locale Localization::System()
+			{
+				return Locale::SystemDefault();
+			}
+
+			Locale Localization::User()
+			{
+				return Locale::UserDefault();
+			}
+
+			collections::LazyList<Locale> Localization::Locales()
+			{
+				auto result = MakePtr<List<Locale>>();
+				Locale::Enumerate(*result.Obj());
+				return result;
+			}
+
+			collections::LazyList<WString> Localization::GetShortDateFormats(Locale locale)
+			{
+				auto result = MakePtr<List<WString>>();
+				locale.GetShortDateFormats(*result.Obj());
+				return result;
+			}
+
+			collections::LazyList<WString> Localization::GetLongDateFormats(Locale locale)
+			{
+				auto result = MakePtr<List<WString>>();
+				locale.GetLongDateFormats(*result.Obj());
+				return result;
+			}
+
+			collections::LazyList<WString> Localization::GetYearMonthDateFormats(Locale locale)
+			{
+				auto result = MakePtr<List<WString>>();
+				locale.GetYearMonthDateFormats(*result.Obj());
+				return result;
+			}
+
+			collections::LazyList<WString> Localization::GetLongTimeFormats(Locale locale)
+			{
+				auto result = MakePtr<List<WString>>();
+				locale.GetLongTimeFormats(*result.Obj());
+				return result;
+			}
+
+			collections::LazyList<WString> Localization::GetShortTimeFormats(Locale locale)
+			{
+				auto result = MakePtr<List<WString>>();
+				locale.GetShortTimeFormats(*result.Obj());
+				return result;
+			}
+
+			WString Localization::GetShortDayOfWeekName(Locale locale, vint dayOfWeek)
+			{
+				return locale.GetShortDayOfWeekName(dayOfWeek);
+			}
+
+			WString Localization::GetLongDayOfWeekName(Locale locale, vint dayOfWeek)
+			{
+				return locale.GetLongDayOfWeekName(dayOfWeek);
+			}
+
+			WString Localization::GetShortMonthName(Locale locale, vint month)
+			{
+				return locale.GetShortMonthName(month);
+			}
+
+			WString Localization::GetLongMonthName(Locale locale, vint month)
+			{
+				return locale.GetLongMonthName(month);
+			}
+
+			WString Localization::FormatDate(Locale locale, const WString& format, DateTime date)
+			{
+				return locale.FormatDate(format, date);
+			}
+
+			WString Localization::FormatTime(Locale locale, const WString& format, DateTime date)
+			{
+				return locale.FormatTime(format, date);
+			}
+
+			WString Localization::FormatNumber(Locale locale, const WString& number)
+			{
+				return locale.FormatNumber(number);
+			}
+
+			WString Localization::FormatCurrency(Locale locale, const WString& number)
+			{
+				return locale.FormatCurrency(number);
+			}
 		}
 	}
 }

@@ -27,6 +27,7 @@ Predefined Types
 #define WORKFLOW_LIBRARY_TYPES(F)\
 			F(Sys)							\
 			F(Math)							\
+			F(Localization)					\
 			F(CoroutineStatus)				\
 			F(CoroutineResult)				\
 			F(ICoroutine)					\
