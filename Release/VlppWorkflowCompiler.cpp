@@ -33288,17 +33288,17 @@ MergeCppFile
 							state = WAIT_OPEN;
 							break;
 						case WAIT_OPEN:
-							if (content == L"{")
+							if (content.Length() >= 1 && content[0] == L'{')
 							{
 								state = WAIT_CLOSE;
 							}
 							break;
 						case WAIT_CLOSE:
-							if (content == L"{")
+							if (content.Length() >= 1 && content[0] == L'{')
 							{
 								counter++;
 							}
-							else if (content == L"}")
+							else if (content.Length() >= 1 && content[0] == L'}')
 							{
 								if (counter == 0)
 								{
