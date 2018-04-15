@@ -36,11 +36,13 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::workflow::hints::Base)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::workflow::hints::Base>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(::workflow::hints::Base*(::vl::vint), { L"x" })
 			END_CLASS_MEMBER(::workflow::hints::Base)
 
 			BEGIN_CLASS_MEMBER(::workflow::hints::Derived)
+				CLASS_MEMBER_BASE(::workflow::hints::Base)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::workflow::hints::Derived>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(::workflow::hints::Derived*(::vl::vint), { L"x" })
 			END_CLASS_MEMBER(::workflow::hints::Derived)

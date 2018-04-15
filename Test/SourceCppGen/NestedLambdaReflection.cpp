@@ -36,6 +36,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IA)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(Calculate, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetA, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetA, { L"value" })
@@ -44,6 +45,7 @@ namespace vl
 			END_INTERFACE_MEMBER(::IA)
 
 			BEGIN_INTERFACE_MEMBER(::IB)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(Calculate, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetB, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetB, { L"value" })

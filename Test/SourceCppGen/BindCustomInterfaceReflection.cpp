@@ -36,10 +36,12 @@ namespace vl
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IAdder)
+				CLASS_MEMBER_BASE(::ISummer)
 				CLASS_MEMBER_METHOD(Add, { L"value" })
 			END_INTERFACE_MEMBER(::IAdder)
 
 			BEGIN_INTERFACE_MEMBER(::ISummer)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(GetSum, NO_PARAMETER)
 				CLASS_MEMBER_EVENT(SumChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Sum, GetSum, SumChanged)

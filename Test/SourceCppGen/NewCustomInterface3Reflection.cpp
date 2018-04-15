@@ -36,10 +36,12 @@ namespace vl
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IMyInterface3)
+				CLASS_MEMBER_BASE(::vl::reflection::description::IValueEnumerable)
 				CLASS_MEMBER_METHOD(Get100, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::IMyInterface3)
 
 			BEGIN_CLASS_MEMBER(::MyClass)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::MyClass>(::vl::vint, ::vl::vint), { L"_begin" _ L"_end" })
 				CLASS_MEMBER_METHOD(CreateMyInterface, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(Get50, NO_PARAMETER)

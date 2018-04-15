@@ -35,6 +35,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IMyInterface2)
+				CLASS_MEMBER_BASE(::vl::reflection::description::IValueEnumerable)
 				CLASS_MEMBER_METHOD(Get100, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::IMyInterface2)
 

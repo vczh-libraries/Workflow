@@ -37,6 +37,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::A)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::A>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Getb, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Setb, { L"__vwsn_value_" })
@@ -46,6 +47,7 @@ namespace vl
 			END_CLASS_MEMBER(::A)
 
 			BEGIN_CLASS_MEMBER(::B)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::B>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Getc, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Setc, { L"__vwsn_value_" })
@@ -55,6 +57,7 @@ namespace vl
 			END_CLASS_MEMBER(::B)
 
 			BEGIN_CLASS_MEMBER(::C)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::C>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Getx, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Setx, { L"__vwsn_value_" })

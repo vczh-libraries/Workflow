@@ -36,6 +36,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Base)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Base>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Base>(::vl::vint), { L"_x" })
 				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
@@ -46,6 +47,8 @@ namespace vl
 			END_CLASS_MEMBER(::Base)
 
 			BEGIN_CLASS_MEMBER(::Ctor)
+				CLASS_MEMBER_BASE(::Base)
+				CLASS_MEMBER_BASE(::test::ObservableValue)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(::vl::vint, bool), { L"y" _ L"b" })
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Ctor>(bool, ::vl::vint), { L"b" _ L"value" })

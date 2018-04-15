@@ -36,6 +36,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Bar)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Bar>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Bar>(::vl::vint), { L"_value" })
 				CLASS_MEMBER_METHOD(Getvalue, NO_PARAMETER)
@@ -46,6 +47,7 @@ namespace vl
 			END_CLASS_MEMBER(::Bar)
 
 			BEGIN_CLASS_MEMBER(::Foo)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Foo>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Getbar, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Setbar, { L"__vwsn_value_" })

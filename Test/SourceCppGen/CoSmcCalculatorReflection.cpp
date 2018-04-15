@@ -35,6 +35,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::SMCalculator)
+				CLASS_MEMBER_BASE(::vl::reflection::description::StateMachine)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::SMCalculator>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_state_CreateCoroutine, { L"__vwsn_state_startState" })
 				CLASS_MEMBER_METHOD(Add, NO_PARAMETER)

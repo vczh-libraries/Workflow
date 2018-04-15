@@ -35,6 +35,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Methods)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Methods>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Methods>(::vl::vint), { L"_x" })
 				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
