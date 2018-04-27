@@ -832,8 +832,14 @@ ValidateSemantic(Expression)
 
 						if (firstType && secondType)
 						{
-							auto mergedType = GetMergedType(firstType, secondType);
-							results.Add(ResolveExpressionResult::ReadonlyType(mergedType ? mergedType : firstType));
+							if (auto mergedType = GetMergedType(firstType, secondType))
+							{
+								results.Add(ResolveExpressionResult::ReadonlyType(mergedType));
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::CannotMergeTwoType(node, firstType.Obj(), secondType.Obj()));
+							}
 						}
 					}
 					else
