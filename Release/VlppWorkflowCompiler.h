@@ -4576,6 +4576,9 @@ namespace vl
 			protected:
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
+
+				template<typename T, typename U>
+				void												SortInternal(collections::List<Ptr<T>>& decls, U isFound);
 				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
 				void												Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls);
 

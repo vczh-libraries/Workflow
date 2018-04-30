@@ -29339,42 +29339,30 @@ WfCppConfig
 				}
 			}
 
-			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
+			template<typename T, typename U>
+			void WfCppConfig::SortInternal(collections::List<Ptr<T>>& decls, U isFound)
 			{
 				List<ITypeDescriptor*> tds;
-				FOREACH_INDEXER(Ptr<WfStructDeclaration>, decl, index, structDecls)
+				FOREACH_INDEXER(Ptr<T>, decl, index, decls)
 				{
 					tds.Add(manager->declarationTypes[decl.Obj()].Obj());
 				}
 
 				for (vint i = 0; i < tds.Count(); i++)
 				{
-					for (vint j = i; i < tds.Count(); j++)
+					for (vint j = i; j < tds.Count(); j++)
 					{
 						auto td = tds[j];
-						vint count = td->GetPropertyCount();
-						bool found = false;
-						for (vint k = 0; k < count && !found; k++)
-						{
-							auto prop = td->GetProperty(k);
-							auto propTd = prop->GetReturn()->GetTypeDescriptor();
-							for (vint l = k + 1; l < tds.Count() && !found; l++)
-							{
-								found = tds[l] == propTd;
-							}
-						}
-
-						if (!found)
+						if (!isFound(td, tds))
 						{
 							if (j != i)
 							{
-								auto t = tds[j];
 								tds.RemoveAt(j);
-								tds.Insert(i, t);
+								tds.Insert(i, td);
 
-								auto decl = structDecls[j];
-								structDecls.RemoveAt(j);
-								structDecls.Insert(i, decl);
+								auto decl = decls[j];
+								decls.RemoveAt(j);
+								decls.Insert(i, decl);
 							}
 
 							break;
@@ -29383,47 +29371,43 @@ WfCppConfig
 				}
 			}
 
-			void WfCppConfig::Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls)
+			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
 			{
-				List<ITypeDescriptor*> tds;
-				FOREACH_INDEXER(Ptr<WfClassDeclaration>, decl, index, classDecls)
+				SortInternal(structDecls, [](ITypeDescriptor* td, List<ITypeDescriptor*>& tds)
 				{
-					tds.Add(manager->declarationTypes[decl.Obj()].Obj());
-				}
+					vint count = td->GetPropertyCount();
+					bool found = false;
 
-				for (vint i = 0; i < tds.Count(); i++)
-				{
-					for (vint j = i; i < tds.Count(); j++)
+					for (vint k = 0; k < count && !found; k++)
 					{
-						auto td = tds[j];
-						vint count = td->GetBaseTypeDescriptorCount();
-						bool found = false;
-						for (vint k = 0; k < count && !found; k++)
+						auto prop = td->GetProperty(k);
+						auto propTd = prop->GetReturn()->GetTypeDescriptor();
+						for (vint l = k + 1; l < tds.Count() && !found; l++)
 						{
-							auto baseTd = td->GetBaseTypeDescriptor(k);
-							for (vint l = k + 1; l < tds.Count() && !found; l++)
-							{
-								found = tds[l] == baseTd;
-							}
-						}
-
-						if (!found)
-						{
-							if (j != i)
-							{
-								auto t = tds[j];
-								tds.RemoveAt(j);
-								tds.Insert(i, t);
-
-								auto decl = classDecls[j];
-								classDecls.RemoveAt(j);
-								classDecls.Insert(i, decl);
-							}
-
-							break;
+							found = tds[l] == propTd;
 						}
 					}
-				}
+					return found;
+				});
+			}
+
+			void WfCppConfig::Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls)
+			{
+				SortInternal(classDecls, [](ITypeDescriptor* td, List<ITypeDescriptor*>& tds)
+				{
+					vint count = td->GetBaseTypeDescriptorCount();
+					bool found = false;
+
+					for (vint k = 0; k < count && !found; k++)
+					{
+						auto baseTd = td->GetBaseTypeDescriptor(k);
+						for (vint l = k + 1; l < tds.Count() && !found; l++)
+						{
+							found = tds[l] == baseTd;
+						}
+					}
+					return found;
+				});
 			}
 
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace)
