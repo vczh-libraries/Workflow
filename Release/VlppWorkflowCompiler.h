@@ -4577,6 +4577,7 @@ namespace vl
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
+				void												Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls);
 
 			public:
 				analyzer::WfLexicalScopeManager*											manager;

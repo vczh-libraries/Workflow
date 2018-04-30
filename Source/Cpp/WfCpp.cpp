@@ -83,6 +83,49 @@ WfCppConfig
 				}
 			}
 
+			void WfCppConfig::Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls)
+			{
+				List<ITypeDescriptor*> tds;
+				FOREACH_INDEXER(Ptr<WfClassDeclaration>, decl, index, classDecls)
+				{
+					tds.Add(manager->declarationTypes[decl.Obj()].Obj());
+				}
+
+				for (vint i = 0; i < tds.Count(); i++)
+				{
+					for (vint j = i; i < tds.Count(); j++)
+					{
+						auto td = tds[j];
+						vint count = td->GetBaseTypeDescriptorCount();
+						bool found = false;
+						for (vint k = 0; k < count && !found; k++)
+						{
+							auto baseTd = td->GetBaseTypeDescriptor(k);
+							for (vint l = k + 1; l < tds.Count() && !found; l++)
+							{
+								found = tds[l] == baseTd;
+							}
+						}
+
+						if (!found)
+						{
+							if (j != i)
+							{
+								auto t = tds[j];
+								tds.RemoveAt(j);
+								tds.Insert(i, t);
+
+								auto decl = classDecls[j];
+								classDecls.RemoveAt(j);
+								classDecls.Insert(i, decl);
+							}
+
+							break;
+						}
+					}
+				}
+			}
+
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace)
 				:manager(_manager)
 				, regexSplitName(L"::")
@@ -97,6 +140,16 @@ WfCppConfig
 				{
 					const auto& values = structDecls.GetByIndex(i);
 					Sort(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
+				}
+				for (vint i = 0; i < topLevelClassDeclsForFiles.Count(); i++)
+				{
+					const auto& values = topLevelClassDeclsForFiles.GetByIndex(i);
+					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
+				}
+				for (vint i = 0; i < classDecls.Count(); i++)
+				{
+					const auto& values = classDecls.GetByIndex(i);
+					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
 				}
 			}
 
