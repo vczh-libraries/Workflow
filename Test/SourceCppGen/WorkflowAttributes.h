@@ -26,8 +26,8 @@ https://github.com/vczh-libraries
 namespace calculator
 {
 	class Expression;
-	class NumberExpression;
 	class BinaryExpression;
+	class NumberExpression;
 
 }
 /***********************************************************************
