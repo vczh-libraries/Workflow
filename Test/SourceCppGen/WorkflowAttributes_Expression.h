@@ -34,6 +34,9 @@ namespace calculator
 		::vl::WString Print();
 		::vl::vint Evaluate();
 		Expression();
+
+	/* USER_CONTENT_BEGIN(custom members of ::calculator::Expression) */
+	/* USER_CONTENT_END() */
 	};
 
 }

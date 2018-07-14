@@ -64,118 +64,120 @@ namespace vl
 				switch (decl->kind)
 				{
 				case WfClassKind::Class:
-				{
-					vint count = td->GetBaseTypeDescriptorCount();
-					bool hasClassBase = Range<vint>(0, count)
-						.Any([=](vint index)
 					{
-						auto baseTd = td->GetBaseTypeDescriptor(index);
-						return baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class
-							&& baseTd != description::GetTypeDescriptor<DescriptableObject>();
-					});
-
-					if (!hasClassBase)
-					{
-						writer.WriteString(L"public ::vl::Object, ");
-					}
-					for (vint i = 0; i < count; i++)
-					{
-						auto baseTd = td->GetBaseTypeDescriptor(i);
-						switch (baseTd->GetTypeDescriptorFlags())
-						{
-						case TypeDescriptorFlags::Class:
-							if (baseTd != description::GetTypeDescriptor<DescriptableObject>())
+						vint count = td->GetBaseTypeDescriptorCount();
+						bool hasClassBase = Range<vint>(0, count)
+							.Any([=](vint index)
 							{
-								writer.WriteString(L"public " + ConvertType(baseTd) + L", ");
+								auto baseTd = td->GetBaseTypeDescriptor(index);
+								return baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class
+									&& baseTd != description::GetTypeDescriptor<DescriptableObject>();
+							});
+
+						if (!hasClassBase)
+						{
+							writer.WriteString(L"public ::vl::Object, ");
+						}
+						for (vint i = 0; i < count; i++)
+						{
+							auto baseTd = td->GetBaseTypeDescriptor(i);
+							switch (baseTd->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::Class:
+								if (baseTd != description::GetTypeDescriptor<DescriptableObject>())
+								{
+									writer.WriteString(L"public " + ConvertType(baseTd) + L", ");
+								}
+								break;
+							case TypeDescriptorFlags::Interface:
+								writer.WriteString(L"public virtual " + ConvertType(baseTd) + L", ");
+								break;
+							default:;
 							}
-							break;
-						case TypeDescriptorFlags::Interface:
-							writer.WriteString(L"public virtual " + ConvertType(baseTd) + L", ");
-							break;
-						default:;
 						}
 					}
-				}
-				break;
+					break;
 				case WfClassKind::Interface:
-				{
-					vint count = td->GetBaseTypeDescriptorCount();
-					for (vint i = 0; i < count; i++)
 					{
-						writer.WriteString(L"public virtual " + ConvertType(td->GetBaseTypeDescriptor(i)) + L", ");
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint i = 0; i < count; i++)
+						{
+							writer.WriteString(L"public virtual " + ConvertType(td->GetBaseTypeDescriptor(i)) + L", ");
+						}
 					}
-				}
-				break;
+					break;
 				}
 				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
 				writer.WriteLine(prefix + L"{");
 
-				List<Ptr<WfClassDeclaration>> unprocessed;
-				unprocessed.Add(decl);
-
-				FOREACH(Ptr<WfAttribute>, attribute, attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 				{
-					auto td = UnboxValue<ITypeDescriptor*>(attributeEvaluator->GetAttributeValue(attribute));
+					List<Ptr<WfClassDeclaration>> unprocessed;
+					unprocessed.Add(decl);
 
-					auto scopeName = manager->typeNames[td];
-					if (scopeName->declarations.Count() == 0)
+					FOREACH(Ptr<WfAttribute>, attribute, attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 					{
-						writer.WriteLine(prefix + L"\tfriend class " + ConvertType(td) + L";");
-					}
-					else
-					{
-						auto friendDecl = scopeName->declarations[0].Cast<WfClassDeclaration>();
-						unprocessed.Add(friendDecl);
-					}
-				}
+						auto td = UnboxValue<ITypeDescriptor*>(attributeEvaluator->GetAttributeValue(attribute));
 
-				auto declTypeName = ConvertType(manager->declarationTypes[decl.Obj()].Obj());
-				for (vint i = 0; i < unprocessed.Count(); i++)
-				{
-					auto current = unprocessed[i];
-					if (current != decl)
-					{
-						auto currentTypeName = ConvertType(manager->declarationTypes[current.Obj()].Obj());
-
-						bool isInternalClass = false;
-						if (currentTypeName.Length() > declTypeName.Length() + 2)
+						auto scopeName = manager->typeNames[td];
+						if (scopeName->declarations.Count() == 0)
 						{
-							if (currentTypeName.Left(declTypeName.Length() + 2) == declTypeName + L"::")
+							writer.WriteLine(prefix + L"\tfriend class " + ConvertType(td) + L";");
+						}
+						else
+						{
+							auto friendDecl = scopeName->declarations[0].Cast<WfClassDeclaration>();
+							unprocessed.Add(friendDecl);
+						}
+					}
+
+					auto declTypeName = ConvertType(manager->declarationTypes[decl.Obj()].Obj());
+					for (vint i = 0; i < unprocessed.Count(); i++)
+					{
+						auto current = unprocessed[i];
+						if (current != decl)
+						{
+							auto currentTypeName = ConvertType(manager->declarationTypes[current.Obj()].Obj());
+
+							bool isInternalClass = false;
+							if (currentTypeName.Length() > declTypeName.Length() + 2)
 							{
-								isInternalClass = true;
+								if (currentTypeName.Left(declTypeName.Length() + 2) == declTypeName + L"::")
+								{
+									isInternalClass = true;
+								}
+							}
+							if (!isInternalClass)
+							{
+								writer.WriteLine(prefix + L"\tfriend class " + currentTypeName + L";");
 							}
 						}
-						if (!isInternalClass)
-						{
-							writer.WriteLine(prefix + L"\tfriend class " + currentTypeName + L";");
-						}
-					}
 
-					vint index = classClosures.Keys().IndexOf(current.Obj());
-					if (index != -1)
-					{
-						SortedList<WString> closureNames;
-						CopyFrom(
-							closureNames,
-							From(classClosures.GetByIndex(index))
-							.Select([&](Ptr<WfExpression> closure)
+						vint index = classClosures.Keys().IndexOf(current.Obj());
+						if (index != -1)
 						{
-							return (closure.Cast<WfNewInterfaceExpression>() ? L"class ::" : L"struct ::") +
-								assemblyNamespace +
-								L"::" +
-								closureInfos[closure.Obj()]->lambdaClassName;
-						})
-						);
-						FOREACH(WString, closureName, closureNames)
-						{
-							writer.WriteLine(prefix + L"\tfriend " + closureName + L";");
+							SortedList<WString> closureNames;
+							CopyFrom(
+								closureNames,
+								From(classClosures.GetByIndex(index))
+								.Select([&](Ptr<WfExpression> closure)
+								{
+									return (closure.Cast<WfNewInterfaceExpression>() ? L"class ::" : L"struct ::") +
+										assemblyNamespace +
+										L"::" +
+										closureInfos[closure.Obj()]->lambdaClassName;
+								})
+							);
+							FOREACH(WString, closureName, closureNames)
+							{
+								writer.WriteLine(prefix + L"\tfriend " + closureName + L";");
+							}
 						}
-					}
 
-					WriteHeader_Class_FindClassDeclVisitor visitor(unprocessed);
-					FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
-					{
-						memberDecl->Accept(&visitor);
+						WriteHeader_Class_FindClassDeclVisitor visitor(unprocessed);
+						FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
+						{
+							memberDecl->Accept(&visitor);
+						}
 					}
 				}
 				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
@@ -273,6 +275,39 @@ namespace vl
 					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), memberDecl, prefix + L"\t", false);
 				}
 
+				{
+					bool hasUserImpl = false;
+					List<Ptr<WfDeclaration>> unprocessed;
+					CopyFrom(unprocessed, decl->declarations);
+
+					for (vint i = 0; i < unprocessed.Count(); i++)
+					{
+						auto memberDecl = unprocessed[i];
+						if (auto cfe = memberDecl.Cast<WfVirtualCfeDeclaration>())
+						{
+							CopyFrom(unprocessed, cfe->expandedDeclarations, true);
+						}
+						else if (auto cse = memberDecl.Cast<WfVirtualCseDeclaration>())
+						{
+							CopyFrom(unprocessed, cse->expandedDeclarations, true);
+						}
+						else if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"UserImpl"))
+						{
+							hasUserImpl = true;
+							break;
+						}
+					}
+
+					if (hasUserImpl)
+					{
+						auto td = manager->declarationTypes[decl.Obj()].Obj();
+						auto classFullName = CppGetFullName(td);
+						writer.WriteLine(L"");
+						writer.WriteLine(prefix + L"/* USER_CONTENT_BEGIN(custom members of " + classFullName + L") */");
+						writer.WriteLine(prefix + L"/* USER_CONTENT_END() */");
+					}
+				}
+
 				writer.WriteLine(prefix + L"};");
 			}
 
@@ -334,7 +369,7 @@ namespace vl
 
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
 				auto classFullName = CppGetFullName(td);
-				return GenerateClassMemberImpl(this, writer, decl.Obj(), GetClassBaseName(decl), ConvertName(decl->name.value), classFullName , memberDecl, prefix);
+				return GenerateClassMemberImpl(this, writer, decl.Obj(), GetClassBaseName(decl), ConvertName(decl->name.value), classFullName, memberDecl, prefix);
 			}
 
 			void WfCppConfig::WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)

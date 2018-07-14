@@ -325,7 +325,7 @@ MergeCppFile
 			template<typename TCallback>
 			void ProcessCppContent(const WString& code, const TCallback& callback)
 			{
-				Regex regexUserContentBegin(L"/.*?(?/{)///* USER_CONTENT_BEGIN/((<name>[^)]*?)/) /*//");
+				Regex regexUserContentBegin(L"/.*?(?/{)?///* USER_CONTENT_BEGIN/((<name>[^)]*?)/) /*//");
 
 				vint state = NORMAL;
 				vint counter = 0;
