@@ -29,7 +29,6 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::CoSmcPush::
 #define GLOBAL_NAME ::vl_workflow_global::CoSmcPush::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::CoSmcPush::Instance()
-#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables
@@ -377,7 +376,6 @@ SMPush::SMPush()
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
-#undef USERIMPL
 
 #if defined( _MSC_VER)
 #pragma warning(pop)

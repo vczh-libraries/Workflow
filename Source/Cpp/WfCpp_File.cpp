@@ -55,8 +55,6 @@ namespace vl
 				writer.WriteString(L"::");
 				writer.WriteString(assemblyName);
 				writer.WriteLine(L"::Instance()");
-
-				writer.WriteLine(L"#define USERIMPL(...)");
 			}
 
 			void WfCppConfig::WriteCpp_PopMacros(stream::StreamWriter& writer)
@@ -64,7 +62,6 @@ namespace vl
 				writer.WriteLine(L"#undef GLOBAL_SYMBOL");
 				writer.WriteLine(L"#undef GLOBAL_NAME");
 				writer.WriteLine(L"#undef GLOBAL_OBJ");
-				writer.WriteLine(L"#undef USERIMPL");
 			}
 
 			void WfCppConfig::WriteHeader(stream::StreamWriter& writer, bool multiFile)

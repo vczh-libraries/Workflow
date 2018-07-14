@@ -29,7 +29,6 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::CoSmcSwitchP2::
 #define GLOBAL_NAME ::vl_workflow_global::CoSmcSwitchP2::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::CoSmcSwitchP2::Instance()
-#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables
@@ -327,7 +326,6 @@ SMSwitchP2::SMSwitchP2()
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
-#undef USERIMPL
 
 #if defined( _MSC_VER)
 #pragma warning(pop)

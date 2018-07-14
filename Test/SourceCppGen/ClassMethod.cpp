@@ -29,7 +29,6 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::ClassMethod::
 #define GLOBAL_NAME ::vl_workflow_global::ClassMethod::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::ClassMethod::Instance()
-#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables
@@ -136,7 +135,6 @@ void Methods::SetX(::vl::vint _x)
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
-#undef USERIMPL
 
 #if defined( _MSC_VER)
 #pragma warning(pop)

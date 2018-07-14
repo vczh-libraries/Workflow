@@ -358,7 +358,7 @@ MergeCppFile
 						case NORMAL:
 							if (auto match = regexUserContentBegin.MatchHead(content))
 							{
-								content = L"USERIMPL(" + match->Groups()[L"name"][0].Value() + L")";
+								content = L"USERIMPL(/* " + match->Groups()[L"name"][0].Value() + L" */)";
 								if (match->Captures().Count() > 0)
 								{
 									content += previousLine;

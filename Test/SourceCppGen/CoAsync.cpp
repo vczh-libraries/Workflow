@@ -29,7 +29,6 @@ https://github.com/vczh-libraries
 #define GLOBAL_SYMBOL ::vl_workflow_global::CoAsync::
 #define GLOBAL_NAME ::vl_workflow_global::CoAsync::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::CoAsync::Instance()
-#define USERIMPL(...)
 
 /***********************************************************************
 Global Variables
@@ -449,7 +448,6 @@ namespace CoAsync_types
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
-#undef USERIMPL
 
 #if defined( _MSC_VER)
 #pragma warning(pop)
