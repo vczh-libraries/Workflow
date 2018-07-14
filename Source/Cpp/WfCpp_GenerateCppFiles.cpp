@@ -9,6 +9,7 @@ namespace vl
 			using namespace collections;
 			using namespace stream;
 			using namespace filesystem;
+			using namespace regex;
 
 /***********************************************************************
 WfCppInput
@@ -318,13 +319,17 @@ MergeCppFile
 			const vint WAIT_HEADER = 1;
 			const vint WAIT_OPEN = 2;
 			const vint WAIT_CLOSE = 3;
-			const vint UNUSED_USER_CONTENT = 4;
+			const vint USER_CONTENT = 4;
+			const vint UNUSED_USER_CONTENT = 5;
 
 			template<typename TCallback>
 			void ProcessCppContent(const WString& code, const TCallback& callback)
 			{
+				Regex regexUserContentBegin(L"/.*?(?{)///* USER_CONTENT_BEGIN/((<name>[^)]*?)/) /*//");
+
 				vint state = NORMAL;
 				vint counter = 0;
+				WString previousLine;
 
 				StringReader reader(code);
 				while (!reader.IsEnd())
@@ -351,7 +356,16 @@ MergeCppFile
 						switch (state)
 						{
 						case NORMAL:
-							if (content.Length() > 9 && content.Sub(0, 9) == L"USERIMPL(")
+							if (auto match = regexUserContentBegin.MatchHead(content))
+							{
+								content = L"USERIMPL(" + match->Groups()[L"name"][0].Value() + L")";
+								if (match->Captures().Count() > 0)
+								{
+									content += previousLine;
+								}
+								state = USER_CONTENT;
+							}
+							else if (INVLOC.StartsWith(content, L"USERIMPL(",Locale::None))
 							{
 								state = WAIT_HEADER;
 							}
@@ -360,17 +374,17 @@ MergeCppFile
 							state = WAIT_OPEN;
 							break;
 						case WAIT_OPEN:
-							if (content.Length() >= 1 && content[0] == L'{')
+							if (INVLOC.StartsWith(content, L"{", Locale::None))
 							{
 								state = WAIT_CLOSE;
 							}
 							break;
 						case WAIT_CLOSE:
-							if (content.Length() >= 1 && content[0] == L'{')
+							if (INVLOC.StartsWith(content, L"{", Locale::None))
 							{
 								counter++;
 							}
-							else if (content.Length() >= 1 && content[0] == L'}')
+							else if (INVLOC.StartsWith(content, L"}", Locale::None))
 							{
 								if (counter == 0)
 								{
@@ -382,9 +396,16 @@ MergeCppFile
 								}
 							}
 							break;
+						case USER_CONTENT:
+							if (INVLOC.EndsWith(content, L"/* USER_CONTENT_END() */", Locale::None))
+							{
+								state = NORMAL;
+							}
+							break;
 						}
 						callback(previousState, state, line, content);
 					}
+					previousLine = line;
 				}
 			}
 
@@ -402,26 +423,38 @@ MergeCppFile
 					}
 					else
 					{
-						if (previousState == NORMAL && state == WAIT_HEADER)
+						switch (previousState)
 						{
-							name = content;
-							userImpl = L"";
-							userImplFull = L"";
-						}
-						else if (previousState == WAIT_HEADER)
-						{
+						case NORMAL:
+							switch (state)
+							{
+							case WAIT_HEADER:
+							case USER_CONTENT:
+								name = content;
+								userImpl = L"";
+								userImplFull = L"";
+								break;
+							}
+							break;
+						case WAIT_HEADER:
 							name += content;
-						}
-						else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
-						{
-							userImpl += line + L"\r\n";
-						}
-						else if (previousState == WAIT_CLOSE && state == NORMAL)
-						{
-							userImplFull += L"//" + line + L"\r\n";
-							userContents.Add(name, userImpl);
-							userContentsFull.Add(name, userImplFull);
-							name = L"";
+							break;
+						case WAIT_CLOSE:
+						case USER_CONTENT:
+							switch (state)
+							{
+							case WAIT_CLOSE:
+							case USER_CONTENT:
+								userImpl += line + L"\r\n";
+								break;
+							case NORMAL:
+								userImplFull += L"//" + line + L"\r\n";
+								userContents.Add(name, userImpl);
+								userContentsFull.Add(name, userImplFull);
+								name = L"";
+								break;
+							}
+							break;
 						}
 
 						if (name != L"")
@@ -589,32 +622,45 @@ MergeCppFile
 					WString userImpl;
 					ProcessCppContent(src, [&](vint previousState, vint state, const WString& line, const WString& content)
 					{
-						if (previousState == NORMAL && state == WAIT_HEADER)
+						switch (previousState)
 						{
-							name = content;
-							userImpl = L"";
-						}
-						else if (previousState == WAIT_HEADER)
-						{
+						case NORMAL:
+							switch (state)
+							{
+							case WAIT_HEADER:
+							case USER_CONTENT:
+								name = content;
+								userImpl = L"";
+								break;
+							}
+							break;
+						case WAIT_HEADER:
 							name += content;
-						}
-						else if (previousState == WAIT_CLOSE && state == WAIT_CLOSE)
-						{
-							userImpl += line + L"\r\n";
-							return;
-						}
-						else if (previousState == WAIT_CLOSE && state == NORMAL)
-						{
-							vint index = userContents.Keys().IndexOf(name);
-							if (index == -1)
+							break;
+						case WAIT_CLOSE:
+						case USER_CONTENT:
+							switch (state)
 							{
-								writer.WriteString(userImpl);
+							case WAIT_CLOSE:
+							case USER_CONTENT:
+								userImpl += line + L"\r\n";
+								return;
+							case NORMAL:
+								{
+									vint index = userContents.Keys().IndexOf(name);
+									if (index == -1)
+									{
+										writer.WriteString(userImpl);
+									}
+									else
+									{
+										writer.WriteString(userContents.Values()[index]);
+										userContentsFull.Remove(name);
+									}
+								}
+								break;
 							}
-							else
-							{
-								writer.WriteString(userContents.Values()[index]);
-								userContentsFull.Remove(name);
-							}
+							break;
 						}
 						writer.WriteLine(line);
 					});
