@@ -263,14 +263,14 @@ WfGenerateClassMemberImplVisitor
 				{
 				}
 
-				void WriteNotImplemented()
+				void WriteNotImplemented(const WString& classFullName)
 				{
 					writer.WriteString(prefix);
-					writer.WriteLine(L"{");
+					writer.WriteLine(L"{/* USER_CONTENT_BEGIN(" + classFullName + L") */");
 					writer.WriteString(prefix);
 					writer.WriteLine(L"\tthrow ::vl::Exception(L\"You should implement this function.\");");
 					writer.WriteString(prefix);
-					writer.WriteLine(L"}");
+					writer.WriteLine(L"}/* USER_CONTENT_END() */");
 				}
 
 				void Visit(WfNamespaceDeclaration* node)override
@@ -283,22 +283,14 @@ WfGenerateClassMemberImplVisitor
 					{
 						printableMember = true;
 
-						bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
-						if (userImpl)
-						{
-							writer.WriteString(prefix);
-							writer.WriteString(L"USERIMPL(/* ");
-							writer.WriteString(classFullName);
-							writer.WriteLine(L" */)");
-						}
-
 						writer.WriteString(prefix);
 						auto returnType = config->WriteFunctionHeader(writer, node, classBaseName + L"::" + config->ConvertName(node->name.value), true);
 						writer.WriteLine(L"");
 
+						bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
 						if (userImpl)
 						{
-							WriteNotImplemented();
+							WriteNotImplemented(classFullName);
 						}
 						else
 						{
@@ -329,15 +321,6 @@ WfGenerateClassMemberImplVisitor
 					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
 					{
 						arguments.Add(config->ConvertName(argument->name.value));
-					}
-
-					bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
-					if (userImpl)
-					{
-						writer.WriteString(prefix);
-						writer.WriteString(L"USERIMPL(/* ");
-						writer.WriteString(classFullName);
-						writer.WriteLine(L" */)");
 					}
 
 					writer.WriteString(prefix);
@@ -379,9 +362,10 @@ WfGenerateClassMemberImplVisitor
 						}
 					}
 
+					bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
 					if (userImpl)
 					{
-						WriteNotImplemented();
+						WriteNotImplemented(classFullName);
 					}
 					else
 					{
@@ -393,20 +377,12 @@ WfGenerateClassMemberImplVisitor
 				{
 					printableMember = true;
 
+					writer.WriteLine(prefix + classBaseName + L"::~" + className + L"()");
+
 					bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");
 					if (userImpl)
 					{
-						writer.WriteString(prefix);
-						writer.WriteString(L"USERIMPL(/* ");
-						writer.WriteString(classFullName);
-						writer.WriteLine(L" */)");
-					}
-
-					writer.WriteLine(prefix + classBaseName + L"::~" + className + L"()");
-
-					if (userImpl)
-					{
-						WriteNotImplemented();
+						WriteNotImplemented(classFullName);
 					}
 					else
 					{
