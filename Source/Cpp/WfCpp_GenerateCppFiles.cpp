@@ -329,7 +329,7 @@ MergeCppFile
 
 				vint state = NORMAL;
 				vint counter = 0;
-				WString previousLine;
+				WString previousContent;
 
 				StringReader reader(code);
 				while (!reader.IsEnd())
@@ -361,7 +361,7 @@ MergeCppFile
 								content = L"USERIMPL(/* " + match->Groups()[L"name"][0].Value() + L" */)";
 								if (match->Captures().Count() > 0)
 								{
-									content += previousLine;
+									content += previousContent;
 								}
 								state = USER_CONTENT;
 							}
@@ -405,7 +405,7 @@ MergeCppFile
 						}
 						callback(previousState, state, line, content);
 					}
-					previousLine = line;
+					previousContent = RemoveSpacePrefix(line);
 				}
 			}
 
