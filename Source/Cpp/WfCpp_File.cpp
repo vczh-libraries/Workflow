@@ -215,6 +215,18 @@ namespace vl
 				writer.WriteLine(L"");
 				WriteCpp_PushMacros(writer);
 				writer.WriteLine(L"");
+
+				if (From(topLevelClassDeclsForFiles.Get(fileName))
+					.Any([=](Ptr<WfClassDeclaration> decl)
+					{
+						return IsClassHasUserImplMethods(decl, true);
+					}))
+				{
+					writer.WriteLine(L"/* USER_CONTENT_BEGIN(custom global declarations) */");
+					writer.WriteLine(L"/* USER_CONTENT_END() */");
+					writer.WriteLine(L"");
+				}
+
 				List<WString> nss;
 
 				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForFiles.Get(fileName))

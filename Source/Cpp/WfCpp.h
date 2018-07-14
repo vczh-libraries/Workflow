@@ -104,6 +104,7 @@ namespace vl
 				WString					ConvertType(ITypeInfo* typeInfo);
 				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
+				bool					IsClassHasUserImplMethods(Ptr<WfClassDeclaration> decl, bool searchInternalClasses);
 
 				vint					CountClassNamespace(Ptr<WfClassDeclaration> decl);
 				void					GetClassNamespace(Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);

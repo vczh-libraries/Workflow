@@ -413,6 +413,37 @@ WfCppConfig
 				return L"";
 			}
 
+			bool WfCppConfig::IsClassHasUserImplMethods(Ptr<WfClassDeclaration> decl, bool searchInternalClasses)
+			{
+				List<Ptr<WfDeclaration>> unprocessed;
+				CopyFrom(unprocessed, decl->declarations);
+
+				for (vint i = 0; i < unprocessed.Count(); i++)
+				{
+					auto memberDecl = unprocessed[i];
+					if (auto cfe = memberDecl.Cast<WfVirtualCfeDeclaration>())
+					{
+						CopyFrom(unprocessed, cfe->expandedDeclarations, true);
+					}
+					else if (auto cse = memberDecl.Cast<WfVirtualCseDeclaration>())
+					{
+						CopyFrom(unprocessed, cse->expandedDeclarations, true);
+					}
+					else if (auto classDecl = memberDecl.Cast<WfClassDeclaration>())
+					{
+						if (searchInternalClasses)
+						{
+							CopyFrom(unprocessed, classDecl->declarations, true);
+						}
+					}
+					else if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"UserImpl"))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+
 			vint WfCppConfig::CountClassNamespace(Ptr<WfClassDeclaration> decl)
 			{
 				vint result = 0;

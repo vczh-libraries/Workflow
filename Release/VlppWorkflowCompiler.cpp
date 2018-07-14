@@ -29716,6 +29716,37 @@ WfCppConfig
 				return L"";
 			}
 
+			bool WfCppConfig::IsClassHasUserImplMethods(Ptr<WfClassDeclaration> decl, bool searchInternalClasses)
+			{
+				List<Ptr<WfDeclaration>> unprocessed;
+				CopyFrom(unprocessed, decl->declarations);
+
+				for (vint i = 0; i < unprocessed.Count(); i++)
+				{
+					auto memberDecl = unprocessed[i];
+					if (auto cfe = memberDecl.Cast<WfVirtualCfeDeclaration>())
+					{
+						CopyFrom(unprocessed, cfe->expandedDeclarations, true);
+					}
+					else if (auto cse = memberDecl.Cast<WfVirtualCseDeclaration>())
+					{
+						CopyFrom(unprocessed, cse->expandedDeclarations, true);
+					}
+					else if (auto classDecl = memberDecl.Cast<WfClassDeclaration>())
+					{
+						if (searchInternalClasses)
+						{
+							CopyFrom(unprocessed, classDecl->declarations, true);
+						}
+					}
+					else if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"UserImpl"))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+
 			vint WfCppConfig::CountClassNamespace(Ptr<WfClassDeclaration> decl)
 			{
 				vint result = 0;
@@ -32946,6 +32977,18 @@ namespace vl
 				writer.WriteLine(L"");
 				WriteCpp_PushMacros(writer);
 				writer.WriteLine(L"");
+
+				if (From(topLevelClassDeclsForFiles.Get(fileName))
+					.Any([=](Ptr<WfClassDeclaration> decl)
+					{
+						return IsClassHasUserImplMethods(decl, true);
+					}))
+				{
+					writer.WriteLine(L"/* USER_CONTENT_BEGIN(custom global declarations) */");
+					writer.WriteLine(L"/* USER_CONTENT_END() */");
+					writer.WriteLine(L"");
+				}
+
 				List<WString> nss;
 
 				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForFiles.Get(fileName))
@@ -34282,37 +34325,13 @@ namespace vl
 					GenerateClassMemberDecl(this, writer, ConvertName(decl->name.value), memberDecl, prefix + L"\t", false);
 				}
 
+				if (IsClassHasUserImplMethods(decl, false))
 				{
-					bool hasUserImpl = false;
-					List<Ptr<WfDeclaration>> unprocessed;
-					CopyFrom(unprocessed, decl->declarations);
-
-					for (vint i = 0; i < unprocessed.Count(); i++)
-					{
-						auto memberDecl = unprocessed[i];
-						if (auto cfe = memberDecl.Cast<WfVirtualCfeDeclaration>())
-						{
-							CopyFrom(unprocessed, cfe->expandedDeclarations, true);
-						}
-						else if (auto cse = memberDecl.Cast<WfVirtualCseDeclaration>())
-						{
-							CopyFrom(unprocessed, cse->expandedDeclarations, true);
-						}
-						else if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"UserImpl"))
-						{
-							hasUserImpl = true;
-							break;
-						}
-					}
-
-					if (hasUserImpl)
-					{
-						auto td = manager->declarationTypes[decl.Obj()].Obj();
-						auto classFullName = CppGetFullName(td);
-						writer.WriteLine(L"");
-						writer.WriteLine(prefix + L"/* USER_CONTENT_BEGIN(custom members of " + classFullName + L") */");
-						writer.WriteLine(prefix + L"/* USER_CONTENT_END() */");
-					}
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					auto classFullName = CppGetFullName(td);
+					writer.WriteLine(L"");
+					writer.WriteLine(prefix + L"/* USER_CONTENT_BEGIN(custom members of " + classFullName + L") */");
+					writer.WriteLine(prefix + L"/* USER_CONTENT_END() */");
 				}
 
 				writer.WriteLine(prefix + L"};");

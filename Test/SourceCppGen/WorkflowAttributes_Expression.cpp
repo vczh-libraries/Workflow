@@ -30,6 +30,9 @@ https://github.com/vczh-libraries
 #define GLOBAL_NAME ::vl_workflow_global::WorkflowAttributes::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::WorkflowAttributes::Instance()
 
+/* USER_CONTENT_BEGIN(custom global declarations) */
+/* USER_CONTENT_END() */
+
 /***********************************************************************
 Class (::calculator::Expression)
 ***********************************************************************/
