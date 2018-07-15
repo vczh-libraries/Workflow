@@ -191,8 +191,6 @@ CollectModule
 			{
 				// prepare candidates
 				List<Ptr<WfClassDeclaration>> candidates;
-				Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>> deps;
-				CopyFrom(deps, config->declDependencies);
 				{
 					vint index = config->classDecls.Keys().IndexOf(nullptr);
 					if (index != -1)
@@ -202,9 +200,84 @@ CollectModule
 							From(config->classDecls.GetByIndex(index))
 								.Where([&](Ptr<WfClassDeclaration> decl)
 								{
-									return config->attributeEvaluator->GetAttribute(decl->attributes, L"cpp", L"File") == nullptr;
+									return config->declFiles[decl.Obj()] == L"";
 								})
 							);
+					}
+				}
+
+				// prepare dependencies
+				Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> deps;
+				{
+					Dictionary<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> rootClasses;
+					{
+						List<Ptr<WfClassDeclaration>> unprocessed;
+						{
+							vint index = config->classDecls.Keys().IndexOf(nullptr);
+							if (index != -1)
+							{
+								CopyFrom(
+									unprocessed,
+									From(config->classDecls.GetByIndex(index))
+								);
+							}
+						}
+
+						FOREACH(Ptr<WfClassDeclaration>, decl, unprocessed)
+						{
+							rootClasses.Add(decl, decl);
+						}
+
+						for (vint i = 0; i < unprocessed.Count(); i++)
+						{
+							auto decl = unprocessed[i];
+							vint index = config->classDecls.Keys().IndexOf(decl.Obj());
+							if (index != -1)
+							{
+								CopyFrom(
+									unprocessed,
+									From(config->classDecls.GetByIndex(index)),
+									true
+									);
+
+								FOREACH(Ptr<WfClassDeclaration>, subDecl, config->classDecls.GetByIndex(index))
+								{
+									auto value = rootClasses[decl.Obj()];
+									rootClasses.Add(subDecl, value);
+								}
+							}
+						}
+					}
+					FOREACH(Ptr<WfClassDeclaration>, decl, candidates)
+					{
+						List<Ptr<WfClassDeclaration>> unprocessed;
+						unprocessed.Add(decl);
+
+						for (vint i = 0; i < unprocessed.Count(); i++)
+						{
+							auto decl = unprocessed[i];
+							vint index = config->classDecls.Keys().IndexOf(decl.Obj());
+							if (index != -1)
+							{
+								CopyFrom(
+									unprocessed,
+									From(config->classDecls.GetByIndex(index)),
+									true
+									);
+							}
+
+							index = config->declDependencies.Keys().IndexOf(decl.Obj());
+							if (index != -1)
+							{
+								FOREACH(Ptr<WfDeclaration>, dep, config->declDependencies.GetByIndex(index))
+								{
+									if (auto classDecl = dep.Cast<WfClassDeclaration>())
+									{
+										deps.Add(decl, rootClasses[classDecl.Obj()]);
+									}
+								}
+							}
+						}
 					}
 				}
 
@@ -229,7 +302,7 @@ CollectModule
 				while (true)
 				{
 					List<Ptr<WfClassDeclaration>> noDeps;
-					CopyFrom(noDeps, From(candidates).Except(From(deps.Keys()).FindType<WfClassDeclaration>()));
+					CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
 					if (noDeps.Count() == 0) break;
 					removeDeps(noDeps);
 				}
@@ -266,7 +339,7 @@ CollectModule
 					{
 						// put non-custom types to a new non-custom header
 						List<Ptr<WfClassDeclaration>> noDeps;
-						CopyFrom(noDeps, From(candidates).Except(From(deps.Keys()).FindType<WfClassDeclaration>()));
+						CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
 						if (noDeps.Count() == 0) break;
 						removeDeps(noDeps);
 
