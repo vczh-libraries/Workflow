@@ -78,7 +78,8 @@ namespace vl
 				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 
-				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForFiles;
+				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForCustomFiles;
+				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForHeaderFiles;
 				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
 				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
 

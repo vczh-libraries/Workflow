@@ -119,7 +119,7 @@ CollectModule
 						{
 							file = UnboxValue<WString>(config->attributeEvaluator->GetAttributeValue(att));
 						}
-						config->topLevelClassDeclsForFiles.Add(file, node);
+						config->topLevelClassDeclsForHeaderFiles.Add(file, node);
 						config->declFiles.Add(node, file);
 					}
 

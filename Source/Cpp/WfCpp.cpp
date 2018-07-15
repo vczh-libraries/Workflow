@@ -169,9 +169,9 @@ WfCppConfig
 					const auto& values = structDecls.GetByIndex(i);
 					Sort(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
 				}
-				for (vint i = 0; i < topLevelClassDeclsForFiles.Count(); i++)
+				for (vint i = 0; i < topLevelClassDeclsForHeaderFiles.Count(); i++)
 				{
-					const auto& values = topLevelClassDeclsForFiles.GetByIndex(i);
+					const auto& values = topLevelClassDeclsForHeaderFiles.GetByIndex(i);
 					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
 				}
 				for (vint i = 0; i < classDecls.Count(); i++)
