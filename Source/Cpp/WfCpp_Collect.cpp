@@ -186,6 +186,104 @@ CollectModule
 			{
 				WfCollectModuleVisitor(config).VisitField(module.Obj());
 			}
+
+			void PostCollect(WfCppConfig* config)
+			{
+				// prepare candidates
+				List<Ptr<WfDeclaration>> candidates;
+				Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>> deps;
+				CopyFrom(deps, config->declDependencies);
+				{
+					vint index = config->classDecls.Keys().IndexOf(nullptr);
+					if (index != -1)
+					{
+						CopyFrom(
+							candidates,
+							From(config->classDecls.GetByIndex(index))
+								.Where([&](Ptr<WfClassDeclaration> decl)
+								{
+									return config->attributeEvaluator->GetAttribute(decl->attributes, L"cpp", L"File") == nullptr;
+								})
+							);
+					}
+				}
+
+				auto removeDeps = [&](const auto& typesToRemove)
+				{
+					for (vint i = deps.Count() - 1; i >= 0; i--)
+					{
+						auto key = deps.Keys()[i].Obj();
+						for (vint j = 0; j < typesToRemove.Count(); j++)
+						{
+							deps.Remove(key, typesToRemove[j].Obj());
+						}
+					}
+
+					for (vint j = 0; j < typesToRemove.Count(); j++)
+					{
+						candidates.Remove(typesToRemove[j].Obj());
+					}
+				};
+
+				// select types in default header
+				while (true)
+				{
+					List<Ptr<WfDeclaration>> noDeps;
+					CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
+					if (noDeps.Count() == 0) break;
+					removeDeps(noDeps);
+				}
+
+				List<WString> customs;
+				CopyFrom(customs, config->topLevelClassDeclsForCustomFiles.Keys());
+				customs.Remove(L"");
+				vint fileIndex = 0;
+
+				while (true)
+				{
+					{
+						// select custom headers without extra unprocessed dependencies
+						List<WString> noDeps;
+						CopyFrom(
+							noDeps,
+							From(customs)
+								.Where([&](const WString& custom)
+								{
+									return From(config->topLevelClassDeclsForCustomFiles[custom])
+										.All([&](Ptr<WfDeclaration> decl)
+										{
+											return !candidates.Contains(decl.Obj());
+										});
+								})
+							);
+						if (noDeps.Count() == 0) break;
+						FOREACH(WString, noDep, noDeps)
+						{
+							customs.Remove(noDep);
+							removeDeps(config->topLevelClassDeclsForCustomFiles[noDep]);
+						}
+					}
+					{
+						// put non-custom types to a new non-custom header
+						List<Ptr<WfDeclaration>> noDeps;
+						CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
+						if (noDeps.Count() == 0) break;
+						removeDeps(noDeps);
+
+						fileIndex++;
+						FOREACH(Ptr<WfDeclaration>, decl, noDeps)
+						{
+							config->topLevelClassDeclsForHeaderFiles.Add(fileIndex, decl);
+						}
+					}
+				}
+
+				fileIndex++;
+				FOREACH(Ptr<WfDeclaration>, decl, candidates)
+				{
+					config->topLevelClassDeclsForHeaderFiles.Add(fileIndex, decl);
+				}
+			}
 		}
 	}
 }

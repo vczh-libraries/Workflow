@@ -23,6 +23,7 @@ WfCppConfig
 				{
 					CollectModule(this, module);
 				}
+				PostCollect(this);
 
 				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
 				{

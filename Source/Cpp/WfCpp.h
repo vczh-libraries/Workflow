@@ -79,7 +79,7 @@ namespace vl
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 
 				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForCustomFiles;
-				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForHeaderFiles;
+				collections::Group<vint, Ptr<WfDeclaration>>								topLevelClassDeclsForHeaderFiles;
 				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
 				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
 
@@ -171,6 +171,7 @@ WfCppConfig::Collect
 ***********************************************************************/
 
 			extern void CollectModule(WfCppConfig* config, Ptr<WfModule> module);
+			extern void PostCollect(WfCppConfig* config);
 
 /***********************************************************************
 WfCppConfig::Write
