@@ -80,7 +80,62 @@ GenerateCppFiles
 				}
 			}
 
-			void WriteDefaultHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
+			void WriteDependedInclude(WfCppConfig& config, const List<Ptr<WfClassDeclaration>>& classDecls, stream::StreamWriter& writer)
+			{
+				List<Ptr<WfDeclaration>> decls;
+				CopyFrom(decls, classDecls);
+				for (vint i = 0; i < decls.Count(); i++)
+				{
+					if (auto classDecl = decls[i].Cast<WfClassDeclaration>())
+					{
+						{
+							vint index = config.enumDecls.Keys().IndexOf(classDecl.Obj());
+							if (index != -1)
+							{
+								CopyFrom(decls, config.enumDecls.GetByIndex(index), true);
+							}
+						}
+						{
+							vint index = config.structDecls.Keys().IndexOf(classDecl.Obj());
+							if (index != -1)
+							{
+								CopyFrom(decls, config.structDecls.GetByIndex(index), true);
+							}
+						}
+						{
+							vint index = config.classDecls.Keys().IndexOf(classDecl.Obj());
+							if (index != -1)
+							{
+								CopyFrom(decls, config.classDecls.GetByIndex(index), true);
+							}
+						}
+					}
+				}
+
+				SortedList<WString> fileNames;
+				FOREACH(Ptr<WfDeclaration>, decl, decls)
+				{
+					vint index = config.declDependencies.Keys().IndexOf(decl.Obj());
+					if (index != -1)
+					{
+						FOREACH(Ptr<WfDeclaration>, declDep, config.declDependencies.GetByIndex(index))
+						{
+							WString fileName = config.declFiles[declDep.Obj()];
+							if (fileName != L"" && !fileNames.Contains(fileName))
+							{
+								fileNames.Add(fileName);
+							}
+						}
+					}
+				}
+
+				FOREACH(WString, fileName, fileNames)
+				{
+					writer.WriteLine(L"#include \"" + fileName + L".h\"");
+				}
+			}
+
+			void WriteHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
 			{
 				GenerateCppComment(writer, input->comment);
 				writer.WriteLine(L"");
@@ -97,7 +152,22 @@ GenerateCppFiles
 				writer.WriteLine(L"#endif");
 			}
 
-			void WriteDefaultCpp(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
+			void WriteNonCustomSubHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, vint fileIndex, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
+				writer.WriteLine(L"#define " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
+				WriteDependedInclude(config, config.topLevelClassDeclsForHeaderFiles[fileIndex], writer);
+				writer.WriteLine(L"");
+				config.WriteNonCustomSubHeader(writer, fileIndex);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#endif");
+			}
+
+			void WriteCpp(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
 			{
 				GenerateCppComment(writer, input->comment);
 				writer.WriteLine(L"");
@@ -155,6 +225,10 @@ GenerateCppFiles
 						writer.WriteLine(L"#include \"" + fileName + L".h\"");
 					}
 				}
+				FOREACH(vint, fileIndex, config.topLevelClassDeclsForHeaderFiles.Keys())
+				{
+					writer.WriteLine(L"#include \"" + input->defaultFileName + itow(fileIndex) + L".h\"");
+				}
 
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#endif");
@@ -168,59 +242,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				{
-					List<Ptr<WfDeclaration>> decls;
-					CopyFrom(decls, config.topLevelClassDeclsForCustomFiles[fileName]);
-					for (vint i = 0; i < decls.Count(); i++)
-					{
-						if (auto classDecl = decls[i].Cast<WfClassDeclaration>())
-						{
-							{
-								vint index = config.enumDecls.Keys().IndexOf(classDecl.Obj());
-								if (index != -1)
-								{
-									CopyFrom(decls, config.enumDecls.GetByIndex(index), true);
-								}
-							}
-							{
-								vint index = config.structDecls.Keys().IndexOf(classDecl.Obj());
-								if (index != -1)
-								{
-									CopyFrom(decls, config.structDecls.GetByIndex(index), true);
-								}
-							}
-							{
-								vint index = config.classDecls.Keys().IndexOf(classDecl.Obj());
-								if (index != -1)
-								{
-									CopyFrom(decls, config.classDecls.GetByIndex(index), true);
-								}
-							}
-						}
-					}
-
-					SortedList<WString> fileNames;
-					FOREACH(Ptr<WfDeclaration>, decl, decls)
-					{
-						vint index = config.declDependencies.Keys().IndexOf(decl.Obj());
-						if (index != -1)
-						{
-							FOREACH(Ptr<WfDeclaration>, declDep, config.declDependencies.GetByIndex(index))
-							{
-								WString fileName = config.declFiles[declDep.Obj()];
-								if (fileName != L"" && !fileNames.Contains(fileName))
-								{
-									fileNames.Add(fileName);
-								}
-							}
-						}
-					}
-
-					FOREACH(WString, fileName, fileNames)
-					{
-						writer.WriteLine(L"#include \"" + fileName + L".h\"");
-					}
-				}
+				WriteDependedInclude(config, config.topLevelClassDeclsForCustomFiles[fileName], writer);
 				writer.WriteLine(L"");
 				config.WriteSubHeader(writer, fileName);
 				writer.WriteLine(L"");
@@ -240,6 +262,13 @@ GenerateCppFiles
 			Ptr<WfCppOutput> GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager)
 			{
 				WfCppConfig config(manager, input->assemblyName, input->assemblyNamespace);
+				for (vint i = 0; i < config.topLevelClassDeslcForHeaderFilesReversed.Count(); i++)
+				{
+					auto key = config.topLevelClassDeslcForHeaderFilesReversed.Keys()[i];
+					auto value = config.topLevelClassDeslcForHeaderFilesReversed.Values()[i];
+					config.declFiles.Set(key, input->defaultFileName + itow(value));
+				}
+
 				auto output = MakePtr<WfCppOutput>();
 				if (config.manager->declarationTypes.Count() > 0)
 				{
@@ -286,12 +315,19 @@ GenerateCppFiles
 
 				output->cppFiles.Add(input->defaultFileName + L".h", GenerateToStream([&](StreamWriter& writer)
 				{
-					WriteDefaultHeader(input, output, config, multiFile, reflection, writer);
+					WriteHeader(input, output, config, multiFile, reflection, writer);
 				}));
+				FOREACH(vint, fileIndex, config.topLevelClassDeclsForHeaderFiles.Keys())
+				{
+					output->cppFiles.Add(input->defaultFileName + itow(fileIndex) + L".h", GenerateToStream([&](StreamWriter& writer)
+					{
+						WriteNonCustomSubHeader(input, output, config, multiFile, reflection, fileIndex, writer);
+					}));
+				}
 
 				output->cppFiles.Add(input->defaultFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
 				{
-					WriteDefaultCpp(input, output, config, multiFile, reflection, writer);
+					WriteCpp(input, output, config, multiFile, reflection, writer);
 				}));
 
 				if (reflection)

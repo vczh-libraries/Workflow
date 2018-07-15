@@ -79,7 +79,9 @@ namespace vl
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 
 				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForCustomFiles;
-				collections::Group<vint, Ptr<WfDeclaration>>								topLevelClassDeclsForHeaderFiles;
+				collections::Group<vint, Ptr<WfClassDeclaration>>							topLevelClassDeclsForHeaderFiles;
+				collections::Dictionary<Ptr<WfClassDeclaration>, vint>						topLevelClassDeslcForHeaderFilesReversed;
+
 				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
 				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
 
@@ -159,6 +161,7 @@ namespace vl
 				void					WriteCpp_PopMacros(stream::StreamWriter& writer);
 
 				void					WriteHeader(stream::StreamWriter& writer, bool multiFile);
+				void					WriteNonCustomSubHeader(stream::StreamWriter& writer, vint fileIndex);
 				void					WriteCpp(stream::StreamWriter& writer, bool multiFile);
 				void					WriteSubHeader(stream::StreamWriter& writer, const WString& fileName);
 				void					WriteSubCpp(stream::StreamWriter& writer, const WString& fileName);

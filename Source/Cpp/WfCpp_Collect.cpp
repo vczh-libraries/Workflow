@@ -190,7 +190,7 @@ CollectModule
 			void PostCollect(WfCppConfig* config)
 			{
 				// prepare candidates
-				List<Ptr<WfDeclaration>> candidates;
+				List<Ptr<WfClassDeclaration>> candidates;
 				Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>> deps;
 				CopyFrom(deps, config->declDependencies);
 				{
@@ -228,8 +228,8 @@ CollectModule
 				// select types in default header
 				while (true)
 				{
-					List<Ptr<WfDeclaration>> noDeps;
-					CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
+					List<Ptr<WfClassDeclaration>> noDeps;
+					CopyFrom(noDeps, From(candidates).Except(From(deps.Keys()).FindType<WfClassDeclaration>()));
 					if (noDeps.Count() == 0) break;
 					removeDeps(noDeps);
 				}
@@ -250,7 +250,7 @@ CollectModule
 								.Where([&](const WString& custom)
 								{
 									return From(config->topLevelClassDeclsForCustomFiles[custom])
-										.All([&](Ptr<WfDeclaration> decl)
+										.All([&](Ptr<WfClassDeclaration> decl)
 										{
 											return !candidates.Contains(decl.Obj());
 										});
@@ -265,23 +265,25 @@ CollectModule
 					}
 					{
 						// put non-custom types to a new non-custom header
-						List<Ptr<WfDeclaration>> noDeps;
-						CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
+						List<Ptr<WfClassDeclaration>> noDeps;
+						CopyFrom(noDeps, From(candidates).Except(From(deps.Keys()).FindType<WfClassDeclaration>()));
 						if (noDeps.Count() == 0) break;
 						removeDeps(noDeps);
 
 						fileIndex++;
-						FOREACH(Ptr<WfDeclaration>, decl, noDeps)
+						FOREACH(Ptr<WfClassDeclaration>, decl, noDeps)
 						{
 							config->topLevelClassDeclsForHeaderFiles.Add(fileIndex, decl);
+							config->topLevelClassDeslcForHeaderFilesReversed.Add(decl, fileIndex);
 						}
 					}
 				}
 
 				fileIndex++;
-				FOREACH(Ptr<WfDeclaration>, decl, candidates)
+				FOREACH(Ptr<WfClassDeclaration>, decl, candidates)
 				{
 					config->topLevelClassDeclsForHeaderFiles.Add(fileIndex, decl);
+					config->topLevelClassDeslcForHeaderFilesReversed.Add(decl, fileIndex);
 				}
 			}
 		}

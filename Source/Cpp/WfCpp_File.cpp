@@ -129,8 +129,11 @@ namespace vl
 						{
 							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.GetByIndex(index))
 							{
-								WriteHeader_TopLevelClass(writer, decl, nss);
-								writer.WriteLine(L"");
+								if (!topLevelClassDeslcForHeaderFilesReversed.Keys().Contains(decl.Obj()))
+								{
+									WriteHeader_TopLevelClass(writer, decl, nss);
+									writer.WriteLine(L"");
+								}
 							}
 						}
 					}
@@ -146,6 +149,30 @@ namespace vl
 				WriteNamespaceEnd(writer, nss);
 
 				WriteHeader_Global(writer);
+
+				writer.WriteLine(L"");
+				WritePopCompileOptions(writer);
+			}
+
+			void WfCppConfig::WriteNonCustomSubHeader(stream::StreamWriter& writer, vint fileIndex)
+			{
+				WritePushCompileOptions(writer);
+				writer.WriteLine(L"");
+				List<WString> nss;
+
+				if (classDecls.Keys().Contains(nullptr))
+				{
+					vint index = topLevelClassDeclsForHeaderFiles.Keys().IndexOf(fileIndex);
+					if (index != -1)
+					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.GetByIndex(index))
+						{
+							WriteHeader_TopLevelClass(writer, decl, nss);
+							writer.WriteLine(L"");
+						}
+					}
+				}
+				WriteNamespaceEnd(writer, nss);
 
 				writer.WriteLine(L"");
 				WritePopCompileOptions(writer);
