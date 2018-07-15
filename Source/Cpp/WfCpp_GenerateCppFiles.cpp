@@ -148,7 +148,7 @@ GenerateCppFiles
 				writer.WriteLine(L"");
 
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				FOREACH(WString, fileName, config.topLevelClassDeclsForHeaderFiles.Keys())
+				FOREACH(WString, fileName, config.topLevelClassDeclsForCustomFiles.Keys())
 				{
 					if (fileName != L"")
 					{
@@ -170,7 +170,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
 				{
 					List<Ptr<WfDeclaration>> decls;
-					CopyFrom(decls, config.topLevelClassDeclsForHeaderFiles[fileName]);
+					CopyFrom(decls, config.topLevelClassDeclsForCustomFiles[fileName]);
 					for (vint i = 0; i < decls.Count(); i++)
 					{
 						if (auto classDecl = decls[i].Cast<WfClassDeclaration>())
@@ -256,7 +256,7 @@ GenerateCppFiles
 					multiFile = false;
 					break;
 				default:
-					multiFile = config.topLevelClassDeclsForHeaderFiles.Count() > 1;
+					multiFile = config.topLevelClassDeclsForCustomFiles.Count() > 1;
 				}
 
 				bool reflection = false;
@@ -314,7 +314,7 @@ GenerateCppFiles
 						WriteIncludesHeader(input, output, config, multiFile, reflection, writer);
 					}));
 
-					FOREACH(WString, fileName, config.topLevelClassDeclsForHeaderFiles.Keys())
+					FOREACH(WString, fileName, config.topLevelClassDeclsForCustomFiles.Keys())
 					{
 						if (fileName != L"")
 						{

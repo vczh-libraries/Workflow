@@ -124,10 +124,10 @@ namespace vl
 					writer.WriteLine(L"");
 					if (multiFile)
 					{
-						vint index = topLevelClassDeclsForHeaderFiles.Keys().IndexOf(L"");
+						vint index = topLevelClassDeclsForCustomFiles.Keys().IndexOf(L"");
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.GetByIndex(index))
+							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.GetByIndex(index))
 							{
 								WriteHeader_TopLevelClass(writer, decl, nss);
 								writer.WriteLine(L"");
@@ -167,10 +167,10 @@ namespace vl
 
 					if (multiFile)
 					{
-						vint index = topLevelClassDeclsForHeaderFiles.Keys().IndexOf(L"");
+						vint index = topLevelClassDeclsForCustomFiles.Keys().IndexOf(L"");
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.GetByIndex(index))
+							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.GetByIndex(index))
 							{
 								WriteCpp_Class(writer, decl, nss);
 							}
@@ -199,7 +199,7 @@ namespace vl
 				writer.WriteLine(L"");
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.Get(fileName))
+				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.Get(fileName))
 				{
 					WriteHeader_TopLevelClass(writer, decl, nss);
 					writer.WriteLine(L"");
@@ -216,7 +216,7 @@ namespace vl
 				WriteCpp_PushMacros(writer);
 				writer.WriteLine(L"");
 
-				if (From(topLevelClassDeclsForHeaderFiles.Get(fileName))
+				if (From(topLevelClassDeclsForCustomFiles.Get(fileName))
 					.Any([=](Ptr<WfClassDeclaration> decl)
 					{
 						return IsClassHasUserImplMethods(decl, true);
@@ -229,7 +229,7 @@ namespace vl
 
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.Get(fileName))
+				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.Get(fileName))
 				{
 					WriteCpp_Class(writer, decl, nss);
 				}
