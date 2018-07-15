@@ -56,6 +56,187 @@ GenerateCppFiles
 				writer.WriteLine(L"***********************************************************************/");
 			}
 
+			void WriteReflectionInclude(bool reflection, Ptr<WfCppInput> input, stream::StreamWriter& writer)
+			{
+				if (reflection || input->reflectionIncludes.Count() > 0)
+				{
+					writer.WriteLine(L"/* CodePack:BeginIgnore() */");
+					writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+					if (reflection)
+					{
+						writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + input->reflectionFileName + L".h) */");
+						writer.WriteLine(L"#include \"" + input->reflectionFileName + L".h\"");
+					}
+					else
+					{
+						FOREACH(WString, include, input->reflectionIncludes)
+						{
+							writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + include + L") */");
+							writer.WriteLine(L"#include \"" + include + L"\"");
+						}
+					}
+					writer.WriteLine(L"#endif");
+					writer.WriteLine(L"/* CodePack:EndIgnore() */");
+				}
+			}
+
+			void WriteDefaultHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName));
+				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName));
+				writer.WriteLine(L"");
+				FOREACH(WString, include, input->normalIncludes)
+				{
+					writer.WriteLine(L"#include \"" + include + L"\"");
+				}
+				writer.WriteLine(L"");
+				config.WriteHeader(writer, multiFile);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#endif");
+			}
+
+			void WriteDefaultCpp(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#include \"" + output->entryFileName + L".h\"");
+				WriteReflectionInclude(reflection, input, writer);
+				writer.WriteLine(L"");
+				config.WriteCpp(writer, multiFile);
+			}
+
+			void WriteReflectionHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->reflectionFileName));
+				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->reflectionFileName));
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#include \"" + output->entryFileName + L".h\"");
+				if (input->reflectionIncludes.Count() > 0)
+				{
+					writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+					FOREACH(WString, include, input->reflectionIncludes)
+					{
+						writer.WriteLine(L"#include \"" + include + L"\"");
+					}
+					writer.WriteLine(L"#endif");
+				}
+				writer.WriteLine(L"");
+				config.WriteReflectionHeader(writer, multiFile);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#endif");
+			}
+
+			void WriteReflectionCpp(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#include \"" + input->reflectionFileName + L".h\"");
+				writer.WriteLine(L"");
+				config.WriteReflectionCpp(writer, multiFile);
+			}
+
+			void WriteIncludesHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->includeFileName));
+				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->includeFileName));
+				writer.WriteLine(L"");
+
+				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
+				FOREACH(WString, fileName, config.topLevelClassDeclsForFiles.Keys())
+				{
+					if (fileName != L"")
+					{
+						writer.WriteLine(L"#include \"" + fileName + L".h\"");
+					}
+				}
+
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#endif");
+			}
+
+			void WriteSubHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, const WString& fileName, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(fileName));
+				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
+				{
+					List<Ptr<WfDeclaration>> decls;
+					CopyFrom(decls, config.topLevelClassDeclsForFiles[fileName]);
+					for (vint i = 0; i < decls.Count(); i++)
+					{
+						if (auto classDecl = decls[i].Cast<WfClassDeclaration>())
+						{
+							{
+								vint index = config.enumDecls.Keys().IndexOf(classDecl.Obj());
+								if (index != -1)
+								{
+									CopyFrom(decls, config.enumDecls.GetByIndex(index), true);
+								}
+							}
+							{
+								vint index = config.structDecls.Keys().IndexOf(classDecl.Obj());
+								if (index != -1)
+								{
+									CopyFrom(decls, config.structDecls.GetByIndex(index), true);
+								}
+							}
+							{
+								vint index = config.classDecls.Keys().IndexOf(classDecl.Obj());
+								if (index != -1)
+								{
+									CopyFrom(decls, config.classDecls.GetByIndex(index), true);
+								}
+							}
+						}
+					}
+
+					SortedList<WString> fileNames;
+					FOREACH(Ptr<WfDeclaration>, decl, decls)
+					{
+						vint index = config.declDependencies.Keys().IndexOf(decl.Obj());
+						if (index != -1)
+						{
+							FOREACH(Ptr<WfDeclaration>, declDep, config.declDependencies.GetByIndex(index))
+							{
+								WString fileName = config.declFiles[declDep.Obj()];
+								if (fileName != L"" && !fileNames.Contains(fileName))
+								{
+									fileNames.Add(fileName);
+								}
+							}
+						}
+					}
+
+					FOREACH(WString, fileName, fileNames)
+					{
+						writer.WriteLine(L"#include \"" + fileName + L".h\"");
+					}
+				}
+				writer.WriteLine(L"");
+				config.WriteSubHeader(writer, fileName);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#endif");
+			}
+
+			void WriteSubCpp(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, const WString& fileName, stream::StreamWriter& writer)
+			{
+				GenerateCppComment(writer, input->comment);
+				writer.WriteLine(L"");
+				writer.WriteLine(L"#include \"" + input->includeFileName + L".h\"");
+				WriteReflectionInclude(reflection, input, writer);
+				writer.WriteLine(L"");
+				config.WriteSubCpp(writer, fileName);
+			}
+
 			Ptr<WfCppOutput> GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager)
 			{
 				WfCppConfig config(manager, input->assemblyName, input->assemblyNamespace);
@@ -105,87 +286,24 @@ GenerateCppFiles
 
 				output->cppFiles.Add(input->defaultFileName + L".h", GenerateToStream([&](StreamWriter& writer)
 				{
-					GenerateCppComment(writer, input->comment);
-					writer.WriteLine(L"");
-					writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName));
-					writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName));
-					writer.WriteLine(L"");
-					FOREACH(WString, include, input->normalIncludes)
-					{
-						writer.WriteLine(L"#include \"" + include + L"\"");
-					}
-					writer.WriteLine(L"");
-					config.WriteHeader(writer, multiFile);
-					writer.WriteLine(L"");
-					writer.WriteLine(L"#endif");
+					WriteDefaultHeader(input, output, config, multiFile, reflection, writer);
 				}));
-
-				auto extraInclude = [&](StreamWriter& writer)
-				{
-					if (reflection || input->reflectionIncludes.Count() > 0)
-					{
-						writer.WriteLine(L"/* CodePack:BeginIgnore() */");
-						writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
-						if (reflection)
-						{
-							writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + input->reflectionFileName + L".h) */");
-							writer.WriteLine(L"#include \"" + input->reflectionFileName + L".h\"");
-						}
-						else
-						{
-							FOREACH(WString, include, input->reflectionIncludes)
-							{
-								writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + include + L") */");
-								writer.WriteLine(L"#include \"" + include + L"\"");
-							}
-						}
-						writer.WriteLine(L"#endif");
-						writer.WriteLine(L"/* CodePack:EndIgnore() */");
-					}
-				};
 
 				output->cppFiles.Add(input->defaultFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
 				{
-					GenerateCppComment(writer, input->comment);
-					writer.WriteLine(L"");
-					writer.WriteLine(L"#include \"" + output->entryFileName + L".h\"");
-					extraInclude(writer);
-					writer.WriteLine(L"");
-					config.WriteCpp(writer, multiFile);
+					WriteDefaultCpp(input, output, config, multiFile, reflection, writer);
 				}));
 
 				if (reflection)
 				{
 					output->cppFiles.Add(input->reflectionFileName + L".h", GenerateToStream([&](StreamWriter& writer)
 					{
-						GenerateCppComment(writer, input->comment);
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->reflectionFileName));
-						writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->reflectionFileName));
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#include \"" + output->entryFileName + L".h\"");
-						if (input->reflectionIncludes.Count() > 0)
-						{
-							writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
-							FOREACH(WString, include, input->reflectionIncludes)
-							{
-								writer.WriteLine(L"#include \"" + include + L"\"");
-							}
-							writer.WriteLine(L"#endif");
-						}
-						writer.WriteLine(L"");
-						config.WriteReflectionHeader(writer, multiFile);
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#endif");
+						WriteReflectionHeader(input, output, config, multiFile, reflection, writer);
 					}));
 
 					output->cppFiles.Add(input->reflectionFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
 					{
-						GenerateCppComment(writer, input->comment);
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#include \"" + input->reflectionFileName + L".h\"");
-						writer.WriteLine(L"");
-						config.WriteReflectionCpp(writer, multiFile);
+						WriteReflectionCpp(input, output, config, multiFile, reflection, writer);
 					}));
 				}
 
@@ -193,23 +311,7 @@ GenerateCppFiles
 				{
 					output->cppFiles.Add(input->includeFileName + L".h", GenerateToStream([&](StreamWriter& writer)
 					{
-						GenerateCppComment(writer, input->comment);
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->includeFileName));
-						writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->includeFileName));
-						writer.WriteLine(L"");
-
-						writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-						FOREACH(WString, fileName, config.topLevelClassDeclsForFiles.Keys())
-						{
-							if (fileName != L"")
-							{
-								writer.WriteLine(L"#include \"" + fileName + L".h\"");
-							}
-						}
-
-						writer.WriteLine(L"");
-						writer.WriteLine(L"#endif");
+						WriteIncludesHeader(input, output, config, multiFile, reflection, writer);
 					}));
 
 					FOREACH(WString, fileName, config.topLevelClassDeclsForFiles.Keys())
@@ -218,79 +320,12 @@ GenerateCppFiles
 						{
 							output->cppFiles.Add(fileName + L".h", GenerateToStream([&](StreamWriter& writer)
 							{
-								GenerateCppComment(writer, input->comment);
-								writer.WriteLine(L"");
-								writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(fileName));
-								writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
-								writer.WriteLine(L"");
-								writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-								{
-									List<Ptr<WfDeclaration>> decls;
-									CopyFrom(decls, config.topLevelClassDeclsForFiles[fileName]);
-									for (vint i = 0; i < decls.Count(); i++)
-									{
-										if (auto classDecl = decls[i].Cast<WfClassDeclaration>())
-										{
-											{
-												vint index = config.enumDecls.Keys().IndexOf(classDecl.Obj());
-												if (index != -1)
-												{
-													CopyFrom(decls, config.enumDecls.GetByIndex(index), true);
-												}
-											}
-											{
-												vint index = config.structDecls.Keys().IndexOf(classDecl.Obj());
-												if (index != -1)
-												{
-													CopyFrom(decls, config.structDecls.GetByIndex(index), true);
-												}
-											}
-											{
-												vint index = config.classDecls.Keys().IndexOf(classDecl.Obj());
-												if (index != -1)
-												{
-													CopyFrom(decls, config.classDecls.GetByIndex(index), true);
-												}
-											}
-										}
-									}
-
-									SortedList<WString> fileNames;
-									FOREACH(Ptr<WfDeclaration>, decl, decls)
-									{
-										vint index = config.declDependencies.Keys().IndexOf(decl.Obj());
-										if (index != -1)
-										{
-											FOREACH(Ptr<WfDeclaration>, declDep, config.declDependencies.GetByIndex(index))
-											{
-												WString fileName = config.declFiles[declDep.Obj()];
-												if (fileName != L"" && !fileNames.Contains(fileName))
-												{
-													fileNames.Add(fileName);
-												}
-											}
-										}
-									}
-
-									FOREACH(WString, fileName, fileNames)
-									{
-										writer.WriteLine(L"#include \"" + fileName + L".h\"");
-									}
-								}
-								writer.WriteLine(L"");
-								config.WriteSubHeader(writer, fileName);
-								writer.WriteLine(L"");
-								writer.WriteLine(L"#endif");
+								WriteSubHeader(input, output, config, multiFile, reflection, fileName, writer);
 							}));
 
 							output->cppFiles.Add(fileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
 							{
-								GenerateCppComment(writer, input->comment);
-								writer.WriteLine(L"");
-								writer.WriteLine(L"#include \"" + input->includeFileName + L".h\"");
-								extraInclude(writer);
-								writer.WriteLine(L"");
-								config.WriteSubCpp(writer, fileName);
+								WriteSubCpp(input, output, config, multiFile, reflection, fileName, writer);
 							}));
 						}
 					}

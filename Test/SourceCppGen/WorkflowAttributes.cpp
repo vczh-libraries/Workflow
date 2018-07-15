@@ -131,6 +131,69 @@ Global Functions
 	}
 }
 
+/***********************************************************************
+Class (::calculator::BinaryExpression)
+***********************************************************************/
+
+namespace calculator
+{
+	::calculator::BinaryExpression::BinaryOperator BinaryExpression::GetOperator()
+	{
+		return this->__vwsn_prop_Operator;
+	}
+	void BinaryExpression::SetOperator(::calculator::BinaryExpression::BinaryOperator __vwsn_value_)
+	{
+		(this->__vwsn_prop_Operator = __vwsn_value_);
+	}
+
+	::vl::Ptr<::calculator::Expression> BinaryExpression::GetLeft()
+	{
+		return this->__vwsn_prop_Left;
+	}
+	void BinaryExpression::SetLeft(::vl::Ptr<::calculator::Expression> __vwsn_value_)
+	{
+		(this->__vwsn_prop_Left = __vwsn_value_);
+	}
+
+	::vl::Ptr<::calculator::Expression> BinaryExpression::GetRight()
+	{
+		return this->__vwsn_prop_Right;
+	}
+	void BinaryExpression::SetRight(::vl::Ptr<::calculator::Expression> __vwsn_value_)
+	{
+		(this->__vwsn_prop_Right = __vwsn_value_);
+	}
+
+	BinaryExpression::BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right)
+		: __vwsn_prop_Operator(::calculator::BinaryExpression::BinaryOperator::Add)
+		, __vwsn_prop_Left(::vl::Ptr<::calculator::Expression>())
+		, __vwsn_prop_Right(::vl::Ptr<::calculator::Expression>())
+	{
+		this->SetLeft(_left);
+		this->SetOperator(_op);
+		this->SetRight(_right);
+	}
+
+/***********************************************************************
+Class (::calculator::NumberExpression)
+***********************************************************************/
+
+	::vl::vint NumberExpression::GetValue()
+	{
+		return this->__vwsn_prop_Value;
+	}
+	void NumberExpression::SetValue(::vl::vint __vwsn_value_)
+	{
+		(this->__vwsn_prop_Value = __vwsn_value_);
+	}
+
+	NumberExpression::NumberExpression(::vl::vint _value)
+		: __vwsn_prop_Value(static_cast<::vl::vint>(0))
+	{
+		this->SetValue(_value);
+	}
+
+}
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

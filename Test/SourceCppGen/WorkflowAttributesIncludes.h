@@ -11,8 +11,6 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_WORKFLOWATTRIBUTESINCLUDES
 
 #include "WorkflowAttributes.h"
-#include "WorkflowAttributes_BinaryExpression.h"
 #include "WorkflowAttributes_Expression.h"
-#include "WorkflowAttributes_NumberExpression.h"
 
 #endif
