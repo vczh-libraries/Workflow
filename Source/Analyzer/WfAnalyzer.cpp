@@ -440,9 +440,9 @@ WfLexicalScopeManager
 					modules.Clear();
 					moduleCodes.Clear();
 					usedCodeIndex = 0;
-					usedTempVars = 0;
 				}
 
+				usedTempVars = 0;
 				errors.Clear();
 				namespaceNames.Clear();
 
