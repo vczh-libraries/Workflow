@@ -21,6 +21,7 @@ CheckBaseClass
 			{
 			public:
 				WfLexicalScopeManager*							manager;
+				vint											step = 0;
 				Dictionary<ITypeDescriptor*, WfDeclaration*>	depItems;
 				Group<ITypeDescriptor*, ITypeDescriptor*>		depGroup;
 
@@ -54,23 +55,31 @@ CheckBaseClass
 				{
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node].Obj();
-					depItems.Add(td, node);
 
-					vint count = td->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
+					if (step == 1)
 					{
-						auto propTd = td->GetProperty(i)->GetReturn()->GetTypeDescriptor();
-						if (td == propTd)
+						depItems.Add(td, node);
+					}
+					else if (step == 2)
+					{
+						vint count = td->GetPropertyCount();
+						for (vint i = 0; i < count; i++)
 						{
-							List<ITypeDescriptor*> tds;
-							tds.Add(td);
-							manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
-						}
-						else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-						{
-							if (!depGroup.Contains(td, propTd))
+							auto propTd = td->GetProperty(i)->GetReturn()->GetTypeDescriptor();
+							if (!depItems.Keys().Contains(propTd)) continue;
+
+							if (td == propTd)
 							{
-								depGroup.Add(td, propTd);
+								List<ITypeDescriptor*> tds;
+								tds.Add(td);
+								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
+							}
+							else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+							{
+								if (!depGroup.Contains(td, propTd))
+								{
+									depGroup.Add(td, propTd);
+								}
 							}
 						}
 					}
@@ -80,38 +89,94 @@ CheckBaseClass
 				{
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node].Obj();
-					depItems.Add(td, node);
 
-					vint count = td->GetBaseTypeDescriptorCount();
-					for (vint i = 0; i < count; i++)
+					if (step == 1)
 					{
-						auto baseTd = td->GetBaseTypeDescriptor(i);
-						if (baseTd == td)
+						depItems.Add(td, node);
+					}
+					else if (step == 2)
+					{
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint i = 0; i < count; i++)
 						{
-							List<ITypeDescriptor*> tds;
-							tds.Add(td);
-							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
+							auto baseTd = td->GetBaseTypeDescriptor(i);
+							if (!depItems.Keys().Contains(baseTd)) continue;
+
+							bool isClass = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
+							bool isInterface = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
+
+							switch (node->kind)
 							{
-								manager->errors.Add(WfErrors::ClassRecursiveInheritance(node, tds));
+							case WfClassKind::Class:
+								{
+									if (!isClass || !baseTd->IsAggregatable())
+									{
+										if (!dynamic_cast<WfClass*>(baseTd))
+										{
+											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
+										}
+									}
+								}
+								break;
+							case WfClassKind::Interface:
+								{
+									if (!isInterface)
+									{
+										manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, baseTd));
+									}
+								}
+								break;
 							}
-							else if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface)
+
+							if (baseTd == td)
 							{
-								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(node, tds));
+								List<ITypeDescriptor*> tds;
+								tds.Add(td);
+								if (isClass)
+								{
+									manager->errors.Add(WfErrors::ClassRecursiveInheritance(node, tds));
+								}
+								else if (isInterface)
+								{
+									manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(node, tds));
+								}
+							}
+							else if (baseTd->GetTypeDescriptorFlags() == td->GetTypeDescriptorFlags())
+							{
+								if (!depGroup.Contains(td, baseTd))
+								{
+									depGroup.Add(td, baseTd);
+								}
 							}
 						}
-						else if (baseTd->GetTypeDescriptorFlags() == td->GetTypeDescriptorFlags())
+
+						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
 						{
-							if (!depGroup.Contains(td, baseTd))
-							{
-								depGroup.Add(td, baseTd);
-							}
+							memberDecl->Accept(this);
 						}
 					}
+				}
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+				void Execute(vint _step)
+				{
+					step = _step;
+					FOREACH(Ptr<WfModule>, module, manager->GetModules())
 					{
-						memberDecl->Accept(this);
+						FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+						{
+							declaration->Accept(this);
+						}
 					}
+				}
+
+				void ExecuteCollectTypes()
+				{
+					Execute(1);
+				}
+
+				void ExecuteCollectDependencies()
+				{
+					Execute(2);
 				}
 			};
 
@@ -154,27 +219,8 @@ CheckScopes_CycleDependency
 			{
 				vint errorCount = manager->errors.Count();
 				CheckCycleDependencyDeclarationVisitor visitor(manager);
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
-				{
-					FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
-					{
-						declaration->Accept(&visitor);
-					}
-				}
-
-				for (vint i = visitor.depGroup.Count() - 1; i >= 0; i--)
-				{
-					auto key = visitor.depGroup.Keys()[i];
-					const auto& values = visitor.depGroup.GetByIndex(i);
-					for (vint j = values.Count() - 1; j >= 0; j--)
-					{
-						auto value = values[j];
-						if (!visitor.depItems.Keys().Contains(value))
-						{
-							visitor.depGroup.Remove(key, value);
-						}
-					}
-				}
+				visitor.ExecuteCollectTypes();
+				visitor.ExecuteCollectDependencies();
 
 				{
 					PartialOrderingProcessor pop;
