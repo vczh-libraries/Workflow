@@ -347,19 +347,17 @@ WfCppConfig
 				}
 				if (useHeaderEnumStructName)
 				{
-					WString type;
 					switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
 					{
 					case TypeDescriptorFlags::EnumType:
-						type = L"enum";
+						return CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"enum");
 						break;
 					case TypeDescriptorFlags::Struct:
-						type = L"struct";
+						return CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"struct");
 						break;
 					default:
-						CHECK_FAIL(L"WfCppConfig::ConvertType(ITypeInfo*, bool)#Internal error: Unexpected type.");
+						return ConvertType(typeInfo->GetTypeDescriptor());
 					}
-					return CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), type);
 				}
 				else
 				{

@@ -107,7 +107,7 @@ namespace vl
 
 				FOREACH(Ptr<WfEnumDeclaration>, decl, allEnums)
 				{
-					WriteHeader_Enum(writer, decl, nss, false);
+					WriteHeader_Enum(writer, decl, nss, true);
 				}
 			}
 		}

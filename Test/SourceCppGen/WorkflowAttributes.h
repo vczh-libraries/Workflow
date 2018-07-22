@@ -23,6 +23,19 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace __vwsn_enums
+{
+	enum class _calculator_BinaryExpression_BinaryOperator : vl::vuint64_t
+	{
+		Add = 0UL,
+		Sub = 1UL,
+		Mul = 2UL,
+		Div = 3UL,
+	};
+	inline _calculator_BinaryExpression_BinaryOperator operator& (_calculator_BinaryExpression_BinaryOperator a, _calculator_BinaryExpression_BinaryOperator b) { return static_cast<_calculator_BinaryExpression_BinaryOperator>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
+	inline _calculator_BinaryExpression_BinaryOperator operator| (_calculator_BinaryExpression_BinaryOperator a, _calculator_BinaryExpression_BinaryOperator b) { return static_cast<_calculator_BinaryExpression_BinaryOperator>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
+
+}
 namespace calculator
 {
 	class Expression;

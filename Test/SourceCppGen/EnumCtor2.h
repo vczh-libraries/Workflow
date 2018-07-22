@@ -23,6 +23,22 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace __vwsn_enums
+{
+	enum class _Seasons : vl::vuint64_t
+	{
+		None = 0UL,
+		Spring = 1UL,
+		Summer = 2UL,
+		Autumn = 4UL,
+		Winter = 8UL,
+		Good = Spring | Autumn,
+		Bad = Summer | Winter,
+	};
+	inline _Seasons operator& (_Seasons a, _Seasons b) { return static_cast<_Seasons>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
+	inline _Seasons operator| (_Seasons a, _Seasons b) { return static_cast<_Seasons>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
+
+}
 using Seasons = ::__vwsn_enums::_Seasons;
 
 /***********************************************************************

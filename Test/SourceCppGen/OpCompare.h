@@ -23,6 +23,16 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace __vwsn_enums
+{
+	enum class _MyEnum : vl::vuint64_t
+	{
+		Item = 0UL,
+	};
+	inline _MyEnum operator& (_MyEnum a, _MyEnum b) { return static_cast<_MyEnum>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
+	inline _MyEnum operator| (_MyEnum a, _MyEnum b) { return static_cast<_MyEnum>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
+
+}
 using MyEnum = ::__vwsn_enums::_MyEnum;
 
 /***********************************************************************
