@@ -33,8 +33,8 @@ namespace vl
 				__vwsne_#				: Temporary variable (not for lambda)
 				__vwsnb_#				: Temporary block
 				__vwnsl_#_LABEL_NAME	: Goto label
-				__vwsn_struct_NAME		: Struct definition
-				__vwsn_enum_NAME		: Enum definition
+				__vwsn_structs::NAME	: Struct definition
+				__vwsn_enums::NAME		: Struct definition
 			*/
 
 			class WfCppConfig : public Object
@@ -98,6 +98,7 @@ namespace vl
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix, ITypeInfo* expectedType);
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType);
 
+				WString					CppNameToHeaderEnumStructName(const WString& fullName, const WString& type);
 				WString					ConvertNameInternal(const WString& name, const WString& specialNameCategory, bool alwaysUseCategory);
 				WString					ConvertName(const WString& name);
 				WString					ConvertName(const WString& name, const WString& specialNameCategory);
@@ -106,7 +107,7 @@ namespace vl
 				WString					ConvertFunctionType(ITypeInfo* typeInfo);
 				bool					IsSpecialGenericType(ITypeInfo* typeInfo);
 				WString					ConvertType(ITypeDescriptor* typeInfo, WString delimiter = L"::");
-				WString					ConvertType(ITypeInfo* typeInfo);
+				WString					ConvertType(ITypeInfo* typeInfo, bool useHeaderEnumStructName = false);
 				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
 				bool					IsClassHasUserImplMethods(Ptr<WfClassDeclaration> decl, bool searchInternalClasses);
@@ -127,11 +128,11 @@ namespace vl
 
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_EnumOp(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
-				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss);
+				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
 
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
-				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
+				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
 
 				void					WriteHeader_ClosurePreDecl(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteHeader_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);

@@ -199,6 +199,11 @@ WfCppConfig
 				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString(L"\t", false), expectedType);
 			}
 
+			WString WfCppConfig::CppNameToHeaderEnumStructName(const WString& fullName, const WString& type)
+			{
+				return L"__vwsn_" + type + L"s::" + ConvertFullName(fullName, L"_");
+			}
+
 			WString WfCppConfig::ConvertNameInternal(const WString& name, const WString& specialNameCategory, bool alwaysUseCategory)
 			{
 				if (name.Length() > 0 && name[0] == L'$')
@@ -318,27 +323,27 @@ WfCppConfig
 				return ConvertFullName(CppGetFullName(typeInfo), delimiter);
 			}
 
-			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo)
+			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo, bool useHeaderEnumStructName)
 			{
 				switch (typeInfo->GetDecorator())
 				{
 				case ITypeInfo::RawPtr:
-					return ConvertType(typeInfo->GetElementType()) + L"*";
+					return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName) + L"*";
 				case ITypeInfo::SharedPtr:
 					if (typeInfo->GetElementType()->GetDecorator() == ITypeInfo::Generic)
 					{
 						if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
 						{
-							return ConvertType(typeInfo->GetElementType());
+							return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName);
 						}
 						else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
 						{
-							return ConvertType(typeInfo->GetElementType());
+							return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName);
 						}
 					}
-					return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType()) + L">";
+					return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName) + L">";
 				case ITypeInfo::Nullable:
-					return L"::vl::Nullable<" + ConvertType(typeInfo->GetElementType()) + L">";
+					return L"::vl::Nullable<" + ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName) + L">";
 				case ITypeInfo::Generic:
 					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
 					{
@@ -346,15 +351,34 @@ WfCppConfig
 					}
 					else if(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
 					{
-						return L"::vl::collections::LazyList<" + ConvertType(typeInfo->GetGenericArgument(0)) + L">";
+						return L"::vl::collections::LazyList<" + ConvertType(typeInfo->GetGenericArgument(0), useHeaderEnumStructName) + L">";
 					}
 					else
 					{
-						return ConvertType(typeInfo->GetElementType());
+						return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName);
 					}
 				default:;
 				}
-				return ConvertType(typeInfo->GetTypeDescriptor());
+				if (useHeaderEnumStructName)
+				{
+					WString type;
+					switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
+					{
+					case TypeDescriptorFlags::EnumType:
+						type = L"enum";
+						break;
+					case TypeDescriptorFlags::Struct:
+						type = L"struct";
+						break;
+					default:
+						CHECK_FAIL(L"WfCppConfig::ConvertType(ITypeInfo*, bool)#Internal error: Unexpected type.");
+					}
+					return CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), type);
+				}
+				else
+				{
+					return ConvertType(typeInfo->GetTypeDescriptor());
+				}
 			}
 
 			WString WfCppConfig::ConvertArgumentType(ITypeInfo* typeInfo)

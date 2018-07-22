@@ -21,7 +21,7 @@ namespace vl
 					{
 						defaultValue = L" = " + defaultValue;
 					}
-					writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn()) + L" " + ConvertName(member->name.value) + defaultValue + L";");
+					writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn(), true) + L" " + ConvertName(member->name.value) + defaultValue + L";");
 				}
 				writer.WriteLine(prefix + L"};");
 			}
@@ -68,13 +68,27 @@ namespace vl
 				}
 			}
 
-			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss)
+			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				WString name;
-				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
-				WriteHeader_Struct(writer, decl, name, prefix);
-				WriteHeader_StructOp(writer, decl, name, prefix);
+				if (mainHeaderDefinition)
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"), nss, name);
+					WriteHeader_Struct(writer, decl, name, prefix);
+					WriteHeader_StructOp(writer, decl, name, prefix);
+				}
+				else
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(name);
+					writer.WriteString(L" = ");
+					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"));
+					writer.WriteLine(L";");
+				}
 			}
 		}
 	}

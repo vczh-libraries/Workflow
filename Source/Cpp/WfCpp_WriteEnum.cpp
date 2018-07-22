@@ -58,13 +58,27 @@ namespace vl
 				}
 			}
 
-			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss)
+			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				WString name;
-				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
-				WriteHeader_Enum(writer, decl, name, prefix);
-				WriteHeader_EnumOp(writer, decl, name, prefix);
+				if (mainHeaderDefinition)
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppNameToHeaderEnumStructName(CppGetFullName(td), L"enum"), nss, name);
+					WriteHeader_Enum(writer, decl, name, prefix);
+					WriteHeader_EnumOp(writer, decl, name, prefix);
+				}
+				else
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(name);
+					writer.WriteString(L" = ");
+					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"enum"));
+					writer.WriteLine(L";");
+				}
 			}
 		}
 	}
