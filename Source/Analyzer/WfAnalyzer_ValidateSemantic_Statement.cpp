@@ -285,6 +285,9 @@ ValidateSemantic(Statement)
 
 						ContextFreeStatementDesugar(manager, node->expandedStatement);
 						BuildScopeForStatement(manager, parentScope, node->expandedStatement);
+
+						manager->checkedScopes_DuplicatedSymbol.Remove(parentScope.Obj());
+						manager->checkedScopes_SymbolType.Remove(parentScope.Obj());
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
 							return;

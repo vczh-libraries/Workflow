@@ -446,6 +446,8 @@ WfLexicalScopeManager
 				errors.Clear();
 				namespaceNames.Clear();
 				nodeScopes.Clear();
+				checkedScopes_DuplicatedSymbol.Clear();
+				checkedScopes_SymbolType.Clear();
 
 				expressionResolvings.Clear();
 				coNewCoroutineResolvings.Clear();

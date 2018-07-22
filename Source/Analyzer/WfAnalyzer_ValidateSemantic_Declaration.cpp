@@ -450,7 +450,10 @@ ValidateSemantic(Declaration)
 						{
 							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[node]);
 						}
-						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_BaseType(manager) || !CheckScopes_SymbolType(manager))
+
+						manager->checkedScopes_DuplicatedSymbol.Remove(parentScope.Obj());
+						manager->checkedScopes_SymbolType.Remove(parentScope.Obj());
+						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
 							return;
 						}

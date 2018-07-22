@@ -178,6 +178,7 @@ Scope Manager
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
+				typedef collections::SortedList<WfLexicalScope*>											AnalyzedScopeList;
 
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Dictionary<Ptr<WfStatement>, ResolveExpressionResult>					CoOperatorResolvingMap;
@@ -204,30 +205,32 @@ Scope Manager
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
 				AttributeTypeMap							attributes;
 
-				Ptr<WfLexicalScopeName>						globalName;						// root scope
-				TypeNameMap									typeNames;						// ITypeDescriptor* to scope name map
+				Ptr<WfLexicalScopeName>						globalName;							// root scope
+				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
 
 				vint										usedTempVars = 0;
-				ParsingErrorList							errors;							// compile errors
-				NamespaceNameMap							namespaceNames;					// namespace to scope name map
-				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
+				ParsingErrorList							errors;								// compile errors
+				NamespaceNameMap							namespaceNames;						// namespace to scope name map
+				NodeScopeMap								nodeScopes;							// the nearest scope for a AST
+				AnalyzedScopeList							checkedScopes_DuplicatedSymbol;		// scopes that validated by CheckScopes_DuplicatedSymbol
+				AnalyzedScopeList							checkedScopes_SymbolType;			// scopes that validated by CheckScopes_SymbolType
 
-				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
-				ExpressionResolvingMap						coNewCoroutineResolvings;		// the coroutine type for the WfNewCoroutineExpression (e.g. AsyncCoroutine)
-				CoOperatorResolvingMap						coOperatorResolvings;			// the method for the co-operator statement (e.g. AwaitAndRead)
-				CoOperatorResolvingMap						coProviderResolvings;			// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
-				CoOperatorResolvingMap						coCastResultResolvings;			// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
-				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
+				ExpressionResolvingMap						expressionResolvings;				// the resolving result for the expression
+				ExpressionResolvingMap						coNewCoroutineResolvings;			// the coroutine type for the WfNewCoroutineExpression (e.g. AsyncCoroutine)
+				CoOperatorResolvingMap						coOperatorResolvings;				// the method for the co-operator statement (e.g. AwaitAndRead)
+				CoOperatorResolvingMap						coProviderResolvings;				// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
+				CoOperatorResolvingMap						coCastResultResolvings;				// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
+				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;		// all base constructor call resolvings
 
-				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
-				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
-				DeclarationSourceMap						declaractionScopeSources;		// the source used to build the scope for a declaration
-				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
-				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
-				StateInputMethodMap							stateInputMethods;				// IMethodInfo* for state input
-				StateArgumentFieldMap						stateInputArguments;			// IPropertyInfo* for state input argument temporary cache
-				StateArgumentFieldMap						stateDeclArguments;				// IPropertyInfo* for state argument temporary cache
-				StateMachineInfoMap							stateMachineInfos;				// members of state machine
+				LambdaCaptureMap							lambdaCaptures;						// all captured symbols in a lambda AST
+				InterfaceMethodImplementationMap			interfaceMethodImpls;				// the IMethodInfo* that implemented by a function
+				DeclarationSourceMap						declaractionScopeSources;			// the source used to build the scope for a declaration
+				DeclarationTypeMap							declarationTypes;					// ITypeDescriptor* for type declaration
+				DeclarationMemberInfoMap					declarationMemberInfos;				// IMemberInfo* for type description
+				StateInputMethodMap							stateInputMethods;					// IMethodInfo* for state input
+				StateArgumentFieldMap						stateInputArguments;				// IPropertyInfo* for state input argument temporary cache
+				StateArgumentFieldMap						stateDeclArguments;					// IPropertyInfo* for state argument temporary cache
+				StateMachineInfoMap							stateMachineInfos;					// members of state machine
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>

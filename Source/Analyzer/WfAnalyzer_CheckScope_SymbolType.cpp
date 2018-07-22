@@ -14,13 +14,12 @@ CheckScopes_SymbolType
 
 			bool CheckScopes_SymbolType(WfLexicalScopeManager* manager)
 			{
-				SortedList<WfLexicalScope*> analyzedScopes;
 				vint errorCount = manager->errors.Count();
 				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
 				{
-					if (!analyzedScopes.Contains(scope.Obj()))
+					if (!manager->checkedScopes_SymbolType.Contains(scope.Obj()))
 					{
-						analyzedScopes.Add(scope.Obj());
+						manager->checkedScopes_SymbolType.Add(scope.Obj());
 
 						for (vint i = 0; i < scope->symbols.Count(); i++)
 						{

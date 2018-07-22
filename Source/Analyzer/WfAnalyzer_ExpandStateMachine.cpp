@@ -103,7 +103,7 @@ ExpandStateMachineStatementVisitor
 						{
 							return symbol->creatorNode.Cast<WfStateInput>();
 						})
-							.Where([=](Ptr<WfStateInput> decl)
+						.Where([=](Ptr<WfStateInput> decl)
 						{
 							return decl != nullptr;
 						})
