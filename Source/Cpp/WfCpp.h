@@ -23,16 +23,18 @@ namespace vl
 				__vwsn_temp_(#|_)		: Temporary variable
 				__vwsn_CATEGORY			: <CATEGORY>
 				__vwsn_CATEGORY_NAME	: <CATEGORY>NAME
-				__vwsno#_ASSEMBLY_*		: ordered lambda class name
-				__vwsnf#_ASSEMBLY_*		: function expression class name
-				__vwsnc#_ASSEMBLY_*		: anonymous interface class name
-				__vwsnthis_#			: captured this pointer in fields
-				__vwsnctor_*			: captured symbol in constructor arguments, assigned to "this->*"
-				__vwsnctorthis_#		: captured this pointer in constructor arguments assigned to "this->__vwsnthis_#"?
+				__vwsno#_ASSEMBLY_*		: Ordered lambda class name
+				__vwsnf#_ASSEMBLY_*		: Function expression class name
+				__vwsnc#_ASSEMBLY_*		: Anonymous interface class name
+				__vwsnthis_#			: Captured this pointer in fields
+				__vwsnctor_*			: Captured symbol in constructor arguments, assigned to "this->*"
+				__vwsnctorthis_#		: Captured this pointer in constructor arguments assigned to "this->__vwsnthis_#"?
 				__vwsnt_#				: Temporary type
 				__vwsne_#				: Temporary variable (not for lambda)
 				__vwsnb_#				: Temporary block
 				__vwnsl_#_LABEL_NAME	: Goto label
+				__vwsn_struct_NAME		: Struct definition
+				__vwsn_enum_NAME		: Enum definition
 			*/
 
 			class WfCppConfig : public Object
