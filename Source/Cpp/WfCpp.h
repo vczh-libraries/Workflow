@@ -73,6 +73,7 @@ namespace vl
 				WString																		assemblyNamespace;
 				WString																		assemblyName;
 
+				collections::Dictionary<ITypeDescriptor*, Ptr<WfDeclaration>>				tdDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;

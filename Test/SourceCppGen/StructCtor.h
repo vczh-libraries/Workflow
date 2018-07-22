@@ -42,7 +42,7 @@ namespace __vwsn_structs
 
 	struct _B
 	{
-		::__vwsn_structs::_test_Point data;
+		::test::Point data;
 	};
 	inline bool operator== (const _B& a, const _B& b)
 	{

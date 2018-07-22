@@ -107,6 +107,7 @@ CollectModule
 				void Visit(WfClassDeclaration* node)override
 				{
 					config->classDecls.Add(surroundingClassDecl, node);
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 
 					if (surroundingClassDecl)
 					{
@@ -144,12 +145,14 @@ CollectModule
 				void Traverse(WfEnumDeclaration* node)override
 				{
 					config->enumDecls.Add(surroundingClassDecl, node);
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 					AddDeclFile(node);
 				}
 
 				void Traverse(WfStructDeclaration* node)override
 				{
 					config->structDecls.Add(surroundingClassDecl, node);
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 					AddDeclFile(node);
 
 					auto td = config->manager->declarationTypes[node].Obj();

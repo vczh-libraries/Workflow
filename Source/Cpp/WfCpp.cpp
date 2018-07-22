@@ -350,14 +350,20 @@ WfCppConfig
 					switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
 					{
 					case TypeDescriptorFlags::EnumType:
-						return L"::" + CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"enum");
+						if (tdDecls.Keys().Contains(typeInfo->GetTypeDescriptor()))
+						{
+							return L"::" + CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"enum");
+						}
 						break;
 					case TypeDescriptorFlags::Struct:
-						return L"::" + CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"struct");
+						if (tdDecls.Keys().Contains(typeInfo->GetTypeDescriptor()))
+						{
+							return L"::" + CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"struct");
+						}
 						break;
-					default:
-						return ConvertType(typeInfo->GetTypeDescriptor());
+					default:;
 					}
+					return ConvertType(typeInfo->GetTypeDescriptor());
 				}
 				else
 				{
