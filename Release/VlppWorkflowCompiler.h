@@ -3902,27 +3902,32 @@ Scope Manager
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
+				typedef collections::Pair<WString, WString>													AttributeKey;
+				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
+
+				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
+
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
-				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
+				typedef collections::SortedList<WfLexicalScope*>											AnalyzedScopeList;
+
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Dictionary<Ptr<WfStatement>, ResolveExpressionResult>					CoOperatorResolvingMap;
+				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
+				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
+				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
+
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, parsing::ParsingTreeCustomBase*>		DeclarationSourceMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
-				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
-				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
-				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 				typedef collections::Dictionary<Ptr<WfStateInput>, Ptr<typeimpl::WfClassMethod>>			StateInputMethodMap;
 				typedef collections::Dictionary<Ptr<WfFunctionArgument>, Ptr<typeimpl::WfField>>			StateArgumentFieldMap;
 				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, Ptr<WfStateMachineInfo>>	StateMachineInfoMap;
 
-				typedef collections::Pair<WString, WString>													AttributeKey;
-				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
 			protected:
 				ModuleList									modules;
 				ModuleCodeList								moduleCodes;
@@ -3931,30 +3936,33 @@ Scope Manager
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
 				AttributeTypeMap							attributes;
+
+				Ptr<WfLexicalScopeName>						globalName;							// root scope
+				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
+
 				vint										usedTempVars = 0;
+				ParsingErrorList							errors;								// compile errors
+				NamespaceNameMap							namespaceNames;						// namespace to scope name map
+				NodeScopeMap								nodeScopes;							// the nearest scope for a AST
+				AnalyzedScopeList							checkedScopes_DuplicatedSymbol;		// scopes that validated by CheckScopes_DuplicatedSymbol
+				AnalyzedScopeList							checkedScopes_SymbolType;			// scopes that validated by CheckScopes_SymbolType
 
-				ParsingErrorList							errors;							// compile errors
+				ExpressionResolvingMap						expressionResolvings;				// the resolving result for the expression
+				ExpressionResolvingMap						coNewCoroutineResolvings;			// the coroutine type for the WfNewCoroutineExpression (e.g. AsyncCoroutine)
+				CoOperatorResolvingMap						coOperatorResolvings;				// the method for the co-operator statement (e.g. AwaitAndRead)
+				CoOperatorResolvingMap						coProviderResolvings;				// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
+				CoOperatorResolvingMap						coCastResultResolvings;				// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
+				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;		// all base constructor call resolvings
 
-				Ptr<WfLexicalScopeName>						globalName;						// root scope
-				NamespaceNameMap							namespaceNames;					// namespace to scope name map
-				TypeNameMap									typeNames;						// ITypeDescriptor* to scope name map
-
-				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
-				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
-				ExpressionResolvingMap						coNewCoroutineResolvings;		// the coroutine type for the WfNewCoroutineExpression (e.g. AsyncCoroutine)
-				CoOperatorResolvingMap						coOperatorResolvings;			// the method for the co-operator statement (e.g. AwaitAndRead)
-				CoOperatorResolvingMap						coProviderResolvings;			// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
-				CoOperatorResolvingMap						coCastResultResolvings;			// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
-				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
-				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
-				DeclarationSourceMap						declaractionScopeSources;		// the source used to build the scope for a declaration
-				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
-				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
-				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
-				StateInputMethodMap							stateInputMethods;				// IMethodInfo* for state input
-				StateArgumentFieldMap						stateInputArguments;			// IPropertyInfo* for state input argument temporary cache
-				StateArgumentFieldMap						stateDeclArguments;				// IPropertyInfo* for state argument temporary cache
-				StateMachineInfoMap							stateMachineInfos;				// members of state machine
+				LambdaCaptureMap							lambdaCaptures;						// all captured symbols in a lambda AST
+				InterfaceMethodImplementationMap			interfaceMethodImpls;				// the IMethodInfo* that implemented by a function
+				DeclarationSourceMap						declaractionScopeSources;			// the source used to build the scope for a declaration
+				DeclarationTypeMap							declarationTypes;					// ITypeDescriptor* for type declaration
+				DeclarationMemberInfoMap					declarationMemberInfos;				// IMemberInfo* for type description
+				StateInputMethodMap							stateInputMethods;					// IMethodInfo* for state input
+				StateArgumentFieldMap						stateInputArguments;				// IPropertyInfo* for state input argument temporary cache
+				StateArgumentFieldMap						stateDeclArguments;					// IPropertyInfo* for state argument temporary cache
+				StateMachineInfoMap							stateMachineInfos;					// members of state machine
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
@@ -4103,7 +4111,7 @@ Scope Analyzing
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
 			extern bool										CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager);
 			extern bool										CheckScopes_SymbolType(WfLexicalScopeManager* manager);
-			extern bool										CheckScopes_BaseType(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_CycleDependency(WfLexicalScopeManager* manager);
 
 /***********************************************************************
 Semantic Analyzing
@@ -4293,7 +4301,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			FlagValueNotExists(WfEnumItemIntersection* node, WfEnumDeclaration* owner);
 				static Ptr<parsing::ParsingError>			DuplicatedEnumValue(WfEnumItem* node, WfEnumDeclaration* owner);
 				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
-				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path);
+				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
 				static Ptr<parsing::ParsingError>			AttributeMissValue(WfAttribute* node);
@@ -4334,7 +4342,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfAutoPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			MissingFieldType(WfVariableDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
-				static Ptr<parsing::ParsingError>			DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static Ptr<parsing::ParsingError>			InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
@@ -4541,16 +4550,18 @@ namespace vl
 				__vwsn_temp_(#|_)		: Temporary variable
 				__vwsn_CATEGORY			: <CATEGORY>
 				__vwsn_CATEGORY_NAME	: <CATEGORY>NAME
-				__vwsno#_ASSEMBLY_*		: ordered lambda class name
-				__vwsnf#_ASSEMBLY_*		: function expression class name
-				__vwsnc#_ASSEMBLY_*		: anonymous interface class name
-				__vwsnthis_#			: captured this pointer in fields
-				__vwsnctor_*			: captured symbol in constructor arguments, assigned to "this->*"
-				__vwsnctorthis_#		: captured this pointer in constructor arguments assigned to "this->__vwsnthis_#"?
+				__vwsno#_ASSEMBLY_*		: Ordered lambda class name
+				__vwsnf#_ASSEMBLY_*		: Function expression class name
+				__vwsnc#_ASSEMBLY_*		: Anonymous interface class name
+				__vwsnthis_#			: Captured this pointer in fields
+				__vwsnctor_*			: Captured symbol in constructor arguments, assigned to "this->*"
+				__vwsnctorthis_#		: Captured this pointer in constructor arguments assigned to "this->__vwsnthis_#"?
 				__vwsnt_#				: Temporary type
 				__vwsne_#				: Temporary variable (not for lambda)
 				__vwsnb_#				: Temporary block
 				__vwnsl_#_LABEL_NAME	: Goto label
+				__vwsn_struct_NAME		: Struct definition
+				__vwsn_enum_NAME		: Enum definition
 			*/
 
 			class WfCppConfig : public Object

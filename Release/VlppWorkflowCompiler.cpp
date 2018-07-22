@@ -24695,6 +24695,9 @@ ValidateSemantic(Statement)
 
 						ContextFreeStatementDesugar(manager, node->expandedStatement);
 						BuildScopeForStatement(manager, parentScope, node->expandedStatement);
+
+						manager->checkedScopes_DuplicatedSymbol.Remove(parentScope.Obj());
+						manager->checkedScopes_SymbolType.Remove(parentScope.Obj());
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
 							return;
@@ -27047,6 +27050,9 @@ ValidateSemantic(Expression)
 
 						ContextFreeExpressionDesugar(manager, node->expandedExpression);
 						BuildScopeForExpression(manager, parentScope, node->expandedExpression);
+
+						manager->checkedScopes_DuplicatedSymbol.Remove(parentScope.Obj());
+						manager->checkedScopes_SymbolType.Remove(parentScope.Obj());
 						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
 							return;
@@ -27740,37 +27746,6 @@ ValidateSemantic(Declaration)
 					}
 				}
 
-				void SearchForItself(WfStructDeclaration* node, ITypeDescriptor* target, ITypeDescriptor* current, List<WString>& path)
-				{
-					if (target == current)
-					{
-						manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(
-							node, 
-							From(path).Aggregate([](const WString& a, const WString& b) {return a + L"::" + b; })
-							));
-						return;
-					}
-
-					if (current == nullptr)
-					{
-						current = target;
-					}
-
-					vint count = current->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto prop = current->GetProperty(i);
-						auto propType = prop->GetReturn();
-						auto propTd = prop->GetReturn()->GetTypeDescriptor();
-						if (propType->GetDecorator()==ITypeInfo::TypeDescriptor && propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-						{
-							vint index = path.Add(prop->GetName());
-							SearchForItself(node, target, propTd, path);
-							path.RemoveAt(index);
-						}
-					}
-				}
-
 				void Visit(WfStructDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
@@ -27783,9 +27758,6 @@ ValidateSemantic(Declaration)
 							manager->errors.Add(WfErrors::StructContainsNonValueType(member.Obj(), node));
 						}
 					}
-					List<WString> path;
-					path.Add(td->GetTypeName());
-					SearchForItself(node, td.Obj(), nullptr, path);
 
 					FOREACH(Ptr<WfStructMember>, member, node->members)
 					{
@@ -27831,7 +27803,10 @@ ValidateSemantic(Declaration)
 						{
 							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[node]);
 						}
-						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_BaseType(manager) || !CheckScopes_SymbolType(manager))
+
+						manager->checkedScopes_DuplicatedSymbol.Remove(parentScope.Obj());
+						manager->checkedScopes_SymbolType.Remove(parentScope.Obj());
+						if (!CheckScopes_DuplicatedSymbol(manager) || !CheckScopes_SymbolType(manager))
 						{
 							return;
 						}
@@ -28330,6 +28305,198 @@ GetEnumerableExpressionItemType
 	}
 }
 
+
+/***********************************************************************
+.\ANALYZER\WFANALYZER_VALIDATESCOPENAME.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+
+/***********************************************************************
+ValidateScopeName
+***********************************************************************/
+
+			class ValidateScopeNameDeclarationVisitor
+				: public Object
+				, public WfDeclaration::IVisitor
+				, public WfVirtualCseDeclaration::IVisitor
+			{
+			public:
+				enum Category
+				{
+					None,
+					Type,
+					Variable,
+					Function,
+					Namespace,
+				};
+
+				WfLexicalScopeManager*				manager;
+				Ptr<WfLexicalScopeName>				name;
+				Category							category;
+
+				ValidateScopeNameDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _name)
+					:manager(_manager)
+					, name(_name)
+					, category(name->typeDescriptor && name->imported ? Type : None)
+				{
+				}
+
+				void AddError(WfDeclaration* node)
+				{
+					WString categoryName;
+					switch (category)
+					{
+					case Type:
+						categoryName = L"type";
+						break;
+					case Variable:
+						categoryName = L"variable";
+						break;
+					case Function:
+						categoryName = L"function";
+						break;
+					case Namespace:
+						categoryName = L"namespace";
+						break;
+					default:
+						CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::AddError(WfDeclaration*)#Internal error.");
+					}
+					manager->errors.Add(WfErrors::DuplicatedDeclaration(node, categoryName));
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Namespace;
+					}
+					else if (category != Namespace)
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfFunctionDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Function;
+					}
+					else if (category != Function)
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Variable;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfEventDeclaration* node)override
+				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfEventDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
+				}
+
+				void Visit(WfPropertyDeclaration* node)override
+				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfPropertyDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
+				}
+
+				void Visit(WfConstructorDeclaration* node)override
+				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfConstructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
+				}
+				
+				void Visit(WfDestructorDeclaration* node)override
+				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfDestructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Type;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfEnumDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Type;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					if (category == None)
+					{
+						category = Type;
+					}
+					else
+					{
+						AddError(node);
+					}
+				}
+
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfVirtualCseDeclaration* node)override
+				{
+					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
+				}
+
+				void Visit(WfStateMachineDeclaration* node)override
+				{
+					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfStateMachineDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
+				}
+			};
+
+			void ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name)
+			{
+				ValidateScopeNameDeclarationVisitor visitor(manager, name);
+				FOREACH(Ptr<WfDeclaration>, declaration, name->declarations)
+				{
+					declaration->Accept(&visitor);
+				}
+
+				FOREACH(Ptr<WfLexicalScopeName>, child, name->children.Values())
+				{
+					ValidateScopeName(manager, child);
+				}
+			}
+		}
+	}
+}
 
 /***********************************************************************
 .\ANALYZER\WFANALYZER_TYPEINFO.CPP
@@ -30451,7 +30618,7 @@ ExpandStateMachineStatementVisitor
 						{
 							return symbol->creatorNode.Cast<WfStateInput>();
 						})
-							.Where([=](Ptr<WfStateInput> decl)
+						.Where([=](Ptr<WfStateInput> decl)
 						{
 							return decl != nullptr;
 						})
@@ -35219,12 +35386,12 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				FOREACH_INDEXER(ResolveExpressionResult, result, index, results)
+				FOREACH(ResolveExpressionResult, result, results)
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
 				}
-				return new ParsingError(node, L"D5: Cannot decide which function to implement in multiple targets: " + description + L".");
+				return new ParsingError(node, L"D5: Cannot decide which function to implement in multiple targets:" + description + L".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type)
@@ -35292,9 +35459,15 @@ WfErrors
 				return new ParsingError(node, L"D12: Type of member \"" + node->name.value + L"\" of struct \"" + owner->name.value + L"\" is not value type.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path)
+			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				return new ParsingError(node, L"D13: Struct \"" + node->name.value + L"\" recursively include itself via \"" + path + L"\".");
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"D13: Recursive references are found in these struct definitions:" + description + L".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner)
@@ -35474,9 +35647,26 @@ WfErrors
 				return new ParsingError(node, L"G10: Class \"" + node->name.value + L"\" inherits from another class \"" + type->GetTypeName() + L"\" for multiple times.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
+			Ptr<parsing::ParsingError> WfErrors::ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				return new ParsingError(node, L"G10: Interface \"" + type->GetTypeName() + L"\" directly or indirectly inherits from itself.");
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"G10: Recursive inheriting are found in these class definitions:" + description + L".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
+			{
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"G10: Recursive inheriting are found in these interface definitions:" + description + L".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type)
@@ -36478,163 +36668,6 @@ CompleteScopeForDeclaration
 			};
 
 /***********************************************************************
-CheckBaseClass
-***********************************************************************/
-
-			class CheckBaseClassDeclarationVisitor
-				: public empty_visitor::DeclarationVisitor
-				, public empty_visitor::VirtualCseDeclarationVisitor
-			{
-			public:
-				WfLexicalScopeManager*					manager;
-				SortedList<ITypeDescriptor*>			checkedInterfaces;
-				SortedList<ITypeDescriptor*>			traversedInterfaces;
-
-				CheckBaseClassDeclarationVisitor(WfLexicalScopeManager* _manager)
-					:manager(_manager)
-				{
-				}
-
-				void Dispatch(WfVirtualCfeDeclaration* node)override
-				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
-					{
-						decl->Accept(this);
-					}
-				}
-
-				void Dispatch(WfVirtualCseDeclaration* node)override
-				{
-					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
-				}
-
-				void Visit(WfNamespaceDeclaration* node)override
-				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
-					{
-						decl->Accept(this);
-					}
-				}
-
-				void CheckDuplicatedBaseClass(WfClassDeclaration* node, ITypeDescriptor* td)
-				{
-					List<ITypeDescriptor*> baseTypes;
-					SortedList<ITypeDescriptor*> duplicatedTypes;
-					baseTypes.Add(td);
-
-					for (vint i = 0; i < baseTypes.Count(); i++)
-					{
-						auto currentTd = baseTypes[i];
-						vint count = currentTd->GetBaseTypeDescriptorCount();
-						for (vint j = 0; j < count; j++)
-						{
-							auto baseTd = currentTd->GetBaseTypeDescriptor(j);
-							if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class && baseTd != description::GetTypeDescriptor<DescriptableObject>())
-							{
-								if (baseTypes.Contains(baseTd))
-								{
-									if (!duplicatedTypes.Contains(baseTd))
-									{
-										duplicatedTypes.Add(baseTd);
-										manager->errors.Add(WfErrors::DuplicatedBaseClass(node, baseTd));
-									}
-								}
-								else
-								{
-									baseTypes.Add(baseTd);
-								}
-							}
-						}
-					}
-				}
-
-				void CheckDuplicatedBaseInterface(WfClassDeclaration* node, ITypeDescriptor* td)
-				{
-					if (traversedInterfaces.Contains(td))
-					{
-						manager->errors.Add(WfErrors::DuplicatedBaseInterface(node, td));
-					}
-					else
-					{
-						if (checkedInterfaces.Contains(td))
-						{
-							return;
-						}
-						checkedInterfaces.Add(td);
-
-						vint index = traversedInterfaces.Add(td);
-						vint count = td->GetBaseTypeDescriptorCount();
-						for (vint i = 0; i < count; i++)
-						{
-							CheckDuplicatedBaseInterface(node, td->GetBaseTypeDescriptor(i));
-						}
-						traversedInterfaces.RemoveAt(index);
-					}
-				}
-
-				void Visit(WfClassDeclaration* node)override
-				{
-					auto scope = manager->nodeScopes[node];
-					auto td = manager->declarationTypes[node].Obj();
-
-					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
-					{
-						if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
-						{
-							if (auto baseTd = scopeName->typeDescriptor)
-							{
-								bool isClass = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
-								bool isInterface = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
-
-								switch (node->kind)
-								{
-								case WfClassKind::Class:
-									{
-										if (!isClass || !baseTd->IsAggregatable())
-										{
-											if (!dynamic_cast<WfClass*>(baseTd))
-											{
-												manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
-											}
-										}
-									}
-									break;
-								case WfClassKind::Interface:
-									{
-										if (!isInterface)
-										{
-											manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, baseTd));
-										}
-									}
-									break;
-								}
-							}
-						}
-					}
-
-					if (node->kind == WfClassKind::Class)
-					{
-						CheckDuplicatedBaseClass(node, td);
-					}
-					else
-					{
-						CheckDuplicatedBaseInterface(node, td);
-					}
-
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
-					{
-						memberDecl->Accept(this);
-					}
-				}
-
-				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
-				{
-					CompleteScopeForDeclarationVisitor visitor(manager, declaration);
-					declaration->Accept(&visitor);
-				}
-			};
-
-/***********************************************************************
 CompleteScope
 ***********************************************************************/
 
@@ -36655,6 +36688,22 @@ CompleteScope
 					CompleteScopeForDeclaration(manager, declaration);
 				}
 			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\ANALYZER\WFANALYZER_CHECKSCOPE_SYMBOLTYPE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace collections;
 
 /***********************************************************************
 CheckScopes_SymbolType
@@ -36662,13 +36711,12 @@ CheckScopes_SymbolType
 
 			bool CheckScopes_SymbolType(WfLexicalScopeManager* manager)
 			{
-				SortedList<WfLexicalScope*> analyzedScopes;
 				vint errorCount = manager->errors.Count();
 				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
 				{
-					if (!analyzedScopes.Contains(scope.Obj()))
+					if (!manager->checkedScopes_SymbolType.Contains(scope.Obj()))
 					{
-						analyzedScopes.Add(scope.Obj());
+						manager->checkedScopes_SymbolType.Add(scope.Obj());
 
 						for (vint i = 0; i < scope->symbols.Count(); i++)
 						{
@@ -36692,20 +36740,99 @@ CheckScopes_SymbolType
 				}
 				return errorCount == manager->errors.Count();
 			}
+		}
+	}
+}
+
 
 /***********************************************************************
-CheckScopes_BaseType
+.\ANALYZER\WFANALYZER_CHECKSCOPE_DUPLICATEDSYMBOL.CPP
 ***********************************************************************/
 
-			bool CheckScopes_BaseType(WfLexicalScopeManager* manager)
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace collections;
+
+/***********************************************************************
+CheckScopes_DuplicatedSymbol
+***********************************************************************/
+
+			bool CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				CheckBaseClassDeclarationVisitor visitor(manager);
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
 				{
-					FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+					if (!manager->checkedScopes_DuplicatedSymbol.Contains(scope.Obj()))
 					{
-						declaration->Accept(&visitor);
+						manager->checkedScopes_DuplicatedSymbol.Add(scope.Obj());
+
+						for (vint i = 0; i < scope->symbols.Count(); i++)
+						{
+							const auto& symbols = scope->symbols.GetByIndex(i);
+							if (symbols.Count() > 1)
+							{
+								if (!scope->ownerNode.Cast<WfModule>() && !scope->ownerNode.Cast<WfNamespaceDeclaration>())
+								{
+									if (symbols.Count() > 1)
+									{
+										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
+										{
+											if (auto decl = symbol->creatorNode.Cast<WfDeclaration>())
+											{
+												if (!decl.Cast<WfFunctionDeclaration>())
+												{
+													manager->errors.Add(WfErrors::DuplicatedSymbol(decl.Obj(), symbol));
+												}
+											}
+											else if (auto arg = symbol->creatorNode.Cast<WfFunctionArgument>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(arg.Obj(), symbol));
+											}
+											else if (auto stat = symbol->creatorNode.Cast<WfStatement>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(stat.Obj(), symbol));
+											}
+											else if (auto expr = symbol->creatorNode.Cast<WfExpression>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(expr.Obj(), symbol));
+											}
+											else if (auto input = symbol->creatorNode.Cast<WfStateInput>())
+											{
+												if (symbols.Count() == 2)
+												{
+													// Ignore the generated function from the state input
+													auto methodSymbol = symbols[1 - symbols.IndexOf(symbol.Obj())];
+													auto funcDecl = methodSymbol->creatorNode.Cast<WfFunctionDeclaration>();
+													vint index = manager->declarationMemberInfos.Keys().IndexOf(funcDecl.Obj());
+													if (index != -1)
+													{
+														auto methodInfo = manager->declarationMemberInfos.Values()[index];
+														if (manager->stateInputMethods[input.Obj()].Obj() == methodInfo.Obj())
+														{
+															goto NO_ERROR;
+														}
+													}
+												}
+												manager->errors.Add(WfErrors::DuplicatedSymbol(input.Obj(), symbol));
+											NO_ERROR:;
+											}
+											else if (auto state = symbol->creatorNode.Cast<WfStateDeclaration>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(state.Obj(), symbol));
+											}
+											else if (auto sarg = symbol->creatorNode.Cast<WfStateSwitchArgument>())
+											{
+												manager->errors.Add(WfErrors::DuplicatedSymbol(sarg.Obj(), symbol));
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 				return errorCount == manager->errors.Count();
@@ -36727,9 +36854,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace parsing;
-			using namespace reflection;
 			using namespace reflection::description;
-			using namespace typeimpl;
 
 /***********************************************************************
 BuildScopeForDeclaration
@@ -37687,95 +37812,13 @@ BuildScope
 			{
 				BuildScopeForExpressionVisitor::Execute(manager, parentScope, expression);
 			}
-
-/***********************************************************************
-CheckScopes_DuplicatedSymbol
-***********************************************************************/
-
-			bool CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager)
-			{
-				SortedList<WfLexicalScope*> analyzedScopes;
-				vint errorCount = manager->errors.Count();
-				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
-				{
-					if (!analyzedScopes.Contains(scope.Obj()))
-					{
-						analyzedScopes.Add(scope.Obj());
-
-						for (vint i = 0; i < scope->symbols.Count(); i++)
-						{
-							const auto& symbols = scope->symbols.GetByIndex(i);
-							if (symbols.Count() > 1)
-							{
-								if (!scope->ownerNode.Cast<WfModule>() && !scope->ownerNode.Cast<WfNamespaceDeclaration>())
-								{
-									if (symbols.Count() > 1)
-									{
-										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
-										{
-											if (auto decl = symbol->creatorNode.Cast<WfDeclaration>())
-											{
-												if (!decl.Cast<WfFunctionDeclaration>())
-												{
-													manager->errors.Add(WfErrors::DuplicatedSymbol(decl.Obj(), symbol));
-												}
-											}
-											else if (auto arg = symbol->creatorNode.Cast<WfFunctionArgument>())
-											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(arg.Obj(), symbol));
-											}
-											else if (auto stat = symbol->creatorNode.Cast<WfStatement>())
-											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(stat.Obj(), symbol));
-											}
-											else if (auto expr = symbol->creatorNode.Cast<WfExpression>())
-											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(expr.Obj(), symbol));
-											}
-											else if (auto input = symbol->creatorNode.Cast<WfStateInput>())
-											{
-												if (symbols.Count() == 2)
-												{
-													// Ignore the generated function from the state input
-													auto methodSymbol = symbols[1 - symbols.IndexOf(symbol.Obj())];
-													auto funcDecl = methodSymbol->creatorNode.Cast<WfFunctionDeclaration>();
-													vint index = manager->declarationMemberInfos.Keys().IndexOf(funcDecl.Obj());
-													if (index != -1)
-													{
-														auto methodInfo = manager->declarationMemberInfos.Values()[index];
-														if (manager->stateInputMethods[input.Obj()].Obj() == methodInfo.Obj())
-														{
-															goto NO_ERROR;
-														}
-													}
-												}
-												manager->errors.Add(WfErrors::DuplicatedSymbol(input.Obj(), symbol));
-											NO_ERROR:;
-											}
-											else if (auto state = symbol->creatorNode.Cast<WfStateDeclaration>())
-											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(state.Obj(), symbol));
-											}
-											else if (auto sarg = symbol->creatorNode.Cast<WfStateSwitchArgument>())
-											{
-												manager->errors.Add(WfErrors::DuplicatedSymbol(sarg.Obj(), symbol));
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				return errorCount == manager->errors.Count();
-			}
 		}
 	}
 }
 
 
 /***********************************************************************
-.\ANALYZER\WFANALYZER_BUILDGLOBALNAME.CPP
+.\ANALYZER\WFANALYZER_BUILDGLOBALNAMEFROMTYPEDESCRIPTORS.CPP
 ***********************************************************************/
 
 namespace vl
@@ -37784,9 +37827,7 @@ namespace vl
 	{
 		namespace analyzer
 		{
-			using namespace collections;
 			using namespace reflection::description;
-			using namespace typeimpl;
 
 /***********************************************************************
 BuildGlobalNameFromTypeDescriptors
@@ -37826,6 +37867,22 @@ BuildGlobalNameFromTypeDescriptors
 					}
 				}
 			}
+		}
+	}
+}
+
+/***********************************************************************
+.\ANALYZER\WFANALYZER_BUILDGLOBALNAMEFROMMODULES.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace reflection::description;
+			using namespace typeimpl;
 
 /***********************************************************************
 BuildGlobalNameFromModules
@@ -38112,184 +38169,6 @@ BuildGlobalNameFromModules
 					{
 						BuildNameForDeclaration(manager, manager->globalName, decl.Obj());
 					}
-				}
-			}
-
-/***********************************************************************
-ValidateScopeName
-***********************************************************************/
-
-			class ValidateScopeNameDeclarationVisitor
-				: public Object
-				, public WfDeclaration::IVisitor
-				, public WfVirtualCseDeclaration::IVisitor
-			{
-			public:
-				enum Category
-				{
-					None,
-					Type,
-					Variable,
-					Function,
-					Namespace,
-				};
-
-				WfLexicalScopeManager*				manager;
-				Ptr<WfLexicalScopeName>				name;
-				Category							category;
-
-				ValidateScopeNameDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _name)
-					:manager(_manager)
-					, name(_name)
-					, category(name->typeDescriptor && name->imported ? Type : None)
-				{
-				}
-
-				void AddError(WfDeclaration* node)
-				{
-					WString categoryName;
-					switch (category)
-					{
-					case Type:
-						categoryName = L"type";
-						break;
-					case Variable:
-						categoryName = L"variable";
-						break;
-					case Function:
-						categoryName = L"function";
-						break;
-					case Namespace:
-						categoryName = L"namespace";
-						break;
-					default:
-						CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::AddError(WfDeclaration*)#Internal error.");
-					}
-					manager->errors.Add(WfErrors::DuplicatedDeclaration(node, categoryName));
-				}
-
-				void Visit(WfNamespaceDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Namespace;
-					}
-					else if (category != Namespace)
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfFunctionDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Function;
-					}
-					else if (category != Function)
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfVariableDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Variable;
-					}
-					else
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfEventDeclaration* node)override
-				{
-					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfEventDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
-				}
-
-				void Visit(WfPropertyDeclaration* node)override
-				{
-					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfPropertyDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
-				}
-
-				void Visit(WfConstructorDeclaration* node)override
-				{
-					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfConstructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
-				}
-				
-				void Visit(WfDestructorDeclaration* node)override
-				{
-					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfDestructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
-				}
-
-				void Visit(WfClassDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Type;
-					}
-					else
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfEnumDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Type;
-					}
-					else
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfStructDeclaration* node)override
-				{
-					if (category == None)
-					{
-						category = Type;
-					}
-					else
-					{
-						AddError(node);
-					}
-				}
-
-				void Visit(WfVirtualCfeDeclaration* node)override
-				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
-					{
-						decl->Accept(this);
-					}
-				}
-
-				void Visit(WfVirtualCseDeclaration* node)override
-				{
-					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
-				}
-
-				void Visit(WfStateMachineDeclaration* node)override
-				{
-					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfStateMachineDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
-				}
-			};
-
-			void ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name)
-			{
-				ValidateScopeNameDeclarationVisitor visitor(manager, name);
-				FOREACH(Ptr<WfDeclaration>, declaration, name->declarations)
-				{
-					declaration->Accept(&visitor);
-				}
-
-				FOREACH(Ptr<WfLexicalScopeName>, child, name->children.Values())
-				{
-					ValidateScopeName(manager, child);
 				}
 			}
 		}
@@ -38740,24 +38619,27 @@ WfLexicalScopeManager
 					modules.Clear();
 					moduleCodes.Clear();
 					usedCodeIndex = 0;
-					usedTempVars = 0;
 				}
 
+				usedTempVars = 0;
 				errors.Clear();
 				namespaceNames.Clear();
-
 				nodeScopes.Clear();
+				checkedScopes_DuplicatedSymbol.Clear();
+				checkedScopes_SymbolType.Clear();
+
 				expressionResolvings.Clear();
 				coNewCoroutineResolvings.Clear();
 				coOperatorResolvings.Clear();
 				coProviderResolvings.Clear();
 				coCastResultResolvings.Clear();
+				baseConstructorCallResolvings.Clear();
+
 				lambdaCaptures.Clear();
 				interfaceMethodImpls.Clear();
 				declaractionScopeSources.Clear();
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();
-				baseConstructorCallResolvings.Clear();
 				stateInputMethods.Clear();
 				stateInputArguments.Clear();
 				stateDeclArguments.Clear();
@@ -38806,8 +38688,8 @@ WfLexicalScopeManager
 				{
 					CompleteScopeForModule(this, module);
 				}
-				CheckScopes_BaseType(this);
 				CheckScopes_SymbolType(this);
+				CheckScopes_CycleDependency(this);
 				
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)
@@ -39106,3 +38988,293 @@ WfLexicalScopeManager
 		}
 	}
 }
+
+/***********************************************************************
+.\ANALYZER\CHECKSCOPES_CYCLEDEPENDENCY.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace collections;
+			using namespace reflection;
+			using namespace reflection::description;
+			using namespace typeimpl;
+
+/***********************************************************************
+CheckBaseClass
+***********************************************************************/
+
+			class CheckCycleDependencyDeclarationVisitor
+				: public empty_visitor::DeclarationVisitor
+				, public empty_visitor::VirtualCseDeclarationVisitor
+			{
+			public:
+				WfLexicalScopeManager*							manager;
+				ITypeDescriptor*								tdDescriptableObject = description::GetTypeDescriptor<DescriptableObject>();
+				ITypeDescriptor*								tdIDescriptable = description::GetTypeDescriptor<IDescriptable>();
+				vint											step = 0;
+				Dictionary<ITypeDescriptor*, WfDeclaration*>	depItems;
+				Group<ITypeDescriptor*, ITypeDescriptor*>		depGroup;
+
+				CheckCycleDependencyDeclarationVisitor(WfLexicalScopeManager* _manager)
+					:manager(_manager)
+				{
+				}
+
+				void Dispatch(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
+				{
+					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
+				}
+
+				void Visit(WfNamespaceDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Visit(WfStructDeclaration* node)override
+				{
+					auto scope = manager->nodeScopes[node];
+					auto td = manager->declarationTypes[node].Obj();
+
+					if (step == 1)
+					{
+						depItems.Add(td, node);
+					}
+					else if (step == 2)
+					{
+						vint count = td->GetPropertyCount();
+						for (vint i = 0; i < count; i++)
+						{
+							auto propType = td->GetProperty(i)->GetReturn();
+							if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
+							{
+								auto propTd = propType->GetTypeDescriptor();
+								if (!depItems.Keys().Contains(propTd)) continue;
+
+								if (td == propTd)
+								{
+									List<ITypeDescriptor*> tds;
+									tds.Add(td);
+									manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
+								}
+								else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+								{
+									if (!depGroup.Contains(td, propTd))
+									{
+										depGroup.Add(td, propTd);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				void Visit(WfClassDeclaration* node)override
+				{
+					auto scope = manager->nodeScopes[node];
+					auto td = manager->declarationTypes[node].Obj();
+
+					if (step == 1)
+					{
+						depItems.Add(td, node);
+					}
+					else if (step == 2)
+					{
+						vint count = td->GetBaseTypeDescriptorCount();
+						for (vint i = 0; i < count; i++)
+						{
+							auto baseTd = td->GetBaseTypeDescriptor(i);
+
+							bool isClass = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
+							bool isInterface = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
+
+							switch (node->kind)
+							{
+							case WfClassKind::Class:
+								{
+									if (!isClass || !baseTd->IsAggregatable())
+									{
+										if (!dynamic_cast<WfClass*>(baseTd) && baseTd != tdDescriptableObject)
+										{
+											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
+										}
+									}
+								}
+								break;
+							case WfClassKind::Interface:
+								{
+									if (!isInterface && baseTd != tdIDescriptable)
+									{
+										manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, baseTd));
+									}
+								}
+								break;
+							}
+
+							if (!depItems.Keys().Contains(baseTd)) continue;
+
+							if (baseTd == td)
+							{
+								List<ITypeDescriptor*> tds;
+								tds.Add(td);
+								if (isClass)
+								{
+									manager->errors.Add(WfErrors::ClassRecursiveInheritance(node, tds));
+								}
+								else if (isInterface)
+								{
+									manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(node, tds));
+								}
+							}
+							else if (baseTd->GetTypeDescriptorFlags() == td->GetTypeDescriptorFlags())
+							{
+								if (!depGroup.Contains(td, baseTd))
+								{
+									depGroup.Add(td, baseTd);
+								}
+							}
+						}
+
+						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+						{
+							memberDecl->Accept(this);
+						}
+					}
+				}
+
+				void Execute(vint _step)
+				{
+					step = _step;
+					FOREACH(Ptr<WfModule>, module, manager->GetModules())
+					{
+						FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+						{
+							declaration->Accept(this);
+						}
+					}
+				}
+
+				void ExecuteCollectTypes()
+				{
+					Execute(1);
+				}
+
+				void ExecuteCollectDependencies()
+				{
+					Execute(2);
+				}
+			};
+
+/***********************************************************************
+CheckScopes_CycleDependency
+***********************************************************************/
+
+			void CheckScopes_DuplicatedBaseClass(WfLexicalScopeManager* manager, WfClassDeclaration* node, ITypeDescriptor* td)
+			{
+				List<ITypeDescriptor*> baseTypes;
+				SortedList<ITypeDescriptor*> duplicatedTypes;
+				baseTypes.Add(td);
+
+				for (vint i = 0; i < baseTypes.Count(); i++)
+				{
+					auto currentTd = baseTypes[i];
+					vint count = currentTd->GetBaseTypeDescriptorCount();
+					for (vint j = 0; j < count; j++)
+					{
+						auto baseTd = currentTd->GetBaseTypeDescriptor(j);
+						if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class && baseTd != description::GetTypeDescriptor<DescriptableObject>())
+						{
+							if (baseTypes.Contains(baseTd))
+							{
+								if (!duplicatedTypes.Contains(baseTd))
+								{
+									duplicatedTypes.Add(baseTd);
+									manager->errors.Add(WfErrors::DuplicatedBaseClass(node, baseTd));
+								}
+							}
+							else
+							{
+								baseTypes.Add(baseTd);
+							}
+						}
+					}
+				}
+			}
+
+			bool CheckScopes_CycleDependency(WfLexicalScopeManager* manager)
+			{
+				vint errorCount = manager->errors.Count();
+				CheckCycleDependencyDeclarationVisitor visitor(manager);
+				visitor.ExecuteCollectTypes();
+				visitor.ExecuteCollectDependencies();
+
+				{
+					PartialOrderingProcessor pop;
+					pop.InitWithGroup(visitor.depItems.Keys(), visitor.depGroup);
+					pop.Sort();
+
+					for (vint i = 0; i < pop.components.Count(); i++)
+					{
+						auto& component = pop.components[i];
+						if (component.nodeCount > 1)
+						{
+							List<ITypeDescriptor*> tds;
+							CopyFrom(
+								tds,
+								From(component.firstNode, component.firstNode + component.nodeCount)
+									.Select([&](vint nodeIndex)
+									{
+										return visitor.depItems.Keys()[nodeIndex];
+									})
+								);
+
+							switch (tds[0]->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::Struct:
+								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(dynamic_cast<WfStructDeclaration*>(visitor.depItems[tds[0]]), tds));
+								break;
+							case TypeDescriptorFlags::Class:
+								manager->errors.Add(WfErrors::ClassRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								break;
+							case TypeDescriptorFlags::Interface:
+								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								break;
+							default:;
+							}
+						}
+					}
+				}
+
+				if (errorCount == manager->errors.Count())
+				{
+					for (vint i = 0; i < visitor.depItems.Count(); i++)
+					{
+						auto key = visitor.depItems.Keys()[i];
+						auto value = dynamic_cast<WfClassDeclaration*>(visitor.depItems.Values()[i]);
+						if (value && value->kind == WfClassKind::Class)
+						{
+							CheckScopes_DuplicatedBaseClass(manager, value, key);
+						}
+					}
+				}
+				return errorCount == manager->errors.Count();
+			}
+		}
+	}
+}
+
