@@ -21,6 +21,8 @@ CheckBaseClass
 			{
 			public:
 				WfLexicalScopeManager*							manager;
+				ITypeDescriptor*								tdDescriptableObject = description::GetTypeDescriptor<DescriptableObject>();
+				ITypeDescriptor*								tdIDescriptable = description::GetTypeDescriptor<IDescriptable>();
 				vint											step = 0;
 				Dictionary<ITypeDescriptor*, WfDeclaration*>	depItems;
 				Group<ITypeDescriptor*, ITypeDescriptor*>		depGroup;
@@ -100,7 +102,6 @@ CheckBaseClass
 						for (vint i = 0; i < count; i++)
 						{
 							auto baseTd = td->GetBaseTypeDescriptor(i);
-							if (!depItems.Keys().Contains(baseTd)) continue;
 
 							bool isClass = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
 							bool isInterface = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
@@ -111,7 +112,7 @@ CheckBaseClass
 								{
 									if (!isClass || !baseTd->IsAggregatable())
 									{
-										if (!dynamic_cast<WfClass*>(baseTd))
+										if (!dynamic_cast<WfClass*>(baseTd) && baseTd != tdDescriptableObject)
 										{
 											manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
 										}
@@ -120,13 +121,15 @@ CheckBaseClass
 								break;
 							case WfClassKind::Interface:
 								{
-									if (!isInterface)
+									if (!isInterface && baseTd != tdIDescriptable)
 									{
 										manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, baseTd));
 									}
 								}
 								break;
 							}
+
+							if (!depItems.Keys().Contains(baseTd)) continue;
 
 							if (baseTd == td)
 							{
