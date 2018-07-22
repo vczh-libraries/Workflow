@@ -8,32 +8,45 @@ namespace vl
 		{
 			using namespace collections;
 
-			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix)
+			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition)
 			{
-				writer.WriteLine(prefix + L"enum class " + name + L" : vl::vuint64_t");
-				writer.WriteLine(prefix + L"{");
-				FOREACH(Ptr<WfEnumItem>, item, decl->items)
+				if (mainHeaderDefinition)
 				{
-					switch (item->kind)
+					writer.WriteLine(prefix + L"enum class " + name + L" : vl::vuint64_t");
+					writer.WriteLine(prefix + L"{");
+					FOREACH(Ptr<WfEnumItem>, item, decl->items)
 					{
-					case WfEnumItemKind::Constant:
-						writer.WriteLine(prefix + L"\t" + ConvertName(item->name.value) + L" = " + item->number.value + L"UL,");
-						break;
-					case WfEnumItemKind::Intersection:
-						writer.WriteString(prefix + L"\t" + ConvertName(item->name.value) + L" = ");
-						FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
+						switch (item->kind)
 						{
-							if (index > 0)
+						case WfEnumItemKind::Constant:
+							writer.WriteLine(prefix + L"\t" + ConvertName(item->name.value) + L" = " + item->number.value + L"UL,");
+							break;
+						case WfEnumItemKind::Intersection:
+							writer.WriteString(prefix + L"\t" + ConvertName(item->name.value) + L" = ");
+							FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
 							{
-								writer.WriteString(L" | ");
+								if (index > 0)
+								{
+									writer.WriteString(L" | ");
+								}
+								writer.WriteString(ConvertName(enumInt->name.value));
 							}
-							writer.WriteString(ConvertName(enumInt->name.value));
+							writer.WriteLine(L",");
+							break;
 						}
-						writer.WriteLine(L",");
-						break;
 					}
+					writer.WriteLine(prefix + L"};");
 				}
-				writer.WriteLine(prefix + L"};");
+				else
+				{
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(name);
+					writer.WriteString(L" = ");
+					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"enum"));
+					writer.WriteLine(L";");
+				}
 			}
 
 			void WfCppConfig::WriteHeader_EnumOp(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix)
@@ -65,7 +78,7 @@ namespace vl
 				{
 					WString name;
 					auto prefix = WriteNamespace(writer, CppNameToHeaderEnumStructName(CppGetFullName(td), L"enum"), nss, name);
-					WriteHeader_Enum(writer, decl, name, prefix);
+					WriteHeader_Enum(writer, decl, name, prefix, true);
 					WriteHeader_EnumOp(writer, decl, name, prefix);
 				}
 				else

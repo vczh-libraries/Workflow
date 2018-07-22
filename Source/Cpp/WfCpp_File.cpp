@@ -101,7 +101,7 @@ namespace vl
 				{
 					FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
 					{
-						WriteHeader_Enum(writer, decl, nss);
+						WriteHeader_Enum(writer, decl, nss, false);
 						writer.WriteLine(L"");
 					}
 				}
@@ -110,7 +110,7 @@ namespace vl
 				{
 					FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
 					{
-						WriteHeader_Struct(writer, decl, nss);
+						WriteHeader_Struct(writer, decl, nss, false);
 						writer.WriteLine(L"");
 					}
 				}

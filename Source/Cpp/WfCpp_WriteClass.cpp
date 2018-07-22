@@ -200,7 +200,7 @@ namespace vl
 						}
 						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls.GetByIndex(index))
 						{
-							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
 						}
 					}
@@ -217,7 +217,7 @@ namespace vl
 						}
 						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls.GetByIndex(index))
 						{
-							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
 						}
 					}
