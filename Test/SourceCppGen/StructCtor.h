@@ -25,21 +25,6 @@ https://github.com/vczh-libraries
 
 namespace __vwsn_structs
 {
-	struct _A
-	{
-		::__vwsn_structs::_B data;
-	};
-	inline bool operator== (const _A& a, const _A& b)
-	{
-		if (a.data != b.data) return false;
-		return true;
-	}
-	inline bool operator!= (const _A& a, const _A& b)
-	{
-		if (a.data != b.data) return true;
-		return false;
-	}
-
 	struct _B
 	{
 		::test::Point data;
@@ -50,6 +35,21 @@ namespace __vwsn_structs
 		return true;
 	}
 	inline bool operator!= (const _B& a, const _B& b)
+	{
+		if (a.data != b.data) return true;
+		return false;
+	}
+
+	struct _A
+	{
+		::__vwsn_structs::_B data;
+	};
+	inline bool operator== (const _A& a, const _A& b)
+	{
+		if (a.data != b.data) return false;
+		return true;
+	}
+	inline bool operator!= (const _A& a, const _A& b)
 	{
 		if (a.data != b.data) return true;
 		return false;

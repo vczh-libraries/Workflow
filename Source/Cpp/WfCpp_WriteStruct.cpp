@@ -115,8 +115,35 @@ namespace vl
 					return WString::Compare(tdA->GetTypeName(), tdB->GetTypeName());
 				});
 
+				Group<Ptr<WfStructDeclaration>, Ptr<WfStructDeclaration>> depGroup;
 				FOREACH(Ptr<WfStructDeclaration>, decl, allStructs)
 				{
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					vint count = td->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto propType = td->GetProperty(i)->GetReturn();
+						if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
+						{
+							auto propTd = propType->GetTypeDescriptor();
+							vint index = tdDecls.Keys().IndexOf(propTd);
+							if (index != -1)
+							{
+								depGroup.Add(decl, tdDecls.Values()[index].Cast<WfStructDeclaration>());
+							}
+						}
+					}
+				}
+
+				PartialOrderingProcessor pop;
+				pop.InitWithGroup(allStructs, depGroup);
+				pop.Sort();
+
+				for (vint i = 0; i < pop.components.Count(); i++)
+				{
+					auto& component = pop.components[i];
+					CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::WriteHeader_MainHeaderStructs(StreamWriter&, List<WString>&)#Internal error: Unexpected circle dependency found, which should be cought by the Workflow semantic analyzer.");
+					auto decl = allStructs[component.firstNode[0]];
 					WriteHeader_Struct(writer, decl, nss, true);
 					writer.WriteLine(L"");
 				}

@@ -268,8 +268,8 @@ WfCppConfig
 				{
 					return ConvertFunctionType(typeInfo->GetElementType());
 				}
-				CHECK_ERROR(typeInfo->GetDecorator() == ITypeInfo::Generic, L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Wrong function type.");
-				CHECK_ERROR(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>(), L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Wrong function type.");
+				CHECK_ERROR(typeInfo->GetDecorator() == ITypeInfo::Generic, L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Internal error: Wrong function type.");
+				CHECK_ERROR(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>(), L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Internal error: Wrong function type.");
 
 				WString type = ConvertType(typeInfo->GetGenericArgument(0)) + L"(";
 				vint count = typeInfo->GetGenericArgumentCount();
