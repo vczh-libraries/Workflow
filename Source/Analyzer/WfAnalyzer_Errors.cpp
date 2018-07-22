@@ -573,12 +573,12 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				FOREACH_INDEXER(ResolveExpressionResult, result, index, results)
+				FOREACH(ResolveExpressionResult, result, results)
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
 				}
-				return new ParsingError(node, L"D5: Cannot decide which function to implement in multiple targets: " + description + L".");
+				return new ParsingError(node, L"D5: Cannot decide which function to implement in multiple targets:" + description + L".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type)
@@ -646,9 +646,15 @@ WfErrors
 				return new ParsingError(node, L"D12: Type of member \"" + node->name.value + L"\" of struct \"" + owner->name.value + L"\" is not value type.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path)
+			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				return new ParsingError(node, L"D13: Struct \"" + node->name.value + L"\" recursively include itself via \"" + path + L"\".");
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"D13: Recursive references are found in these struct definitions:" + description + L".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner)
@@ -828,9 +834,26 @@ WfErrors
 				return new ParsingError(node, L"G10: Class \"" + node->name.value + L"\" inherits from another class \"" + type->GetTypeName() + L"\" for multiple times.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type)
+			Ptr<parsing::ParsingError> WfErrors::ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				return new ParsingError(node, L"G10: Interface \"" + type->GetTypeName() + L"\" directly or indirectly inherits from itself.");
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"G10: Recursive inheriting are found in these class definitions:" + description + L".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
+			{
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"G10: Recursive inheriting are found in these interface definitions:" + description + L".");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type)
