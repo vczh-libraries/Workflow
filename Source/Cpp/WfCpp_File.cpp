@@ -139,7 +139,7 @@ namespace vl
 							{
 								if (!topLevelClassDeslcForHeaderFilesReversed.Keys().Contains(decl.Obj()))
 								{
-									WriteHeader_TopLevelClass(writer, decl, nss);
+									WriteHeader_Class(writer, decl, nss);
 									writer.WriteLine(L"");
 								}
 							}
@@ -149,7 +149,7 @@ namespace vl
 					{
 						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
 						{
-							WriteHeader_TopLevelClass(writer, decl, nss);
+							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
 						}
 					}
@@ -175,7 +175,7 @@ namespace vl
 					{
 						FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.GetByIndex(index))
 						{
-							WriteHeader_TopLevelClass(writer, decl, nss);
+							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
 						}
 					}
@@ -236,7 +236,7 @@ namespace vl
 
 				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.Get(fileName))
 				{
-					WriteHeader_TopLevelClass(writer, decl, nss);
+					WriteHeader_Class(writer, decl, nss);
 					writer.WriteLine(L"");
 				}
 

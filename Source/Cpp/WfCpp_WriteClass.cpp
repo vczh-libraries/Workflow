@@ -296,47 +296,6 @@ namespace vl
 				return prefix;
 			}
 
-			void WfCppConfig::WriteHeader_TopLevelClass(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
-			{
-				auto prefix = WriteHeader_Class(writer, decl, nss);
-				List<Ptr<WfClassDeclaration>> classes;
-				classes.Add(decl);
-				vint processed = 0;
-				while (processed < classes.Count())
-				{
-					auto current = classes[processed++];
-					{
-						vint index = enumDecls.Keys().IndexOf(current.Obj());
-						if (index != -1)
-						{
-							FOREACH(Ptr<WfEnumDeclaration>, enumDecl, enumDecls.GetByIndex(index))
-							{
-								auto td = manager->declarationTypes[enumDecl.Obj()].Obj();
-								WriteHeader_EnumOp(writer, enumDecl, ConvertType(td), prefix);
-							}
-						}
-					}
-					{
-						vint index = structDecls.Keys().IndexOf(current.Obj());
-						if (index != -1)
-						{
-							FOREACH(Ptr<WfStructDeclaration>, structDecl, structDecls.GetByIndex(index))
-							{
-								auto td = manager->declarationTypes[structDecl.Obj()].Obj();
-								WriteHeader_StructOp(writer, structDecl, ConvertType(td), prefix);
-							}
-						}
-					}
-					{
-						vint index = classDecls.Keys().IndexOf(current.Obj());
-						if (index != -1)
-						{
-							CopyFrom(classes, classDecls.GetByIndex(index), true);
-						}
-					}
-				}
-			}
-
 			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfDeclaration> memberDecl, collections::List<WString>& nss)
 			{
 				List<WString> nss2;

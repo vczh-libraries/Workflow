@@ -57,8 +57,6 @@ namespace calculator
 		void SetRight(::vl::Ptr<::calculator::Expression> __vwsn_value_);
 		BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right);
 	};
-	inline ::calculator::BinaryExpression::BinaryOperator operator& (::calculator::BinaryExpression::BinaryOperator a, ::calculator::BinaryExpression::BinaryOperator b) { return static_cast<::calculator::BinaryExpression::BinaryOperator>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
-	inline ::calculator::BinaryExpression::BinaryOperator operator| (::calculator::BinaryExpression::BinaryOperator a, ::calculator::BinaryExpression::BinaryOperator b) { return static_cast<::calculator::BinaryExpression::BinaryOperator>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
 
 }
 
