@@ -109,32 +109,7 @@ WfCppConfig
 				CopyFrom(decls, From(tds).Select([&](ITypeDescriptor* td) {return tdMap[td]; }));
 			}
 
-			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
-			{
-				SortInternal(structDecls, [](ITypeDescriptor* type, ITypeDescriptor* field)
-				{
-					vint count = type->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto propType = type->GetProperty(i)->GetReturn();
-						if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
-						{
-							auto td = propType->GetTypeDescriptor();
-							if (td == field)
-							{
-								return true;
-							}
-							else if (INVLOC.StartsWith(td->GetTypeName(), field->GetTypeName() + L"::", Locale::None))
-							{
-								return true;
-							}
-						}
-					}
-					return false;
-				});
-			}
-
-			void WfCppConfig::Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls)
+			void WfCppConfig::SortClassDecls(collections::List<Ptr<WfClassDeclaration>>& classDecls)
 			{
 				SortInternal(classDecls, [](ITypeDescriptor* derived, ITypeDescriptor* base)
 				{
@@ -165,20 +140,31 @@ WfCppConfig
 			{
 				attributeEvaluator = MakePtr<WfAttributeEvaluator>(manager);
 				Collect();
+				for (vint i = 0; i < enumDecls.Count(); i++)
+				{
+					const auto& values = enumDecls.GetByIndex(i);
+					Sort<Ptr<WfEnumDeclaration>>(const_cast<Ptr<WfEnumDeclaration>*>(&values[0]), values.Count(), [](Ptr<WfEnumDeclaration> a, Ptr<WfEnumDeclaration> b)
+					{
+						return WString::Compare(a->name.value, b->name.value);
+					});
+				}
 				for (vint i = 0; i < structDecls.Count(); i++)
 				{
 					const auto& values = structDecls.GetByIndex(i);
-					Sort(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
+					Sort<Ptr<WfStructDeclaration>>(const_cast<Ptr<WfStructDeclaration>*>(&values[0]), values.Count(), [](Ptr<WfStructDeclaration> a, Ptr<WfStructDeclaration> b)
+					{
+						return WString::Compare(a->name.value, b->name.value);
+					});
 				}
 				for (vint i = 0; i < topLevelClassDeclsForCustomFiles.Count(); i++)
 				{
 					const auto& values = topLevelClassDeclsForCustomFiles.GetByIndex(i);
-					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
+					SortClassDecls(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
 				}
 				for (vint i = 0; i < classDecls.Count(); i++)
 				{
 					const auto& values = classDecls.GetByIndex(i);
-					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
+					SortClassDecls(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
 				}
 			}
 

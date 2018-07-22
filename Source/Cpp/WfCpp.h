@@ -65,8 +65,7 @@ namespace vl
 
 				template<typename T, typename U>
 				void												SortInternal(collections::List<Ptr<T>>& decls, U dependOn);
-				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
-				void												Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls);
+				void												SortClassDecls(collections::List<Ptr<WfClassDeclaration>>& classDecls);
 
 			public:
 				analyzer::WfLexicalScopeManager*											manager;
