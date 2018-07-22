@@ -509,8 +509,8 @@ WfLexicalScopeManager
 				{
 					CompleteScopeForModule(this, module);
 				}
-				CheckScopes_BaseType(this);
 				CheckScopes_SymbolType(this);
+				CheckScopes_CycleDependency(this);
 				
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)

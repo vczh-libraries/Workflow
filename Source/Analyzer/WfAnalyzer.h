@@ -379,7 +379,7 @@ Scope Analyzing
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
 			extern bool										CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager);
 			extern bool										CheckScopes_SymbolType(WfLexicalScopeManager* manager);
-			extern bool										CheckScopes_BaseType(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_CycleDependency(WfLexicalScopeManager* manager);
 
 /***********************************************************************
 Semantic Analyzing

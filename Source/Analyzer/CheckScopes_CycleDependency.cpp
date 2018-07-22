@@ -15,7 +15,7 @@ namespace vl
 CheckBaseClass
 ***********************************************************************/
 
-			class CheckBaseClassDeclarationVisitor
+			class CheckCycleDependencyDeclarationVisitor
 				: public empty_visitor::DeclarationVisitor
 				, public empty_visitor::VirtualCseDeclarationVisitor
 			{
@@ -24,7 +24,7 @@ CheckBaseClass
 				SortedList<ITypeDescriptor*>			checkedInterfaces;
 				SortedList<ITypeDescriptor*>			traversedInterfaces;
 
-				CheckBaseClassDeclarationVisitor(WfLexicalScopeManager* _manager)
+				CheckCycleDependencyDeclarationVisitor(WfLexicalScopeManager* _manager)
 					:manager(_manager)
 				{
 				}
@@ -203,13 +203,13 @@ CheckBaseClass
 			};
 
 /***********************************************************************
-CheckScopes_BaseType
+CheckScopes_CycleDependency
 ***********************************************************************/
 
-			bool CheckScopes_BaseType(WfLexicalScopeManager* manager)
+			bool CheckScopes_CycleDependency(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				CheckBaseClassDeclarationVisitor visitor(manager);
+				CheckCycleDependencyDeclarationVisitor visitor(manager);
 				FOREACH(Ptr<WfModule>, module, manager->GetModules())
 				{
 					FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
