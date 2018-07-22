@@ -53,7 +53,7 @@
 #include "ClassMethodReflection.h"
 #include "ClassCtorReflection.h"
 #include "ClassDtorReflection.h"
-#include "StructCtor.h"
+#include "StructCtorReflection.h"
 #include "StructCtor2Reflection.h"
 #include "EnumCtor.h"
 #include "EnumCtor2Reflection.h"
@@ -107,6 +107,7 @@ void LoadTestCaseTypes()
 	 LoadClassMethodTypes();
 	 LoadClassCtorTypes();
 	 LoadClassDtorTypes();
+	 LoadStructCtorTypes();
 	 LoadStructCtor2Types();
 	 LoadEnumCtor2Types();
 	 LoadWorkflowHintsTypes();

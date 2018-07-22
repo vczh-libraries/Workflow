@@ -23,6 +23,56 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace __vwsn_structs
+{
+	struct _A
+	{
+		__vwsn_structs::_B data;
+	};
+	inline bool operator== (const _A& a, const _A& b)
+	{
+		if (a.data != b.data) return false;
+		return true;
+	}
+	inline bool operator!= (const _A& a, const _A& b)
+	{
+		if (a.data != b.data) return true;
+		return false;
+	}
+	struct _B
+	{
+		__vwsn_structs::_test_Point data;
+	};
+	inline bool operator== (const _B& a, const _B& b)
+	{
+		if (a.data != b.data) return false;
+		return true;
+	}
+	inline bool operator!= (const _B& a, const _B& b)
+	{
+		if (a.data != b.data) return true;
+		return false;
+	}
+	struct _C
+	{
+		__vwsn_structs::_A data;
+	};
+	inline bool operator== (const _C& a, const _C& b)
+	{
+		if (a.data != b.data) return false;
+		return true;
+	}
+	inline bool operator!= (const _C& a, const _C& b)
+	{
+		if (a.data != b.data) return true;
+		return false;
+	}
+
+}
+using A = ::__vwsn_structs::_A;
+using B = ::__vwsn_structs::_B;
+using C = ::__vwsn_structs::_C;
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
