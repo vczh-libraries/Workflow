@@ -23,12 +23,7 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
-enum class MyEnum : vl::vuint64_t
-{
-	Item = 0UL,
-};
-inline MyEnum operator& (MyEnum a, MyEnum b) { return static_cast<MyEnum>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
-inline MyEnum operator| (MyEnum a, MyEnum b) { return static_cast<MyEnum>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
+using MyEnum = ::__vwsn_enums::_MyEnum;
 
 /***********************************************************************
 Global Variables and Functions

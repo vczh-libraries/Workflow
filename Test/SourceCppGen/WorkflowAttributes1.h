@@ -44,13 +44,7 @@ namespace calculator
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BinaryExpression>;
 #endif
 	public:
-		enum class BinaryOperator : vl::vuint64_t
-		{
-			Add = 0UL,
-			Sub = 1UL,
-			Mul = 2UL,
-			Div = 3UL,
-		};
+		using BinaryOperator = ::__vwsn_enums::_calculator_BinaryExpression_BinaryOperator;
 
 		::calculator::BinaryExpression::BinaryOperator __vwsn_prop_Operator;
 		::calculator::BinaryExpression::BinaryOperator GetOperator();

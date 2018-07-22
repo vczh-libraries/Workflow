@@ -33,7 +33,7 @@ namespace vl
 					writer.WriteString(prefix);
 					writer.WriteString(L"using ");
 					writer.WriteString(name);
-					writer.WriteString(L" = ");
+					writer.WriteString(L" = ::");
 					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"));
 					writer.WriteLine(L";");
 				}
@@ -98,7 +98,7 @@ namespace vl
 					writer.WriteString(prefix);
 					writer.WriteString(L"using ");
 					writer.WriteString(name);
-					writer.WriteString(L" = ");
+					writer.WriteString(L" = ::");
 					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"));
 					writer.WriteLine(L";");
 				}

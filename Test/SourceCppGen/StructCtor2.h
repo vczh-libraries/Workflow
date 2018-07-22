@@ -23,26 +23,7 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
-struct Point
-{
-	::vl::vint x = 0;
-	::vl::vint y = 0;
-	::vl::Nullable<::Point> z;
-};
-inline bool operator== (const Point& a, const Point& b)
-{
-	if (a.x != b.x) return false;
-	if (a.y != b.y) return false;
-	if (a.z != b.z) return false;
-	return true;
-}
-inline bool operator!= (const Point& a, const Point& b)
-{
-	if (a.x != b.x) return true;
-	if (a.y != b.y) return true;
-	if (a.z != b.z) return true;
-	return false;
-}
+using Point = ::__vwsn_structs::_Point;
 
 /***********************************************************************
 Global Variables and Functions
