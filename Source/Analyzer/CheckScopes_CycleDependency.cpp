@@ -162,6 +162,20 @@ CheckScopes_CycleDependency
 					}
 				}
 
+				for (vint i = visitor.depGroup.Count() - 1; i >= 0; i--)
+				{
+					auto key = visitor.depGroup.Keys()[i];
+					const auto& values = visitor.depGroup.GetByIndex(i);
+					for (vint j = values.Count() - 1; j >= 0; j--)
+					{
+						auto value = values[j];
+						if (!visitor.depItems.Keys().Contains(value))
+						{
+							visitor.depGroup.Remove(key, value);
+						}
+					}
+				}
+
 				{
 					PartialOrderingProcessor pop;
 					pop.InitWithGroup(visitor.depItems.Keys(), visitor.depGroup);
@@ -205,7 +219,7 @@ CheckScopes_CycleDependency
 					{
 						auto key = visitor.depItems.Keys()[i];
 						auto value = dynamic_cast<WfClassDeclaration*>(visitor.depItems.Values()[i]);
-						if (value->kind == WfClassKind::Class)
+						if (value && value->kind == WfClassKind::Class)
 						{
 							CheckScopes_DuplicatedBaseClass(manager, value, key);
 						}
