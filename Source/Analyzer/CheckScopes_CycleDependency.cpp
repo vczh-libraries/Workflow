@@ -67,20 +67,24 @@ CheckBaseClass
 						vint count = td->GetPropertyCount();
 						for (vint i = 0; i < count; i++)
 						{
-							auto propTd = td->GetProperty(i)->GetReturn()->GetTypeDescriptor();
-							if (!depItems.Keys().Contains(propTd)) continue;
+							auto propType = td->GetProperty(i)->GetReturn();
+							if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
+							{
+								auto propTd = propType->GetTypeDescriptor();
+								if (!depItems.Keys().Contains(propTd)) continue;
 
-							if (td == propTd)
-							{
-								List<ITypeDescriptor*> tds;
-								tds.Add(td);
-								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
-							}
-							else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-							{
-								if (!depGroup.Contains(td, propTd))
+								if (td == propTd)
 								{
-									depGroup.Add(td, propTd);
+									List<ITypeDescriptor*> tds;
+									tds.Add(td);
+									manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
+								}
+								else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+								{
+									if (!depGroup.Contains(td, propTd))
+									{
+										depGroup.Add(td, propTd);
+									}
 								}
 							}
 						}
