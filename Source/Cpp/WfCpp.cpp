@@ -143,18 +143,12 @@ WfCppConfig
 				for (vint i = 0; i < enumDecls.Count(); i++)
 				{
 					const auto& values = enumDecls.GetByIndex(i);
-					Sort<Ptr<WfEnumDeclaration>>(const_cast<Ptr<WfEnumDeclaration>*>(&values[0]), values.Count(), [](Ptr<WfEnumDeclaration> a, Ptr<WfEnumDeclaration> b)
-					{
-						return WString::Compare(a->name.value, b->name.value);
-					});
+					SortDeclsByName(const_cast<List<Ptr<WfEnumDeclaration>>&>(values));
 				}
 				for (vint i = 0; i < structDecls.Count(); i++)
 				{
 					const auto& values = structDecls.GetByIndex(i);
-					Sort<Ptr<WfStructDeclaration>>(const_cast<Ptr<WfStructDeclaration>*>(&values[0]), values.Count(), [](Ptr<WfStructDeclaration> a, Ptr<WfStructDeclaration> b)
-					{
-						return WString::Compare(a->name.value, b->name.value);
-					});
+					SortDeclsByName(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
 				}
 				for (vint i = 0; i < topLevelClassDeclsForCustomFiles.Count(); i++)
 				{

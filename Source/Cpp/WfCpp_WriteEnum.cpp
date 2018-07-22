@@ -98,12 +98,7 @@ namespace vl
 			{
 				List<Ptr<WfEnumDeclaration>> allEnums;
 				CopyFrom(allEnums, Range<vint>(0, enumDecls.Count()).SelectMany([&](vint index) {return From(enumDecls.GetByIndex(index)); }));
-				Sort<Ptr<WfEnumDeclaration>>(&allEnums[0], allEnums.Count(), [=](Ptr<WfEnumDeclaration> a, Ptr<WfEnumDeclaration> b)
-				{
-					auto tdA = manager->declarationTypes[a.Obj()].Obj();
-					auto tdB = manager->declarationTypes[b.Obj()].Obj();
-					return WString::Compare(tdA->GetTypeName(), tdB->GetTypeName());
-				});
+				SortDeclsByName(allEnums);
 
 				FOREACH(Ptr<WfEnumDeclaration>, decl, allEnums)
 				{

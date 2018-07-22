@@ -67,6 +67,17 @@ namespace vl
 				void												SortInternal(collections::List<Ptr<T>>& decls, U dependOn);
 				void												SortClassDecls(collections::List<Ptr<WfClassDeclaration>>& classDecls);
 
+				template<typename T>
+				void SortDeclsByName(collections::List<Ptr<T>>& decls)
+				{
+					collections::Sort<Ptr<T>>(&decls[0], decls.Count(), [=](Ptr<T> a, Ptr<T> b)
+					{
+						auto tdA = manager->declarationTypes[a.Obj()].Obj();
+						auto tdB = manager->declarationTypes[b.Obj()].Obj();
+						return WString::Compare(tdA->GetTypeName(), tdB->GetTypeName());
+					});
+				}
+
 			public:
 				analyzer::WfLexicalScopeManager*											manager;
 				Ptr<emitter::WfAttributeEvaluator>											attributeEvaluator;
