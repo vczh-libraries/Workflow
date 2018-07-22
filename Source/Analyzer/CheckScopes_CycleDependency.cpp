@@ -20,9 +20,9 @@ CheckBaseClass
 				, public empty_visitor::VirtualCseDeclarationVisitor
 			{
 			public:
-				WfLexicalScopeManager*					manager;
-				SortedList<ITypeDescriptor*>			checkedInterfaces;
-				SortedList<ITypeDescriptor*>			traversedInterfaces;
+				WfLexicalScopeManager*							manager;
+				Dictionary<ITypeDescriptor*, WfDeclaration*>	depItems;
+				Group<ITypeDescriptor*, ITypeDescriptor*>		depGroup;
 
 				CheckCycleDependencyDeclarationVisitor(WfLexicalScopeManager* _manager)
 					:manager(_manager)
@@ -50,99 +50,29 @@ CheckBaseClass
 					}
 				}
 
-				void CheckRecursiveStruct(WfStructDeclaration* node, ITypeDescriptor* target, ITypeDescriptor* current, List<WString>& path)
-				{
-					if (target == current)
-					{
-						manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(
-							node,
-							From(path).Aggregate([](const WString& a, const WString& b) {return a + L"::" + b; })
-							));
-						return;
-					}
-
-					if (current == nullptr)
-					{
-						current = target;
-					}
-
-					vint count = current->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto prop = current->GetProperty(i);
-						auto propType = prop->GetReturn();
-						auto propTd = prop->GetReturn()->GetTypeDescriptor();
-						if (propType->GetDecorator() == ITypeInfo::TypeDescriptor && propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-						{
-							vint index = path.Add(prop->GetName());
-							CheckRecursiveStruct(node, target, propTd, path);
-							path.RemoveAt(index);
-						}
-					}
-				}
-
 				void Visit(WfStructDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
-					auto td = manager->declarationTypes[node].Cast<WfStruct>();
-					List<WString> path;
-					path.Add(td->GetTypeName());
-					CheckRecursiveStruct(node, td.Obj(), nullptr, path);
-				}
+					auto td = manager->declarationTypes[node].Obj();
+					depItems.Add(td, node);
 
-				void CheckDuplicatedBaseClass(WfClassDeclaration* node, ITypeDescriptor* td)
-				{
-					List<ITypeDescriptor*> baseTypes;
-					SortedList<ITypeDescriptor*> duplicatedTypes;
-					baseTypes.Add(td);
-
-					for (vint i = 0; i < baseTypes.Count(); i++)
+					vint count = td->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
 					{
-						auto currentTd = baseTypes[i];
-						vint count = currentTd->GetBaseTypeDescriptorCount();
-						for (vint j = 0; j < count; j++)
+						auto propTd = td->GetProperty(i)->GetReturn()->GetTypeDescriptor();
+						if (td == propTd)
 						{
-							auto baseTd = currentTd->GetBaseTypeDescriptor(j);
-							if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class && baseTd != description::GetTypeDescriptor<DescriptableObject>())
+							List<ITypeDescriptor*> tds;
+							tds.Add(td);
+							manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
+						}
+						else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+						{
+							if (!depGroup.Contains(td, propTd))
 							{
-								if (baseTypes.Contains(baseTd))
-								{
-									if (!duplicatedTypes.Contains(baseTd))
-									{
-										duplicatedTypes.Add(baseTd);
-										manager->errors.Add(WfErrors::DuplicatedBaseClass(node, baseTd));
-									}
-								}
-								else
-								{
-									baseTypes.Add(baseTd);
-								}
+								depGroup.Add(td, propTd);
 							}
 						}
-					}
-				}
-
-				void CheckDuplicatedBaseInterface(WfClassDeclaration* node, ITypeDescriptor* td)
-				{
-					if (traversedInterfaces.Contains(td))
-					{
-						manager->errors.Add(WfErrors::DuplicatedBaseInterface(node, td));
-					}
-					else
-					{
-						if (checkedInterfaces.Contains(td))
-						{
-							return;
-						}
-						checkedInterfaces.Add(td);
-
-						vint index = traversedInterfaces.Add(td);
-						vint count = td->GetBaseTypeDescriptorCount();
-						for (vint i = 0; i < count; i++)
-						{
-							CheckDuplicatedBaseInterface(node, td->GetBaseTypeDescriptor(i));
-						}
-						traversedInterfaces.RemoveAt(index);
 					}
 				}
 
@@ -150,49 +80,32 @@ CheckBaseClass
 				{
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node].Obj();
+					depItems.Add(td, node);
 
-					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					vint count = td->GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < count; i++)
 					{
-						if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
+						auto baseTd = td->GetBaseTypeDescriptor(i);
+						if (baseTd == td)
 						{
-							if (auto baseTd = scopeName->typeDescriptor)
+							List<ITypeDescriptor*> tds;
+							tds.Add(td);
+							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
 							{
-								bool isClass = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class;
-								bool isInterface = baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface;
-
-								switch (node->kind)
-								{
-								case WfClassKind::Class:
-									{
-										if (!isClass || !baseTd->IsAggregatable())
-										{
-											if (!dynamic_cast<WfClass*>(baseTd))
-											{
-												manager->errors.Add(WfErrors::WrongBaseTypeOfClass(node, baseTd));
-											}
-										}
-									}
-									break;
-								case WfClassKind::Interface:
-									{
-										if (!isInterface)
-										{
-											manager->errors.Add(WfErrors::WrongBaseTypeOfInterface(node, baseTd));
-										}
-									}
-									break;
-								}
+								manager->errors.Add(WfErrors::ClassRecursiveInheritance(node, tds));
+							}
+							else if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface)
+							{
+								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(node, tds));
 							}
 						}
-					}
-
-					if (node->kind == WfClassKind::Class)
-					{
-						CheckDuplicatedBaseClass(node, td);
-					}
-					else
-					{
-						CheckDuplicatedBaseInterface(node, td);
+						else if (baseTd->GetTypeDescriptorFlags() == td->GetTypeDescriptorFlags())
+						{
+							if (!depGroup.Contains(td, baseTd))
+							{
+								depGroup.Add(td, baseTd);
+							}
+						}
 					}
 
 					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
@@ -206,6 +119,37 @@ CheckBaseClass
 CheckScopes_CycleDependency
 ***********************************************************************/
 
+			void CheckScopes_DuplicatedBaseClass(WfLexicalScopeManager* manager, WfClassDeclaration* node, ITypeDescriptor* td)
+			{
+				List<ITypeDescriptor*> baseTypes;
+				SortedList<ITypeDescriptor*> duplicatedTypes;
+
+				for (vint i = 0; i < baseTypes.Count(); i++)
+				{
+					auto currentTd = baseTypes[i];
+					vint count = currentTd->GetBaseTypeDescriptorCount();
+					for (vint j = 0; j < count; j++)
+					{
+						auto baseTd = currentTd->GetBaseTypeDescriptor(j);
+						if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class && baseTd != description::GetTypeDescriptor<DescriptableObject>())
+						{
+							if (baseTypes.Contains(baseTd))
+							{
+								if (!duplicatedTypes.Contains(baseTd))
+								{
+									duplicatedTypes.Add(baseTd);
+									manager->errors.Add(WfErrors::DuplicatedBaseClass(node, baseTd));
+								}
+							}
+							else
+							{
+								baseTypes.Add(baseTd);
+							}
+						}
+					}
+				}
+			}
+
 			bool CheckScopes_CycleDependency(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
@@ -215,6 +159,56 @@ CheckScopes_CycleDependency
 					FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
 					{
 						declaration->Accept(&visitor);
+					}
+				}
+
+				{
+					PartialOrderingProcessor pop;
+					pop.InitWithGroup(visitor.depItems.Keys(), visitor.depGroup);
+					pop.Sort();
+
+					for (vint i = 0; i < pop.components.Count(); i++)
+					{
+						auto& component = pop.components[i];
+						if (component.nodeCount > 1)
+						{
+							List<ITypeDescriptor*> tds;
+							CopyFrom(
+								tds,
+								From(component.firstNode, component.firstNode + component.nodeCount)
+									.Select([&](vint nodeIndex)
+									{
+										return visitor.depItems.Keys()[nodeIndex];
+									})
+								);
+
+							switch (tds[0]->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::Struct:
+								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(dynamic_cast<WfStructDeclaration*>(visitor.depItems[tds[0]]), tds));
+								break;
+							case TypeDescriptorFlags::Class:
+								manager->errors.Add(WfErrors::ClassRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								break;
+							case TypeDescriptorFlags::Interface:
+								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								break;
+							default:;
+							}
+						}
+					}
+				}
+
+				if (errorCount == manager->errors.Count())
+				{
+					for (vint i = 0; i < visitor.depItems.Count(); i++)
+					{
+						auto key = visitor.depItems.Keys()[i];
+						auto value = dynamic_cast<WfClassDeclaration*>(visitor.depItems.Values()[i]);
+						if (value->kind == WfClassKind::Class)
+						{
+							CheckScopes_DuplicatedBaseClass(manager, value, key);
+						}
 					}
 				}
 				return errorCount == manager->errors.Count();
