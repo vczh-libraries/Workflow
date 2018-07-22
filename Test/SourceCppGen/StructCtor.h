@@ -25,56 +25,75 @@ https://github.com/vczh-libraries
 
 namespace __vwsn_structs
 {
-	struct _B
+	struct _depended_structs_B
 	{
 		::test::Point data;
 	};
-	inline bool operator== (const _B& a, const _B& b)
+	inline bool operator== (const _depended_structs_B& a, const _depended_structs_B& b)
 	{
 		if (a.data != b.data) return false;
 		return true;
 	}
-	inline bool operator!= (const _B& a, const _B& b)
+	inline bool operator!= (const _depended_structs_B& a, const _depended_structs_B& b)
 	{
 		if (a.data != b.data) return true;
 		return false;
 	}
 
-	struct _A
+	struct _depended_structs_A
 	{
-		::__vwsn_structs::_B data;
+		::__vwsn_structs::_depended_structs_B data;
 	};
-	inline bool operator== (const _A& a, const _A& b)
+	inline bool operator== (const _depended_structs_A& a, const _depended_structs_A& b)
 	{
 		if (a.data != b.data) return false;
 		return true;
 	}
-	inline bool operator!= (const _A& a, const _A& b)
+	inline bool operator!= (const _depended_structs_A& a, const _depended_structs_A& b)
 	{
 		if (a.data != b.data) return true;
 		return false;
 	}
 
-	struct _C
+	struct _depended_structs_C
 	{
-		::__vwsn_structs::_A data;
+		::__vwsn_structs::_depended_structs_A data;
 	};
-	inline bool operator== (const _C& a, const _C& b)
+	inline bool operator== (const _depended_structs_C& a, const _depended_structs_C& b)
 	{
 		if (a.data != b.data) return false;
 		return true;
 	}
-	inline bool operator!= (const _C& a, const _C& b)
+	inline bool operator!= (const _depended_structs_C& a, const _depended_structs_C& b)
+	{
+		if (a.data != b.data) return true;
+		return false;
+	}
+
+	struct _depended_structs_D
+	{
+		::__vwsn_structs::_depended_structs_B data;
+	};
+	inline bool operator== (const _depended_structs_D& a, const _depended_structs_D& b)
+	{
+		if (a.data != b.data) return false;
+		return true;
+	}
+	inline bool operator!= (const _depended_structs_D& a, const _depended_structs_D& b)
 	{
 		if (a.data != b.data) return true;
 		return false;
 	}
 
 }
-using A = ::__vwsn_structs::_A;
-using B = ::__vwsn_structs::_B;
-using C = ::__vwsn_structs::_C;
+namespace depended_structs
+{
+	using A = ::__vwsn_structs::_depended_structs_A;
+	using B = ::__vwsn_structs::_depended_structs_B;
+	using C = ::__vwsn_structs::_depended_structs_C;
+	using D = ::__vwsn_structs::_depended_structs_D;
 
+}
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/

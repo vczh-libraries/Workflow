@@ -31,22 +31,27 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(A)
-			IMPL_CPP_TYPE_INFO(B)
-			IMPL_CPP_TYPE_INFO(C)
+			IMPL_CPP_TYPE_INFO(depended_structs::A)
+			IMPL_CPP_TYPE_INFO(depended_structs::B)
+			IMPL_CPP_TYPE_INFO(depended_structs::C)
+			IMPL_CPP_TYPE_INFO(depended_structs::D)
 
 #define _ ,
-			BEGIN_STRUCT_MEMBER(::A)
+			BEGIN_STRUCT_MEMBER(::depended_structs::A)
 				STRUCT_MEMBER(data)
-			END_STRUCT_MEMBER(::A)
+			END_STRUCT_MEMBER(::depended_structs::A)
 
-			BEGIN_STRUCT_MEMBER(::B)
+			BEGIN_STRUCT_MEMBER(::depended_structs::B)
 				STRUCT_MEMBER(data)
-			END_STRUCT_MEMBER(::B)
+			END_STRUCT_MEMBER(::depended_structs::B)
 
-			BEGIN_STRUCT_MEMBER(::C)
+			BEGIN_STRUCT_MEMBER(::depended_structs::C)
 				STRUCT_MEMBER(data)
-			END_STRUCT_MEMBER(::C)
+			END_STRUCT_MEMBER(::depended_structs::C)
+
+			BEGIN_STRUCT_MEMBER(::depended_structs::D)
+				STRUCT_MEMBER(data)
+			END_STRUCT_MEMBER(::depended_structs::D)
 
 #undef _
 			class StructCtorTypeLoader : public Object, public ITypeLoader
@@ -54,9 +59,10 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(::A)
-					ADD_TYPE_INFO(::B)
-					ADD_TYPE_INFO(::C)
+					ADD_TYPE_INFO(::depended_structs::A)
+					ADD_TYPE_INFO(::depended_structs::B)
+					ADD_TYPE_INFO(::depended_structs::C)
+					ADD_TYPE_INFO(::depended_structs::D)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -34,9 +34,10 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::A)
-			DECL_TYPE_INFO(::B)
-			DECL_TYPE_INFO(::C)
+			DECL_TYPE_INFO(::depended_structs::A)
+			DECL_TYPE_INFO(::depended_structs::B)
+			DECL_TYPE_INFO(::depended_structs::C)
+			DECL_TYPE_INFO(::depended_structs::D)
 #endif
 
 			extern bool LoadStructCtorTypes();

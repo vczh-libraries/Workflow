@@ -2,19 +2,27 @@ module test;
 using system::*;
 using test::*;
 
-struct A
+namespace depended_structs
 {
-	data : B;
-}
+	struct A
+	{
+		data : B;
+	}
 
-struct B
-{
-	data : Point;
-}
+	struct B
+	{
+		data : Point;
+	}
 
-struct C
-{
-	data : A;
+	struct C
+	{
+		data : A;
+	}
+
+	struct D
+	{
+		data : B;
+	}
 }
 
 func Do(p : Point) : int
