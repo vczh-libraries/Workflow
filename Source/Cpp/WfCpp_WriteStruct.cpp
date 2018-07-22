@@ -118,6 +118,7 @@ namespace vl
 				FOREACH(Ptr<WfStructDeclaration>, decl, allStructs)
 				{
 					WriteHeader_Struct(writer, decl, nss, true);
+					writer.WriteLine(L"");
 				}
 			}
 		}

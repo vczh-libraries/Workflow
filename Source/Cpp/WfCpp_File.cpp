@@ -102,13 +102,12 @@ namespace vl
 					WriteHeader_MainHeaderEnums(writer, nss);
 					if (enumDecls.Keys().Contains(nullptr))
 					{
-						writer.WriteLine(L"");
 						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
 						{
 							WriteHeader_Enum(writer, decl, nss, false);
 						}
+						writer.WriteLine(L"");
 					}
-					writer.WriteLine(L"");
 				}
 
 				if (structDecls.Count() > 0)
@@ -116,13 +115,12 @@ namespace vl
 					WriteHeader_MainHeaderStructs(writer, nss);
 					if (structDecls.Keys().Contains(nullptr))
 					{
-						writer.WriteLine(L"");
 						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
 						{
 							WriteHeader_Struct(writer, decl, nss, false);
 						}
+						writer.WriteLine(L"");
 					}
-					writer.WriteLine(L"");
 				}
 
 				if (classDecls.Keys().Contains(nullptr))

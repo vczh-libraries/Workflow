@@ -108,6 +108,7 @@ namespace vl
 				FOREACH(Ptr<WfEnumDeclaration>, decl, allEnums)
 				{
 					WriteHeader_Enum(writer, decl, nss, true);
+					writer.WriteLine(L"");
 				}
 			}
 		}

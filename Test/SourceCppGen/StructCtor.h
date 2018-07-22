@@ -27,7 +27,7 @@ namespace __vwsn_structs
 {
 	struct _A
 	{
-		__vwsn_structs::_B data;
+		::__vwsn_structs::_B data;
 	};
 	inline bool operator== (const _A& a, const _A& b)
 	{
@@ -39,9 +39,10 @@ namespace __vwsn_structs
 		if (a.data != b.data) return true;
 		return false;
 	}
+
 	struct _B
 	{
-		__vwsn_structs::_test_Point data;
+		::__vwsn_structs::_test_Point data;
 	};
 	inline bool operator== (const _B& a, const _B& b)
 	{
@@ -53,9 +54,10 @@ namespace __vwsn_structs
 		if (a.data != b.data) return true;
 		return false;
 	}
+
 	struct _C
 	{
-		__vwsn_structs::_A data;
+		::__vwsn_structs::_A data;
 	};
 	inline bool operator== (const _C& a, const _C& b)
 	{
