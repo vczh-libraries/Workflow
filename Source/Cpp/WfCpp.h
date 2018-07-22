@@ -128,10 +128,12 @@ namespace vl
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition);
 				void					WriteHeader_EnumOp(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
+				void					WriteHeader_MainHeaderEnums(stream::StreamWriter& writer, collections::List<WString>& nss);
 
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition);
 				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
+				void					WriteHeader_MainHeaderStructs(stream::StreamWriter& writer, collections::List<WString>& nss);
 
 				void					WriteHeader_ClosurePreDecl(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteHeader_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);

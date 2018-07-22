@@ -103,6 +103,23 @@ namespace vl
 					writer.WriteLine(L";");
 				}
 			}
+
+			void WfCppConfig::WriteHeader_MainHeaderStructs(stream::StreamWriter& writer, collections::List<WString>& nss)
+			{
+				List<Ptr<WfStructDeclaration>> allStructs;
+				CopyFrom(allStructs, Range<vint>(0, structDecls.Count()).SelectMany([&](vint index) {return From(structDecls.GetByIndex(index)); }));
+				Sort<Ptr<WfStructDeclaration>>(&allStructs[0], allStructs.Count(), [=](Ptr<WfStructDeclaration> a, Ptr<WfStructDeclaration> b)
+				{
+					auto tdA = manager->declarationTypes[a.Obj()].Obj();
+					auto tdB = manager->declarationTypes[b.Obj()].Obj();
+					return WString::Compare(tdA->GetTypeName(), tdB->GetTypeName());
+				});
+
+				FOREACH(Ptr<WfStructDeclaration>, decl, allStructs)
+				{
+					WriteHeader_Struct(writer, decl, nss, false);
+				}
+			}
 		}
 	}
 }

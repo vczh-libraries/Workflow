@@ -93,6 +93,23 @@ namespace vl
 					writer.WriteLine(L";");
 				}
 			}
+
+			void WfCppConfig::WriteHeader_MainHeaderEnums(stream::StreamWriter& writer, collections::List<WString>& nss)
+			{
+				List<Ptr<WfEnumDeclaration>> allEnums;
+				CopyFrom(allEnums, Range<vint>(0, enumDecls.Count()).SelectMany([&](vint index) {return From(enumDecls.GetByIndex(index)); }));
+				Sort<Ptr<WfEnumDeclaration>>(&allEnums[0], allEnums.Count(), [=](Ptr<WfEnumDeclaration> a, Ptr<WfEnumDeclaration> b)
+				{
+					auto tdA = manager->declarationTypes[a.Obj()].Obj();
+					auto tdB = manager->declarationTypes[b.Obj()].Obj();
+					return WString::Compare(tdA->GetTypeName(), tdB->GetTypeName());
+				});
+
+				FOREACH(Ptr<WfEnumDeclaration>, decl, allEnums)
+				{
+					WriteHeader_Enum(writer, decl, nss, false);
+				}
+			}
 		}
 	}
 }

@@ -97,22 +97,32 @@ namespace vl
 
 				List<WString> nss;
 
-				if (enumDecls.Keys().Contains(nullptr))
+				if (enumDecls.Count() > 0)
 				{
-					FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
+					WriteHeader_MainHeaderEnums(writer, nss);
+					if (enumDecls.Keys().Contains(nullptr))
 					{
-						WriteHeader_Enum(writer, decl, nss, false);
 						writer.WriteLine(L"");
+						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
+						{
+							WriteHeader_Enum(writer, decl, nss, false);
+						}
 					}
+					writer.WriteLine(L"");
 				}
 
-				if (structDecls.Keys().Contains(nullptr))
+				if (structDecls.Count() > 0)
 				{
-					FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
+					WriteHeader_MainHeaderStructs(writer, nss);
+					if (structDecls.Keys().Contains(nullptr))
 					{
-						WriteHeader_Struct(writer, decl, nss, false);
 						writer.WriteLine(L"");
+						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
+						{
+							WriteHeader_Struct(writer, decl, nss, false);
+						}
 					}
+					writer.WriteLine(L"");
 				}
 
 				if (classDecls.Keys().Contains(nullptr))
