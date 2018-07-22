@@ -445,19 +445,20 @@ WfLexicalScopeManager
 				usedTempVars = 0;
 				errors.Clear();
 				namespaceNames.Clear();
-
 				nodeScopes.Clear();
+
 				expressionResolvings.Clear();
 				coNewCoroutineResolvings.Clear();
 				coOperatorResolvings.Clear();
 				coProviderResolvings.Clear();
 				coCastResultResolvings.Clear();
+				baseConstructorCallResolvings.Clear();
+
 				lambdaCaptures.Clear();
 				interfaceMethodImpls.Clear();
 				declaractionScopeSources.Clear();
 				declarationTypes.Clear();
 				declarationMemberInfos.Clear();
-				baseConstructorCallResolvings.Clear();
 				stateInputMethods.Clear();
 				stateInputArguments.Clear();
 				stateDeclArguments.Clear();

@@ -170,27 +170,30 @@ Scope Manager
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
+				typedef collections::Pair<WString, WString>													AttributeKey;
+				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
+
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
-				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
+				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
+
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Dictionary<Ptr<WfStatement>, ResolveExpressionResult>					CoOperatorResolvingMap;
+				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
+				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
+				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
+
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, parsing::ParsingTreeCustomBase*>		DeclarationSourceMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
-				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
-				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
-				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 				typedef collections::Dictionary<Ptr<WfStateInput>, Ptr<typeimpl::WfClassMethod>>			StateInputMethodMap;
 				typedef collections::Dictionary<Ptr<WfFunctionArgument>, Ptr<typeimpl::WfField>>			StateArgumentFieldMap;
 				typedef collections::Dictionary<Ptr<WfStateMachineDeclaration>, Ptr<WfStateMachineInfo>>	StateMachineInfoMap;
 
-				typedef collections::Pair<WString, WString>													AttributeKey;
-				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
 			protected:
 				ModuleList									modules;
 				ModuleCodeList								moduleCodes;
@@ -199,26 +202,26 @@ Scope Manager
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
 				AttributeTypeMap							attributes;
+
 				vint										usedTempVars = 0;
-
 				ParsingErrorList							errors;							// compile errors
-
 				Ptr<WfLexicalScopeName>						globalName;						// root scope
-				NamespaceNameMap							namespaceNames;					// namespace to scope name map
 				TypeNameMap									typeNames;						// ITypeDescriptor* to scope name map
-
+				NamespaceNameMap							namespaceNames;					// namespace to scope name map
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
+
 				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
 				ExpressionResolvingMap						coNewCoroutineResolvings;		// the coroutine type for the WfNewCoroutineExpression (e.g. AsyncCoroutine)
 				CoOperatorResolvingMap						coOperatorResolvings;			// the method for the co-operator statement (e.g. AwaitAndRead)
 				CoOperatorResolvingMap						coProviderResolvings;			// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
 				CoOperatorResolvingMap						coCastResultResolvings;			// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
+				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
+
 				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
 				DeclarationSourceMap						declaractionScopeSources;		// the source used to build the scope for a declaration
 				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
 				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
-				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
 				StateInputMethodMap							stateInputMethods;				// IMethodInfo* for state input
 				StateArgumentFieldMap						stateInputArguments;			// IPropertyInfo* for state input argument temporary cache
 				StateArgumentFieldMap						stateDeclArguments;				// IPropertyInfo* for state argument temporary cache
