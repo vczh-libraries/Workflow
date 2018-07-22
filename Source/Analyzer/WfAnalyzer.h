@@ -173,8 +173,9 @@ Scope Manager
 				typedef collections::Pair<WString, WString>													AttributeKey;
 				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
 
-				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
+
+				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
 
@@ -203,10 +204,11 @@ Scope Manager
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
 				AttributeTypeMap							attributes;
 
-				vint										usedTempVars = 0;
-				ParsingErrorList							errors;							// compile errors
 				Ptr<WfLexicalScopeName>						globalName;						// root scope
 				TypeNameMap									typeNames;						// ITypeDescriptor* to scope name map
+
+				vint										usedTempVars = 0;
+				ParsingErrorList							errors;							// compile errors
 				NamespaceNameMap							namespaceNames;					// namespace to scope name map
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
 
