@@ -191,6 +191,7 @@ CheckScopes_CycleDependency
 			{
 				List<ITypeDescriptor*> baseTypes;
 				SortedList<ITypeDescriptor*> duplicatedTypes;
+				baseTypes.Add(td);
 
 				for (vint i = 0; i < baseTypes.Count(); i++)
 				{
