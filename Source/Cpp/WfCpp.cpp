@@ -23,7 +23,6 @@ WfCppConfig
 				{
 					CollectModule(this, module);
 				}
-				PostCollect(this);
 
 				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
 				{
@@ -40,94 +39,36 @@ WfCppConfig
 				}
 			}
 
-			template<typename T, typename U>
-			void WfCppConfig::SortInternal(collections::List<Ptr<T>>& decls, U dependOn)
+			void WfCppConfig::ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& expandedClassDecls)
 			{
-				List<ITypeDescriptor*> tds;
-				Dictionary<ITypeDescriptor*, Ptr<T>> tdMap;
-				FOREACH_INDEXER(Ptr<T>, decl, index, decls)
+				vint index = classDecls.Keys().IndexOf(parent.Obj());
+				if (index == -1) return;
+
+				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(index))
 				{
-					auto td = manager->declarationTypes[decl.Obj()].Obj();
-					tds.Add(td);
-					tdMap.Add(td, decl);
-				}
-				// key depends on values
-				Group<ITypeDescriptor*, ITypeDescriptor*> deps;
-				FOREACH(ITypeDescriptor*, td, tds)
-				{
-					deps.Add(td, td);
+					ExpandClassDeclGroup(subDecl, expandedClassDecls);
 				}
 
-				for (vint i = 0; i < tds.Count(); i++)
-				{
-					for (vint j = 0; j < tds.Count(); j++)
-					{
-						if (dependOn(tds[i], tds[j]))
+				auto expanded = From(classDecls.GetByIndex(index))
+					.Concat(From(classDecls.GetByIndex(index))
+						.Select([&](Ptr<WfClassDeclaration> subDecl)
 						{
-							if (!deps.Contains(tds[i], tds[j]))
-							{
-								deps.Add(tds[i], tds[j]);
-							}
-						}
-					}
+							return expandedClassDecls.Keys().IndexOf(subDecl.Obj());
+						})
+						.Where([](vint index)
+						{
+							return index != -1;
+						})
+						.SelectMany([&](vint index)
+						{
+							return From(expandedClassDecls.GetByIndex(index));
+						})
+					);
+
+				FOREACH(Ptr<WfClassDeclaration>, subDecl, expanded)
+				{
+					expandedClassDecls.Add(parent, subDecl);
 				}
-
-				tds.Clear();
-				while (deps.Count() != 0)
-				{
-					List<ITypeDescriptor*> selected;
-
-					for (vint i = 0; i < deps.Count(); i++)
-					{
-						if (deps.GetByIndex(i).Count() == 1)
-						{
-							selected.Add(deps.Keys()[i]);
-						}
-					}
-
-					for (vint i = deps.Count() - 1; i >= 0; i--)
-					{
-						if (deps.GetByIndex(i).Count() == 1)
-						{
-							deps.Remove(deps.Keys()[i]);
-						}
-					}
-
-					for (vint i = deps.Count() - 1; i >= 0; i--)
-					{
-						for (vint j = 0; j < selected.Count(); j++)
-						{
-							deps.Remove(deps.Keys()[i], selected[j]);
-						}
-					}
-
-					CopyFrom(selected, From(selected).OrderBy([](ITypeDescriptor* a, ITypeDescriptor* b) {return WString::Compare(a->GetTypeName(), b->GetTypeName()); }));
-					CopyFrom(tds, selected, true);
-					CHECK_ERROR(selected.Count() > 0, L"WfCppConfig::SortInternal<T, U>(collections::List<Ptr<T>>&, U)#Internal error: Unexpected circle dependency found, which should be cought by the Workflow semantic analyzer.");
-				}
-
-				CopyFrom(decls, From(tds).Select([&](ITypeDescriptor* td) {return tdMap[td]; }));
-			}
-
-			void WfCppConfig::SortClassDecls(collections::List<Ptr<WfClassDeclaration>>& classDecls)
-			{
-				SortInternal(classDecls, [](ITypeDescriptor* derived, ITypeDescriptor* base)
-				{
-					vint count = derived->GetBaseTypeDescriptorCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto td = derived->GetBaseTypeDescriptor(i);
-						if (td == base)
-						{
-							return true;
-						}
-						else if (INVLOC.StartsWith(td->GetTypeName(), base->GetTypeName() + L"::", Locale::None))
-						{
-							return true;
-						}
-					}
-					return false;
-				});
 			}
 
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace)
@@ -150,16 +91,9 @@ WfCppConfig
 					const auto& values = structDecls.GetByIndex(i);
 					SortDeclsByName(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
 				}
-				for (vint i = 0; i < topLevelClassDeclsForCustomFiles.Count(); i++)
-				{
-					const auto& values = topLevelClassDeclsForCustomFiles.GetByIndex(i);
-					SortClassDecls(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
-				}
-				for (vint i = 0; i < classDecls.Count(); i++)
-				{
-					const auto& values = classDecls.GetByIndex(i);
-					SortClassDecls(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
-				}
+
+				Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> expandedClassDecls;
+				ExpandClassDeclGroup(nullptr, expandedClassDecls);
 			}
 
 			WfCppConfig::~WfCppConfig()

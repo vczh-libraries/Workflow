@@ -63,9 +63,7 @@ namespace vl
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 
-				template<typename T, typename U>
-				void												SortInternal(collections::List<Ptr<T>>& decls, U dependOn);
-				void												SortClassDecls(collections::List<Ptr<WfClassDeclaration>>& classDecls);
+				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& expandedClassDecls);
 
 				template<typename T>
 				void SortDeclsByName(collections::List<Ptr<T>>& decls)
@@ -189,7 +187,6 @@ WfCppConfig::Collect
 ***********************************************************************/
 
 			extern void CollectModule(WfCppConfig* config, Ptr<WfModule> module);
-			extern void PostCollect(WfCppConfig* config);
 
 /***********************************************************************
 WfCppConfig::Write
