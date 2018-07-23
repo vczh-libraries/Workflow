@@ -110,7 +110,7 @@ WfCppConfig::Collect
 				for (vint i = classDecls.Count() - 1; i >= 0; i--)
 				{
 					auto parent = classDecls.Keys()[i];
-					vint parentIndexKey;
+					vint parentIndexKey = -1;
 					if (parent)
 					{
 						auto parentStringKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
@@ -162,8 +162,8 @@ WfCppConfig::Collect
 						CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
 						
 						auto& node = pop.nodes[component.firstNode[0]];
-						auto subDeclKey = subClass[items[node.firstSubClassItem[0]]];
-						auto subDecl = tdDecls[allTds[subDeclKey]].Cast<WfClassDeclaration>();
+						auto subDeclIndexKey = subClass[items[node.firstSubClassItem[0]]];
+						auto subDecl = tdDecls[allTds.Values()[subDeclIndexKey]].Cast<WfClassDeclaration>();
 						classDecls.Add(parent, subDecl);
 					}
 				}
