@@ -189,6 +189,172 @@ CollectModule
 			{
 				WfCollectModuleVisitor(config).VisitField(module.Obj());
 			}
+
+/***********************************************************************
+WfCppConfig::CollectClosureInfo
+***********************************************************************/
+
+			class WfCppCollectClassExprInfoVisitor : public empty_visitor::DeclarationVisitor
+			{
+			public:
+				WfCppConfig*							config;
+				vint									variableCount = 0;
+				Ptr<analyzer::WfLexicalCapture>			capture;
+
+				WfCppCollectClassExprInfoVisitor(WfCppConfig* _config)
+					:config(_config)
+				{
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+					variableCount++;
+				}
+
+				void Dispatch(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Execute(WfNewInterfaceExpression* node)
+				{
+					capture = config->manager->lambdaCaptures[node];
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					{
+						memberDecl->Accept(this);
+					}
+				}
+			};
+
+			Ptr<WfCppConfig::ClosureInfo> WfCppConfig::CollectClosureInfo(Ptr<WfExpression> closure)
+			{
+				using SymbolPair = Pair<WString, Ptr<analyzer::WfLexicalSymbol>>;
+
+				auto info = MakePtr<ClosureInfo>();
+				WfLexicalScope* scope = nullptr;
+
+				if (auto ordered = closure.Cast<WfOrderedLambdaExpression>())
+				{
+					// stable symbol order by sorting them by name
+					CopyFrom(
+						info->symbols,
+						From(manager->lambdaCaptures[ordered.Obj()]->symbols)
+							.Select([](Ptr<WfLexicalSymbol> symbol)
+							{
+								return SymbolPair(symbol->name, symbol);
+							})
+						);
+					scope = manager->nodeScopes[ordered.Obj()].Obj();
+				}
+				else if (auto funcExpr = closure.Cast<WfFunctionExpression>())
+				{
+					// stable symbol order by sorting them by name
+					CopyFrom(
+						info->symbols,
+						From(manager->lambdaCaptures[funcExpr->function.Obj()]->symbols)
+							.Select([](Ptr<WfLexicalSymbol> symbol)
+							{
+								return SymbolPair(symbol->name, symbol);
+							})
+						);
+					scope = manager->nodeScopes[funcExpr->function.Obj()].Obj();
+				}
+				else if (auto classExpr = closure.Cast<WfNewInterfaceExpression>())
+				{
+					WfCppCollectClassExprInfoVisitor visitor(this);
+					visitor.Execute(classExpr.Obj());
+
+					if (visitor.capture)
+					{
+						// stable symbol order by sorting them by name
+						CopyFrom(
+							info->symbols,
+							From(visitor.capture->symbols)
+								.Skip(visitor.variableCount)
+								.Select([](Ptr<WfLexicalSymbol> symbol)
+								{
+									return SymbolPair(symbol->name, symbol);
+								})
+							);
+
+						CopyFrom(
+							info->ctorArgumentSymbols,
+							From(visitor.capture->ctorArgumentSymbols)
+								.Select([](Ptr<WfLexicalSymbol> symbol)
+								{
+									return SymbolPair(symbol->name, symbol);
+								})
+							);
+					}
+
+					scope = manager->nodeScopes[classExpr.Obj()].Obj();
+				}
+
+				Ptr<WfLexicalFunctionConfig> methodConfig;
+				while (scope)
+				{
+					if (scope->typeOfThisExpr)
+					{
+						if (methodConfig)
+						{
+							info->thisTypes.Add(scope->typeOfThisExpr);
+							if (!methodConfig->parentThisAccessable)
+							{
+								break;
+							}
+							methodConfig = nullptr;
+						}
+					}
+
+					if (scope->functionConfig)
+					{
+						if (scope->functionConfig->thisAccessable)
+						{
+							methodConfig = scope->functionConfig;
+						}
+					}
+					scope = scope->parentScope.Obj();
+				}
+
+				return info;
+			}
+
+/***********************************************************************
+WfCppConfig::Collect
+***********************************************************************/
+
+			void WfCppConfig::Collect()
+			{
+				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				{
+					CollectModule(this, module);
+				}
+
+				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
+				{
+					auto closureInfo = CollectClosureInfo(lambda);
+					closureInfo->lambdaClassName = lambdaExprs[lambda.Obj()];
+					closureInfos.Add(lambda, closureInfo);
+				}
+
+				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
+				{
+					auto closureInfo = CollectClosureInfo(classExpr);
+					closureInfo->lambdaClassName = classExprs[classExpr.Obj()];
+					closureInfos.Add(classExpr, closureInfo);
+				}
+			}
 		}
 	}
 }

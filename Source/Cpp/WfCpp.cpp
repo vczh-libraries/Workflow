@@ -17,60 +17,6 @@ namespace vl
 WfCppConfig
 ***********************************************************************/
 
-			void WfCppConfig::Collect()
-			{
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
-				{
-					CollectModule(this, module);
-				}
-
-				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
-				{
-					auto closureInfo = CollectClosureInfo(lambda);
-					closureInfo->lambdaClassName = lambdaExprs[lambda.Obj()];
-					closureInfos.Add(lambda, closureInfo);
-				}
-
-				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
-				{
-					auto closureInfo = CollectClosureInfo(classExpr);
-					closureInfo->lambdaClassName = classExprs[classExpr.Obj()];
-					closureInfos.Add(classExpr, closureInfo);
-				}
-			}
-
-			void WfCppConfig::ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& expandedClassDecls)
-			{
-				vint index = classDecls.Keys().IndexOf(parent.Obj());
-				if (index == -1) return;
-
-				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(index))
-				{
-					ExpandClassDeclGroup(subDecl, expandedClassDecls);
-				}
-
-				auto expanded = From(classDecls.GetByIndex(index))
-					.Concat(From(classDecls.GetByIndex(index))
-						.Select([&](Ptr<WfClassDeclaration> subDecl)
-						{
-							return expandedClassDecls.Keys().IndexOf(subDecl.Obj());
-						})
-						.Where([](vint index)
-						{
-							return index != -1;
-						})
-						.SelectMany([&](vint index)
-						{
-							return From(expandedClassDecls.GetByIndex(index));
-						})
-					);
-
-				FOREACH(Ptr<WfClassDeclaration>, subDecl, expanded)
-				{
-					expandedClassDecls.Add(parent, subDecl);
-				}
-			}
-
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace)
 				:manager(_manager)
 				, regexSplitName(L"::")
@@ -91,9 +37,7 @@ WfCppConfig
 					const auto& values = structDecls.GetByIndex(i);
 					SortDeclsByName(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
 				}
-
-				Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> expandedClassDecls;
-				ExpandClassDeclGroup(nullptr, expandedClassDecls);
+				AssignClassDeclsToFiles();
 			}
 
 			WfCppConfig::~WfCppConfig()

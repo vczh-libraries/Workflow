@@ -64,6 +64,7 @@ namespace vl
 				void												Collect();
 
 				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& expandedClassDecls);
+				void												AssignClassDeclsToFiles();
 
 				template<typename T>
 				void SortDeclsByName(collections::List<Ptr<T>>& decls)
