@@ -78,6 +78,45 @@ WfCppConfig::Collect
 				Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> dependencies;
 				ExpandClassDeclGroup(nullptr, expandedClassDecls);
 				GenerateClassDependencies(dependencies);
+
+				FOREACH_INDEXER(Ptr<WfClassDeclaration>, parent, parentIndex, classDecls.Keys())
+				{
+					const auto& items = expandedClassDecls.GetByIndex(parentIndex);
+					Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> depGroup;
+					Dictionary<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> subClass;
+
+					FOREACH(Ptr<WfClassDeclaration>, subDecl, items)
+					{
+						vint index = dependencies.Keys().IndexOf(subDecl.Obj());
+						if (index != -1)
+						{
+							FOREACH(Ptr<WfClassDeclaration>, dep, dependencies.GetByIndex(index))
+							{
+								if (items.Contains(dep.Obj()))
+								{
+									depGroup.Add(subDecl, dep);
+								}
+							}
+						}
+					}
+
+					FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(parentIndex))
+					{
+						subClass.Add(subDecl, subDecl);
+
+						vint index = expandedClassDecls.Keys().IndexOf(subDecl.Obj());
+						if (index != -1)
+						{
+							FOREACH(Ptr<WfClassDeclaration>, expandDecl, expandedClassDecls.GetByIndex(index))
+							{
+								subClass.Add(expandDecl, subDecl);
+							}
+						}
+					}
+
+					PartialOrderingProcessor pop;
+					pop.InitWithSubClass(items, depGroup, subClass);
+				}
 			}
 		}
 	}

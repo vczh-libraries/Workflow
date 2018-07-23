@@ -37,6 +37,11 @@ WfCppConfig
 					const auto& values = structDecls.GetByIndex(i);
 					SortDeclsByName(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
 				}
+				for (vint i = 0; i < classDecls.Count(); i++)
+				{
+					const auto& values = classDecls.GetByIndex(i);
+					SortDeclsByName(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
+				}
 				AssignClassDeclsToFiles();
 			}
 
