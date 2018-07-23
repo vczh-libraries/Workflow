@@ -117,6 +117,7 @@ WfCppConfig::Collect
 
 					PartialOrderingProcessor pop;
 					pop.InitWithSubClass(items, depGroup, subClass);
+					pop.Sort();
 
 					classDecls.Remove(parent.Obj());
 					for (vint j = 0; j < pop.components.Count(); j++)
