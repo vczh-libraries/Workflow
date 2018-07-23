@@ -63,8 +63,8 @@ namespace vl
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 
-				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& expandedClassDecls);
-				void												GenerateClassDependencies(collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& dependencies);
+				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Group<WString, WString>& expandedClassDecls);
+				void												GenerateClassDependencies(collections::Dictionary<WString, ITypeDescriptor*>& allTds, collections::Group<WString, WString>& dependencies);
 				void												AssignClassDeclsToFiles();
 
 				template<typename T>
