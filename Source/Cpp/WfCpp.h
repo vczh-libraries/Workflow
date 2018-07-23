@@ -64,6 +64,7 @@ namespace vl
 				void												Collect();
 
 				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& expandedClassDecls);
+				void												GenerateClassDependencies(collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>& dependencies);
 				void												AssignClassDeclsToFiles();
 
 				template<typename T>
