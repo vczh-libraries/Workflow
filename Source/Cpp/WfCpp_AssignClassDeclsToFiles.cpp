@@ -79,9 +79,10 @@ WfCppConfig::Collect
 				ExpandClassDeclGroup(nullptr, expandedClassDecls);
 				GenerateClassDependencies(dependencies);
 
-				FOREACH_INDEXER(Ptr<WfClassDeclaration>, parent, parentIndex, classDecls.Keys())
+				for (vint i = classDecls.Count() - 1; i >= 0; i--)
 				{
-					const auto& items = expandedClassDecls.GetByIndex(parentIndex);
+					auto parent = classDecls.Keys()[i];
+					const auto& items = expandedClassDecls.GetByIndex(i);
 					Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> depGroup;
 					Dictionary<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> subClass;
 
@@ -100,7 +101,7 @@ WfCppConfig::Collect
 						}
 					}
 
-					FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(parentIndex))
+					FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(i))
 					{
 						subClass.Add(subDecl, subDecl);
 
@@ -116,6 +117,17 @@ WfCppConfig::Collect
 
 					PartialOrderingProcessor pop;
 					pop.InitWithSubClass(items, depGroup, subClass);
+
+					classDecls.Remove(parent.Obj());
+					for (vint j = 0; j < pop.components.Count(); j++)
+					{
+						auto& component = pop.components[j];
+						CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+						
+						auto& node = pop.nodes[component.firstNode[0]];
+						auto subDecl = subClass[items[node.firstSubClassItem[0]].Obj()];
+						classDecls.Add(parent, subDecl);
+					}
 				}
 			}
 		}
