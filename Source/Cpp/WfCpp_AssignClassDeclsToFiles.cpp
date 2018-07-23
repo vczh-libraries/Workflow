@@ -100,7 +100,11 @@ WfCppConfig::Collect
 				for (vint i = classDecls.Count() - 1; i >= 0; i--)
 				{
 					auto parent = classDecls.Keys()[i];
-					auto parentKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
+					WString parentKey;
+					if (parent)
+					{
+						parentKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
+					}
 					const auto& items = expandedClassDecls[parentKey];
 					Group<WString, WString> depGroup;
 					Dictionary<WString, WString> subClass;
