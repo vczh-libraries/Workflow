@@ -195,26 +195,41 @@ WfCppConfig::Collect
 
 			void WfCppConfig::GenerateFileClassMaps(GlobalDep& globalDep)
 			{
-				// get dependency information for top level classes
-				ClassLevelDep classLevelDep;
-				GenerateClassLevelDep(nullptr, globalDep, classLevelDep);
-				const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
-
-				// calculate dependency for top level classes
-				Group<vint, vint> depGroup;
+				if (classDecls.Keys().Contains(nullptr))
 				{
+					// get dependency information for top level classes
+					ClassLevelDep classLevelDep;
+					GenerateClassLevelDep(nullptr, globalDep, classLevelDep);
+					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
 
+					// calculate dependency for top level classes
+					Group<vint, vint> depGroup;
+					{
+						PartialOrderingProcessor pop;
+						pop.InitWithSubClass(items, classLevelDep.depGroup, classLevelDep.subClass);
+						for (vint i = 0; i < pop.nodes.Count(); i++)
+						{
+							auto& keyNode = pop.nodes[i];
+							vint keyIndex = classLevelDep.subClass[keyNode.firstSubClassItem[0]];
+							for (vint j = 0; j < keyNode.ins->Count(); j++)
+							{
+								auto& valueNode = pop.nodes[keyNode.ins->Get(j)];
+								vint valueIndex = classLevelDep.subClass[valueNode.firstSubClassItem[0]];
+								depGroup.Add(keyIndex, valueIndex);
+							}
+						}
+					}
+
+					// generate sub class using @cpp:File
+					// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
+					// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
 				}
-
-				// generate sub class using @cpp:File
-				// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
-				// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
 			}
 
 			void WfCppConfig::SortFileClassMaps(GlobalDep& globalDep)
 			{
 				// sort customFilesClasses and headerFilesClasses according to classDecls[nullptr]
-				if (classDecls.Count() > 0)
+				if (classDecls.Keys().Contains(nullptr))
 				{
 					SortedList<Ptr<WfClassDeclaration>> ordered;
 					CopyFrom(ordered, classDecls[nullptr]);
