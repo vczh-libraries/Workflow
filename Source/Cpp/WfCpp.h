@@ -87,6 +87,7 @@ namespace vl
 				void												GenerateClassLevelDep(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep, ClassLevelDep& classLevelDep);
 
 				void												SortClassDecls(GlobalDep& globalDep);
+				void												GenerateFileClassMaps(GlobalDep& globapDep);
 				void												SortFileClassMaps(GlobalDep& globalDep);
 				void												AssignClassDeclsToFiles();
 

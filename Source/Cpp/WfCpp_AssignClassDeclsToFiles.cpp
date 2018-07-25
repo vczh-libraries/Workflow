@@ -195,6 +195,18 @@ WfCppConfig::Collect
 				}
 			}
 
+			void WfCppConfig::GenerateFileClassMaps(GlobalDep& globapDep)
+			{
+				vint index = customFilesClasses.Keys().IndexOf(L"");
+				if (index != -1)
+				{
+					FOREACH(Ptr<WfClassDeclaration>, classDecl, customFilesClasses.GetByIndex(index))
+					{
+						headerFilesClasses.Add(0, classDecl);
+					}
+				}
+			}
+
 			void WfCppConfig::SortFileClassMaps(GlobalDep& globalDep)
 			{
 				// sort customFilesClasses and headerFilesClasses according to classDecls[nullptr]
@@ -232,8 +244,9 @@ WfCppConfig::Collect
 				GlobalDep globalDep;
 				GenerateGlobalDep(globalDep);
 
-				SortClassDecls(globalDep);
-				SortFileClassMaps(globalDep);
+				if (manager->errors.Count() == 0) SortClassDecls(globalDep);
+				if (manager->errors.Count() == 0) GenerateFileClassMaps(globalDep);
+				if (manager->errors.Count() == 0) SortFileClassMaps(globalDep);
 			}
 
 #undef ASSIGN_INDEX_KEY
