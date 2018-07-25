@@ -198,6 +198,35 @@ WfCppConfig::Collect
 					{
 					}
 				}
+				
+				// sort customFilesClasses and headerFilesClasses according to classDecls[nullptr]
+				if(classDecls.Count() > 0)
+				{
+					SortedList<Ptr<WfClassDeclaration>> ordered;
+					CopyFrom(ordered, classDecls[nullptr]);
+
+					for (vint i = 0; i < customFilesClasses.Count(); i++)
+					{
+						auto& values = const_cast<List<Ptr<WfClassDeclaration>>&>(customFilesClasses.GetByIndex(i));
+						Sort<Ptr<WfClassDeclaration>>(&values[0], values.Count(), [&](Ptr<WfClassDeclaration> a, Ptr<WfClassDeclaration> b)
+						{
+							vint aIndex = ordered.IndexOf(a.Obj());
+							vint bIndex = ordered.IndexOf(b.Obj());
+							return aIndex - bIndex;
+						});
+					}
+
+					for (vint i = 0; i < headerFilesClasses.Count(); i++)
+					{
+						auto& values = const_cast<List<Ptr<WfClassDeclaration>>&>(headerFilesClasses.GetByIndex(i));
+						Sort<Ptr<WfClassDeclaration>>(&values[0], values.Count(), [&](Ptr<WfClassDeclaration> a, Ptr<WfClassDeclaration> b)
+						{
+							vint aIndex = ordered.IndexOf(a.Obj());
+							vint bIndex = ordered.IndexOf(b.Obj());
+							return aIndex - bIndex;
+						});
+					}
+				}
 			}
 
 #undef ASSIGN_INDEX_KEY
