@@ -42,18 +42,6 @@ namespace calculator
 	class BinaryExpression;
 	class NumberExpression;
 
-	class NumberExpression : public ::calculator::Expression, public ::vl::reflection::Description<NumberExpression>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<NumberExpression>;
-#endif
-	public:
-		::vl::vint __vwsn_prop_Value;
-		::vl::vint GetValue();
-		void SetValue(::vl::vint __vwsn_value_);
-		NumberExpression(::vl::vint _value);
-	};
-
 	class BinaryExpression : public ::calculator::Expression, public ::vl::reflection::Description<BinaryExpression>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -72,6 +60,18 @@ namespace calculator
 		::vl::Ptr<::calculator::Expression> GetRight();
 		void SetRight(::vl::Ptr<::calculator::Expression> __vwsn_value_);
 		BinaryExpression(::vl::Ptr<::calculator::Expression> _left, ::calculator::BinaryExpression::BinaryOperator _op, ::vl::Ptr<::calculator::Expression> _right);
+	};
+
+	class NumberExpression : public ::calculator::Expression, public ::vl::reflection::Description<NumberExpression>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<NumberExpression>;
+#endif
+	public:
+		::vl::vint __vwsn_prop_Value;
+		::vl::vint GetValue();
+		void SetValue(::vl::vint __vwsn_value_);
+		NumberExpression(::vl::vint _value);
 	};
 
 }

@@ -132,30 +132,11 @@ Global Functions
 }
 
 /***********************************************************************
-Class (::calculator::NumberExpression)
+Class (::calculator::BinaryExpression)
 ***********************************************************************/
 
 namespace calculator
 {
-	::vl::vint NumberExpression::GetValue()
-	{
-		return this->__vwsn_prop_Value;
-	}
-	void NumberExpression::SetValue(::vl::vint __vwsn_value_)
-	{
-		(this->__vwsn_prop_Value = __vwsn_value_);
-	}
-
-	NumberExpression::NumberExpression(::vl::vint _value)
-		: __vwsn_prop_Value(static_cast<::vl::vint>(0))
-	{
-		this->SetValue(_value);
-	}
-
-/***********************************************************************
-Class (::calculator::BinaryExpression)
-***********************************************************************/
-
 	::calculator::BinaryExpression::BinaryOperator BinaryExpression::GetOperator()
 	{
 		return this->__vwsn_prop_Operator;
@@ -191,6 +172,25 @@ Class (::calculator::BinaryExpression)
 		this->SetLeft(_left);
 		this->SetOperator(_op);
 		this->SetRight(_right);
+	}
+
+/***********************************************************************
+Class (::calculator::NumberExpression)
+***********************************************************************/
+
+	::vl::vint NumberExpression::GetValue()
+	{
+		return this->__vwsn_prop_Value;
+	}
+	void NumberExpression::SetValue(::vl::vint __vwsn_value_)
+	{
+		(this->__vwsn_prop_Value = __vwsn_value_);
+	}
+
+	NumberExpression::NumberExpression(::vl::vint _value)
+		: __vwsn_prop_Value(static_cast<::vl::vint>(0))
+	{
+		this->SetValue(_value);
 	}
 
 }
