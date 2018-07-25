@@ -63,10 +63,31 @@ namespace vl
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 
-				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Dictionary<WString, ITypeDescriptor*>& allTds, collections::Group<vint, vint>& expandedClassDecls);
-				void												GenerateClassDependencies(collections::Dictionary<WString, ITypeDescriptor*>& allTds, collections::Group<vint, vint>& dependencies);
-				void												CollectExpandedDepGroup(vint parentIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Group<vint, vint>& dependencies, collections::Group<vint, vint>& depGroup);
-				void												CollectExpandedSubClass(vint subDeclIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Dictionary<vint, vint>& subClass);
+				struct GlobalDep
+				{
+					collections::Dictionary<WString, ITypeDescriptor*>		allTds;				// Type name to type descriptor of class decls. Class index is the position in this map.
+					collections::Group<vint, vint>							expandedClassDecls;	// Class index (-1 means top level) to all direct and indirect internal classes
+					collections::Group<vint, vint>							dependencies;		// Class dependencies
+				};
+
+				struct ClassLevelDep
+				{
+					Ptr<WfClassDeclaration>									parentClass;
+					vint													parentIndexKey = -1;
+					collections::Group<vint, vint>							depGroup;			// A slice of GlobalDep::dependencies
+					collections::Dictionary<vint, vint>						subClass;			// Classes to their ancestor, which are direct internal classes of the selected parent class
+				};
+
+				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep);
+				void												GenerateClassDependencies(GlobalDep& globalDep);
+				void												GenerateGlobalDep(GlobalDep& globalDep);
+
+				void												CollectExpandedDepGroup(vint parentIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep);
+				void												CollectExpandedSubClass(vint subDeclIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep);
+				void												GenerateClassLevelDep(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep, ClassLevelDep& classLevelDep);
+
+				void												SortClassDecls(GlobalDep& globalDep);
+				void												SortFileClassMaps(GlobalDep& globalDep);
 				void												AssignClassDeclsToFiles();
 
 				template<typename T>

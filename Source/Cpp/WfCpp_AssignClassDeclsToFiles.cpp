@@ -9,21 +9,21 @@ namespace vl
 			using namespace collections;
 
 #define ASSIGN_INDEX_KEY(INDEX_DECL, INDEX_KEY, STRING_KEY) \
-			INDEX_DECL INDEX_KEY = allTds.Keys().IndexOf(STRING_KEY); \
+			INDEX_DECL INDEX_KEY = globalDep.allTds.Keys().IndexOf(STRING_KEY); \
 			CHECK_ERROR(INDEX_KEY != -1, L"WfCppConfig::AssignClassDeclsToFiles()#Internal error.") \
 
 /***********************************************************************
-WfCppConfig::ExpandClassDeclGroup
+WfCppConfig::GenerateGlobalDep
 ***********************************************************************/
 
-			void WfCppConfig::ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Dictionary<WString, ITypeDescriptor*>& allTds, collections::Group<vint, vint>& expandedClassDecls)
+			void WfCppConfig::ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep)
 			{
 				vint index = classDecls.Keys().IndexOf(parent.Obj());
 				if (index == -1) return;
 
 				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(index))
 				{
-					ExpandClassDeclGroup(subDecl, allTds, expandedClassDecls);
+					ExpandClassDeclGroup(subDecl, globalDep);
 				}
 
 				auto directChildren =
@@ -41,7 +41,7 @@ WfCppConfig::ExpandClassDeclGroup
 						{
 							auto stringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
 							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
-							return expandedClassDecls.Keys().IndexOf(indexKey);
+							return globalDep.expandedClassDecls.Keys().IndexOf(indexKey);
 						})
 						.Where([](vint index)
 						{
@@ -49,7 +49,7 @@ WfCppConfig::ExpandClassDeclGroup
 						})
 						.SelectMany([&](vint index)
 						{
-							return From(expandedClassDecls.GetByIndex(index));
+							return From(globalDep.expandedClassDecls.GetByIndex(index));
 						});
 
 				vint indexKey = -1;
@@ -60,69 +60,99 @@ WfCppConfig::ExpandClassDeclGroup
 				}
 				FOREACH(vint, subDecl, directChildren.Concat(indirectChildren))
 				{
-					expandedClassDecls.Add(indexKey, subDecl);
+					globalDep.expandedClassDecls.Add(indexKey, subDecl);
 				}
 			}
 
-/***********************************************************************
-WfCppConfig::GenerateClassDependencies
-***********************************************************************/
-
-			void WfCppConfig::GenerateClassDependencies(collections::Dictionary<WString, ITypeDescriptor*>& allTds, collections::Group<vint, vint>& dependencies)
+			void WfCppConfig::GenerateClassDependencies(GlobalDep& globalDep)
 			{
-				FOREACH_INDEXER(ITypeDescriptor*, td, tdIndex, allTds.Values())
+				FOREACH_INDEXER(ITypeDescriptor*, td, tdIndex, globalDep.allTds.Values())
 				{
 					vint count = td->GetBaseTypeDescriptorCount();
 					for (vint i = 0; i < count; i++)
 					{
 						auto baseTd = td->GetBaseTypeDescriptor(i);
-						vint baseTdIndex = allTds.Keys().IndexOf(baseTd->GetTypeName());
+						vint baseTdIndex = globalDep.allTds.Keys().IndexOf(baseTd->GetTypeName());
 						if (baseTdIndex != -1)
 						{
-							dependencies.Add(tdIndex, baseTdIndex);
+							globalDep.dependencies.Add(tdIndex, baseTdIndex);
 						}
 					}
 				}
 			}
 
+			void WfCppConfig::GenerateGlobalDep(GlobalDep& globalDep)
+			{
+				FOREACH_INDEXER(ITypeDescriptor*, td, index, tdDecls.Keys())
+				{
+					if (tdDecls.Values()[index].Cast<WfClassDeclaration>())
+					{
+						globalDep.allTds.Add(td->GetTypeName(), td);
+					}
+				}
+
+				ExpandClassDeclGroup(nullptr, globalDep);
+				GenerateClassDependencies(globalDep);
+			}
+
 /***********************************************************************
-WfCppConfig::CollectExpandedDepGroup
+WfCppConfig::GenerateClassLevelDep
 ***********************************************************************/
 
-			void WfCppConfig::CollectExpandedDepGroup(vint parentIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Group<vint, vint>& dependencies, collections::Group<vint, vint>& depGroup)
+			void WfCppConfig::CollectExpandedDepGroup(vint parentIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
 			{
-				const auto& items = expandedClassDecls[parentIndexKey];
+				const auto& items = globalDep.expandedClassDecls[parentIndexKey];
 				FOREACH(vint, subDecl, items)
 				{
-					vint index = dependencies.Keys().IndexOf(subDecl);
+					vint index = globalDep.dependencies.Keys().IndexOf(subDecl);
 					if (index != -1)
 					{
-						FOREACH(vint, dep, dependencies.GetByIndex(index))
+						FOREACH(vint, dep, globalDep.dependencies.GetByIndex(index))
 						{
 							if (items.Contains(dep))
 							{
-								depGroup.Add(subDecl, dep);
+								classLevelDep.depGroup.Add(subDecl, dep);
 							}
 						}
 					}
 				}
 			}
 
-/***********************************************************************
-WfCppConfig::CollectExpandedSubClass
-***********************************************************************/
-
-			void WfCppConfig::CollectExpandedSubClass(vint subDeclIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Dictionary<vint, vint>& subClass)
+			void WfCppConfig::CollectExpandedSubClass(vint subDeclIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
 			{
-				subClass.Add(subDeclIndexKey, subDeclIndexKey);
+				classLevelDep.subClass.Add(subDeclIndexKey, subDeclIndexKey);
 
-				vint index = expandedClassDecls.Keys().IndexOf(subDeclIndexKey);
+				vint index = globalDep.expandedClassDecls.Keys().IndexOf(subDeclIndexKey);
 				if (index != -1)
 				{
-					FOREACH(vint, expandDecl, expandedClassDecls.GetByIndex(index))
+					FOREACH(vint, expandDecl, globalDep.expandedClassDecls.GetByIndex(index))
 					{
-						subClass.Add(expandDecl, subDeclIndexKey);
+						classLevelDep.subClass.Add(expandDecl, subDeclIndexKey);
 					}
+				}
+			}
+
+			void WfCppConfig::GenerateClassLevelDep(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
+			{
+				classLevelDep.parentClass = parent;
+				if (parent)
+				{
+					auto parentStringKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
+					ASSIGN_INDEX_KEY(, classLevelDep.parentIndexKey, parentStringKey);
+				}
+				const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
+				Group<vint, vint> depGroup;
+				Dictionary<vint, vint> subClass;
+
+				// for any specified class (or top level if nullptr)
+				// find all direct and indirect internal classes
+				// copy their dependencies, and generate sub classes by grouping them using the second level of classes
+				CollectExpandedDepGroup(classLevelDep.parentIndexKey, globalDep, classLevelDep);
+				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.Get(parent.Obj()))
+				{
+					auto subDeclStringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
+					ASSIGN_INDEX_KEY(auto, subDeclIndexKey, subDeclStringKey);
+					CollectExpandedSubClass(subDeclIndexKey, globalDep, classLevelDep);
 				}
 			}
 
@@ -130,52 +160,22 @@ WfCppConfig::CollectExpandedSubClass
 WfCppConfig::Collect
 ***********************************************************************/
 
-			void WfCppConfig::AssignClassDeclsToFiles()
+			void WfCppConfig::SortClassDecls(GlobalDep& globalDep)
 			{
-				// Sort all classes by full name
-				Dictionary<WString, ITypeDescriptor*> allTds;
-				FOREACH_INDEXER(ITypeDescriptor*, td, index, tdDecls.Keys())
-				{
-					if (tdDecls.Values()[index].Cast<WfClassDeclaration>())
-					{
-						allTds.Add(td->GetTypeName(), td);
-					}
-				}
-
-				// Calculate dependencies by indices of keys in allTds
-				Group<vint, vint> expandedClassDecls;
-				Group<vint, vint> dependencies;
-				ExpandClassDeclGroup(nullptr, allTds, expandedClassDecls);
-				GenerateClassDependencies(allTds, dependencies);
-
 				// sort top level classes and all internal classes inside any classes
 				for (vint i = classDecls.Count() - 1; i >= 0; i--)
 				{
-					auto parent = classDecls.Keys()[i];
-					vint parentIndexKey = -1;
-					if (parent)
-					{
-						auto parentStringKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
-						ASSIGN_INDEX_KEY(, parentIndexKey, parentStringKey);
-					}
-					const auto& items = expandedClassDecls[parentIndexKey];
-					Group<vint, vint> depGroup;
-					Dictionary<vint, vint> subClass;
-
 					// for any specified class (or top level if nullptr)
 					// find all direct and indirect internal classes
 					// copy their dependencies, and generate sub classes by grouping them using the second level of classes
-					CollectExpandedDepGroup(parentIndexKey, expandedClassDecls, dependencies, depGroup);
-					FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(i))
-					{
-						auto subDeclStringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
-						ASSIGN_INDEX_KEY(auto, subDeclIndexKey, subDeclStringKey);
-						CollectExpandedSubClass(subDeclIndexKey, expandedClassDecls, subClass);
-					}
+					auto parent = classDecls.Keys()[i];
+					ClassLevelDep classLevelDep;
+					GenerateClassLevelDep(parent, globalDep, classLevelDep);
 
 					// sort them
 					PartialOrderingProcessor pop;
-					pop.InitWithSubClass(items, depGroup, subClass);
+					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
+					pop.InitWithSubClass(items, classLevelDep.depGroup, classLevelDep.subClass);
 					pop.Sort();
 
 					// using the partial ordering result to sort the corresponding value list in classDecls
@@ -187,20 +187,18 @@ WfCppConfig::Collect
 							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
 
 							auto& node = pop.nodes[component.firstNode[0]];
-							auto subDeclIndexKey = subClass[items[node.firstSubClassItem[0]]];
-							auto subDecl = tdDecls[allTds.Values()[subDeclIndexKey]].Cast<WfClassDeclaration>();
+							auto subDeclIndexKey = classLevelDep.subClass[items[node.firstSubClassItem[0]]];
+							auto subDecl = tdDecls[globalDep.allTds.Values()[subDeclIndexKey]].Cast<WfClassDeclaration>();
 							values[j] = subDecl;
 						}
 					}
-
-					// reuse dependency information of top level classes to dispatch classes to files
-					if (parentIndexKey == -1 && pop.nodes.Count() == pop.components.Count())
-					{
-					}
 				}
-				
+			}
+
+			void WfCppConfig::SortFileClassMaps(GlobalDep& globalDep)
+			{
 				// sort customFilesClasses and headerFilesClasses according to classDecls[nullptr]
-				if(classDecls.Count() > 0)
+				if (classDecls.Count() > 0)
 				{
 					SortedList<Ptr<WfClassDeclaration>> ordered;
 					CopyFrom(ordered, classDecls[nullptr]);
@@ -227,6 +225,15 @@ WfCppConfig::Collect
 						});
 					}
 				}
+			}
+
+			void WfCppConfig::AssignClassDeclsToFiles()
+			{
+				GlobalDep globalDep;
+				GenerateGlobalDep(globalDep);
+
+				SortClassDecls(globalDep);
+				SortFileClassMaps(globalDep);
 			}
 
 #undef ASSIGN_INDEX_KEY
