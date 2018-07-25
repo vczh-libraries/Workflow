@@ -95,6 +95,7 @@ namespace vl
 
 				collections::Group<WString, Ptr<WfClassDeclaration>>						customFilesClasses;	// @cpp:File to top level classes, empty key means the default cpp
 				collections::Group<vint, Ptr<WfClassDeclaration>>							headerFilesClasses;	// non-@cpp:File header file to top level classes, 0 means the default header
+				collections::Group<vint, vint>												headerIncludes;		// 0:default header, positive:@cpp:File indexed in customFilesClasses, negative:non-@cpp:File headers
 
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;

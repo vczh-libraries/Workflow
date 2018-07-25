@@ -80,6 +80,30 @@ GenerateCppFiles
 				}
 			}
 
+			void WriteDependedInclude(Ptr<WfCppInput> input, WfCppConfig& config, vint headerIndex, stream::StreamWriter& writer)
+			{
+				vint index = config.headerIncludes.Keys().IndexOf(headerIndex);
+				if (index != -1)
+				{
+					const auto& headers = config.headerIncludes.GetByIndex(index);
+					FOREACH(vint, header, headers)
+					{
+						if (header == 0)
+						{
+							writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
+						}
+						else if (header > 0)
+						{
+							writer.WriteLine(L"#include \"" + config.customFilesClasses.Keys()[header] + L".h\"");
+						}
+						else
+						{
+							writer.WriteLine(L"#include \"" + input->defaultFileName + itow(-header) + L".h\"");
+						}
+					}
+				}
+			}
+
 			void WriteHeader(Ptr<WfCppInput> input, Ptr<WfCppOutput> output, WfCppConfig& config, bool multiFile, bool reflection, stream::StreamWriter& writer)
 			{
 				GenerateCppComment(writer, input->comment);
@@ -105,7 +129,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				WriteDependedInclude(config, config.headerFilesClasses[fileIndex], writer);
+				WriteDependedInclude(input, config, -fileIndex, writer);
 				writer.WriteLine(L"");
 				config.WriteNonCustomSubHeader(writer, fileIndex);
 				writer.WriteLine(L"");
@@ -190,7 +214,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				WriteDependedInclude(config, config.customFilesClasses[fileName], writer);
+				WriteDependedInclude(input, config, config.customFilesClasses.Keys().IndexOf(fileName), writer);
 				writer.WriteLine(L"");
 				config.WriteSubHeader(writer, fileName);
 				writer.WriteLine(L"");
