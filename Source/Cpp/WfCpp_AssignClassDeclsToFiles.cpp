@@ -148,6 +148,7 @@ WfCppConfig::Collect
 				ExpandClassDeclGroup(nullptr, allTds, expandedClassDecls);
 				GenerateClassDependencies(allTds, dependencies);
 
+				// sort top level classes and all internal classes inside any classes
 				for (vint i = classDecls.Count() - 1; i >= 0; i--)
 				{
 					auto parent = classDecls.Keys()[i];
@@ -161,6 +162,9 @@ WfCppConfig::Collect
 					Group<vint, vint> depGroup;
 					Dictionary<vint, vint> subClass;
 
+					// for any specified class (or top level if nullptr)
+					// find all direct and indirect internal classes
+					// copy their dependencies, and generate sub classes by grouping them using the second level of classes
 					CollectExpandedDepGroup(parentIndexKey, expandedClassDecls, dependencies, depGroup);
 					FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(i))
 					{
@@ -169,22 +173,27 @@ WfCppConfig::Collect
 						CollectExpandedSubClass(subDeclIndexKey, expandedClassDecls, subClass);
 					}
 
+					// sort them
 					PartialOrderingProcessor pop;
 					pop.InitWithSubClass(items, depGroup, subClass);
 					pop.Sort();
 
-					classDecls.Remove(parent.Obj());
-					for (vint j = 0; j < pop.components.Count(); j++)
+					// using the partial ordering result to sort the corresponding value list in classDecls
 					{
-						auto& component = pop.components[j];
-						CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
-						
-						auto& node = pop.nodes[component.firstNode[0]];
-						auto subDeclIndexKey = subClass[items[node.firstSubClassItem[0]]];
-						auto subDecl = tdDecls[allTds.Values()[subDeclIndexKey]].Cast<WfClassDeclaration>();
-						classDecls.Add(parent, subDecl);
+						auto& values = const_cast<List<Ptr<WfClassDeclaration>>&>(classDecls.GetByIndex(i));
+						for (vint j = 0; j < pop.components.Count(); j++)
+						{
+							auto& component = pop.components[j];
+							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+							auto& node = pop.nodes[component.firstNode[0]];
+							auto subDeclIndexKey = subClass[items[node.firstSubClassItem[0]]];
+							auto subDecl = tdDecls[allTds.Values()[subDeclIndexKey]].Cast<WfClassDeclaration>();
+							values[j] = subDecl;
+						}
 					}
 
+					// reuse dependency information of top level classes to dispatch classes to files
 					if (parentIndexKey == -1 && pop.nodes.Count() == pop.components.Count())
 					{
 					}
