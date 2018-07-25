@@ -221,6 +221,21 @@ WfCppConfig::Collect
 					}
 
 					// generate sub class using @cpp:File
+					Dictionary<vint, WString> subClass;
+					for (vint i = 0; i < customFilesClasses.Count(); i++)
+					{
+						WString key = customFilesClasses.Keys()[i];
+						if (key != L"")
+						{
+							FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(i))
+							{
+								auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+								ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+								subClass.Add(indexKey, key);
+							}
+						}
+					}
+
 					// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
 					// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
 				}
