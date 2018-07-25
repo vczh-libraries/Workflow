@@ -184,6 +184,10 @@ WfCppConfig::Collect
 						auto subDecl = tdDecls[allTds.Values()[subDeclIndexKey]].Cast<WfClassDeclaration>();
 						classDecls.Add(parent, subDecl);
 					}
+
+					if (parentIndexKey == -1 && pop.nodes.Count() == pop.components.Count())
+					{
+					}
 				}
 			}
 

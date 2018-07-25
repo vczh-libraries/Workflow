@@ -86,19 +86,15 @@ namespace vl
 				WString																		assemblyNamespace;
 				WString																		assemblyName;
 
-				collections::Dictionary<ITypeDescriptor*, Ptr<WfDeclaration>>				tdDecls;
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
-				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
-				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
+				collections::Dictionary<ITypeDescriptor*, Ptr<WfDeclaration>>				tdDecls;			// type descriptor to declaration
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;			// class (nullable) to direct internal enums
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;		// class (nullable) to direct internal structs
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;			// class (nullable) to direct internal classes
+				collections::List<Ptr<WfVariableDeclaration>>								varDecls;			// global variables
+				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;			// global functions
 
-				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForCustomFiles;
-				collections::Group<vint, Ptr<WfClassDeclaration>>							topLevelClassDeclsForHeaderFiles;
-				collections::Dictionary<Ptr<WfClassDeclaration>, vint>						topLevelClassDeslcForHeaderFilesReversed;
-
-				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
-				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
+				collections::Group<WString, Ptr<WfClassDeclaration>>						customFilesClasses;	// @cpp:File to top level classes, empty key means the default cpp
+				collections::Group<vint, Ptr<WfClassDeclaration>>							headerFilesClasses;	// non-@cpp:File header file to top level classes, 0 means the default header
 
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;

@@ -160,7 +160,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				WriteDependedInclude(config, config.topLevelClassDeclsForHeaderFiles[fileIndex], writer);
+				WriteDependedInclude(config, config.headerFilesClasses[fileIndex], writer);
 				writer.WriteLine(L"");
 				config.WriteNonCustomSubHeader(writer, fileIndex);
 				writer.WriteLine(L"");
@@ -218,16 +218,19 @@ GenerateCppFiles
 				writer.WriteLine(L"");
 
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				FOREACH(WString, fileName, config.topLevelClassDeclsForCustomFiles.Keys())
+				FOREACH(WString, fileName, config.customFilesClasses.Keys())
 				{
 					if (fileName != L"")
 					{
 						writer.WriteLine(L"#include \"" + fileName + L".h\"");
 					}
 				}
-				FOREACH(vint, fileIndex, config.topLevelClassDeclsForHeaderFiles.Keys())
+				FOREACH(vint, fileIndex, config.headerFilesClasses.Keys())
 				{
-					writer.WriteLine(L"#include \"" + input->defaultFileName + itow(fileIndex) + L".h\"");
+					if (fileIndex != 0)
+					{
+						writer.WriteLine(L"#include \"" + input->defaultFileName + itow(fileIndex) + L".h\"");
+					}
 				}
 
 				writer.WriteLine(L"");
@@ -242,7 +245,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				WriteDependedInclude(config, config.topLevelClassDeclsForCustomFiles[fileName], writer);
+				WriteDependedInclude(config, config.customFilesClasses[fileName], writer);
 				writer.WriteLine(L"");
 				config.WriteSubHeader(writer, fileName);
 				writer.WriteLine(L"");

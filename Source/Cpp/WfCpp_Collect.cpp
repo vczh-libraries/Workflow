@@ -91,49 +91,19 @@ CollectModule
 					}
 				}
 
-				void AddDeclFile(WfDeclaration* node)
-				{
-					if (surroundingClassDecl)
-					{
-						auto fileName = config->declFiles[surroundingClassDecl];
-						config->declFiles.Add(node, fileName);
-					}
-					else
-					{
-						config->declFiles.Add(node, L"");
-					}
-				}
-
 				void Visit(WfClassDeclaration* node)override
 				{
 					config->classDecls.Add(surroundingClassDecl, node);
 					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 
-					if (surroundingClassDecl)
-					{
-						AddDeclFile(node);
-					}
-					else
+					if (!surroundingClassDecl)
 					{
 						WString file;
 						if (auto att = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"File"))
 						{
 							file = UnboxValue<WString>(config->attributeEvaluator->GetAttributeValue(att));
 						}
-						config->topLevelClassDeclsForCustomFiles.Add(file, node);
-						config->declFiles.Add(node, file);
-					}
-
-					auto td = config->manager->declarationTypes[node].Obj();
-					vint count = td->GetBaseTypeDescriptorCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto baseTd = td->GetBaseTypeDescriptor(i);
-						auto scopeName = config->manager->typeNames[baseTd];
-						if (scopeName->declarations.Count() > 0)
-						{
-							config->declDependencies.Add(node, scopeName->declarations[0]);
-						}
+						config->customFilesClasses.Add(file, node);
 					}
 
 					auto oldSurroundingClassDecl = surroundingClassDecl;
@@ -146,26 +116,12 @@ CollectModule
 				{
 					config->enumDecls.Add(surroundingClassDecl, node);
 					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
-					AddDeclFile(node);
 				}
 
 				void Traverse(WfStructDeclaration* node)override
 				{
 					config->structDecls.Add(surroundingClassDecl, node);
 					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
-					AddDeclFile(node);
-
-					auto td = config->manager->declarationTypes[node].Obj();
-					vint count = td->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto propTd = td->GetProperty(i)->GetReturn()->GetTypeDescriptor();
-						auto scopeName = config->manager->typeNames[propTd];
-						if (scopeName->declarations.Count() > 0)
-						{
-							config->declDependencies.Add(node, scopeName->declarations[0]);
-						}
-					}
 				}
 
 				void Visit(WfFunctionExpression* node)override

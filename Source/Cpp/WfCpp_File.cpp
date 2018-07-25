@@ -132,16 +132,13 @@ namespace vl
 					writer.WriteLine(L"");
 					if (multiFile)
 					{
-						vint index = topLevelClassDeclsForCustomFiles.Keys().IndexOf(L"");
+						vint index = headerFilesClasses.Keys().IndexOf(0);
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.GetByIndex(index))
+							FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
 							{
-								if (!topLevelClassDeslcForHeaderFilesReversed.Keys().Contains(decl.Obj()))
-								{
-									WriteHeader_Class(writer, decl, nss);
-									writer.WriteLine(L"");
-								}
+								WriteHeader_Class(writer, decl, nss);
+								writer.WriteLine(L"");
 							}
 						}
 					}
@@ -170,10 +167,10 @@ namespace vl
 
 				if (classDecls.Keys().Contains(nullptr))
 				{
-					vint index = topLevelClassDeclsForHeaderFiles.Keys().IndexOf(fileIndex);
+					vint index = headerFilesClasses.Keys().IndexOf(fileIndex);
 					if (index != -1)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.GetByIndex(index))
+						FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
 						{
 							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
@@ -202,10 +199,10 @@ namespace vl
 
 					if (multiFile)
 					{
-						vint index = topLevelClassDeclsForCustomFiles.Keys().IndexOf(L"");
+						vint index = customFilesClasses.Keys().IndexOf(L"");
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.GetByIndex(index))
+							FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(index))
 							{
 								WriteCpp_Class(writer, decl, nss);
 							}
@@ -234,7 +231,7 @@ namespace vl
 				writer.WriteLine(L"");
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.Get(fileName))
+				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
 				{
 					WriteHeader_Class(writer, decl, nss);
 					writer.WriteLine(L"");
@@ -251,7 +248,7 @@ namespace vl
 				WriteCpp_PushMacros(writer);
 				writer.WriteLine(L"");
 
-				if (From(topLevelClassDeclsForCustomFiles.Get(fileName))
+				if (From(customFilesClasses.Get(fileName))
 					.Any([=](Ptr<WfClassDeclaration> decl)
 					{
 						return IsClassHasUserImplMethods(decl, true);
@@ -264,7 +261,7 @@ namespace vl
 
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.Get(fileName))
+				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
 				{
 					WriteCpp_Class(writer, decl, nss);
 				}
