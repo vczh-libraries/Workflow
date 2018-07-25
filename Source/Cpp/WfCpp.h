@@ -65,6 +65,8 @@ namespace vl
 
 				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, collections::Dictionary<WString, ITypeDescriptor*>& allTds, collections::Group<vint, vint>& expandedClassDecls);
 				void												GenerateClassDependencies(collections::Dictionary<WString, ITypeDescriptor*>& allTds, collections::Group<vint, vint>& dependencies);
+				void												CollectExpandedDepGroup(vint parentIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Group<vint, vint>& dependencies, collections::Group<vint, vint>& depGroup);
+				void												CollectExpandedSubClass(vint subDeclIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Dictionary<vint, vint>& subClass);
 				void												AssignClassDeclsToFiles();
 
 				template<typename T>

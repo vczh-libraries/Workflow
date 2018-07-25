@@ -86,6 +86,47 @@ WfCppConfig::GenerateClassDependencies
 			}
 
 /***********************************************************************
+WfCppConfig::CollectExpandedDepGroup
+***********************************************************************/
+
+			void WfCppConfig::CollectExpandedDepGroup(vint parentIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Group<vint, vint>& dependencies, collections::Group<vint, vint>& depGroup)
+			{
+				const auto& items = expandedClassDecls[parentIndexKey];
+				FOREACH(vint, subDecl, items)
+				{
+					vint index = dependencies.Keys().IndexOf(subDecl);
+					if (index != -1)
+					{
+						FOREACH(vint, dep, dependencies.GetByIndex(index))
+						{
+							if (items.Contains(dep))
+							{
+								depGroup.Add(subDecl, dep);
+							}
+						}
+					}
+				}
+			}
+
+/***********************************************************************
+WfCppConfig::CollectExpandedSubClass
+***********************************************************************/
+
+			void WfCppConfig::CollectExpandedSubClass(vint subDeclIndexKey, collections::Group<vint, vint>& expandedClassDecls, collections::Dictionary<vint, vint>& subClass)
+			{
+				subClass.Add(subDeclIndexKey, subDeclIndexKey);
+
+				vint index = expandedClassDecls.Keys().IndexOf(subDeclIndexKey);
+				if (index != -1)
+				{
+					FOREACH(vint, expandDecl, expandedClassDecls.GetByIndex(index))
+					{
+						subClass.Add(expandDecl, subDeclIndexKey);
+					}
+				}
+			}
+
+/***********************************************************************
 WfCppConfig::Collect
 ***********************************************************************/
 
@@ -120,35 +161,12 @@ WfCppConfig::Collect
 					Group<vint, vint> depGroup;
 					Dictionary<vint, vint> subClass;
 
-					FOREACH(vint, subDecl, items)
-					{
-						vint index = dependencies.Keys().IndexOf(subDecl);
-						if (index != -1)
-						{
-							FOREACH(vint, dep, dependencies.GetByIndex(index))
-							{
-								if (items.Contains(dep))
-								{
-									depGroup.Add(subDecl, dep);
-								}
-							}
-						}
-					}
-
+					CollectExpandedDepGroup(parentIndexKey, expandedClassDecls, dependencies, depGroup);
 					FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(i))
 					{
 						auto subDeclStringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
 						ASSIGN_INDEX_KEY(auto, subDeclIndexKey, subDeclStringKey);
-						subClass.Add(subDeclIndexKey, subDeclIndexKey);
-
-						vint index = expandedClassDecls.Keys().IndexOf(subDeclIndexKey);
-						if (index != -1)
-						{
-							FOREACH(vint, expandDecl, expandedClassDecls.GetByIndex(index))
-							{
-								subClass.Add(expandDecl, subDeclIndexKey);
-							}
-						}
+						CollectExpandedSubClass(subDeclIndexKey, expandedClassDecls, subClass);
 					}
 
 					PartialOrderingProcessor pop;
