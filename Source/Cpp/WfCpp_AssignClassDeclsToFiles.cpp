@@ -141,8 +141,6 @@ WfCppConfig::GenerateClassLevelDep
 					ASSIGN_INDEX_KEY(, classLevelDep.parentIndexKey, parentStringKey);
 				}
 				const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
-				Group<vint, vint> depGroup;
-				Dictionary<vint, vint> subClass;
 
 				// for any specified class (or top level if nullptr)
 				// find all direct and indirect internal classes
@@ -195,16 +193,22 @@ WfCppConfig::Collect
 				}
 			}
 
-			void WfCppConfig::GenerateFileClassMaps(GlobalDep& globapDep)
+			void WfCppConfig::GenerateFileClassMaps(GlobalDep& globalDep)
 			{
-				vint index = customFilesClasses.Keys().IndexOf(L"");
-				if (index != -1)
+				// get dependency information for top level classes
+				ClassLevelDep classLevelDep;
+				GenerateClassLevelDep(nullptr, globalDep, classLevelDep);
+				const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
+
+				// calculate dependency for top level classes
+				Group<vint, vint> depGroup;
 				{
-					FOREACH(Ptr<WfClassDeclaration>, classDecl, customFilesClasses.GetByIndex(index))
-					{
-						headerFilesClasses.Add(0, classDecl);
-					}
+
 				}
+
+				// generate sub class using @cpp:File
+				// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
+				// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
 			}
 
 			void WfCppConfig::SortFileClassMaps(GlobalDep& globalDep)
