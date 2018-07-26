@@ -404,6 +404,64 @@ WfCppConfig::Collect
 
 						currentHeaderIndex++;
 					}
+
+					// calculate header includes
+					// globalDep.allTds.keys()'s index to header index
+					Dictionary<vint, vint> headers;
+
+					auto addToHeaders = [&](const List<Ptr<WfClassDeclaration>>& decls, vint headerIndex)
+					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						{
+							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+							headers.Add(indexKey, headerIndex);
+						}
+					};
+
+					auto calculateIncludes = [&](const List<Ptr<WfClassDeclaration>>& decls, SortedList<vint>& includes)
+					{
+
+					};
+
+					for (vint i = 0; i < customFilesClasses.Count(); i++)
+					{
+						if (customFilesClasses.Keys()[i] != L"")
+						{
+							addToHeaders(customFilesClasses.GetByIndex(i), i);
+						}
+					}
+
+					for (vint i = 0; i < headerFilesClasses.Count(); i++)
+					{
+						addToHeaders(headerFilesClasses.GetByIndex(i), -headerFilesClasses.Keys()[i]);
+					}
+
+					for (vint i = 0; i < customFilesClasses.Count(); i++)
+					{
+						if (customFilesClasses.Keys()[i] != L"")
+						{
+							SortedList<vint> includes;
+							calculateIncludes(customFilesClasses.GetByIndex(i), includes);
+							for (vint i = 0; i < includes.Count(); i++)
+							{
+								headerIncludes.Add(i, includes[i]);
+							}
+						}
+					}
+
+					for (vint i = 0; i < headerFilesClasses.Count(); i++)
+					{
+						if (headerFilesClasses.Keys()[i] != 0)
+						{
+							SortedList<vint> includes;
+							calculateIncludes(headerFilesClasses.GetByIndex(i), includes);
+							for (vint i = 0; i < includes.Count(); i++)
+							{
+								headerIncludes.Add(-headerFilesClasses.Keys()[i], includes[i]);
+							}
+						}
+					}
 				}
 			}
 
