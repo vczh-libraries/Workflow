@@ -190,6 +190,30 @@ WfCppConfig::Collect
 							values[j] = subDecl;
 						}
 					}
+
+					if (!parent)
+					{
+						for (vint i = 0; i < classLevelDep.subClass.Count(); i++)
+						{
+							vint index = classLevelDep.subClass.Values()[i];
+							if (!globalDep.topLevelClasses.Contains(index))
+							{
+								globalDep.topLevelClasses.Add(index);
+							}
+						}
+
+						for (vint i = 0; i < pop.nodes.Count(); i++)
+						{
+							auto& keyNode = pop.nodes[i];
+							vint keyIndex = classLevelDep.subClass[keyNode.firstSubClassItem[0]];
+							for (vint j = 0; j < keyNode.ins->Count(); j++)
+							{
+								auto& valueNode = pop.nodes[keyNode.ins->Get(j)];
+								vint valueIndex = classLevelDep.subClass[valueNode.firstSubClassItem[0]];
+								globalDep.topLevelClassDep.Add(keyIndex, valueIndex);
+							}
+						}
+					}
 				}
 			}
 

@@ -68,6 +68,8 @@ namespace vl
 					collections::Dictionary<WString, ITypeDescriptor*>		allTds;				// Type name to type descriptor of class decls. Class index is the position in this map.
 					collections::Group<vint, vint>							expandedClassDecls;	// Class index (-1 means top level) to all direct and indirect internal classes
 					collections::Group<vint, vint>							dependencies;		// Class dependencies
+					collections::SortedList<vint>							topLevelClasses;	// Class index
+					collections::Group<vint, vint>							topLevelClassDep;	// Class dependencies for top level classes
 				};
 
 				struct ClassLevelDep
