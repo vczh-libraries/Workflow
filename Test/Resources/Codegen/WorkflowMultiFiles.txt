@@ -1,0 +1,40 @@
+module test;
+using test::*;
+using system::*;
+
+namespace multifiles
+{
+	class C1 {}
+	class C2 {}
+	class C3: C1, C2 {}
+	class C4 {}
+
+	@cpp:File("WorkflowMultiFiles_Animal")
+	class Animal {}
+
+	class Dog: Animal {}
+	class Cat: Animal {}
+
+	class FlyingObject {}
+	@cpp:File("WorkflowMultiFiles_Bird")
+	class Bird: Animal, FlyingObject {}
+
+	class BadDog: Dog {}
+	class GoodDog: Dog{}
+
+	class HuntingObject
+	{
+		class Inside: Bird {}
+	}
+
+	class Tiger: Cat, HuntingObject {}
+	class Leopard: Cat, HuntingObject {}
+	
+	@cpp:File("WorkflowMultiFiles_Lion")
+	class Lion: Cat, HuntingObject {}
+}
+
+func main():string
+{
+	return "MultiFiles";
+}
