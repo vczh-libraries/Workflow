@@ -394,7 +394,7 @@ WfCppConfig::Collect
 						}
 					};
 
-					while (nonCustomFirstOrder.Count() > 0 && customFirstOrder.Count() > 0)
+					while (nonCustomFirstOrderPicked < nonCustomFirstOrder.Count() || customFirstOrderPicked < customFirstOrder.Count())
 					{
 						pickItems(nonCustomFirstOrder, nonCustomFirstOrderPicked, false);
 						pickItems(customFirstOrder, customFirstOrderPicked, false);
