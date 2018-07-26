@@ -203,6 +203,7 @@ WfCppConfig::Collect
 					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
 
 					// calculate dependency for top level classes
+					// globalDep.allTds.Keys()'s index to index
 					Group<vint, vint> depGroup;
 					{
 						PartialOrderingProcessor pop;
@@ -221,6 +222,7 @@ WfCppConfig::Collect
 					}
 
 					// generate sub class using @cpp:File
+					// globalDep.allTds.Keys()'s index to file name
 					Dictionary<vint, WString> subClass;
 					for (vint i = 0; i < customFilesClasses.Count(); i++)
 					{
@@ -237,7 +239,60 @@ WfCppConfig::Collect
 					}
 
 					// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
+					PartialOrderingProcessor popSubClass;
+					popSubClass.InitWithSubClass(items, depGroup, subClass);
+					popSubClass.Sort();
+					
+					for (vint i = 0; i < popSubClass.components.Count(); i++)
+					{
+						auto& component = popSubClass.components[i];
+						CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+					}
+
 					// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
+					// popSubClass.nodes's index
+					List<vint> customFirstItems;
+					List<vint> nonCustomFirstItems;
+					{
+						List<vint> customItems;
+						List<vint> nonCustomItems;
+
+						for (vint i = 0; i < popSubClass.nodes.Count(); i++)
+						{
+							auto& node = popSubClass.nodes[i];
+							if (subClass.Keys().Contains(node.firstSubClassItem[0]))
+							{
+								customItems.Add(i);
+							}
+							else
+							{
+								nonCustomItems.Add(i);
+							}
+						}
+
+						auto SortNodes = [&](List<vint>& items)
+						{
+							if (items.Count() > 0)
+							{
+								Sort<vint>(&items[0], items.Count(), [&](vint a, vint b)
+								{
+									auto& nodeA = popSubClass.nodes[a];
+									auto& nodeB = popSubClass.nodes[b];
+									vint indexA = From(nodeA.firstSubClassItem, nodeA.firstSubClassItem + nodeA.subClassItemCount).Min();
+									vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount).Min();
+									return indexA - indexB;
+								});
+							}
+						};
+						SortNodes(customItems);
+						SortNodes(nonCustomItems);
+
+						CopyFrom(customFirstItems, customItems);
+						CopyFrom(nonCustomFirstItems, nonCustomItems);
+
+						CopyFrom(nonCustomFirstItems, customItems, true);
+						CopyFrom(customFirstItems, nonCustomItems, true);
+					}
 				}
 			}
 
