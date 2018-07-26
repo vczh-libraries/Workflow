@@ -93,6 +93,19 @@ WfCppConfig::GenerateGlobalDep
 
 				ExpandClassDeclGroup(nullptr, globalDep);
 				GenerateClassDependencies(globalDep);
+
+				// keep a stable order
+				for (vint i = 0; i < globalDep.expandedClassDecls.Count(); i++)
+				{
+					auto& values = const_cast<List<vint>&>(globalDep.expandedClassDecls.GetByIndex(i));
+					Sort<vint>(&values[0], values.Count(), [](vint a, vint b) {return a - b; });
+				}
+
+				for (vint i = 0; i < globalDep.dependencies.Count(); i++)
+				{
+					auto& values = const_cast<List<vint>&>(globalDep.dependencies.GetByIndex(i));
+					Sort<vint>(&values[0], values.Count(), [](vint a, vint b) {return a - b; });
+				}
 			}
 
 /***********************************************************************
@@ -152,6 +165,13 @@ WfCppConfig::GenerateClassLevelDep
 					ASSIGN_INDEX_KEY(auto, subDeclIndexKey, subDeclStringKey);
 					CollectExpandedSubClass(subDeclIndexKey, globalDep, classLevelDep);
 				}
+
+				// keep a stable order
+				for (vint i = 0; i < classLevelDep.depGroup.Count(); i++)
+				{
+					auto& values = const_cast<List<vint>&>(classLevelDep.depGroup.GetByIndex(i));
+					Sort<vint>(&values[0], values.Count(), [](vint a, vint b) {return a - b; });
+				}
 			}
 
 /***********************************************************************
@@ -169,6 +189,11 @@ WfCppConfig::Collect
 					auto parent = classDecls.Keys()[i];
 					ClassLevelDep classLevelDep;
 					GenerateClassLevelDep(parent, globalDep, classLevelDep);
+
+					if (globalDep.allTds.Keys()[0] == L"calculator::BinaryExpression")
+					{
+						int a = 0;
+					}
 
 					// sort them
 					PartialOrderingProcessor pop;
