@@ -354,15 +354,55 @@ WfCppConfig::Collect
 
 					// dispatch non-@cpp:File classes to non-@cpp:File headers
 					vint currentHeaderIndex = 0;
+					vint nonCustomFirstOrderPicked = 0;
+					vint customFirstOrderPicked = 0;
 					Array<bool> visited(customFirstOrder.Count());
 					for (vint i = 0; i < visited.Count(); i++)
 					{
 						visited[i] = false;
 					}
 
+					auto pickItems = [&](Array<vint>& order, vint& picked, bool customItem)
+					{
+						while (picked < order.Count())
+						{
+							vint item = order[picked];
+							if (visited[item])
+							{
+								picked++;
+							}
+							else if (isCustomItems[item] == customItem)
+							{
+								visited[item]++;
+								picked++;
+
+								if(!customItem)
+								{
+									auto& node = popSubClass.nodes[item];
+									for (vint i = 0; i < node.subClassItemCount; i++)
+									{
+										auto indexKey = node.firstSubClassItem[i];
+										auto td = globalDep.allTds.Values()[indexKey];
+										headerFilesClasses.Add(currentHeaderIndex, tdDecls[td].Cast<WfClassDeclaration>());
+									}
+								}
+							}
+							else
+							{
+								break;
+							}
+						}
+					};
+
 					while (nonCustomFirstOrder.Count() > 0 && customFirstOrder.Count() > 0)
 					{
+						pickItems(nonCustomFirstOrder, nonCustomFirstOrderPicked, false);
+						pickItems(customFirstOrder, customFirstOrderPicked, false);
 
+						pickItems(nonCustomFirstOrder, nonCustomFirstOrderPicked, true);
+						pickItems(customFirstOrder, customFirstOrderPicked, true);
+
+						currentHeaderIndex++;
 					}
 				}
 			}
