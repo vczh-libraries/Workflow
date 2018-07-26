@@ -59,6 +59,7 @@
 #include "EnumCtor2Reflection.h"
 #include "WorkflowHintsReflection.h"
 #include "WorkflowAttributesReflection.h"
+#include "WorkflowMultiFilesReflection.h"
 #include "CoRawCoroutine.h"
 #include "CoRawCoroutine2.h"
 #include "CoRawCoroutine3.h"
@@ -112,6 +113,7 @@ void LoadTestCaseTypes()
 	 LoadEnumCtor2Types();
 	 LoadWorkflowHintsTypes();
 	 LoadWorkflowAttributesTypes();
+	 LoadWorkflowMultiFilesTypes();
 	 LoadCoAsyncTypes();
 	 LoadCoAsync2Types();
 	 LoadCoSmcSwitchD1Types();
@@ -675,6 +677,15 @@ TEST_CASE(WorkflowAttributes)
 {
 	WString expected = L"((1 + 2) * (3 + 4)) = 21";
 	WString actual = ::vl_workflow_global::WorkflowAttributes::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(WorkflowMultiFiles)
+{
+	WString expected = L"MultiFiles";
+	WString actual = ::vl_workflow_global::WorkflowMultiFiles::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
