@@ -203,8 +203,8 @@ WfCppConfig::Collect
 					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
 
 					PartialOrderingProcessor popSubClass;
-					List<vint> customFirstItems;
-					List<vint> nonCustomFirstItems;
+					Array<vint> customFirstItems;
+					Array<vint> nonCustomFirstItems;
 					Group<vint, vint> subClassDepGroup;
 					{
 						// calculate dependency for top level classes
@@ -315,6 +315,20 @@ WfCppConfig::Collect
 					PartialOrderingProcessor popNonCustomFirst;
 					popNonCustomFirst.InitWithGroup(nonCustomFirstItems, subClassDepGroup);
 					popNonCustomFirst.Sort();
+
+					Array<vint> customFirstOrder(popCustomFirst.components.Count());
+					for (vint i = 0; i < popCustomFirst.components.Count(); i++)
+					{
+						auto& component = popCustomFirst.components[i];
+						customFirstOrder[i] = customFirstItems[component.firstNode[0]];
+					}
+
+					Array<vint> nonCustomFirstOrder(popNonCustomFirst.components.Count());
+					for (vint i = 0; i < popNonCustomFirst.components.Count(); i++)
+					{
+						auto& component = popNonCustomFirst.components[i];
+						nonCustomFirstOrder[i] = nonCustomFirstItems[component.firstNode[0]];
+					}
 				}
 			}
 
