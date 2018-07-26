@@ -233,6 +233,9 @@ WfCppConfig::Collect
 					// And than use the new items, depGroup to create popSubClass
 					// We still construct popSubClass using allTds.Keys()'s index
 					// we need to carefully building the data structure using allTds.Keys()'s index from the previous pop
+
+					// BUG:
+					// firstSubClassItem contains index of items, not index of nodes. need to fix all misuse
 					PartialOrderingProcessor popSubClass;
 					Array<vint> customFirstItems;		// popSubClass.nodes's index
 					Array<vint> nonCustomFirstItems;	// popSubClass.nodes's index
