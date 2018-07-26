@@ -202,6 +202,13 @@ WfCppConfig::Collect
 					GenerateClassLevelDep(nullptr, globalDep, classLevelDep);
 					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
 
+					// BUG:
+					// Items contains every classes including internal classes, which is not the collection to sort
+					// Pop of (items, classLevelDep.depGroup, classLevelDep.subClass) needs to be initialized first, but not sort it
+					// And than copy the sub class dependency out of this pop, now we get dependencies of top level classes
+					// And than use the new items, depGroup to create popSubClass
+					// We still construct popSubClass using allTds.Keys()'s index
+					// we need to carefully building the data structure using allTds.Keys()'s index from the previous pop
 					PartialOrderingProcessor popSubClass;
 					Array<vint> customFirstItems;		// popSubClass.nodes's index
 					Array<vint> nonCustomFirstItems;	// popSubClass.nodes's index
