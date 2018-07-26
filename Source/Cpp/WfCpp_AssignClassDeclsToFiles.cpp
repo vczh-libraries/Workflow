@@ -202,97 +202,119 @@ WfCppConfig::Collect
 					GenerateClassLevelDep(nullptr, globalDep, classLevelDep);
 					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
 
-					// calculate dependency for top level classes
-					// globalDep.allTds.Keys()'s index to index
-					Group<vint, vint> depGroup;
-					{
-						PartialOrderingProcessor pop;
-						pop.InitWithSubClass(items, classLevelDep.depGroup, classLevelDep.subClass);
-						for (vint i = 0; i < pop.nodes.Count(); i++)
-						{
-							auto& keyNode = pop.nodes[i];
-							vint keyIndex = classLevelDep.subClass[keyNode.firstSubClassItem[0]];
-							for (vint j = 0; j < keyNode.ins->Count(); j++)
-							{
-								auto& valueNode = pop.nodes[keyNode.ins->Get(j)];
-								vint valueIndex = classLevelDep.subClass[valueNode.firstSubClassItem[0]];
-								depGroup.Add(keyIndex, valueIndex);
-							}
-						}
-					}
-
-					// generate sub class using @cpp:File
-					// globalDep.allTds.Keys()'s index to file name
-					Dictionary<vint, WString> subClass;
-					for (vint i = 0; i < customFilesClasses.Count(); i++)
-					{
-						WString key = customFilesClasses.Keys()[i];
-						if (key != L"")
-						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(i))
-							{
-								auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
-								ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
-								subClass.Add(indexKey, key);
-							}
-						}
-					}
-
-					// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
 					PartialOrderingProcessor popSubClass;
-					popSubClass.InitWithSubClass(items, depGroup, subClass);
-					popSubClass.Sort();
-					
-					for (vint i = 0; i < popSubClass.components.Count(); i++)
-					{
-						auto& component = popSubClass.components[i];
-						CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
-					}
-
-					// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
-					// popSubClass.nodes's index
 					List<vint> customFirstItems;
 					List<vint> nonCustomFirstItems;
+					Group<vint, vint> subClassDepGroup;
 					{
-						List<vint> customItems;
-						List<vint> nonCustomItems;
-
-						for (vint i = 0; i < popSubClass.nodes.Count(); i++)
+						// calculate dependency for top level classes
+						// globalDep.allTds.Keys()'s index to index
+						Group<vint, vint> depGroup;
 						{
-							auto& node = popSubClass.nodes[i];
-							if (subClass.Keys().Contains(node.firstSubClassItem[0]))
+							PartialOrderingProcessor pop;
+							pop.InitWithSubClass(items, classLevelDep.depGroup, classLevelDep.subClass);
+							for (vint i = 0; i < pop.nodes.Count(); i++)
 							{
-								customItems.Add(i);
-							}
-							else
-							{
-								nonCustomItems.Add(i);
+								auto& keyNode = pop.nodes[i];
+								vint keyIndex = classLevelDep.subClass[keyNode.firstSubClassItem[0]];
+								for (vint j = 0; j < keyNode.ins->Count(); j++)
+								{
+									auto& valueNode = pop.nodes[keyNode.ins->Get(j)];
+									vint valueIndex = classLevelDep.subClass[valueNode.firstSubClassItem[0]];
+									depGroup.Add(keyIndex, valueIndex);
+								}
 							}
 						}
 
-						auto SortNodes = [&](List<vint>& items)
+						// generate sub class using @cpp:File
+						// globalDep.allTds.Keys()'s index to file name
+						Dictionary<vint, WString> subClass;
+						for (vint i = 0; i < customFilesClasses.Count(); i++)
 						{
-							if (items.Count() > 0)
+							WString key = customFilesClasses.Keys()[i];
+							if (key != L"")
 							{
-								Sort<vint>(&items[0], items.Count(), [&](vint a, vint b)
+								FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(i))
 								{
-									auto& nodeA = popSubClass.nodes[a];
-									auto& nodeB = popSubClass.nodes[b];
-									vint indexA = From(nodeA.firstSubClassItem, nodeA.firstSubClassItem + nodeA.subClassItemCount).Min();
-									vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount).Min();
-									return indexA - indexB;
-								});
+									auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+									ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+									subClass.Add(indexKey, key);
+								}
 							}
-						};
-						SortNodes(customItems);
-						SortNodes(nonCustomItems);
+						}
 
-						CopyFrom(customFirstItems, customItems);
-						CopyFrom(nonCustomFirstItems, nonCustomItems);
+						// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
+						popSubClass.InitWithSubClass(items, depGroup, subClass);
+						popSubClass.Sort();
 
-						CopyFrom(nonCustomFirstItems, customItems, true);
-						CopyFrom(customFirstItems, nonCustomItems, true);
+						for (vint i = 0; i < popSubClass.components.Count(); i++)
+						{
+							auto& component = popSubClass.components[i];
+							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+						}
+
+						// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
+						// popSubClass.nodes's index
+						{
+							List<vint> customItems;
+							List<vint> nonCustomItems;
+
+							for (vint i = 0; i < popSubClass.nodes.Count(); i++)
+							{
+								auto& node = popSubClass.nodes[i];
+								if (subClass.Keys().Contains(node.firstSubClassItem[0]))
+								{
+									customItems.Add(i);
+								}
+								else
+								{
+									nonCustomItems.Add(i);
+								}
+							}
+
+							auto SortNodes = [&](List<vint>& items)
+							{
+								if (items.Count() > 0)
+								{
+									Sort<vint>(&items[0], items.Count(), [&](vint a, vint b)
+									{
+										auto& nodeA = popSubClass.nodes[a];
+										auto& nodeB = popSubClass.nodes[b];
+										vint indexA = From(nodeA.firstSubClassItem, nodeA.firstSubClassItem + nodeA.subClassItemCount).Min();
+										vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount).Min();
+										return indexA - indexB;
+									});
+								}
+							};
+							SortNodes(customItems);
+							SortNodes(nonCustomItems);
+
+							CopyFrom(customFirstItems, customItems);
+							CopyFrom(nonCustomFirstItems, nonCustomItems);
+
+							CopyFrom(nonCustomFirstItems, customItems, true);
+							CopyFrom(customFirstItems, nonCustomItems, true);
+						}
 					}
+
+					// copy popSubClass's sub class dependencies to subClassDepGroup
+					for (vint i = 0; i < popSubClass.nodes.Count(); i++)
+					{
+						auto& node = popSubClass.nodes[i];
+						for (vint j = 0; j < node.ins->Count(); j++)
+						{
+							subClassDepGroup.Add(i, node.ins->Get(j));
+						}
+					}
+
+					// sort using inputs of two orders
+					PartialOrderingProcessor popCustomFirst;
+					popCustomFirst.InitWithGroup(customFirstItems, subClassDepGroup);
+					popCustomFirst.Sort();
+
+					PartialOrderingProcessor popNonCustomFirst;
+					popNonCustomFirst.InitWithGroup(nonCustomFirstItems, subClassDepGroup);
+					popNonCustomFirst.Sort();
 				}
 			}
 
