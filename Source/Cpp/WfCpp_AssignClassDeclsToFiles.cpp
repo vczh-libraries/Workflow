@@ -203,9 +203,10 @@ WfCppConfig::Collect
 					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
 
 					PartialOrderingProcessor popSubClass;
-					Array<vint> customFirstItems;
-					Array<vint> nonCustomFirstItems;
-					Group<vint, vint> subClassDepGroup;
+					Array<vint> customFirstItems;		// popSubClass.nodes's index
+					Array<vint> nonCustomFirstItems;	// popSubClass.nodes's index
+					Array<bool> isCustomItems;			// popSubClass.nodes's index to boolean (true means custom item)
+					Group<vint, vint> subClassDepGroup;	// popSubClass.nodes's index to index
 					{
 						// calculate dependency for top level classes
 						// globalDep.allTds.Keys()'s index to index
@@ -259,6 +260,7 @@ WfCppConfig::Collect
 							List<vint> customItems;
 							List<vint> nonCustomItems;
 
+							// categorize popSubClass.nodes's index to customItems and nonCustomItems
 							for (vint i = 0; i < popSubClass.nodes.Count(); i++)
 							{
 								auto& node = popSubClass.nodes[i];
@@ -272,6 +274,7 @@ WfCppConfig::Collect
 								}
 							}
 
+							// sort items using allTds.Keys()'s index
 							auto SortNodes = [&](List<vint>& items)
 							{
 								if (items.Count() > 0)
@@ -288,6 +291,17 @@ WfCppConfig::Collect
 							};
 							SortNodes(customItems);
 							SortNodes(nonCustomItems);
+
+							// prepare customFirstItems, nonCustomFirstItems and isCustomItems
+							isCustomItems.Resize(customItems.Count() + nonCustomItems.Count());
+							for (vint i = 0; i < customItems.Count(); i++)
+							{
+								isCustomItems[customItems[i]] = true;
+							}
+							for (vint i = 0; i < nonCustomItems.Count(); i++)
+							{
+								isCustomItems[nonCustomItems[i]] = false;
+							}
 
 							CopyFrom(customFirstItems, customItems);
 							CopyFrom(nonCustomFirstItems, nonCustomItems);
@@ -316,6 +330,12 @@ WfCppConfig::Collect
 					popNonCustomFirst.InitWithGroup(nonCustomFirstItems, subClassDepGroup);
 					popNonCustomFirst.Sort();
 
+					CHECK_ERROR(popCustomFirst.components.Count() == customFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+					CHECK_ERROR(popNonCustomFirst.components.Count() == nonCustomFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+					CHECK_ERROR(popCustomFirst.components.Count() == popNonCustomFirst.components.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+					// translate popCustomFirst's sorting result
+					// popSubClass.nodes's index
 					Array<vint> customFirstOrder(popCustomFirst.components.Count());
 					for (vint i = 0; i < popCustomFirst.components.Count(); i++)
 					{
@@ -323,11 +343,26 @@ WfCppConfig::Collect
 						customFirstOrder[i] = customFirstItems[component.firstNode[0]];
 					}
 
+					// translate popNonCustomFirst's sorting result
+					// popSubClass.nodes's index
 					Array<vint> nonCustomFirstOrder(popNonCustomFirst.components.Count());
 					for (vint i = 0; i < popNonCustomFirst.components.Count(); i++)
 					{
 						auto& component = popNonCustomFirst.components[i];
 						nonCustomFirstOrder[i] = nonCustomFirstItems[component.firstNode[0]];
+					}
+
+					// dispatch non-@cpp:File classes to non-@cpp:File headers
+					vint currentHeaderIndex = 0;
+					Array<bool> visited(customFirstOrder.Count());
+					for (vint i = 0; i < visited.Count(); i++)
+					{
+						visited[i] = false;
+					}
+
+					while (nonCustomFirstOrder.Count() > 0 && customFirstOrder.Count() > 0)
+					{
+
 					}
 				}
 			}
