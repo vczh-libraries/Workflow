@@ -421,7 +421,25 @@ WfCppConfig::Collect
 
 					auto calculateIncludes = [&](const List<Ptr<WfClassDeclaration>>& decls, SortedList<vint>& includes)
 					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						{
+							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
 
+							vint index = classLevelDep.depGroup.Keys().IndexOf(indexKey);
+							if (index != -1)
+							{
+								const auto& values = classLevelDep.depGroup.GetByIndex(index);
+								for (vint i = 0; i < values.Count(); i++)
+								{
+									vint header = headers[values[i]];
+									if (header != 0 && !includes.Contains(header))
+									{
+										includes.Add(header);
+									}
+								}
+							}
+						}
 					};
 
 					for (vint i = 0; i < customFilesClasses.Count(); i++)
