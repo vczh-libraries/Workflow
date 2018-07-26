@@ -86,15 +86,6 @@ namespace multifiles
 		FlyingObject();
 	};
 
-	class Tiger : public ::multifiles::Cat, public ::multifiles::HuntingObject, public ::vl::reflection::Description<Tiger>
-	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Tiger>;
-#endif
-	public:
-		Tiger();
-	};
-
 }
 /***********************************************************************
 Global Variables and Functions

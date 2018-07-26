@@ -26,18 +26,6 @@ https://github.com/vczh-libraries
 
 namespace multifiles
 {
-	namespace HuntingObject
-	{
-		class Inside : public ::multifiles::Bird, public ::vl::reflection::Description<Inside>
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Inside>;
-#endif
-		public:
-			Inside();
-		};
-
-	}
 	class HuntingObject : public ::vl::Object, public ::vl::reflection::Description<HuntingObject>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -64,6 +52,15 @@ namespace multifiles
 #endif
 	public:
 		Leopard();
+	};
+
+	class Tiger : public ::multifiles::Cat, public ::multifiles::HuntingObject, public ::vl::reflection::Description<Tiger>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Tiger>;
+#endif
+	public:
+		Tiger();
 	};
 
 }

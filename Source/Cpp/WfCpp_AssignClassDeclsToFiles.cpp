@@ -205,12 +205,15 @@ WfCppConfig::Collect
 						for (vint i = 0; i < pop.nodes.Count(); i++)
 						{
 							auto& keyNode = pop.nodes[i];
-							vint keyIndex = classLevelDep.subClass[keyNode.firstSubClassItem[0]];
+							vint keyIndex = classLevelDep.subClass[items[keyNode.firstSubClassItem[0]]];
 							for (vint j = 0; j < keyNode.ins->Count(); j++)
 							{
 								auto& valueNode = pop.nodes[keyNode.ins->Get(j)];
-								vint valueIndex = classLevelDep.subClass[valueNode.firstSubClassItem[0]];
-								globalDep.topLevelClassDep.Add(keyIndex, valueIndex);
+								vint valueIndex = classLevelDep.subClass[items[valueNode.firstSubClassItem[0]]];
+								if (!globalDep.topLevelClassDep.Contains(keyIndex, valueIndex))
+								{
+									globalDep.topLevelClassDep.Add(keyIndex, valueIndex);
+								}
 							}
 						}
 					}
@@ -221,46 +224,12 @@ WfCppConfig::Collect
 			{
 				if (classDecls.Keys().Contains(nullptr))
 				{
-					// get dependency information for top level classes
-					ClassLevelDep classLevelDep;
-					GenerateClassLevelDep(nullptr, globalDep, classLevelDep);
-					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
-
-					// BUG:
-					// Items contains every classes including internal classes, which is not the collection to sort
-					// Pop of (items, classLevelDep.depGroup, classLevelDep.subClass) needs to be initialized first, but not sort it
-					// And than copy the sub class dependency out of this pop, now we get dependencies of top level classes
-					// And than use the new items, depGroup to create popSubClass
-					// We still construct popSubClass using allTds.Keys()'s index
-					// we need to carefully building the data structure using allTds.Keys()'s index from the previous pop
-
-					// BUG:
-					// firstSubClassItem contains index of items, not index of nodes. need to fix all misuse
 					PartialOrderingProcessor popSubClass;
 					Array<vint> customFirstItems;		// popSubClass.nodes's index
 					Array<vint> nonCustomFirstItems;	// popSubClass.nodes's index
 					Array<bool> isCustomItems;			// popSubClass.nodes's index to boolean (true means custom item)
 					Group<vint, vint> subClassDepGroup;	// popSubClass.nodes's index to index
 					{
-						// calculate dependency for top level classes
-						// globalDep.allTds.Keys()'s index to index
-						Group<vint, vint> depGroup;
-						{
-							PartialOrderingProcessor pop;
-							pop.InitWithSubClass(items, classLevelDep.depGroup, classLevelDep.subClass);
-							for (vint i = 0; i < pop.nodes.Count(); i++)
-							{
-								auto& keyNode = pop.nodes[i];
-								vint keyIndex = classLevelDep.subClass[keyNode.firstSubClassItem[0]];
-								for (vint j = 0; j < keyNode.ins->Count(); j++)
-								{
-									auto& valueNode = pop.nodes[keyNode.ins->Get(j)];
-									vint valueIndex = classLevelDep.subClass[valueNode.firstSubClassItem[0]];
-									depGroup.Add(keyIndex, valueIndex);
-								}
-							}
-						}
-
 						// generate sub class using @cpp:File
 						// globalDep.allTds.Keys()'s index to file name
 						Dictionary<vint, WString> subClass;
@@ -279,7 +248,7 @@ WfCppConfig::Collect
 						}
 
 						// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
-						popSubClass.InitWithSubClass(items, depGroup, subClass);
+						popSubClass.InitWithSubClass(globalDep.topLevelClasses, globalDep.topLevelClassDep, subClass);
 						popSubClass.Sort();
 
 						for (vint i = 0; i < popSubClass.components.Count(); i++)
@@ -298,7 +267,7 @@ WfCppConfig::Collect
 							for (vint i = 0; i < popSubClass.nodes.Count(); i++)
 							{
 								auto& node = popSubClass.nodes[i];
-								if (subClass.Keys().Contains(node.firstSubClassItem[0]))
+								if (subClass.Keys().Contains(globalDep.topLevelClasses[node.firstSubClassItem[0]]))
 								{
 									customItems.Add(i);
 								}
@@ -317,8 +286,12 @@ WfCppConfig::Collect
 									{
 										auto& nodeA = popSubClass.nodes[a];
 										auto& nodeB = popSubClass.nodes[b];
-										vint indexA = From(nodeA.firstSubClassItem, nodeA.firstSubClassItem + nodeA.subClassItemCount).Min();
-										vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount).Min();
+										vint indexA = From(nodeA.firstSubClassItem, nodeA.firstSubClassItem + nodeA.subClassItemCount)
+											.Select([&](vint index) {return globalDep.topLevelClasses[index]; })
+											.Min();
+										vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount)
+											.Select([&](vint index) {return globalDep.topLevelClasses[index]; })
+											.Min();
 										return indexA - indexB;
 									});
 								}
@@ -415,7 +388,7 @@ WfCppConfig::Collect
 									auto& node = popSubClass.nodes[item];
 									for (vint i = 0; i < node.subClassItemCount; i++)
 									{
-										auto indexKey = node.firstSubClassItem[i];
+										auto indexKey = globalDep.topLevelClasses[node.firstSubClassItem[i]];
 										auto td = globalDep.allTds.Values()[indexKey];
 										headerFilesClasses.Add(currentHeaderIndex, tdDecls[td].Cast<WfClassDeclaration>());
 									}
@@ -460,10 +433,10 @@ WfCppConfig::Collect
 							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
 							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
 
-							vint index = classLevelDep.depGroup.Keys().IndexOf(indexKey);
+							vint index = globalDep.topLevelClassDep.Keys().IndexOf(indexKey);
 							if (index != -1)
 							{
-								const auto& values = classLevelDep.depGroup.GetByIndex(index);
+								const auto& values = globalDep.topLevelClassDep.GetByIndex(index);
 								for (vint i = 0; i < values.Count(); i++)
 								{
 									vint header = headers[values[i]];
