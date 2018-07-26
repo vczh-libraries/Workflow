@@ -156,11 +156,11 @@ CheckBaseClass
 								}
 							}
 						}
+					}
 
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
-						{
-							memberDecl->Accept(this);
-						}
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					{
+						memberDecl->Accept(this);
 					}
 				}
 
