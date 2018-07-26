@@ -125,8 +125,8 @@ GenerateCppFiles
 			{
 				GenerateCppComment(writer, input->comment);
 				writer.WriteLine(L"");
-				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
-				writer.WriteLine(L"#define " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
+				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName) + L"_DP" + itow(fileIndex));
+				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName) + L"_DP" + itow(fileIndex));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
 				WriteDependedInclude(input, config, -fileIndex, writer);
