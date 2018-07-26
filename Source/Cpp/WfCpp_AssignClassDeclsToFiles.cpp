@@ -468,9 +468,9 @@ WfCppConfig::Collect
 						{
 							SortedList<vint> includes;
 							calculateIncludes(customFilesClasses.GetByIndex(i), includes);
-							for (vint i = 0; i < includes.Count(); i++)
+							for (vint j = 0; j < includes.Count(); j++)
 							{
-								headerIncludes.Add(i, includes[i]);
+								headerIncludes.Add(i, includes[j]);
 							}
 						}
 					}
@@ -481,9 +481,9 @@ WfCppConfig::Collect
 						{
 							SortedList<vint> includes;
 							calculateIncludes(headerFilesClasses.GetByIndex(i), includes);
-							for (vint i = 0; i < includes.Count(); i++)
+							for (vint j = 0; j < includes.Count(); j++)
 							{
-								headerIncludes.Add(-headerFilesClasses.Keys()[i], includes[i]);
+								headerIncludes.Add(-headerFilesClasses.Keys()[i], includes[j]);
 							}
 						}
 					}

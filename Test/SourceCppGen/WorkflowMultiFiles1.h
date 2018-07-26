@@ -11,8 +11,8 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_WORKFLOWMULTIFILES_DP1
 
 #include "WorkflowMultiFiles.h"
-#include "WorkflowMultiFiles_Animal.h"
 #include "WorkflowMultiFiles1.h"
+#include "WorkflowMultiFiles_Animal.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)
