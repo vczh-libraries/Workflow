@@ -29,21 +29,6 @@ WfCppInput
 GenerateCppFiles
 ***********************************************************************/
 
-			template<typename TCallback>
-			WString GenerateToStream(const TCallback& callback)
-			{
-				MemoryStream stream;
-				{
-					StreamWriter writer(stream);
-					callback(writer);
-				}
-				stream.SeekFromBegin(0);
-				{
-					StreamReader reader(stream);
-					return reader.ReadToEnd();
-				}
-			}
-
 			void GenerateCppComment(StreamWriter& writer, const WString& comment)
 			{
 				writer.WriteLine(L"/***********************************************************************");
