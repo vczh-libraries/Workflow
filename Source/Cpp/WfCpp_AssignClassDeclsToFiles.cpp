@@ -380,7 +380,7 @@ WfCppConfig::Collect
 							}
 							else if (isCustomItems[item] == customItem)
 							{
-								visited[item]++;
+								visited[item] = true;
 								picked++;
 
 								if(!customItem)
