@@ -8,6 +8,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace regex;
+			using namespace stream;
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace analyzer;
@@ -1810,16 +1811,10 @@ WfGenerateExpressionVisitor
 							{
 								auto toCode = [&]()
 								{
-									stream::MemoryStream stream;
+									return GenerateToStream([&](StreamWriter& writer)
 									{
-										stream::StreamWriter writer(stream);
 										WfPrint(node, WString::Empty, writer);
-									}
-									stream.SeekFromBegin(0);
-									{
-										stream::StreamReader reader(stream);
-										return reader.ReadToEnd();
-									}
+									});
 								};
 
 								if (config->IsSpecialGenericType(result.type.Obj()))

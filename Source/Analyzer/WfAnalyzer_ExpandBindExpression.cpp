@@ -10,6 +10,7 @@ namespace vl
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace parsing;
+			using namespace stream;
 
 /***********************************************************************
 SearchUntilNonVirtualStatement
@@ -1258,16 +1259,10 @@ ExpandBindExpression
 
 					auto printExpression = [](WfExpression* observe)
 					{
-						stream::MemoryStream stream;
+						return GenerateToStream([&](StreamWriter& writer)
 						{
-							stream::StreamWriter writer(stream);
 							WfPrint(observe, WString::Empty, writer);
-						}
-						stream.SeekFromBegin(0);
-						{
-							stream::StreamReader reader(stream);
-							return reader.ReadToEnd();
-						}
+						});
 					};
 
 					FOREACH_INDEXER(WfExpression*, parent, index, context.cachedExprs)

@@ -27,11 +27,10 @@ Unescaping Functions
 
 		void UnescapeStringInternal(vl::parsing::ParsingToken& value, bool formatString)
 		{
-			MemoryStream memoryStream;
+			value.value = GenerateToStream([&](StreamWriter& writer)
 			{
 				WString input = formatString ? value.value.Sub(2, value.value.Length() - 3) : value.value.Sub(1, value.value.Length() - 2);
 				const wchar_t* reading = input.Buffer();
-				StreamWriter writer(memoryStream);
 
 				while (wchar_t c = *reading++)
 				{
@@ -57,13 +56,7 @@ Unescaping Functions
 						writer.WriteChar(c);
 					}
 				}
-			}
-
-			memoryStream.SeekFromBegin(0);
-			{
-				StreamReader reader(memoryStream);
-				value.value = reader.ReadToEnd();
-			}
+			});
 		}
 
 		void UnescapeFormatString(vl::parsing::ParsingToken& value, const vl::collections::List<vl::regex::RegexToken>& tokens)

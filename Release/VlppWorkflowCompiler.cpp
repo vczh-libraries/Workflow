@@ -164,11 +164,11 @@ CheckBaseClass
 								}
 							}
 						}
+					}
 
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
-						{
-							memberDecl->Accept(this);
-						}
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					{
+						memberDecl->Accept(this);
 					}
 				}
 
@@ -4488,6 +4488,7 @@ namespace vl
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace parsing;
+			using namespace stream;
 
 /***********************************************************************
 SearchUntilNonVirtualStatement
@@ -5736,16 +5737,10 @@ ExpandBindExpression
 
 					auto printExpression = [](WfExpression* observe)
 					{
-						stream::MemoryStream stream;
+						return GenerateToStream([&](StreamWriter& writer)
 						{
-							stream::StreamWriter writer(stream);
 							WfPrint(observe, WString::Empty, writer);
-						}
-						stream.SeekFromBegin(0);
-						{
-							stream::StreamReader reader(stream);
-							return reader.ReadToEnd();
-						}
+						});
 					};
 
 					FOREACH_INDEXER(WfExpression*, parent, index, context.cachedExprs)
@@ -16622,144 +16617,6 @@ namespace vl
 WfCppConfig
 ***********************************************************************/
 
-			void WfCppConfig::Collect()
-			{
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
-				{
-					CollectModule(this, module);
-				}
-				PostCollect(this);
-
-				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
-				{
-					auto closureInfo = CollectClosureInfo(lambda);
-					closureInfo->lambdaClassName = lambdaExprs[lambda.Obj()];
-					closureInfos.Add(lambda, closureInfo);
-				}
-
-				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
-				{
-					auto closureInfo = CollectClosureInfo(classExpr);
-					closureInfo->lambdaClassName = classExprs[classExpr.Obj()];
-					closureInfos.Add(classExpr, closureInfo);
-				}
-			}
-
-			template<typename T, typename U>
-			void WfCppConfig::SortInternal(collections::List<Ptr<T>>& decls, U dependOn)
-			{
-				List<ITypeDescriptor*> tds;
-				Dictionary<ITypeDescriptor*, Ptr<T>> tdMap;
-				FOREACH_INDEXER(Ptr<T>, decl, index, decls)
-				{
-					auto td = manager->declarationTypes[decl.Obj()].Obj();
-					tds.Add(td);
-					tdMap.Add(td, decl);
-				}
-				// key depends on values
-				Group<ITypeDescriptor*, ITypeDescriptor*> deps;
-				FOREACH(ITypeDescriptor*, td, tds)
-				{
-					deps.Add(td, td);
-				}
-
-				for (vint i = 0; i < tds.Count(); i++)
-				{
-					for (vint j = 0; j < tds.Count(); j++)
-					{
-						if (dependOn(tds[i], tds[j]))
-						{
-							if (!deps.Contains(tds[i], tds[j]))
-							{
-								deps.Add(tds[i], tds[j]);
-							}
-						}
-					}
-				}
-
-				tds.Clear();
-				while (deps.Count() != 0)
-				{
-					List<ITypeDescriptor*> selected;
-
-					for (vint i = 0; i < deps.Count(); i++)
-					{
-						if (deps.GetByIndex(i).Count() == 1)
-						{
-							selected.Add(deps.Keys()[i]);
-						}
-					}
-
-					for (vint i = deps.Count() - 1; i >= 0; i--)
-					{
-						if (deps.GetByIndex(i).Count() == 1)
-						{
-							deps.Remove(deps.Keys()[i]);
-						}
-					}
-
-					for (vint i = deps.Count() - 1; i >= 0; i--)
-					{
-						for (vint j = 0; j < selected.Count(); j++)
-						{
-							deps.Remove(deps.Keys()[i], selected[j]);
-						}
-					}
-
-					CopyFrom(selected, From(selected).OrderBy([](ITypeDescriptor* a, ITypeDescriptor* b) {return WString::Compare(a->GetTypeName(), b->GetTypeName()); }));
-					CopyFrom(tds, selected, true);
-					CHECK_ERROR(selected.Count() > 0, L"WfCppConfig::SortInternal<T, U>(collections::List<Ptr<T>>&, U)#Internal error: Unexpected circle dependency found, which should be cought by the Workflow semantic analyzer.");
-				}
-
-				CopyFrom(decls, From(tds).Select([&](ITypeDescriptor* td) {return tdMap[td]; }));
-			}
-
-			void WfCppConfig::Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls)
-			{
-				SortInternal(structDecls, [](ITypeDescriptor* type, ITypeDescriptor* field)
-				{
-					vint count = type->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto propType = type->GetProperty(i)->GetReturn();
-						if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
-						{
-							auto td = propType->GetTypeDescriptor();
-							if (td == field)
-							{
-								return true;
-							}
-							else if (INVLOC.StartsWith(td->GetTypeName(), field->GetTypeName() + L"::", Locale::None))
-							{
-								return true;
-							}
-						}
-					}
-					return false;
-				});
-			}
-
-			void WfCppConfig::Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls)
-			{
-				SortInternal(classDecls, [](ITypeDescriptor* derived, ITypeDescriptor* base)
-				{
-					vint count = derived->GetBaseTypeDescriptorCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto td = derived->GetBaseTypeDescriptor(i);
-						if (td == base)
-						{
-							return true;
-						}
-						else if (INVLOC.StartsWith(td->GetTypeName(), base->GetTypeName() + L"::", Locale::None))
-						{
-							return true;
-						}
-					}
-					return false;
-				});
-			}
-
 			WfCppConfig::WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace)
 				:manager(_manager)
 				, regexSplitName(L"::")
@@ -16770,21 +16627,22 @@ WfCppConfig
 			{
 				attributeEvaluator = MakePtr<WfAttributeEvaluator>(manager);
 				Collect();
+				for (vint i = 0; i < enumDecls.Count(); i++)
+				{
+					const auto& values = enumDecls.GetByIndex(i);
+					SortDeclsByName(const_cast<List<Ptr<WfEnumDeclaration>>&>(values));
+				}
 				for (vint i = 0; i < structDecls.Count(); i++)
 				{
 					const auto& values = structDecls.GetByIndex(i);
-					Sort(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
-				}
-				for (vint i = 0; i < topLevelClassDeclsForCustomFiles.Count(); i++)
-				{
-					const auto& values = topLevelClassDeclsForCustomFiles.GetByIndex(i);
-					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
+					SortDeclsByName(const_cast<List<Ptr<WfStructDeclaration>>&>(values));
 				}
 				for (vint i = 0; i < classDecls.Count(); i++)
 				{
 					const auto& values = classDecls.GetByIndex(i);
-					Sort(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
+					SortDeclsByName(const_cast<List<Ptr<WfClassDeclaration>>&>(values));
 				}
+				AssignClassDeclsToFiles();
 			}
 
 			WfCppConfig::~WfCppConfig()
@@ -16802,6 +16660,11 @@ WfCppConfig
 			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType)
 			{
 				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString(L"\t", false), expectedType);
+			}
+
+			WString WfCppConfig::CppNameToHeaderEnumStructName(const WString& fullName, const WString& type)
+			{
+				return L"__vwsn_" + type + L"s::" + ConvertFullName(fullName, L"_");
 			}
 
 			WString WfCppConfig::ConvertNameInternal(const WString& name, const WString& specialNameCategory, bool alwaysUseCategory)
@@ -16882,8 +16745,8 @@ WfCppConfig
 				{
 					return ConvertFunctionType(typeInfo->GetElementType());
 				}
-				CHECK_ERROR(typeInfo->GetDecorator() == ITypeInfo::Generic, L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Wrong function type.");
-				CHECK_ERROR(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>(), L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Wrong function type.");
+				CHECK_ERROR(typeInfo->GetDecorator() == ITypeInfo::Generic, L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Internal error: Wrong function type.");
+				CHECK_ERROR(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>(), L"WfCppConfig::ConvertFunctionType(ITypeInfo*)#Internal error: Wrong function type.");
 
 				WString type = ConvertType(typeInfo->GetGenericArgument(0)) + L"(";
 				vint count = typeInfo->GetGenericArgumentCount();
@@ -16923,27 +16786,27 @@ WfCppConfig
 				return ConvertFullName(CppGetFullName(typeInfo), delimiter);
 			}
 
-			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo)
+			WString WfCppConfig::ConvertType(ITypeInfo* typeInfo, bool useHeaderEnumStructName)
 			{
 				switch (typeInfo->GetDecorator())
 				{
 				case ITypeInfo::RawPtr:
-					return ConvertType(typeInfo->GetElementType()) + L"*";
+					return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName) + L"*";
 				case ITypeInfo::SharedPtr:
 					if (typeInfo->GetElementType()->GetDecorator() == ITypeInfo::Generic)
 					{
 						if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
 						{
-							return ConvertType(typeInfo->GetElementType());
+							return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName);
 						}
 						else if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
 						{
-							return ConvertType(typeInfo->GetElementType());
+							return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName);
 						}
 					}
-					return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType()) + L">";
+					return L"::vl::Ptr<" + ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName) + L">";
 				case ITypeInfo::Nullable:
-					return L"::vl::Nullable<" + ConvertType(typeInfo->GetElementType()) + L">";
+					return L"::vl::Nullable<" + ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName) + L">";
 				case ITypeInfo::Generic:
 					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
 					{
@@ -16951,15 +16814,38 @@ WfCppConfig
 					}
 					else if(typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
 					{
-						return L"::vl::collections::LazyList<" + ConvertType(typeInfo->GetGenericArgument(0)) + L">";
+						return L"::vl::collections::LazyList<" + ConvertType(typeInfo->GetGenericArgument(0), useHeaderEnumStructName) + L">";
 					}
 					else
 					{
-						return ConvertType(typeInfo->GetElementType());
+						return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName);
 					}
 				default:;
 				}
-				return ConvertType(typeInfo->GetTypeDescriptor());
+				if (useHeaderEnumStructName)
+				{
+					switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
+					{
+					case TypeDescriptorFlags::EnumType:
+						if (tdDecls.Keys().Contains(typeInfo->GetTypeDescriptor()))
+						{
+							return L"::" + CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"enum");
+						}
+						break;
+					case TypeDescriptorFlags::Struct:
+						if (tdDecls.Keys().Contains(typeInfo->GetTypeDescriptor()))
+						{
+							return L"::" + CppNameToHeaderEnumStructName(CppGetFullName(typeInfo->GetTypeDescriptor()), L"struct");
+						}
+						break;
+					default:;
+					}
+					return ConvertType(typeInfo->GetTypeDescriptor());
+				}
+				else
+				{
+					return ConvertType(typeInfo->GetTypeDescriptor());
+				}
 			}
 
 			WString WfCppConfig::ConvertArgumentType(ITypeInfo* typeInfo)
@@ -17189,6 +17075,547 @@ WfCppConfig
 	}
 }
 
+
+/***********************************************************************
+.\CPP\WFCPP_ASSIGNCLASSDECLSTOFILES.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace cppcodegen
+		{
+			using namespace collections;
+
+#define ASSIGN_INDEX_KEY(INDEX_DECL, INDEX_KEY, STRING_KEY) \
+			INDEX_DECL INDEX_KEY = globalDep.allTds.Keys().IndexOf(STRING_KEY); \
+			CHECK_ERROR(INDEX_KEY != -1, L"WfCppConfig::AssignClassDeclsToFiles()#Internal error.") \
+
+/***********************************************************************
+WfCppConfig::GenerateGlobalDep
+***********************************************************************/
+
+			void WfCppConfig::ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep)
+			{
+				vint index = classDecls.Keys().IndexOf(parent.Obj());
+				if (index == -1) return;
+
+				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(index))
+				{
+					ExpandClassDeclGroup(subDecl, globalDep);
+				}
+
+				auto directChildren =
+					From(classDecls.GetByIndex(index))
+						.Select([&](Ptr<WfClassDeclaration> decl)
+						{
+							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+							return indexKey;
+						});
+
+				auto indirectChildren =
+					From(classDecls.GetByIndex(index))
+						.Select([&](Ptr<WfClassDeclaration> subDecl)
+						{
+							auto stringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
+							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+							return globalDep.expandedClassDecls.Keys().IndexOf(indexKey);
+						})
+						.Where([](vint index)
+						{
+							return index != -1;
+						})
+						.SelectMany([&](vint index)
+						{
+							return From(globalDep.expandedClassDecls.GetByIndex(index));
+						});
+
+				vint indexKey = -1;
+				if (parent)
+				{
+					auto stringKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
+					ASSIGN_INDEX_KEY(, indexKey, stringKey);
+				}
+				FOREACH(vint, subDecl, directChildren.Concat(indirectChildren))
+				{
+					globalDep.expandedClassDecls.Add(indexKey, subDecl);
+				}
+			}
+
+			void WfCppConfig::GenerateClassDependencies(GlobalDep& globalDep)
+			{
+				FOREACH_INDEXER(ITypeDescriptor*, td, tdIndex, globalDep.allTds.Values())
+				{
+					vint count = td->GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto baseTd = td->GetBaseTypeDescriptor(i);
+						vint baseTdIndex = globalDep.allTds.Keys().IndexOf(baseTd->GetTypeName());
+						if (baseTdIndex != -1)
+						{
+							globalDep.dependencies.Add(tdIndex, baseTdIndex);
+						}
+					}
+				}
+			}
+
+			void WfCppConfig::GenerateGlobalDep(GlobalDep& globalDep)
+			{
+				FOREACH_INDEXER(ITypeDescriptor*, td, index, tdDecls.Keys())
+				{
+					if (tdDecls.Values()[index].Cast<WfClassDeclaration>())
+					{
+						globalDep.allTds.Add(td->GetTypeName(), td);
+					}
+				}
+
+				ExpandClassDeclGroup(nullptr, globalDep);
+				GenerateClassDependencies(globalDep);
+			}
+
+/***********************************************************************
+WfCppConfig::GenerateClassLevelDep
+***********************************************************************/
+
+			void WfCppConfig::CollectExpandedDepGroup(vint parentIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
+			{
+				const auto& items = globalDep.expandedClassDecls[parentIndexKey];
+				FOREACH(vint, subDecl, items)
+				{
+					vint index = globalDep.dependencies.Keys().IndexOf(subDecl);
+					if (index != -1)
+					{
+						FOREACH(vint, dep, globalDep.dependencies.GetByIndex(index))
+						{
+							if (items.Contains(dep))
+							{
+								classLevelDep.depGroup.Add(subDecl, dep);
+							}
+						}
+					}
+				}
+			}
+
+			void WfCppConfig::CollectExpandedSubClass(vint subDeclIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
+			{
+				classLevelDep.subClass.Add(subDeclIndexKey, subDeclIndexKey);
+
+				vint index = globalDep.expandedClassDecls.Keys().IndexOf(subDeclIndexKey);
+				if (index != -1)
+				{
+					FOREACH(vint, expandDecl, globalDep.expandedClassDecls.GetByIndex(index))
+					{
+						classLevelDep.subClass.Add(expandDecl, subDeclIndexKey);
+					}
+				}
+			}
+
+			void WfCppConfig::GenerateClassLevelDep(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
+			{
+				classLevelDep.parentClass = parent;
+				if (parent)
+				{
+					auto parentStringKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
+					ASSIGN_INDEX_KEY(, classLevelDep.parentIndexKey, parentStringKey);
+				}
+				const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
+
+				// for any specified class (or top level if nullptr)
+				// find all direct and indirect internal classes
+				// copy their dependencies, and generate sub classes by grouping them using the second level of classes
+				CollectExpandedDepGroup(classLevelDep.parentIndexKey, globalDep, classLevelDep);
+				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.Get(parent.Obj()))
+				{
+					auto subDeclStringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
+					ASSIGN_INDEX_KEY(auto, subDeclIndexKey, subDeclStringKey);
+					CollectExpandedSubClass(subDeclIndexKey, globalDep, classLevelDep);
+				}
+			}
+
+/***********************************************************************
+WfCppConfig::Collect
+***********************************************************************/
+
+			void WfCppConfig::SortClassDecls(GlobalDep& globalDep)
+			{
+				// sort top level classes and all internal classes inside any classes
+				for (vint i = classDecls.Count() - 1; i >= 0; i--)
+				{
+					// for any specified class (or top level if nullptr)
+					// find all direct and indirect internal classes
+					// copy their dependencies, and generate sub classes by grouping them using the second level of classes
+					auto parent = classDecls.Keys()[i];
+					ClassLevelDep classLevelDep;
+					GenerateClassLevelDep(parent, globalDep, classLevelDep);
+
+					// sort them
+					PartialOrderingProcessor pop;
+					const auto& items = globalDep.expandedClassDecls[classLevelDep.parentIndexKey];
+					pop.InitWithSubClass(items, classLevelDep.depGroup, classLevelDep.subClass);
+					pop.Sort();
+
+					// using the partial ordering result to sort the corresponding value list in classDecls
+					{
+						auto& values = const_cast<List<Ptr<WfClassDeclaration>>&>(classDecls.GetByIndex(i));
+						for (vint j = 0; j < pop.components.Count(); j++)
+						{
+							auto& component = pop.components[j];
+							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+							auto& node = pop.nodes[component.firstNode[0]];
+							auto subDeclIndexKey = classLevelDep.subClass[items[node.firstSubClassItem[0]]];
+							auto subDecl = tdDecls[globalDep.allTds.Values()[subDeclIndexKey]].Cast<WfClassDeclaration>();
+							values[j] = subDecl;
+						}
+					}
+
+					if (!parent)
+					{
+						for (vint i = 0; i < classLevelDep.subClass.Count(); i++)
+						{
+							vint index = classLevelDep.subClass.Values()[i];
+							if (!globalDep.topLevelClasses.Contains(index))
+							{
+								globalDep.topLevelClasses.Add(index);
+							}
+						}
+
+						for (vint i = 0; i < pop.nodes.Count(); i++)
+						{
+							auto& keyNode = pop.nodes[i];
+							vint keyIndex = classLevelDep.subClass[items[keyNode.firstSubClassItem[0]]];
+							for (vint j = 0; j < keyNode.ins->Count(); j++)
+							{
+								auto& valueNode = pop.nodes[keyNode.ins->Get(j)];
+								vint valueIndex = classLevelDep.subClass[items[valueNode.firstSubClassItem[0]]];
+								if (!globalDep.topLevelClassDep.Contains(keyIndex, valueIndex))
+								{
+									globalDep.topLevelClassDep.Add(keyIndex, valueIndex);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			void WfCppConfig::GenerateFileClassMaps(GlobalDep& globalDep)
+			{
+				if (classDecls.Keys().Contains(nullptr))
+				{
+					PartialOrderingProcessor popSubClass;
+					Array<vint> customFirstItems;		// popSubClass.nodes's index
+					Array<vint> nonCustomFirstItems;	// popSubClass.nodes's index
+					Array<bool> isCustomItems;			// popSubClass.nodes's index to boolean (true means custom item)
+					Group<vint, vint> subClassDepGroup;	// popSubClass.nodes's index to index
+					{
+						// generate sub class using @cpp:File
+						// globalDep.allTds.Keys()'s index to file name
+						Dictionary<vint, WString> subClass;
+						for (vint i = 0; i < customFilesClasses.Count(); i++)
+						{
+							WString key = customFilesClasses.Keys()[i];
+							if (key != L"")
+							{
+								FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(i))
+								{
+									auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+									ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+									subClass.Add(indexKey, key);
+								}
+							}
+						}
+
+						// check if all components contains either all classes of the same @cpp:File or a single non-@cpp:File class
+						popSubClass.InitWithSubClass(globalDep.topLevelClasses, globalDep.topLevelClassDep, subClass);
+						popSubClass.Sort();
+
+						for (vint i = 0; i < popSubClass.components.Count(); i++)
+						{
+							auto& component = popSubClass.components[i];
+							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+						}
+
+						// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
+						// popSubClass.nodes's index
+						{
+							List<vint> customItems;
+							List<vint> nonCustomItems;
+
+							// categorize popSubClass.nodes's index to customItems and nonCustomItems
+							for (vint i = 0; i < popSubClass.nodes.Count(); i++)
+							{
+								auto& node = popSubClass.nodes[i];
+								if (subClass.Keys().Contains(globalDep.topLevelClasses[node.firstSubClassItem[0]]))
+								{
+									customItems.Add(i);
+								}
+								else
+								{
+									nonCustomItems.Add(i);
+								}
+							}
+
+							// sort items using allTds.Keys()'s index
+							auto SortNodes = [&](List<vint>& items)
+							{
+								if (items.Count() > 0)
+								{
+									Sort<vint>(&items[0], items.Count(), [&](vint a, vint b)
+									{
+										auto& nodeA = popSubClass.nodes[a];
+										auto& nodeB = popSubClass.nodes[b];
+										vint indexA = From(nodeA.firstSubClassItem, nodeA.firstSubClassItem + nodeA.subClassItemCount)
+											.Select([&](vint index) {return globalDep.topLevelClasses[index]; })
+											.Min();
+										vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount)
+											.Select([&](vint index) {return globalDep.topLevelClasses[index]; })
+											.Min();
+										return indexA - indexB;
+									});
+								}
+							};
+							SortNodes(customItems);
+							SortNodes(nonCustomItems);
+
+							// prepare customFirstItems, nonCustomFirstItems and isCustomItems
+							isCustomItems.Resize(customItems.Count() + nonCustomItems.Count());
+							for (vint i = 0; i < customItems.Count(); i++)
+							{
+								isCustomItems[customItems[i]] = true;
+							}
+							for (vint i = 0; i < nonCustomItems.Count(); i++)
+							{
+								isCustomItems[nonCustomItems[i]] = false;
+							}
+
+							CopyFrom(customFirstItems, customItems);
+							CopyFrom(nonCustomFirstItems, nonCustomItems);
+
+							CopyFrom(nonCustomFirstItems, customItems, true);
+							CopyFrom(customFirstItems, nonCustomItems, true);
+						}
+					}
+
+					// copy popSubClass's sub class dependencies to subClassDepGroup
+					for (vint i = 0; i < popSubClass.nodes.Count(); i++)
+					{
+						auto& node = popSubClass.nodes[i];
+						for (vint j = 0; j < node.ins->Count(); j++)
+						{
+							subClassDepGroup.Add(i, node.ins->Get(j));
+						}
+					}
+
+					// sort using inputs of two orders
+					PartialOrderingProcessor popCustomFirst;
+					popCustomFirst.InitWithGroup(customFirstItems, subClassDepGroup);
+					popCustomFirst.Sort();
+
+					PartialOrderingProcessor popNonCustomFirst;
+					popNonCustomFirst.InitWithGroup(nonCustomFirstItems, subClassDepGroup);
+					popNonCustomFirst.Sort();
+
+					CHECK_ERROR(popCustomFirst.components.Count() == customFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+					CHECK_ERROR(popNonCustomFirst.components.Count() == nonCustomFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+					CHECK_ERROR(popCustomFirst.components.Count() == popNonCustomFirst.components.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+					// translate popCustomFirst's sorting result
+					// popSubClass.nodes's index
+					Array<vint> customFirstOrder(popCustomFirst.components.Count());
+					for (vint i = 0; i < popCustomFirst.components.Count(); i++)
+					{
+						auto& component = popCustomFirst.components[i];
+						customFirstOrder[i] = customFirstItems[component.firstNode[0]];
+					}
+
+					// translate popNonCustomFirst's sorting result
+					// popSubClass.nodes's index
+					Array<vint> nonCustomFirstOrder(popNonCustomFirst.components.Count());
+					for (vint i = 0; i < popNonCustomFirst.components.Count(); i++)
+					{
+						auto& component = popNonCustomFirst.components[i];
+						nonCustomFirstOrder[i] = nonCustomFirstItems[component.firstNode[0]];
+					}
+
+					// dispatch non-@cpp:File classes to non-@cpp:File headers
+					vint currentHeaderIndex = 0;
+					vint nonCustomFirstOrderPicked = 0;
+					vint customFirstOrderPicked = 0;
+					Array<bool> visited(customFirstOrder.Count());
+					for (vint i = 0; i < visited.Count(); i++)
+					{
+						visited[i] = false;
+					}
+
+					auto pickItems = [&](Array<vint>& order, vint& picked, bool customItem)
+					{
+						while (picked < order.Count())
+						{
+							vint item = order[picked];
+							if (visited[item])
+							{
+								picked++;
+							}
+							else if (isCustomItems[item] == customItem)
+							{
+								visited[item]++;
+								picked++;
+
+								if(!customItem)
+								{
+									auto& node = popSubClass.nodes[item];
+									for (vint i = 0; i < node.subClassItemCount; i++)
+									{
+										auto indexKey = globalDep.topLevelClasses[node.firstSubClassItem[i]];
+										auto td = globalDep.allTds.Values()[indexKey];
+										headerFilesClasses.Add(currentHeaderIndex, tdDecls[td].Cast<WfClassDeclaration>());
+									}
+								}
+							}
+							else
+							{
+								break;
+							}
+						}
+					};
+
+					while (nonCustomFirstOrderPicked < nonCustomFirstOrder.Count() || customFirstOrderPicked < customFirstOrder.Count())
+					{
+						pickItems(nonCustomFirstOrder, nonCustomFirstOrderPicked, false);
+						pickItems(customFirstOrder, customFirstOrderPicked, false);
+
+						pickItems(nonCustomFirstOrder, nonCustomFirstOrderPicked, true);
+						pickItems(customFirstOrder, customFirstOrderPicked, true);
+
+						currentHeaderIndex++;
+					}
+
+					// calculate header includes
+					// globalDep.allTds.keys()'s index to header index
+					Dictionary<vint, vint> headers;
+
+					auto addToHeaders = [&](const List<Ptr<WfClassDeclaration>>& decls, vint headerIndex)
+					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						{
+							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+							headers.Add(indexKey, headerIndex);
+						}
+					};
+
+					auto calculateIncludes = [&](const List<Ptr<WfClassDeclaration>>& decls, SortedList<vint>& includes)
+					{
+						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						{
+							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
+							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
+
+							vint index = globalDep.topLevelClassDep.Keys().IndexOf(indexKey);
+							if (index != -1)
+							{
+								const auto& values = globalDep.topLevelClassDep.GetByIndex(index);
+								for (vint i = 0; i < values.Count(); i++)
+								{
+									vint header = headers[values[i]];
+									if (header != 0 && !includes.Contains(header))
+									{
+										includes.Add(header);
+									}
+								}
+							}
+						}
+					};
+
+					for (vint i = 0; i < customFilesClasses.Count(); i++)
+					{
+						if (customFilesClasses.Keys()[i] != L"")
+						{
+							addToHeaders(customFilesClasses.GetByIndex(i), i);
+						}
+					}
+
+					for (vint i = 0; i < headerFilesClasses.Count(); i++)
+					{
+						addToHeaders(headerFilesClasses.GetByIndex(i), -headerFilesClasses.Keys()[i]);
+					}
+
+					for (vint i = 0; i < customFilesClasses.Count(); i++)
+					{
+						if (customFilesClasses.Keys()[i] != L"")
+						{
+							SortedList<vint> includes;
+							calculateIncludes(customFilesClasses.GetByIndex(i), includes);
+							for (vint j = 0; j < includes.Count(); j++)
+							{
+								headerIncludes.Add(i, includes[j]);
+							}
+						}
+					}
+
+					for (vint i = 0; i < headerFilesClasses.Count(); i++)
+					{
+						if (headerFilesClasses.Keys()[i] != 0)
+						{
+							SortedList<vint> includes;
+							calculateIncludes(headerFilesClasses.GetByIndex(i), includes);
+							for (vint j = 0; j < includes.Count(); j++)
+							{
+								headerIncludes.Add(-headerFilesClasses.Keys()[i], includes[j]);
+							}
+						}
+					}
+				}
+			}
+
+			void WfCppConfig::SortFileClassMaps(GlobalDep& globalDep)
+			{
+				// sort customFilesClasses and headerFilesClasses according to classDecls[nullptr]
+				if (classDecls.Keys().Contains(nullptr))
+				{
+					List<Ptr<WfClassDeclaration>> ordered;
+					CopyFrom(ordered, classDecls[nullptr]);
+
+					for (vint i = 0; i < customFilesClasses.Count(); i++)
+					{
+						auto& values = const_cast<List<Ptr<WfClassDeclaration>>&>(customFilesClasses.GetByIndex(i));
+						Sort<Ptr<WfClassDeclaration>>(&values[0], values.Count(), [&](Ptr<WfClassDeclaration> a, Ptr<WfClassDeclaration> b)
+						{
+							vint aIndex = ordered.IndexOf(a.Obj());
+							vint bIndex = ordered.IndexOf(b.Obj());
+							return aIndex - bIndex;
+						});
+					}
+
+					for (vint i = 0; i < headerFilesClasses.Count(); i++)
+					{
+						auto& values = const_cast<List<Ptr<WfClassDeclaration>>&>(headerFilesClasses.GetByIndex(i));
+						Sort<Ptr<WfClassDeclaration>>(&values[0], values.Count(), [&](Ptr<WfClassDeclaration> a, Ptr<WfClassDeclaration> b)
+						{
+							vint aIndex = ordered.IndexOf(a.Obj());
+							vint bIndex = ordered.IndexOf(b.Obj());
+							return aIndex - bIndex;
+						});
+					}
+				}
+			}
+
+			void WfCppConfig::AssignClassDeclsToFiles()
+			{
+				GlobalDep globalDep;
+				GenerateGlobalDep(globalDep);
+
+				if (manager->errors.Count() == 0) SortClassDecls(globalDep);
+				if (manager->errors.Count() == 0) GenerateFileClassMaps(globalDep);
+				if (manager->errors.Count() == 0) SortFileClassMaps(globalDep);
+			}
+
+#undef ASSIGN_INDEX_KEY
+		}
+	}
+}
 
 /***********************************************************************
 .\CPP\WFCPP_CLASS.CPP
@@ -17718,48 +18145,19 @@ CollectModule
 					}
 				}
 
-				void AddDeclFile(WfDeclaration* node)
-				{
-					if (surroundingClassDecl)
-					{
-						auto fileName = config->declFiles[surroundingClassDecl];
-						config->declFiles.Add(node, fileName);
-					}
-					else
-					{
-						config->declFiles.Add(node, L"");
-					}
-				}
-
 				void Visit(WfClassDeclaration* node)override
 				{
 					config->classDecls.Add(surroundingClassDecl, node);
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 
-					if (surroundingClassDecl)
-					{
-						AddDeclFile(node);
-					}
-					else
+					if (!surroundingClassDecl)
 					{
 						WString file;
 						if (auto att = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"File"))
 						{
 							file = UnboxValue<WString>(config->attributeEvaluator->GetAttributeValue(att));
 						}
-						config->topLevelClassDeclsForCustomFiles.Add(file, node);
-						config->declFiles.Add(node, file);
-					}
-
-					auto td = config->manager->declarationTypes[node].Obj();
-					vint count = td->GetBaseTypeDescriptorCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto baseTd = td->GetBaseTypeDescriptor(i);
-						auto scopeName = config->manager->typeNames[baseTd];
-						if (scopeName->declarations.Count() > 0)
-						{
-							config->declDependencies.Add(node, scopeName->declarations[0]);
-						}
+						config->customFilesClasses.Add(file, node);
 					}
 
 					auto oldSurroundingClassDecl = surroundingClassDecl;
@@ -17771,25 +18169,13 @@ CollectModule
 				void Traverse(WfEnumDeclaration* node)override
 				{
 					config->enumDecls.Add(surroundingClassDecl, node);
-					AddDeclFile(node);
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 				}
 
 				void Traverse(WfStructDeclaration* node)override
 				{
 					config->structDecls.Add(surroundingClassDecl, node);
-					AddDeclFile(node);
-
-					auto td = config->manager->declarationTypes[node].Obj();
-					vint count = td->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto propTd = td->GetProperty(i)->GetReturn()->GetTypeDescriptor();
-						auto scopeName = config->manager->typeNames[propTd];
-						if (scopeName->declarations.Count() > 0)
-						{
-							config->declDependencies.Add(node, scopeName->declarations[0]);
-						}
-					}
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 				}
 
 				void Visit(WfFunctionExpression* node)override
@@ -17814,176 +18200,169 @@ CollectModule
 				WfCollectModuleVisitor(config).VisitField(module.Obj());
 			}
 
-			void PostCollect(WfCppConfig* config)
+/***********************************************************************
+WfCppConfig::CollectClosureInfo
+***********************************************************************/
+
+			class WfCppCollectClassExprInfoVisitor : public empty_visitor::DeclarationVisitor
 			{
-				// prepare candidates
-				List<Ptr<WfClassDeclaration>> candidates;
+			public:
+				WfCppConfig*							config;
+				vint									variableCount = 0;
+				Ptr<analyzer::WfLexicalCapture>			capture;
+
+				WfCppCollectClassExprInfoVisitor(WfCppConfig* _config)
+					:config(_config)
 				{
-					vint index = config->classDecls.Keys().IndexOf(nullptr);
-					if (index != -1)
+				}
+
+				void Visit(WfVariableDeclaration* node)override
+				{
+					variableCount++;
+				}
+
+				void Dispatch(WfVirtualCfeDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
 					{
+						decl->Accept(this);
+					}
+				}
+
+				void Dispatch(WfVirtualCseDeclaration* node)override
+				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						decl->Accept(this);
+					}
+				}
+
+				void Execute(WfNewInterfaceExpression* node)
+				{
+					capture = config->manager->lambdaCaptures[node];
+					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					{
+						memberDecl->Accept(this);
+					}
+				}
+			};
+
+			Ptr<WfCppConfig::ClosureInfo> WfCppConfig::CollectClosureInfo(Ptr<WfExpression> closure)
+			{
+				using SymbolPair = Pair<WString, Ptr<analyzer::WfLexicalSymbol>>;
+
+				auto info = MakePtr<ClosureInfo>();
+				WfLexicalScope* scope = nullptr;
+
+				if (auto ordered = closure.Cast<WfOrderedLambdaExpression>())
+				{
+					// stable symbol order by sorting them by name
+					CopyFrom(
+						info->symbols,
+						From(manager->lambdaCaptures[ordered.Obj()]->symbols)
+							.Select([](Ptr<WfLexicalSymbol> symbol)
+							{
+								return SymbolPair(symbol->name, symbol);
+							})
+						);
+					scope = manager->nodeScopes[ordered.Obj()].Obj();
+				}
+				else if (auto funcExpr = closure.Cast<WfFunctionExpression>())
+				{
+					// stable symbol order by sorting them by name
+					CopyFrom(
+						info->symbols,
+						From(manager->lambdaCaptures[funcExpr->function.Obj()]->symbols)
+							.Select([](Ptr<WfLexicalSymbol> symbol)
+							{
+								return SymbolPair(symbol->name, symbol);
+							})
+						);
+					scope = manager->nodeScopes[funcExpr->function.Obj()].Obj();
+				}
+				else if (auto classExpr = closure.Cast<WfNewInterfaceExpression>())
+				{
+					WfCppCollectClassExprInfoVisitor visitor(this);
+					visitor.Execute(classExpr.Obj());
+
+					if (visitor.capture)
+					{
+						// stable symbol order by sorting them by name
 						CopyFrom(
-							candidates,
-							From(config->classDecls.GetByIndex(index))
-								.Where([&](Ptr<WfClassDeclaration> decl)
+							info->symbols,
+							From(visitor.capture->symbols)
+								.Skip(visitor.variableCount)
+								.Select([](Ptr<WfLexicalSymbol> symbol)
 								{
-									return config->declFiles[decl.Obj()] == L"";
+									return SymbolPair(symbol->name, symbol);
+								})
+							);
+
+						CopyFrom(
+							info->ctorArgumentSymbols,
+							From(visitor.capture->ctorArgumentSymbols)
+								.Select([](Ptr<WfLexicalSymbol> symbol)
+								{
+									return SymbolPair(symbol->name, symbol);
 								})
 							);
 					}
+
+					scope = manager->nodeScopes[classExpr.Obj()].Obj();
 				}
 
-				// prepare dependencies
-				Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> deps;
+				Ptr<WfLexicalFunctionConfig> methodConfig;
+				while (scope)
 				{
-					Dictionary<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>> rootClasses;
+					if (scope->typeOfThisExpr)
 					{
-						List<Ptr<WfClassDeclaration>> unprocessed;
+						if (methodConfig)
 						{
-							vint index = config->classDecls.Keys().IndexOf(nullptr);
-							if (index != -1)
+							info->thisTypes.Add(scope->typeOfThisExpr);
+							if (!methodConfig->parentThisAccessable)
 							{
-								CopyFrom(
-									unprocessed,
-									From(config->classDecls.GetByIndex(index))
-								);
+								break;
 							}
-						}
-
-						FOREACH(Ptr<WfClassDeclaration>, decl, unprocessed)
-						{
-							rootClasses.Add(decl, decl);
-						}
-
-						for (vint i = 0; i < unprocessed.Count(); i++)
-						{
-							auto decl = unprocessed[i];
-							vint index = config->classDecls.Keys().IndexOf(decl.Obj());
-							if (index != -1)
-							{
-								CopyFrom(
-									unprocessed,
-									From(config->classDecls.GetByIndex(index)),
-									true
-									);
-
-								FOREACH(Ptr<WfClassDeclaration>, subDecl, config->classDecls.GetByIndex(index))
-								{
-									auto value = rootClasses[decl.Obj()];
-									rootClasses.Add(subDecl, value);
-								}
-							}
+							methodConfig = nullptr;
 						}
 					}
-					FOREACH(Ptr<WfClassDeclaration>, decl, candidates)
+
+					if (scope->functionConfig)
 					{
-						List<Ptr<WfClassDeclaration>> unprocessed;
-						unprocessed.Add(decl);
-
-						for (vint i = 0; i < unprocessed.Count(); i++)
+						if (scope->functionConfig->thisAccessable)
 						{
-							auto decl = unprocessed[i];
-							vint index = config->classDecls.Keys().IndexOf(decl.Obj());
-							if (index != -1)
-							{
-								CopyFrom(
-									unprocessed,
-									From(config->classDecls.GetByIndex(index)),
-									true
-									);
-							}
-
-							index = config->declDependencies.Keys().IndexOf(decl.Obj());
-							if (index != -1)
-							{
-								FOREACH(Ptr<WfDeclaration>, dep, config->declDependencies.GetByIndex(index))
-								{
-									if (auto classDecl = dep.Cast<WfClassDeclaration>())
-									{
-										deps.Add(decl, rootClasses[classDecl.Obj()]);
-									}
-								}
-							}
+							methodConfig = scope->functionConfig;
 						}
 					}
+					scope = scope->parentScope.Obj();
 				}
 
-				auto removeDeps = [&](const auto& typesToRemove)
-				{
-					for (vint i = deps.Count() - 1; i >= 0; i--)
-					{
-						auto key = deps.Keys()[i].Obj();
-						for (vint j = 0; j < typesToRemove.Count(); j++)
-						{
-							deps.Remove(key, typesToRemove[j].Obj());
-						}
-					}
+				return info;
+			}
 
-					for (vint j = 0; j < typesToRemove.Count(); j++)
-					{
-						candidates.Remove(typesToRemove[j].Obj());
-					}
-				};
+/***********************************************************************
+WfCppConfig::Collect
+***********************************************************************/
 
-				// select types in default header
-				while (true)
+			void WfCppConfig::Collect()
+			{
+				FOREACH(Ptr<WfModule>, module, manager->GetModules())
 				{
-					List<Ptr<WfClassDeclaration>> noDeps;
-					CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
-					if (noDeps.Count() == 0) break;
-					removeDeps(noDeps);
+					CollectModule(this, module);
 				}
 
-				List<WString> customs;
-				CopyFrom(customs, config->topLevelClassDeclsForCustomFiles.Keys());
-				customs.Remove(L"");
-				vint fileIndex = 0;
-
-				while (true)
+				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
 				{
-					{
-						// select custom headers without extra unprocessed dependencies
-						List<WString> noDeps;
-						CopyFrom(
-							noDeps,
-							From(customs)
-								.Where([&](const WString& custom)
-								{
-									return From(config->topLevelClassDeclsForCustomFiles[custom])
-										.All([&](Ptr<WfClassDeclaration> decl)
-										{
-											return !candidates.Contains(decl.Obj());
-										});
-								})
-							);
-						if (noDeps.Count() == 0) break;
-						FOREACH(WString, noDep, noDeps)
-						{
-							customs.Remove(noDep);
-							removeDeps(config->topLevelClassDeclsForCustomFiles[noDep]);
-						}
-					}
-					{
-						// put non-custom types to a new non-custom header
-						List<Ptr<WfClassDeclaration>> noDeps;
-						CopyFrom(noDeps, From(candidates).Except(deps.Keys()));
-						if (noDeps.Count() == 0) break;
-						removeDeps(noDeps);
-
-						fileIndex++;
-						FOREACH(Ptr<WfClassDeclaration>, decl, noDeps)
-						{
-							config->topLevelClassDeclsForHeaderFiles.Add(fileIndex, decl);
-							config->topLevelClassDeslcForHeaderFilesReversed.Add(decl, fileIndex);
-						}
-					}
+					auto closureInfo = CollectClosureInfo(lambda);
+					closureInfo->lambdaClassName = lambdaExprs[lambda.Obj()];
+					closureInfos.Add(lambda, closureInfo);
 				}
 
-				fileIndex++;
-				FOREACH(Ptr<WfClassDeclaration>, decl, candidates)
+				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
 				{
-					config->topLevelClassDeclsForHeaderFiles.Add(fileIndex, decl);
-					config->topLevelClassDeslcForHeaderFilesReversed.Add(decl, fileIndex);
+					auto closureInfo = CollectClosureInfo(classExpr);
+					closureInfo->lambdaClassName = classExprs[classExpr.Obj()];
+					closureInfos.Add(classExpr, closureInfo);
 				}
 			}
 		}
@@ -18002,6 +18381,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace regex;
+			using namespace stream;
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace analyzer;
@@ -19804,16 +20184,10 @@ WfGenerateExpressionVisitor
 							{
 								auto toCode = [&]()
 								{
-									stream::MemoryStream stream;
+									return GenerateToStream([&](StreamWriter& writer)
 									{
-										stream::StreamWriter writer(stream);
 										WfPrint(node, WString::Empty, writer);
-									}
-									stream.SeekFromBegin(0);
-									{
-										stream::StreamReader reader(stream);
-										return reader.ReadToEnd();
-									}
+									});
 								};
 
 								if (config->IsSpecialGenericType(result.type.Obj()))
@@ -20335,20 +20709,28 @@ namespace vl
 
 				List<WString> nss;
 
-				if (enumDecls.Keys().Contains(nullptr))
+				if (enumDecls.Count() > 0)
 				{
-					FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
+					WriteHeader_MainHeaderEnums(writer, nss);
+					if (enumDecls.Keys().Contains(nullptr))
 					{
-						WriteHeader_Enum(writer, decl, nss);
+						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
+						{
+							WriteHeader_Enum(writer, decl, nss, false);
+						}
 						writer.WriteLine(L"");
 					}
 				}
 
-				if (structDecls.Keys().Contains(nullptr))
+				if (structDecls.Count() > 0)
 				{
-					FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
+					WriteHeader_MainHeaderStructs(writer, nss);
+					if (structDecls.Keys().Contains(nullptr))
 					{
-						WriteHeader_Struct(writer, decl, nss);
+						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
+						{
+							WriteHeader_Struct(writer, decl, nss, false);
+						}
 						writer.WriteLine(L"");
 					}
 				}
@@ -20362,16 +20744,13 @@ namespace vl
 					writer.WriteLine(L"");
 					if (multiFile)
 					{
-						vint index = topLevelClassDeclsForCustomFiles.Keys().IndexOf(L"");
+						vint index = headerFilesClasses.Keys().IndexOf(0);
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.GetByIndex(index))
+							FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
 							{
-								if (!topLevelClassDeslcForHeaderFilesReversed.Keys().Contains(decl.Obj()))
-								{
-									WriteHeader_TopLevelClass(writer, decl, nss);
-									writer.WriteLine(L"");
-								}
+								WriteHeader_Class(writer, decl, nss);
+								writer.WriteLine(L"");
 							}
 						}
 					}
@@ -20379,7 +20758,7 @@ namespace vl
 					{
 						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
 						{
-							WriteHeader_TopLevelClass(writer, decl, nss);
+							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
 						}
 					}
@@ -20400,12 +20779,12 @@ namespace vl
 
 				if (classDecls.Keys().Contains(nullptr))
 				{
-					vint index = topLevelClassDeclsForHeaderFiles.Keys().IndexOf(fileIndex);
+					vint index = headerFilesClasses.Keys().IndexOf(fileIndex);
 					if (index != -1)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForHeaderFiles.GetByIndex(index))
+						FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
 						{
-							WriteHeader_TopLevelClass(writer, decl, nss);
+							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
 						}
 					}
@@ -20432,10 +20811,10 @@ namespace vl
 
 					if (multiFile)
 					{
-						vint index = topLevelClassDeclsForCustomFiles.Keys().IndexOf(L"");
+						vint index = customFilesClasses.Keys().IndexOf(L"");
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.GetByIndex(index))
+							FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(index))
 							{
 								WriteCpp_Class(writer, decl, nss);
 							}
@@ -20464,9 +20843,9 @@ namespace vl
 				writer.WriteLine(L"");
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.Get(fileName))
+				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
 				{
-					WriteHeader_TopLevelClass(writer, decl, nss);
+					WriteHeader_Class(writer, decl, nss);
 					writer.WriteLine(L"");
 				}
 
@@ -20481,7 +20860,7 @@ namespace vl
 				WriteCpp_PushMacros(writer);
 				writer.WriteLine(L"");
 
-				if (From(topLevelClassDeclsForCustomFiles.Get(fileName))
+				if (From(customFilesClasses.Get(fileName))
 					.Any([=](Ptr<WfClassDeclaration> decl)
 					{
 						return IsClassHasUserImplMethods(decl, true);
@@ -20494,7 +20873,7 @@ namespace vl
 
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, topLevelClassDeclsForCustomFiles.Get(fileName))
+				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
 				{
 					WriteCpp_Class(writer, decl, nss);
 				}
@@ -20566,21 +20945,6 @@ WfCppInput
 GenerateCppFiles
 ***********************************************************************/
 
-			template<typename TCallback>
-			WString GenerateToStream(const TCallback& callback)
-			{
-				MemoryStream stream;
-				{
-					StreamWriter writer(stream);
-					callback(writer);
-				}
-				stream.SeekFromBegin(0);
-				{
-					StreamReader reader(stream);
-					return reader.ReadToEnd();
-				}
-			}
-
 			void GenerateCppComment(StreamWriter& writer, const WString& comment)
 			{
 				writer.WriteLine(L"/***********************************************************************");
@@ -20617,58 +20981,27 @@ GenerateCppFiles
 				}
 			}
 
-			void WriteDependedInclude(WfCppConfig& config, const List<Ptr<WfClassDeclaration>>& classDecls, stream::StreamWriter& writer)
+			void WriteDependedInclude(Ptr<WfCppInput> input, WfCppConfig& config, vint headerIndex, stream::StreamWriter& writer)
 			{
-				List<Ptr<WfDeclaration>> decls;
-				CopyFrom(decls, classDecls);
-				for (vint i = 0; i < decls.Count(); i++)
+				vint index = config.headerIncludes.Keys().IndexOf(headerIndex);
+				if (index != -1)
 				{
-					if (auto classDecl = decls[i].Cast<WfClassDeclaration>())
+					const auto& headers = config.headerIncludes.GetByIndex(index);
+					FOREACH(vint, header, headers)
 					{
+						if (header == 0)
 						{
-							vint index = config.enumDecls.Keys().IndexOf(classDecl.Obj());
-							if (index != -1)
-							{
-								CopyFrom(decls, config.enumDecls.GetByIndex(index), true);
-							}
+							writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
 						}
+						else if (header > 0)
 						{
-							vint index = config.structDecls.Keys().IndexOf(classDecl.Obj());
-							if (index != -1)
-							{
-								CopyFrom(decls, config.structDecls.GetByIndex(index), true);
-							}
+							writer.WriteLine(L"#include \"" + config.customFilesClasses.Keys()[header] + L".h\"");
 						}
+						else
 						{
-							vint index = config.classDecls.Keys().IndexOf(classDecl.Obj());
-							if (index != -1)
-							{
-								CopyFrom(decls, config.classDecls.GetByIndex(index), true);
-							}
+							writer.WriteLine(L"#include \"" + input->defaultFileName + itow(-header) + L".h\"");
 						}
 					}
-				}
-
-				SortedList<WString> fileNames;
-				FOREACH(Ptr<WfDeclaration>, decl, decls)
-				{
-					vint index = config.declDependencies.Keys().IndexOf(decl.Obj());
-					if (index != -1)
-					{
-						FOREACH(Ptr<WfDeclaration>, declDep, config.declDependencies.GetByIndex(index))
-						{
-							WString fileName = config.declFiles[declDep.Obj()];
-							if (fileName != L"" && !fileNames.Contains(fileName))
-							{
-								fileNames.Add(fileName);
-							}
-						}
-					}
-				}
-
-				FOREACH(WString, fileName, fileNames)
-				{
-					writer.WriteLine(L"#include \"" + fileName + L".h\"");
 				}
 			}
 
@@ -20693,11 +21026,11 @@ GenerateCppFiles
 			{
 				GenerateCppComment(writer, input->comment);
 				writer.WriteLine(L"");
-				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
-				writer.WriteLine(L"#define " + input->headerGuardPrefix + L"DEPENDED_GROUP_" + itow(fileIndex));
+				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName) + L"_DP" + itow(fileIndex));
+				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName) + L"_DP" + itow(fileIndex));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				WriteDependedInclude(config, config.topLevelClassDeclsForHeaderFiles[fileIndex], writer);
+				WriteDependedInclude(input, config, -fileIndex, writer);
 				writer.WriteLine(L"");
 				config.WriteNonCustomSubHeader(writer, fileIndex);
 				writer.WriteLine(L"");
@@ -20755,16 +21088,19 @@ GenerateCppFiles
 				writer.WriteLine(L"");
 
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				FOREACH(WString, fileName, config.topLevelClassDeclsForCustomFiles.Keys())
+				FOREACH(WString, fileName, config.customFilesClasses.Keys())
 				{
 					if (fileName != L"")
 					{
 						writer.WriteLine(L"#include \"" + fileName + L".h\"");
 					}
 				}
-				FOREACH(vint, fileIndex, config.topLevelClassDeclsForHeaderFiles.Keys())
+				FOREACH(vint, fileIndex, config.headerFilesClasses.Keys())
 				{
-					writer.WriteLine(L"#include \"" + input->defaultFileName + itow(fileIndex) + L".h\"");
+					if (fileIndex != 0)
+					{
+						writer.WriteLine(L"#include \"" + input->defaultFileName + itow(fileIndex) + L".h\"");
+					}
 				}
 
 				writer.WriteLine(L"");
@@ -20779,7 +21115,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(fileName));
 				writer.WriteLine(L"");
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				WriteDependedInclude(config, config.topLevelClassDeclsForCustomFiles[fileName], writer);
+				WriteDependedInclude(input, config, config.customFilesClasses.Keys().IndexOf(fileName), writer);
 				writer.WriteLine(L"");
 				config.WriteSubHeader(writer, fileName);
 				writer.WriteLine(L"");
@@ -20799,12 +21135,6 @@ GenerateCppFiles
 			Ptr<WfCppOutput> GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager)
 			{
 				WfCppConfig config(manager, input->assemblyName, input->assemblyNamespace);
-				for (vint i = 0; i < config.topLevelClassDeslcForHeaderFilesReversed.Count(); i++)
-				{
-					auto key = config.topLevelClassDeslcForHeaderFilesReversed.Keys()[i];
-					auto value = config.topLevelClassDeslcForHeaderFilesReversed.Values()[i];
-					config.declFiles.Set(key, input->defaultFileName + itow(value));
-				}
 
 				auto output = MakePtr<WfCppOutput>();
 				if (config.manager->declarationTypes.Count() > 0)
@@ -20822,7 +21152,7 @@ GenerateCppFiles
 					multiFile = false;
 					break;
 				default:
-					multiFile = config.topLevelClassDeclsForCustomFiles.Count() > 1;
+					multiFile = config.customFilesClasses.Count() > 1;
 				}
 
 				bool reflection = false;
@@ -20854,12 +21184,15 @@ GenerateCppFiles
 				{
 					WriteHeader(input, output, config, multiFile, reflection, writer);
 				}));
-				FOREACH(vint, fileIndex, config.topLevelClassDeclsForHeaderFiles.Keys())
+				FOREACH(vint, fileIndex, config.headerFilesClasses.Keys())
 				{
-					output->cppFiles.Add(input->defaultFileName + itow(fileIndex) + L".h", GenerateToStream([&](StreamWriter& writer)
+					if (fileIndex != 0)
 					{
-						WriteNonCustomSubHeader(input, output, config, multiFile, reflection, fileIndex, writer);
-					}));
+						output->cppFiles.Add(input->defaultFileName + itow(fileIndex) + L".h", GenerateToStream([&](StreamWriter& writer)
+						{
+							WriteNonCustomSubHeader(input, output, config, multiFile, reflection, fileIndex, writer);
+						}));
+					}
 				}
 
 				output->cppFiles.Add(input->defaultFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
@@ -20887,7 +21220,7 @@ GenerateCppFiles
 						WriteIncludesHeader(input, output, config, multiFile, reflection, writer);
 					}));
 
-					FOREACH(WString, fileName, config.topLevelClassDeclsForCustomFiles.Keys())
+					FOREACH(WString, fileName, config.customFilesClasses.Keys())
 					{
 						if (fileName != L"")
 						{
@@ -21824,7 +22157,7 @@ namespace vl
 						}
 						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls.GetByIndex(index))
 						{
-							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
 						}
 					}
@@ -21841,7 +22174,7 @@ namespace vl
 						}
 						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls.GetByIndex(index))
 						{
-							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
+							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
 						}
 					}
@@ -21920,47 +22253,6 @@ namespace vl
 				return prefix;
 			}
 
-			void WfCppConfig::WriteHeader_TopLevelClass(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss)
-			{
-				auto prefix = WriteHeader_Class(writer, decl, nss);
-				List<Ptr<WfClassDeclaration>> classes;
-				classes.Add(decl);
-				vint processed = 0;
-				while (processed < classes.Count())
-				{
-					auto current = classes[processed++];
-					{
-						vint index = enumDecls.Keys().IndexOf(current.Obj());
-						if (index != -1)
-						{
-							FOREACH(Ptr<WfEnumDeclaration>, enumDecl, enumDecls.GetByIndex(index))
-							{
-								auto td = manager->declarationTypes[enumDecl.Obj()].Obj();
-								WriteHeader_EnumOp(writer, enumDecl, ConvertType(td), prefix);
-							}
-						}
-					}
-					{
-						vint index = structDecls.Keys().IndexOf(current.Obj());
-						if (index != -1)
-						{
-							FOREACH(Ptr<WfStructDeclaration>, structDecl, structDecls.GetByIndex(index))
-							{
-								auto td = manager->declarationTypes[structDecl.Obj()].Obj();
-								WriteHeader_StructOp(writer, structDecl, ConvertType(td), prefix);
-							}
-						}
-					}
-					{
-						vint index = classDecls.Keys().IndexOf(current.Obj());
-						if (index != -1)
-						{
-							CopyFrom(classes, classDecls.GetByIndex(index), true);
-						}
-					}
-				}
-			}
-
 			bool WfCppConfig::WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfDeclaration> memberDecl, collections::List<WString>& nss)
 			{
 				List<WString> nss2;
@@ -22018,32 +22310,45 @@ namespace vl
 		{
 			using namespace collections;
 
-			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix)
+			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition)
 			{
-				writer.WriteLine(prefix + L"enum class " + name + L" : vl::vuint64_t");
-				writer.WriteLine(prefix + L"{");
-				FOREACH(Ptr<WfEnumItem>, item, decl->items)
+				if (mainHeaderDefinition)
 				{
-					switch (item->kind)
+					writer.WriteLine(prefix + L"enum class " + name + L" : vl::vuint64_t");
+					writer.WriteLine(prefix + L"{");
+					FOREACH(Ptr<WfEnumItem>, item, decl->items)
 					{
-					case WfEnumItemKind::Constant:
-						writer.WriteLine(prefix + L"\t" + ConvertName(item->name.value) + L" = " + item->number.value + L"UL,");
-						break;
-					case WfEnumItemKind::Intersection:
-						writer.WriteString(prefix + L"\t" + ConvertName(item->name.value) + L" = ");
-						FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
+						switch (item->kind)
 						{
-							if (index > 0)
+						case WfEnumItemKind::Constant:
+							writer.WriteLine(prefix + L"\t" + ConvertName(item->name.value) + L" = " + item->number.value + L"UL,");
+							break;
+						case WfEnumItemKind::Intersection:
+							writer.WriteString(prefix + L"\t" + ConvertName(item->name.value) + L" = ");
+							FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
 							{
-								writer.WriteString(L" | ");
+								if (index > 0)
+								{
+									writer.WriteString(L" | ");
+								}
+								writer.WriteString(ConvertName(enumInt->name.value));
 							}
-							writer.WriteString(ConvertName(enumInt->name.value));
+							writer.WriteLine(L",");
+							break;
 						}
-						writer.WriteLine(L",");
-						break;
 					}
+					writer.WriteLine(prefix + L"};");
 				}
-				writer.WriteLine(prefix + L"};");
+				else
+				{
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(name);
+					writer.WriteString(L" = ::");
+					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"enum"));
+					writer.WriteLine(L";");
+				}
 			}
 
 			void WfCppConfig::WriteHeader_EnumOp(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix)
@@ -22068,13 +22373,40 @@ namespace vl
 				}
 			}
 
-			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss)
+			void WfCppConfig::WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				WString name;
-				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
-				WriteHeader_Enum(writer, decl, name, prefix);
-				WriteHeader_EnumOp(writer, decl, name, prefix);
+				if (mainHeaderDefinition)
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppNameToHeaderEnumStructName(CppGetFullName(td), L"enum"), nss, name);
+					WriteHeader_Enum(writer, decl, name, prefix, true);
+					WriteHeader_EnumOp(writer, decl, name, prefix);
+				}
+				else
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(name);
+					writer.WriteString(L" = ::");
+					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"enum"));
+					writer.WriteLine(L";");
+				}
+			}
+
+			void WfCppConfig::WriteHeader_MainHeaderEnums(stream::StreamWriter& writer, collections::List<WString>& nss)
+			{
+				List<Ptr<WfEnumDeclaration>> allEnums;
+				CopyFrom(allEnums, Range<vint>(0, enumDecls.Count()).SelectMany([&](vint index) {return From(enumDecls.GetByIndex(index)); }));
+				SortDeclsByName(allEnums);
+
+				FOREACH(Ptr<WfEnumDeclaration>, decl, allEnums)
+				{
+					WriteHeader_Enum(writer, decl, nss, true);
+					writer.WriteLine(L"");
+				}
 			}
 		}
 	}
@@ -22474,146 +22806,6 @@ namespace vl
 			using namespace analyzer;
 			using namespace reflection;
 			using namespace reflection::description;
-
-/***********************************************************************
-WfCppConfig::CollectClosureInfo
-***********************************************************************/
-
-			class WfCppCollectClassExprInfoVisitor : public empty_visitor::DeclarationVisitor
-			{
-			public:
-				WfCppConfig*							config;
-				vint									variableCount = 0;
-				Ptr<analyzer::WfLexicalCapture>			capture;
-
-				WfCppCollectClassExprInfoVisitor(WfCppConfig* _config)
-					:config(_config)
-				{
-				}
-
-				void Visit(WfVariableDeclaration* node)override
-				{
-					variableCount++;
-				}
-
-				void Dispatch(WfVirtualCfeDeclaration* node)override
-				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
-					{
-						decl->Accept(this);
-					}
-				}
-
-				void Dispatch(WfVirtualCseDeclaration* node)override
-				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
-					{
-						decl->Accept(this);
-					}
-				}
-
-				void Execute(WfNewInterfaceExpression* node)
-				{
-					capture = config->manager->lambdaCaptures[node];
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
-					{
-						memberDecl->Accept(this);
-					}
-				}
-			};
-
-			Ptr<WfCppConfig::ClosureInfo> WfCppConfig::CollectClosureInfo(Ptr<WfExpression> closure)
-			{
-				using SymbolPair = Pair<WString, Ptr<analyzer::WfLexicalSymbol>>;
-
-				auto info = MakePtr<ClosureInfo>();
-				WfLexicalScope* scope = nullptr;
-
-				if (auto ordered = closure.Cast<WfOrderedLambdaExpression>())
-				{
-					// stable symbol order by sorting them by name
-					CopyFrom(
-						info->symbols,
-						From(manager->lambdaCaptures[ordered.Obj()]->symbols)
-							.Select([](Ptr<WfLexicalSymbol> symbol)
-							{
-								return SymbolPair(symbol->name, symbol);
-							})
-						);
-					scope = manager->nodeScopes[ordered.Obj()].Obj();
-				}
-				else if (auto funcExpr = closure.Cast<WfFunctionExpression>())
-				{
-					// stable symbol order by sorting them by name
-					CopyFrom(
-						info->symbols,
-						From(manager->lambdaCaptures[funcExpr->function.Obj()]->symbols)
-							.Select([](Ptr<WfLexicalSymbol> symbol)
-							{
-								return SymbolPair(symbol->name, symbol);
-							})
-						);
-					scope = manager->nodeScopes[funcExpr->function.Obj()].Obj();
-				}
-				else if (auto classExpr = closure.Cast<WfNewInterfaceExpression>())
-				{
-					WfCppCollectClassExprInfoVisitor visitor(this);
-					visitor.Execute(classExpr.Obj());
-
-					if (visitor.capture)
-					{
-						// stable symbol order by sorting them by name
-						CopyFrom(
-							info->symbols,
-							From(visitor.capture->symbols)
-								.Skip(visitor.variableCount)
-								.Select([](Ptr<WfLexicalSymbol> symbol)
-								{
-									return SymbolPair(symbol->name, symbol);
-								})
-							);
-
-						CopyFrom(
-							info->ctorArgumentSymbols,
-							From(visitor.capture->ctorArgumentSymbols)
-								.Select([](Ptr<WfLexicalSymbol> symbol)
-								{
-									return SymbolPair(symbol->name, symbol);
-								})
-							);
-					}
-
-					scope = manager->nodeScopes[classExpr.Obj()].Obj();
-				}
-
-				Ptr<WfLexicalFunctionConfig> methodConfig;
-				while (scope)
-				{
-					if (scope->typeOfThisExpr)
-					{
-						if (methodConfig)
-						{
-							info->thisTypes.Add(scope->typeOfThisExpr);
-							if (!methodConfig->parentThisAccessable)
-							{
-								break;
-							}
-							methodConfig = nullptr;
-						}
-					}
-
-					if (scope->functionConfig)
-					{
-						if (scope->functionConfig->thisAccessable)
-						{
-							methodConfig = scope->functionConfig;
-						}
-					}
-					scope = scope->parentScope.Obj();
-				}
-
-				return info;
-			}
 
 /***********************************************************************
 WfCppConfig::WriteCpp
@@ -23453,22 +23645,35 @@ namespace vl
 		{
 			using namespace collections;
 
-			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix)
+			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition)
 			{
-				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				writer.WriteLine(prefix + L"struct " + name);
-				writer.WriteLine(prefix + L"{");
-				FOREACH(Ptr<WfStructMember>, member, decl->members)
+				if (mainHeaderDefinition)
 				{
-					auto prop = td->GetPropertyByName(member->name.value, false);
-					auto defaultValue = DefaultValue(prop->GetReturn());
-					if (defaultValue != L"")
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					writer.WriteLine(prefix + L"struct " + name);
+					writer.WriteLine(prefix + L"{");
+					FOREACH(Ptr<WfStructMember>, member, decl->members)
 					{
-						defaultValue = L" = " + defaultValue;
+						auto prop = td->GetPropertyByName(member->name.value, false);
+						auto defaultValue = DefaultValue(prop->GetReturn());
+						if (defaultValue != L"")
+						{
+							defaultValue = L" = " + defaultValue;
+						}
+						writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn(), true) + L" " + ConvertName(member->name.value) + defaultValue + L";");
 					}
-					writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn()) + L" " + ConvertName(member->name.value) + defaultValue + L";");
+					writer.WriteLine(prefix + L"};");
 				}
-				writer.WriteLine(prefix + L"};");
+				else
+				{
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(name);
+					writer.WriteString(L" = ::");
+					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"));
+					writer.WriteLine(L";");
+				}
 			}
 
 			void WfCppConfig::WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix)
@@ -23513,13 +23718,67 @@ namespace vl
 				}
 			}
 
-			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss)
+			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
-				WString name;
-				auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
-				WriteHeader_Struct(writer, decl, name, prefix);
-				WriteHeader_StructOp(writer, decl, name, prefix);
+				if (mainHeaderDefinition)
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"), nss, name);
+					WriteHeader_Struct(writer, decl, name, prefix, true);
+					WriteHeader_StructOp(writer, decl, name, prefix);
+				}
+				else
+				{
+					WString name;
+					auto prefix = WriteNamespace(writer, CppGetFullName(td), nss, name);
+					writer.WriteString(prefix);
+					writer.WriteString(L"using ");
+					writer.WriteString(name);
+					writer.WriteString(L" = ::");
+					writer.WriteString(CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"));
+					writer.WriteLine(L";");
+				}
+			}
+
+			void WfCppConfig::WriteHeader_MainHeaderStructs(stream::StreamWriter& writer, collections::List<WString>& nss)
+			{
+				List<Ptr<WfStructDeclaration>> allStructs;
+				CopyFrom(allStructs, Range<vint>(0, structDecls.Count()).SelectMany([&](vint index) {return From(structDecls.GetByIndex(index)); }));
+				SortDeclsByName(allStructs);
+
+				Group<Ptr<WfStructDeclaration>, Ptr<WfStructDeclaration>> depGroup;
+				FOREACH(Ptr<WfStructDeclaration>, decl, allStructs)
+				{
+					auto td = manager->declarationTypes[decl.Obj()].Obj();
+					vint count = td->GetPropertyCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto propType = td->GetProperty(i)->GetReturn();
+						if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
+						{
+							auto propTd = propType->GetTypeDescriptor();
+							vint index = tdDecls.Keys().IndexOf(propTd);
+							if (index != -1)
+							{
+								depGroup.Add(decl, tdDecls.Values()[index].Cast<WfStructDeclaration>());
+							}
+						}
+					}
+				}
+
+				PartialOrderingProcessor pop;
+				pop.InitWithGroup(allStructs, depGroup);
+				pop.Sort();
+
+				for (vint i = 0; i < pop.components.Count(); i++)
+				{
+					auto& component = pop.components[i];
+					CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::WriteHeader_MainHeaderStructs(StreamWriter&, List<WString>&)#Internal error: Unexpected circle dependency found, which should be cought by the Workflow semantic analyzer.");
+					auto decl = allStructs[component.firstNode[0]];
+					WriteHeader_Struct(writer, decl, nss, true);
+					writer.WriteLine(L"");
+				}
 			}
 		}
 	}
@@ -26440,11 +26699,10 @@ Unescaping Functions
 
 		void UnescapeStringInternal(vl::parsing::ParsingToken& value, bool formatString)
 		{
-			MemoryStream memoryStream;
+			value.value = GenerateToStream([&](StreamWriter& writer)
 			{
 				WString input = formatString ? value.value.Sub(2, value.value.Length() - 3) : value.value.Sub(1, value.value.Length() - 2);
 				const wchar_t* reading = input.Buffer();
-				StreamWriter writer(memoryStream);
 
 				while (wchar_t c = *reading++)
 				{
@@ -26470,13 +26728,7 @@ Unescaping Functions
 						writer.WriteChar(c);
 					}
 				}
-			}
-
-			memoryStream.SeekFromBegin(0);
-			{
-				StreamReader reader(memoryStream);
-				value.value = reader.ReadToEnd();
-			}
+			});
 		}
 
 		void UnescapeFormatString(vl::parsing::ParsingToken& value, const vl::collections::List<vl::regex::RegexToken>& tokens)

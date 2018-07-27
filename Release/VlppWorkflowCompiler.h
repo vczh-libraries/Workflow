@@ -4560,8 +4560,8 @@ namespace vl
 				__vwsne_#				: Temporary variable (not for lambda)
 				__vwsnb_#				: Temporary block
 				__vwnsl_#_LABEL_NAME	: Goto label
-				__vwsn_struct_NAME		: Struct definition
-				__vwsn_enum_NAME		: Enum definition
+				__vwsn_structs::NAME	: Struct definition
+				__vwsn_enums::NAME		: Struct definition
 			*/
 
 			class WfCppConfig : public Object
@@ -4590,10 +4590,46 @@ namespace vl
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 
-				template<typename T, typename U>
-				void												SortInternal(collections::List<Ptr<T>>& decls, U dependOn);
-				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
-				void												Sort(collections::List<Ptr<WfClassDeclaration>>& classDecls);
+				struct GlobalDep
+				{
+					collections::Dictionary<WString, ITypeDescriptor*>		allTds;				// Type name to type descriptor of class decls. Class index is the position in this map.
+					collections::Group<vint, vint>							expandedClassDecls;	// Class index (-1 means top level) to all direct and indirect internal classes
+					collections::Group<vint, vint>							dependencies;		// Class dependencies
+					collections::SortedList<vint>							topLevelClasses;	// Class index
+					collections::Group<vint, vint>							topLevelClassDep;	// Class dependencies for top level classes
+				};
+
+				struct ClassLevelDep
+				{
+					Ptr<WfClassDeclaration>									parentClass;
+					vint													parentIndexKey = -1;
+					collections::Group<vint, vint>							depGroup;			// A slice of GlobalDep::dependencies
+					collections::Dictionary<vint, vint>						subClass;			// Classes to their ancestor, which are direct internal classes of the selected parent class
+				};
+
+				void												ExpandClassDeclGroup(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep);
+				void												GenerateClassDependencies(GlobalDep& globalDep);
+				void												GenerateGlobalDep(GlobalDep& globalDep);
+
+				void												CollectExpandedDepGroup(vint parentIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep);
+				void												CollectExpandedSubClass(vint subDeclIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep);
+				void												GenerateClassLevelDep(Ptr<WfClassDeclaration> parent, GlobalDep& globalDep, ClassLevelDep& classLevelDep);
+
+				void												SortClassDecls(GlobalDep& globalDep);
+				void												GenerateFileClassMaps(GlobalDep& globalDep);
+				void												SortFileClassMaps(GlobalDep& globalDep);
+				void												AssignClassDeclsToFiles();
+
+				template<typename T>
+				void SortDeclsByName(collections::List<Ptr<T>>& decls)
+				{
+					collections::Sort<Ptr<T>>(&decls[0], decls.Count(), [=](Ptr<T> a, Ptr<T> b)
+					{
+						auto tdA = manager->declarationTypes[a.Obj()].Obj();
+						auto tdB = manager->declarationTypes[b.Obj()].Obj();
+						return WString::Compare(tdA->GetTypeName(), tdB->GetTypeName());
+					});
+				}
 
 			public:
 				analyzer::WfLexicalScopeManager*											manager;
@@ -4601,18 +4637,16 @@ namespace vl
 				WString																		assemblyNamespace;
 				WString																		assemblyName;
 
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
-				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
-				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
-				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
+				collections::Dictionary<ITypeDescriptor*, Ptr<WfDeclaration>>				tdDecls;			// type descriptor to declaration
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;			// class (nullable) to direct internal enums
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;		// class (nullable) to direct internal structs
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;			// class (nullable) to direct internal classes
+				collections::List<Ptr<WfVariableDeclaration>>								varDecls;			// global variables
+				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;			// global functions
 
-				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForCustomFiles;
-				collections::Group<vint, Ptr<WfClassDeclaration>>							topLevelClassDeclsForHeaderFiles;
-				collections::Dictionary<Ptr<WfClassDeclaration>, vint>						topLevelClassDeslcForHeaderFilesReversed;
-
-				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
-				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
+				collections::Group<WString, Ptr<WfClassDeclaration>>						customFilesClasses;	// @cpp:File to top level classes, empty key means the default cpp
+				collections::Group<vint, Ptr<WfClassDeclaration>>							headerFilesClasses;	// non-@cpp:File header file to top level classes, 0 means the default header
+				collections::Group<vint, vint>												headerIncludes;		// 0:default header, positive:@cpp:File indexed in customFilesClasses, negative:non-@cpp:File headers
 
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
@@ -4625,6 +4659,7 @@ namespace vl
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix, ITypeInfo* expectedType);
 				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType);
 
+				WString					CppNameToHeaderEnumStructName(const WString& fullName, const WString& type);
 				WString					ConvertNameInternal(const WString& name, const WString& specialNameCategory, bool alwaysUseCategory);
 				WString					ConvertName(const WString& name);
 				WString					ConvertName(const WString& name, const WString& specialNameCategory);
@@ -4633,7 +4668,7 @@ namespace vl
 				WString					ConvertFunctionType(ITypeInfo* typeInfo);
 				bool					IsSpecialGenericType(ITypeInfo* typeInfo);
 				WString					ConvertType(ITypeDescriptor* typeInfo, WString delimiter = L"::");
-				WString					ConvertType(ITypeInfo* typeInfo);
+				WString					ConvertType(ITypeInfo* typeInfo, bool useHeaderEnumStructName = false);
 				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
 				bool					IsClassHasUserImplMethods(Ptr<WfClassDeclaration> decl, bool searchInternalClasses);
@@ -4652,13 +4687,15 @@ namespace vl
 				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, collections::List<WString>& arguments, const WString& name, bool writeReturnType);
 				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
 
-				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
+				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition);
 				void					WriteHeader_EnumOp(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
-				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss);
+				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
+				void					WriteHeader_MainHeaderEnums(stream::StreamWriter& writer, collections::List<WString>& nss);
 
-				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
+				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition);
 				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
-				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
+				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
+				void					WriteHeader_MainHeaderStructs(stream::StreamWriter& writer, collections::List<WString>& nss);
 
 				void					WriteHeader_ClosurePreDecl(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteHeader_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
@@ -4673,7 +4710,6 @@ namespace vl
 				void					WriteHeader_ClassPreDecl(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 				void					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix);
 				WString					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
-				void					WriteHeader_TopLevelClass(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 				bool					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfDeclaration> memberDecl, collections::List<WString>& nss);
 				void					WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 
@@ -4703,7 +4739,6 @@ WfCppConfig::Collect
 ***********************************************************************/
 
 			extern void CollectModule(WfCppConfig* config, Ptr<WfModule> module);
-			extern void PostCollect(WfCppConfig* config);
 
 /***********************************************************************
 WfCppConfig::Write
