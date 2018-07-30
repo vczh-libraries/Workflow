@@ -21406,6 +21406,40 @@ MergeCppFile
 				});
 			}
 
+			MergeCppMultiPlatformException::MergeCppMultiPlatformException(vint _row32, vint _column32, vint _row64, vint _column64)
+				:Exception(L"The difference at "
+					L"x86 file(row:" + itow(_row32 + 1) + L", column:" + itow(_column32 + 1) + L") and "
+					L"x64 file(row:" + itow(_row64 + 1) + L", column:" + itow(_column64 + 1) + L") are not "
+					L"\"vint32_t\" and \"vint64_t\", "
+					L"\"vuint32_t\" and \"vuint64_t\", "
+					L"\"<number>\" and \"<number>L\", "
+					L"\"<number>\" and \"<number>UL\".")
+				, row32(_row32)
+				, column32(_column32)
+				, row64(_row64)
+				, column64(_column64)
+			{
+			}
+
+			void CountRowAndColumn(const wchar_t* start, const wchar_t* reading, vint& row, vint& column)
+			{
+				row = 0;
+				column = 0;
+				while (start < reading)
+				{
+					if (*start++ == L'\n')
+					{
+						row++;
+						column = 0;
+					}
+					else
+					{
+						column++;
+					}
+				}
+			}
+
+
 			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
 			{
 				static wchar_t stringCast32[] = L"static_cast<::vl::vint32_t>(";
@@ -21419,6 +21453,7 @@ MergeCppFile
 					const wchar_t* reading32 = code32.Buffer();
 					const wchar_t* reading64 = code64.Buffer();
 					const wchar_t* start32 = reading32;
+					const wchar_t* start64 = reading64;
 					while (true)
 					{
 						vint length = 0;
@@ -21450,6 +21485,15 @@ MergeCppFile
 							if (length >= 4)
 							{
 								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
+								{
+									reading32 += 4;
+									reading64 += 4;
+									goto NEXT_ROUND;
+								}
+							}
+							if (length >= 5)
+							{
+								if (wcsncmp(reading32 - 5, L"vuint32_t", 9) == 0 && wcsncmp(reading64 - 5, L"vuint64_t", 9) == 0)
 								{
 									reading32 += 4;
 									reading64 += 4;
@@ -21515,13 +21559,17 @@ MergeCppFile
 								goto NEXT_ROUND;
 							}
 						}
-						throw Exception(L"The difference at " + itow((vint)(reading32 - start32)) + L"-th character between Input C++ source files are not "
-							L"\"vint32_t\" and \"vint64_t\", "
-							L"\"<number>\" and \"<number>L\", "
-							L"\"<number>\" and \"<number>UL\"."
-							);
-					NEXT_ROUND:;
 
+						{
+							vint row32 = 0;
+							vint column32 = 0;
+							vint row64 = 0;
+							vint column64 = 0;
+							CountRowAndColumn(start32, reading32, row32, column32);
+							CountRowAndColumn(start64, reading64, row64, column64);
+							throw MergeCppMultiPlatformException(row32, column32, row64, column64);
+						}
+					NEXT_ROUND:;
 #undef IS_DIGIT
 					}
 				});
