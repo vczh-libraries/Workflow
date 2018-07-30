@@ -30,23 +30,33 @@ int main(int argc, char* argv[])
 	FilePath fileOutput = atow(argv[3]);
 #endif
 
-	auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
-
-	File file(fileOutput);
-	if (file.Exists())
+	try
 	{
-		code = MergeCppFileContent(file.ReadAllTextByBom(), code);
-	}
+		auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
 
-	if (file.Exists())
-	{
-		auto originalCode = file.ReadAllTextByBom();
-		if (originalCode == code)
+		File file(fileOutput);
+		if (file.Exists())
 		{
-			return 0;
+			code = MergeCppFileContent(file.ReadAllTextByBom(), code);
 		}
-	}
 
-	file.WriteAllText(code, true, BomEncoder::Utf8);
-	return 0;
+		if (file.Exists())
+		{
+			auto originalCode = file.ReadAllTextByBom();
+			if (originalCode == code)
+			{
+				return 0;
+			}
+		}
+
+		file.WriteAllText(code, true, BomEncoder::Utf8);
+		return 0;
+	}
+	catch (const MergeCppMultiPlatformException& ex)
+	{
+		Console::SetColor(true, false, false, true);
+		Console::WriteLine(ex.Message());
+		Console::SetColor(true, true, true, false);
+		throw;
+	}
 }
