@@ -173,6 +173,14 @@ Global Functions
 				(x = (x + static_cast<::vl::vint>(1)));
 			}
 		}
+		auto merge1 = ::vl::reflection::description::Sys::Int32ToInt(static_cast<::vl::vint32_t>(static_cast<::vl::vint>(0)));
+		auto merge2 = ::vl::reflection::description::Sys::Int64ToInt(static_cast<::vl::vint64_t>(static_cast<::vl::vint>(0)));
+		auto merge3 = ::vl::reflection::description::Sys::IntToInt32(static_cast<::vl::vint>(0));
+		auto merge4 = ::vl::reflection::description::Sys::IntToInt64(static_cast<::vl::vint>(0));
+		auto merge5 = ::vl::reflection::description::Sys::UInt32ToUInt(static_cast<::vl::vuint32_t>(static_cast<::vl::vint>(0)));
+		auto merge6 = ::vl::reflection::description::Sys::UInt64ToUInt(static_cast<::vl::vuint64_t>(static_cast<::vl::vint>(0)));
+		auto merge7 = ::vl::reflection::description::Sys::UIntToUInt32(static_cast<::vl::vuint>(static_cast<::vl::vint>(0)));
+		auto merge8 = ::vl::reflection::description::Sys::UIntToUInt64(static_cast<::vl::vuint>(static_cast<::vl::vint>(0)));
 		return ((((((((((((((((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(a)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(e)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(f)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g1)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g2)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(hinters.Obj())->GetMyList()).Obj())->Get(static_cast<::vl::vint>(2))))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(hinters.Obj())->GetObservableList()[static_cast<::vl::vint>(3)])) + ::vl::WString(L"]", false));
 	}
 

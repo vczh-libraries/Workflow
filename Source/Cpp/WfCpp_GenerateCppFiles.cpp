@@ -495,6 +495,7 @@ MergeCppFile
 					L"x86 file(row:" + itow(_row32 + 1) + L", column:" + itow(_column32 + 1) + L") and "
 					L"x64 file(row:" + itow(_row64 + 1) + L", column:" + itow(_column64 + 1) + L") are not "
 					L"\"vint32_t\" and \"vint64_t\", "
+					L"\"vuint32_t\" and \"vuint64_t\", "
 					L"\"<number>\" and \"<number>L\", "
 					L"\"<number>\" and \"<number>UL\".")
 				, row32(_row32)
@@ -568,6 +569,15 @@ MergeCppFile
 							if (length >= 4)
 							{
 								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
+								{
+									reading32 += 4;
+									reading64 += 4;
+									goto NEXT_ROUND;
+								}
+							}
+							if (length >= 5)
+							{
+								if (wcsncmp(reading32 - 5, L"vuint32_t", 9) == 0 && wcsncmp(reading64 - 5, L"vuint64_t", 9) == 0)
 								{
 									reading32 += 4;
 									reading64 += 4;
