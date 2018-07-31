@@ -21200,6 +21200,10 @@ GenerateCppFiles
 			Ptr<WfCppOutput> GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager)
 			{
 				WfCppConfig config(manager, input->assemblyName, input->assemblyNamespace);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
 
 				auto output = MakePtr<WfCppOutput>();
 				if (config.manager->declarationTypes.Count() > 0)
