@@ -191,9 +191,14 @@ WfCppConfig::Collect
 								for (vint k = 0; k < component.nodeCount; k++)
 								{
 									auto& node = pop.nodes[component.firstNode[k]];
-									auto indexKey = items[classLevelDep.subClass[node.firstSubClassItem[0]]];
+									auto indexKey = classLevelDep.subClass[items[node.firstSubClassItem[0]]];
 									tds.Add(globalDep.allTds.Values()[indexKey]);
 								}
+
+								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								{
+									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+								});
 								manager->errors.Add(WfErrors::CppUnableToDecideClassOrder(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
 							}
 
@@ -281,6 +286,11 @@ WfCppConfig::Collect
 										tds.Add(globalDep.allTds.Values()[indexKey]);
 									}
 								}
+
+								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								{
+									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+								});
 								manager->errors.Add(WfErrors::CppUnableToSeparateCustomFile(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
 							}
 						}
