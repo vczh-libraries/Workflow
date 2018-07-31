@@ -192,7 +192,7 @@ WfCppConfig::Collect
 								{
 									auto& node = pop.nodes[component.firstNode[k]];
 									auto indexKey = items[classLevelDep.subClass[node.firstSubClassItem[0]]];
-									tds.Add(globalDep.allTds[indexKey]);
+									tds.Add(globalDep.allTds.Values()[indexKey]);
 								}
 								manager->errors.Add(WfErrors::CppUnableToDecideClassOrder(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
 							}
@@ -278,7 +278,7 @@ WfCppConfig::Collect
 									for (vint k = 0; k < node.subClassItemCount; k++)
 									{
 										auto indexKey = globalDep.topLevelClasses[node.firstSubClassItem[k]];
-										tds.Add(globalDep.allTds[indexKey]);
+										tds.Add(globalDep.allTds.Values()[indexKey]);
 									}
 								}
 								manager->errors.Add(WfErrors::CppUnableToSeparateCustomFile(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));

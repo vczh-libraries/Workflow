@@ -112,6 +112,11 @@ TEST_CASE(TestAnalyzerError)
 		manager.AddModule(module);
 		manager.Rebuild(true);
 
+		if (manager.errors.Count() == 0)
+		{
+			WfCppConfig(&manager, L"Assembly", L"Namespace");
+		}
+
 		auto sampleModule = GenerateToStream([&](StreamWriter& writer)
 		{
 			WfPrint(module, L"", writer);
