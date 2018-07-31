@@ -77,6 +77,7 @@ TEST_CASE(TestCodegen)
 			input->normalIncludes.Add(L"../Source/CppTypes.h");
 
 			auto output = GenerateCppFiles(input, &manager);
+			TEST_ASSERT(manager.errors.Count() == 0);
 			if (output->containsReflectionInfo)
 			{
 				reflectableAssemblies.Add(input->assemblyName);

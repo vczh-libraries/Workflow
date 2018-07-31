@@ -866,7 +866,7 @@ GenerateInstructions(Expression)
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
-					auto type = CreateTypeInfoFromType(scope, node->type);
+					auto type = CreateTypeInfoFromType(scope, node->type, false);
 					auto value = Value::From(type->GetTypeDescriptor());
 					INSTRUCTION(Ins::LoadValue(value));
 				}

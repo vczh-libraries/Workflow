@@ -758,15 +758,15 @@ CreateTypeInfoFromType
 					VisitReferenceType(node);
 				}
 
-				static Ptr<ITypeInfo> Execute(WfLexicalScope* scope, WfType* type)
+				static Ptr<ITypeInfo> Execute(WfLexicalScope* scope, WfType* type, bool checkTypeForValue)
 				{
-					return CreateTypeInfoFromTypeVisitor(scope).Call(type, true);
+					return CreateTypeInfoFromTypeVisitor(scope).Call(type, checkTypeForValue);
 				}
 			};
 
-			Ptr<reflection::description::ITypeInfo>	CreateTypeInfoFromType(WfLexicalScope* scope, Ptr<WfType> type)
+			Ptr<reflection::description::ITypeInfo>	CreateTypeInfoFromType(WfLexicalScope* scope, Ptr<WfType> type, bool checkTypeForValue)
 			{
-				return CreateTypeInfoFromTypeVisitor::Execute(scope, type.Obj());
+				return CreateTypeInfoFromTypeVisitor::Execute(scope, type.Obj(), checkTypeForValue);
 			}
 
 /***********************************************************************

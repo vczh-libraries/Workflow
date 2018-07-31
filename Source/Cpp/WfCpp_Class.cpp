@@ -330,7 +330,7 @@ WfGenerateClassMemberImplVisitor
 					vint callIndex = 0;
 					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
 					{
-						auto callType = CreateTypeInfoFromType(scope, call->type);
+						auto callType = CreateTypeInfoFromType(scope, call->type, false);
 						auto callCtor = config->manager->baseConstructorCallResolvings[{node, callType->GetTypeDescriptor()}].value;
 
 						writer.WriteString(prefix);
