@@ -617,6 +617,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
+
+				// CPP: C++ code generation error
+				static Ptr<parsing::ParsingError>			CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static Ptr<parsing::ParsingError>			CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 			};
 		}
 	}

@@ -6,6 +6,7 @@ namespace vl
 	{
 		namespace cppcodegen
 		{
+			using namespace analyzer;
 			using namespace collections;
 
 #define ASSIGN_INDEX_KEY(INDEX_DECL, INDEX_KEY, STRING_KEY) \
@@ -182,7 +183,19 @@ WfCppConfig::Collect
 						for (vint j = 0; j < pop.components.Count(); j++)
 						{
 							auto& component = pop.components[j];
-							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+							// check error
+							if (component.nodeCount > 1)
+							{
+								List<ITypeDescriptor*> tds;
+								for (vint k = 0; k < component.nodeCount; k++)
+								{
+									auto& node = pop.nodes[component.firstNode[k]];
+									auto indexKey = items[classLevelDep.subClass[node.firstSubClassItem[0]]];
+									tds.Add(globalDep.allTds[indexKey]);
+								}
+								manager->errors.Add(WfErrors::CppUnableToDecideClassOrder(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
+							}
 
 							auto& node = pop.nodes[component.firstNode[0]];
 							auto subDeclIndexKey = classLevelDep.subClass[items[node.firstSubClassItem[0]]];
@@ -191,7 +204,7 @@ WfCppConfig::Collect
 						}
 					}
 
-					if (!parent)
+					if (!parent && manager->errors.Count() == 0)
 					{
 						for (vint i = 0; i < classLevelDep.subClass.Count(); i++)
 						{
@@ -254,7 +267,27 @@ WfCppConfig::Collect
 						for (vint i = 0; i < popSubClass.components.Count(); i++)
 						{
 							auto& component = popSubClass.components[i];
-							CHECK_ERROR(component.nodeCount == 1, L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+
+							// check error
+							if (component.nodeCount > 1)
+							{
+								List<ITypeDescriptor*> tds;
+								for (vint j = 0; j < component.nodeCount; j++)
+								{
+									auto& node = popSubClass.nodes[component.firstNode[j]];
+									for (vint k = 0; k < node.subClassItemCount; k++)
+									{
+										auto indexKey = globalDep.topLevelClasses[node.firstSubClassItem[k]];
+										tds.Add(globalDep.allTds[indexKey]);
+									}
+								}
+								manager->errors.Add(WfErrors::CppUnableToSeparateCustomFile(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
+							}
+						}
+
+						if (manager->errors.Count() != 0)
+						{
+							return;
 						}
 
 						// generate two item list, one have all @cpp:File classes put in front, one have all non-@cpp:File classes put in front
@@ -337,9 +370,9 @@ WfCppConfig::Collect
 					popNonCustomFirst.InitWithGroup(nonCustomFirstItems, subClassDepGroup);
 					popNonCustomFirst.Sort();
 
-					CHECK_ERROR(popCustomFirst.components.Count() == customFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
-					CHECK_ERROR(popNonCustomFirst.components.Count() == nonCustomFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
-					CHECK_ERROR(popCustomFirst.components.Count() == popNonCustomFirst.components.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found.");
+					CHECK_ERROR(popCustomFirst.components.Count() == customFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Internal error: Unexpected circle dependency found, this should have been caught by code above.");
+					CHECK_ERROR(popNonCustomFirst.components.Count() == nonCustomFirstItems.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found, this should have been caught by code above.");
+					CHECK_ERROR(popCustomFirst.components.Count() == popNonCustomFirst.components.Count(), L"WfCppConfig::AssignClassDeclsToFiles()#Future error: Unexpected circle dependency found, this should have been caught by code above.");
 
 					// translate popCustomFirst's sorting result
 					// popSubClass.nodes's index

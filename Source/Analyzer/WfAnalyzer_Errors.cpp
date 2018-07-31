@@ -880,6 +880,28 @@ WfErrors
 			{
 				return new ParsingError(node, L"G13: Auto property \"" + node->name.value + L"\" cannot be initialized in interface \"" + classDecl->name.value + L"\".");
 			}
+
+			Ptr<parsing::ParsingError> WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
+			{
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"CPP1: (C++ Code Generation) Cannot decide order of the following classes. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
+			{
+				WString description;
+				FOREACH(ITypeDescriptor*, td, tds)
+				{
+					description += L"\r\n\t";
+					description += td->GetTypeName();
+				}
+				return new ParsingError(node, L"CPP2: (C++ Code Generation) @cpp:File atrribute values for these classes are invalid. Generating classes to source files specified by these attribute values will create source files which do not compile. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
+			}
 		}
 	}
 }
