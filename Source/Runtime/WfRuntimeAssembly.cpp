@@ -17,6 +17,12 @@ namespace vl
 				Dictionary<vint, IMethodInfo*>					miIndex;
 				Dictionary<vint, IPropertyInfo*>				piIndex;
 				Dictionary<vint, IEventInfo*>					eiIndex;
+				WfAssemblyLoadErrors&							errors;
+
+				WfReaderContext(WfAssemblyLoadErrors& _errors)
+					:errors(_errors)
+				{
+				}
 			};
 
 			struct WfWriterContextPrepare
@@ -1483,9 +1489,9 @@ Serialization (Assembly)
 
 				//----------------------------------------------------
 
-				static void IOPrepare(WfReader& reader, WfAssembly& value)
+				static void IOPrepare(WfReader& reader, WfAssembly& value, WfAssemblyLoadErrors& errors)
 				{
-					reader.context = new WfReaderContext;
+					reader.context = new WfReaderContext(errors);
 					bool hasTypeImpl = false;
 					reader << hasTypeImpl;
 					if (hasTypeImpl)
@@ -1535,7 +1541,7 @@ Serialization (Assembly)
 					}
 				}
 
-				static void IOPrepare(WfWriter& writer, WfAssembly& value)
+				static void IOPrepare(WfWriter& writer, WfAssembly& value, WfAssemblyLoadErrors&)
 				{
 					writer.context = new WfWriterContext;
 					bool hasTypeImpl = value.typeImpl != nullptr;
@@ -1596,9 +1602,9 @@ Serialization (Assembly)
 				//----------------------------------------------------
 
 				template<typename TIO>
-				static void IO(TIO& io, WfAssembly& value)
+				static void IO(TIO& io, WfAssembly& value, WfAssemblyLoadErrors& errors)
 				{
-					IOPrepare(io, value);
+					IOPrepare(io, value, errors);
 					io	<< value.insBeforeCodegen
 						<< value.insAfterCodegen
 						<< value.variableNames
@@ -1644,23 +1650,26 @@ WfAssembly
 			{
 			}
 
-			WfAssembly::WfAssembly(stream::IStream& input)
-			{
-				stream::internal::WfReader reader(input);
-				stream::internal::Serialization<WfAssembly>::IO(reader, *this);
-				Initialize();
-			}
-
 			void WfAssembly::Initialize()
 			{
 				insBeforeCodegen->Initialize();
 				insAfterCodegen->Initialize();
 			}
 
+			Ptr<WfAssembly> WfAssembly::Deserialize(stream::IStream& input, WfAssemblyLoadErrors& errors)
+			{
+				auto assembly = MakePtr<WfAssembly>();
+				stream::internal::WfReader reader(input);
+				stream::internal::Serialization<WfAssembly>::IO(reader, *assembly.Obj(), errors);
+				assembly->Initialize();
+				return assembly;
+			}
+
 			void WfAssembly::Serialize(stream::IStream& output)
 			{
+				WfAssemblyLoadErrors dummy;
 				stream::internal::WfWriter writer(output);
-				stream::internal::Serialization<WfAssembly>::IO(writer, *this);
+				stream::internal::Serialization<WfAssembly>::IO(writer, *this, dummy);
 			}
 		}
 	}
