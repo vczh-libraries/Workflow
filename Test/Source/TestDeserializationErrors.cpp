@@ -27,12 +27,12 @@ class B
 		auto assembly = Compile(GetWorkflowTable(), codes, errors);
 		TEST_ASSERT(assembly);
 		assembly->Serialize(streamA);
-		streamA.SeekFromBegin(0);
 	}
 	{
 		Ptr<WfAssembly> assemblyA;
 		{
 			WfAssemblyLoadErrors errors;
+			streamA.SeekFromBegin(0);
 			assemblyA = WfAssembly::Deserialize(streamA, errors);
 			TEST_ASSERT(assemblyA);
 			TEST_ASSERT(errors.unresolvedTypes.Count() == 0);
@@ -46,10 +46,10 @@ class B
 		auto assembly = Compile(GetWorkflowTable(), codes, errors);
 		TEST_ASSERT(assembly);
 		assembly->Serialize(streamB);
-		streamB.SeekFromBegin(0);
 	}
 
 	WfAssemblyLoadErrors errors;
+	streamB.SeekFromBegin(0);
 	auto assemblyB = WfAssembly::Deserialize(streamB, errors);
 	TEST_ASSERT(!assemblyB);
 	TEST_ASSERT(errors.unresolvedTypes.Count() == 1);
@@ -75,15 +75,17 @@ class A
 		auto assembly = Compile(GetWorkflowTable(), codes, errors);
 		TEST_ASSERT(assembly);
 		assembly->Serialize(streamA);
-		streamA.SeekFromBegin(0);
 	}
 
 	WfAssemblyLoadErrors errors;
+	streamA.SeekFromBegin(0);
 	auto assemblyA = WfAssembly::Deserialize(streamA, errors);
 	TEST_ASSERT(assemblyA);
 	TEST_ASSERT(errors.unresolvedTypes.Count() == 0);
 	TEST_ASSERT(errors.duplicatedTypes.Count() == 0);
+	WfRuntimeGlobalContext globalContext(assemblyA);
 
+	streamA.SeekFromBegin(0);
 	auto assemblyB = WfAssembly::Deserialize(streamA, errors);
 	TEST_ASSERT(!assemblyB);
 	TEST_ASSERT(errors.unresolvedTypes.Count() == 0);

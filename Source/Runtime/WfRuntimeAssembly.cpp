@@ -322,7 +322,10 @@ Serizliation (ITypeDescriptor)
 					WString id;
 					reader << id;
 					value = GetTypeDescriptor(id);
-					CHECK_ERROR(value, L"Failed to load type.");
+					if (!value)
+					{
+						reader.context->errors.unresolvedTypes.Add(id);
+					}
 				}
 					
 				static void IO(WfWriter& writer, ITypeDescriptor*& value)
@@ -1426,6 +1429,10 @@ Serialization (Assembly)
 				{
 					bool isFlags;
 					WString typeName;
+					if (GetTypeDescriptor(typeName))
+					{
+						reader.context->errors.duplicatedTypes.Add(typeName);
+					}
 					reader << isFlags << typeName;
 					type = MakePtr<WfEnum>(isFlags, typeName);
 				}
@@ -1442,6 +1449,10 @@ Serialization (Assembly)
 				{
 					WString typeName;
 					reader << typeName;
+					if (GetTypeDescriptor(typeName))
+					{
+						reader.context->errors.duplicatedTypes.Add(typeName);
+					}
 					type = MakePtr<TType>(typeName);
 				}
 
@@ -1517,6 +1528,11 @@ Serialization (Assembly)
 						ITypeDescriptor* td = nullptr;
 						reader << td;
 						reader.context->tdIndex.Add(i, td);
+					}
+
+					if (errors.unresolvedTypes.Count() + errors.duplicatedTypes.Count() > 0)
+					{
+						throw WfDeserializationException();
 					}
 
 					if (hasTypeImpl)
