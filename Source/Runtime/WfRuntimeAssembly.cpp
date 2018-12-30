@@ -11,6 +11,10 @@ namespace vl
 	{
 		namespace internal
 		{
+			struct WfDeserializationException
+			{
+			};
+
 			struct WfReaderContext
 			{
 				Dictionary<vint, ITypeDescriptor*>				tdIndex;
@@ -1658,11 +1662,18 @@ WfAssembly
 
 			Ptr<WfAssembly> WfAssembly::Deserialize(stream::IStream& input, WfAssemblyLoadErrors& errors)
 			{
-				auto assembly = MakePtr<WfAssembly>();
-				stream::internal::WfReader reader(input);
-				stream::internal::Serialization<WfAssembly>::IO(reader, *assembly.Obj(), errors);
-				assembly->Initialize();
-				return assembly;
+				try
+				{
+					auto assembly = MakePtr<WfAssembly>();
+					stream::internal::WfReader reader(input);
+					stream::internal::Serialization<WfAssembly>::IO(reader, *assembly.Obj(), errors);
+					assembly->Initialize();
+					return assembly;
+				}
+				catch (stream::internal::WfDeserializationException)
+				{
+					return {};
+				}
 			}
 
 			void WfAssembly::Serialize(stream::IStream& output)

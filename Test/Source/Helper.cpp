@@ -469,6 +469,8 @@ void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName,
 	}
 	{
 		FileStream fileStream(path, FileStream::ReadOnly);
-		assembly = new WfAssembly(fileStream);
+		WfAssemblyLoadErrors errors;
+		assembly = WfAssembly::Deserialize(fileStream, errors);
+		TEST_ASSERT(assembly);
 	}
 }
