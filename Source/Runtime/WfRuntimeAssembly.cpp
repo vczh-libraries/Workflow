@@ -461,7 +461,7 @@ Serizliation (Metadata)
 
 					vint methodFlag = -1;
 					reader << methodFlag;
-					if (0 > methodFlag || methodFlag < 3)
+					if (0 > methodFlag || methodFlag > 3)
 					{
 						reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(...): *");
 						return;
@@ -597,7 +597,7 @@ Serizliation (Metadata)
 								}
 							}
 
-							if (value)
+							if (!value)
 							{
 								reader.context->errors.unresolvedMembers.Add(L"method: " + type->GetTypeName() + L"::" + name + L"(" + parameters + L"): *; A qualified method doesn't exist.");
 								return;
