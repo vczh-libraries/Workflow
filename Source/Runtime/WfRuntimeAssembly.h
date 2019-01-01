@@ -62,6 +62,7 @@ Assembly
 			public:
 				collections::List<WString>							unresolvedTypes;
 				collections::List<WString>							duplicatedTypes;
+				collections::List<WString>							unresolvedMembers;
 			};
 
 			/// <summary>Representing a Workflow assembly.</summary>
