@@ -16,7 +16,7 @@ namespace vl
 
 #define INSTRUCTION(X) context.AddInstruction(node, X)
 #define FILL_LABEL_TO_INS(LABEL, INS) context.assembly->instructions[LABEL].indexParameter = INS
-#define FILL_LABEL_TO_CURRENT(LABEL) FILL_LABEL_TO_INS(context.assembly->instructions.Count())
+#define FILL_LABEL_TO_CURRENT(LABEL) FILL_LABEL_TO_INS(LABEL, context.assembly->instructions.Count())
 #define EXIT_CODE(X) context.AddExitInstruction(node, X)
 
 /***********************************************************************
@@ -161,13 +161,13 @@ GenerateInstructions(Statement)
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 					}
 					vint fillEndIndex = INSTRUCTION(Ins::Jump(-1));
-					FILL_LABEL_TO_CURRENT(fillElseIndex)
+					FILL_LABEL_TO_CURRENT(fillElseIndex);
 
 					if (node->falseBranch)
 					{
 						GenerateStatementInstructions(context, node->falseBranch);
 					}
-					FILL_LABEL_TO_CURRENT(fillEndIndex)
+					FILL_LABEL_TO_CURRENT(fillEndIndex);
 				}
 
 				void Visit(WfWhileStatement* node)override

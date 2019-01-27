@@ -17,7 +17,7 @@ namespace vl
 
 #define INSTRUCTION(X) context.AddInstruction(node, X)
 #define FILL_LABEL_TO_INS(LABEL, INS) context.assembly->instructions[LABEL].indexParameter = INS
-#define FILL_LABEL_TO_CURRENT(LABEL) FILL_LABEL_TO_INS(context.assembly->instructions.Count())
+#define FILL_LABEL_TO_CURRENT(LABEL) FILL_LABEL_TO_INS(LABEL, context.assembly->instructions.Count())
 
 /***********************************************************************
 GenerateInstructions(Expression)
@@ -492,10 +492,10 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::UninstallTry(1));
 						vint finishInstruction = INSTRUCTION(Ins::Jump(-1));
 
-						FILL_LABEL_TO_CURRENT(trapInstruction)
+						FILL_LABEL_TO_CURRENT(trapInstruction);
 						GenerateExpressionInstructions(context, node->second, result.type);
 
-						FILL_LABEL_TO_CURRENT(finishInstruction)
+						FILL_LABEL_TO_CURRENT(finishInstruction);
 					}
 					else
 					{
@@ -648,9 +648,9 @@ GenerateInstructions(Expression)
 					vint fillTrueIndex = INSTRUCTION(Ins::JumpIf(-1));
 					GenerateExpressionInstructions(context, node->falseBranch, result.type);
 					vint fillEndIndex = INSTRUCTION(Ins::Jump(-1));
-					FILL_LABEL_TO_CURRENT(fillTrueIndex)
+					FILL_LABEL_TO_CURRENT(fillTrueIndex);
 					GenerateExpressionInstructions(context, node->trueBranch, result.type);
-					FILL_LABEL_TO_CURRENT(fillEndIndex)
+					FILL_LABEL_TO_CURRENT(fillEndIndex);
 				}
 
 				void Visit(WfRangeExpression* node)override
