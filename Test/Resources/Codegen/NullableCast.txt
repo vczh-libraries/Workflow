@@ -2,18 +2,18 @@ module test;
 using test::*;
 using system::*;
 
-struct Value
+struct BoxedIntValue
 {
 	value : int;
 }
 
 func ReadValue(value : object) : string
 {
-	var nullable = cast (Value?) value;
+	var nullable = cast (BoxedIntValue?) value;
 	return nullable is null ? "null" : nullable.value;
 }
 
 func main():string
 {
-	return ReadValue(null) & ", " & ReadValue({value : 0} of Value);
+	return ReadValue(null) & ", " & ReadValue({value : 0} of BoxedIntValue);
 }

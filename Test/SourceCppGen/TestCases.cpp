@@ -36,6 +36,7 @@
 #include "TryCatch.h"
 #include "Delete.h"
 #include "FailedThen.h"
+#include "NullableCastReflection.h"
 #include "NewInterface.h"
 #include "NewCustomInterfaceReflection.h"
 #include "NewCustomInterface2Reflection.h"
@@ -95,6 +96,7 @@ using namespace vl::reflection::description;
 void LoadTestCaseTypes()
 {
 	 LoadOpCompareTypes();
+	 LoadNullableCastTypes();
 	 LoadNewCustomInterfaceTypes();
 	 LoadNewCustomInterface2Types();
 	 LoadNewCustomInterface3Types();
@@ -470,6 +472,15 @@ TEST_CASE(FailedThen)
 {
 	WString expected = L"-1, 110";
 	WString actual = ::vl_workflow_global::FailedThen::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+}
+
+TEST_CASE(NullableCast)
+{
+	WString expected = L"null, 0";
+	WString actual = ::vl_workflow_global::NullableCast::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
