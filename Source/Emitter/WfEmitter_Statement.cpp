@@ -15,6 +15,8 @@ namespace vl
 			typedef WfInstruction Ins;
 
 #define INSTRUCTION(X) context.AddInstruction(node, X)
+#define FILL_LABEL_TO_INS(LABEL, INS) context.assembly->instructions[LABEL].indexParameter = INS
+#define FILL_LABEL_TO_CURRENT(LABEL) FILL_LABEL_TO_INS(context.assembly->instructions.Count())
 #define EXIT_CODE(X) context.AddExitInstruction(node, X)
 
 /***********************************************************************
@@ -159,13 +161,13 @@ GenerateInstructions(Statement)
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 					}
 					vint fillEndIndex = INSTRUCTION(Ins::Jump(-1));
-					context.assembly->instructions[fillElseIndex].indexParameter = context.assembly->instructions.Count();
+					FILL_LABEL_TO_CURRENT(fillElseIndex)
 
 					if (node->falseBranch)
 					{
 						GenerateStatementInstructions(context, node->falseBranch);
 					}
-					context.assembly->instructions[fillEndIndex].indexParameter = context.assembly->instructions.Count();
+					FILL_LABEL_TO_CURRENT(fillEndIndex)
 				}
 
 				void Visit(WfWhileStatement* node)override
@@ -186,11 +188,11 @@ GenerateInstructions(Statement)
 
 					FOREACH(vint, index, loopContext->continueInstructions)
 					{
-						context.assembly->instructions[index].indexParameter = continueLabelIndex;
+						FILL_LABEL_TO_INS(index, continueLabelIndex);
 					}
 					FOREACH(vint, index, loopContext->breakInstructions)
 					{
-						context.assembly->instructions[index].indexParameter = breakLabelIndex;
+						FILL_LABEL_TO_INS(index, breakLabelIndex);
 					}
 					context.functionContext->PopScopeContext();
 				}
@@ -237,7 +239,7 @@ GenerateInstructions(Statement)
 
 				void GenerateTrap(WfTryStatement* node, vint variableIndex, Pair<vint, vint> trap)
 				{
-					context.assembly->instructions[trap.key].indexParameter = context.assembly->instructions.Count();
+					FILL_LABEL_TO_CURRENT(trap.key);
 					INSTRUCTION(Ins::LoadException());
 					INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 				}
@@ -279,10 +281,10 @@ GenerateInstructions(Statement)
 					}
 
 					// finally
-					context.assembly->instructions[trap1.value].indexParameter = context.assembly->instructions.Count();
+					FILL_LABEL_TO_CURRENT(trap1.value);
 					if (trap2.value != -1)
 					{
-						context.assembly->instructions[trap2.value].indexParameter = context.assembly->instructions.Count();
+						FILL_LABEL_TO_CURRENT(trap2.value);
 					}
 					if (node->finallyStatement)
 					{
@@ -308,7 +310,7 @@ GenerateInstructions(Statement)
 						vint breakLabelIndex = context.assembly->instructions.Count();
 						FOREACH(vint, index, blockContext->breakInstructions)
 						{
-							context.assembly->instructions[index].indexParameter = breakLabelIndex;
+							FILL_LABEL_TO_INS(index, breakLabelIndex);
 						}
 						context.functionContext->PopScopeContext();
 					}
@@ -356,6 +358,8 @@ GenerateInstructions(Statement)
 			};
 
 #undef EXIT_CODE
+#undef FILL_LABEL_TO_CURRENT
+#undef FILL_LABEL_TO_INS
 #undef INSTRUCTION
 
 			void GenerateStatementInstructions(WfCodegenContext& context, Ptr<WfStatement> statement)

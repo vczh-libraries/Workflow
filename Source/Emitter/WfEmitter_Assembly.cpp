@@ -15,6 +15,8 @@ namespace vl
 			typedef WfInstruction Ins;
 
 #define INSTRUCTION(X) context.AddInstruction(node, X)
+#define FILL_LABEL_TO_INS(LABEL, INS) context.assembly->instructions[LABEL].indexParameter = INS
+#define FILL_LABEL_TO_CURRENT(LABEL) FILL_LABEL_TO_INS(LABEL, context.assembly->instructions.Count())
 
 /***********************************************************************
 GenerateTypeCastInstructions
@@ -24,6 +26,17 @@ GenerateTypeCastInstructions
 			{
 				if (expectedType->GetTypeDescriptor() != GetTypeDescriptor<Value>())
 				{
+					vint fillElseIndex = -1;
+					vint fillEndIndex = -1;
+
+					if (expectedType->GetDecorator() == ITypeInfo::Nullable)
+					{
+						INSTRUCTION(Ins::Duplicate(0));
+						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::CompareReference());
+						fillElseIndex = INSTRUCTION(Ins::JumpIf(-1));
+					}
+
 					if (strongCast)
 					{
 						switch (expectedType->GetDecorator())
@@ -57,6 +70,14 @@ GenerateTypeCastInstructions
 							INSTRUCTION(Ins::TryConvertToType(Value::BoxedValue, expectedType->GetTypeDescriptor()));
 							break;
 						}
+					}
+
+					if (fillElseIndex != -1)
+					{
+						fillEndIndex = INSTRUCTION(Ins::Jump(-1));
+						FILL_LABEL_TO_CURRENT(fillElseIndex);
+						INSTRUCTION(Ins::LoadValue(Value()));
+						FILL_LABEL_TO_CURRENT(fillEndIndex);
 					}
 				}
 			}
@@ -92,7 +113,7 @@ GetInstructionTypeArgument
 			}
 
 /***********************************************************************
-GenerateTypeCastInstructions
+GetInstructionTypeArgument
 ***********************************************************************/
 
 			runtime::WfInsType GetInstructionTypeArgument(Ptr<reflection::description::ITypeInfo> expectedType)
@@ -229,6 +250,8 @@ GenerateAssembly
 			}
 
 #undef CALLBACK
+#undef FILL_LABEL_TO_CURRENT
+#undef FILL_LABEL_TO_INS
 #undef INSTRUCTION
 
 /***********************************************************************

@@ -16,6 +16,8 @@ namespace vl
 			typedef WfInstruction Ins;
 
 #define INSTRUCTION(X) context.AddInstruction(node, X)
+#define FILL_LABEL_TO_INS(LABEL, INS) context.assembly->instructions[LABEL].indexParameter = INS
+#define FILL_LABEL_TO_CURRENT(LABEL) FILL_LABEL_TO_INS(context.assembly->instructions.Count())
 
 /***********************************************************************
 GenerateInstructions(Expression)
@@ -490,10 +492,10 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::UninstallTry(1));
 						vint finishInstruction = INSTRUCTION(Ins::Jump(-1));
 
-						context.assembly->instructions[trapInstruction].indexParameter = context.assembly->instructions.Count();
+						FILL_LABEL_TO_CURRENT(trapInstruction)
 						GenerateExpressionInstructions(context, node->second, result.type);
 
-						context.assembly->instructions[finishInstruction].indexParameter = context.assembly->instructions.Count();
+						FILL_LABEL_TO_CURRENT(finishInstruction)
 					}
 					else
 					{
@@ -646,9 +648,9 @@ GenerateInstructions(Expression)
 					vint fillTrueIndex = INSTRUCTION(Ins::JumpIf(-1));
 					GenerateExpressionInstructions(context, node->falseBranch, result.type);
 					vint fillEndIndex = INSTRUCTION(Ins::Jump(-1));
-					context.assembly->instructions[fillTrueIndex].indexParameter = context.assembly->instructions.Count();
+					FILL_LABEL_TO_CURRENT(fillTrueIndex)
 					GenerateExpressionInstructions(context, node->trueBranch, result.type);
-					context.assembly->instructions[fillEndIndex].indexParameter = context.assembly->instructions.Count();
+					FILL_LABEL_TO_CURRENT(fillEndIndex)
 				}
 
 				void Visit(WfRangeExpression* node)override
@@ -1152,6 +1154,8 @@ GenerateInstructions(Expression)
 				}
 			};
 
+#undef FILL_LABEL_TO_CURRENT
+#undef FILL_LABEL_TO_INS
 #undef INSTRUCTION
 
 			Ptr<reflection::description::ITypeInfo> GenerateExpressionInstructions(WfCodegenContext& context, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
