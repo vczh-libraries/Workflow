@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_LIBRARY_CPPLIBRARY
 #define VCZH_WORKFLOW_LIBRARY_CPPLIBRARY
 
-#include "../../Import/Vlpp.h"
+#include "../../Import/VlppReflection.h"
 
 namespace vl
 {
