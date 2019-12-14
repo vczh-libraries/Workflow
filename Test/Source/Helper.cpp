@@ -19,32 +19,29 @@ Ptr<ParsingTable> GetWorkflowTable()
 {
 	if (!workflowTable)
 	{
-		TEST_CASE(L"Building Workflow parser table")
-		{
-			BEGIN_TIMER;
+		BEGIN_TIMER;
 
-			TEST_PRINT(L"GetWorkFlowTable()");
-			auto table = WfLoadTable();
-			TEST_PRINT(L"Finished WfLoadTable()");
-			PRINT_TIMER;
+		TEST_PRINT(L"GetWorkFlowTable()");
+		auto table = WfLoadTable();
+		TEST_PRINT(L"Finished WfLoadTable()");
+		PRINT_TIMER;
 
-			MemoryStream stream;
-			table->Serialize(stream);
-			stream.SeekFromBegin(0);
-			TEST_PRINT(L"Finished serializing parsing table: " + i64tow(stream.Size()) + L" bytes");
-			PRINT_TIMER;
+		MemoryStream stream;
+		table->Serialize(stream);
+		stream.SeekFromBegin(0);
+		TEST_PRINT(L"Finished serializing parsing table: " + i64tow(stream.Size()) + L" bytes");
+		PRINT_TIMER;
 
-			Ptr<ParsingTable> deserializedTable = new ParsingTable(stream);
-			TEST_ASSERT(stream.Position() == stream.Size());
-			TEST_PRINT(L"Finished deserializing parsing table");
-			PRINT_TIMER;
+		Ptr<ParsingTable> deserializedTable = new ParsingTable(stream);
+		CHECK_ERROR(stream.Position() == stream.Size(), L"Table stream is not comsumed to the end");
+		TEST_PRINT(L"Finished deserializing parsing table");
+		PRINT_TIMER;
 
-			deserializedTable->Initialize();
-			TEST_PRINT(L"Finished initializing parsing table");
-			PRINT_TIMER;
+		deserializedTable->Initialize();
+		TEST_PRINT(L"Finished initializing parsing table");
+		PRINT_TIMER;
 
-			workflowTable = deserializedTable;
-		});
+		workflowTable = deserializedTable;
 	}
 	return workflowTable;
 }
@@ -465,18 +462,15 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly)
 {
 	auto path = GetTestOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".bin";
-	TEST_CASE(L"Loading: " + path)
 	{
-		{
-			FileStream fileStream(path, FileStream::WriteOnly);
-			assembly->Serialize(fileStream);
-			TEST_PRINT(L"    serialized: " + i64tow(fileStream.Size()) + L" bytes");
-		}
-		{
-			FileStream fileStream(path, FileStream::ReadOnly);
-			WfAssemblyLoadErrors errors;
-			assembly = WfAssembly::Deserialize(fileStream, errors);
-			TEST_ASSERT(assembly);
-		}
-	});
+		FileStream fileStream(path, FileStream::WriteOnly);
+		assembly->Serialize(fileStream);
+		TEST_PRINT(L"    serialized: " + i64tow(fileStream.Size()) + L" bytes");
+	}
+	{
+		FileStream fileStream(path, FileStream::ReadOnly);
+		WfAssemblyLoadErrors errors;
+		assembly = WfAssembly::Deserialize(fileStream, errors);
+		TEST_ASSERT(assembly);
+	}
 }
