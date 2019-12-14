@@ -30,187 +30,193 @@ bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& i
 	return true;
 }
 
-#define DECODE_CODEGEN_NAME\
+#define DECODE_CODEGEN_NAME(EXIT_STATEMENT)\
 	WString itemName, itemResult;\
 	bool cppCodegen;\
 	if (!DecodeCodegenName(codegenName, itemName, itemResult, cppCodegen))\
 	{\
-		continue;\
-	}
+		EXIT_STATEMENT;\
+	}\
 
-TEST_CASE(TestCodegen)
+TEST_FILE
 {
-	Ptr<ParsingTable> table = GetWorkflowTable();
-	List<WString> codegenNames, reflectableAssemblies;
-	Dictionary<WString, WString> assemblyEntries;
-	LoadSampleIndex(L"Codegen", codegenNames);
-
-	WfLexicalScopeManager manager(table);
-	FOREACH(WString, codegenName, codegenNames)
+	TEST_CATEGORY(L"Code generation")
 	{
-		DECODE_CODEGEN_NAME
+		Ptr<ParsingTable> table = GetWorkflowTable();
+		List<WString> codegenNames, reflectableAssemblies;
+		Dictionary<WString, WString> assemblyEntries;
+		LoadSampleIndex(L"Codegen", codegenNames);
 
-		UnitTest::PrintInfo(itemName);
-		WString sample = LoadSample(L"Codegen", itemName);
-		List<Ptr<ParsingError>> errors;
-		Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
-		TEST_ASSERT(node);
-
-		manager.Clear(true, true);
-		{
-			List<RegexToken> tokens;
-			Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
-			manager.AddModule(module);
-			manager.Rebuild(true);
-			LogSampleParseResult(L"Codegen", itemName, sample, node, module, &manager);
-			TEST_ASSERT(manager.errors.Count() == 0);
-		}
-		Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
-		TEST_ASSERT(assembly);
-
-		if (cppCodegen)
-		{
-			auto input = MakePtr<WfCppInput>(itemName);
-			input->multiFile = WfCppFileSwitch::OnDemand;
-			input->reflection = WfCppFileSwitch::OnDemand;
-			input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";
-			input->normalIncludes.Add(L"../Source/CppTypes.h");
-
-			auto output = GenerateCppFiles(input, &manager);
-			TEST_ASSERT(manager.errors.Count() == 0);
-			if (output->containsReflectionInfo)
-			{
-				reflectableAssemblies.Add(input->assemblyName);
-			}
-			if (output->reflection)
-			{
-				assemblyEntries.Add(input->assemblyName, input->reflectionFileName);
-			}
-			else
-			{
-				assemblyEntries.Add(input->assemblyName, output->entryFileName);
-			}
-
-			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
-			{
-				WString code = output->cppFiles.Values()[index];
-				File file(GetCppOutputPath() + fileName);
-				file.WriteAllText(code, false, BomEncoder::Mbcs);
-			}
-		}
-		
-		{
-			LogSampleCodegenResult(L"Codegen", itemName, assembly);
-			LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
-
-			WfRuntimeThreadContext context(assembly);
-			TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Finished);
-
-			{
-				vint functionIndex = assembly->functionByName[L"<initialize>"][0];
-				context.PushStackFrame(functionIndex, 0);
-				TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
-
-				while (context.status != WfRuntimeExecutionStatus::Finished)
-				{
-					auto action = context.Execute(nullptr);
-					TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
-				}
-				TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
-				Value result;
-				TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-			}
-
-			{
-				vint functionIndex = assembly->functionByName[L"main"][0];
-				context.PushStackFrame(functionIndex, 0);
-				TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
-
-				while (context.status != WfRuntimeExecutionStatus::Finished)
-				{
-					auto action = context.Execute(nullptr);
-					TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
-				}
-				TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
-			}
-
-			Value result;
-			WString actual;
-			TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-			result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
-			UnitTest::PrintInfo(L"    expected  : " + itemResult);
-			UnitTest::PrintInfo(L"    actual    : " + actual);
-			TEST_ASSERT(actual == itemResult);
-			TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
-		}
-	}
-
-	{
-		FileStream fileStream(GetCppOutputPath() + L"TestCases.cpp", FileStream::WriteOnly);
-		Utf8Encoder encoder;
-		EncoderStream encoderStream(fileStream, encoder);
-		StreamWriter writer(encoderStream);
-
+		WfLexicalScopeManager manager(table);
 		FOREACH(WString, codegenName, codegenNames)
 		{
-			DECODE_CODEGEN_NAME
-			if (!cppCodegen) continue;
+			TEST_CASE(codegenName)
+			{
+				DECODE_CODEGEN_NAME(return)
 
-			writer.WriteString(L"#include \"");
-			writer.WriteString(assemblyEntries[itemName]);
-			writer.WriteLine(L".h\"");
+				TEST_PRINT(itemName);
+				WString sample = LoadSample(L"Codegen", itemName);
+				List<Ptr<ParsingError>> errors;
+				Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
+				TEST_ASSERT(node);
+
+				manager.Clear(true, true);
+				{
+					List<RegexToken> tokens;
+					Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
+					manager.AddModule(module);
+					manager.Rebuild(true);
+					LogSampleParseResult(L"Codegen", itemName, sample, node, module, &manager);
+					TEST_ASSERT(manager.errors.Count() == 0);
+				}
+				Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
+				TEST_ASSERT(assembly);
+
+				if (cppCodegen)
+				{
+					auto input = MakePtr<WfCppInput>(itemName);
+					input->multiFile = WfCppFileSwitch::OnDemand;
+					input->reflection = WfCppFileSwitch::OnDemand;
+					input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";
+					input->normalIncludes.Add(L"../Source/CppTypes.h");
+
+					auto output = GenerateCppFiles(input, &manager);
+					TEST_ASSERT(manager.errors.Count() == 0);
+					if (output->containsReflectionInfo)
+					{
+						reflectableAssemblies.Add(input->assemblyName);
+					}
+					if (output->reflection)
+					{
+						assemblyEntries.Add(input->assemblyName, input->reflectionFileName);
+					}
+					else
+					{
+						assemblyEntries.Add(input->assemblyName, output->entryFileName);
+					}
+
+					FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+					{
+						WString code = output->cppFiles.Values()[index];
+						File file(GetCppOutputPath() + fileName);
+						file.WriteAllText(code, false, BomEncoder::Mbcs);
+					}
+				}
+
+				{
+					LogSampleCodegenResult(L"Codegen", itemName, assembly);
+					LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
+
+					WfRuntimeThreadContext context(assembly);
+					TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Finished);
+
+					{
+						vint functionIndex = assembly->functionByName[L"<initialize>"][0];
+						context.PushStackFrame(functionIndex, 0);
+						TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
+
+						while (context.status != WfRuntimeExecutionStatus::Finished)
+						{
+							auto action = context.Execute(nullptr);
+							TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
+						}
+						TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
+						Value result;
+						TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+					}
+
+					{
+						vint functionIndex = assembly->functionByName[L"main"][0];
+						context.PushStackFrame(functionIndex, 0);
+						TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
+
+						while (context.status != WfRuntimeExecutionStatus::Finished)
+						{
+							auto action = context.Execute(nullptr);
+							TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
+						}
+						TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
+					}
+
+					Value result;
+					WString actual;
+					TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+					result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
+					TEST_PRINT(L"    expected  : " + itemResult);
+					TEST_PRINT(L"    actual    : " + actual);
+					TEST_ASSERT(actual == itemResult);
+					TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
+				}
+			});
 		}
 
-		writer.WriteLine(L"");
-		writer.WriteLine(L"using namespace vl;");
-		writer.WriteLine(L"using namespace vl::console;");
-		writer.WriteLine(L"using namespace vl::reflection::description;");
-
-		writer.WriteLine(L"");
-		writer.WriteLine(L"void LoadTestCaseTypes()");
-		writer.WriteLine(L"{");
-		FOREACH(WString, name, reflectableAssemblies)
+		TEST_CASE(L"TestCases.cpp")
 		{
-			writer.WriteString(L"\t Load");
-			writer.WriteString(name);
-			writer.WriteLine(L"Types();");
-		}
-		writer.WriteLine(L"}");
+			FileStream fileStream(GetCppOutputPath() + L"TestCases.cpp", FileStream::WriteOnly);
+			Utf8Encoder encoder;
+			EncoderStream encoderStream(fileStream, encoder);
+			StreamWriter writer(encoderStream);
 
-		FOREACH(WString, codegenName, codegenNames)
-		{
-			DECODE_CODEGEN_NAME
-			if (!cppCodegen) continue;
+			FOREACH(WString, codegenName, codegenNames)
+			{
+				DECODE_CODEGEN_NAME(continue)
+				if (!cppCodegen) continue;
+
+				writer.WriteString(L"#include \"");
+				writer.WriteString(assemblyEntries[itemName]);
+				writer.WriteLine(L".h\"");
+			}
 
 			writer.WriteLine(L"");
+			writer.WriteLine(L"using namespace vl;");
+			writer.WriteLine(L"using namespace vl::console;");
+			writer.WriteLine(L"using namespace vl::reflection::description;");
 
-			writer.WriteString(L"TEST_CASE(");
-			writer.WriteString(itemName);
-			writer.WriteLine(L")");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"void LoadTestCaseTypes()");
 			writer.WriteLine(L"{");
-
-			writer.WriteString(L"\tWString expected = L\"");
-			writer.WriteString(itemResult);
-			writer.WriteLine(L"\";");
-
-			writer.WriteString(L"\tWString actual = ::vl_workflow_global::");
-			writer.WriteString(itemName);
-			writer.WriteLine(L"::Instance().main();");
-
-			writer.WriteLine(L"\tConsole::WriteLine(L\"    expected : \" + expected);");
-			writer.WriteLine(L"\tConsole::WriteLine(L\"    actual   : \" + actual);");
-			writer.WriteLine(L"\tTEST_ASSERT(actual == expected);");
-
+			FOREACH(WString, name, reflectableAssemblies)
+			{
+				writer.WriteString(L"\t Load");
+				writer.WriteString(name);
+				writer.WriteLine(L"Types();");
+			}
 			writer.WriteLine(L"}");
-		}
-	}
-}
 
-TEST_CASE(TestWorkflow)
-{
-	List<Ptr<ParsingError>> errors;
-	List<WString> moduleCodes;
-	moduleCodes.Add(LR"workflow(
+			FOREACH(WString, codegenName, codegenNames)
+			{
+				DECODE_CODEGEN_NAME(continue)
+				if (!cppCodegen) continue;
+
+				writer.WriteLine(L"");
+
+				writer.WriteString(L"TEST_CASE(");
+				writer.WriteString(itemName);
+				writer.WriteLine(L")");
+				writer.WriteLine(L"{");
+
+				writer.WriteString(L"\tWString expected = L\"");
+				writer.WriteString(itemResult);
+				writer.WriteLine(L"\";");
+
+				writer.WriteString(L"\tWString actual = ::vl_workflow_global::");
+				writer.WriteString(itemName);
+				writer.WriteLine(L"::Instance().main();");
+
+				writer.WriteLine(L"\tConsole::WriteLine(L\"    expected : \" + expected);");
+				writer.WriteLine(L"\tConsole::WriteLine(L\"    actual   : \" + actual);");
+				writer.WriteLine(L"\tTEST_ASSERT(actual == expected);");
+
+				writer.WriteLine(L"}");
+			}
+		});
+	});
+
+	TEST_CASE(L"Hello, world!")
+	{
+		List<Ptr<ParsingError>> errors;
+		List<WString> moduleCodes;
+		moduleCodes.Add(LR"workflow(
 module test;
 
 func main():string
@@ -219,19 +225,20 @@ func main():string
 }
 )workflow");
 
-	auto table = GetWorkflowTable();
-	auto assembly = Compile(table, moduleCodes, errors);
-	TEST_ASSERT(errors.Count() == 0);
+		auto table = GetWorkflowTable();
+		auto assembly = Compile(table, moduleCodes, errors);
+		TEST_ASSERT(errors.Count() == 0);
 
-	WfRuntimeThreadContext context(assembly);
-	context.PushStackFrame(assembly->functionByName[L"<initialize>"][0], 0);
-	context.ExecuteToEnd();
-	context.PushStackFrame(assembly->functionByName[L"main"][0], 0);
-	context.ExecuteToEnd();
+		WfRuntimeThreadContext context(assembly);
+		context.PushStackFrame(assembly->functionByName[L"<initialize>"][0], 0);
+		context.ExecuteToEnd();
+		context.PushStackFrame(assembly->functionByName[L"main"][0], 0);
+		context.ExecuteToEnd();
 
-	Value result;
-	WString actual;
-	TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-	result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
-	TEST_ASSERT(actual == L"Hello, world!");
+		Value result;
+		WString actual;
+		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
+		TEST_ASSERT(actual == L"Hello, world!");
+	});
 }
