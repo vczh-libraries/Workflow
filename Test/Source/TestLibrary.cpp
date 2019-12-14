@@ -6,14 +6,14 @@ using namespace vl::collections;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
 
-/***********************************************************************
-Coroutine (Enumerable)
-***********************************************************************/
-
-using EC = EnumerableCoroutine;
-
-namespace test_coroutine
+TEST_FILE
 {
+	/***********************************************************************
+	Coroutine (Enumerable)
+	***********************************************************************/
+
+	using EC = EnumerableCoroutine;
+
 	class YieldAndPauseEnum : public Object, public ICoroutine
 	{
 	public:
@@ -51,20 +51,16 @@ namespace test_coroutine
 			return status;
 		}
 	};
-}
-using namespace test_coroutine;
 
-TEST_CASE(TestYieldAndPause)
-{
-	auto ec = EC::Create([](auto* impl) {return MakePtr<YieldAndPauseEnum>(impl); });
-	List<vint> xs;
-	CopyFrom(xs, GetLazyList<vint>(ec));
-	int ys[] = { 0,1,2,3,4 };
-	TEST_ASSERT(CompareEnumerable(xs, From(ys)) == 0);
-}
+	TEST_CASE(L"Test YieldAndPauseEnum coroutine")
+	{
+		auto ec = EC::Create([](auto* impl) {return MakePtr<YieldAndPauseEnum>(impl); });
+		List<vint> xs;
+		CopyFrom(xs, GetLazyList<vint>(ec));
+		int ys[] = { 0,1,2,3,4 };
+		TEST_ASSERT(CompareEnumerable(xs, From(ys)) == 0);
+	});
 
-namespace test_coroutine
-{
 	class JoinAndPauseEnum : public Object, public ICoroutine
 	{
 	public:
@@ -102,20 +98,16 @@ namespace test_coroutine
 			return status;
 		}
 	};
-}
-using namespace test_coroutine;
 
-TEST_CASE(TestJoinAndPause)
-{
-	auto ec = EC::Create([](auto* impl) {return MakePtr<JoinAndPauseEnum>(impl); });
-	List<vint> xs;
-	CopyFrom(xs, GetLazyList<vint>(ec));
-	int ys[] = { 0,1,2,1,2,3,2,3,4,3,4,5,4,5,6 };
-	TEST_ASSERT(CompareEnumerable(xs, From(ys)) == 0);
-}
+	TEST_CASE(L"Test JoinAndPauseEnum coroutine")
+	{
+		auto ec = EC::Create([](auto* impl) {return MakePtr<JoinAndPauseEnum>(impl); });
+		List<vint> xs;
+		CopyFrom(xs, GetLazyList<vint>(ec));
+		int ys[] = { 0,1,2,1,2,3,2,3,4,3,4,5,4,5,6 };
+		TEST_ASSERT(CompareEnumerable(xs, From(ys)) == 0);
+	});
 
-namespace test_coroutine
-{
 	class MixEnum : public Object, public ICoroutine
 	{
 	public:
@@ -160,26 +152,22 @@ namespace test_coroutine
 			return status;
 		}
 	};
-}
-using namespace test_coroutine;
 
-TEST_CASE(TestYieldJoinAndPause)
-{
-	auto ec = EC::Create([](auto* impl) {return MakePtr<MixEnum>(impl); });
-	List<vint> xs;
-	CopyFrom(xs, GetLazyList<vint>(ec));
-	int ys[] = { 0,1,2,3,2,3,4,5,4 };
-	TEST_ASSERT(CompareEnumerable(xs, From(ys)) == 0);
-}
+	TEST_CASE(L"Test MixEnum coroutine")
+	{
+		auto ec = EC::Create([](auto* impl) {return MakePtr<MixEnum>(impl); });
+		List<vint> xs;
+		CopyFrom(xs, GetLazyList<vint>(ec));
+		int ys[] = { 0,1,2,3,2,3,4,5,4 };
+		TEST_ASSERT(CompareEnumerable(xs, From(ys)) == 0);
+	});
 
-/***********************************************************************
-Coroutine (Async)
-***********************************************************************/
+	/***********************************************************************
+	Coroutine (Async)
+	***********************************************************************/
 
-using AC = AsyncCoroutine;
+	using AC = AsyncCoroutine;
 
-namespace test_coroutine
-{
 	class SyncScheduler : public Object, public IAsyncScheduler, public Description<SyncScheduler>
 	{
 	public:
@@ -237,12 +225,12 @@ namespace test_coroutine
 		{
 			return status;
 		}
-	};
 
-	Ptr<IAsync> CreateEmptyAsync()
-	{
-		return AC::Create([](auto impl) { return MakePtr<EmptyAsync>(impl); });
-	}
+		static Ptr<IAsync> Create()
+		{
+			return AC::Create([](auto impl) { return MakePtr<EmptyAsync>(impl); });
+		}
+	};
 
 	class FailAsync : public Object, public ICoroutine
 	{
@@ -269,53 +257,49 @@ namespace test_coroutine
 		{
 			return status;
 		}
+
+		static Ptr<IAsync> Create()
+		{
+			return AC::Create([](auto impl) { return MakePtr<FailAsync>(impl); });
+		}
 	};
 
-	Ptr<IAsync> CreateFailAsync()
+	TEST_CASE(L"Test EmptyAsync coroutine")
 	{
-		return AC::Create([](auto impl) { return MakePtr<FailAsync>(impl); });
-	}
-}
-using namespace test_coroutine;
-
-TEST_CASE(TestEmptyAsync)
-{
-	auto scheduler = MakePtr<SyncScheduler>();
-	IAsyncScheduler::RegisterDefaultScheduler(scheduler);
-	Ptr<CoroutineResult> cr;
-	{
-		auto async = CreateEmptyAsync();
-		TEST_ASSERT(async->Execute([&](auto output)
+		auto scheduler = MakePtr<SyncScheduler>();
+		IAsyncScheduler::RegisterDefaultScheduler(scheduler);
+		Ptr<CoroutineResult> cr;
 		{
-			cr = output;
-		}) == true);
-		TEST_ASSERT(async->Execute({}) == false);
-	}
-	scheduler->Run();
-	TEST_ASSERT(UnboxValue<WString>(cr->GetResult()) == L"Empty!");
-	IAsyncScheduler::UnregisterDefaultScheduler();
-}
+			auto async = EmptyAsync::Create();
+			TEST_ASSERT(async->Execute([&](auto output)
+			{
+				cr = output;
+			}) == true);
+			TEST_ASSERT(async->Execute({}) == false);
+		}
+		scheduler->Run();
+		TEST_ASSERT(UnboxValue<WString>(cr->GetResult()) == L"Empty!");
+		IAsyncScheduler::UnregisterDefaultScheduler();
+	});
 
-TEST_CASE(TestFailAsync)
-{
-	auto scheduler = MakePtr<SyncScheduler>();
-	IAsyncScheduler::RegisterDefaultScheduler(scheduler);
-	Ptr<CoroutineResult> cr;
+	TEST_CASE(L"Test FailAsync coroutine")
 	{
-		auto async = CreateFailAsync();
-		TEST_ASSERT(async->Execute([&](auto output)
+		auto scheduler = MakePtr<SyncScheduler>();
+		IAsyncScheduler::RegisterDefaultScheduler(scheduler);
+		Ptr<CoroutineResult> cr;
 		{
-			cr = output;
-		}) == true);
-		TEST_ASSERT(async->Execute({}) == false);
-	}
-	scheduler->Run();
-	TEST_ASSERT(cr->GetFailure()->GetMessage() == L"Fail!");
-	IAsyncScheduler::UnregisterDefaultScheduler();
-}
+			auto async = FailAsync::Create();
+			TEST_ASSERT(async->Execute([&](auto output)
+			{
+				cr = output;
+			}) == true);
+			TEST_ASSERT(async->Execute({}) == false);
+		}
+		scheduler->Run();
+		TEST_ASSERT(cr->GetFailure()->GetMessage() == L"Fail!");
+		IAsyncScheduler::UnregisterDefaultScheduler();
+	});
 
-namespace test_coroutine
-{
 	class NestedAsync : public Object, public ICoroutine
 	{
 	public:
@@ -336,11 +320,11 @@ namespace test_coroutine
 				switch (state++)
 				{
 				case 0:
-					AC::AwaitAndRead(impl, CreateEmptyAsync());
+					AC::AwaitAndRead(impl, EmptyAsync::Create());
 					break;
 				case 1:
 					if (output->GetFailure()) { throw output->GetFailure(); }
-					AC::AwaitAndRead(impl, CreateFailAsync());
+					AC::AwaitAndRead(impl, FailAsync::Create());
 					break;
 				case 2:
 					if (output->GetFailure()) { throw output->GetFailure(); }
@@ -365,34 +349,31 @@ namespace test_coroutine
 		{
 			return status;
 		}
+
+		static Ptr<IAsync> Create()
+		{
+			return AC::Create([](auto impl) { return MakePtr<NestedAsync>(impl); });
+		}
 	};
 
-	Ptr<IAsync> CreateNestedAsync()
+	TEST_CASE(L"Test NestedAsync coroutine")
 	{
-		return AC::Create([](auto impl) { return MakePtr<NestedAsync>(impl); });
-	}
-}
-
-TEST_CASE(TestNestedAsync)
-{
-	auto scheduler = MakePtr<SyncScheduler>();
-	Ptr<CoroutineResult> cr;
-	IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
-	{
-		auto async = CreateNestedAsync();
-		TEST_ASSERT(async->Execute([&](auto output)
+		auto scheduler = MakePtr<SyncScheduler>();
+		Ptr<CoroutineResult> cr;
+		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
-			cr = output;
-		}) == true);
-		TEST_ASSERT(async->Execute({}) == false);
-	}
-	scheduler->Run();
-	TEST_ASSERT(cr->GetFailure()->GetMessage() == L"Fail!");
-	IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-}
+			auto async = NestedAsync::Create();
+			TEST_ASSERT(async->Execute([&](auto output)
+			{
+				cr = output;
+			}) == true);
+			TEST_ASSERT(async->Execute({}) == false);
+		}
+		scheduler->Run();
+		TEST_ASSERT(cr->GetFailure()->GetMessage() == L"Fail!");
+		IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+	});
 
-namespace test_coroutine
-{
 	class DelayAsync : public Object, public ICoroutine
 	{
 	public:
@@ -428,82 +409,82 @@ namespace test_coroutine
 		{
 			return status;
 		}
+
+		static Ptr<IAsync> Create()
+		{
+			return AC::Create([](auto impl) { return MakePtr<DelayAsync>(impl); });
+		}
 	};
 
-	Ptr<IAsync> CreateDelayAsync()
+	TEST_CASE(L"Test DelayAsync coroutine")
 	{
-		return AC::Create([](auto impl) { return MakePtr<DelayAsync>(impl); });
-	}
-}
-
-TEST_CASE(TestDelayAsync)
-{
-	auto scheduler = MakePtr<SyncScheduler>();
-	Ptr<CoroutineResult> cr;
-	IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
-	{
-		auto async = CreateDelayAsync();
-		TEST_ASSERT(async->Execute([&](auto output)
+		auto scheduler = MakePtr<SyncScheduler>();
+		Ptr<CoroutineResult> cr;
+		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
-			cr = output;
-		}) == true);
-		TEST_ASSERT(async->Execute({}) == false);
-	}
-	scheduler->Run();
-	TEST_ASSERT(UnboxValue<WString>(cr->GetResult()) == L"Delay!");
-	IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-}
-
-TEST_CASE(TestFutureAndPromiseSuccess)
-{
-	auto scheduler = MakePtr<SyncScheduler>();
-	Ptr<CoroutineResult> cr;
-	IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
-	{
-		auto future = IFuture::Create();
-		auto promise = future->GetPromise();
-		scheduler->ExecuteInBackground([=]()
-		{
-			TEST_ASSERT(promise->SendResult(BoxValue<WString>(L"Future!")) == true);
-			TEST_ASSERT(promise->SendResult(BoxValue<WString>(L"Future!")) == false);
-		});
-		scheduler->ExecuteInBackground([=, &cr]()
-		{
-			TEST_ASSERT(future->Execute([&](auto output)
+			auto async = DelayAsync::Create();
+			TEST_ASSERT(async->Execute([&](auto output)
 			{
 				cr = output;
 			}) == true);
-			TEST_ASSERT(future->Execute({}) == false);
-		});
-	}
-	scheduler->Run();
-	TEST_ASSERT(UnboxValue<WString>(cr->GetResult()) == L"Future!");
-	IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-}
+			TEST_ASSERT(async->Execute({}) == false);
+		}
+		scheduler->Run();
+		TEST_ASSERT(UnboxValue<WString>(cr->GetResult()) == L"Delay!");
+		IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+	});
 
-TEST_CASE(TestFutureAndPromiseFail)
-{
-	auto scheduler = MakePtr<SyncScheduler>();
-	Ptr<CoroutineResult> cr;
-	IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
+	TEST_CASE(L"Test succeeded Future/Promise")
 	{
-		auto future = IFuture::Create();
-		scheduler->ExecuteInBackground([=, &cr]()
+		auto scheduler = MakePtr<SyncScheduler>();
+		Ptr<CoroutineResult> cr;
+		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
-			TEST_ASSERT(future->Execute([&](auto output)
+			auto future = IFuture::Create();
+			auto promise = future->GetPromise();
+			scheduler->ExecuteInBackground([=]()
 			{
-				cr = output;
-			}) == true);
-			TEST_ASSERT(future->Execute({}) == false);
-		});
-		auto promise = future->GetPromise();
-		scheduler->ExecuteInBackground([=]()
+				TEST_ASSERT(promise->SendResult(BoxValue<WString>(L"Future!")) == true);
+				TEST_ASSERT(promise->SendResult(BoxValue<WString>(L"Future!")) == false);
+			});
+			scheduler->ExecuteInBackground([=, &cr]()
+			{
+				TEST_ASSERT(future->Execute([&](auto output)
+				{
+					cr = output;
+				}) == true);
+				TEST_ASSERT(future->Execute({}) == false);
+			});
+		}
+		scheduler->Run();
+		TEST_ASSERT(UnboxValue<WString>(cr->GetResult()) == L"Future!");
+		IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+	});
+
+	TEST_CASE(L"Test failed Future/Promise")
+	{
+		auto scheduler = MakePtr<SyncScheduler>();
+		Ptr<CoroutineResult> cr;
+		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
-			TEST_ASSERT(promise->SendFailure(IValueException::Create(L"Promise!")) == true);
-			TEST_ASSERT(promise->SendFailure(IValueException::Create(L"Promise!")) == false);
-		});
-	}
-	scheduler->Run();
-	TEST_ASSERT(cr->GetFailure()->GetMessage() == L"Promise!");
-	IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+			auto future = IFuture::Create();
+			scheduler->ExecuteInBackground([=, &cr]()
+			{
+				TEST_ASSERT(future->Execute([&](auto output)
+				{
+					cr = output;
+				}) == true);
+				TEST_ASSERT(future->Execute({}) == false);
+			});
+			auto promise = future->GetPromise();
+			scheduler->ExecuteInBackground([=]()
+			{
+				TEST_ASSERT(promise->SendFailure(IValueException::Create(L"Promise!")) == true);
+				TEST_ASSERT(promise->SendFailure(IValueException::Create(L"Promise!")) == false);
+			});
+		}
+		scheduler->Run();
+		TEST_ASSERT(cr->GetFailure()->GetMessage() == L"Promise!");
+		IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+	});
 }
