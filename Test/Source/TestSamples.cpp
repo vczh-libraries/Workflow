@@ -1,77 +1,45 @@
 #include "Helper.h"
 
-TEST_CASE(TestSampleExpressions)
+TEST_FILE
 {
-	Ptr<ParsingTable> table = GetWorkflowTable();
-	List<WString> itemNames;
-	LoadSampleIndex(L"Expression", itemNames);
-	FOREACH(WString, itemName, itemNames)
+	const wchar_t* categories[] =
 	{
-		UnitTest::PrintInfo(itemName);
-		WString sample = LoadSample(L"Expression", itemName);
-		List<Ptr<ParsingError>> errors;
-		Ptr<ParsingTreeNode> node = WfParseExpressionAsParsingTreeNode(sample, table, errors);
-		TEST_ASSERT(node);
+		L"Expression",
+		L"Statement",
+		L"Declaration",
+		L"Module"
+	};
 
-		List<RegexToken> tokens;
-		auto typedNode = WfConvertParsingTreeNode(node, tokens);
-		LogSampleParseResult(L"Expression", itemName, sample, node, typedNode);
-	}
-}
-
-TEST_CASE(TestSampleStatements)
-{
-	Ptr<ParsingTable> table = GetWorkflowTable();
-	List<WString> itemNames;
-	LoadSampleIndex(L"Statement", itemNames);
-	FOREACH(WString, itemName, itemNames)
+	using ParseProc = Ptr<ParsingTreeNode>(*)(const WString&, Ptr<ParsingTable>, List<Ptr<ParsingError>>&, vint);
+	const ParseProc parseProcs[] =
 	{
-		UnitTest::PrintInfo(itemName);
-		WString sample = LoadSample(L"Statement", itemName);
-		List<Ptr<ParsingError>> errors;
-		Ptr<ParsingTreeNode> node = WfParseStatementAsParsingTreeNode(sample, table, errors);
-		TEST_ASSERT(node);
+		WfParseExpressionAsParsingTreeNode,
+		WfParseStatementAsParsingTreeNode,
+		WfParseDeclarationAsParsingTreeNode,
+		WfParseModuleAsParsingTreeNode
+	};
 
-		List<RegexToken> tokens;
-		auto typedNode = WfConvertParsingTreeNode(node, tokens);
-		LogSampleParseResult(L"Statement", itemName, sample, node, typedNode);
-	}
-}
-
-TEST_CASE(TestSampleDeclarations)
-{
-	Ptr<ParsingTable> table = GetWorkflowTable();
-	List<WString> itemNames;
-	LoadSampleIndex(L"Declaration", itemNames);
-	FOREACH(WString, itemName, itemNames)
+	for (vint i = 0; i < 4; i++)
 	{
-		UnitTest::PrintInfo(itemName);
-		WString sample = LoadSample(L"Declaration", itemName);
-		List<Ptr<ParsingError>> errors;
-		Ptr<ParsingTreeNode> node = WfParseDeclarationAsParsingTreeNode(sample, table, errors);
-		TEST_ASSERT(node);
+		auto category = categories[i];
+		auto parseProc = parseProcs[i];
+		TEST_CATEGORY(L"Test against legal script: " + WString(category))
+		{
+			Ptr<ParsingTable> table = GetWorkflowTable();
+			List<WString> itemNames;
+			LoadSampleIndex(category, itemNames);
+			FOREACH(WString, itemName, itemNames)
+			{
+				TEST_PRINT(itemName);
+				WString sample = LoadSample(category, itemName);
+				List<Ptr<ParsingError>> errors;
+				Ptr<ParsingTreeNode> node = parseProc(sample, table, errors, -1);
+				TEST_ASSERT(node);
 
-		List<RegexToken> tokens;
-		auto typedNode = WfConvertParsingTreeNode(node, tokens);
-		LogSampleParseResult(L"Declaration", itemName, sample, node, typedNode);
-	}
-}
-
-TEST_CASE(TestSampleModules)
-{
-	Ptr<ParsingTable> table = GetWorkflowTable();
-	List<WString> itemNames;
-	LoadSampleIndex(L"Module", itemNames);
-	FOREACH(WString, itemName, itemNames)
-	{
-		UnitTest::PrintInfo(itemName);
-		WString sample = LoadSample(L"Module", itemName);
-		List<Ptr<ParsingError>> errors;
-		Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
-		TEST_ASSERT(node);
-
-		List<RegexToken> tokens;
-		auto typedNode = WfConvertParsingTreeNode(node, tokens);
-		LogSampleParseResult(L"Module", itemName, sample, node, typedNode);
+				List<RegexToken> tokens;
+				auto typedNode = WfConvertParsingTreeNode(node, tokens);
+				LogSampleParseResult(category, itemName, sample, node, typedNode);
+			}
+		});
 	}
 }
