@@ -30,15 +30,18 @@ TEST_FILE
 			LoadSampleIndex(category, itemNames);
 			FOREACH(WString, itemName, itemNames)
 			{
-				TEST_PRINT(itemName);
-				WString sample = LoadSample(category, itemName);
-				List<Ptr<ParsingError>> errors;
-				Ptr<ParsingTreeNode> node = parseProc(sample, table, errors, -1);
-				TEST_ASSERT(node);
+				TEST_CASE(itemName)
+				{
+					TEST_PRINT(itemName);
+					WString sample = LoadSample(category, itemName);
+					List<Ptr<ParsingError>> errors;
+					Ptr<ParsingTreeNode> node = parseProc(sample, table, errors, -1);
+					TEST_ASSERT(node);
 
-				List<RegexToken> tokens;
-				auto typedNode = WfConvertParsingTreeNode(node, tokens);
-				LogSampleParseResult(category, itemName, sample, node, typedNode);
+					List<RegexToken> tokens;
+					auto typedNode = WfConvertParsingTreeNode(node, tokens);
+					LogSampleParseResult(category, itemName, sample, node, typedNode);
+				});
 			}
 		});
 	}

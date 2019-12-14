@@ -181,7 +181,7 @@ TEST_FILE
 		List<Ptr<ParsingError>> errors;
 		auto assembly = Compile(GetWorkflowTable(), moduleCodes, errors);
 		TEST_ASSERT(assembly && errors.Count() == 0);
-		return new WfRuntimeGlobalContext(assembly);
+		return MakePtr<WfRuntimeGlobalContext>(assembly);
 	};
 
 	TEST_CASE(L"Test debugger: no break point")
