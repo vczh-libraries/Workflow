@@ -74,10 +74,10 @@ WString GetCppMergePath()
 void FillFileNames(const WString& path, SortedList<WString>& fileNames)
 {
 	Folder folder(path);
-	TEST_ASSERT(folder.Exists());
+	CHECK_ERROR(folder.Exists(), L"Folder does not exist");
 
 	List<File> files;
-	TEST_ASSERT(folder.GetFiles(files));
+	CHECK_ERROR(folder.GetFiles(files), L"Failed to enumerate files");
 
 	FOREACH(File, file, files)
 	{

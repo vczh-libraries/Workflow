@@ -135,812 +135,816 @@ void LoadTestCaseTypes()
 	 LoadCoSmcCalculatorTypes();
 }
 
-TEST_CASE(HelloWorld)
+TEST_FILE
+{
+
+TEST_CASE(L"HelloWorld")
 {
 	WString expected = L"Hello, world!";
 	WString actual = ::vl_workflow_global::HelloWorld::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpNot)
+TEST_CASE(L"OpNot")
 {
 	WString expected = L"true, -2, -3, -5, -9, 254, 65533, 4294967291, 18446744073709551607";
 	WString actual = ::vl_workflow_global::OpNot::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpPositive)
+TEST_CASE(L"OpPositive")
 {
 	WString expected = L"1, 2, 4, 8, 1, 2, 4, 8";
 	WString actual = ::vl_workflow_global::OpPositive::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpNegative)
+TEST_CASE(L"OpNegative")
 {
 	WString expected = L"-1, -2, -4, -8";
 	WString actual = ::vl_workflow_global::OpNegative::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpAdd)
+TEST_CASE(L"OpAdd")
 {
 	WString expected = L"3, 6, 12, 3, 6, 12, 4.5";
 	WString actual = ::vl_workflow_global::OpAdd::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpSub)
+TEST_CASE(L"OpSub")
 {
 	WString expected = L"-1, -2, -4, 4294967295, 4294967294, 18446744073709551612, -1.5";
 	WString actual = ::vl_workflow_global::OpSub::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpMul)
+TEST_CASE(L"OpMul")
 {
 	WString expected = L"2, 8, 32, 2, 8, 32, 4.5";
 	WString actual = ::vl_workflow_global::OpMul::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpDiv)
+TEST_CASE(L"OpDiv")
 {
 	WString expected = L"0, 0, 0, 0, 0, 0, 0.5";
 	WString actual = ::vl_workflow_global::OpDiv::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpMod)
+TEST_CASE(L"OpMod")
 {
 	WString expected = L"1, 2, 4, 1, 2, 4";
 	WString actual = ::vl_workflow_global::OpMod::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpShl)
+TEST_CASE(L"OpShl")
 {
 	WString expected = L"4, 32, 1024, 4, 32, 1024";
 	WString actual = ::vl_workflow_global::OpShl::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpShr)
+TEST_CASE(L"OpShr")
 {
 	WString expected = L"0, 0, 0, 0, 0, 0";
 	WString actual = ::vl_workflow_global::OpShr::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpAnd)
+TEST_CASE(L"OpAnd")
 {
 	WString expected = L"false, false, 0, 0, 0, 0, 0, 0";
 	WString actual = ::vl_workflow_global::OpAnd::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpOr)
+TEST_CASE(L"OpOr")
 {
 	WString expected = L"true, false, 3, 6, 12, 3, 6, 12";
 	WString actual = ::vl_workflow_global::OpOr::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpXor)
+TEST_CASE(L"OpXor")
 {
 	WString expected = L"true, false, 3, 6, 12, 3, 6, 12";
 	WString actual = ::vl_workflow_global::OpXor::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpCompare)
+TEST_CASE(L"OpCompare")
 {
 	WString expected = L"true, false, false, true, false, true, true, false, false, false, false, false, true, true, true, true, false, false, false, true, true, false, false, false, true, false, false, true";
 	WString actual = ::vl_workflow_global::OpCompare::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OpCompareReference)
+TEST_CASE(L"OpCompareReference")
 {
 	WString expected = L"false, true, false, false, true, true, false, false, true, true, true";
 	WString actual = ::vl_workflow_global::OpCompareReference::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ListProcessing)
+TEST_CASE(L"ListProcessing")
 {
 	WString expected = L"5, 1, 5, 6, 1, 6";
 	WString actual = ::vl_workflow_global::ListProcessing::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(MapProcessing)
+TEST_CASE(L"MapProcessing")
 {
 	WString expected = L"5, 1, 5, 6, 1, 6";
 	WString actual = ::vl_workflow_global::MapProcessing::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ObservableList)
+TEST_CASE(L"ObservableList")
 {
 	WString expected = L"[1:0:1][3:0:1][5:0:1][7:0:1][9:0:1][0:1:0][1:1:0][2:1:0][3:1:0][4:1:0][2][4][6][8][10][0:5:0]";
 	WString actual = ::vl_workflow_global::ObservableList::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ElementInSet)
+TEST_CASE(L"ElementInSet")
 {
 	WString expected = L"true, false, true, false, true, false, false, true, true, false";
 	WString actual = ::vl_workflow_global::ElementInSet::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(GlobalVariable)
+TEST_CASE(L"GlobalVariable")
 {
 	WString expected = L"30, 10";
 	WString actual = ::vl_workflow_global::GlobalVariable::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(RecursiveFunction)
+TEST_CASE(L"RecursiveFunction")
 {
 	WString expected = L"1, 1, 2, 3, 5";
 	WString actual = ::vl_workflow_global::RecursiveFunction::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(LetIn)
+TEST_CASE(L"LetIn")
 {
 	WString expected = L"30";
 	WString actual = ::vl_workflow_global::LetIn::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(Property)
+TEST_CASE(L"Property")
 {
 	WString expected = L"10, 20, 10, , This is , 20, Workflow, This is Workflow";
 	WString actual = ::vl_workflow_global::Property::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(MethodClosure)
+TEST_CASE(L"MethodClosure")
 {
 	WString expected = L"10, 20";
 	WString actual = ::vl_workflow_global::MethodClosure::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(StaticMethod)
+TEST_CASE(L"StaticMethod")
 {
 	WString expected = L"1, This is one, 2, This is two";
 	WString actual = ::vl_workflow_global::StaticMethod::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(Event)
+TEST_CASE(L"Event")
 {
 	WString expected = L"2, 10, 20, 2, 20, 30, true, false";
 	WString actual = ::vl_workflow_global::Event::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ControlFlow)
+TEST_CASE(L"ControlFlow")
 {
 	WString expected = L"55, 55, 55, 55, 55";
 	WString actual = ::vl_workflow_global::ControlFlow::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(IfNotNull)
+TEST_CASE(L"IfNotNull")
 {
 	WString expected = L"{1} is a list, {1:2} is not a list";
 	WString actual = ::vl_workflow_global::IfNotNull::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ForEach)
+TEST_CASE(L"ForEach")
 {
 	WString expected = L"[1, 2, 3, 4, 5][5, 4, 3, 2, 1]";
 	WString actual = ::vl_workflow_global::ForEach::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(AnonymousLambda)
+TEST_CASE(L"AnonymousLambda")
 {
 	WString expected = L"2, 3, 3, 4";
 	WString actual = ::vl_workflow_global::AnonymousLambda::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(NamedLambda)
+TEST_CASE(L"NamedLambda")
 {
 	WString expected = L"1, 1, 2, 3, 5";
 	WString actual = ::vl_workflow_global::NamedLambda::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(OrderedLambda)
+TEST_CASE(L"OrderedLambda")
 {
 	WString expected = L"2, 3, 3, 4";
 	WString actual = ::vl_workflow_global::OrderedLambda::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(TryFinally)
+TEST_CASE(L"TryFinally")
 {
 	WString expected = L"3115";
 	WString actual = ::vl_workflow_global::TryFinally::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(TryFinally2)
+TEST_CASE(L"TryFinally2")
 {
 	WString expected = L"3115";
 	WString actual = ::vl_workflow_global::TryFinally2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(TryCatch)
+TEST_CASE(L"TryCatch")
 {
 	WString expected = L"[Test1::catch][Test2::catch][Test2::finally][Test3::catch1][Test3::finally1][Test3::catch2][Test3::finally2][Test4::finally1][Test4::finally2]";
 	WString actual = ::vl_workflow_global::TryCatch::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(Delete)
+TEST_CASE(L"Delete")
 {
 	WString expected = L"false, false, false, false, true";
 	WString actual = ::vl_workflow_global::Delete::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(FailedThen)
+TEST_CASE(L"FailedThen")
 {
 	WString expected = L"-1, 110";
 	WString actual = ::vl_workflow_global::FailedThen::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(NullableCast)
+TEST_CASE(L"NullableCast")
 {
 	WString expected = L"null, 0";
 	WString actual = ::vl_workflow_global::NullableCast::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(NewInterface)
+TEST_CASE(L"NewInterface")
 {
 	WString expected = L"[1, 2, 3, 4, 5][5, 4, 3, 2, 1]";
 	WString actual = ::vl_workflow_global::NewInterface::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(NewCustomInterface)
+TEST_CASE(L"NewCustomInterface")
 {
 	WString expected = L"[100][15][15]";
 	WString actual = ::vl_workflow_global::NewCustomInterface::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(NewCustomInterface2)
+TEST_CASE(L"NewCustomInterface2")
 {
 	WString expected = L"[100][15][15]";
 	WString actual = ::vl_workflow_global::NewCustomInterface2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(NewCustomInterface3)
+TEST_CASE(L"NewCustomInterface3")
 {
 	WString expected = L"[100][15][15]";
 	WString actual = ::vl_workflow_global::NewCustomInterface3::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(BindSimple)
+TEST_CASE(L"BindSimple")
 {
 	WString expected = L"[10][30][60]";
 	WString actual = ::vl_workflow_global::BindSimple::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(BindLet)
+TEST_CASE(L"BindLet")
 {
 	WString expected = L"[1][2][22][42][42][342][642]";
 	WString actual = ::vl_workflow_global::BindLet::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(BindComplex)
+TEST_CASE(L"BindComplex")
 {
 	WString expected = L"[10][30][60]";
 	WString actual = ::vl_workflow_global::BindComplex::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(BindFormat)
+TEST_CASE(L"BindFormat")
 {
 	WString expected = L"[The value has changed to 10][The value has changed to 20][The value has changed to 30]";
 	WString actual = ::vl_workflow_global::BindFormat::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(BindCustomInterface)
+TEST_CASE(L"BindCustomInterface")
 {
 	WString expected = L"[1][3][6][10][15]";
 	WString actual = ::vl_workflow_global::BindCustomInterface::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(BindCustomInterface2)
+TEST_CASE(L"BindCustomInterface2")
 {
 	WString expected = L"[1][3][6][10][15]";
 	WString actual = ::vl_workflow_global::BindCustomInterface2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(BindNull)
+TEST_CASE(L"BindNull")
 {
 	WString expected = L"[*][0][100][*][*]";
 	WString actual = ::vl_workflow_global::BindNull::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ClassField)
+TEST_CASE(L"ClassField")
 {
 	WString expected = L"0, 0, 1, 2, true, false";
 	WString actual = ::vl_workflow_global::ClassField::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CallStaticMethod)
+TEST_CASE(L"CallStaticMethod")
 {
 	WString expected = L"55";
 	WString actual = ::vl_workflow_global::CallStaticMethod::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(NestedLambda)
+TEST_CASE(L"NestedLambda")
 {
 	WString expected = L"[1][2][[4][5][[3, 12]]]";
 	WString actual = ::vl_workflow_global::NestedLambda::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ClassMethod)
+TEST_CASE(L"ClassMethod")
 {
 	WString expected = L"[0][100][2][1][100]";
 	WString actual = ::vl_workflow_global::ClassMethod::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ClassCtor)
+TEST_CASE(L"ClassCtor")
 {
 	WString expected = L"[0][0][1][0][0][2][1][2]";
 	WString actual = ::vl_workflow_global::ClassCtor::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(ClassDtor)
+TEST_CASE(L"ClassDtor")
 {
 	WString expected = L"[x][y][z]";
 	WString actual = ::vl_workflow_global::ClassDtor::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(StructCtor)
+TEST_CASE(L"StructCtor")
 {
 	WString expected = L"21";
 	WString actual = ::vl_workflow_global::StructCtor::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(StructCtor2)
+TEST_CASE(L"StructCtor2")
 {
 	WString expected = L"21";
 	WString actual = ::vl_workflow_global::StructCtor2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(EnumCtor)
+TEST_CASE(L"EnumCtor")
 {
 	WString expected = L"1, 2, 4, 8, 3, 1, 0";
 	WString actual = ::vl_workflow_global::EnumCtor::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(EnumCtor2)
+TEST_CASE(L"EnumCtor2")
 {
 	WString expected = L"1, 2, 4, 8, 3, 1, 0";
 	WString actual = ::vl_workflow_global::EnumCtor2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(WorkflowHints)
+TEST_CASE(L"WorkflowHints")
 {
 	WString expected = L"[1][10][100][1000][2][20][1][100][3][4]";
 	WString actual = ::vl_workflow_global::WorkflowHints::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(WorkflowAttributes)
+TEST_CASE(L"WorkflowAttributes")
 {
 	WString expected = L"((1 + 2) * (3 + 4)) = 21";
 	WString actual = ::vl_workflow_global::WorkflowAttributes::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(WorkflowMultiFiles)
+TEST_CASE(L"WorkflowMultiFiles")
 {
 	WString expected = L"MultiFiles";
 	WString actual = ::vl_workflow_global::WorkflowMultiFiles::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoRawCoroutine)
+TEST_CASE(L"CoRawCoroutine")
 {
 	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoRawCoroutine2)
+TEST_CASE(L"CoRawCoroutine2")
 {
 	WString expected = L"[+0][-0]![*]![+2][-1]![*]![-2]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoRawCoroutine3)
+TEST_CASE(L"CoRawCoroutine3")
 {
 	WString expected = L"[+0][-0]!![-1][*]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine3::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoRawCoroutine4)
+TEST_CASE(L"CoRawCoroutine4")
 {
 	WString expected = L"[+0][-0][+1][-1][-2][*]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine4::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoRawCoroutine5)
+TEST_CASE(L"CoRawCoroutine5")
 {
 	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine5::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoRawCoroutine6)
+TEST_CASE(L"CoRawCoroutine6")
 {
 	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine6::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoRawCoroutine7)
+TEST_CASE(L"CoRawCoroutine7")
 {
 	WString expected = L"[+0][-0][+1][-1][+2][-2][+3][-3][+4][-4][+Enough!][-5]";
 	WString actual = ::vl_workflow_global::CoRawCoroutine7::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoEnum)
+TEST_CASE(L"CoEnum")
 {
 	WString expected = L"[0][1][2][3][4]";
 	WString actual = ::vl_workflow_global::CoEnum::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoEnum2)
+TEST_CASE(L"CoEnum2")
 {
 	WString expected = L"[0][1][2][1][2][3][2][3][4]";
 	WString actual = ::vl_workflow_global::CoEnum2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoAsync)
+TEST_CASE(L"CoAsync")
 {
 	WString expected = L"[0][+0][0][-0]![1][+1][1][-1]!";
 	WString actual = ::vl_workflow_global::CoAsync::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoAsync2)
+TEST_CASE(L"CoAsync2")
 {
 	WString expected = L"[1][2][3][4][5][Cancelled]";
 	WString actual = ::vl_workflow_global::CoAsync2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(Overloading)
+TEST_CASE(L"Overloading")
 {
 	WString expected = L"[2][2][2][2][2][2][2][2][2][2]";
 	WString actual = ::vl_workflow_global::Overloading::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchD1)
+TEST_CASE(L"CoSmcSwitchD1")
 {
 	WString expected = L"[A].";
 	WString actual = ::vl_workflow_global::CoSmcSwitchD1::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchD2)
+TEST_CASE(L"CoSmcSwitchD2")
 {
 	WString expected = L"!";
 	WString actual = ::vl_workflow_global::CoSmcSwitchD2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchI1)
+TEST_CASE(L"CoSmcSwitchI1")
 {
 	WString expected = L"[A].";
 	WString actual = ::vl_workflow_global::CoSmcSwitchI1::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchI2)
+TEST_CASE(L"CoSmcSwitchI2")
 {
 	WString expected = L".";
 	WString actual = ::vl_workflow_global::CoSmcSwitchI2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchIR1)
+TEST_CASE(L"CoSmcSwitchIR1")
 {
 	WString expected = L"[A].";
 	WString actual = ::vl_workflow_global::CoSmcSwitchIR1::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchIR2)
+TEST_CASE(L"CoSmcSwitchIR2")
 {
 	WString expected = L"";
 	WString actual = ::vl_workflow_global::CoSmcSwitchIR2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchP1)
+TEST_CASE(L"CoSmcSwitchP1")
 {
 	WString expected = L"[A][B].";
 	WString actual = ::vl_workflow_global::CoSmcSwitchP1::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchP2)
+TEST_CASE(L"CoSmcSwitchP2")
 {
 	WString expected = L"[B].!";
 	WString actual = ::vl_workflow_global::CoSmcSwitchP2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchPR1)
+TEST_CASE(L"CoSmcSwitchPR1")
 {
 	WString expected = L"[A][B].";
 	WString actual = ::vl_workflow_global::CoSmcSwitchPR1::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcSwitchPR2)
+TEST_CASE(L"CoSmcSwitchPR2")
 {
 	WString expected = L"!";
 	WString actual = ::vl_workflow_global::CoSmcSwitchPR2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcGoto)
+TEST_CASE(L"CoSmcGoto")
 {
 	WString expected = L"[A].A!";
 	WString actual = ::vl_workflow_global::CoSmcGoto::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcPush)
+TEST_CASE(L"CoSmcPush")
 {
 	WString expected = L"[A].A[B].B.";
 	WString actual = ::vl_workflow_global::CoSmcPush::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcTryCatch1)
+TEST_CASE(L"CoSmcTryCatch1")
 {
 	WString expected = L"[A].A[B].B.";
 	WString actual = ::vl_workflow_global::CoSmcTryCatch1::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcTryCatch2)
+TEST_CASE(L"CoSmcTryCatch2")
 {
 	WString expected = L"!A!B.";
 	WString actual = ::vl_workflow_global::CoSmcTryCatch2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
-}
+});
 
-TEST_CASE(CoSmcCalculator)
+TEST_CASE(L"CoSmcCalculator")
 {
 	WString expected = L"[0][1][1.][1.5][2][21][21.][21.2][21.25][22.75][2][45.5][0]";
 	WString actual = ::vl_workflow_global::CoSmcCalculator::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
+});
 }

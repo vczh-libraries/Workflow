@@ -16,15 +16,15 @@ void LoadTypes()
 	JsonLoadTypes();
 	LoadCppTypes();
 	LoadTestCaseTypes();
-	TEST_ASSERT(GetGlobalTypeManager()->Load());
+	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
 #endif
 }
 
 void UnloadTypes()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
-	TEST_ASSERT(GetGlobalTypeManager()->Unload());
-	TEST_ASSERT(ResetGlobalTypeManager());
+	CHECK_ERROR(GetGlobalTypeManager()->Unload(), L"Failed to unload types");
+	CHECK_ERROR(ResetGlobalTypeManager(), L"Failed to reset type manager");
 #endif
 }
 
