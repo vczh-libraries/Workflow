@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 using namespace vl;
+using namespace vl::console;
 using namespace vl::collections;
 using namespace vl::filesystem;
 using namespace vl::stream;
@@ -87,7 +88,7 @@ void FillFileNames(const WString& path, SortedList<WString>& fileNames)
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
-int main()
+int main(int argc, char* argv[])
 #endif
 {
 	{
@@ -96,12 +97,12 @@ int main()
 		{
 			FillFileNames(GetCppOutputPath32(), fileNames32);
 			FillFileNames(GetCppOutputPath64(), fileNames64);
-			TEST_ASSERT(CompareEnumerable(fileNames32, fileNames64) == 0);
+			CHECK_ERROR(CompareEnumerable(fileNames32, fileNames64) == 0, L"File names in x64 and x86 folder are different.");
 		}
 
 		FOREACH(WString, fileName, fileNames32)
 		{
-			unittest::UnitTest::PrintInfo(fileName);
+			Console::WriteLine(fileName);
 			auto file32 = GetCppOutputPath32() + fileName;
 			auto file64 = GetCppOutputPath64() + fileName;
 			auto fileOutput = GetCppMergePath() + fileName;
