@@ -183,6 +183,10 @@ TEST_FILE
 			}
 			writer.WriteLine(L"}");
 
+			writer.WriteLine(L"");
+			writer.WriteLine(L"TEST_FILE");
+			writer.WriteLine(L"{");
+
 			FOREACH(WString, codegenName, codegenNames)
 			{
 				DECODE_CODEGEN_NAME(continue)
@@ -190,9 +194,9 @@ TEST_FILE
 
 				writer.WriteLine(L"");
 
-				writer.WriteString(L"TEST_CASE(");
+				writer.WriteString(L"TEST_CASE(L\"");
 				writer.WriteString(itemName);
-				writer.WriteLine(L")");
+				writer.WriteLine(L"\")");
 				writer.WriteLine(L"{");
 
 				writer.WriteString(L"\tWString expected = L\"");
@@ -207,8 +211,9 @@ TEST_FILE
 				writer.WriteLine(L"\tConsole::WriteLine(L\"    actual   : \" + actual);");
 				writer.WriteLine(L"\tTEST_ASSERT(actual == expected);");
 
-				writer.WriteLine(L"}");
+				writer.WriteLine(L"});");
 			}
+			writer.WriteLine(L"}");
 		});
 	});
 
