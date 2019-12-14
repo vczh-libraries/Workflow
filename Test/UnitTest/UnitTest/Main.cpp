@@ -14,13 +14,13 @@ void LoadTypes()
 	WfLoadLibraryTypes();
 	WfLoadTypes();
 	LoadCppTypes();
-	TEST_ASSERT(GetGlobalTypeManager()->Load());
+	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
 }
 
 void UnloadTypes()
 {
-	TEST_ASSERT(GetGlobalTypeManager()->Unload());
-	TEST_ASSERT(ResetGlobalTypeManager());
+	CHECK_ERROR(GetGlobalTypeManager()->Unload(), L"Failed to unload types");
+	CHECK_ERROR(ResetGlobalTypeManager(), L"Failed to reset type manager");
 }
 
 #if defined VCZH_MSVC
@@ -34,22 +34,22 @@ int main(int argc, char* argv[])
 		Folder folder(GetTestOutputPath());
 		if (!folder.Exists())
 		{
-			TEST_ASSERT(folder.Create(false) == true);
+			CHECK_ERROR(folder.Create(false) == true, L"Failed to create GetTestOutputPath()");
 		}
 	}
 	{
 		Folder folder(GetCppOutputPath());
 		if (!folder.Exists())
 		{
-			TEST_ASSERT(folder.Create(false) == true);
+			CHECK_ERROR(folder.Create(false) == true, L"Failed to create GetCppOutputPath()");
 		}
 		else
 		{
 			List<File> files;
-			TEST_ASSERT(folder.GetFiles(files) == true);
+			CHECK_ERROR(folder.GetFiles(files) == true, L"Failed to get files from GetCppOutputPath()");
 			FOREACH(File, file, files)
 			{
-				TEST_ASSERT(file.Delete() == true);
+				CHECK_ERROR(file.Delete() == true, L"Failed to delete file");
 			}
 		}
 	}
