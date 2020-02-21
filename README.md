@@ -80,7 +80,7 @@ There are two important test that will help you build the concept:
 
 This scripting system provide the following features:
 
-- **Interoperability with C++ classes** if you write your C++ classes using [vczh-libraries/Vlpp](https://github.com/vczh-libraries/Vlpp) following the [tutorial in comment](http://www.gaclib.net/Document.html#~/index/vl.reflection.Description`1/symbol/::vl::reflection::Description`1).
+- **Interoperability with C++ classes** if you write your C++ classes using [vczh-libraries/VlppReflection](https://github.com/vczh-libraries/VlppReflection) following the [tutorial in comment](http://www.gaclib.net/CodeIndex.html#~/index/vl.reflection.Description`1/symbol/::vl::reflection::Description`1).
 - **Serializing compiled script to binary** to increase the loading performance if the script is large.
 - **Data Binding** infrastructure. The script language provide a special bind and observe syntax, to create a event object, which will fire if the value of the expression to observe is changed.
 - **Debugger** infrastructure.
