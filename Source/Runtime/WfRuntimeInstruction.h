@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMEINSTRUCTION
 #define VCZH_WORKFLOW_RUNTIME_WFRUNTIMEINSTRUCTION
 
-#include "../../Import/VlppReflection.h"
+#include <VlppReflection.h>
 
 namespace vl
 {

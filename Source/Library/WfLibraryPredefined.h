@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_WORKFLOW_LIBRARY_PREDEFINED
 
 #include <math.h>
-#include "../../Import/VlppReflection.h"
+#include <VlppReflection.h>
 
 namespace vl
 {

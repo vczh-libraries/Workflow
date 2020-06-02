@@ -1,7 +1,7 @@
 #ifndef VCZH_WORKFLOW_UNITTEST_CPPTYPES
 #define VCZH_WORKFLOW_UNITTEST_CPPTYPES
 
-#include "../../Import/Vlpp.h"
+#include <Vlpp.h>
 #include "../../Source/Library/WfLibraryCppHelper.h"
 #include "../../Source/Library/WfLibraryReflection.h"
 

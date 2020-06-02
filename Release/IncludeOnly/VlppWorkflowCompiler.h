@@ -11,10 +11,10 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppParser.h"
 
 #include "..\..\Source\Expression\WfExpression_Ast.h"
-#include "..\..\Source\Expression\WfExpression_Parser.h"
 #include "..\..\Source\Expression\WfExpression_Copy.h"
-#include "..\..\Source\Expression\WfExpression_Traverse.h"
 #include "..\..\Source\Expression\WfExpression_Empty.h"
+#include "..\..\Source\Expression\WfExpression_Parser.h"
+#include "..\..\Source\Expression\WfExpression_Traverse.h"
 #include "..\..\Source\Expression\WfExpression.h"
 #include "..\..\Source\Analyzer\WfAnalyzer.h"
 #include "..\..\Source\Emitter\WfEmitter.h"

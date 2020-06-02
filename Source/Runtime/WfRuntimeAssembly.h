@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMEASSEMBLY
 #define VCZH_WORKFLOW_RUNTIME_WFRUNTIMEASSEMBLY
 
-#include "../../Import/VlppParser.h"
+#include <VlppParser.h>
 #include "WfRuntimeInstruction.h"
 #include "WfRuntimeTypeDescriptor.h"
 

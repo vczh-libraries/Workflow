@@ -7,6 +7,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 #include "VlppRegex.h"
 
+#include "..\..\Source\Library\WfLibraryCppHelper.h"
 #include "..\..\Source\Library\WfLibraryPredefined.h"
 #include "..\..\Source\Library\WfLibraryReflection.h"
-#include "..\..\Source\Library\WfLibraryCppHelper.h"
