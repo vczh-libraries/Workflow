@@ -467,11 +467,11 @@ WfLexicalScopeManager
 				stateMachineInfos.Clear();
 			}
 
-#define CALLBACK(EXPR) if (callback) callback->EXPR
+#define EXECUTE_CALLBACK(EXPR) if (callback) callback->EXPR
 
 			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback)
 			{
-				CALLBACK(OnLoadEnvironment());
+				EXECUTE_CALLBACK(OnLoadEnvironment());
 				Clear(keepTypeDescriptorNames, false);
 				if (!globalName)
 				{
@@ -479,7 +479,7 @@ WfLexicalScopeManager
 					BuildGlobalNameFromTypeDescriptors(this);
 				}
 
-				CALLBACK(OnInitialize(this));
+				EXECUTE_CALLBACK(OnInitialize(this));
 				vint errorCount = errors.Count();
 
 #define EXIT_IF_ERRORS_EXIST\
@@ -515,14 +515,14 @@ WfLexicalScopeManager
 				EXIT_IF_ERRORS_EXIST;
 				FOREACH(Ptr<WfModule>, module, modules)
 				{
-					CALLBACK(OnValidateModule(module));
+					EXECUTE_CALLBACK(OnValidateModule(module));
 					ValidateModuleSemantic(this, module);
 				}
 
 #undef EXIT_IF_ERRORS_EXIST
 			}
 
-#undef CALLBACK
+#undef EXECUTE_CALLBACK
 
 			bool WfLexicalScopeManager::ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results)
 			{
