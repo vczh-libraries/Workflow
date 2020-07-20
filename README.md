@@ -12,10 +12,12 @@ The documentation for this library has not been done yet. Currently you can refe
 
 ## Document
 
-Unfortunately I don't have time to document the code at this moment.
-I promise I will do it before GacUI 1.0 get released.
+For **Gaclib**: click [here](http://vczh-libraries.github.io/doc/current/home.html)
+
+For **Workflow**: click [here](http://vczh-libraries.github.io/doc/current/workflow/home.html)
+
+Before the Workflow language reference is completed,
 Please learn by unit test at this moment.
-Also note that there are comments before important classes.
 
 - **Unit Test** solution is found [here](./Test/UnitTest/UnitTest.sln).
 - **Script Files to Test** is found [here](../../tree/master/Test/Resources).
@@ -80,7 +82,7 @@ There are two important test that will help you build the concept:
 
 This scripting system provide the following features:
 
-- **Interoperability with C++ classes** if you write your C++ classes using [vczh-libraries/VlppReflection](https://github.com/vczh-libraries/VlppReflection) following the [tutorial in comment](http://www.gaclib.net/CodeIndex.html#~/index/vl.reflection.Description`1/symbol/::vl::reflection::Description`1).
+- **Interoperability with C++ classes** if you write your C++ classes using [vczh-libraries/VlppReflection](https://github.com/vczh-libraries/VlppReflection) following the [tutorial in comment](http://vczh-libraries.github.io/doc/current/vlppreflection/ref/VL__REFLECTION__DESCRIPTION.html).
 - **Serializing compiled script to binary** to increase the loading performance if the script is large.
 - **Data Binding** infrastructure. The script language provide a special bind and observe syntax, to create a event object, which will fire if the value of the expression to observe is changed.
 - **Debugger** infrastructure.
