@@ -2082,7 +2082,7 @@ IsConstantExpression
 
 				void Visit(WfBinaryExpression* node)override
 				{
-					if (node->op == WfBinaryOperator::Intersect)
+					if (node->op == WfBinaryOperator::Union || node->op == WfBinaryOperator::Intersect)
 					{
 						isConstant = Call(node->first) && Call(node->second);
 					}
