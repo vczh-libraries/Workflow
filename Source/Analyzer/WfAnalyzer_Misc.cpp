@@ -69,6 +69,14 @@ IsExpressionDependOnExpectedType(Expression)
 					}
 				}
 
+				void Visit(WfBinaryExpression* node)override
+				{
+					if (node->op == WfBinaryOperator::Intersect)
+					{
+						result = Execute(node->first) && Execute(node->second);
+					}
+				}
+
 				void Visit(WfIfExpression* node)override
 				{
 					result = Execute(node->trueBranch) && Execute(node->falseBranch);
