@@ -149,6 +149,8 @@ Print (Type)
 				case WfPredefinedTypeName::Bool:
 					writer.WriteString(L"bool");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.AfterPrint(node);
 			}
@@ -202,9 +204,15 @@ Print (Type)
 			void Visit(WfMapType* node)override
 			{
 				writer.BeforePrint(node);
-				if (node->writability == WfMapWritability::Readonly)
+				switch (node->writability)
 				{
+				case WfMapWritability::Readonly:
 					writer.WriteString(L"const ");
+					break;
+				case WfMapWritability::Writable:
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				WfPrint(node->value, indent, writer);
 				writer.WriteString(L"[");
@@ -345,6 +353,8 @@ Print (Expression)
 				case WfLiteralValue::False:
 					writer.WriteString(L"false");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.AfterPrint(node);
 			}
@@ -385,6 +395,8 @@ Print (Expression)
 				case WfUnaryOperator::Not:
 					writer.WriteString(L"!");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				WfPrint(node->operand, indent, writer);
 				writer.WriteString(L")");
@@ -470,7 +482,8 @@ Print (Expression)
 					case WfBinaryOperator::Or:
 						writer.WriteString(L" or ");
 						break;
-					default:;
+					default:
+						CHECK_FAIL(L"Internal error: Unknown value.");
 					}
 					WfPrint(node->second, indent, writer);
 					writer.WriteString(L")");
@@ -515,11 +528,31 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"range ");
-				writer.WriteString(node->beginBoundary == WfRangeBoundary::Exclusive ? L"(" : L"[");
+				switch (node->beginBoundary)
+				{
+				case WfRangeBoundary::Exclusive:
+					writer.WriteString(L"(");
+					break;
+				case WfRangeBoundary::Inclusive:
+					writer.WriteString(L"[");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
+				}
 				WfPrint(node->begin, indent, writer);
 				writer.WriteString(L", ");
 				WfPrint(node->end, indent, writer);
-				writer.WriteString(node->endBoundary == WfRangeBoundary::Exclusive ? L")" : L"]");
+				switch (node->beginBoundary)
+				{
+				case WfRangeBoundary::Exclusive:
+					writer.WriteString(L")");
+					break;
+				case WfRangeBoundary::Inclusive:
+					writer.WriteString(L"]");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
+				}
 				writer.AfterPrint(node);
 			}
 
@@ -527,11 +560,17 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				WfPrint(node->element, indent, writer);
-				if (node->test == WfSetTesting::NotIn)
+				switch (node->test)
 				{
-					writer.WriteString(L" not");
+				case WfSetTesting::In:
+					writer.WriteString(L" in ");
+					break;
+				case WfSetTesting::NotIn:
+					writer.WriteString(L" not in ");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
-				writer.WriteString(L" in ");
 				WfPrint(node->collection, indent, writer);
 				writer.AfterPrint(node);
 			}
@@ -571,21 +610,24 @@ Print (Expression)
 			void Visit(WfTypeCastingExpression* node)override
 			{
 				writer.BeforePrint(node);
-				if (node->strategy == WfTypeCastingStrategy::Strong)
+				switch (node->strategy)
 				{
+				case WfTypeCastingStrategy::Strong:
 					writer.WriteString(L"(cast (");
 					WfPrint(node->type, indent, writer);
 					writer.WriteString(L") ");
 					WfPrint(node->expression, indent, writer);
 					writer.WriteString(L")");
-				}
-				else
-				{
+					break;
+				case WfTypeCastingStrategy::Weak:
 					writer.WriteString(L"(");
 					WfPrint(node->expression, indent, writer);
 					writer.WriteString(L" as (");
 					WfPrint(node->type, indent, writer);
 					writer.WriteString(L"))");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.AfterPrint(node);
 			}
@@ -612,6 +654,8 @@ Print (Expression)
 				case WfTypeTesting::IsNotNull:
 					writer.WriteString(L" is not null");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.AfterPrint(node);
 			}
@@ -661,10 +705,16 @@ Print (Expression)
 				writer.BeforePrint(node);
 				WfPrint(node->parent, indent, writer);
 				writer.WriteString(L".observe");
-				if (node->observeType == WfObserveType::ExtendedObserve)
+				switch (node->observeType)
 				{
+				case WfObserveType::ExtendedObserve:
 					writer.WriteString(L" as ");
 					writer.WriteString(node->name.value);
+					break;
+				case WfObserveType::SimpleObserve:
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.WriteString(L"(");
 				WfPrint(node->expression, indent, writer);
@@ -834,17 +884,20 @@ Print (Expression)
 			void Visit(WfExpectedTypeCastExpression* node)override
 			{
 				writer.BeforePrint(node);
-				if (node->strategy == WfTypeCastingStrategy::Strong)
+				switch (node->strategy)
 				{
+				case WfTypeCastingStrategy::Strong:
 					writer.WriteString(L"(cast * ");
 					WfPrint(node->expression, indent, writer);
 					writer.WriteString(L")");
-				}
-				else
-				{
+					break;
+				case WfTypeCastingStrategy::Weak:
 					writer.WriteString(L"(");
 					WfPrint(node->expression, indent, writer);
 					writer.WriteString(L" as *)");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.AfterPrint(node);
 			}
@@ -1111,9 +1164,15 @@ Print (Statement)
 				writer.WriteString(L"for (");
 				writer.WriteString(node->name.value);
 				writer.WriteString(L" in ");
-				if (node->direction == WfForEachDirection::Reversed)
+				switch (node->direction)
 				{
+				case WfForEachDirection::Reversed:
 					writer.WriteString(L"reversed ");
+					break;
+				case WfForEachDirection::Normal:
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				WfPrint(node->collection, indent, writer);
 				writer.WriteLine(L")");
@@ -1203,6 +1262,8 @@ Print (Statement)
 				case WfStateSwitchType::IgnoreAndReturn:
 					writer.WriteLine(L"return)");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 
 				writer.WriteString(indent);
@@ -1245,6 +1306,8 @@ Print (Statement)
 				case WfStateInvokeType::Push:
 					writer.WriteString(L"push_state ");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 
 				writer.WriteString(node->name.value);
@@ -1303,9 +1366,15 @@ Print (Declaration)
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"func ");
-				if (node->anonymity == WfFunctionAnonymity::Named)
+				switch (node->anonymity)
 				{
+				case WfFunctionAnonymity::Named:
 					writer.WriteString(node->name.value);
+					break;
+				case WfFunctionAnonymity::Anonymous:
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 
 				writer.WriteString(L"(");
@@ -1405,13 +1474,16 @@ Print (Declaration)
 			void Visit(WfConstructorDeclaration* node)override
 			{
 				writer.BeforePrint(node);
-				if (node->constructorType == WfConstructorType::RawPtr)
+				switch (node->constructorType)
 				{
+				case WfConstructorType::RawPtr:
 					writer.WriteString(L"new* ");
-				}
-				else
-				{
+					break;
+				case WfConstructorType::SharedPtr:
 					writer.WriteString(L"new ");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				
 				writer.WriteString(L"(");
@@ -1481,11 +1553,32 @@ Print (Declaration)
 				case WfClassKind::Interface:
 					writer.WriteString(L"interface ");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.WriteString(node->name.value);
-				if (node->constructorType == WfConstructorType::RawPtr)
+				switch (node->kind)
 				{
-					writer.WriteString(L"*");
+				case WfClassKind::Class:
+					switch (node->constructorType)
+					{
+					case WfConstructorType::Undefined:
+						break;
+					default:
+						CHECK_FAIL(L"Internal error: Unknown value.");
+					}
+					break;
+				case WfClassKind::Interface:
+					switch (node->constructorType)
+					{
+					case WfConstructorType::RawPtr:
+						writer.WriteString(L"*");
+					case WfConstructorType::SharedPtr:
+						break;
+					default:
+						CHECK_FAIL(L"Internal error: Unknown value.");
+					}
+					break;
 				}
 
 				FOREACH_INDEXER(Ptr<WfType>, type, index, node->baseTypes)
@@ -1531,6 +1624,8 @@ Print (Declaration)
 				case WfEnumKind::Flag:
 					writer.WriteString(L"flagenum ");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.WriteLine(node->name.value);
 				writer.WriteLine(indent + L"{");
@@ -1560,6 +1655,8 @@ Print (Declaration)
 							writer.WriteString(itemInt->name.value);
 						}
 						break;
+					default:
+						CHECK_FAIL(L"Internal error: Unknown value.");
 					}
 					writer.AfterPrint(item.Obj());
 					writer.WriteLine(L",");
@@ -1642,23 +1739,35 @@ Print (Declaration)
 					WfPrint(node->expression, indent, writer);
 				}
 				writer.WriteString(L" {");
-				if (node->configConst == WfAPConst::Readonly)
+				switch (node->configConst)
 				{
-					if (node->configObserve == WfAPObserve::NotObservable)
+				case WfAPConst::Readonly:
+					switch (node->configObserve)
 					{
+					case WfAPObserve::NotObservable:
 						writer.WriteString(L"const, not observe");
-					}
-					else
-					{
+						break;
+					case WfAPObserve::Observable:
 						writer.WriteString(L"const");
+						break;
+					default:
+						CHECK_FAIL(L"Internal error: Unknown value.");
 					}
-				}
-				else
-				{
-					if (node->configObserve == WfAPObserve::NotObservable)
+					break;
+				case WfAPConst::Writable:
+					switch (node->configObserve)
 					{
+					case WfAPObserve::NotObservable:
 						writer.WriteString(L"not observe");
+						break;
+					case WfAPObserve::Observable:
+						break;
+					default:
+						CHECK_FAIL(L"Internal error: Unknown value.");
 					}
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 				writer.WriteString(L"}");
 				writer.AfterPrint(node);
@@ -1819,6 +1928,8 @@ Print (Module)
 				case WfClassMemberKind::Override:
 					writer.WriteString(L"override ");
 					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
 				}
 			}
 
@@ -1837,6 +1948,8 @@ Print (Module)
 			case WfModuleType::Unit:
 				writer.WriteLine(L"unit " + node->name.value + L";");
 				break;
+			default:
+				CHECK_FAIL(L"Internal error: Unknown value.");
 			}
 
 			FOREACH(Ptr<WfModuleUsingPath>, path, node->paths)
