@@ -497,6 +497,7 @@ ValidateStructure(Declaration)
 									ctor->classMember = MakePtr<WfClassMember>();
 									ctor->classMember->codeRange = node->codeRange;
 									ctor->classMember->kind = WfClassMemberKind::Normal;
+									ctor->constructorType = WfConstructorType::SharedPtr;
 
 									auto stat = MakePtr<WfBlockStatement>();
 									ctor->statement = stat;
