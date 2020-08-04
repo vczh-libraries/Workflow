@@ -1915,7 +1915,7 @@ ValidateSemantic(Expression)
 									}
 								}
 							}
-							manager->errors.Add(WfErrors::WrongMixinTargetType(node, expressionType.Obj(), type.Obj()));
+							manager->errors.Add(WfErrors::WrongMixinTargetType(node, type.Obj(), expressionType.Obj()));
 						PASS_VALIDATION:;
 						}
 					}

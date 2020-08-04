@@ -878,6 +878,7 @@ Print (Expression)
 
 				writer.WriteString(L"(using ");
 				WfPrint(node->expression, indent, writer);
+				writer.WriteString(L")");
 				writer.AfterPrint(node);
 			}
 
