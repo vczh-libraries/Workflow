@@ -222,7 +222,7 @@ ContextFreeModuleDesugar
 							binary->codeRange = node->codeRange;
 							binary->first = current;
 							binary->second = expression;
-							binary->op = WfBinaryOperator::Union;
+							binary->op = WfBinaryOperator::FlagAnd;
 							current = binary;
 						}
 

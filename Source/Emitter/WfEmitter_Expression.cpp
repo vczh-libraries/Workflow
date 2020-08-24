@@ -455,7 +455,7 @@ GenerateInstructions(Expression)
 						GenerateExpressionInstructions(context, node->first);
 						INSTRUCTION(Ins::InvokeMethod(methodInfo, 1));
 					}
-					else if (node->op == WfBinaryOperator::Union)
+					else if (node->op == WfBinaryOperator::FlagAnd)
 					{
 						auto type = context.manager->expressionResolvings[node].type;
 						if (type->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
@@ -474,7 +474,7 @@ GenerateInstructions(Expression)
 							INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, type->GetTypeDescriptor()));
 						}
 					}
-					else if (node->op == WfBinaryOperator::Intersect)
+					else if (node->op == WfBinaryOperator::FlagOr)
 					{
 						auto type = context.manager->expressionResolvings[node].type;
 						GenerateExpressionInstructions(context, node->first, type);

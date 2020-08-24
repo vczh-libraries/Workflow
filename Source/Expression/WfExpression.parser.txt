@@ -618,8 +618,8 @@ enum BinaryOperator
 {
 	Assign,
 	Index,
-	Union,
-	Intersect,
+	FlagAnd,
+	FlagOr,
 	FailedThen,
 	Exp,
 	Add,
@@ -900,7 +900,7 @@ token SUB = "-";
 token MUL = "/*";
 token DIV = "//";
 token MOD = "%";
-token UNION = "&";
+token JOIN = "&";
 token INTERSECTION = "/|";
 token LE = "/</=";
 token GE = "/>/=";
@@ -1141,8 +1141,8 @@ rule Expression _Exp3
 	= !_Exp2
 	= _Exp3 : first "+" _Exp2 : second as BinaryExpression with {op = "Add"}
 	= _Exp3 : first "-" _Exp2 : second as BinaryExpression with {op = "Sub"}
-	= _Exp3 : first "&" _Exp2 : second as BinaryExpression with {op = "Union"}
-	= _Exp3 : first "|" _Exp2 : second as BinaryExpression with {op = "Intersect"}
+	= _Exp3 : first "&" _Exp2 : second as BinaryExpression with {op = "FlagAnd"}
+	= _Exp3 : first "|" _Exp2 : second as BinaryExpression with {op = "FlagOr"}
 	;
 rule Expression _Exp4
 	= !_Exp3

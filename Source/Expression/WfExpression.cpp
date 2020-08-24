@@ -422,10 +422,10 @@ Print (Expression)
 					case WfBinaryOperator::Assign:
 						writer.WriteString(L" = ");
 						break;
-					case WfBinaryOperator::Union:
+					case WfBinaryOperator::FlagAnd:
 						writer.WriteString(L" & ");
 						break;
-					case WfBinaryOperator::Intersect:
+					case WfBinaryOperator::FlagOr:
 						writer.WriteString(L" | ");
 						break;
 					case WfBinaryOperator::FailedThen:

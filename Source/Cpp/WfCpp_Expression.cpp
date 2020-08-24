@@ -1364,7 +1364,7 @@ WfGenerateExpressionVisitor
 							});
 						}
 					}
-					else if (node->op == WfBinaryOperator::Union)
+					else if (node->op == WfBinaryOperator::FlagAnd)
 					{
 						auto type = config->manager->expressionResolvings[node].type;
 						if (type->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
@@ -1376,7 +1376,7 @@ WfGenerateExpressionVisitor
 							VisitBinaryExpression(node, L"&", nullptr, nullptr);
 						}
 					}
-					else if (node->op == WfBinaryOperator::Intersect)
+					else if (node->op == WfBinaryOperator::FlagOr)
 					{
 						VisitBinaryExpression(node, L"|", nullptr, nullptr);
 					}

@@ -71,7 +71,7 @@ IsExpressionDependOnExpectedType(Expression)
 
 				void Visit(WfBinaryExpression* node)override
 				{
-					if (node->op == WfBinaryOperator::Intersect)
+					if (node->op == WfBinaryOperator::FlagOr)
 					{
 						result = Execute(node->first) && Execute(node->second);
 					}

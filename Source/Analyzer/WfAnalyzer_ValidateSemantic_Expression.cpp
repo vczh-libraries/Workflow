@@ -774,7 +774,7 @@ ValidateSemantic(Expression)
 							}
 						}
 					}
-					else if (node->op == WfBinaryOperator::Union)
+					else if (node->op == WfBinaryOperator::FlagAnd)
 					{
 						auto typeA = GetExpressionType(manager, node->first, expectedType);
 						auto typeB = GetExpressionType(manager, node->second, expectedType);
@@ -802,7 +802,7 @@ ValidateSemantic(Expression)
 							manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
 						}
 					}
-					else if (node->op == WfBinaryOperator::Intersect)
+					else if (node->op == WfBinaryOperator::FlagOr)
 					{
 						auto typeA = GetExpressionType(manager, node->first, expectedType);
 						auto typeB = GetExpressionType(manager, node->second, expectedType);
@@ -2082,7 +2082,7 @@ IsConstantExpression
 
 				void Visit(WfBinaryExpression* node)override
 				{
-					if (node->op == WfBinaryOperator::Union || node->op == WfBinaryOperator::Intersect)
+					if (node->op == WfBinaryOperator::FlagAnd || node->op == WfBinaryOperator::FlagOr)
 					{
 						isConstant = Call(node->first) && Call(node->second);
 					}
