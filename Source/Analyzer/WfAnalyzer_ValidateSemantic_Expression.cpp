@@ -1434,6 +1434,7 @@ ValidateSemantic(Expression)
 								if (propertyInfo)
 								{
 									observeeType = CopyTypeInfo(propertyInfo->GetReturn());
+									manager->expressionResolvings.Add(node->expression, ResolveExpressionResult::Property(propertyInfo));
 								}
 								else
 								{
@@ -1462,7 +1463,11 @@ ValidateSemantic(Expression)
 								{
 									auto ref = eventExpr.Cast<WfReferenceExpression>();
 									IEventInfo* info = td->GetEventByName(ref->name.value, true);
-									if (!info)
+									if (info)
+									{
+										manager->expressionResolvings.Add(eventExpr, ResolveExpressionResult::Event(info));
+									}
+									else if (!info)
 									{
 										manager->errors.Add(WfErrors::MemberNotExists(ref.Obj(), td, ref->name.value));
 									}

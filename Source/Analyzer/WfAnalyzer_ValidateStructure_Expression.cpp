@@ -221,7 +221,7 @@ ValidateStructure(Expression)
 							}
 						}
 					}
-					if (node->events.Count() == 0)
+					else if (node->events.Count() == 0)
 					{
 						manager->errors.Add(WfErrors::EmptyObserveEvent(node));
 					}

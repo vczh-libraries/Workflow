@@ -42,6 +42,7 @@
 #include "NewCustomInterface2Reflection.h"
 #include "NewCustomInterface3Reflection.h"
 #include "BindSimpleReflection.h"
+#include "BindSimple2Reflection.h"
 #include "BindLetReflection.h"
 #include "BindComplex.h"
 #include "BindFormat.h"
@@ -101,6 +102,7 @@ void LoadTestCaseTypes()
 	 LoadNewCustomInterface2Types();
 	 LoadNewCustomInterface3Types();
 	 LoadBindSimpleTypes();
+	 LoadBindSimple2Types();
 	 LoadBindLetTypes();
 	 LoadBindCustomInterfaceTypes();
 	 LoadBindCustomInterface2Types();
@@ -529,6 +531,15 @@ TEST_CASE(L"BindSimple")
 {
 	WString expected = L"[10][30][60]";
 	WString actual = ::vl_workflow_global::BindSimple::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"BindSimple2")
+{
+	WString expected = L"[10][30][60]";
+	WString actual = ::vl_workflow_global::BindSimple2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

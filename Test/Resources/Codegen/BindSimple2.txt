@@ -2,19 +2,19 @@ module test;
 using test::*;
 using system::*;
 
-class OuterClass
+class OuterClass2
 {
-	class Base
+	class Base2
 	{
 		var subscription : Subscription^ = null;
 		var s : string = "";
 
-		func Initialize(derived : Derived*) : void
+		func Initialize(derived : Derived2*) : void
 		{
 			subscription = bind(
-				derived.x.Value +
-				derived.y.Value +
-				derived.z.Value
+				derived.x.observe(Value on ValueChanged) +
+				derived.y.observe(Value on ValueChanged) +
+				derived.z.observe(Value on ValueChanged)
 				);
 			subscription.Open();
 			attach(subscription.ValueChanged,
@@ -26,8 +26,8 @@ class OuterClass
 	}
 }
 
-@cpp:Friend(typeof(OuterClass))
-class Derived : OuterClass::Base
+@cpp:Friend(typeof(OuterClass2))
+class Derived2 : OuterClass2::Base2
 {
 	@cpp:Protected
 	var x : ObservableValue^ = new ObservableValue^();
@@ -52,7 +52,7 @@ class Derived : OuterClass::Base
 
 func main() : string
 {
-	var derived = new Derived^();
+	var derived = new Derived2^();
 	derived.Execute();
 	return derived.s;
 }
