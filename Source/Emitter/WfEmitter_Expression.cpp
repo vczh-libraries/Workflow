@@ -1139,7 +1139,11 @@ GenerateInstructions(Expression)
 							});
 						}
 					}
-
+					else
+					{
+						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::CreateClosureContext(1));
+					}
 					INSTRUCTION(Ins::CreateInterface(result.constructorInfo, declVisitor.overrideFunctions.Count() * 2));
 				}
 
