@@ -281,6 +281,11 @@ CreateBindContext
 
 				void ObservableDepend(WfExpression* expr, WfExpression* parent)
 				{
+					if (context.observeParents.Keys().Contains(expr))
+					{
+						CHECK_ERROR(context.observeParents[expr] == parent, L"CreateBindContextVisitor::ObservableDepend assigned different parents to the same expression.");
+						return;
+					}
 					context.orderedObserves.Add(expr);
 					context.observeParents.Add(expr, parent);
 					DirectDepend(expr, parent, false);
