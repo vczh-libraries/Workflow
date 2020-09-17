@@ -188,8 +188,8 @@ Coroutine (Async)
 			class IFuture : public virtual IAsync, public Description<IFuture>
 			{
 			public:
-				/// <summary>Get the <see cref="IPromise"> that controls this future object.</summary>
-				/// <summary>The <see cref="IPromise"> that controls this future object.</summary>
+				/// <summary>Get the <see cref="IPromise"/> that controls this future object.</summary>
+				/// <returns>The <see cref="IPromise"/> that controls this future object.</returns>
 				virtual Ptr<IPromise>					GetPromise() = 0;
 
 				/// <summary>Create a future object.</summary>
@@ -203,7 +203,7 @@ Coroutine (Async)
 			{
 			public:
 				/// <summary>Called when a callback needs to be executed in any thread.</summary>
-				/// <param name="callback>The callback to execute.</param>
+				/// <param name="callback">The callback to execute.</param>
 				/// <remarks>
 				/// You can decide which thread to execute.
 				/// For GacUI, the scheduler that attached to the UI thread will execute this callback in the UI thread.
@@ -211,7 +211,7 @@ Coroutine (Async)
 				virtual void							Execute(const Func<void()>& callback) = 0;
 
 				/// <summary>Called when a callback needs to be executed in another thread.</summary>
-				/// <param name="callback>The callback to execute.</param>
+				/// <param name="callback">The callback to execute.</param>
 				/// <remarks>
 				/// You can decide which thread to execute except the current one.
 				/// For GacUI, the scheduler that attached to any thread will execute this callback in a random background thread.
@@ -219,8 +219,8 @@ Coroutine (Async)
 				virtual void							ExecuteInBackground(const Func<void()>& callback) = 0;
 
 				/// <summary>Called when a callback needs to be executed in any thread after a specified moment of time.</summary>
-				/// <param name="callback>The callback to execute.</param>
-				/// <param name="milliseconds>The time in milliseconds to wait.</param>
+				/// <param name="callback">The callback to execute.</param>
+				/// <param name="milliseconds">The time in milliseconds to wait.</param>
 				/// <remarks>
 				/// You can decide which thread to execute.
 				/// For GacUI, the scheduler that attached to the UI thread will execute this callback in the UI thread.
