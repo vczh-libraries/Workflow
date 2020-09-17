@@ -385,9 +385,9 @@ Libraries
 			/// <p>
 			/// There are three locales that reflect the configuration of the operating system:
 			/// <ul>
-			///     <li><b>Invariant</b>: An invariant locale for general languages.</li>.
-			///     <li><b>System</b>: Locale for the operating system, including the file system.</li>.
-			///     <li><b>User</b>: Locale for UI of the operating system.</li>.
+			///     <li><b>Invariant</b>: An invariant locale for general languages.</li>
+			///     <li><b>System</b>: Locale for the operating system, including the file system.</li>
+			///     <li><b>User</b>: Locale for UI of the operating system.</li>
 			/// </ul>
 			/// </p>
 			/// </remarks>
