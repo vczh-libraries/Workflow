@@ -197,7 +197,7 @@ Coroutine (Async)
 				static Ptr<IFuture>						Create();
 			};
 
-			/// <summary>A scheduler that controls how async operations are executed.</summary>
+			/// <summary>A scheduler that controls how async operations are executed. It needs to be implemented and attached to threads that run async operations.</summary>
 			/// <remarks>See <a href="/workflow/lang/coroutine_async.html">Async Coroutine</a> for more information.</remarks>
 			class IAsyncScheduler : public virtual IDescriptable, public Description<IAsyncScheduler>
 			{
@@ -227,10 +227,24 @@ Coroutine (Async)
 				/// </remarks>
 				virtual void							DelayExecute(const Func<void()>& callback, vint milliseconds) = 0;
 
+				/// <summary>Attach a scheduler for all threads.</summary>
+				/// <param name="scheduler">The scheduler to attach.</param>
 				static void								RegisterDefaultScheduler(Ptr<IAsyncScheduler> scheduler);
+
+				/// <summary>Attach a scheduler for the current thread.</summary>
+				/// <param name="scheduler">The scheduler to attach.</param>
 				static void								RegisterSchedulerForCurrentThread(Ptr<IAsyncScheduler> scheduler);
+
+				/// <summary>Detach the scheduler for all threads.</summary>
+				/// <returns>The previously attached scheduler.</returns>
 				static Ptr<IAsyncScheduler>				UnregisterDefaultScheduler();
+
+				/// <summary>Detach the scheduler for the current thread.</summary>
+				/// <returns>The previously attached scheduler.</returns>
 				static Ptr<IAsyncScheduler>				UnregisterSchedulerForCurrentThread();
+
+				/// <summary>Get the attached scheduler for the current thread.</summary>
+				/// <returns>The attached scheduler. If there is no scheduler that is attached to this particular thread, the default scheduler kicks in.</returns>
 				static Ptr<IAsyncScheduler>				GetSchedulerForCurrentThread();
 			};
 
@@ -371,7 +385,9 @@ Libraries
 			/// <p>
 			/// There are three locales that reflect the configuration of the operating system:
 			/// <ul>
-			///     <li><b>Invariant</b></li>.
+			///     <li><b>Invariant</b>: An invariant locale for general languages.</li>.
+			///     <li><b>System</b>: Locale for the operating system, including the file system.</li>.
+			///     <li><b>User</b>: Locale for UI of the operating system.</li>.
 			/// </ul>
 			/// </p>
 			/// </remarks>
