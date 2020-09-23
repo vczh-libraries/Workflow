@@ -57,12 +57,17 @@ Assembly
 				void												Initialize();
 			};
 
-			/// <summary>Representing failures during loading an assembly</summary>
+			/// <summary>Representing metadata errors during loading an assembly.</summary>
 			class WfAssemblyLoadErrors
 			{
 			public:
+				/// <summary>All unresolvable types.</summary>
 				collections::List<WString>							unresolvedTypes;
+
+				/// <summary>All duplicated types. Types are shared in the process, there is no isolation between assemblies.</summary>
 				collections::List<WString>							duplicatedTypes;
+
+				/// <summary>All unresolvable members in resolved types.</summary>
 				collections::List<WString>							unresolvedMembers;
 			};
 
