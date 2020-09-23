@@ -28,15 +28,29 @@ namespace vl
 Callback
 ***********************************************************************/
 
+		/// <summary>A callback for tracking compiling progress. This is used in <see cref="WfLexicalScopeManager::Rebuild"/> and <see cref="emitter::GenerateAssembly"/>.</summary>
 		class IWfCompilerCallback : public Interface
 		{
 		public:
+			/// <summary>1st step: Called before loading global type information.</summary>
 			virtual void								OnLoadEnvironment() = 0;
+
+			/// <summary>2nd step: Called before compiling.</summary>
+			/// <param name="manager">The scope manager object for storing all information generated from Workflow modules during compiling.</param>
 			virtual void								OnInitialize(analyzer::WfLexicalScopeManager* manager) = 0;
+
+			/// <summary>3rd step: Called before validating a Workflow module. This could be called multiple times for each module.</summary>
+			/// <param name="module">The module for validating.</param>
 			virtual void								OnValidateModule(Ptr<WfModule> module) = 0;
 
+			/// <summary>4th step: Called before generating metadata for functions and types created by given Workflow modules.</summary>
 			virtual void								OnGenerateMetadata() = 0;
+
+			/// <summary>5th step: Called before generating instructions for a Workflow module. This could be called multiple times for each module.</summary>
+			/// <param name="module">The module for generating code.</param>
 			virtual void								OnGenerateCode(Ptr<WfModule> module) = 0;
+
+			/// <summary>6th step: Called before generating debug information.</summary>
 			virtual void								OnGenerateDebugInfo() = 0;
 		};
 
@@ -159,7 +173,7 @@ Scope Manager
 				collections::Dictionary<WString, vint>		stateIds;
 			};
 
-			/// <summary>Workflow compiler.</summary>
+			/// <summary>Scope manager for storing all information generated from Workflow modules during compiling.</summary>
 			class WfLexicalScopeManager : public Object
 			{
 				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
@@ -241,24 +255,29 @@ Scope Manager
 				/// <param name="moduleCode">The source code of a workflow module.</param>
 				/// <returns>Returns the code index, which is a number representing a module in data structured used in Workflow compiler, runtime and debugger.</returns>
 				vint										AddModule(const WString& moduleCode);
-				/// <summary>Add a Workflow module.</summary>
+				/// <summary>Add a parsed Workflow module.</summary>
 				/// <param name="module">The syntax tree of a workflow module.</param>
 				/// <returns>Returns the code index, which is a number representing a module in data structured used in Workflow compiler, runtime and debugger.</returns>
 				vint										AddModule(Ptr<WfModule> module);
-				/// <summary>Get all added modules.</summary>
-				/// <returns>All added modules.</returns>
+				/// <summary>Get all added modules in adding order.</summary>
+				/// <returns>All added modules in adding order.</returns>
 				ModuleList&									GetModules();
-				/// <summary>Get all module codes. If a module is added from a syntax tree, then the source code is empty.</summary>
-				/// <returns>All module codes.</returns>
+				/// <summary>Get all module codes in adding order. For any added parsed module, the code is an empty string.</summary>
+				/// <returns>All module codes in adding order.</returns>
 				ModuleCodeList&								GetModuleCodes();
 
-				/// <summary>Clean compiling results.</summary>
-				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types.</param>
+				/// <summary>Clean all generated information from the last called to <see cref="Rebuild"/>.</summary>
+				/// <param name="keepTypeDescriptorNames">
+				/// Set to true so that only scopes for types in Workflow modules are deleted.
+				/// Set to false to also delete scopes for cached global types.
+				/// If there is no new reflectable native type that is registered after the last call to <see cref="Rebuild"/>,
+				/// using true for this argument saves times by reusing scopes created from global types.
+				/// </param>
 				/// <param name="deleteModules">Set to true to delete all added modules.</param>
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
-				/// <summary>Compile.</summary>
-				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
-				/// <param name="callback">The callback to receive progress information, could be nullptr.</param>
+				/// <summary>Perform semantic analyzing for added modules.</summary>
+				/// <param name="keepTypeDescriptorNames">The same to the argument in <see cref="Clear"/>.</param>
+				/// <param name="callback">The callback to receive progress information (optional).</param>
 				void										Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback = nullptr);
 
 				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);

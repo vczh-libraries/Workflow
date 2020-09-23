@@ -137,25 +137,25 @@ Code Generation
 			extern void										GenerateTypeTestingInstructions(WfCodegenContext& context, Ptr<reflection::description::ITypeInfo> expectedType, WfExpression* node);
 			extern runtime::WfInsType						GetInstructionTypeArgument(Ptr<reflection::description::ITypeInfo> expectedType);
 
-			/// <summary>Generate an assembly from a compiler. [M:vl.workflow.analyzer.WfLexicalScopeManager.Rebuild] should be called before using this function.</summary>
+			/// <summary>Generate an assembly from semantic analyzed modules. [M:vl.workflow.analyzer.WfLexicalScopeManager.Rebuild] should be called before using this function.</summary>
 			/// <returns>The generated assembly.</returns>
-			/// <param name="manager">The Workflow compiler.</param>
-			/// <param name="callback">The callback to receive progress information, could be nullptr.</param>
+			/// <param name="manager">The scope manager that is used to perform semantic analyzing.</param>
+			/// <param name="callback">The callback to receive progress information (optional).</param>
 			extern Ptr<runtime::WfAssembly>					GenerateAssembly(analyzer::WfLexicalScopeManager* manager, IWfCompilerCallback* callback = nullptr);
 
 			/// <summary>Compile a Workflow program.</summary>
-			/// <returns>The generated assembly.</returns>
-			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
-			/// <param name="manager">The workflow compiler to reuse the cache of C++ reflectable types.</param>
+			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>
+			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable]. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
+			/// <param name="manager">The scope manager. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
 			/// <param name="moduleCodes">All workflow module codes.</param>
-			/// <param name="errors">Container to get all compileing errors.</param>
+			/// <param name="errors">Container to get all errors generated during compiling.</param>
 			extern Ptr<runtime::WfAssembly>					Compile(Ptr<parsing::tabling::ParsingTable> table, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors);
 			
-			/// <summary>Compile a Workflow program.</summary>
-			/// <returns>The generated assembly.</returns>
-			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
+			/// <summary>Compile a Workflow program. Use the other one whenever possible, which alloes reusing <see cref="WfLexicalScopeManager"/> to improve performance.</summary>
+			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>
+			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable]. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
 			/// <param name="moduleCodes">All workflow module codes.</param>
-			/// <param name="errors">Container to get all compileing errors.</param>
+			/// <param name="errors">Container to get all errors generated during compiling.</param>
 			extern Ptr<runtime::WfAssembly>					Compile(Ptr<parsing::tabling::ParsingTable> table, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors);
 		}
 	}

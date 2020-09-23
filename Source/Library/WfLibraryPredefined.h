@@ -124,7 +124,7 @@ Coroutine (Async)
 
 			public:
 				/// <summary>Create a context.</summary>
-				/// <param name="_context">(optional) Set the initial return value for <see cref="GetContext"/>. The default value is null.</param>
+				/// <param name="_context">Set the initial return value for <see cref="GetContext"/> (optional)..</param>
 				AsyncContext(const Value& _context = {});
 				~AsyncContext();
 
@@ -160,7 +160,7 @@ Coroutine (Async)
 				/// <summary>Run this async operation.</summary>
 				/// <returns>Returns true when this operation succeeded. This function cannot be called twice on the same object.</returns>
 				/// <param name="callback">A callback to execute when the async operation finished.</param>
-				/// <param name="context">(optional) A context object that is accessible in Workflow script by "$" in an $Async coroutine. The default value is nullptr.</param>
+				/// <param name="context">A context object that is accessible in Workflow script by "$" in an $Async coroutine (optional).</param>
 				virtual bool							Execute(const Func<void(Ptr<CoroutineResult>)>& callback, Ptr<AsyncContext> context = nullptr) = 0;
 
 				/// <summary>Create an async operation that finished after a specified moment of time.</summary>
