@@ -151,7 +151,7 @@ Code Generation
 			/// <param name="errors">Container to get all errors generated during compiling.</param>
 			extern Ptr<runtime::WfAssembly>					Compile(Ptr<parsing::tabling::ParsingTable> table, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors);
 			
-			/// <summary>Compile a Workflow program. Use the other one whenever possible, which alloes reusing <see cref="WfLexicalScopeManager"/> to improve performance.</summary>
+			/// <summary>Compile a Workflow program. Use the other one whenever possible, which alloes reusing <see cref="analyzer::WfLexicalScopeManager"/> to improve performance.</summary>
 			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>
 			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable]. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
 			/// <param name="moduleCodes">All workflow module codes.</param>

@@ -36,7 +36,7 @@ Debugger
 				virtual bool					EvaluateCondition(WfDebugger* debugger) = 0;
 				/// <summary>Called when a break point is about to activate, even <see cref="EvaluateCondition"/> returns false.</summary>
 				/// <param name="debugger">The current attached debugger.</param>
-				/// <param name="debugger">The return value from <see cref="EvaluateCondition"/>.</param>
+				/// <param name="activated">The return value from <see cref="EvaluateCondition"/>.</param>
 				virtual void					PostAction(WfDebugger* debugger, bool activated) = 0;
 			};
 
@@ -325,6 +325,7 @@ Debugger
 				vint									GetBreakPointCount();
 				/// <summary>Test if an index is an available break point.</summary>
 				/// <returns>Returns true if an index is an available break point. This function returns true for all disabled break points.</returns>
+				/// <param name="index">The index of the break point.</param>
 				bool									IsBreakPointAvailable(vint index);
 				/// <summary>Get a specified break point. For unavailable break points, <see cref="WfBreakPoint::available"/> is false.</summary>
 				/// <returns>The break point.</returns>

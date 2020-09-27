@@ -28,7 +28,7 @@ namespace vl
 Callback
 ***********************************************************************/
 
-		/// <summary>A callback for tracking compiling progress. This is used in <see cref="WfLexicalScopeManager::Rebuild"/> and <see cref="emitter::GenerateAssembly"/>.</summary>
+		/// <summary>A callback for tracking compiling progress. This is used in <see cref="analyzer::WfLexicalScopeManager::Rebuild"/> and <see cref="emitter::GenerateAssembly"/>.</summary>
 		class IWfCompilerCallback : public Interface
 		{
 		public:
