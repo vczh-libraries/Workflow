@@ -24,19 +24,23 @@ namespace vl
 RuntimeEnvironment
 ***********************************************************************/
 
+			/// <summary>Variable storage.</summary>
 			class WfRuntimeVariableContext : public Object, public reflection::Description<WfRuntimeVariableContext>
 			{
 				typedef collections::Array<reflection::description::Value>		VariableArray;
 
 			public:
+				/// <summary>Values of variables in runtime.</summary>
 				VariableArray					variables;
 			};
 
-			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "&lt;initialize&gt;" should be the first to execute.</summary>
+			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction`1] to call any functions inside the assembly. Function "<b>&lt;initialize&gt;</b>" should be the first to execute.</summary>
 			class WfRuntimeGlobalContext : public Object, public reflection::Description<WfRuntimeGlobalContext>
 			{
 			public:
+				/// <summary>The loaded assembly.</summary>
 				Ptr<WfAssembly>					assembly;
+				/// <summary>Global variable storages.</summary>
 				Ptr<WfRuntimeVariableContext>	globalVariables;
 				
 				/// <summary>Create a global context for executing a Workflow program.</summary>
@@ -220,6 +224,23 @@ RuntimeThreadContext
 				StackCorrupted,
 			};
 
+			/// <summary>A Workflow script call stack.</summary>
+			/// <remarks>
+			/// <p>
+			/// This object could be obtained by <see cref="WfDebugger::GetCurrentThreadContext"/>.
+			/// A thread could have multiple thread contexts,
+			/// a full list could be obtained by <see cref="WfDebugger::GetThreadContexts"/>.
+			/// </p>
+			/// <p>
+			/// You are not recommended to update the call stack using this object.
+			/// </p>
+			/// <p>
+			/// In the current version,
+			/// the debug information doesn't contain enough data,
+			/// so that it could be difficult to read local variables in high-level function constructions,
+			/// like lambda expression or coroutines.
+			/// </p>
+			/// </remakrs>
 			class WfRuntimeThreadContext
 			{
 				typedef collections::List<reflection::description::Value>		VariableList;
@@ -269,6 +290,7 @@ Helper Functions
 			/// <returns>The loaded function.</returns>
 			/// <param name="context">The context to the evaluation environment.</param>
 			/// <param name="name">The function name.</param>
+			/// <remarks>"<b>&lt;initialize&gt;</b>" must be the first function that is executed after an assembly is loaded. It has no argument or return value.</remarks>
 			extern Ptr<reflection::description::IValueFunctionProxy>		LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name);
 			
 			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
@@ -276,6 +298,7 @@ Helper Functions
 			/// <returns>The loaded C++ friendly function.</returns>
 			/// <param name="context">The context to the evaluation environment.</param>
 			/// <param name="name">The function name.</param>
+			/// <remarks>"<b>&lt;initialize&gt;</b>" must be the first function that is executed after an assembly is loaded. Its type is <b>void()</b>.</remarks>
 			template<typename TFunction>
 			Func<TFunction> LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name)
 			{
