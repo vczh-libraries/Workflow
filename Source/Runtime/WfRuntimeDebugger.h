@@ -26,7 +26,7 @@ namespace vl
 Debugger
 ***********************************************************************/
 
-			/// <summary>Break point action.</summary>
+			/// <summary>Break point action. It will </summary>
 			class IWfBreakPointAction : public virtual Interface
 			{
 			public:
@@ -36,7 +36,8 @@ Debugger
 				virtual bool					EvaluateCondition(WfDebugger* debugger) = 0;
 				/// <summary>Called when a break point is about to activate, even <see cref="EvaluateCondition"/> returns false.</summary>
 				/// <param name="debugger">The current attached debugger.</param>
-				virtual void					PostAction(WfDebugger* debugger) = 0;
+				/// <param name="debugger">The return value from <see cref="EvaluateCondition"/>.</param>
+				virtual void					PostAction(WfDebugger* debugger, bool activated) = 0;
 			};
 
 			/// <summary>Break point.</summary>
@@ -177,15 +178,36 @@ Debugger
 				typedef collections::Dictionary<MethodKey, vint>		MethodBreakPointMap;
 				typedef collections::Dictionary<TypeKey, vint>			TypeBreakPointMap;
 			public:
+				/// <summary>The state of the debugger.</summary>
+				/// <remarks>
+				/// <p>
+				/// The state is affected by break points and the following operations:
+				/// <ul>
+				///   <li><b><see cref="Run"/></b>: If the Workflow script is paused, it continues the script.</li>
+				///   <li><b><see cref="Pause"/></b>: If the Workflow script is running, it pauses the script, following by a call to <see cref="OnBlockExecution"/>.</li>
+				///   <li><b><see cref="Stop"/></b>: If the Workflow script is not stopped, it stops the script by throwing in exception in the script.</li>
+				///   <li><b><see cref="StepOver"/></b>: Stop over to the next code line and pause. It doesn't jump into the function to be called.</li>
+				///   <li><b><see cref="StepInto"/></b>: Stop into the new code line and pause.</li>
+				/// </ul>
+				/// Operations are expected to be called in <see cref="OnBlockExecution"/>.
+				/// </p>
+				/// </remarks>
 				enum State
 				{						//		Run		Pause	Stop	StepOver	StepInto
+					/// <summary>The associated thread is running Workflow script.</summary>
 					Running,			// R			*RTP	*RTS
+					/// <summary>The target Workflow script is paused by operations other than break points.</summary>
 					PauseByOperation,	// PBO	*C				*RTS	*C			*C
+					/// <summary>The target Workflow script is paused by break points.</summary>
 					PauseByBreakPoint,	// PBB	*C				*RTS	*C			*C
+					/// <summary>The associated thread has stopped running Workflow script.</summary>
 					Stopped,			// S			*RTP			*			*
+					/// <summary>The debugger allows the target Workflow script to continue.</summary>
 					Continue,			// C	soon becomes Running
-					RequiredToPause,	// RTP	soon becomes PauseByOperation
-					RequiredToStop,		// RTS	soon becomes Stop
+					/// <summary>The target Workflow script is required to pause. This value can be observed in <see cref="OnBlockExecution"/>. Operations to continue executing the Workflow script await to be called.</summary>
+					RequiredToPause,	// RTP	soon becomes PauseByOperation (should be triggered in OnBlockExecution)
+					/// <summary>The target Workflow script is required to stop. It caused to Workflow script to stop by throwing an exception saying this.</summary>
+					RequiredToStop,		// RTS	soon becomes Stopped          (should be triggered in OnBlockExecution)
 				};
 
 				enum RunningType
@@ -234,6 +256,7 @@ Debugger
 				TypeBreakPointMap						createObjectBreakPoints;
 
 				/// <summary>Called for doing something when a break point is activated. This function will be called multiple times before some one let the debugger to continue.</summary>
+				/// <remarks>This function must be overrided, or the Workflow script will hang when it is paused by any reason.</remarks>
 				virtual void							OnBlockExecution();
 				/// <summary>Called when a new Workflow program is about to run.</summary>
 				virtual void							OnStartExecution();
@@ -278,13 +301,17 @@ Debugger
 				/// <summary>Get the number of all break points.</summary>
 				/// <returns>The number of all break points.</returns>
 				vint									GetBreakPointCount();
-				/// <summary>Get a specified break point.</summary>
+				/// <summary>Test if an index is an available break point.</summary>
+				/// <returns>Returns true if an index is an available break point. This function returns true for all disabled break points.</returns>
+				bool									IsBreakPointAvailable(vint index);
+				/// <summary>Get a specified break point. For unavailable break points, <see cref="WfBreakPoint::available"/> is false.</summary>
 				/// <returns>The break point.</returns>
 				/// <param name="index">The index of the break point.</param>
 				const WfBreakPoint&						GetBreakPoint(vint index);
 				/// <summary>Delete a specified break point.</summary>
 				/// <returns>Returns true if this operation is succeeded.</returns>
 				/// <param name="index">The index of the break point.</param>
+				/// <remarks>After removing a break point, the break point becomes unavailable. The index will be reused later when a new break point is added to the debugger.</remarks>
 				bool									RemoveBreakPoint(vint index);
 				/// <summary>Enable or disable a specified break point.</summary>
 				/// <returns>Returns true if this operation is succeeded.</returns>

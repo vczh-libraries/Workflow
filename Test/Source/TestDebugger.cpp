@@ -326,6 +326,16 @@ TEST_FILE
 		SetDebuggerForCurrentThread(nullptr);
 	});
 
+	TEST_CASE(L"Test debugger: stop while running")
+	{
+		TEST_ASSERT(false);
+	});
+
+	TEST_CASE(L"Test debugger: pause while running")
+	{
+		TEST_ASSERT(false);
+	});
+
 	TEST_CASE(L"Test debugger: step over 1")
 	{
 		auto debugger = MakePtr<MultithreadDebugger>(
