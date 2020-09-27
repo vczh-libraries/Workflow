@@ -159,6 +159,28 @@ Debugger
 			};
 
 			/// <summary>Workflow debugger.</summary>
+			/// <remarks>
+			/// <p>
+			/// <see cref="SetDebuggerForCurrentThread"/> needs to be called to make a debugger works for any Workflow script that is running in the current thread.
+			/// </p>
+			/// <p>
+			/// <see cref="OnBlockExecution"/> needs to be overrided to make a debugger work properly.
+			/// When the target Workflow script stops,
+			/// this function will be called.
+			/// In this function,
+			/// one of <see cref="Run"/>, <see cref="Pause"/>, <see cref="Stop"/>, <see cref="StepOver"/> and <see cref="StepInto"/>
+			/// must be called to make the target Workflow script continues.
+			/// </p>
+			/// <p>
+			/// You are allowed to run the debugger logic in another thread,
+			/// for example,
+			/// an GUI application is debugging a Workflow script which is running in another thread.
+			/// In this case, <see cref="OnBlockExecution"/> needs to be blocked until it is ready to continue.
+			/// </p>
+			/// <p>
+			/// Locks are a good choice for this.
+			/// </p>
+			/// </remarks>
 			class WfDebugger : public Object, protected virtual IWfDebuggerCallback
 			{
 				friend IWfDebuggerCallback* GetDebuggerCallback(WfDebugger* debugger);
