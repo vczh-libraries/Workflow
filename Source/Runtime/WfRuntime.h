@@ -286,14 +286,14 @@ RuntimeThreadContext
 Helper Functions
 ***********************************************************************/
 			
-			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
+			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "&lt;initialize&gt;" should be the first to execute.</summary>
 			/// <returns>The loaded function.</returns>
 			/// <param name="context">The context to the evaluation environment.</param>
 			/// <param name="name">The function name.</param>
 			/// <remarks>"<b>&lt;initialize&gt;</b>" must be the first function that is executed after an assembly is loaded. It has no argument or return value.</remarks>
 			extern Ptr<reflection::description::IValueFunctionProxy>		LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name);
 			
-			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
+			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "&lt;initialize&gt;" should be the first to execute.</summary>
 			/// <typeparam name="TFunction">Type of the function.</typeparam>
 			/// <returns>The loaded C++ friendly function.</returns>
 			/// <param name="context">The context to the evaluation environment.</param>
