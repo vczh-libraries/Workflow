@@ -43,7 +43,7 @@ Instruction
 				Return,					//						: Value -> Value													; (exit function)
 				CreateArray,			// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
 				CreateObservableList,	// count				: Value-count, ..., Value-1 -> <observable-list>					; {1 2 3} -> <3 2 1>
-				CreateMap,				// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
+				CreateMap,				// count				: Value-count*2, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
 				CreateClosureContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
 				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
 				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
