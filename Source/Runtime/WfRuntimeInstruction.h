@@ -63,7 +63,7 @@ Instruction
 				UpdateProperty,			// IPropertyInfo*		: Value-this, Value -> Value-this									;
 				InvokeProxy,			// count				: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeMethod,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
-				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> <null>						;
 				InvokeBaseCtor,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> <null>						;
 				AttachEvent,			// IEventInfo*			: Value-this, <function> -> <Listener>								;
 				DetachEvent,			// IEventInfo*			: Value-this, <Listener> -> bool									;
