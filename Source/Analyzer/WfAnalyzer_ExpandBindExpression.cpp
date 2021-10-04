@@ -695,13 +695,12 @@ CreateDefaultValue
 				auto valueType = elementType->GetTypeDescriptor()->GetValueType();
 				if (elementType->GetDecorator()==ITypeInfo::TypeDescriptor && valueType != nullptr)
 				{
-					auto value = valueType->CreateDefault();
 					switch (GetTypeFlag(elementType))
 					{
 					case TypeFlag::Enum:
 						{
 							auto intExpr = MakePtr<WfIntegerExpression>();
-							intExpr->value.value = u64tow(elementType->GetTypeDescriptor()->GetEnumType()->FromEnum(value));
+							intExpr->value.value = u64tow(elementType->GetTypeDescriptor()->GetEnumType()->FromEnum(valueType->CreateDefault()));
 
 							auto inferExpr = MakePtr<WfTypeCastingExpression>();
 							inferExpr->strategy = WfTypeCastingStrategy::Strong;
@@ -718,7 +717,7 @@ CreateDefaultValue
 					case TypeFlag::String:
 						{
 							auto stringExpr = MakePtr<WfStringExpression>();
-							elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
+							elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(valueType->CreateDefault(), stringExpr->value.value);
 							return stringExpr;
 						}
 						break;
@@ -776,7 +775,7 @@ CreateDefaultValue
 							else
 							{
 								auto stringExpr = MakePtr<WfStringExpression>();
-								elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(value, stringExpr->value.value);
+								elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(valueType->CreateDefault(), stringExpr->value.value);
 
 								auto castExpr = MakePtr<WfTypeCastingExpression>();
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
