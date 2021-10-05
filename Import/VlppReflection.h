@@ -18,6 +18,14 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_REFLECTION_GUITYPEDESCRIPTOR
 
 
+#if (defined VCZH_DEBUG_NO_REFLECTION) && (defined VCZH_DEBUG_METAONLY_REFLECTION)
+static_assert(false, "Preprocessor VCZH_DEBUG_NO_REFLECTION and VCZH_DEBUG_METAONLY_REFLECTION could not be defined at the same time.")
+#endif
+
+#if !(defined VCZH_DEBUG_NO_REFLECTION) && !(defined VCZH_DEBUG_METAONLY_REFLECTION)
+#define VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+#endif
+
 namespace vl
 {
 	namespace reflection
@@ -129,13 +137,14 @@ Attribute
 		private:
 			volatile vint							referenceCounter;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			size_t									objectSize;
 			description::ITypeDescriptor**			typeDescriptor;
 #endif
 			Ptr<InternalPropertyMap>				internalProperties;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			bool									destructing;
 			DescriptableObject**					aggregationInfo;
 			vint									aggregationSize;
@@ -146,7 +155,7 @@ Attribute
 
 		protected:
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			// Returns true if this object inherits other objects by aggregation.</returns>
 			bool									IsAggregated();
 
@@ -174,7 +183,7 @@ Attribute
 			/// <summary>A function that must be called in destructors of all classes inheriting from [T:vl.reflection.AggregatableDescription`1].</summary>
 			void									FinalizeAggregation();
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			template<typename T>
 			void SafeAggregationCast(T*& result)
 			{
@@ -200,7 +209,7 @@ Attribute
 			DescriptableObject();
 			virtual ~DescriptableObject();
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			/// <summary>
 			/// <p>Get the type descriptor that describe the real type of this object.</p>
 			/// </summary>
@@ -232,7 +241,7 @@ Attribute
 			/// <param name="forceDisposing">Set to true to force disposing this object. If the reference counter is not 0 if you force disposing it, it will raise a [T:vl.reflection.description.ValueNotDisposableException].</param>
 			bool									Dispose(bool forceDisposing);
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			/// <summary>
 			/// <p>Get the aggregation root object, which is the object that inherits this object by aggregation.</p>
 			/// </summary>
@@ -262,7 +271,7 @@ Attribute
 			template<typename T>
 			T* SafeAggregationCast()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				T* result = nullptr;
 				SafeGetAggregationRoot()->SafeAggregationCast<T>(result);
 				return result;
@@ -630,13 +639,13 @@ Attribute
 		class Description : public virtual DescriptableObject
 		{
 		protected:
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			static description::ITypeDescriptor*		associatedTypeDescriptor;
 #endif
 		public:
 			Description()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 				if(objectSize<sizeof(T))
 				{
@@ -649,7 +658,7 @@ Attribute
 #endif
 			}
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			static description::ITypeDescriptor* GetAssociatedTypeDescriptor()
 			{
 				return associatedTypeDescriptor;
@@ -671,7 +680,7 @@ Attribute
 		{
 		};
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		template<typename T>
 		description::ITypeDescriptor* Description<T>::associatedTypeDescriptor=0;
 #endif
@@ -694,7 +703,7 @@ ReferenceCounterOperator
 		static __forceinline volatile vint* CreateCounter(T* reference)
 		{
 			reflection::DescriptableObject* obj=reference;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			if (obj->IsAggregated())
 			{
 				if (auto root = obj->GetAggregationRoot())
@@ -768,7 +777,7 @@ Value
 				DescriptableObject*				rawPtr;
 				Ptr<DescriptableObject>			sharedPtr;
 				Ptr<IBoxedValue>				boxedValue;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeDescriptor*				typeDescriptor;
 #endif
 
@@ -804,7 +813,7 @@ Value
 				/// <summary>Test if this value isnull.</summary>
 				/// <returns>Returns true if this value is null.</returns>
 				bool							IsNull()const;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				/// <summary>Get the real type of the stored object.</summary>
 				/// <returns>The real type. Returns null if the value is null.</returns>
 				/// <remarks>
@@ -830,7 +839,7 @@ Value
 				/// <param name="type">The type of the boxed value.</param>
 				static Value					From(Ptr<IBoxedValue> value, ITypeDescriptor* type);
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static IMethodInfo*				SelectMethod(IMethodGroupInfo* methodGroup, collections::Array<Value>& arguments);
 
 				/// <summary>Call the default constructor of the specified type to create a value.</summary>
@@ -2301,6 +2310,8 @@ ITypeManager
 			extern ITypeDescriptor*				GetTypeDescriptor(const WString& name);
 			extern bool							IsInterfaceType(ITypeDescriptor* typeDescriptor, bool& acceptProxy);
 			extern void							LogTypeManager(stream::TextWriter& writer);
+			extern void							GenerateMetaonlyTypes(stream::IStream& outputStream);
+			extern Ptr<ITypeLoader>				LoadMetaonlyTypes(stream::IStream& inputStream, const collections::Dictionary<WString, Ptr<ISerializableType>>& serializableTypes);
 
 /***********************************************************************
 Cpp Helper Functions
@@ -2343,7 +2354,7 @@ Exceptions
 				}
 			};
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			class TypeNotExistsException : public TypeDescriptorException
 			{
@@ -3337,78 +3348,9 @@ TypeInfo
 				return GetTypeDescriptor(TypeInfo<T>::content.typeName);
 			}
 
-/***********************************************************************
-SerializableTypeDescriptor
-***********************************************************************/
+#endif
 
-			class TypeDescriptorImplBase : public Object, public ITypeDescriptor, private ITypeDescriptor::ICpp
-			{
-			private:
-				TypeDescriptorFlags							typeDescriptorFlags;
-				const TypeInfoContent*						typeInfoContent;
-				WString										typeName;
-				WString										cppFullTypeName;
-
-				const WString&								GetFullName()override;
-
-			protected:
-				const TypeInfoContent*						GetTypeInfoContentInternal();
-
-			public:
-				TypeDescriptorImplBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
-				~TypeDescriptorImplBase();
-
-				ITypeDescriptor::ICpp*						GetCpp()override;
-				TypeDescriptorFlags							GetTypeDescriptorFlags()override;
-				const WString&								GetTypeName()override;
-			};
-
-			class ValueTypeDescriptorBase : public TypeDescriptorImplBase
-			{
-			protected:
-				bool										loaded;
-				Ptr<IValueType>								valueType;
-				Ptr<IEnumType>								enumType;
-				Ptr<ISerializableType>						serializableType;
-
-				virtual void								LoadInternal();;
-				void										Load();
-			public:
-				ValueTypeDescriptorBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
-				~ValueTypeDescriptorBase();
-
-				bool										IsAggregatable()override;
-				IValueType*									GetValueType()override;
-				IEnumType*									GetEnumType()override;
-				ISerializableType*							GetSerializableType()override;
-
-				vint										GetBaseTypeDescriptorCount()override;
-				ITypeDescriptor*							GetBaseTypeDescriptor(vint index)override;
-				bool										CanConvertTo(ITypeDescriptor* targetType)override;
-				vint										GetPropertyCount()override;
-				IPropertyInfo*								GetProperty(vint index)override;
-				bool										IsPropertyExists(const WString& name, bool inheritable)override;
-				IPropertyInfo*								GetPropertyByName(const WString& name, bool inheritable)override;
-				vint										GetEventCount()override;
-				IEventInfo*									GetEvent(vint index)override;
-				bool										IsEventExists(const WString& name, bool inheritable)override;
-				IEventInfo*									GetEventByName(const WString& name, bool inheritable)override;
-				vint										GetMethodGroupCount()override;
-				IMethodGroupInfo*							GetMethodGroup(vint index)override;
-				bool										IsMethodGroupExists(const WString& name, bool inheritable)override;
-				IMethodGroupInfo*							GetMethodGroupByName(const WString& name, bool inheritable)override;
-				IMethodGroupInfo*							GetConstructorGroup()override;
-			};
-
-			template<typename T, TypeDescriptorFlags TDFlags>
-			class TypedValueTypeDescriptorBase : public ValueTypeDescriptorBase
-			{
-			public:
-				TypedValueTypeDescriptorBase()
-					:ValueTypeDescriptorBase(TDFlags, &TypeInfo<T>::content)
-				{
-				}
-			};
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 /***********************************************************************
 TypeInfoImp
@@ -3494,6 +3436,83 @@ TypeInfoImp
 				WString									GetTypeFriendlyName()override;
 
 				void									AddGenericArgument(Ptr<ITypeInfo> value);
+			};
+
+#endif
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
+/***********************************************************************
+SerializableTypeDescriptor
+***********************************************************************/
+
+			class TypeDescriptorImplBase : public Object, public ITypeDescriptor, private ITypeDescriptor::ICpp
+			{
+			private:
+				TypeDescriptorFlags							typeDescriptorFlags;
+				const TypeInfoContent*						typeInfoContent;
+				WString										typeName;
+				WString										cppFullTypeName;
+
+				const WString&								GetFullName()override;
+
+			protected:
+				const TypeInfoContent*						GetTypeInfoContentInternal();
+
+			public:
+				TypeDescriptorImplBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
+				~TypeDescriptorImplBase();
+
+				ITypeDescriptor::ICpp*						GetCpp()override;
+				TypeDescriptorFlags							GetTypeDescriptorFlags()override;
+				const WString&								GetTypeName()override;
+			};
+
+			class ValueTypeDescriptorBase : public TypeDescriptorImplBase
+			{
+			protected:
+				bool										loaded;
+				Ptr<IValueType>								valueType;
+				Ptr<IEnumType>								enumType;
+				Ptr<ISerializableType>						serializableType;
+
+				virtual void								LoadInternal();;
+				void										Load();
+			public:
+				ValueTypeDescriptorBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
+				~ValueTypeDescriptorBase();
+
+				bool										IsAggregatable()override;
+				IValueType*									GetValueType()override;
+				IEnumType*									GetEnumType()override;
+				ISerializableType*							GetSerializableType()override;
+
+				vint										GetBaseTypeDescriptorCount()override;
+				ITypeDescriptor*							GetBaseTypeDescriptor(vint index)override;
+				bool										CanConvertTo(ITypeDescriptor* targetType)override;
+				vint										GetPropertyCount()override;
+				IPropertyInfo*								GetProperty(vint index)override;
+				bool										IsPropertyExists(const WString& name, bool inheritable)override;
+				IPropertyInfo*								GetPropertyByName(const WString& name, bool inheritable)override;
+				vint										GetEventCount()override;
+				IEventInfo*									GetEvent(vint index)override;
+				bool										IsEventExists(const WString& name, bool inheritable)override;
+				IEventInfo*									GetEventByName(const WString& name, bool inheritable)override;
+				vint										GetMethodGroupCount()override;
+				IMethodGroupInfo*							GetMethodGroup(vint index)override;
+				bool										IsMethodGroupExists(const WString& name, bool inheritable)override;
+				IMethodGroupInfo*							GetMethodGroupByName(const WString& name, bool inheritable)override;
+				IMethodGroupInfo*							GetConstructorGroup()override;
+			};
+
+			template<typename T, TypeDescriptorFlags TDFlags>
+			class TypedValueTypeDescriptorBase : public ValueTypeDescriptorBase
+			{
+			public:
+				TypedValueTypeDescriptorBase()
+					:ValueTypeDescriptorBase(TDFlags, &TypeInfo<T>::content)
+				{
+				}
 			};
 
 /***********************************************************************
@@ -4034,7 +4053,7 @@ TypeInfoRetriver
 				typedef typename DetailTypeInfoRetriver<T, TypeFlag>::ResultReferenceType		ResultReferenceType;
 				typedef typename DetailTypeInfoRetriver<T, TypeFlag>::ResultNonReferenceType	ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo()
 				{
 					return DetailTypeInfoRetriver<typename RemoveCVR<T>::Type, TypeFlag>::CreateTypeInfo(Hint);
@@ -4108,7 +4127,7 @@ TypeInfoRetriver Helper Functions (UnboxParameter)
 				ParameterAccessor<T, TypeInfoRetriver<T>::TypeFlag>::UnboxParameter(value, result, typeDescriptor, valueName);
 			}
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 /***********************************************************************
 Value_xs
@@ -4193,9 +4212,13 @@ CustomFieldInfoImpl
 				}
 			};
 
+#endif
+
 /***********************************************************************
 PrimitiveTypeDescriptor
 ***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 			template<typename T>
 			class SerializableValueType : public Object, public virtual IValueType
@@ -4234,6 +4257,10 @@ PrimitiveTypeDescriptor
 					return true;
 				}
 			};
+
+#endif
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			template<typename T>
 			class PrimitiveTypeDescriptor : public TypedValueTypeDescriptorBase<T, TypeDescriptorFlags::Primitive>
@@ -4981,7 +5008,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -5009,7 +5036,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -5037,7 +5064,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -5065,7 +5092,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -5093,7 +5120,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -5125,7 +5152,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -5164,7 +5191,7 @@ ParameterAccessor<TContainer>
 						);
 
 					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueEnumerable>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue<Ptr<IValueEnumerable>>(result, td);
@@ -5186,7 +5213,7 @@ ParameterAccessor<TContainer>
 					Ptr<IValueReadonlyList> result=new ValueReadonlyListWrapper<T*>(&object);
 
 					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueReadonlyList>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue<Ptr<IValueReadonlyList>>(result, td);
@@ -5209,7 +5236,7 @@ ParameterAccessor<TContainer>
 					Ptr<IValueList> result=new ValueListWrapper<T*>(&object);
 
 					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueList>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue<Ptr<IValueList>>(result, td);
@@ -5230,7 +5257,7 @@ ParameterAccessor<TContainer>
 				static Value BoxParameter(collections::ObservableList<T>& object, ITypeDescriptor* typeDescriptor)
 				{
 					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueObservableList>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue<Ptr<IValueObservableList>>(object.GetWrapper(), td);
@@ -5245,7 +5272,7 @@ ParameterAccessor<TContainer>
 					Ptr<IValueReadonlyDictionary> result=new ValueReadonlyDictionaryWrapper<T*>(&object);
 
 					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue<Ptr<IValueReadonlyDictionary>>(result, td);
@@ -5272,7 +5299,7 @@ ParameterAccessor<TContainer>
 					Ptr<IValueDictionary> result=new ValueDictionaryWrapper<T*>(&object);
 
 					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueDictionary>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue<Ptr<IValueDictionary>>(result, td);
@@ -5653,7 +5680,7 @@ namespace vl
 DetailTypeInfoRetriver<Func<R(TArgs...)>>
 ***********************************************************************/
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			namespace internal_helper
 			{
 				template<typename T>
@@ -5687,7 +5714,7 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
  
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					auto functionType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor(), hint);
@@ -5773,7 +5800,7 @@ ValueFunctionProxyWrapper<Func<R(TArgs...)>>
 				{
 					if (!arguments || arguments->GetCount() != sizeof...(TArgs))
 					{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 						throw ArgumentCountMismtatchException();
 #else
 						CHECK_FAIL(L"Argument count mismatch.");
@@ -5808,7 +5835,7 @@ ParameterAccessor<Func<R(TArgs...)>>
 					Ptr<IValueFunctionProxy> result=new ValueFunctionProxyWrapper<RawFunctionType>(object);
 
 					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue<Ptr<IValueFunctionProxy>>(result, td);
@@ -5846,7 +5873,7 @@ ParameterAccessor<Func<R(TArgs...)>>
 			{
 			};
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
  
 /***********************************************************************
 MethodInfoImpl
@@ -6261,7 +6288,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&												ResultReferenceType;
 				typedef T												ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<Type>(), hint);
@@ -6280,7 +6307,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef const T&												ResultReferenceType;
 				typedef const T													ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
@@ -6299,7 +6326,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&														ResultReferenceType;
 				typedef T														ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
@@ -6318,7 +6345,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T*&														ResultReferenceType;
 				typedef T*														ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<RawPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
@@ -6337,7 +6364,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef Ptr<T>&													ResultReferenceType;
 				typedef Ptr<T>													ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<SharedPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
@@ -6356,7 +6383,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef Nullable<T>&											ResultReferenceType;
 				typedef Nullable<T>												ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<NullableTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
@@ -6375,7 +6402,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&														ResultReferenceType;
 				typedef T														ResultNonReferenceType;
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
@@ -6424,7 +6451,7 @@ ParameterAccessor<TStruct>
 					}
 					if(!result)
 					{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 						if(!typeDescriptor)
 						{
 							typeDescriptor=GetTypeDescriptor<T>();
@@ -6456,7 +6483,7 @@ ParameterAccessor<TStruct>
 					}
 					if(!result)
 					{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 						if(!typeDescriptor)
 						{
 							typeDescriptor=GetTypeDescriptor<T>();
@@ -6496,7 +6523,7 @@ ParameterAccessor<TStruct>
 			{
 				static Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor)
 				{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					if(!typeDescriptor)
 					{
 						typeDescriptor = GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
@@ -6515,7 +6542,7 @@ ParameterAccessor<TStruct>
 					}
 					else
 					{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 						if (!typeDescriptor)
 						{
 							typeDescriptor = GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
@@ -6573,7 +6600,7 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_REFLECTION_GUITYPEDESCRIPTORMACROS
 
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 /***********************************************************************
 Macros
@@ -7176,6 +7203,10 @@ Predefined Types
 			F(WString)		\
 			F(Locale)		\
 
+#define REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(F)\
+			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(F)	\
+			F(DateTime)									\
+
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 #define REFLECTION_PREDEFINED_COMPLEX_TYPES(F, VOID_TYPE)\
@@ -7229,21 +7260,7 @@ Predefined Types
 				static IBoxedValue::CompareResult Compare(const TYPENAME& a, const TYPENAME& b);\
 			};\
 
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint8_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint16_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint32_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint64_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint8_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint16_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint32_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint64_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(float)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(double)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(bool)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(wchar_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(WString)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(Locale)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(DateTime)
+			REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER)
 
 #undef DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER
 
@@ -7251,7 +7268,7 @@ Predefined Types
 Interface Implementation Proxy (Implement)
 ***********************************************************************/
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #pragma warning(push)
 #pragma warning(disable:4250)
