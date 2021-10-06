@@ -32,20 +32,22 @@ INITIALIZE_GLOBAL_STORAGE_CLASS
 
 FINALIZE_GLOBAL_STORAGE_CLASS
 
+END_GLOBAL_STORAGE_CLASS(MetaonlyTypeDescriptors)
+
 TEST_FILE
 {
 	TEST_CASE(L"Run LoadMetaonlyTypes()")
 	{
 		{
-			FileStream fileStream(GetTestOutputPath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
+			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
 			BomEncoder encoder(BomEncoder::Utf16);
 			EncoderStream encoderStream(fileStream, encoder);
 			StreamWriter writer(encoderStream);
 			LogTypeManager(writer);
 		}
 		{
-			auto first = File(GetTestOutputPath() + REFLECTION_BASELINE).ReadAllTextByBom();
-			auto second = File(GetTestOutputPath() + REFLECTION_OUTPUT).ReadAllTextByBom();
+			auto first = File(GetTestOutputBasePath() + REFLECTION_BASELINE).ReadAllTextByBom();
+			auto second = File(GetTestOutputBasePath() + REFLECTION_OUTPUT).ReadAllTextByBom();
 			TEST_ASSERT(first == second);
 		}
 	});
