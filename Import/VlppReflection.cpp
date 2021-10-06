@@ -1383,7 +1383,7 @@ GenericTypeInfo
 
 #endif
 
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 TypeDescriptorImplBase
@@ -1666,6 +1666,7 @@ MethodInfoImpl
 
 			void MethodInfoImpl::CheckArguments(collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(arguments.Count()!=parameters.Count())
 				{
 					throw ArgumentCountMismtatchException(ownerMethodGroup);
@@ -1677,10 +1678,14 @@ MethodInfoImpl
 						throw ArgumentTypeMismtatchException(parameters[i]->GetName(), parameters[i]->GetType(), arguments[i]);
 					}
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Value MethodInfoImpl::Invoke(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(thisObject.IsNull())
 				{
 					if(!isStatic)
@@ -1694,10 +1699,14 @@ MethodInfoImpl
 				}
 				CheckArguments(arguments);
 				return InvokeInternal(thisObject, arguments);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Value MethodInfoImpl::CreateFunctionProxy(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(thisObject.IsNull())
 				{
 					if(!isStatic)
@@ -1710,6 +1719,9 @@ MethodInfoImpl
 					throw ArgumentTypeMismtatchException(L"thisObject", ownerMethodGroup->GetOwnerTypeDescriptor(), Value::RawPtr, thisObject);
 				}
 				return CreateFunctionProxyInternal(thisObject);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			bool MethodInfoImpl::AddParameter(Ptr<IParameterInfo> parameter)
@@ -1824,6 +1836,7 @@ EventInfoImpl
 
 			Ptr<IEventHandler> EventInfoImpl::Attach(const Value& thisObject, Ptr<IValueFunctionProxy> handler)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(thisObject.IsNull())
 				{
 					throw ArgumentNullException(L"thisObject", this);
@@ -1842,10 +1855,14 @@ EventInfoImpl
 				{
 					return nullptr;
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			bool EventInfoImpl::Detach(const Value& thisObject, Ptr<IEventHandler> handler)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (thisObject.IsNull())
 				{
 					throw ArgumentNullException(L"thisObject", this);
@@ -1864,10 +1881,14 @@ EventInfoImpl
 				{
 					return false;
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void EventInfoImpl::Invoke(const Value& thisObject, Ptr<IValueList> arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(thisObject.IsNull())
 				{
 					throw ArgumentNullException(L"thisObject", this);
@@ -1886,6 +1907,9 @@ EventInfoImpl
 				{
 					return;
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -1958,6 +1982,7 @@ PropertyInfoImpl
 
 			Value PropertyInfoImpl::GetValue(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(getter)
 				{
 					Array<Value> arguments;
@@ -1967,10 +1992,14 @@ PropertyInfoImpl
 				{
 					throw PropertyIsNotReadableException(this);
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void PropertyInfoImpl::SetValue(Value& thisObject, const Value& newValue)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(setter)
 				{
 					Array<Value> arguments(1);
@@ -1981,6 +2010,9 @@ PropertyInfoImpl
 				{
 					throw PropertyIsNotWritableException(this);
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -2064,6 +2096,7 @@ FieldInfoImpl
 
 			Value FieldInfoImpl::GetValue(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(thisObject.IsNull())
 				{
 					throw ArgumentNullException(L"thisObject", this);
@@ -2078,10 +2111,14 @@ FieldInfoImpl
 					}
 				}
 				return GetValueInternal(thisObject);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void FieldInfoImpl::SetValue(Value& thisObject, const Value& newValue)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if(thisObject.IsNull())
 				{
 					throw ArgumentNullException(L"thisObject", this);
@@ -2100,6 +2137,9 @@ FieldInfoImpl
 					throw ArgumentTypeMismtatchException(L"newValue", returnInfo.Obj(), newValue);
 				}
 				SetValueInternal(thisObject, newValue);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
