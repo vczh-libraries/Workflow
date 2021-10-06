@@ -13,6 +13,8 @@ Interfaces:
 #include "WfRuntimeConstructions.h"
 #include "WfRuntimeDebugger.h"
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 namespace vl
 {
 	namespace workflow
@@ -311,4 +313,5 @@ Helper Functions
 	}
 }
 
+#endif
 #endif

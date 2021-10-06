@@ -878,14 +878,19 @@ WfClassInstance
 ***********************************************************************/
 
 			WfClassInstance::WfClassInstance(ITypeDescriptor* _typeDescriptor)
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				:Description<WfClassInstance>(_typeDescriptor)
+#endif
 			{
 				classType = dynamic_cast<WfClass*>(_typeDescriptor);
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				InitializeAggregation(classType->GetExpandedBaseTypes().Count());
+#endif
 			}
 
 			WfClassInstance::~WfClassInstance()
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (classType->destructorFunctionIndex != -1)
 				{
 					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
@@ -895,6 +900,7 @@ WfClassInstance
 					auto argumentArray = IValueList::Create();
 					WfRuntimeLambda::Invoke(classType->GetGlobalContext(), capturedVariables, classType->destructorFunctionIndex, argumentArray);
 				}
+#endif
 			}
 
 			void WfClassInstance::InstallBaseObject(ITypeDescriptor* td, Value& value)
@@ -907,9 +913,10 @@ WfClassInstance
 					}
 					value = Value();
 				}
-				
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				vint index = classType->GetExpandedBaseTypes().IndexOf(td);
 				SetAggregationParent(index, ptr);
+#endif
 			}
 
 /***********************************************************************
@@ -917,12 +924,14 @@ WfInterfaceInstance
 ***********************************************************************/
 
 			WfInterfaceInstance::WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors)
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				:Description<WfInterfaceInstance>(_typeDescriptor)
 				, proxy(_proxy)
+#endif
 			{
 				Array<Value> arguments(1);
 				arguments[0] = Value::From(_proxy);
-
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				InitializeAggregation(baseCtors.Count());
 				FOREACH_INDEXER(IMethodInfo*, ctor, index, baseCtors)
 				{
@@ -937,6 +946,7 @@ WfInterfaceInstance
 
 					SetAggregationParent(index, ptr);
 				}
+#endif
 			}
 
 			WfInterfaceInstance::~WfInterfaceInstance()

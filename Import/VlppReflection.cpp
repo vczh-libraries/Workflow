@@ -1178,7 +1178,7 @@ namespace vl
 		namespace description
 		{
 
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 TypeDescriptorTypeInfo

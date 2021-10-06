@@ -1,5 +1,7 @@
 #include "WfRuntime.h"
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 namespace vl
 {
 	using namespace reflection;
@@ -549,3 +551,5 @@ WfRuntimeThreadContext
 		}
 	}
 }
+
+#endif

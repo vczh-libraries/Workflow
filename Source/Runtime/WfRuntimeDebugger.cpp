@@ -1,6 +1,8 @@
 #include "WfRuntime.h"
 #include <math.h>
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 namespace vl
 {
 	namespace workflow
@@ -769,3 +771,5 @@ Helper Functions
 		}
 	}
 }
+
+#endif
