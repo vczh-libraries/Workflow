@@ -83,7 +83,7 @@ WString GetTestResourcePath()
 #endif
 }
 
-WString GetTestOutputPath()
+WString GetTestOutputBasePath()
 {
 #if defined VCZH_MSVC
 #ifdef VCZH_64
@@ -100,15 +100,32 @@ WString GetCppOutputPath()
 {
 #if defined VCZH_MSVC
 #ifdef VCZH_64
-	return GetTestOutputPath() + L"x64\\";
+	return GetTestOutputBasePath() + L"Cpp64\\";
 #else
-	return GetTestOutputPath() + L"x32\\";
+	return GetTestOutputBasePath() + L"Cpp86\\";
 #endif
 #elif defined VCZH_GCC
 #ifdef VCZH_64
-	return GetTestOutputPath() + L"x64/";
+	return GetTestOutputBasePath() + L"Cpp64/";
 #else
-	return GetTestOutputPath() + L"x32/";
+	return GetTestOutputBasePath() + L"Cpp86/";
+#endif
+#endif
+}
+
+WString GetWorkflowOutputPath()
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+	return GetTestOutputBasePath() + L"Workflow64\\";
+#else
+	return GetTestOutputBasePath() + L"Workflow32\\";
+#endif
+#elif defined VCZH_GCC
+#ifdef VCZH_64
+	return GetTestOutputBasePath() + L"Workflow64/";
+#else
+	return GetTestOutputBasePath() + L"Workflow32/";
 #endif
 #endif
 }
@@ -141,7 +158,7 @@ WString LoadSample(const WString& sampleName, const WString& itemName)
 
 void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, Ptr<ParsingTreeCustomBase> typedNode, WfLexicalScopeManager* manager)
 {
-	FileStream fileStream(GetTestOutputPath() + L"Parsing." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
+	FileStream fileStream(GetWorkflowOutputPath() + L"Parsing." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
 	BomEncoder encoder(BomEncoder::Utf16);
 	EncoderStream encoderStream(fileStream, encoder);
 	StreamWriter writer(encoderStream);
@@ -194,7 +211,7 @@ void LogSampleParseResult(const WString& sampleName, const WString& itemName, co
 
 void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, Ptr<WfAssembly> assembly)
 {
-	FileStream fileStream(GetTestOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
+	FileStream fileStream(GetWorkflowOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
 	BomEncoder encoder(BomEncoder::Utf16);
 	EncoderStream encoderStream(fileStream, encoder);
 	StreamWriter writer(encoderStream);
@@ -461,7 +478,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 
 void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly)
 {
-	auto path = GetTestOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".bin";
+	auto path = GetWorkflowOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".bin";
 	{
 		FileStream fileStream(path, FileStream::WriteOnly);
 		assembly->Serialize(fileStream);
