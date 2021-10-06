@@ -616,6 +616,8 @@ namespace vl
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfVirtualCseExpression::IVisitor, workflow::WfVirtualCseExpression::IVisitor)
 			IMPL_TYPE_INFO_RENAME(vl::workflow::WfModuleUsingFragment::IVisitor, workflow::WfModuleUsingFragment::IVisitor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_ENUM_ITEM(WfClassMemberKind)
 				ENUM_ITEM_NAMESPACE(WfClassMemberKind)
 				ENUM_NAMESPACE_ITEM(Static)
@@ -1820,6 +1822,7 @@ namespace vl
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(WfModuleUsingFragment::IVisitor::*)(WfModuleUsingWildCardFragment* node))
 			END_INTERFACE_MEMBER(WfModuleUsingFragment)
 
+#endif
 #undef PARSING_TOKEN_FIELD
 
 			class WfTypeLoader : public vl::Object, public ITypeLoader
@@ -1827,6 +1830,7 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					ADD_TYPE_INFO(vl::workflow::WfClassMemberKind)
 					ADD_TYPE_INFO(vl::workflow::WfClassMember)
 					ADD_TYPE_INFO(vl::workflow::WfType)
@@ -1971,6 +1975,7 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfVirtualCfeExpression::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfVirtualCseExpression::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
+#endif
 				}
 
 				void Unload(ITypeManager* manager)
@@ -1981,7 +1986,7 @@ namespace vl
 
 			bool WfLoadTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
