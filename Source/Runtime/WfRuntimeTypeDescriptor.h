@@ -24,6 +24,7 @@ namespace vl
 
 	namespace reflection
 	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define DEFINE_DESCRIPTION(TYPE)\
 		template<>\
 		class Description<workflow::typeimpl::TYPE> : public virtual DescriptableObject\
@@ -42,6 +43,7 @@ namespace vl
 		DEFINE_DESCRIPTION(WfInterfaceInstance)
 
 #undef DEFINE_DESCRIPTION
+#endif
 	}
 
 	namespace workflow

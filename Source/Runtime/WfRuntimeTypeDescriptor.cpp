@@ -28,9 +28,13 @@ WfMethodProxy
 				
 			Value WfMethodProxy::Invoke(Ptr<IValueList> arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				Array<Value> values;
 				UnboxParameter(Value::From(arguments), values);
 				return methodInfo->Invoke(thisObject, values);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -39,7 +43,11 @@ WfMethodBase
 
 			Value WfMethodBase::CreateFunctionProxyInternal(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return Value::From(MakePtr<WfMethodProxy>(thisObject, this));
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfMethodBase::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext)
@@ -77,8 +85,12 @@ WfStaticMethod
 
 			Value WfStaticMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto argumentArray = IValueList::Create(arguments);
 				return WfRuntimeLambda::Invoke(globalContext, nullptr, functionIndex, argumentArray);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfStaticMethod::WfStaticMethod()
@@ -92,6 +104,7 @@ WfClassConstructor
 
 			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto instance = MakePtr<WfClassInstance>(GetOwnerTypeDescriptor());
 				{
 					InvokeBaseCtor(Value::From(instance.Obj()), arguments);
@@ -105,6 +118,9 @@ WfClassConstructor
 				{
 					return Value::From(instance.Detach());
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfClassConstructor::WfClassConstructor(Ptr<ITypeInfo> type)
@@ -115,12 +131,16 @@ WfClassConstructor
 
 			void WfClassConstructor::InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
 				capturedVariables->variables.Resize(1);
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 					
 				auto argumentArray = IValueList::Create(arguments);
 				WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -129,12 +149,16 @@ WfClassMethod
 
 			Value WfClassMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
 				capturedVariables->variables.Resize(1);
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 
 				auto argumentArray = IValueList::Create(arguments);
 				return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfClassMethod::WfClassMethod()
@@ -148,6 +172,7 @@ WfInterfaceConstructor
 
 			Value WfInterfaceConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (arguments.Count() != 1)
 				{
 					throw ArgumentCountMismtatchException(GetOwnerMethodGroup());
@@ -209,6 +234,9 @@ WfInterfaceConstructor
 				{
 					return Value::From(instance.Detach());
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfInterfaceConstructor::WfInterfaceConstructor(Ptr<ITypeInfo> type)
@@ -226,8 +254,12 @@ WfInterfaceMethod
 
 			Value WfInterfaceMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto instance = thisObject.GetRawPtr()->SafeAggregationCast<WfInterfaceInstance>();
 				return instance->GetProxy()->Invoke(this, IValueList::Create(From(arguments)));
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfInterfaceMethod::WfInterfaceMethod()
@@ -239,6 +271,7 @@ WfInterfaceMethod
 GetInfoRecord
 ***********************************************************************/
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			template<typename TRecord, typename TInfo>
 			Ptr<TRecord> GetInfoRecord(TInfo* target, DescriptableObject* thisObject, const WString& key, bool createIfNotExist)
 			{
@@ -262,6 +295,7 @@ GetInfoRecord
 				}
 				return typedValue;
 			}
+#endif
 
 /***********************************************************************
 WfEvent
@@ -271,19 +305,28 @@ WfEvent
 
 			Ptr<WfEvent::EventRecord> WfEvent::GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return GetInfoRecord<EventRecord>(this, thisObject, EventRecordInternalPropertyName, createIfNotExist);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Ptr<IEventHandler> WfEvent::AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetEventRecord(thisObject, true);
 				auto result = MakePtr<EventHandlerImpl>(handler);
 				record->handlers.Add(this, result);
 				return result;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			bool WfEvent::DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto impl = handler.Cast<EventHandlerImpl>();
 				if (!impl)return false;
 				auto record = GetEventRecord(thisObject, true);
@@ -293,10 +336,14 @@ WfEvent
 					return true;
 				}
 				return false;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetEventRecord(thisObject, false);
 				if (record)
 				{
@@ -310,6 +357,9 @@ WfEvent
 						}
 					}
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Ptr<ITypeInfo> WfEvent::GetHandlerTypeInternal()
@@ -344,19 +394,31 @@ WfField
 
 			Ptr<WfField::FieldRecord> WfField::GetFieldRecord(DescriptableObject* thisObject, bool createIfNotExist)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return GetInfoRecord<FieldRecord>(this, thisObject, FieldRecordInternalPropertyName, createIfNotExist);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			Value WfField::GetValueInternal(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
 				return record->values.Get(this);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfField::SetValueInternal(Value& thisObject, const Value& newValue)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetFieldRecord(thisObject.GetRawPtr(), true);
 				record->values.Set(this, newValue);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfField::WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
@@ -384,6 +446,7 @@ WfStructField
 
 			Value WfStructField::GetValueInternal(const Value& thisObject)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
 				if (!structValue)
 				{
@@ -398,16 +461,23 @@ WfStructField
 				{
 					return structValue->value.fieldValues.Values()[index];
 				}
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			void WfStructField::SetValueInternal(Value& thisObject, const Value& newValue)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
 				if (!structValue)
 				{
 					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
 				}
 				structValue->value.fieldValues.Set(this, newValue);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfStructField::WfStructField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
@@ -622,7 +692,11 @@ WfStruct
 
 			Value WfStruct::WfValueType::CreateDefault()
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			IBoxedValue::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
@@ -719,19 +793,27 @@ WfEnum::WfEnumType
 
 			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto boxedValue = MakePtr<IValueType::TypedBox<WfEnumInstance>>();
 				boxedValue->value.value = value;
 				return Value::From(boxedValue, owner);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			vuint64_t WfEnum::WfEnumType::FromEnum(const Value& value)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto enumValue = value.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
 				if (!enumValue)
 				{
 					throw ArgumentTypeMismtatchException(L"enumValue", owner, Value::BoxedValue, value);
 				}
 				return enumValue->value.value;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 /***********************************************************************
@@ -745,11 +827,16 @@ WfEnum
 
 			Value WfEnum::WfValueType::CreateDefault()
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			IBoxedValue::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
 			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
 				if (!ea)
 				{
@@ -765,6 +852,9 @@ WfEnum
 				if (ea->value.value < eb->value.value) return IBoxedValue::Smaller;
 				if (ea->value.value > eb->value.value)return IBoxedValue::Greater;
 				return IBoxedValue::Equal;
+#else
+				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
+#endif
 			}
 
 			WfEnum::WfEnum(bool isFlags, const WString& typeName)
