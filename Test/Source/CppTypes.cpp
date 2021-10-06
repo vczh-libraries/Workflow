@@ -209,8 +209,11 @@ namespace vl
 			using namespace test;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-#define _ ,
 			UNITTEST_TYPELIST(IMPL_CPP_TYPE_INFO)
+#endif
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+#define _ ,
 
 			BEGIN_ENUM_ITEM_MERGABLE(Seasons)
 				ENUM_CLASS_ITEM(None)
@@ -290,7 +293,7 @@ namespace vl
 
 			bool LoadCppTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager = GetGlobalTypeManager();
 				if (manager)
 				{

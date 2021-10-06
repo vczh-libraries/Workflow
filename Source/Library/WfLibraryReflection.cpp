@@ -42,7 +42,7 @@ TypeName
 WfLoadLibraryTypes
 ***********************************************************************/
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,	
 
@@ -282,7 +282,7 @@ WfLoadLibraryTypes
 
 			bool WfLoadLibraryTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				ITypeManager* manager = GetGlobalTypeManager();
 				if (manager)
 				{
