@@ -92,7 +92,7 @@ WfAttributeEvaluator
 				auto func = LoadFunction<Value()>(attributeGlobalContext, L"<get-attribute-value>");
 				auto value = func();
 				attributeValues.Add(att, value);
-				return func();
+				return value;
 			}
 
 /***********************************************************************
