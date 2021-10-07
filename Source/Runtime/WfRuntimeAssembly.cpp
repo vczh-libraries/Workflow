@@ -217,7 +217,7 @@ Serialization (CollectMetadata)
 #define PI(X)										do{ if (!prepare.pis.Contains(X)) prepare.pis.Add(X); }while(0)
 #define EI(X)										do{ if (!prepare.eis.Contains(X)) prepare.eis.Add(X); }while(0)
 #define COLLECTMETADATA(NAME)						case WfInsCode::NAME: break;
-#define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: if (auto td = ins.valueParameter.GetTypeDescriptor()) TD(td); break;
+#define COLLECTMETADATA_VALUE(NAME)					case WfInsCode::NAME: if (auto td = ins.valueParameter.typeDescriptor) TD(td); break;
 #define COLLECTMETADATA_FUNCTION(NAME)				case WfInsCode::NAME: break;
 #define COLLECTMETADATA_FUNCTION_COUNT(NAME)		case WfInsCode::NAME: break;
 #define COLLECTMETADATA_VARIABLE(NAME)				case WfInsCode::NAME: break;
@@ -724,126 +724,63 @@ Serizliation (Metadata)
 			};
 
 			template<>
-			struct Serialization<Value>
+			struct Serialization<WfRuntimeValue>
 			{
-				static void IO(WfReader& reader, Value& value)
+				static void IO(WfReader& reader, WfRuntimeValue& value)
 				{
 					vint typeFlag = -1;
 					reader << typeFlag;
 					CHECK_ERROR(0 <= typeFlag && typeFlag <= 2, L"Failed to load value.");
 					if (typeFlag == 0)
 					{
-						value = Value();
+						value = {};
 						return;
 					}
 
 					vint typeIndex = -1;
 					reader << typeIndex;
-					auto type = reader.context->tdIndex[typeIndex];
+					value.typeDescriptor = typeIndex == -1 ? nullptr : reader.context->tdIndex[typeIndex];
+					reader << value.type;
+					value.stringValue = WString();
 
-					if (typeFlag == 1)
+					switch (value.type)
 					{
-						value = Value::From(type);
-						return;
-					}
-
-					if (auto st = type->GetSerializableType())
-					{
-						WString text;
-						reader << text;
-						st->Deserialize(text, value);
-					}
-					else
-					{
-						switch (type->GetTypeDescriptorFlags())
-						{
-						case TypeDescriptorFlags::FlagEnum:
-						case TypeDescriptorFlags::NormalEnum:
-							{
-								vint64_t intValue;
-								reader << intValue;
-								value = type->GetEnumType()->ToEnum((vuint64_t)intValue);
-							}
-							break;
-						case TypeDescriptorFlags::Struct:
-							{
-								value = type->GetValueType()->CreateDefault();
-								vint count = 0;
-								reader << count;
-
-								for (vint i = 0; i < count; i++)
-								{
-									vint propName = 0;
-									Value propValue;
-									reader << propName << propValue;
-									reader.context->piIndex[propName]->SetValue(value, propValue);
-								}
-							}
-							break;
-						default:;
-						}
+					case WfInsType::Bool:			reader << value.boolValue; break;
+					case WfInsType::I1:				{ vint64_t intValue = value.i1Value; reader << intValue; break; }
+					case WfInsType::I2:				{ vint64_t intValue = value.i2Value; reader << intValue; break; }
+					case WfInsType::I4:				{ vint64_t intValue = value.i4Value; reader << intValue; break; }
+					case WfInsType::I8:				{ vint64_t intValue = value.i8Value; reader << intValue; break; }
+					case WfInsType::U1:				{ vuint64_t intValue = value.u1Value; reader << intValue; break; }
+					case WfInsType::U2:				{ vuint64_t intValue = value.u2Value; reader << intValue; break; }
+					case WfInsType::U4:				{ vuint64_t intValue = value.u4Value; reader << intValue; break; }
+					case WfInsType::U8:				{ vuint64_t intValue = value.u8Value; reader << intValue; break; }
+					case WfInsType::F4:				reader << value.f4Value; break;
+					case WfInsType::F8:				reader << value.f8Value; break;
+					case WfInsType::String:			reader << value.stringValue; break;
 					}
 				}
 					
-				static void IO(WfWriter& writer, Value& value)
+				static void IO(WfWriter& writer, WfRuntimeValue& value)
 				{
-					vint typeFlag = 0;
-					if (value.IsNull())
-					{
-						writer << typeFlag;
-					}
-					else
-					{
-						auto type = value.GetTypeDescriptor();
-						if (type == GetTypeDescriptor<ITypeDescriptor>())
-						{
-							typeFlag = 1;
-							type = UnboxValue<ITypeDescriptor*>(value);
-						}
-						else
-						{
-							typeFlag = 2;
-						}
-						vint typeIndex = writer.context->tdIndex[type];
-						writer << typeFlag << typeIndex;
+					vint typeIndex = -1;
+					if (value.typeDescriptor) typeIndex = writer.context->tdIndex[value.typeDescriptor];
+					writer << typeIndex;
+					writer << value.type;
 
-						if (typeFlag == 2)
-						{
-							if (auto st = type->GetSerializableType())
-							{
-								WString text;
-								st->Serialize(value, text);
-								writer << text;
-							}
-							else
-							{
-								switch (type->GetTypeDescriptorFlags())
-								{
-								case TypeDescriptorFlags::FlagEnum:
-								case TypeDescriptorFlags::NormalEnum:
-									{
-										vint64_t intValue = (vint64_t)type->GetEnumType()->FromEnum(value);
-										writer << intValue;
-									}
-									break;
-								case TypeDescriptorFlags::Struct:
-									{
-										vint count = type->GetPropertyCount();
-										writer << count;
-
-										for (vint i = 0; i < count; i++)
-										{
-											auto prop = type->GetProperty(i);
-											vint propName = writer.context->piIndex[prop];
-											Value propValue = prop->GetValue(value);
-											writer << propName << propValue;
-										}
-									}
-									break;
-								default:;
-								}
-							}
-						}
+					switch (value.type)
+					{
+					case WfInsType::Bool:			writer << value.boolValue; break;
+					case WfInsType::I1:				{ vint64_t intValue = 0; writer << intValue; value.i1Value = (vint8_t)intValue; break; }
+					case WfInsType::I2:				{ vint64_t intValue = 0; writer << intValue; value.i2Value = (vint16_t)intValue; break; }
+					case WfInsType::I4:				{ vint64_t intValue = 0; writer << intValue; value.i4Value = (vint32_t)intValue; break; }
+					case WfInsType::I8:				{ vint64_t intValue = 0; writer << intValue; value.i8Value = (vint64_t)intValue; break; }
+					case WfInsType::U1:				{ vuint64_t intValue = 0; writer << intValue; value.u1Value = (vuint8_t)intValue; break; }
+					case WfInsType::U2:				{ vuint64_t intValue = 0; writer << intValue; value.u2Value = (vuint16_t)intValue; break; }
+					case WfInsType::U4:				{ vuint64_t intValue = 0; writer << intValue; value.u4Value = (vuint32_t)intValue; break; }
+					case WfInsType::U8:				{ vuint64_t intValue = 0; writer << intValue; value.u8Value = (vuint64_t)intValue; break; }
+					case WfInsType::F4:				writer << value.f4Value; break;
+					case WfInsType::F8:				writer << value.f8Value; break;
+					case WfInsType::String:			writer << value.stringValue; break;
 					}
 				}
 			};
