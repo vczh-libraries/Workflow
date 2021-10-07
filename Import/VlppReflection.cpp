@@ -4684,7 +4684,13 @@ ITypeDescriptor
 
 				bool CanConvertTo(ITypeDescriptor* targetType) override
 				{
-					CHECK_FAIL(L"Not Implemented!");
+					if (this == targetType) return true;
+					vint count = GetBaseTypeDescriptorCount();
+					for (vint i = 0; i < count; i++)
+					{
+						if (GetBaseTypeDescriptor(i)->CanConvertTo(targetType)) return true;
+					}
+					return false;
 				}
 
 				vint GetPropertyCount() override

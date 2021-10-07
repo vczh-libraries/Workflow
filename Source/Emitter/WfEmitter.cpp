@@ -118,16 +118,19 @@ WfCodegenContext
 			vint WfCodegenContext::AddInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins)
 			{
 				auto index = assembly->instructions.Add(ins);
-				if (node)
+				if (assembly->insBeforeCodegen && assembly->insAfterCodegen)
 				{
-					assembly->insBeforeCodegen->instructionCodeMapping.Add(nodePositionsBeforeCodegen[node]);
-					assembly->insAfterCodegen->instructionCodeMapping.Add(nodePositionsAfterCodegen[node]);
-				}
-				else
-				{
-					parsing::ParsingTextRange range;
-					assembly->insBeforeCodegen->instructionCodeMapping.Add(range);
-					assembly->insAfterCodegen->instructionCodeMapping.Add(range);
+					if (node)
+					{
+						assembly->insBeforeCodegen->instructionCodeMapping.Add(nodePositionsBeforeCodegen[node]);
+						assembly->insAfterCodegen->instructionCodeMapping.Add(nodePositionsAfterCodegen[node]);
+					}
+					else
+					{
+						parsing::ParsingTextRange range;
+						assembly->insBeforeCodegen->instructionCodeMapping.Add(range);
+						assembly->insAfterCodegen->instructionCodeMapping.Add(range);
+					}
 				}
 				return index;
 			}
