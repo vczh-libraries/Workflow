@@ -32,7 +32,7 @@ class IMyEmptyInterface;
 
 class IMyEmptyInterface : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IMyEmptyInterface>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IMyEmptyInterface>;
 #endif
 public:

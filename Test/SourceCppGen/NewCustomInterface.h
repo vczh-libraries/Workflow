@@ -33,7 +33,7 @@ class IMyInterface;
 
 class IMyInterface : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IMyInterface>;
 #endif
 public:

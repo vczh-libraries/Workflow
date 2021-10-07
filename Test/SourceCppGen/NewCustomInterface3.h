@@ -34,7 +34,7 @@ class MyClass;
 
 class IMyInterface3 : public virtual ::vl::reflection::description::IValueEnumerable, public ::vl::reflection::Description<IMyInterface3>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IMyInterface3>;
 #endif
 public:
@@ -45,7 +45,7 @@ class MyClass : public ::vl::Object, public ::vl::reflection::Description<MyClas
 {
 	friend class ::vl_workflow_global::__vwsnc1_NewCustomInterface3_MyClass_CreateMyInterface__IMyInterface3;
 	friend class ::vl_workflow_global::__vwsnc2_NewCustomInterface3_MyClass_CreateMyInterface_CreateEnumerator__vl_reflection_description_IValueEnumerator;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyClass>;
 #endif
 public:

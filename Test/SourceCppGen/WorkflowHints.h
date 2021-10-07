@@ -32,7 +32,7 @@ namespace workflow
 
 		class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
 #endif
 		public:
@@ -42,7 +42,7 @@ namespace workflow
 
 		class Derived : public ::workflow::hints::Base, public ::vl::reflection::Description<Derived>
 		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Derived>;
 #endif
 		public:

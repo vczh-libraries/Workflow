@@ -33,6 +33,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(SMCalculator)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::SMCalculator)
 				CLASS_MEMBER_BASE(::vl::reflection::description::StateMachine)
@@ -71,10 +72,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadCoSmcCalculatorTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<CoSmcCalculatorTypeLoader>());

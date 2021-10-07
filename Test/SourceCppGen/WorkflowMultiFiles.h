@@ -43,7 +43,7 @@ namespace multifiles
 
 	class C1 : public ::vl::Object, public ::vl::reflection::Description<C1>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<C1>;
 #endif
 	public:
@@ -52,7 +52,7 @@ namespace multifiles
 
 	class C2 : public ::vl::Object, public ::vl::reflection::Description<C2>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<C2>;
 #endif
 	public:
@@ -61,7 +61,7 @@ namespace multifiles
 
 	class C3 : public ::multifiles::C1, public ::multifiles::C2, public ::vl::reflection::Description<C3>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<C3>;
 #endif
 	public:
@@ -70,7 +70,7 @@ namespace multifiles
 
 	class C4 : public ::vl::Object, public ::vl::reflection::Description<C4>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<C4>;
 #endif
 	public:
@@ -79,7 +79,7 @@ namespace multifiles
 
 	class FlyingObject : public ::vl::Object, public ::vl::reflection::Description<FlyingObject>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FlyingObject>;
 #endif
 	public:

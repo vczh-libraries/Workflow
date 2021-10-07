@@ -35,7 +35,7 @@ class C;
 
 class A : public ::vl::Object, public ::vl::reflection::Description<A>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<A>;
 #endif
 public:
@@ -48,7 +48,7 @@ public:
 
 class B : public ::vl::Object, public ::vl::reflection::Description<B>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<B>;
 #endif
 public:
@@ -61,7 +61,7 @@ public:
 
 class C : public ::vl::Object, public ::vl::reflection::Description<C>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<C>;
 #endif
 public:

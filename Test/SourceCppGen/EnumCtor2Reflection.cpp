@@ -33,6 +33,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(Seasons)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_ENUM_ITEM_MERGABLE(::Seasons)
 				ENUM_CLASS_ITEM(Autumn)
@@ -58,10 +59,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadEnumCtor2Types()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<EnumCtor2TypeLoader>());

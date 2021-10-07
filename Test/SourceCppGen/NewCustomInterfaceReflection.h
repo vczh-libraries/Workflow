@@ -36,12 +36,15 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::IMyInterface)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IMyInterface, ::vl::reflection::description::IValueEnumerable)
 				::vl::vint Get100() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
 				}
 			END_INTERFACE_PROXY(::IMyInterface)
+#endif
 #endif
 
 			extern bool LoadNewCustomInterfaceTypes();

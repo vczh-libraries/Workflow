@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(IA)
 			IMPL_CPP_TYPE_INFO(IB)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IA)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
@@ -68,10 +69,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadNestedLambdaTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<NestedLambdaTypeLoader>());

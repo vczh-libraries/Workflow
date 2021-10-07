@@ -33,6 +33,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(Dtor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Dtor)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
@@ -55,10 +56,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadClassDtorTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<ClassDtorTypeLoader>());

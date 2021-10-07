@@ -33,7 +33,7 @@ class SMGoto;
 class SMGoto : public ::vl::reflection::description::StateMachine, public ::vl::reflection::Description<SMGoto>
 {
 	friend class ::vl_workflow_global::__vwsnc1_CoSmcGoto_SMGoto___vwsn_state_CreateCoroutine__vl_reflection_description_ICoroutine;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SMGoto>;
 #endif
 public:

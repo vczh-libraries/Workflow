@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(Calculator)
 			IMPL_CPP_TYPE_INFO(Calculator::Internal)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Calculator)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
@@ -61,10 +62,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadCallStaticMethodTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<CallStaticMethodTypeLoader>());

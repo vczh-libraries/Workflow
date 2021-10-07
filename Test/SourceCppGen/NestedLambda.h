@@ -43,7 +43,7 @@ class IB;
 
 class IA : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IA>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IA>;
 #endif
 public:
@@ -55,7 +55,7 @@ public:
 
 class IB : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IB>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IB>;
 #endif
 public:

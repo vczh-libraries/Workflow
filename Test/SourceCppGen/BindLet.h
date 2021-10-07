@@ -33,7 +33,7 @@ class Foo;
 
 class Bar : public ::vl::Object, public ::vl::reflection::Description<Bar>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Bar>;
 #endif
 public:
@@ -47,7 +47,7 @@ public:
 
 class Foo : public ::vl::Object, public ::vl::reflection::Description<Foo>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Foo>;
 #endif
 public:

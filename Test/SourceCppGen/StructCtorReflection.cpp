@@ -36,6 +36,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(depended_structs::C)
 			IMPL_CPP_TYPE_INFO(depended_structs::D)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_STRUCT_MEMBER(::depended_structs::A)
 				STRUCT_MEMBER(data)
@@ -70,10 +71,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadStructCtorTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<StructCtorTypeLoader>());

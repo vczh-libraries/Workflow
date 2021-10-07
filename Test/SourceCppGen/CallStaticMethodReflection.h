@@ -37,8 +37,11 @@ namespace vl
 			DECL_TYPE_INFO(::Calculator)
 			DECL_TYPE_INFO(::Calculator::Internal)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::Calculator::Internal)
 			END_INTERFACE_PROXY(::Calculator::Internal)
+#endif
 #endif
 
 			extern bool LoadCallStaticMethodTypes();

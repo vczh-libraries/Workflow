@@ -28,7 +28,7 @@ class Ctor;
 
 class Base : public ::vl::Object, public ::vl::reflection::Description<Base>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
 #endif
 public:
@@ -42,7 +42,7 @@ public:
 
 class Ctor : public ::Base, public ::test::ObservableValue, public ::vl::reflection::Description<Ctor>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Ctor>;
 #endif
 public:

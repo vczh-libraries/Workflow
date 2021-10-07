@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(Base)
 			IMPL_CPP_TYPE_INFO(Ctor)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Base)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
@@ -70,10 +71,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadClassCtorTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<ClassCtorTypeLoader>());

@@ -29,7 +29,7 @@ namespace multifiles
 {
 	class Cat : public ::multifiles::Animal, public ::vl::reflection::Description<Cat>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Cat>;
 #endif
 	public:
@@ -38,7 +38,7 @@ namespace multifiles
 
 	class Dog : public ::multifiles::Animal, public ::vl::reflection::Description<Dog>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Dog>;
 #endif
 	public:
@@ -47,7 +47,7 @@ namespace multifiles
 
 	class BadDog : public ::multifiles::Dog, public ::vl::reflection::Description<BadDog>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BadDog>;
 #endif
 	public:
@@ -56,7 +56,7 @@ namespace multifiles
 
 	class GoodDog : public ::multifiles::Dog, public ::vl::reflection::Description<GoodDog>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GoodDog>;
 #endif
 	public:

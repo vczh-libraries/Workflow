@@ -182,7 +182,7 @@ namespace vl
 						}
 					}
 				}
-				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(prefix + L"\tfriend struct ::vl::reflection::description::CustomTypeDescriptorSelector<" + name + L">;");
 				writer.WriteLine(L"#endif");
 

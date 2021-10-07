@@ -33,6 +33,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(MyEnum)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_ENUM_ITEM(::MyEnum)
 				ENUM_CLASS_ITEM(Item)
@@ -52,10 +53,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadOpCompareTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<OpCompareTypeLoader>());

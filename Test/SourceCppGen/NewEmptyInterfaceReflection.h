@@ -36,8 +36,11 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::IMyEmptyInterface)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::IMyEmptyInterface)
 			END_INTERFACE_PROXY(::IMyEmptyInterface)
+#endif
 #endif
 
 			extern bool LoadNewEmptyInterfaceTypes();

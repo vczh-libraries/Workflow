@@ -36,7 +36,7 @@ class OuterClass : public ::vl::Object, public ::vl::reflection::Description<Out
 {
 	friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
 	friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<OuterClass>;
 #endif
 public:
@@ -46,7 +46,7 @@ public:
 	{
 		friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Base>;
 #endif
 	public:
@@ -64,7 +64,7 @@ class Derived : public ::OuterClass::Base, public ::vl::reflection::Description<
 	friend class ::OuterClass::Base;
 	friend class ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription;
 	friend struct ::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Derived>;
 #endif
 protected:

@@ -33,7 +33,7 @@ class SMSwitchPR1;
 class SMSwitchPR1 : public ::vl::reflection::description::StateMachine, public ::vl::reflection::Description<SMSwitchPR1>
 {
 	friend class ::vl_workflow_global::__vwsnc1_CoSmcSwitchPR1_SMSwitchPR1___vwsn_state_CreateCoroutine__vl_reflection_description_ICoroutine;
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SMSwitchPR1>;
 #endif
 public:

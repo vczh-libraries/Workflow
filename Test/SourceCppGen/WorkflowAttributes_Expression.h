@@ -27,7 +27,7 @@ namespace calculator
 {
 	class Expression : public ::vl::Object, public ::vl::reflection::Description<Expression>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Expression>;
 #endif
 	public:

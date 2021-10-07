@@ -35,6 +35,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(B)
 			IMPL_CPP_TYPE_INFO(C)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::A)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
@@ -82,10 +83,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadBindNullTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<BindNullTypeLoader>());

@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(IMyInterface3)
 			IMPL_CPP_TYPE_INFO(MyClass)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IMyInterface3)
 				CLASS_MEMBER_BASE(::vl::reflection::description::IValueEnumerable)
@@ -64,10 +65,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadNewCustomInterface3Types()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<NewCustomInterface3TypeLoader>());

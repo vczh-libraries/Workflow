@@ -35,7 +35,7 @@ class IAdder;
 
 class ISummer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ISummer>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ISummer>;
 #endif
 public:
@@ -45,7 +45,7 @@ public:
 
 class IAdder : public virtual ::ISummer, public ::vl::reflection::Description<IAdder>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IAdder>;
 #endif
 public:

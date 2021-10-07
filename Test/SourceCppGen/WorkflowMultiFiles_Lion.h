@@ -29,7 +29,7 @@ namespace multifiles
 {
 	class Lion : public ::multifiles::Cat, public ::multifiles::HuntingObject, public ::vl::reflection::Description<Lion>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Lion>;
 #endif
 	public:

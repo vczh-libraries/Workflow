@@ -37,12 +37,15 @@ namespace vl
 			DECL_TYPE_INFO(::IMyInterface3)
 			DECL_TYPE_INFO(::MyClass)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::IMyInterface3, ::vl::reflection::description::IValueEnumerable)
 				::vl::vint Get100() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Get100);
 				}
 			END_INTERFACE_PROXY(::IMyInterface3)
+#endif
 #endif
 
 			extern bool LoadNewCustomInterface3Types();

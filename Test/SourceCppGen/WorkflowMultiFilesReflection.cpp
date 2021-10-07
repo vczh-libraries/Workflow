@@ -48,6 +48,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(multifiles::Lion)
 			IMPL_CPP_TYPE_INFO(multifiles::Tiger)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::multifiles::Animal)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
@@ -163,10 +164,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadWorkflowMultiFilesTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<WorkflowMultiFilesTypeLoader>());

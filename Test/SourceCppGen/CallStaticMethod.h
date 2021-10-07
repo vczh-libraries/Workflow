@@ -27,7 +27,7 @@ class Calculator;
 
 class Calculator : public ::vl::Object, public ::vl::reflection::Description<Calculator>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Calculator>;
 #endif
 public:
@@ -35,7 +35,7 @@ public:
 
 	class Internal : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<Internal>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Internal>;
 #endif
 	public:

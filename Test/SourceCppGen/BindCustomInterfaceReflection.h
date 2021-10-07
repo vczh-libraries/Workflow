@@ -37,6 +37,8 @@ namespace vl
 			DECL_TYPE_INFO(::IAdder)
 			DECL_TYPE_INFO(::ISummer)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::ISummer)
 				::vl::vint GetSum() override
 				{
@@ -50,6 +52,7 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Add, value);
 				}
 			END_INTERFACE_PROXY(::IAdder)
+#endif
 #endif
 
 			extern bool LoadBindCustomInterfaceTypes();

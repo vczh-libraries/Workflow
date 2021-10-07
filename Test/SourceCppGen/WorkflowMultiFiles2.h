@@ -30,7 +30,7 @@ namespace multifiles
 {
 	class HuntingObject : public ::vl::Object, public ::vl::reflection::Description<HuntingObject>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<HuntingObject>;
 #endif
 	public:
@@ -38,7 +38,7 @@ namespace multifiles
 
 		class Inside : public ::multifiles::Bird, public ::vl::reflection::Description<Inside>
 		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Inside>;
 #endif
 		public:
@@ -49,7 +49,7 @@ namespace multifiles
 
 	class Leopard : public ::multifiles::Cat, public ::multifiles::HuntingObject, public ::vl::reflection::Description<Leopard>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Leopard>;
 #endif
 	public:
@@ -58,7 +58,7 @@ namespace multifiles
 
 	class Tiger : public ::multifiles::Cat, public ::multifiles::HuntingObject, public ::vl::reflection::Description<Tiger>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Tiger>;
 #endif
 	public:

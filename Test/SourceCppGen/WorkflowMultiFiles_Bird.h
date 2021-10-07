@@ -28,7 +28,7 @@ namespace multifiles
 {
 	class Bird : public ::multifiles::Animal, public ::multifiles::FlyingObject, public ::vl::reflection::Description<Bird>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Bird>;
 #endif
 	public:

@@ -32,7 +32,7 @@ class Methods;
 
 class Methods : public ::vl::Object, public ::vl::reflection::Description<Methods>
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Methods>;
 #endif
 public:

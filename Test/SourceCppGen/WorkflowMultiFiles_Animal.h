@@ -27,7 +27,7 @@ namespace multifiles
 {
 	class Animal : public ::vl::Object, public ::vl::reflection::Description<Animal>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Animal>;
 #endif
 	public:

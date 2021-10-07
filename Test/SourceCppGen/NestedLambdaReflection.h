@@ -37,6 +37,8 @@ namespace vl
 			DECL_TYPE_INFO(::IA)
 			DECL_TYPE_INFO(::IB)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::IA)
 				::vl::WString Calculate() override
 				{
@@ -66,6 +68,7 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(SetB, value);
 				}
 			END_INTERFACE_PROXY(::IB)
+#endif
 #endif
 
 			extern bool LoadNestedLambdaTypes();

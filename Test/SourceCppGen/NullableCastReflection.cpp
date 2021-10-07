@@ -33,6 +33,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(BoxedIntValue)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_STRUCT_MEMBER(::BoxedIntValue)
 				STRUCT_MEMBER(value)
@@ -52,10 +53,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadNullableCastTypes()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<NullableCastTypeLoader>());

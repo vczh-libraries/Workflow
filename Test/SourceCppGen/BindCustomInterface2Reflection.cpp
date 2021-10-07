@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(IAdder2)
 			IMPL_CPP_TYPE_INFO(ISummer2)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::IAdder2)
 				CLASS_MEMBER_BASE(::ISummer2)
@@ -62,10 +63,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadBindCustomInterface2Types()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<BindCustomInterface2TypeLoader>());

@@ -28,7 +28,7 @@ namespace calculator
 {
 	class BinaryExpression : public ::calculator::Expression, public ::vl::reflection::Description<BinaryExpression>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<BinaryExpression>;
 #endif
 	public:
@@ -48,7 +48,7 @@ namespace calculator
 
 	class NumberExpression : public ::calculator::Expression, public ::vl::reflection::Description<NumberExpression>
 	{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<NumberExpression>;
 #endif
 	public:
