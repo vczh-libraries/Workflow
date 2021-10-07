@@ -43,18 +43,18 @@ WString GetTestOutputPath()
 WString GetCppOutputPath32()
 {
 #if defined VCZH_MSVC
-	return GetTestOutputPath() + L"x32\\";
+	return GetTestOutputPath() + L"Cpp32\\";
 #elif defined VCZH_GCC
-	return GetTestOutputPath() + L"x32/";
+	return GetTestOutputPath() + L"Cpp32/";
 #endif
 }
 
 WString GetCppOutputPath64()
 {
 #if defined VCZH_MSVC
-	return GetTestOutputPath() + L"x64\\";
+	return GetTestOutputPath() + L"Cpp64\\";
 #elif defined VCZH_GCC
-	return GetTestOutputPath() + L"x64/";
+	return GetTestOutputPath() + L"Cpp64/";
 #endif
 }
 

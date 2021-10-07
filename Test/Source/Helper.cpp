@@ -102,13 +102,13 @@ WString GetCppOutputPath()
 #ifdef VCZH_64
 	return GetTestOutputBasePath() + L"Cpp64\\";
 #else
-	return GetTestOutputBasePath() + L"Cpp86\\";
+	return GetTestOutputBasePath() + L"Cpp32\\";
 #endif
 #elif defined VCZH_GCC
 #ifdef VCZH_64
 	return GetTestOutputBasePath() + L"Cpp64/";
 #else
-	return GetTestOutputBasePath() + L"Cpp86/";
+	return GetTestOutputBasePath() + L"Cpp32/";
 #endif
 #endif
 }
