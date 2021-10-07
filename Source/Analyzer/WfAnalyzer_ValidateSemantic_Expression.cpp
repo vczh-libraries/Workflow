@@ -2080,6 +2080,8 @@ IsConstantExpression
 					isConstant = true;
 				}
 
+				/*
+
 				void Visit(WfUnaryExpression* node)override
 				{
 					isConstant = Call(node->operand);
@@ -2116,6 +2118,8 @@ IsConstantExpression
 					}
 					isConstant = true;
 				}
+
+				*/
 
 				void Visit(WfTypeOfTypeExpression* node)override
 				{

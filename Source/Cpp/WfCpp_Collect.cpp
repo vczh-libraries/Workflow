@@ -101,7 +101,9 @@ CollectModule
 						WString file;
 						if (auto att = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"File"))
 						{
-							file = UnboxValue<WString>(config->attributeEvaluator->GetAttributeValue(att));
+							auto attValue = config->attributeEvaluator->GetAttributeValue(att);
+							CHECK_ERROR(attValue.type == runtime::WfInsType::String, L"Unexpected value in attribute: @cpp.File.");
+							file = attValue.stringValue;
 						}
 						config->customFilesClasses.Add(file, node);
 					}

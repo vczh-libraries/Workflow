@@ -29,16 +29,16 @@ WfAttributeEvaluator
 			{
 				return From(atts)
 					.Where([=](Ptr<WfAttribute> att)
-				{
-					return att->category.value == category && att->name.value == name;
-				});
+					{
+						return att->category.value == category && att->name.value == name;
+					});
 			}
 
-			Value WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute> att)
+			runtime::WfRuntimeValue WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute> att)
 			{
 				if (!att->value)
 				{
-					return Value();
+					return {};
 				}
 
 				{
@@ -49,50 +49,16 @@ WfAttributeEvaluator
 					}
 				}
 
-				if (!attributeAssembly)
-				{
-					attributeAssembly = MakePtr<WfAssembly>();
-
-					auto func = MakePtr<WfAssemblyFunction>();
-					func->name = L"<get-attribute-value>";
-					func->firstInstruction = 0;
-
-					vint index = attributeAssembly->functions.Add(func);
-					attributeAssembly->functionByName.Add(func->name, index);
-				}
-
-				attributeAssembly->insBeforeCodegen = MakePtr<WfInstructionDebugInfo>();
-				attributeAssembly->insAfterCodegen = MakePtr<WfInstructionDebugInfo>();
-				attributeAssembly->instructions.Clear();
-
+				auto attributeAssembly = MakePtr<WfAssembly>();
 				WfCodegenContext context(attributeAssembly, manager);
-				{
-					auto recorderBefore = new ParsingGeneratedLocationRecorder(context.nodePositionsBeforeCodegen);
-					auto recorderAfter = new ParsingGeneratedLocationRecorder(context.nodePositionsAfterCodegen);
-					auto recorderOriginal = new ParsingOriginalLocationRecorder(recorderBefore);
-					auto recorderMultiple = new ParsingMultiplePrintNodeRecorder;
-					recorderMultiple->AddRecorder(recorderOriginal);
-					recorderMultiple->AddRecorder(recorderAfter);
-
-					stream::MemoryStream memoryStream;
-					{
-						stream::StreamWriter streamWriter(memoryStream);
-						ParsingWriter parsingWriter(streamWriter, recorderMultiple);
-						WfPrint(att->value, L"", parsingWriter);
-					}
-				}
 				auto typeInfo = manager->attributes[{att->category.value, att->name.value}];
 				GenerateExpressionInstructions(context, att->value, typeInfo);
-				attributeAssembly->instructions.Add(WfInstruction::Return());
 
-				if (!attributeGlobalContext)
-				{
-					attributeGlobalContext = MakePtr<WfRuntimeGlobalContext>(attributeAssembly);
-				}
-				auto func = LoadFunction<Value()>(attributeGlobalContext, L"<get-attribute-value>");
-				auto value = func();
-				attributeValues.Add(att, value);
-				return value;
+				CHECK_ERROR(attributeAssembly->instructions.Count() == 1, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
+				auto& ins = attributeAssembly->instructions[0];
+				CHECK_ERROR(ins.code == WfInsCode::LoadValue, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
+				attributeValues.Add(att, ins.valueParameter);
+				return ins.valueParameter;
 			}
 
 /***********************************************************************

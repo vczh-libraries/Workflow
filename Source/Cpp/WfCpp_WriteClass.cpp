@@ -116,7 +116,9 @@ namespace vl
 
 					FOREACH(Ptr<WfAttribute>, attribute, attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 					{
-						auto td = UnboxValue<ITypeDescriptor*>(attributeEvaluator->GetAttributeValue(attribute));
+						auto attValue = attributeEvaluator->GetAttributeValue(attribute);
+						CHECK_ERROR(attValue.type == runtime::WfInsType::Unknown && attValue.typeDescriptor != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
+						auto td = attValue.typeDescriptor;
 
 						auto scopeName = manager->typeNames[td];
 						if (scopeName->declarations.Count() == 0)

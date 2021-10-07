@@ -24,21 +24,18 @@ Attribute Evaluator
 
 			class WfAttributeEvaluator : public Object
 			{
-				typedef reflection::description::Value														Value;
-				typedef collections::Dictionary<Ptr<WfAttribute>, Value>									AttributeValueMap;
+				typedef collections::Dictionary<Ptr<WfAttribute>, runtime::WfRuntimeValue>			AttributeValueMap;
 
 			protected:
 				analyzer::WfLexicalScopeManager*			manager;
 				AttributeValueMap							attributeValues;				// cached value for attribute
-				Ptr<runtime::WfAssembly>					attributeAssembly;				// shared assembly for evaluating attribute value
-				Ptr<runtime::WfRuntimeGlobalContext>		attributeGlobalContext;			// shared shared context for evaluating attribute value
 
 			public:
 				WfAttributeEvaluator(analyzer::WfLexicalScopeManager* _manager);
 
 				Ptr<WfAttribute>							GetAttribute(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
 				collections::LazyList<Ptr<WfAttribute>>		GetAttributes(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
-				Value										GetAttributeValue(Ptr<WfAttribute> att);
+				runtime::WfRuntimeValue						GetAttributeValue(Ptr<WfAttribute> att);
 			};
 
 /***********************************************************************
