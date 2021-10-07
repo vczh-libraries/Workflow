@@ -358,6 +358,8 @@ GenerateInstructions(Expression)
 					INSTRUCTION_LOAD_VALUE(vuint16_t);
 					INSTRUCTION_LOAD_VALUE(vuint32_t);
 					INSTRUCTION_LOAD_VALUE(vuint64_t);
+					INSTRUCTION_LOAD_VALUE(float);
+					INSTRUCTION_LOAD_VALUE(double);
 					CHECK_FAIL(L"Unrecognized value in WfIntegerExpression!");
 				}
 
