@@ -31,27 +31,28 @@ INITIALIZE_GLOBAL_STORAGE_CLASS
 	typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
 
 FINALIZE_GLOBAL_STORAGE_CLASS
+	typeLoader = nullptr;
 
 END_GLOBAL_STORAGE_CLASS(MetaonlyTypeDescriptors)
 
-TEST_FILE
-{
-	TEST_CASE(L"Run LoadMetaonlyTypes()")
-	{
-		{
-			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
-			BomEncoder encoder(BomEncoder::Utf16);
-			EncoderStream encoderStream(fileStream, encoder);
-			StreamWriter writer(encoderStream);
-			LogTypeManager(writer);
-		}
-		{
-			auto first = File(GetTestOutputBasePath() + REFLECTION_BASELINE).ReadAllTextByBom();
-			auto second = File(GetTestOutputBasePath() + REFLECTION_OUTPUT).ReadAllTextByBom();
-			TEST_ASSERT(first == second);
-		}
-	});
-}
+//TEST_FILE
+//{
+//	TEST_CASE(L"Run LoadMetaonlyTypes()")
+//	{
+//		{
+//			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
+//			BomEncoder encoder(BomEncoder::Utf16);
+//			EncoderStream encoderStream(fileStream, encoder);
+//			StreamWriter writer(encoderStream);
+//			LogTypeManager(writer);
+//		}
+//		{
+//			auto first = File(GetTestOutputBasePath() + REFLECTION_BASELINE).ReadAllTextByBom();
+//			auto second = File(GetTestOutputBasePath() + REFLECTION_OUTPUT).ReadAllTextByBom();
+//			TEST_ASSERT(first == second);
+//		}
+//	});
+//}
 
 void LoadTypes()
 {
@@ -115,9 +116,9 @@ int main(int argc, char* argv[])
 	LoadTypes();
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 	UnloadTypes();
+	FinalizeGlobalStorage();
 	ReleaseWorkflowTable();
 	ThreadLocalStorage::DisposeStorages();
-	FinalizeGlobalStorage();
 #if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
