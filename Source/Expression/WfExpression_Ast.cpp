@@ -1825,12 +1825,12 @@ namespace vl
 #endif
 #undef PARSING_TOKEN_FIELD
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			class WfTypeLoader : public vl::Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
 				{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					ADD_TYPE_INFO(vl::workflow::WfClassMemberKind)
 					ADD_TYPE_INFO(vl::workflow::WfClassMember)
 					ADD_TYPE_INFO(vl::workflow::WfType)
@@ -1975,7 +1975,6 @@ namespace vl
 					ADD_TYPE_INFO(vl::workflow::WfVirtualCfeExpression::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfVirtualCseExpression::IVisitor)
 					ADD_TYPE_INFO(vl::workflow::WfModuleUsingFragment::IVisitor)
-#endif
 				}
 
 				void Unload(ITypeManager* manager)
@@ -1983,14 +1982,15 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool WfLoadTypes()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				ITypeManager* manager=GetGlobalTypeManager();
+				ITypeManager* manager = GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new WfTypeLoader;
+					Ptr<ITypeLoader> loader = new WfTypeLoader;
 					return manager->AddTypeLoader(loader);
 				}
 #endif

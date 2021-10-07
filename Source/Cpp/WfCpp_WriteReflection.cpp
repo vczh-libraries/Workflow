@@ -82,6 +82,8 @@ namespace vl
 
 				if (tdInterfaces.Count() > 0)
 				{
+					writer.WriteLine(L"");
+					writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 					FOREACH(ITypeDescriptor*, td, tdInterfaces)
 					{
 						List<ITypeDescriptor*> baseTds;
@@ -169,6 +171,7 @@ namespace vl
 						writer.WriteString(ConvertType(td));
 						writer.WriteLine(L")");
 					}
+					writer.WriteLine(L"#endif");
 				}
 
 				writer.WriteLine(L"#endif");
@@ -212,6 +215,7 @@ namespace vl
 				}
 				writer.WriteLine(L"");
 
+				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"#define _ ,");
 				FOREACH(ITypeDescriptor*, td, tds)
 				{
@@ -491,13 +495,14 @@ namespace vl
 				writer.WriteLine(L"\t\t\t};");
 
 				writer.WriteLine(L"#endif");
+				writer.WriteLine(L"#endif");
 				writer.WriteLine(L"");
 
 				writer.WriteString(L"\t\t\tbool Load");
 				writer.WriteString(assemblyName);
 				writer.WriteLine(L"Types()");
 				writer.WriteLine(L"\t\t\t{");
-				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"\t\t\t\tif (auto manager = GetGlobalTypeManager())");
 				writer.WriteLine(L"\t\t\t\t{");
 				writer.WriteString(L"\t\t\t\t\treturn manager->AddTypeLoader(MakePtr<");
