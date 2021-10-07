@@ -33,6 +33,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(CoAsync2_types::IStringAsync)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::CoAsync2_types::IStringAsync)
 				CLASS_MEMBER_BASE(::vl::reflection::description::IAsync)
@@ -54,10 +55,11 @@ namespace vl
 				}
 			};
 #endif
+#endif
 
 			bool LoadCoAsync2Types()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
 					return manager->AddTypeLoader(MakePtr<CoAsync2TypeLoader>());

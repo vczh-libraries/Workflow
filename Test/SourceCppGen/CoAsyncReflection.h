@@ -36,8 +36,11 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::CoAsync_types::IStringAsync)
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::CoAsync_types::IStringAsync, ::vl::reflection::description::IAsync)
 			END_INTERFACE_PROXY(::CoAsync_types::IStringAsync)
+#endif
 #endif
 
 			extern bool LoadCoAsyncTypes();

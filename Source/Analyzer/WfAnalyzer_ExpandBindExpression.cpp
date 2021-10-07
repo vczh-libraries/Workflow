@@ -700,7 +700,7 @@ CreateDefaultValue
 					case TypeFlag::Enum:
 						{
 							auto intExpr = MakePtr<WfIntegerExpression>();
-							intExpr->value.value = u64tow(elementType->GetTypeDescriptor()->GetEnumType()->FromEnum(valueType->CreateDefault()));
+							intExpr->value.value = L"0";
 
 							auto inferExpr = MakePtr<WfTypeCastingExpression>();
 							inferExpr->strategy = WfTypeCastingStrategy::Strong;
@@ -717,7 +717,6 @@ CreateDefaultValue
 					case TypeFlag::String:
 						{
 							auto stringExpr = MakePtr<WfStringExpression>();
-							elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(valueType->CreateDefault(), stringExpr->value.value);
 							return stringExpr;
 						}
 						break;
@@ -740,6 +739,11 @@ CreateDefaultValue
 							{
 								auto expr = MakePtr<WfLiteralExpression>();
 								expr->value = WfLiteralValue::False;
+								return expr;
+							}
+							if (td == description::GetTypeDescriptor<WString>())
+							{
+								auto expr = MakePtr<WfStringExpression>();
 								return expr;
 							}
 							else if (td == description::GetTypeDescriptor<float>()
@@ -774,6 +778,9 @@ CreateDefaultValue
 							}
 							else
 							{
+								// Consider adding a \"default (type)\" expression if CreateDefault() cannot be liminated from the compiler.
+								CHECK_FAIL(L"All serializable types should have been handled!");
+								/*
 								auto stringExpr = MakePtr<WfStringExpression>();
 								elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(valueType->CreateDefault(), stringExpr->value.value);
 
@@ -783,6 +790,7 @@ CreateDefaultValue
 								castExpr->type = GetTypeFromTypeInfo(elementType);
 
 								return castExpr;
+								*/
 							}
 						}
 					}
