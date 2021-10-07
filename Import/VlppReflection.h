@@ -664,7 +664,7 @@ Attribute
 				return associatedTypeDescriptor;
 			}
 
-			static void SetAssociatedTypeDescroptor(description::ITypeDescriptor* typeDescroptor)
+			static void SetAssociatedTypeDescriptor(description::ITypeDescriptor* typeDescroptor)
 			{
 				associatedTypeDescriptor=typeDescroptor;
 			}
@@ -2266,6 +2266,7 @@ ITypeManager
 				virtual bool					Reload()=0;
 				virtual bool					IsLoaded()=0;
 				virtual ITypeDescriptor*		GetRootType()=0;
+				virtual vint					GetTypeVersion()=0;
 			};
 
 			/// <summary>Get the type manager.</summary>
@@ -3345,7 +3346,22 @@ TypeInfo
 			template<typename T>
 			ITypeDescriptor* GetTypeDescriptor()
 			{
-				return GetTypeDescriptor(TypeInfo<T>::content.typeName);
+				static vint typeVersion = -1;
+				static ITypeDescriptor* cached = nullptr;
+				if (auto tm = GetGlobalTypeManager())
+				{
+					auto currentVersion = tm->GetTypeVersion();
+					if (typeVersion != currentVersion)
+					{
+						cached = GetTypeDescriptor(TypeInfo<T>::content.typeName);
+					}
+					return cached;
+				}
+				else
+				{
+					typeVersion = -1;
+					return nullptr;
+				}
 			}
 
 #endif
@@ -5014,7 +5030,7 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::ElementType										ElementType;
 
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueEnumerable>::GetAssociatedTypeDescriptor(), hint);
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueEnumerable>(), hint);
 
 					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
@@ -5042,7 +5058,7 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::ElementType										ElementType;
 
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyList>::GetAssociatedTypeDescriptor(), hint);
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueReadonlyList>(), hint);
 
 					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
@@ -5070,7 +5086,7 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::ElementType										ElementType;
 
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueList>::GetAssociatedTypeDescriptor(), hint);
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueList>(), hint);
 
 					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
@@ -5098,7 +5114,7 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::ElementType										ElementType;
 
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueObservableList>::GetAssociatedTypeDescriptor(), hint);
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueObservableList>(), hint);
 
 					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
@@ -5129,7 +5145,7 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename KeyContainer::ElementType										KeyType;
 					typedef typename ValueContainer::ElementType									ValueType;
 
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor(), hint);
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueReadonlyDictionary>(), hint);
 
 					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
@@ -5161,7 +5177,7 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename KeyContainer::ElementType										KeyType;
 					typedef typename ValueContainer::ElementType									ValueType;
 
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueDictionary>::GetAssociatedTypeDescriptor(), hint);
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueDictionary>(), hint);
 
 					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
@@ -5717,7 +5733,7 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					auto functionType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor(), hint);
+					auto functionType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueFunctionProxy>(), hint);
  
 					auto genericType = MakePtr<GenericTypeInfo>(functionType);
 					genericType->AddGenericArgument(TypeInfoRetriver<R>::CreateTypeInfo());
@@ -6886,11 +6902,11 @@ Class
 					CustomTypeDescriptorImpl()\
 						:TypeDescriptorImpl(TDFlags, &TypeInfo<TYPENAME>::content)\
 					{\
-						Description<TYPENAME>::SetAssociatedTypeDescroptor(this);\
+						Description<TYPENAME>::SetAssociatedTypeDescriptor(this);\
 					}\
 					~CustomTypeDescriptorImpl()\
 					{\
-						Description<TYPENAME>::SetAssociatedTypeDescroptor(0);\
+						Description<TYPENAME>::SetAssociatedTypeDescriptor(0);\
 					}\
 				protected:\
 					bool IsAggregatable()override\
@@ -6927,11 +6943,11 @@ Interface
 					CustomTypeDescriptorImpl()\
 						:TypeDescriptorImpl(TDFLAGS, &TypeInfo<TYPENAME>::content)\
 					{\
-						Description<TYPENAME>::SetAssociatedTypeDescroptor(this);\
+						Description<TYPENAME>::SetAssociatedTypeDescriptor(this);\
 					}\
 					~CustomTypeDescriptorImpl()\
 					{\
-						Description<TYPENAME>::SetAssociatedTypeDescroptor(0);\
+						Description<TYPENAME>::SetAssociatedTypeDescriptor(0);\
 					}\
 					void IndexMethodInfo(const MethodPointerBinaryData& data, IMethodInfo* methodInfo)override\
 					{\

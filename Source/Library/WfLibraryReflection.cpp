@@ -44,30 +44,7 @@ WfLoadLibraryTypes
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-#define _ ,	
-
-			template<>
-			struct CustomTypeDescriptorSelector<DescriptableObject>
-			{
-			public:
-				class CustomTypeDescriptorImpl : public TypeDescriptorImpl
-				{
-				public:
-					CustomTypeDescriptorImpl()
-						:TypeDescriptorImpl(TypeDescriptorFlags::Class, &TypeInfo<DescriptableObject>::content)
-					{
-						Description<DescriptableObject>::SetAssociatedTypeDescroptor(this);
-					}
-					~CustomTypeDescriptorImpl()
-					{
-						Description<DescriptableObject>::SetAssociatedTypeDescroptor(0);
-					}
-				protected:
-					void LoadInternal()override
-					{
-					}
-				};
-			};
+#define _ ,
 
 			BEGIN_CLASS_MEMBER(Sys)
 				CLASS_MEMBER_STATIC_METHOD(Int32ToInt, { L"value" })

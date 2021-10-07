@@ -771,7 +771,7 @@ description::Value
 				IEventInfo* eventInfo=type->GetEventByName(name, true);
 				if(!eventInfo) throw MemberNotExistsException(name, type);
 
-				Ptr<IValueFunctionProxy> proxy=UnboxValue<Ptr<IValueFunctionProxy>>(function, Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor(), L"function");
+				Ptr<IValueFunctionProxy> proxy=UnboxValue<Ptr<IValueFunctionProxy>>(function, description::GetTypeDescriptor<IValueFunctionProxy>(), L"function");
 				return eventInfo->Attach(*this, proxy);
 			}
 
@@ -805,16 +805,17 @@ description::TypeManager
 
 			class TypeManager : public Object, public ITypeManager
 			{
+			public:
+				static vint										typeVersion;
+
 			protected:
 				Dictionary<WString, Ptr<ITypeDescriptor>>		typeDescriptors;
 				List<Ptr<ITypeLoader>>							typeLoaders;
-				ITypeDescriptor* rootType;
-				bool											loaded;
+				ITypeDescriptor*								rootType = nullptr;
+				bool											loaded = false;
 
 			public:
 				TypeManager()
-					:rootType(0)
-					, loaded(false)
 				{
 				}
 
@@ -850,6 +851,7 @@ description::TypeManager
 						if (typeDescriptor)
 						{
 							typeDescriptors.Add(name, typeDescriptor);
+							typeVersion++;
 							return true;
 						}
 					}
@@ -858,6 +860,7 @@ description::TypeManager
 						if (!typeDescriptor)
 						{
 							typeDescriptors.Remove(name);
+							typeVersion++;
 							return true;
 						}
 					}
@@ -872,7 +875,9 @@ description::TypeManager
 						typeLoaders.Add(typeLoader);
 						if (loaded)
 						{
+							auto oldTypeVersion = typeVersion;
 							typeLoader->Load(this);
+							typeVersion = oldTypeVersion + 1;
 						}
 						return true;
 					}
@@ -889,7 +894,9 @@ description::TypeManager
 					{
 						if (loaded)
 						{
+							auto oldTypeVersion = typeVersion;
 							typeLoader->Unload(this);
+							typeVersion = oldTypeVersion + 1;
 						}
 						typeLoaders.RemoveAt(index);
 						return true;
@@ -905,10 +912,12 @@ description::TypeManager
 					if (!loaded)
 					{
 						loaded = true;
+						auto oldTypeVersion = typeVersion;
 						for (vint i = 0; i < typeLoaders.Count(); i++)
 						{
 							typeLoaders[i]->Load(this);
 						}
+						typeVersion = oldTypeVersion + 1;
 						return true;
 					}
 					else
@@ -923,10 +932,12 @@ description::TypeManager
 					{
 						loaded = false;
 						rootType = 0;
+						auto oldTypeVersion = typeVersion;
 						for (vint i = 0; i < typeLoaders.Count(); i++)
 						{
 							typeLoaders[i]->Unload(this);
 						}
+						typeVersion = oldTypeVersion + 1;
 						typeDescriptors.Clear();
 						return true;
 					}
@@ -956,7 +967,13 @@ description::TypeManager
 					}
 					return rootType;
 				}
+
+				vint GetTypeVersion() override
+				{
+					return typeVersion;
+				}
 			};
+			vint TypeManager::typeVersion = -1;
 
 /***********************************************************************
 description::TypeManager helper functions
@@ -967,20 +984,21 @@ description::TypeManager helper functions
 
 			ITypeManager* GetGlobalTypeManager()
 			{
-				if(!initializedGlobalTypeManager)
+				if (!initializedGlobalTypeManager)
 				{
-					initializedGlobalTypeManager=true;
-					globalTypeManager=new TypeManager;
+					initializedGlobalTypeManager = true;
+					globalTypeManager = new TypeManager;
 				}
 				return globalTypeManager;
 			}
 
 			bool DestroyGlobalTypeManager()
 			{
-				if(initializedGlobalTypeManager && globalTypeManager)
+				if (initializedGlobalTypeManager && globalTypeManager)
 				{
 					delete globalTypeManager;
-					globalTypeManager=0;
+					globalTypeManager = nullptr;
+					TypeManager::typeVersion++;
 					return true;
 				}
 				else
@@ -991,22 +1009,22 @@ description::TypeManager helper functions
 
 			bool ResetGlobalTypeManager()
 			{
-				if(!DestroyGlobalTypeManager()) return false;
-				initializedGlobalTypeManager=false;
+				if (!DestroyGlobalTypeManager()) return false;
+				initializedGlobalTypeManager = false;
 				return true;
 			}
 
 			ITypeDescriptor* GetTypeDescriptor(const WString& name)
 			{
-				if(globalTypeManager)
+				if (globalTypeManager)
 				{
-					if(!globalTypeManager->IsLoaded())
+					if (!globalTypeManager->IsLoaded())
 					{
 						globalTypeManager->Load();
 					}
 					return globalTypeManager->GetTypeDescriptor(name);
 				}
-				return 0;
+				return nullptr;
 			}
 
 /***********************************************************************
@@ -3184,11 +3202,11 @@ LoadPredefinedTypes
 					CustomTypeDescriptorImpl()
 						:TypeDescriptorImpl(TypeDescriptorFlags::Class, &TypeInfo<DescriptableObject>::content)
 					{
-						Description<DescriptableObject>::SetAssociatedTypeDescroptor(this);
+						Description<DescriptableObject>::SetAssociatedTypeDescriptor(this);
 					}
 					~CustomTypeDescriptorImpl()
 					{
-						Description<DescriptableObject>::SetAssociatedTypeDescroptor(0);
+						Description<DescriptableObject>::SetAssociatedTypeDescriptor(0);
 					}
 				protected:
 					void LoadInternal()override
