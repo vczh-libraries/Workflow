@@ -1,4 +1,4 @@
-#include "../../../Source/Cpp/WfCpp.h"
+#include "../../../Source/Cpp/WfMergeCpp.h"
 #include <Windows.h>
 
 using namespace vl;
