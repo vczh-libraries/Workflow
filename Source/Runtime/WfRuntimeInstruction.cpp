@@ -28,7 +28,7 @@ WfInstruction
 			}\
 
 #define CTOR_VALUE(NAME)\
-			WfInstruction WfInstruction::NAME(const reflection::description::Value& value)\
+			WfInstruction WfInstruction::NAME(const WfRuntimeValue& value)\
 			{\
 				WfInstruction ins; \
 				ins.code = WfInsCode::NAME; \

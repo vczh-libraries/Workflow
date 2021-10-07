@@ -128,7 +128,7 @@ GenerateInstructions(Expression)
 					{
 						if (result.methodInfo->IsStatic())
 						{
-							INSTRUCTION(Ins::LoadValue(Value()));
+							INSTRUCTION(Ins::LoadValue({}));
 						}
 						else
 						{
@@ -153,12 +153,13 @@ GenerateInstructions(Expression)
 					{
 						if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 						{
-							auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
+							auto td = result.type->GetTypeDescriptor();
+							auto enumType = td->GetEnumType();
 							vint index = enumType->IndexOfItem(name);
 							if (index != -1)
 							{
 								auto intValue = enumType->GetItemValue(index);
-								INSTRUCTION(Ins::LoadValue(enumType->ToEnum(intValue)));
+								INSTRUCTION(Ins::LoadValue({ intValue, td }));
 								return;
 							}
 						}
@@ -319,16 +320,18 @@ GenerateInstructions(Expression)
 					switch (node->value)
 					{
 					case WfLiteralValue::Null:
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						break;
 					case WfLiteralValue::True:
-						INSTRUCTION(Ins::LoadValue(BoxValue(true)));
+						INSTRUCTION(Ins::LoadValue({ true }));
 						break;
 					case WfLiteralValue::False:
-						INSTRUCTION(Ins::LoadValue(BoxValue(false)));
+						INSTRUCTION(Ins::LoadValue({ false }));
 						break;
 					}
 				}
+
+#define INSTRUCTION_LOAD_VALUE(TYPE) if (td == GetTypeDescriptor<TYPE>()) { INSTRUCTION(Ins::LoadValue({ UnboxValue<TYPE>(output) })); return; }
 
 				void Visit(WfFloatingExpression* node)override
 				{
@@ -336,7 +339,9 @@ GenerateInstructions(Expression)
 					auto td = result.type->GetTypeDescriptor();
 					Value output;
 					td->GetSerializableType()->Deserialize(node->value.value, output);
-					INSTRUCTION(Ins::LoadValue(output));
+					INSTRUCTION_LOAD_VALUE(float);
+					INSTRUCTION_LOAD_VALUE(double);
+					CHECK_FAIL(L"Unrecognized value in WfFloatingExpression!");
 				}
 
 				void Visit(WfIntegerExpression* node)override
@@ -345,12 +350,22 @@ GenerateInstructions(Expression)
 					auto td = result.type->GetTypeDescriptor();
 					Value output;
 					td->GetSerializableType()->Deserialize(node->value.value, output);
-					INSTRUCTION(Ins::LoadValue(output));
+					INSTRUCTION_LOAD_VALUE(vint8_t);
+					INSTRUCTION_LOAD_VALUE(vint16_t);
+					INSTRUCTION_LOAD_VALUE(vint32_t);
+					INSTRUCTION_LOAD_VALUE(vint64_t);
+					INSTRUCTION_LOAD_VALUE(vuint8_t);
+					INSTRUCTION_LOAD_VALUE(vuint16_t);
+					INSTRUCTION_LOAD_VALUE(vuint32_t);
+					INSTRUCTION_LOAD_VALUE(vuint64_t);
+					CHECK_FAIL(L"Unrecognized value in WfIntegerExpression!");
 				}
+
+#undef INSTRUCTION_LOAD_VALUE
 
 				void Visit(WfStringExpression* node)override
 				{
-					INSTRUCTION(Ins::LoadValue(BoxValue(node->value.value)));
+					INSTRUCTION(Ins::LoadValue({ node->value.value }));
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -636,7 +651,7 @@ GenerateInstructions(Expression)
 					GenerateExpressionInstructions(context, node->expression);
 					FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(variableIndices[index]));
 					}
 				}
@@ -662,14 +677,14 @@ GenerateInstructions(Expression)
 					GenerateExpressionInstructions(context, node->begin, elementType);
 					if (node->beginBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
+						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
 						INSTRUCTION(Ins::OpAdd(type));
 					}
 					
 					GenerateExpressionInstructions(context, node->end, elementType);
 					if (node->endBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue(BoxValue<vint>(1)));
+						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
 						INSTRUCTION(Ins::OpSub(type));
 					}
 
@@ -731,7 +746,7 @@ GenerateInstructions(Expression)
 						{
 							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 						}
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(index));
 					}
 					else
@@ -836,12 +851,12 @@ GenerateInstructions(Expression)
 					{
 					case WfTypeTesting::IsNull:
 						GenerateExpressionInstructions(context, node->expression);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						break;
 					case WfTypeTesting::IsNotNull:
 						GenerateExpressionInstructions(context, node->expression);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 						break;
@@ -869,8 +884,7 @@ GenerateInstructions(Expression)
 				{
 					auto scope = context.manager->nodeScopes[node].Obj();
 					auto type = CreateTypeInfoFromType(scope, node->type, false);
-					auto value = Value::From(type->GetTypeDescriptor());
-					INSTRUCTION(Ins::LoadValue(value));
+					INSTRUCTION(Ins::LoadValue({ type->GetTypeDescriptor() }));
 				}
 
 				void Visit(WfTypeOfExpressionExpression* node)override
@@ -925,7 +939,7 @@ GenerateInstructions(Expression)
 					{
 						if (result.methodInfo->IsStatic())
 						{
-							INSTRUCTION(Ins::LoadValue(Value()));
+							INSTRUCTION(Ins::LoadValue({}));
 						}
 						else if (auto member = node->function.Cast<WfMemberExpression>())
 						{
@@ -1085,7 +1099,7 @@ GenerateInstructions(Expression)
 					{
 						GenerateExpressionInstructions(context, argument);
 					}
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::InvokeMethod(result.constructorInfo, node->arguments.Count()));
 				}
 
@@ -1110,7 +1124,7 @@ GenerateInstructions(Expression)
 						}
 						auto scope = context.manager->nodeScopes[node].Obj();
 						vint thisCount = PushCapturedThisValues(context, scope, node);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + thisCount + 1));
 
 						FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.closureFunctions)
@@ -1141,7 +1155,7 @@ GenerateInstructions(Expression)
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CreateClosureContext(1));
 					}
 					INSTRUCTION(Ins::CreateInterface(result.constructorInfo, declVisitor.overrideFunctions.Count() * 2));

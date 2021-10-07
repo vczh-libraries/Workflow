@@ -32,7 +32,7 @@ GenerateTypeCastInstructions
 					if (expectedType->GetDecorator() == ITypeInfo::Nullable)
 					{
 						INSTRUCTION(Ins::Duplicate(0));
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						fillElseIndex = INSTRUCTION(Ins::JumpIf(-1));
 					}
@@ -76,7 +76,7 @@ GenerateTypeCastInstructions
 					{
 						fillEndIndex = INSTRUCTION(Ins::Jump(-1));
 						FILL_LABEL_TO_CURRENT(fillElseIndex);
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						FILL_LABEL_TO_CURRENT(fillEndIndex);
 					}
 				}
@@ -108,7 +108,7 @@ GetInstructionTypeArgument
 				else
 				{
 					INSTRUCTION(Ins::Pop());
-					INSTRUCTION(Ins::LoadValue(BoxValue(true)));
+					INSTRUCTION(Ins::LoadValue({ true }));
 				}
 			}
 
@@ -226,7 +226,7 @@ GenerateAssembly
 
 					// define node for INSTRUCTION
 					parsing::ParsingTreeCustomBase* node = nullptr;
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::Return());
 
 					meta->lastInstruction = assembly->instructions.Count() - 1;

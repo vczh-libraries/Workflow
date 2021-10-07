@@ -186,10 +186,52 @@ Instruction
 				Unknown,
 			};
 
+			struct WfRuntimeValue
+			{
+				// U8 with ITypeDescriptor* -> enum
+				// Unknown with ITypeDescriptor* -> type
+				// Unknown -> Null
+				WfInsType											type = WfInsType::Unknown;
+				reflection::description::ITypeDescriptor*			typeDescriptor = nullptr;
+				WString												stringValue;
+				union
+				{
+					bool											boolValue;
+					vint8_t											i1Value;
+					vint16_t										i2Value;
+					vint32_t										i4Value;
+					vint64_t										i8Value;
+					vuint8_t										u1Value;
+					vuint16_t										u2Value;
+					vuint32_t										u4Value;
+					vuint64_t										u8Value = 0;
+					float											f4Value;
+					double											f8Value;
+				};
+
+				WfRuntimeValue() {}
+				WfRuntimeValue(bool value) : type(WfInsType::Bool), boolValue(value) {}
+				WfRuntimeValue(vint8_t value) : type(WfInsType::I1), i1Value(value) {}
+				WfRuntimeValue(vint16_t value) : type(WfInsType::I2), i2Value(value) {}
+				WfRuntimeValue(vint32_t value) : type(WfInsType::I4), i4Value(value) {}
+				WfRuntimeValue(vint64_t value) : type(WfInsType::I8), i8Value(value) {}
+				WfRuntimeValue(vuint8_t value) : type(WfInsType::U1), u1Value(value) {}
+				WfRuntimeValue(vuint16_t value) : type(WfInsType::U2), u2Value(value) {}
+				WfRuntimeValue(vuint32_t value) : type(WfInsType::U4), u4Value(value) {}
+				WfRuntimeValue(vuint64_t value) : type(WfInsType::U8), u8Value(value) {}
+				WfRuntimeValue(float value) : type(WfInsType::F4), f4Value(value) {}
+				WfRuntimeValue(double value) : type(WfInsType::F8), f8Value(value) {}
+				WfRuntimeValue(WString value) : type(WfInsType::String), stringValue(value) {}
+				WfRuntimeValue(vuint64_t value, reflection::description::ITypeDescriptor* enumType)
+					: type(WfInsType::U8), typeDescriptor(enumType), u8Value(value) {}
+				WfRuntimeValue(reflection::description::ITypeDescriptor* td)
+					: type(WfInsType::Unknown), typeDescriptor(td) {}
+			};
+
 			struct WfInstruction
 			{
 				WfInsCode											code = WfInsCode::Nop;
-				reflection::description::Value						valueParameter;
+				WfRuntimeValue										valueParameter;
 				vint												countParameter = 0;
 				union
 				{
@@ -208,7 +250,7 @@ Instruction
 				WfInstruction();
 
 				#define CTOR(NAME)						static WfInstruction NAME();
-				#define CTOR_VALUE(NAME)				static WfInstruction NAME(const reflection::description::Value& value);
+				#define CTOR_VALUE(NAME)				static WfInstruction NAME(const WfRuntimeValue& value);
 				#define CTOR_FUNCTION(NAME)				static WfInstruction NAME(vint function);
 				#define CTOR_FUNCTION_COUNT(NAME)		static WfInstruction NAME(vint function, vint count);
 				#define CTOR_VARIABLE(NAME)				static WfInstruction NAME(vint variable);

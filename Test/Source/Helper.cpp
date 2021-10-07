@@ -315,59 +315,33 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 		}
 	};
 
-	Func<WString(const Value&)> serializeValue = [&](const Value& value)->WString
+	auto formatValue = [&](const WfRuntimeValue& value)->WString
 	{
-		switch (value.GetValueType())
+		if (value.typeDescriptor)
 		{
-		case Value::RawPtr:
-			return L"<*>";
-		case Value::SharedPtr:
-			return L"<^>";
-		case Value::BoxedValue:
+			switch (value.type)
 			{
-				auto td = value.GetTypeDescriptor();
-				if (auto st = td->GetSerializableType())
-				{
-					WString output;
-					st->Serialize(value, output);
-					return output;
-				}
-				else if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-				{
-					WString output = L"{";
-					vint count = td->GetPropertyCount();
-					for (vint i = 0; i < count; i++)
-					{
-						if (i != 0) output += L" ";
-						auto prop = td->GetProperty(i);
-						output += prop->GetName() + L":" + serializeValue(prop->GetValue(value));
-					}
-					output += L"}";
-					return output;
-				}
-				else if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
-				{
-					auto enumType = td->GetEnumType();
-					return L"<enum: " + u64tow(enumType->FromEnum(value)) + L">";
-				}
-				else
-				{
-					return L"<struct>";
-				}
+			case WfInsType::U8:			return L"<enum: " + u64tow(value.u8Value) + L">";
+			case WfInsType::Unknown:	return L"<type: " + value.typeDescriptor->GetTypeName() + L">";
 			}
-			break;
-		default:
-			return L"<null>";
+			CHECK_FAIL(L"Unexpected type in WfRuntimeValue with typeDescriptor!");
 		}
-	};
-
-	auto formatValue = [&](const Value& value)->WString
-	{
-		return L"<" +
-			serializeValue(value) + L", " +
-			formatFlag(value.GetValueType()) +
-			(value.GetTypeDescriptor() ? L", " + value.GetTypeDescriptor()->GetTypeName() : L"") +
-			L">";
+		switch (value.type)
+		{
+		case WfInsType::Bool:			return L"<" + formatType(value.type) + L", " + (value.boolValue ? L"true" : L"false") + L">";
+		case WfInsType::I1:				return L"<" + formatType(value.type) + L", " + i64tow(value.i1Value) + L">";
+		case WfInsType::I2:				return L"<" + formatType(value.type) + L", " + i64tow(value.i2Value) + L">";
+		case WfInsType::I4:				return L"<" + formatType(value.type) + L", " + i64tow(value.i4Value) + L">";
+		case WfInsType::I8:				return L"<" + formatType(value.type) + L", " + i64tow(value.i8Value) + L">";
+		case WfInsType::U1:				return L"<" + formatType(value.type) + L", " + u64tow(value.u1Value) + L">";
+		case WfInsType::U2:				return L"<" + formatType(value.type) + L", " + u64tow(value.u2Value) + L">";
+		case WfInsType::U4:				return L"<" + formatType(value.type) + L", " + u64tow(value.u4Value) + L">";
+		case WfInsType::U8:				return L"<" + formatType(value.type) + L", " + u64tow(value.u8Value) + L">";
+		case WfInsType::F4:				return L"<" + formatType(value.type) + L", " + ftow(value.f4Value) + L">";
+		case WfInsType::F8:				return L"<" + formatType(value.type) + L", " + ftow(value.f8Value) + L">";
+		case WfInsType::String:			return L"<" + formatType(value.type) + L", " + value.stringValue + L">";
+		}
+		return L"<null>";
 	};
 
 	auto formatVarName = [assembly](const WfInstruction& ins, vint index)->WString

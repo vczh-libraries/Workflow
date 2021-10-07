@@ -91,7 +91,7 @@ GenerateInstructions(Statement)
 					}
 					else
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 					}
 					INSTRUCTION(Ins::Return());
 				}
@@ -145,7 +145,7 @@ GenerateInstructions(Statement)
 						GenerateTypeCastInstructions(context, symbol->typeInfo, false, node->expression.Obj());
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 						INSTRUCTION(Ins::LoadLocalVar(variableIndex));
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 					}
 					else
@@ -157,7 +157,7 @@ GenerateInstructions(Statement)
 					GenerateStatementInstructions(context, node->trueBranch);
 					if (variableIndex != -1)
 					{
-						INSTRUCTION(Ins::LoadValue(Value()));
+						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 					}
 					vint fillEndIndex = INSTRUCTION(Ins::Jump(-1));

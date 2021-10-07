@@ -141,7 +141,7 @@ GenerateInstructions(Declaration)
 
 			void GenerateFunctionInstructions_Epilog(WfCodegenContext& context, WfLexicalScope* scope, Ptr<WfAssemblyFunction> meta, Ptr<ITypeInfo> returnType, Ptr<WfLexicalSymbol> recursiveLambdaSymbol, const List<Ptr<WfLexicalSymbol>>& argumentSymbols, const List<Ptr<WfLexicalSymbol>>& capturedSymbols, Ptr<WfCodegenFunctionContext> functionContext, ParsingTreeCustomBase* node)
 			{
-				INSTRUCTION(Ins::LoadValue(Value()));
+				INSTRUCTION(Ins::LoadValue({}));
 				INSTRUCTION(Ins::Return());
 				meta->lastInstruction = context.assembly->instructions.Count() - 1;
 				context.functionContext = 0;
@@ -317,7 +317,7 @@ GenerateInstructions(Declaration)
 					}
 					GenerateStatementInstructions(context, node->statement);
 
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::Return());
 					meta->lastInstruction = context.assembly->instructions.Count() - 1;
 					context.functionContext = 0;
@@ -335,7 +335,7 @@ GenerateInstructions(Declaration)
 					auto scope = context.manager->nodeScopes[node].Obj();
 					GenerateStatementInstructions(context, node->statement);
 
-					INSTRUCTION(Ins::LoadValue(Value()));
+					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::Return());
 					meta->lastInstruction = context.assembly->instructions.Count() - 1;
 					context.functionContext = 0;
