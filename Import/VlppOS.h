@@ -2451,6 +2451,50 @@ Serialization
 			};
 
 			template<>
+			struct Serialization<double>
+			{
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, double& value)
+				{
+					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Deserialization failed.");
+					}
+				}
+
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, double& value)
+				{
+					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Serialization failed.");
+					}
+				}
+			};
+
+			template<>
+			struct Serialization<float>
+			{
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, float& value)
+				{
+					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Deserialization failed.");
+					}
+				}
+
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, float& value)
+				{
+					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
+					{
+						CHECK_FAIL(L"Serialization failed.");
+					}
+				}
+			};
+
+			template<>
 			struct Serialization<bool>
 			{
 				template<typename TContext>
