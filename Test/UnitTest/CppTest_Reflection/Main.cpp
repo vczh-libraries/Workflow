@@ -9,7 +9,6 @@ extern void LoadTestCaseTypes();
 
 void LoadTypes()
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
 	LoadPredefinedTypes();
 	LoadParsingTypes();
 	XmlLoadTypes();
@@ -17,15 +16,12 @@ void LoadTypes()
 	LoadCppTypes();
 	LoadTestCaseTypes();
 	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
-#endif
 }
 
 void UnloadTypes()
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
 	CHECK_ERROR(GetGlobalTypeManager()->Unload(), L"Failed to unload types");
 	CHECK_ERROR(ResetGlobalTypeManager(), L"Failed to reset type manager");
-#endif
 }
 
 #if defined VCZH_MSVC
