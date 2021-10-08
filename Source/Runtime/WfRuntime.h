@@ -266,6 +266,7 @@ RuntimeThreadContext
 				WfRuntimeTrapFrame&				GetCurrentTrapFrame();
 				WfRuntimeThreadContextError		PushTrapFrame(vint instructionIndex);
 				WfRuntimeThreadContextError		PopTrapFrame(vint saveStackPatternCount);
+				WfRuntimeThreadContextError		PushRuntimeValue(const WfRuntimeValue& value);
 				WfRuntimeThreadContextError		PushValue(const reflection::description::Value& value);
 				WfRuntimeThreadContextError		PopValue(reflection::description::Value& value);
 				WfRuntimeThreadContextError		RaiseException(const WString& exception, bool fatalError, bool skipDebugger = false);

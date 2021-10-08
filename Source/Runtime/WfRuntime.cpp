@@ -375,6 +375,54 @@ WfRuntimeThreadContext
 				return WfRuntimeThreadContextError::Success;
 			}
 
+			WfRuntimeThreadContextError WfRuntimeThreadContext::PushRuntimeValue(const WfRuntimeValue& value)
+			{
+				if (value.typeDescriptor)
+				{
+					switch (value.type)
+					{
+					case WfInsType::Unknown:
+						return PushValue(BoxValue(value.typeDescriptor));
+					case WfInsType::U8:
+						CHECK_ERROR(value.typeDescriptor->GetEnumType(), L"WfRuntimeThreadContext::PushValue(const WfRuntimeValue&)#Missing typeDescriptor in WfRuntimeValue!");
+						return PushValue(value.typeDescriptor->GetEnumType()->ToEnum(value.u8Value));
+					}
+					CHECK_FAIL(L"WfRuntimeThreadContext::PushValue(const WfRuntimeValue&)#Unexpected type in WfRuntimeValue with typeDescriptor!");
+				}
+				else
+				{
+					switch (value.type)
+					{
+					case WfInsType::Bool:
+						return PushValue(BoxValue(value.boolValue));
+					case WfInsType::I1:
+						return PushValue(BoxValue(value.i1Value));
+					case WfInsType::I2:
+						return PushValue(BoxValue(value.i2Value));
+					case WfInsType::I4:
+						return PushValue(BoxValue(value.i4Value));
+					case WfInsType::I8:
+						return PushValue(BoxValue(value.i8Value));
+					case WfInsType::U1:
+						return PushValue(BoxValue(value.u1Value));
+					case WfInsType::U2:
+						return PushValue(BoxValue(value.u2Value));
+					case WfInsType::U4:
+						return PushValue(BoxValue(value.u4Value));
+					case WfInsType::U8:
+						return PushValue(BoxValue(value.u8Value));
+					case WfInsType::F4:
+						return PushValue(BoxValue(value.f4Value));
+					case WfInsType::F8:
+						return PushValue(BoxValue(value.f8Value));
+					case WfInsType::String:
+						return PushValue(BoxValue(value.stringValue));
+					default:
+						return PushValue(Value());
+					}
+				}
+			}
+
 			WfRuntimeThreadContextError WfRuntimeThreadContext::PushValue(const reflection::description::Value& value)
 			{
 				stack.Add(value);

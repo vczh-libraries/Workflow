@@ -333,7 +333,7 @@ WfRuntimeThreadContext
 				switch (ins.code)
 				{
 				case WfInsCode::LoadValue:
-					CONTEXT_ACTION(PushValue(ins.valueParameter), L"failed to push a value to the stack.");
+					CONTEXT_ACTION(PushRuntimeValue(ins.valueParameter), L"failed to push a value to the stack.");
 					return WfRuntimeExecutionAction::ExecuteInstruction;
 				case WfInsCode::LoadFunction:
 					{
