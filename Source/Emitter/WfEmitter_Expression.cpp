@@ -331,7 +331,7 @@ GenerateInstructions(Expression)
 					}
 				}
 
-#define INSTRUCTION_LOAD_VALUE(TYPE) if (td == GetTypeDescriptor<TYPE>()) { INSTRUCTION(Ins::LoadValue({ UnboxValue<TYPE>(output) })); return; }
+#define INSTRUCTION_LOAD_VALUE(TYPE) if (td == description::GetTypeDescriptor<TYPE>()) { INSTRUCTION(Ins::LoadValue({ UnboxValue<TYPE>(output) })); return; }
 
 				void Visit(WfFloatingExpression* node)override
 				{

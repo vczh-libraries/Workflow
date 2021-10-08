@@ -728,15 +728,6 @@ Serizliation (Metadata)
 			{
 				static void IO(WfReader& reader, WfRuntimeValue& value)
 				{
-					vint typeFlag = -1;
-					reader << typeFlag;
-					CHECK_ERROR(0 <= typeFlag && typeFlag <= 2, L"Failed to load value.");
-					if (typeFlag == 0)
-					{
-						value = {};
-						return;
-					}
-
 					vint typeIndex = -1;
 					reader << typeIndex;
 					value.typeDescriptor = typeIndex == -1 ? nullptr : reader.context->tdIndex[typeIndex];

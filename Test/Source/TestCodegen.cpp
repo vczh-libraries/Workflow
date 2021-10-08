@@ -102,6 +102,8 @@ TEST_FILE
 						file.WriteAllText(code, false, BomEncoder::Mbcs);
 					}
 				}
+				LogSampleCodegenResult(L"Codegen", itemName, assembly);
+				LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
 			});
 		}
 
