@@ -47,6 +47,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Cpp\WfCpp_WriteLambda.cpp"
 #include "..\..\Source\Cpp\WfCpp_WriteReflection.cpp"
 #include "..\..\Source\Cpp\WfCpp_WriteStruct.cpp"
+#include "..\..\Source\Cpp\WfMergeCpp.cpp"
 #include "..\..\Source\Emitter\WfEmitter.cpp"
 #include "..\..\Source\Emitter\WfEmitter_Assembly.cpp"
 #include "..\..\Source\Emitter\WfEmitter_Declaration.cpp"

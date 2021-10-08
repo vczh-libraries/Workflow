@@ -6,8 +6,8 @@ Workflow::C++ Code Generator
 Interfaces:
 **********************************************************************/
 
-#ifndef VCZH_WORKFLOW_CPP_WFCPP
-#define VCZH_WORKFLOW_CPP_WFCPP
+#ifndef VCZH_WORKFLOW_CPP_WFMERGECPP
+#define VCZH_WORKFLOW_CPP_WFMERGECPP
 
 #include <VlppOS.h>
 

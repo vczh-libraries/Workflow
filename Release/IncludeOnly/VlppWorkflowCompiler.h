@@ -10,6 +10,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppRegex.h"
 #include "VlppParser.h"
 
+#include "..\..\Source\Cpp\WfMergeCpp.h"
 #include "..\..\Source\Expression\WfExpression_Ast.h"
 #include "..\..\Source\Expression\WfExpression_Copy.h"
 #include "..\..\Source\Expression\WfExpression_Empty.h"
