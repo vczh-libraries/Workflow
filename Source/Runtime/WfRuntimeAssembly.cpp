@@ -737,14 +737,14 @@ Serizliation (Metadata)
 					switch (value.type)
 					{
 					case WfInsType::Bool:			reader << value.boolValue; break;
-					case WfInsType::I1:				{ vint64_t intValue = value.i1Value; reader << intValue; break; }
-					case WfInsType::I2:				{ vint64_t intValue = value.i2Value; reader << intValue; break; }
-					case WfInsType::I4:				{ vint64_t intValue = value.i4Value; reader << intValue; break; }
-					case WfInsType::I8:				{ vint64_t intValue = value.i8Value; reader << intValue; break; }
-					case WfInsType::U1:				{ vuint64_t intValue = value.u1Value; reader << intValue; break; }
-					case WfInsType::U2:				{ vuint64_t intValue = value.u2Value; reader << intValue; break; }
-					case WfInsType::U4:				{ vuint64_t intValue = value.u4Value; reader << intValue; break; }
-					case WfInsType::U8:				{ vuint64_t intValue = value.u8Value; reader << intValue; break; }
+					case WfInsType::I1:				{ vint64_t intValue = 0; reader << intValue; value.i1Value = (vint8_t)intValue; break; }
+					case WfInsType::I2:				{ vint64_t intValue = 0; reader << intValue; value.i2Value = (vint16_t)intValue; break; }
+					case WfInsType::I4:				{ vint64_t intValue = 0; reader << intValue; value.i4Value = (vint32_t)intValue; break; }
+					case WfInsType::I8:				{ vint64_t intValue = 0; reader << intValue; value.i8Value = (vint64_t)intValue; break; }
+					case WfInsType::U1:				{ vuint64_t intValue = 0; reader << intValue; value.u1Value = (vuint8_t)intValue; break; }
+					case WfInsType::U2:				{ vuint64_t intValue = 0; reader << intValue; value.u2Value = (vuint16_t)intValue; break; }
+					case WfInsType::U4:				{ vuint64_t intValue = 0; reader << intValue; value.u4Value = (vuint32_t)intValue; break; }
+					case WfInsType::U8:				{ vuint64_t intValue = 0; reader << intValue; value.u8Value = (vuint64_t)intValue; break; }
 					case WfInsType::F4:				reader << value.f4Value; break;
 					case WfInsType::F8:				reader << value.f8Value; break;
 					case WfInsType::String:			reader << value.stringValue; break;
@@ -761,14 +761,14 @@ Serizliation (Metadata)
 					switch (value.type)
 					{
 					case WfInsType::Bool:			writer << value.boolValue; break;
-					case WfInsType::I1:				{ vint64_t intValue = 0; writer << intValue; value.i1Value = (vint8_t)intValue; break; }
-					case WfInsType::I2:				{ vint64_t intValue = 0; writer << intValue; value.i2Value = (vint16_t)intValue; break; }
-					case WfInsType::I4:				{ vint64_t intValue = 0; writer << intValue; value.i4Value = (vint32_t)intValue; break; }
-					case WfInsType::I8:				{ vint64_t intValue = 0; writer << intValue; value.i8Value = (vint64_t)intValue; break; }
-					case WfInsType::U1:				{ vuint64_t intValue = 0; writer << intValue; value.u1Value = (vuint8_t)intValue; break; }
-					case WfInsType::U2:				{ vuint64_t intValue = 0; writer << intValue; value.u2Value = (vuint16_t)intValue; break; }
-					case WfInsType::U4:				{ vuint64_t intValue = 0; writer << intValue; value.u4Value = (vuint32_t)intValue; break; }
-					case WfInsType::U8:				{ vuint64_t intValue = 0; writer << intValue; value.u8Value = (vuint64_t)intValue; break; }
+					case WfInsType::I1:				{ vint64_t intValue = value.i1Value; writer << intValue; break; }
+					case WfInsType::I2:				{ vint64_t intValue = value.i2Value; writer << intValue; break; }
+					case WfInsType::I4:				{ vint64_t intValue = value.i4Value; writer << intValue; break; }
+					case WfInsType::I8:				{ vint64_t intValue = value.i8Value; writer << intValue; break; }
+					case WfInsType::U1:				{ vuint64_t intValue = value.u1Value; writer << intValue; break; }
+					case WfInsType::U2:				{ vuint64_t intValue = value.u2Value; writer << intValue; break; }
+					case WfInsType::U4:				{ vuint64_t intValue = value.u4Value; writer << intValue; break; }
+					case WfInsType::U8:				{ vuint64_t intValue = value.u8Value; writer << intValue; break; }
 					case WfInsType::F4:				writer << value.f4Value; break;
 					case WfInsType::F8:				writer << value.f8Value; break;
 					case WfInsType::String:			writer << value.stringValue; break;
