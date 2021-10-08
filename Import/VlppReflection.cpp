@@ -2282,10 +2282,10 @@ TypeDescriptorImpl
 			bool TypeDescriptorImpl::CanConvertTo(ITypeDescriptor* targetType)
 			{
 				Load();
-				if(this==targetType) return true;
-				for(vint i=0;i<baseTypeDescriptors.Count();i++)
+				if (this == targetType) return true;
+				for (vint i = 0; i < baseTypeDescriptors.Count(); i++)
 				{
-					if(baseTypeDescriptors[i]->CanConvertTo(targetType)) return true;
+					if (baseTypeDescriptors[i]->CanConvertTo(targetType)) return true;
 				}
 				return false;
 			}
