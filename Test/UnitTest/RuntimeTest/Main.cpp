@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 {
 #if defined VCZH_MSVC
 	{
-		Folder folder(GetTestOutputPath());
+		Folder folder(GetTestOutputBasePath());
 		if (!folder.Exists())
 		{
 			CHECK_ERROR(folder.Create(false) == true, L"Failed to create GetTestOutputPath()");

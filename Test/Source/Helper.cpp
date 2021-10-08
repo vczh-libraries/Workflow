@@ -156,6 +156,15 @@ WString LoadSample(const WString& sampleName, const WString& itemName)
 	return reader.ReadToEnd();
 }
 
+void LoadSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly)
+{
+	auto path = GetWorkflowOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".bin";
+	FileStream fileStream(path, FileStream::ReadOnly);
+	WfAssemblyLoadErrors errors;
+	assembly = WfAssembly::Deserialize(fileStream, errors);
+	TEST_ASSERT(assembly);
+}
+
 void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, Ptr<ParsingTreeCustomBase> typedNode, WfLexicalScopeManager* manager)
 {
 	FileStream fileStream(GetWorkflowOutputPath() + L"Parsing." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
@@ -450,18 +459,10 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 #undef LOG_TYPE
 }
 
-void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly)
+void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly> assembly)
 {
 	auto path = GetWorkflowOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".bin";
-	{
-		FileStream fileStream(path, FileStream::WriteOnly);
-		assembly->Serialize(fileStream);
-		TEST_PRINT(L"    serialized: " + i64tow(fileStream.Size()) + L" bytes");
-	}
-	{
-		FileStream fileStream(path, FileStream::ReadOnly);
-		WfAssemblyLoadErrors errors;
-		assembly = WfAssembly::Deserialize(fileStream, errors);
-		TEST_ASSERT(assembly);
-	}
+	FileStream fileStream(path, FileStream::WriteOnly);
+	assembly->Serialize(fileStream);
+	TEST_PRINT(L"    serialized: " + i64tow(fileStream.Size()) + L" bytes");
 }

@@ -102,51 +102,6 @@ TEST_FILE
 						file.WriteAllText(code, false, BomEncoder::Mbcs);
 					}
 				}
-
-				//{
-				//	LogSampleCodegenResult(L"Codegen", itemName, assembly);
-				//	LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
-				//
-				//	WfRuntimeThreadContext context(assembly);
-				//	TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Finished);
-				//
-				//	{
-				//		vint functionIndex = assembly->functionByName[L"<initialize>"][0];
-				//		context.PushStackFrame(functionIndex, 0);
-				//		TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
-				//
-				//		while (context.status != WfRuntimeExecutionStatus::Finished)
-				//		{
-				//			auto action = context.Execute(nullptr);
-				//			TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
-				//		}
-				//		TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
-				//		Value result;
-				//		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-				//	}
-				//
-				//	{
-				//		vint functionIndex = assembly->functionByName[L"main"][0];
-				//		context.PushStackFrame(functionIndex, 0);
-				//		TEST_ASSERT(context.status == WfRuntimeExecutionStatus::Ready);
-				//
-				//		while (context.status != WfRuntimeExecutionStatus::Finished)
-				//		{
-				//			auto action = context.Execute(nullptr);
-				//			TEST_ASSERT(action != WfRuntimeExecutionAction::Nop);
-				//		}
-				//		TEST_ASSERT(context.Execute(nullptr) == WfRuntimeExecutionAction::Nop);
-				//	}
-				//
-				//	Value result;
-				//	WString actual;
-				//	TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-				//	result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
-				//	TEST_PRINT(L"    expected  : " + itemResult);
-				//	TEST_PRINT(L"    actual    : " + actual);
-				//	TEST_ASSERT(actual == itemResult);
-				//	TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
-				//}
 			});
 		}
 
@@ -216,34 +171,4 @@ TEST_FILE
 			writer.WriteLine(L"}");
 		});
 	});
-
-//	TEST_CASE(L"Hello, world!")
-//	{
-//		List<Ptr<ParsingError>> errors;
-//		List<WString> moduleCodes;
-//		moduleCodes.Add(LR"workflow(
-//module test;
-//
-//func main():string
-//{
-//	return "Hello, world!";
-//}
-//)workflow");
-//
-//		auto table = GetWorkflowTable();
-//		auto assembly = Compile(table, moduleCodes, errors);
-//		TEST_ASSERT(errors.Count() == 0);
-//
-//		WfRuntimeThreadContext context(assembly);
-//		context.PushStackFrame(assembly->functionByName[L"<initialize>"][0], 0);
-//		context.ExecuteToEnd();
-//		context.PushStackFrame(assembly->functionByName[L"main"][0], 0);
-//		context.ExecuteToEnd();
-//
-//		Value result;
-//		WString actual;
-//		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-//		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
-//		TEST_ASSERT(actual == L"Hello, world!");
-//	});
 }

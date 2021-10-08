@@ -27,7 +27,8 @@ extern WString				GetCppOutputPath();
 extern WString				GetWorkflowOutputPath();
 extern void					LoadSampleIndex(const WString& sampleName, List<WString>& itemNames);
 extern WString				LoadSample(const WString& sampleName, const WString& itemName);
+extern void					LoadSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly);
 extern void					LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, Ptr<ParsingTreeCustomBase> typedNode, WfLexicalScopeManager* manager = 0);
 extern void					LogSampleCodegenResult(const WString& sampleName, const WString& itemName, Ptr<WfAssembly> assembly);
-extern void					LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly);
+extern void					LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly> assembly);
 #endif
