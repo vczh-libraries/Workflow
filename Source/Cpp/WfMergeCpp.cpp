@@ -1,4 +1,5 @@
-#include "WfCpp.h"
+#include "WfMergeCpp.h"
+#include <VlppRegex.h>
 
 namespace vl
 {

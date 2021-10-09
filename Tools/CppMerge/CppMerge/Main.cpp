@@ -1,4 +1,4 @@
-#include "VlppWorkflowCompiler.h"
+#include "../../../Source/Cpp/WfMergeCpp.h"
 
 using namespace vl;
 using namespace vl::console;
