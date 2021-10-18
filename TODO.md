@@ -4,6 +4,8 @@
 
 - Generated C++ code try not to create IValueList if apply `{1 2 3}` on `List<int>` argument.
 - Dump binary type metadata including only new types created in Workflow.
+- Type inferencing on all methods in generic collection intertfaces.
+  - Consider adding a compile-time general generic mechanism.
 
 ## With VlppParser2
 
