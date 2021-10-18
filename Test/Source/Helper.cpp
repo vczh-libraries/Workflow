@@ -79,7 +79,7 @@ WString GetTestResourcePath()
 	return GetExePath() + L"..\\..\\Resources\\";
 #endif
 #elif defined VCZH_GCC
-	return L"../Resources/";
+	return L"../../Resources/";
 #endif
 }
 
@@ -92,7 +92,7 @@ WString GetTestOutputBasePath()
 	return GetExePath() + L"..\\..\\Output\\";
 #endif
 #elif defined VCZH_GCC
-	return L"../Output/";
+	return L"../../Output/";
 #endif
 }
 
