@@ -109,6 +109,7 @@ TEST_FILE
 			});
 		}
 
+#ifdef VCZH_MSVC
 		TEST_CASE(L"TestCases.cpp")
 		{
 			FileStream fileStream(GetCppOutputPath() + L"TestCases.cpp", FileStream::WriteOnly);
@@ -174,5 +175,6 @@ TEST_FILE
 			}
 			writer.WriteLine(L"}");
 		});
+#endif
 	});
 }

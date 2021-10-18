@@ -9,12 +9,14 @@ pre-build:
 	if ! [ -d ./Obj ]; then mkdir ./Obj; fi
 	if ! [ -d ./Coverage ]; then mkdir ./Coverage; fi
 	if ! [ -d ../../Output ]; then mkdir ../../Output; fi
+	if ! [ -d ../../Output/Workflow64 ]; then mkdir ../../Output/Workflow64; fi
 
 clean:
 	if [ -d ./Bin ]; then rm -r ./Bin; fi
 	if [ -d ./Obj ]; then rm -r ./Obj; fi
 	if [ -d ./Coverage ]; then rm -r ./Coverage; fi
 	if [ -d ./../../Output ]; then rm -r ../../Output; fi
+	if [ -d ./../../Output/Workflow64 ]; then rm -r ../../Output/Workflow64; fi
 
 all:pre-build ./Bin/UnitTest
 
