@@ -1,7 +1,9 @@
 #include <VlppParser.h>
 #include "../../../Source/Library/WfLibraryReflection.h"
 #include "../../Source/CppTypes.h"
+#ifdef VCZH_MSVC
 #include <windows.h>
+#endif
 
 using namespace vl;
 using namespace vl::filesystem;
@@ -9,6 +11,7 @@ using namespace vl::stream;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
 
+#if defined VCZH_MSVC
 WString GetExePath()
 {
 	wchar_t buffer[65536];
@@ -34,6 +37,12 @@ WString GetTestOutputPath()
 	return GetExePath() + L"../../Output/";
 #endif
 }
+#elif defined VCZH_GCC
+WString GetTestOutputPath()
+{
+	return L"../../Output/";
+}
+#endif
 
 #ifdef VCZH_64
 #define REFLECTION_BIN L"Reflection64.bin"
@@ -78,8 +87,13 @@ TEST_FILE
 	});
 }
 
+#ifdef VCZH_MSVC
 int wmain(vint argc, wchar_t* argv[])
+#elif defined VCZH_GCC
+int main(int argc, char* argv[])
+#endif
 {
+#if defined VCZH_MSVC
 	{
 		Folder folder(GetTestOutputPath());
 		if (!folder.Exists())
@@ -87,9 +101,10 @@ int wmain(vint argc, wchar_t* argv[])
 			folder.Create(false);
 		}
 	}
+#endif
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 	FinalizeGlobalStorage();
-#ifdef VCZH_CHECK_MEMORY_LEAKS
+#if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
 	return result;
