@@ -1,7 +1,7 @@
 .PHONY: all clean pre-build
 .DEFAULT_GOAL := all
 
-CPP_COMPILE_OPTIONS=-I ../../../Import
+CPP_COMPILE_OPTIONS=-I ../../../Import -DVCZH_DEBUG_NO_REFLECTION
 include $(VCPROOT)/vl/makefile-cpp
 
 pre-build:
