@@ -332,6 +332,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 			{
 			case WfInsType::U8:			return L"<enum: " + u64tow(value.u8Value) + L">";
 			case WfInsType::Unknown:	return L"<type: " + value.typeDescriptor->GetTypeName() + L">";
+			default:;
 			}
 			CHECK_FAIL(L"Unexpected type in WfRuntimeValue with typeDescriptor!");
 		}
@@ -349,6 +350,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 		case WfInsType::F4:				return L"<" + formatType(value.type) + L", " + ftow(value.f4Value) + L">";
 		case WfInsType::F8:				return L"<" + formatType(value.type) + L", " + ftow(value.f8Value) + L">";
 		case WfInsType::String:			return L"<" + formatType(value.type) + L", " + value.stringValue + L">";
+		default:;
 		}
 		return L"<null>";
 	};
