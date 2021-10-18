@@ -72,6 +72,7 @@ TEST_FILE
 				Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
 				TEST_ASSERT(assembly);
 
+#ifdef VCZH_MSVC
 				if (cppCodegen)
 				{
 					auto input = MakePtr<WfCppInput>(itemName);
@@ -102,11 +103,13 @@ TEST_FILE
 						file.WriteAllText(code, false, BomEncoder::Mbcs);
 					}
 				}
+#endif
 				LogSampleCodegenResult(L"Codegen", itemName, assembly);
 				LogSampleAssemblyBinary(L"Codegen", itemName, assembly);
 			});
 		}
 
+#ifdef VCZH_MSVC
 		TEST_CASE(L"TestCases.cpp")
 		{
 			FileStream fileStream(GetCppOutputPath() + L"TestCases.cpp", FileStream::WriteOnly);
@@ -172,5 +175,6 @@ TEST_FILE
 			}
 			writer.WriteLine(L"}");
 		});
+#endif
 	});
 }
