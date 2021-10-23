@@ -31,7 +31,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoRawCoroutine2)
 	vl_workflow_global::CoRawCoroutine2 instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -51,7 +51,7 @@ Global Functions
 			while ((::vl::__vwsn::This(coroutine.Obj())->GetStatus() != ::vl::reflection::description::CoroutineStatus::Stopped))
 			{
 				::vl::__vwsn::This(coroutine.Obj())->Resume(true, ::vl::Ptr<::vl::reflection::description::CoroutineResult>());
-				(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[-", false)) + ::vl::__vwsn::ToString(i)) + ::vl::WString(L"]", false)));
+				(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[-")) + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
 				(i = (i + static_cast<::vl::vint>(1)));
 			}
 		}
@@ -104,7 +104,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -175,14 +175,14 @@ Closures
 					if ((__vwsn_co_state_ == static_cast<::vl::vint>(3)))
 					{
 						{
-							(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
+							(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"!")));
 						}
 						throw ::vl::Exception(::vl::__vwsn::This(__vwsn_co4_ex.Obj())->GetMessage());
 					}
 					if ((__vwsn_co_state_ == static_cast<::vl::vint>(7)))
 					{
 						{
-							(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
+							(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"!")));
 						}
 						(__vwsn_co_state_ = static_cast<::vl::vint>(2));
 						continue;
@@ -193,7 +193,7 @@ Closures
 							if ((__vwsn_co_state_ == static_cast<::vl::vint>(4)))
 							{
 								{
-									(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(__vwsn_co4_ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
+									(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(__vwsn_co4_ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"]")));
 								}
 								(__vwsn_co_state_ = static_cast<::vl::vint>(7));
 								continue;
@@ -217,14 +217,14 @@ Closures
 								(__vwsn_co0_switch_0 = (__vwsn_co3_i % static_cast<::vl::vint>(2)));
 								if ((__vwsn_co0_switch_0 == static_cast<::vl::vint>(0)))
 								{
-									(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + ::vl::__vwsn::ToString(__vwsn_co3_i)) + ::vl::WString(L"]", false)));
+									(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[+")) + ::vl::__vwsn::ToString(__vwsn_co3_i)) + ::vl::WString::Unmanaged(L"]")));
 									(__vwsn_co_state_ = static_cast<::vl::vint>(6));
 									continue;
 								}
 								if ((__vwsn_co0_switch_0 == static_cast<::vl::vint>(1)))
 								{
 									{
-										throw ::vl::Exception(::vl::WString(L"*", false));
+										throw ::vl::Exception(::vl::WString::Unmanaged(L"*"));
 									}
 									(__vwsn_co_state_ = static_cast<::vl::vint>(7));
 									continue;

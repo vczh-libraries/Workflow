@@ -47,7 +47,7 @@ Global Functions
 		auto s1 = get();
 		set(static_cast<::vl::vint>(20));
 		auto s2 = get();
-		return ((::vl::__vwsn::ToString(s1) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(s2));
+		return ((::vl::__vwsn::ToString(s1) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(s2));
 	}
 
 	MethodClosure& MethodClosure::Instance()

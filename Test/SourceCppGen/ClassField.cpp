@@ -41,12 +41,12 @@ Global Functions
 
 	::vl::WString ClassField::main()
 	{
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		auto a = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
 		auto b = ::vl::Ptr<::test::PointClass>(new ::test::PointClass());
 		(::vl::__vwsn::This(b.Obj())->x = static_cast<::vl::vint>(1));
 		(::vl::__vwsn::This(b.Obj())->y = static_cast<::vl::vint>(2));
-		return (((((((((((::vl::WString(L"", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->y)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(b.Obj())->x)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(b.Obj())->y)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() == a.Obj()))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((a.Obj() == b.Obj())));
+		return (((((((((((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->y)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(b.Obj())->x)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(b.Obj())->y)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((a.Obj() == a.Obj()))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((a.Obj() == b.Obj())));
 	}
 
 	ClassField& ClassField::Instance()

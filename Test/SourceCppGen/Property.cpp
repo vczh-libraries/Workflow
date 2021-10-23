@@ -43,11 +43,11 @@ Global Functions
 	{
 		auto x = [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(10); __vwsn_temp__.y = static_cast<::vl::vint>(20); return __vwsn_temp__; }();
 		auto y = ::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(static_cast<::vl::vint>(10)));
-		auto s1 = ((((((((::vl::__vwsn::ToString(x.x) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x.y)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(y.Obj())->GetValue())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y.Obj())->GetName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y.Obj())->GetDisplayName());
+		auto s1 = ((((((((::vl::__vwsn::ToString(x.x) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(x.y)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(y.Obj())->GetValue())) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::This(y.Obj())->GetName()) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::This(y.Obj())->GetDisplayName());
 		::vl::__vwsn::This(y.Obj())->SetValue(static_cast<::vl::vint>(20));
-		::vl::__vwsn::This(y.Obj())->SetName(::vl::WString(L"Workflow", false));
-		auto s2 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(y.Obj())->GetValue()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y.Obj())->GetName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(y.Obj())->GetDisplayName());
-		return ((s1 + ::vl::WString(L", ", false)) + s2);
+		::vl::__vwsn::This(y.Obj())->SetName(::vl::WString::Unmanaged(L"Workflow"));
+		auto s2 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(y.Obj())->GetValue()) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::This(y.Obj())->GetName()) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::This(y.Obj())->GetDisplayName());
+		return ((s1 + ::vl::WString::Unmanaged(L", ")) + s2);
 	}
 
 	Property& Property::Instance()

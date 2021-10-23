@@ -41,7 +41,7 @@ Global Functions
 
 	::vl::WString ForEach::Show1(::vl::Ptr<::vl::reflection::description::IValueList> xs)
 	{
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		{
 			auto __vwsn_for_enumerable_x = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs);
 			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
@@ -49,13 +49,13 @@ Global Functions
 			{
 				auto x = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
 				{
-					if ((s == ::vl::WString(L"", false)))
+					if ((s == ::vl::WString::Unmanaged(L"")))
 					{
 						(s = (s + ::vl::__vwsn::ToString(x)));
 					}
 					else
 					{
-						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+						(s = ((s + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(x)));
 					}
 				}
 			}
@@ -65,7 +65,7 @@ Global Functions
 
 	::vl::WString ForEach::Show2(::vl::Ptr<::vl::reflection::description::IValueList> xs)
 	{
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		{
 			auto __vwsn_for_enumerable_x = ::vl::reflection::description::Sys::ReverseEnumerable(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs));
 			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
@@ -73,13 +73,13 @@ Global Functions
 			{
 				auto x = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
 				{
-					if ((s == ::vl::WString(L"", false)))
+					if ((s == ::vl::WString::Unmanaged(L"")))
 					{
 						(s = (s + ::vl::__vwsn::ToString(x)));
 					}
 					else
 					{
-						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+						(s = ((s + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(x)));
 					}
 				}
 			}
@@ -90,7 +90,7 @@ Global Functions
 	::vl::WString ForEach::main()
 	{
 		auto xs = (::vl::__vwsn::CreateList().Add(static_cast<::vl::vint>(1)).Add(static_cast<::vl::vint>(2)).Add(static_cast<::vl::vint>(3)).Add(static_cast<::vl::vint>(4)).Add(static_cast<::vl::vint>(5))).list;
-		return ((((::vl::WString(L"[", false) + GLOBAL_NAME Show1(xs)) + ::vl::WString(L"][", false)) + GLOBAL_NAME Show2(xs)) + ::vl::WString(L"]", false));
+		return ((((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Show1(xs)) + ::vl::WString::Unmanaged(L"][")) + GLOBAL_NAME Show2(xs)) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	ForEach& ForEach::Instance()

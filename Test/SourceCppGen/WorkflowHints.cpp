@@ -49,7 +49,7 @@ Global Functions
 	{
 		if ((! condition))
 		{
-			throw ::vl::Exception(::vl::WString(L"Wrong!", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Wrong!"));
 		}
 	}
 
@@ -65,16 +65,16 @@ Global Functions
 
 	void WorkflowHints::ExtraTests()
 	{
-		GLOBAL_NAME Ensure((::vl::__vwsn::ToString(static_cast<::vl::vint>(123)) == ::vl::WString(L"123", false)));
-		GLOBAL_NAME Ensure((::vl::__vwsn::Parse<::vl::vint>(::vl::WString(L"123", false)) == static_cast<::vl::vint>(123)));
-		GLOBAL_NAME Ensure(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)), true);
-		GLOBAL_NAME Ensure(::vl::__vwsn::Parse<::vl::vint>(::vl::WString(L"123", false)), static_cast<::vl::vint>(123));
+		GLOBAL_NAME Ensure((::vl::__vwsn::ToString(static_cast<::vl::vint>(123)) == ::vl::WString::Unmanaged(L"123")));
+		GLOBAL_NAME Ensure((::vl::__vwsn::Parse<::vl::vint>(::vl::WString::Unmanaged(L"123")) == static_cast<::vl::vint>(123)));
+		GLOBAL_NAME Ensure(::vl::__vwsn::Parse<bool>(::vl::WString::Unmanaged(L"true")), true);
+		GLOBAL_NAME Ensure(::vl::__vwsn::Parse<::vl::vint>(::vl::WString::Unmanaged(L"123")), static_cast<::vl::vint>(123));
 		{
 			auto v = ::vl::__vwsn::ToString(static_cast<::vl::vint>(123));
-			GLOBAL_NAME Ensure((v == ::vl::WString(L"123", false)));
+			GLOBAL_NAME Ensure((v == ::vl::WString::Unmanaged(L"123")));
 		}
 		{
-			auto v = ::vl::__vwsn::Parse<::vl::vint>(::vl::WString(L"123", false));
+			auto v = ::vl::__vwsn::Parse<::vl::vint>(::vl::WString::Unmanaged(L"123"));
 			GLOBAL_NAME Ensure((v == static_cast<::vl::vint>(123)));
 		}
 		auto sBase = ::vl::Ptr<::workflow::hints::Base>(new ::workflow::hints::Base());
@@ -110,14 +110,14 @@ Global Functions
 		auto iNull = ::vl::Nullable<::vl::vint>();
 		auto iValue = ::vl::Nullable<::vl::vint>(static_cast<::vl::vint>(1));
 		auto sNull = ::vl::Nullable<::vl::WString>();
-		auto sValue = ::vl::Nullable<::vl::WString>(::vl::WString(L"2", false));
+		auto sValue = ::vl::Nullable<::vl::WString>(::vl::WString::Unmanaged(L"2"));
 		GLOBAL_NAME Ensure((! static_cast<bool>(iNull)));
 		GLOBAL_NAME Ensure(static_cast<bool>(iValue));
 		GLOBAL_NAME Ensure((! static_cast<bool>(sNull)));
 		GLOBAL_NAME Ensure(static_cast<bool>(sValue));
 		GLOBAL_NAME Ensure((! static_cast<bool>(::vl::__vwsn::NullableCast<::vl::WString>(iNull))));
-		GLOBAL_NAME Ensure((::vl::__vwsn::NullableCast<::vl::WString>(iValue) == ::vl::Nullable<::vl::WString>(::vl::WString(L"1", false))));
-		GLOBAL_NAME Ensure((::vl::__vwsn::ToString(iValue.Value()) == ::vl::WString(L"1", false)));
+		GLOBAL_NAME Ensure((::vl::__vwsn::NullableCast<::vl::WString>(iValue) == ::vl::Nullable<::vl::WString>(::vl::WString::Unmanaged(L"1"))));
+		GLOBAL_NAME Ensure((::vl::__vwsn::ToString(iValue.Value()) == ::vl::WString::Unmanaged(L"1")));
 		GLOBAL_NAME Ensure((! static_cast<bool>(::vl::__vwsn::NullableCast<::vl::vint>(sNull))));
 		GLOBAL_NAME Ensure((::vl::__vwsn::NullableCast<::vl::vint>(sValue) == ::vl::Nullable<::vl::vint>(static_cast<::vl::vint>(2))));
 		GLOBAL_NAME Ensure((::vl::__vwsn::Parse<::vl::vint>(sValue.Value()) == static_cast<::vl::vint>(2)));
@@ -180,7 +180,7 @@ Global Functions
 		auto merge6 = ::vl::reflection::description::Sys::UInt64ToUInt(static_cast<::vl::vuint64_t>(static_cast<::vl::vint>(0)));
 		auto merge7 = ::vl::reflection::description::Sys::UIntToUInt32(static_cast<::vl::vuint>(static_cast<::vl::vint>(0)));
 		auto merge8 = ::vl::reflection::description::Sys::UIntToUInt64(static_cast<::vl::vuint>(static_cast<::vl::vint>(0)));
-		return ((((((((((((((((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(a)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(e)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(f)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g1)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(g2)) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(hinters.Obj())->GetMyList()).Obj())->Get(static_cast<::vl::vint>(2))))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(hinters.Obj())->GetObservableList()[static_cast<::vl::vint>(3)])) + ::vl::WString(L"]", false));
+		return ((((((((((((((((((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(a)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(b)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(c)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(d)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(e)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(f)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(g1)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(g2)) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(hinters.Obj())->GetMyList()).Obj())->Get(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(hinters.Obj())->GetObservableList()[static_cast<::vl::vint>(3)])) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	WorkflowHints& WorkflowHints::Instance()

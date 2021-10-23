@@ -31,7 +31,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_TryCatch)
 	vl_workflow_global::TryCatch instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.log = ::vl::WString(L"", false);
+		instance.log = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.log = ::vl::WString::Empty;
@@ -48,14 +48,14 @@ Global Functions
 		try
 		{
 			{
-				throw ::vl::Exception(::vl::WString(L"Test1::catch", false));
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"Test1::catch"));
 			}
 		}
 		catch(const ::vl::Exception& __vwsne_0)
 		{
 			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
+				(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"]")));
 			}
 		}
 	}
@@ -65,21 +65,21 @@ Global Functions
 		{
 			auto __vwsnb_0 = [&]()
 			{
-				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test2::finally]", false)));
+				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test2::finally]")));
 			}
 			;
 			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
-					throw ::vl::Exception(::vl::WString(L"Test2::catch", false));
+					throw ::vl::Exception(::vl::WString::Unmanaged(L"Test2::catch"));
 				}
 			}
 			catch(const ::vl::Exception& __vwsne_0)
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 				{
-					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"]", false)));
+					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"]")));
 				}
 			}
 		}
@@ -95,7 +95,7 @@ Global Functions
 		{
 			auto __vwsnb_0 = [&]()
 			{
-				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test3::finally2]", false)));
+				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test3::finally2]")));
 			}
 			;
 			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
@@ -105,21 +105,21 @@ Global Functions
 					{
 						auto __vwsnb_1 = [&]()
 						{
-							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test3::finally1]", false)));
+							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test3::finally1]")));
 						}
 						;
 						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
 						try
 						{
 							{
-								GLOBAL_NAME Throw(::vl::WString(L"Test3::catch", false));
+								GLOBAL_NAME Throw(::vl::WString::Unmanaged(L"Test3::catch"));
 							}
 						}
 						catch(const ::vl::Exception& __vwsne_1)
 						{
 							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
 							{
-								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
+								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"1]")));
 								throw;
 							}
 						}
@@ -130,7 +130,7 @@ Global Functions
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 				{
-					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
+					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"2]")));
 				}
 			}
 		}
@@ -141,7 +141,7 @@ Global Functions
 		{
 			auto __vwsnb_0 = [&]()
 			{
-				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test4::finally2]", false)));
+				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test4::finally2]")));
 			}
 			;
 			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
@@ -151,7 +151,7 @@ Global Functions
 					{
 						auto __vwsnb_1 = [&]()
 						{
-							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString(L"[Test4::finally1]", false)));
+							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test4::finally1]")));
 						}
 						;
 						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
@@ -164,7 +164,7 @@ Global Functions
 						{
 							auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
 							{
-								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"1]", false)));
+								(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"1]")));
 								throw;
 							}
 						}
@@ -175,7 +175,7 @@ Global Functions
 			{
 				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 				{
-					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString(L"2]", false)));
+					(GLOBAL_NAME log = (((GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"2]")));
 				}
 			}
 		}

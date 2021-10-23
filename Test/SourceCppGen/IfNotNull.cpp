@@ -43,23 +43,23 @@ Global Functions
 	{
 		auto x = ::vl::__vwsn::Box((::vl::__vwsn::CreateList().Add(static_cast<::vl::vint>(1))).list);
 		auto y = ::vl::__vwsn::Box((::vl::__vwsn::CreateDictionary().Add(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2))).dictionary);
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		if (auto z = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueList>>(x))
 		{
-			(s = (s + ::vl::WString(L"{1} is a list", false)));
+			(s = (s + ::vl::WString::Unmanaged(L"{1} is a list")));
 		}
 		else
 		{
-			(s = (s + ::vl::WString(L"{1} is not a list", false)));
+			(s = (s + ::vl::WString::Unmanaged(L"{1} is not a list")));
 		}
-		(s = (s + ::vl::WString(L", ", false)));
+		(s = (s + ::vl::WString::Unmanaged(L", ")));
 		if (auto z = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueList>>(y))
 		{
-			(s = (s + ::vl::WString(L"{1:2} is a list", false)));
+			(s = (s + ::vl::WString::Unmanaged(L"{1:2} is a list")));
 		}
 		else
 		{
-			(s = (s + ::vl::WString(L"{1:2} is not a list", false)));
+			(s = (s + ::vl::WString::Unmanaged(L"{1:2} is not a list")));
 		}
 		return s;
 	}

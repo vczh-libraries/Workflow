@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoSmcCalculator)
 	vl_workflow_global::CoSmcCalculator instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -52,7 +52,7 @@ Global Functions
 	::vl::WString CoSmcCalculator::main()
 	{
 		auto c = ::vl::Ptr<::SMCalculator>(new ::SMCalculator());
-		(GLOBAL_NAME s = ((::vl::WString(L"[", false) + ::vl::__vwsn::This(c.Obj())->GetValue()) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::This(c.Obj())->GetValue()) + ::vl::WString::Unmanaged(L"]")));
 		auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(c.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_CoSmcCalculator_main_(c)));
 		::vl::__vwsn::This(c.Obj())->Digit(static_cast<::vl::vint>(1));
 		::vl::__vwsn::This(c.Obj())->Dot();
@@ -89,7 +89,7 @@ Closures
 
 	void __vwsnf1_CoSmcCalculator_main_::operator()() const
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(this->c.Obj())->GetValue()) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(this->c.Obj())->GetValue()) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	//-------------------------------------------------------------------
@@ -138,7 +138,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -351,7 +351,7 @@ Closures
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
-											__vwsnthis_0->SetValue((__vwsnthis_0->GetValue() + ::vl::WString(L".", false)));
+											__vwsnthis_0->SetValue((__vwsnthis_0->GetValue() + ::vl::WString::Unmanaged(L".")));
 										}
 									}
 									(__vwsn_co_state_ = static_cast<::vl::vint>(12));
@@ -416,7 +416,7 @@ Closures
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
 											__vwsnthis_0->Calculate();
-											(__vwsnthis_0->op = ::vl::WString(L"+", false));
+											(__vwsnthis_0->op = ::vl::WString::Unmanaged(L"+"));
 										}
 									}
 									else if ((__vwsn_switch_3 == static_cast<::vl::vint>(3)))
@@ -424,7 +424,7 @@ Closures
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
 											__vwsnthis_0->Calculate();
-											(__vwsnthis_0->op = ::vl::WString(L"*", false));
+											(__vwsnthis_0->op = ::vl::WString::Unmanaged(L"*"));
 										}
 									}
 									else if ((__vwsn_switch_3 == static_cast<::vl::vint>(4)))
@@ -432,27 +432,27 @@ Closures
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
 											__vwsnthis_0->Calculate();
-											(__vwsnthis_0->op = ::vl::WString(L"=", false));
+											(__vwsnthis_0->op = ::vl::WString::Unmanaged(L"="));
 										}
 									}
 									else if ((__vwsn_switch_3 == static_cast<::vl::vint>(5)))
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
-											(__vwsnthis_0->valueFirst = ::vl::WString(L"", false));
-											(__vwsnthis_0->op = ::vl::WString(L"", false));
-											__vwsnthis_0->SetValue(::vl::WString(L"0", false));
+											(__vwsnthis_0->valueFirst = ::vl::WString::Unmanaged(L""));
+											(__vwsnthis_0->op = ::vl::WString::Unmanaged(L""));
+											__vwsnthis_0->SetValue(::vl::WString::Unmanaged(L"0"));
 										}
 									}
 									else if ((__vwsn_switch_3 == static_cast<::vl::vint>(0)))
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
-										throw ::vl::Exception(::vl::WString(L"Method \"Digit\" of class \"SMCalculator\" cannot be called at this moment.", false));
+										throw ::vl::Exception(::vl::WString::Unmanaged(L"Method \"Digit\" of class \"SMCalculator\" cannot be called at this moment."));
 									}
 									else if ((__vwsn_switch_3 == static_cast<::vl::vint>(1)))
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
-										throw ::vl::Exception(::vl::WString(L"Method \"Dot\" of class \"SMCalculator\" cannot be called at this moment.", false));
+										throw ::vl::Exception(::vl::WString::Unmanaged(L"Method \"Dot\" of class \"SMCalculator\" cannot be called at this moment."));
 									}
 								}
 								(__vwsn_co8_state_state = static_cast<::vl::vint>(4));
@@ -530,21 +530,21 @@ void SMCalculator::Update(const ::vl::WString& value)
 
 void SMCalculator::Calculate()
 {
-	if ((this->valueFirst == ::vl::WString(L"", false)))
+	if ((this->valueFirst == ::vl::WString::Unmanaged(L"")))
 	{
 		(this->valueFirst = this->GetValue());
 	}
-	else if ((this->op == ::vl::WString(L"+", false)))
+	else if ((this->op == ::vl::WString::Unmanaged(L"+")))
 	{
 		this->Update(::vl::__vwsn::ToString((::vl::__vwsn::Parse<double>(this->valueFirst) + ::vl::__vwsn::Parse<double>(this->GetValue()))));
 	}
-	else if ((this->op == ::vl::WString(L"*", false)))
+	else if ((this->op == ::vl::WString::Unmanaged(L"*")))
 	{
 		this->Update(::vl::__vwsn::ToString((::vl::__vwsn::Parse<double>(this->valueFirst) * ::vl::__vwsn::Parse<double>(this->GetValue()))));
 	}
 	else
 	{
-		throw ::vl::Exception((::vl::WString(L"Unrecognized operator: ", false) + this->op));
+		throw ::vl::Exception((::vl::WString::Unmanaged(L"Unrecognized operator: ") + this->op));
 	}
 }
 
@@ -623,9 +623,9 @@ void SMCalculator::__vwsn_state_CreateCoroutine(::vl::vint __vwsn_state_startSta
 }
 
 SMCalculator::SMCalculator()
-	: valueFirst(::vl::WString(L"", false))
-	, op(::vl::WString(L"", false))
-	, __vwsn_prop_Value(::vl::WString(L"0", false))
+	: valueFirst(::vl::WString::Unmanaged(L""))
+	, op(::vl::WString::Unmanaged(L""))
+	, __vwsn_prop_Value(::vl::WString::Unmanaged(L"0"))
 	, __vwsn_stateip_Digit_i(static_cast<::vl::vint>(0))
 	, __vwsn_statesp_Integer_newNumber(false)
 {

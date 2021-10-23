@@ -48,12 +48,12 @@ Global Functions
 	::vl::WString NullableCast::ReadValue(const ::vl::reflection::description::Value& value)
 	{
 		auto nullable = ::vl::__vwsn::Unbox<::vl::Nullable<::BoxedIntValue>>(value);
-		return ((! static_cast<bool>(nullable)) ? ::vl::WString(L"null", false) : ::vl::__vwsn::ToString(nullable.Value().value));
+		return ((! static_cast<bool>(nullable)) ? ::vl::WString::Unmanaged(L"null") : ::vl::__vwsn::ToString(nullable.Value().value));
 	}
 
 	::vl::WString NullableCast::main()
 	{
-		return ((GLOBAL_NAME ReadValue(::vl::reflection::description::Value()) + ::vl::WString(L", ", false)) + GLOBAL_NAME ReadValue(::vl::__vwsn::Box([&](){ ::BoxedIntValue __vwsn_temp__; __vwsn_temp__.value = static_cast<::vl::vint>(0); return __vwsn_temp__; }())));
+		return ((GLOBAL_NAME ReadValue(::vl::reflection::description::Value()) + ::vl::WString::Unmanaged(L", ")) + GLOBAL_NAME ReadValue(::vl::__vwsn::Box([&](){ ::BoxedIntValue __vwsn_temp__; __vwsn_temp__.value = static_cast<::vl::vint>(0); return __vwsn_temp__; }())));
 	}
 
 	NullableCast& NullableCast::Instance()

@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_ClassMethod)
 	vl_workflow_global::ClassMethod instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -53,11 +53,11 @@ Global Functions
 	{
 		{
 			auto a = ::vl::Ptr<::Methods>(new ::Methods());
-			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString::Unmanaged(L"]"))));
 		}
 		{
 			auto a = ::vl::Ptr<::Methods>(new ::Methods(static_cast<::vl::vint>(100)));
-			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->x)) + ::vl::WString::Unmanaged(L"]"))));
 		}
 		{
 			auto a = ::vl::Ptr<::Methods>(new ::Methods(static_cast<::vl::vint>(1)));
@@ -67,7 +67,7 @@ Global Functions
 			::vl::__vwsn::This(a.Obj())->SetX(::vl::__vwsn::This(a.Obj())->GetX());
 			::vl::__vwsn::EventDetach(::vl::__vwsn::This(a.Obj())->XChanged, handler);
 			::vl::__vwsn::This(a.Obj())->SetX(static_cast<::vl::vint>(100));
-			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString::Unmanaged(L"]"))));
 		}
 		return GLOBAL_NAME s;
 	}
@@ -90,7 +90,7 @@ Closures
 
 	void __vwsnf1_ClassMethod_main_::operator()() const
 	{
-		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(this->a.Obj())->GetX())) + ::vl::WString(L"]", false))));
+		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(this->a.Obj())->GetX())) + ::vl::WString::Unmanaged(L"]"))));
 	}
 }
 
@@ -109,7 +109,7 @@ Methods::Methods(::vl::vint _x)
 	(this->x = _x);
 	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
-		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"The \"this\" expression is not correctly implemented."));
 	}
 }
 
@@ -117,7 +117,7 @@ Methods::Methods(::vl::vint _x)
 {
 	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
-		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"The \"this\" expression is not correctly implemented."));
 	}
 	return this->x;
 }

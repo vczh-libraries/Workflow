@@ -49,7 +49,7 @@ Global Functions
 	{
 		auto x = ::vl::Ptr<::MyClass>(new ::MyClass(static_cast<::vl::vint>(1), static_cast<::vl::vint>(5)));
 		auto xs = ::vl::__vwsn::This(x.Obj())->CreateMyInterface();
-		return ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString(L"]", false));
+		return ((((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->Get100())) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::test::CustomInterfaceProcessor::Sum(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs)))) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	NewCustomInterface3& NewCustomInterface3::Instance()

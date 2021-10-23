@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoSmcGoto)
 	vl_workflow_global::CoSmcGoto instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -63,7 +63,7 @@ Global Functions
 		{
 			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
+				(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"!")));
 			}
 		}
 		return GLOBAL_NAME s;
@@ -118,7 +118,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -243,7 +243,7 @@ Closures
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
-											(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[A]", false)));
+											(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[A]")));
 										}
 									}
 									else
@@ -251,7 +251,7 @@ Closures
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 									}
 								}
-								(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L".A", false)));
+								(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L".A")));
 								(__vwsn_co_state_ = static_cast<::vl::vint>(9));
 								continue;
 								(__vwsn_co_state_ = static_cast<::vl::vint>(3));
@@ -265,7 +265,7 @@ Closures
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
-											(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[B]", false)));
+											(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[B]")));
 										}
 									}
 									else
@@ -273,7 +273,7 @@ Closures
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 									}
 								}
-								(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L".B", false)));
+								(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L".B")));
 								(__vwsn_co_state_ = static_cast<::vl::vint>(9));
 								continue;
 								(__vwsn_co_state_ = static_cast<::vl::vint>(3));
@@ -289,7 +289,7 @@ Closures
 							}
 							if ((__vwsn_co_state_ == static_cast<::vl::vint>(8)))
 							{
-								(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L".", false)));
+								(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L".")));
 								(__vwsn_co_state_ = static_cast<::vl::vint>(9));
 								continue;
 								(__vwsn_co_state_ = static_cast<::vl::vint>(3));

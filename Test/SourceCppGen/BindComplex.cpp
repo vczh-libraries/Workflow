@@ -31,7 +31,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindComplex)
 	vl_workflow_global::BindComplex instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -45,7 +45,7 @@ Global Functions
 
 	void BindComplex::Callback(const ::vl::reflection::description::Value& value)
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(value))) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(value))) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	::vl::WString BindComplex::main()

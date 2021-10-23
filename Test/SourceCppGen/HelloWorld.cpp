@@ -41,7 +41,7 @@ Global Functions
 
 	::vl::WString HelloWorld::main()
 	{
-		return ::vl::WString(L"Hello, world!", false);
+		return ::vl::WString::Unmanaged(L"Hello, world!");
 	}
 
 	HelloWorld& HelloWorld::Instance()

@@ -46,7 +46,7 @@ Global Functions
 
 	::vl::WString FailedThen::main()
 	{
-		return (((::vl::WString(L"", false) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(), static_cast<::vl::vint>(10), (- static_cast<::vl::vint>(1))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(static_cast<::vl::vint>(100))), static_cast<::vl::vint>(10), (- static_cast<::vl::vint>(1)))));
+		return (((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(), static_cast<::vl::vint>(10), (- static_cast<::vl::vint>(1))))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME GetValue(::vl::Ptr<::test::ObservableValue>(new ::test::ObservableValue(static_cast<::vl::vint>(100))), static_cast<::vl::vint>(10), (- static_cast<::vl::vint>(1)))));
 	}
 
 	FailedThen& FailedThen::Instance()

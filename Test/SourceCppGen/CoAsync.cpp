@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoAsync)
 	vl_workflow_global::CoAsync instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -104,7 +104,7 @@ Closures
 
 	void __vwsnf2_CoAsync_GetStringAsync2_::operator()() const
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(x)) + ::vl::WString::Unmanaged(L"]")));
 		::vl::__vwsn::This(::vl::__vwsn::This(this->future.Obj())->GetPromise().Obj())->SendResult(::vl::__vwsn::Box(::vl::__vwsn::ToString(x)));
 	}
 
@@ -164,7 +164,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -192,7 +192,7 @@ Closures
 				{
 					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
 					{
-						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(x)) + ::vl::WString(L"]", false)));
+						(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(x)) + ::vl::WString::Unmanaged(L"]")));
 						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::CoAsync_types::IStringAsync::StoreResult(::vl::__vwsn::ToString(x)));
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
 						return;
@@ -260,8 +260,8 @@ Closures
 	__vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine::__vwsnc4_CoAsync_GetMultipleString___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_)
 		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
 	{
-		this->__vwsn_co0_x = ::vl::WString(L"", false);
-		this->__vwsn_co1_y = ::vl::WString(L"", false);
+		this->__vwsn_co0_x = ::vl::WString::Unmanaged(L"");
+		this->__vwsn_co1_y = ::vl::WString::Unmanaged(L"");
 		this->__vwsn_co2_for_begin_i = static_cast<::vl::vint>(0);
 		this->__vwsn_co3_for_end_i = static_cast<::vl::vint>(0);
 		this->__vwsn_co4_i = static_cast<::vl::vint>(0);
@@ -293,7 +293,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -346,7 +346,7 @@ Closures
 								throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 							}
 						}
-						(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
+						(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"!")));
 						(__vwsn_co4_i = (__vwsn_co4_i + static_cast<::vl::vint>(1)));
 						if ((__vwsn_co4_i <= __vwsn_co3_for_end_i))
 						{
@@ -373,7 +373,7 @@ Closures
 							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 						}
 						(__vwsn_co0_x = ::CoAsync_types::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
-						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[+", false)) + __vwsn_co0_x) + ::vl::WString(L"]", false)));
+						(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[+")) + __vwsn_co0_x) + ::vl::WString::Unmanaged(L"]")));
 						(__vwsn_co_state_ = static_cast<::vl::vint>(5));
 						continue;
 					}
@@ -394,7 +394,7 @@ Closures
 							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 						}
 						(__vwsn_co1_y = ::CoAsync_types::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
-						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[-", false)) + __vwsn_co1_y) + ::vl::WString(L"]", false)));
+						(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[-")) + __vwsn_co1_y) + ::vl::WString::Unmanaged(L"]")));
 						(__vwsn_co_state_ = static_cast<::vl::vint>(7));
 						continue;
 					}

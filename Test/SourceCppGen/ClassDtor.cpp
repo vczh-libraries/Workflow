@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_ClassDtor)
 	vl_workflow_global::ClassDtor instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -52,11 +52,11 @@ Global Functions
 	::vl::WString ClassDtor::main()
 	{
 		auto x = new ::Dtor();
-		(::vl::__vwsn::This(x)->name = ::vl::WString(L"x", false));
+		(::vl::__vwsn::This(x)->name = ::vl::WString::Unmanaged(L"x"));
 		auto y = new ::Dtor();
-		(::vl::__vwsn::This(y)->name = ::vl::WString(L"y", false));
+		(::vl::__vwsn::This(y)->name = ::vl::WString::Unmanaged(L"y"));
 		auto z = new ::Dtor();
-		(::vl::__vwsn::This(z)->name = ::vl::WString(L"z", false));
+		(::vl::__vwsn::This(z)->name = ::vl::WString::Unmanaged(L"z"));
 		(::vl::__vwsn::This(x)->next = y);
 		(::vl::__vwsn::This(y)->next = z);
 		::vl::__vwsn::This(x)->Dispose(true);
@@ -74,14 +74,14 @@ Class (::Dtor)
 ***********************************************************************/
 
 Dtor::Dtor()
-	: name(::vl::WString(L"", false))
+	: name(::vl::WString::Unmanaged(L""))
 	, next(static_cast<::Dtor*>(nullptr))
 {
 }
 
 Dtor::~Dtor()
 {
-	(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + this->name) + ::vl::WString(L"]", false)));
+	(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + this->name) + ::vl::WString::Unmanaged(L"]")));
 	if ((this->next != nullptr))
 	{
 		::vl::__vwsn::This(this->next)->Dispose(true);

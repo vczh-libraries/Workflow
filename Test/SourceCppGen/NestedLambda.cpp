@@ -199,13 +199,13 @@ Closures
 		auto f = LAMBDA(::vl_workflow_global::__vwsno6_NestedLambda_main_Calculate_(this));
 		auto g = LAMBDA(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
 		auto h = ::vl::Func<::vl::WString()>(this, &__vwsnc1_NestedLambda_main__IA::H);
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		(a = static_cast<::vl::vint>(1));
-		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(f())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(f())) + ::vl::WString::Unmanaged(L"]"))));
 		this->SetA(static_cast<::vl::vint>(2));
-		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(g())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(g())) + ::vl::WString::Unmanaged(L"]"))));
 		this->SetA((this->GetA() + static_cast<::vl::vint>(1)));
-		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString::Unmanaged(L"[") + h()) + ::vl::WString::Unmanaged(L"]"))));
 		return s;
 	}
 
@@ -230,7 +230,7 @@ Closures
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::H()
 	{
-		return ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(__vwsnthis_0->GetA())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(this->GetB())) + ::vl::WString(L"]", false));
+		return ((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(__vwsnthis_0->GetA())) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(this->GetB())) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::Calculate()
@@ -238,13 +238,13 @@ Closures
 		auto f = LAMBDA(::vl_workflow_global::__vwsno2_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
 		auto g = LAMBDA(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
 		auto h = ::vl::Func<::vl::WString()>(this, &__vwsnc2_NestedLambda_main_H__IB::H);
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		(b = static_cast<::vl::vint>(1));
-		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(f())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(f())) + ::vl::WString::Unmanaged(L"]"))));
 		this->SetB(static_cast<::vl::vint>(2));
-		(s = (s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(g())) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(g())) + ::vl::WString::Unmanaged(L"]"))));
 		this->SetB((this->GetB() + static_cast<::vl::vint>(10)));
-		(s = (s + ((::vl::WString(L"[", false) + h()) + ::vl::WString(L"]", false))));
+		(s = (s + ((::vl::WString::Unmanaged(L"[") + h()) + ::vl::WString::Unmanaged(L"]"))));
 		return s;
 	}
 

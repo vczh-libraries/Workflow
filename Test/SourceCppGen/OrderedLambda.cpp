@@ -53,7 +53,7 @@ Global Functions
 	{
 		auto f = GLOBAL_NAME Adder(static_cast<::vl::vint>(1));
 		auto g = GLOBAL_NAME Adder(static_cast<::vl::vint>(2));
-		return ((((((::vl::__vwsn::ToString(f(static_cast<::vl::vint>(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(f(static_cast<::vl::vint>(2)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(1)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(2))));
+		return ((((((::vl::__vwsn::ToString(f(static_cast<::vl::vint>(1))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(f(static_cast<::vl::vint>(2)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(1)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(g(static_cast<::vl::vint>(2))));
 	}
 
 	OrderedLambda& OrderedLambda::Instance()

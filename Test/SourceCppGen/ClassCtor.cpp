@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_ClassCtor)
 	vl_workflow_global::ClassCtor instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -53,19 +53,19 @@ Global Functions
 	{
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor());
-			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString::Unmanaged(L"]"))));
 		}
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(static_cast<::vl::vint>(1), true));
-			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString::Unmanaged(L"]"))));
 		}
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(true, static_cast<::vl::vint>(2)));
-			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString::Unmanaged(L"]"))));
 		}
 		{
 			auto a = ::vl::Ptr<::Ctor>(new ::Ctor(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2)));
-			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString(L"][", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString(L"]", false))));
+			(GLOBAL_NAME s = (GLOBAL_NAME s + ((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetX())) + ::vl::WString::Unmanaged(L"][")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(a.Obj())->GetValue())) + ::vl::WString::Unmanaged(L"]"))));
 		}
 		return GLOBAL_NAME s;
 	}
@@ -91,7 +91,7 @@ Base::Base(::vl::vint _x)
 	(this->x = _x);
 	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
-		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"The \"this\" expression is not correctly implemented."));
 	}
 }
 
@@ -99,7 +99,7 @@ Base::Base(::vl::vint _x)
 {
 	if ((::vl::__vwsn::This(this)->x != this->x))
 	{
-		throw ::vl::Exception(::vl::WString(L"The \"this\" expression is not correctly implemented.", false));
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"The \"this\" expression is not correctly implemented."));
 	}
 	return this->x;
 }

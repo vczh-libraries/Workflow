@@ -70,7 +70,7 @@ Closures
 
 	void __vwsnf1_BindSimple_OuterClass_Base_Initialize_::operator()(const ::vl::reflection::description::Value& value) const
 	{
-		(__vwsnthis_0->s = ((((::vl::WString(L"", false) + __vwsnthis_0->s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(value))) + ::vl::WString(L"]", false)));
+		(__vwsnthis_0->s = ((((::vl::WString::Unmanaged(L"") + __vwsnthis_0->s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(value))) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	//-------------------------------------------------------------------
@@ -190,7 +190,7 @@ void OuterClass::Base::Initialize(::Derived* derived)
 
 OuterClass::Base::Base()
 	: subscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>())
-	, s(::vl::WString(L"", false))
+	, s(::vl::WString::Unmanaged(L""))
 {
 }
 

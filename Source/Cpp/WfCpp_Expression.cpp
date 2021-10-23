@@ -1143,7 +1143,7 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfStringExpression* node)override
 				{
-					writer.WriteString(L"::vl::WString(L\"");
+					writer.WriteString(L"::vl::WString::Unmanaged(L\"");
 					for (vint i = 0; i < node->value.value.Length(); i++)
 					{
 						auto c = node->value.value[i];
@@ -1157,7 +1157,7 @@ WfGenerateExpressionVisitor
 						default: writer.WriteChar(c);
 						}
 					}
-					writer.WriteString(L"\", false)");
+					writer.WriteString(L"\")");
 				}
 
 				void Visit(WfUnaryExpression* node)override

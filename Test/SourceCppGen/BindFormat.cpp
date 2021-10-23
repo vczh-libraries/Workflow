@@ -31,7 +31,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindFormat)
 	vl_workflow_global::BindFormat instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -45,7 +45,7 @@ Global Functions
 
 	void BindFormat::Callback(const ::vl::reflection::description::Value& value)
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	::vl::WString BindFormat::main()
@@ -83,7 +83,7 @@ Closures
 
 	void __vwsnc1_BindFormat_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::WString(L"The value has changed to ", false) + ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue()));
+		auto __vwsn_bind_activator_result_ = (::vl::WString::Unmanaged(L"The value has changed to ") + ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetValue()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 

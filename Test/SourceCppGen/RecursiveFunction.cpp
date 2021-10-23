@@ -46,7 +46,7 @@ Global Functions
 
 	::vl::WString RecursiveFunction::main()
 	{
-		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(2)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(3)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(4)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(5))));
+		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(1))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(2)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(3)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(4)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Fib(static_cast<::vl::vint>(5))));
 	}
 
 	RecursiveFunction& RecursiveFunction::Instance()

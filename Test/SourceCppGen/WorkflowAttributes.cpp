@@ -53,31 +53,31 @@ Global Functions
 		}
 		else if (auto be = ::vl::__vwsn::SharedPtrCast<::calculator::BinaryExpression>(expr.Obj()))
 		{
-			auto op = ::vl::WString(L"", false);
+			auto op = ::vl::WString::Unmanaged(L"");
 			{
 				auto __vwsn_switch_0 = ::vl::__vwsn::This(be.Obj())->GetOperator();
 				if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Add))
 				{
-					(op = ::vl::WString(L"+", false));
+					(op = ::vl::WString::Unmanaged(L"+"));
 				}
 				else if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Sub))
 				{
-					(op = ::vl::WString(L"-", false));
+					(op = ::vl::WString::Unmanaged(L"-"));
 				}
 				else if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Mul))
 				{
-					(op = ::vl::WString(L"*", false));
+					(op = ::vl::WString::Unmanaged(L"*"));
 				}
 				else if ((__vwsn_switch_0 == ::calculator::BinaryExpression::BinaryOperator::Div))
 				{
-					(op = ::vl::WString(L"/", false));
+					(op = ::vl::WString::Unmanaged(L"/"));
 				}
 			}
-			return ((((((::vl::WString(L"(", false) + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->GetLeft())) + ::vl::WString(L" ", false)) + op) + ::vl::WString(L" ", false)) + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->GetRight())) + ::vl::WString(L")", false));
+			return ((((((::vl::WString::Unmanaged(L"(") + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->GetLeft())) + ::vl::WString::Unmanaged(L" ")) + op) + ::vl::WString::Unmanaged(L" ")) + GLOBAL_NAME Print(::vl::__vwsn::This(be.Obj())->GetRight())) + ::vl::WString::Unmanaged(L")"));
 		}
 		else
 		{
-			throw ::vl::Exception(::vl::WString(L"Unrecognized expression type.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unrecognized expression type."));
 		}
 	}
 
@@ -110,18 +110,18 @@ Global Functions
 					return (left / right);
 				}
 			}
-			throw ::vl::Exception(::vl::WString(L"Unrecognized binary operator.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unrecognized binary operator."));
 		}
 		else
 		{
-			throw ::vl::Exception(::vl::WString(L"Unrecognized expression type.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unrecognized expression type."));
 		}
 	}
 
 	::vl::WString WorkflowAttributes::main()
 	{
 		auto expr = ::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::Expression>(::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::Expression>(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(1)))), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::Expression>(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(2))))))), ::calculator::BinaryExpression::BinaryOperator::Mul, ::vl::Ptr<::calculator::Expression>(::vl::Ptr<::calculator::BinaryExpression>(new ::calculator::BinaryExpression(::vl::Ptr<::calculator::Expression>(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(3)))), ::calculator::BinaryExpression::BinaryOperator::Add, ::vl::Ptr<::calculator::Expression>(::vl::Ptr<::calculator::NumberExpression>(new ::calculator::NumberExpression(static_cast<::vl::vint>(4)))))))));
-		return (((::vl::WString(L"", false) + ::vl::__vwsn::This(expr.Obj())->Print()) + ::vl::WString(L" = ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(expr.Obj())->Evaluate()));
+		return (((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::This(expr.Obj())->Print()) + ::vl::WString::Unmanaged(L" = ")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(expr.Obj())->Evaluate()));
 	}
 
 	WorkflowAttributes& WorkflowAttributes::Instance()

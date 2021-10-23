@@ -47,7 +47,7 @@ Global Functions
 
 	::vl::WString WorkflowMultiFiles::main()
 	{
-		return ::vl::WString(L"MultiFiles", false);
+		return ::vl::WString::Unmanaged(L"MultiFiles");
 	}
 
 	WorkflowMultiFiles& WorkflowMultiFiles::Instance()

@@ -59,15 +59,15 @@ Global Functions
 
 	::vl::WString Delete::main()
 	{
-		auto raw1 = ::test::ObservableValue::CreatePtr(static_cast<::vl::vint>(0), ::vl::WString(L"", false));
-		auto raw2 = ::test::ObservableValue::CreatePtr(static_cast<::vl::vint>(0), ::vl::WString(L"", false));
+		auto raw1 = ::test::ObservableValue::CreatePtr(static_cast<::vl::vint>(0), ::vl::WString::Unmanaged(L""));
+		auto raw2 = ::test::ObservableValue::CreatePtr(static_cast<::vl::vint>(0), ::vl::WString::Unmanaged(L""));
 		auto shared = ::vl::__vwsn::Ensure(::vl::Ptr<::test::ObservableValue>(raw1));
 		auto a = (raw1 == nullptr);
 		auto b = (raw2 == nullptr);
 		auto c = (! static_cast<bool>(shared));
 		auto d = GLOBAL_NAME DoDelete(raw1);
 		auto e = GLOBAL_NAME DoDelete(raw2);
-		return ((((((((::vl::__vwsn::ToString(a) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(b)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(c)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(d)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(e));
+		return ((((((((::vl::__vwsn::ToString(a) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(b)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(c)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(d)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(e));
 	}
 
 	Delete& Delete::Instance()

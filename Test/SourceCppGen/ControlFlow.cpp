@@ -128,7 +128,7 @@ Global Functions
 
 	::vl::WString ControlFlow::main()
 	{
-		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Sum1(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum2(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum3(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum4(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum5(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10))));
+		return ((((((((::vl::__vwsn::ToString(GLOBAL_NAME Sum1(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum2(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum3(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum4(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(GLOBAL_NAME Sum5(static_cast<::vl::vint>(1), static_cast<::vl::vint>(10))));
 	}
 
 	ControlFlow& ControlFlow::Instance()

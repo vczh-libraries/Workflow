@@ -52,8 +52,8 @@ Global Functions
 		auto u64 = static_cast<::vl::vuint64_t>(8UL);
 		auto f32 = static_cast<float>(1.5f);
 		auto f64 = static_cast<double>(3);
-		auto s = ::vl::WString(L"text", false);
-		return ((((((((((::vl::__vwsn::ToString((static_cast<::vl::vint32_t>(i8) >> static_cast<::vl::vint32_t>(i16))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vint32_t>(i16) >> i32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vint64_t>(i32) >> i64))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint32_t>(u8) >> static_cast<::vl::vuint32_t>(u16)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint32_t>(u16) >> u32))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString((static_cast<::vl::vuint64_t>(u32) >> u64)));
+		auto s = ::vl::WString::Unmanaged(L"text");
+		return ((((((((((::vl::__vwsn::ToString((static_cast<::vl::vint32_t>(i8) >> static_cast<::vl::vint32_t>(i16))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((static_cast<::vl::vint32_t>(i16) >> i32))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((static_cast<::vl::vint64_t>(i32) >> i64))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((static_cast<::vl::vuint32_t>(u8) >> static_cast<::vl::vuint32_t>(u16)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((static_cast<::vl::vuint32_t>(u16) >> u32))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((static_cast<::vl::vuint64_t>(u32) >> u64)));
 	}
 
 	OpShr& OpShr::Instance()

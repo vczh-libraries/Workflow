@@ -31,7 +31,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Overloading)
 	vl_workflow_global::Overloading instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -45,16 +45,16 @@ Global Functions
 
 	::vl::WString Overloading::main()
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint8_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint8_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint16_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint16_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint32_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint32_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint64_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint64_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint8_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint8_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint16_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint16_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint32_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint32_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint64_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint64_t>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<float>(static_cast<::vl::vint>(1)), static_cast<float>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<double>(static_cast<::vl::vint>(1)), static_cast<double>(static_cast<::vl::vint>(2))))) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint8_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint8_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint16_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint16_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint32_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint32_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vint64_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vint64_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint8_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint8_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint16_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint16_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint32_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint32_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<::vl::vuint64_t>(static_cast<::vl::vint>(1)), static_cast<::vl::vuint64_t>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<float>(static_cast<::vl::vint>(1)), static_cast<float>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::reflection::description::Math::Max(static_cast<double>(static_cast<::vl::vint>(1)), static_cast<double>(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"]")));
 		return GLOBAL_NAME s;
 	}
 

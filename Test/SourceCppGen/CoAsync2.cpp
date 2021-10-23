@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoAsync2)
 	vl_workflow_global::CoAsync2 instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -117,7 +117,7 @@ Closures
 
 	void __vwsnf4_CoAsync2_main__::operator()(::vl::Ptr<::vl::reflection::description::CoroutineResult> result) const
 	{
-		(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + ::vl::__vwsn::This(::vl::__vwsn::This(result.Obj())->GetFailure().Obj())->GetMessage()) + ::vl::WString(L"]", false)));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(::vl::__vwsn::This(result.Obj())->GetFailure().Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	//-------------------------------------------------------------------
@@ -154,7 +154,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -184,7 +184,7 @@ Closures
 					{
 						if (::vl::__vwsn::This(::vl::reflection::description::AsyncCoroutine::QueryContext(__vwsn_co_impl_).Obj())->IsCancelled())
 						{
-							throw ::vl::Exception(::vl::WString(L"Cancelled", false));
+							throw ::vl::Exception(::vl::WString::Unmanaged(L"Cancelled"));
 						}
 						::vl::reflection::description::AsyncCoroutine::ReturnAndExit(__vwsn_co_impl_, ::CoAsync2_types::IStringAsync::StoreResult(::vl::__vwsn::ToString(x)));
 						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
@@ -236,7 +236,7 @@ Closures
 	__vwsnc3_CoAsync2_GetMultipleString___vl_reflection_description_ICoroutine::__vwsnc3_CoAsync2_GetMultipleString___vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_)
 		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
 	{
-		this->__vwsn_co0_x = ::vl::WString(L"", false);
+		this->__vwsn_co0_x = ::vl::WString::Unmanaged(L"");
 		this->__vwsn_co1_for_begin_i = static_cast<::vl::vint>(0);
 		this->__vwsn_co2_for_end_i = static_cast<::vl::vint>(0);
 		this->__vwsn_co3_i = static_cast<::vl::vint>(0);
@@ -268,7 +268,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -319,7 +319,7 @@ Closures
 							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
 						}
 						(__vwsn_co0_x = ::CoAsync2_types::IStringAsync::CastResult(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetResult()));
-						(GLOBAL_NAME s = ((((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[", false)) + __vwsn_co0_x) + ::vl::WString(L"]", false)));
+						(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + __vwsn_co0_x) + ::vl::WString::Unmanaged(L"]")));
 						if ((__vwsn_co3_i == static_cast<::vl::vint>(5)))
 						{
 							::vl::__vwsn::This(::vl::reflection::description::AsyncCoroutine::QueryContext(__vwsn_co_impl_).Obj())->Cancel();

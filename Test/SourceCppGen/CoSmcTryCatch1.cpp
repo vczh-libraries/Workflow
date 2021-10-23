@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_CoSmcTryCatch1)
 	vl_workflow_global::CoSmcTryCatch1 instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -63,7 +63,7 @@ Global Functions
 		{
 			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!", false)));
+				(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"!")));
 			}
 		}
 		return GLOBAL_NAME s;
@@ -120,7 +120,7 @@ Closures
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
-			throw ::vl::Exception(::vl::WString(L"Resume should be called only when the coroutine is in the waiting status.", false));
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
 		}
 		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
 		try
@@ -269,16 +269,16 @@ Closures
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
-											(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[A]", false)));
+											(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[A]")));
 										}
 									}
 									else if ((__vwsn_switch_0 == static_cast<::vl::vint>(1)))
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
-										throw ::vl::Exception(::vl::WString(L"Method \"B\" of class \"SMTryCatch1\" cannot be called at this moment.", false));
+										throw ::vl::Exception(::vl::WString::Unmanaged(L"Method \"B\" of class \"SMTryCatch1\" cannot be called at this moment."));
 									}
 								}
-								(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L".A", false)));
+								(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L".A")));
 								(__vwsn_co_state_ = static_cast<::vl::vint>(13));
 								continue;
 								(__vwsn_co_state_ = static_cast<::vl::vint>(3));
@@ -292,16 +292,16 @@ Closures
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
 										{
-											(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"[B]", false)));
+											(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[B]")));
 										}
 									}
 									else if ((__vwsn_switch_1 == static_cast<::vl::vint>(0)))
 									{
 										(::vl::__vwsn::This(this->__vwsn_state_stateMachineObject)->stateMachineInput = (- static_cast<::vl::vint>(1)));
-										throw ::vl::Exception(::vl::WString(L"Method \"A\" of class \"SMTryCatch1\" cannot be called at this moment.", false));
+										throw ::vl::Exception(::vl::WString::Unmanaged(L"Method \"A\" of class \"SMTryCatch1\" cannot be called at this moment."));
 									}
 								}
-								(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L".B", false)));
+								(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L".B")));
 								(__vwsn_co_state_ = static_cast<::vl::vint>(13));
 								continue;
 								(__vwsn_co_state_ = static_cast<::vl::vint>(3));
@@ -310,7 +310,7 @@ Closures
 							if ((__vwsn_co_state_ == static_cast<::vl::vint>(7)))
 							{
 								{
-									(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!A", false)));
+									(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"!A")));
 								}
 								(__vwsn_co_state_ = static_cast<::vl::vint>(10));
 								continue;
@@ -318,14 +318,14 @@ Closures
 							if ((__vwsn_co_state_ == static_cast<::vl::vint>(9)))
 							{
 								{
-									(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L"!B", false)));
+									(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"!B")));
 								}
 								(__vwsn_co_state_ = static_cast<::vl::vint>(12));
 								continue;
 							}
 							if ((__vwsn_co_state_ == static_cast<::vl::vint>(12)))
 							{
-								(GLOBAL_NAME s = ((::vl::WString(L"", false) + GLOBAL_NAME s) + ::vl::WString(L".", false)));
+								(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L".")));
 								(__vwsn_co_state_ = static_cast<::vl::vint>(13));
 								continue;
 								(__vwsn_co_state_ = static_cast<::vl::vint>(3));

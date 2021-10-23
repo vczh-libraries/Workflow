@@ -48,7 +48,7 @@ Global Functions
 	::vl::WString NewEmptyInterface::main()
 	{
 		auto xs = ::vl::Ptr<::IMyEmptyInterface>(new ::vl_workflow_global::__vwsnc1_NewEmptyInterface_main__IMyEmptyInterface());
-		return ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(::IMyEmptyInterface::Get50())) + ::vl::WString(L"]", false));
+		return ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::IMyEmptyInterface::Get50())) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	NewEmptyInterface& NewEmptyInterface::Instance()

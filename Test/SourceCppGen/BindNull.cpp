@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_BindNull)
 	vl_workflow_global::BindNull instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -81,7 +81,7 @@ Closures
 
 	void __vwsnf1_BindNull_main_::operator()(const ::vl::reflection::description::Value& value) const
 	{
-		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString(L"]", false))));
+		(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::Unbox<::vl::WString>(value)) + ::vl::WString::Unmanaged(L"]"))));
 	}
 
 	//-------------------------------------------------------------------
@@ -101,7 +101,7 @@ Closures
 
 	void __vwsnc1_BindNull_main__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->Getx()); } catch(...){ return ::vl::WString(L"*", false); } }();
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->Getx()); } catch(...){ return ::vl::WString::Unmanaged(L"*"); } }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 

@@ -42,7 +42,7 @@ Global Functions
 	::vl::WString NamedLambda::main()
 	{
 		auto fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
-		return ((((((((::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(1))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(2)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(3)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(4)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(5))));
+		return ((((((((::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(1))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(2)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(3)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(4)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(5))));
 	}
 
 	NamedLambda& NamedLambda::Instance()

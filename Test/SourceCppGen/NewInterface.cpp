@@ -41,7 +41,7 @@ Global Functions
 
 	::vl::WString NewInterface::Show1(const ::vl::collections::LazyList<::vl::vint>& xs)
 	{
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		{
 			auto __vwsn_for_enumerable_x = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(xs);
 			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
@@ -49,13 +49,13 @@ Global Functions
 			{
 				auto x = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
 				{
-					if ((s == ::vl::WString(L"", false)))
+					if ((s == ::vl::WString::Unmanaged(L"")))
 					{
 						(s = (s + ::vl::__vwsn::ToString(x)));
 					}
 					else
 					{
-						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+						(s = ((s + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(x)));
 					}
 				}
 			}
@@ -65,7 +65,7 @@ Global Functions
 
 	::vl::WString NewInterface::Show2(const ::vl::collections::LazyList<::vl::vint>& xs)
 	{
-		auto s = ::vl::WString(L"", false);
+		auto s = ::vl::WString::Unmanaged(L"");
 		{
 			auto __vwsn_for_enumerable_x = ::vl::reflection::description::Sys::ReverseEnumerable(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(xs));
 			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
@@ -73,13 +73,13 @@ Global Functions
 			{
 				auto x = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
 				{
-					if ((s == ::vl::WString(L"", false)))
+					if ((s == ::vl::WString::Unmanaged(L"")))
 					{
 						(s = (s + ::vl::__vwsn::ToString(x)));
 					}
 					else
 					{
-						(s = ((s + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(x)));
+						(s = ((s + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(x)));
 					}
 				}
 			}
@@ -92,7 +92,7 @@ Global Functions
 		auto begin = static_cast<::vl::vint>(1);
 		auto end = static_cast<::vl::vint>(5);
 		auto xs = ::vl::reflection::description::GetLazyList<::vl::vint>(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(new ::vl_workflow_global::__vwsnc1_NewInterface_main__vl_reflection_description_IValueEnumerable(begin, end)));
-		return ((((::vl::WString(L"[", false) + GLOBAL_NAME Show1(xs)) + ::vl::WString(L"][", false)) + GLOBAL_NAME Show2(xs)) + ::vl::WString(L"]", false));
+		return ((((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Show1(xs)) + ::vl::WString::Unmanaged(L"][")) + GLOBAL_NAME Show2(xs)) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	NewInterface& NewInterface::Instance()

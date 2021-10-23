@@ -50,7 +50,7 @@ Global Functions
 		auto b = ::test::Seasons::Summer;
 		auto c = GLOBAL_NAME Id(::test::Seasons::Autumn);
 		auto d = ::test::Seasons::Winter;
-		return ((((((((((((::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(a)) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(b))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(c))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(d))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a | b)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::test::Seasons::Good)))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::test::Seasons::Bad))));
+		return ((((((((((((::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(a)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(b))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(c))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>(d))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a | b)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::test::Seasons::Good)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(static_cast<::vl::vuint64_t>((a & ::test::Seasons::Bad))));
 	}
 
 	EnumCtor& EnumCtor::Instance()

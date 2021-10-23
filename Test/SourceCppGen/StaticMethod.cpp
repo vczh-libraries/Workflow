@@ -48,9 +48,9 @@ Global Functions
 	{
 		auto create1 = ::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint, const ::vl::WString&)>(&::test::ObservableValue::Create);
 		auto create2 = ::vl::Func<::vl::Ptr<::test::ObservableValue>(::vl::vint, const ::vl::WString&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL Create2);
-		auto o1 = create1(static_cast<::vl::vint>(1), ::vl::WString(L"one", false));
-		auto o2 = GLOBAL_NAME Create2(static_cast<::vl::vint>(2), ::vl::WString(L"two", false));
-		return ((((((::vl::__vwsn::ToString(::vl::__vwsn::This(o1.Obj())->GetValue()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(o1.Obj())->GetDisplayName()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::This(o2.Obj())->GetValue())) + ::vl::WString(L", ", false)) + ::vl::__vwsn::This(o2.Obj())->GetDisplayName());
+		auto o1 = create1(static_cast<::vl::vint>(1), ::vl::WString::Unmanaged(L"one"));
+		auto o2 = GLOBAL_NAME Create2(static_cast<::vl::vint>(2), ::vl::WString::Unmanaged(L"two"));
+		return ((((((::vl::__vwsn::ToString(::vl::__vwsn::This(o1.Obj())->GetValue()) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::This(o1.Obj())->GetDisplayName()) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(o2.Obj())->GetValue())) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::This(o2.Obj())->GetDisplayName());
 	}
 
 	StaticMethod& StaticMethod::Instance()

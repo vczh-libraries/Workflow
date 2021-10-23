@@ -53,7 +53,7 @@ Global Functions
 	{
 		(GLOBAL_NAME x = static_cast<::vl::vint>(10));
 		auto y = GLOBAL_NAME Add(static_cast<::vl::vint>(20));
-		return ((::vl::__vwsn::ToString(GLOBAL_NAME x) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(y));
+		return ((::vl::__vwsn::ToString(GLOBAL_NAME x) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(y));
 	}
 
 	GlobalVariable& GlobalVariable::Instance()

@@ -31,7 +31,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_ObservableList)
 	vl_workflow_global::ObservableList instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString(L"", false);
+		instance.s = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -45,7 +45,7 @@ Global Functions
 
 	void ObservableList::Callback(::vl::vint index, ::vl::vint oldCount, ::vl::vint newCount)
 	{
-		(GLOBAL_NAME s = (GLOBAL_NAME s + ((((((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(index)) + ::vl::WString(L":", false)) + ::vl::__vwsn::ToString(oldCount)) + ::vl::WString(L":", false)) + ::vl::__vwsn::ToString(newCount)) + ::vl::WString(L"]", false))));
+		(GLOBAL_NAME s = (GLOBAL_NAME s + ((((((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(index)) + ::vl::WString::Unmanaged(L":")) + ::vl::__vwsn::ToString(oldCount)) + ::vl::WString::Unmanaged(L":")) + ::vl::__vwsn::ToString(newCount)) + ::vl::WString::Unmanaged(L"]"))));
 	}
 
 	::vl::WString ObservableList::main()
@@ -82,7 +82,7 @@ Global Functions
 			{
 				auto i = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_for_enumerator_i.Obj())->GetCurrent());
 				{
-					(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString(L"[", false) + ::vl::__vwsn::ToString(i)) + ::vl::WString(L"]", false))));
+					(GLOBAL_NAME s = (GLOBAL_NAME s + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]"))));
 				}
 			}
 		}

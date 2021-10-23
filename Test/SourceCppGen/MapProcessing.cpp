@@ -41,12 +41,12 @@ Global Functions
 
 	::vl::WString MapProcessing::main()
 	{
-		auto xs = (::vl::__vwsn::CreateDictionary().Add(::vl::WString(L"a", false), static_cast<::vl::vint>(1)).Add(::vl::WString(L"b", false), static_cast<::vl::vint>(2)).Add(::vl::WString(L"c", false), static_cast<::vl::vint>(3)).Add(::vl::WString(L"d", false), static_cast<::vl::vint>(4)).Add(::vl::WString(L"e", false), static_cast<::vl::vint>(5))).dictionary;
-		auto s1 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"a", false)))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"e", false))))));
-		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(::vl::WString(L"e", false)), ::vl::__vwsn::Box(static_cast<::vl::vint>(6)));
-		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(::vl::WString(L"f", false)), ::vl::__vwsn::Box(static_cast<::vl::vint>(7)));
-		auto s2 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"a", false)))))) + ::vl::WString(L", ", false)) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString(L"e", false))))));
-		return ((s1 + ::vl::WString(L", ", false)) + s2);
+		auto xs = (::vl::__vwsn::CreateDictionary().Add(::vl::WString::Unmanaged(L"a"), static_cast<::vl::vint>(1)).Add(::vl::WString::Unmanaged(L"b"), static_cast<::vl::vint>(2)).Add(::vl::WString::Unmanaged(L"c"), static_cast<::vl::vint>(3)).Add(::vl::WString::Unmanaged(L"d"), static_cast<::vl::vint>(4)).Add(::vl::WString::Unmanaged(L"e"), static_cast<::vl::vint>(5))).dictionary;
+		auto s1 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"a")))))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"e"))))));
+		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"e")), ::vl::__vwsn::Box(static_cast<::vl::vint>(6)));
+		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"f")), ::vl::__vwsn::Box(static_cast<::vl::vint>(7)));
+		auto s2 = ((((::vl::__vwsn::ToString(::vl::__vwsn::This(xs.Obj())->GetCount()) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"a")))))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"e"))))));
+		return ((s1 + ::vl::WString::Unmanaged(L", ")) + s2);
 	}
 
 	MapProcessing& MapProcessing::Instance()
