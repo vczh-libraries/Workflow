@@ -378,7 +378,7 @@ namespace vl
 									if (methodCount > 1)
 									{
 										writer.WriteString(L", ");
-										auto typeDecorator = methodInfo->IsStatic() ? WString(L"(*)", false) : L"(" + ConvertType(td) + L"::*)";
+										auto typeDecorator = methodInfo->IsStatic() ? WString::Unmanaged(L"(*)") : L"(" + ConvertType(td) + L"::*)";
 										writer.WriteString(ConvertFunctionType(methodInfo, typeDecorator));
 									}
 									writer.WriteLine(L")");

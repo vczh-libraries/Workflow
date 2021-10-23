@@ -66,7 +66,7 @@ WString GetExePath()
 		}
 		index++;
 	}
-	return WString(buffer, pos + 1);
+	return WString::CopyFrom(buffer, pos + 1);
 }
 #endif
 

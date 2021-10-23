@@ -31,7 +31,7 @@ namespace vl
 				{
 				}
 
-				void Call(Ptr<WfStatement> node, WString prefixDelta = WString(L"\t", false))
+				void Call(Ptr<WfStatement> node, WString prefixDelta = WString::Unmanaged(L"\t"))
 				{
 					GenerateStatement(config, functionRecord, writer, node, prefix, prefixDelta, returnType);
 				}
@@ -166,7 +166,7 @@ namespace vl
 						writer.WriteString(L"auto ");
 						writer.WriteString(blockName);
 						writer.WriteLine(L" = [&]()");
-						GenerateStatement(config, functionRecord, writer, node->finallyStatement, tryPrefix, WString(L"\t", false), returnType);
+						GenerateStatement(config, functionRecord, writer, node->finallyStatement, tryPrefix, WString::Unmanaged(L"\t"), returnType);
 						writer.WriteString(tryPrefix);
 						writer.WriteLine(L";");
 
@@ -185,7 +185,7 @@ namespace vl
 					writer.WriteLine(L"try");
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"{");
-					GenerateStatement(config, functionRecord, writer, node->protectedStatement, bodyPrefix, WString(L"\t", false), returnType);
+					GenerateStatement(config, functionRecord, writer, node->protectedStatement, bodyPrefix, WString::Unmanaged(L"\t"), returnType);
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");
 
@@ -207,7 +207,7 @@ namespace vl
 						writer.WriteString(L" = ::vl::reflection::description::IValueException::Create(");
 						writer.WriteString(exName);
 						writer.WriteLine(L".Message());");
-						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString(L"\t", false), returnType);
+						GenerateStatement(config, functionRecord, writer, node->catchStatement, bodyPrefix, WString::Unmanaged(L"\t"), returnType);
 					}
 					writer.WriteString(tryPrefix);
 					writer.WriteLine(L"}");

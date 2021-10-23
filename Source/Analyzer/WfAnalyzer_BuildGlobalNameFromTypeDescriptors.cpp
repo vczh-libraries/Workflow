@@ -27,7 +27,7 @@ BuildGlobalNameFromTypeDescriptors
 						const wchar_t* delimiter = wcsstr(reading, L"::");
 						if (delimiter)
 						{
-							fragment = WString(reading, vint(delimiter - reading));
+							fragment = WString::CopyFrom(reading, vint(delimiter - reading));
 							reading = delimiter + 2;
 						}
 						else

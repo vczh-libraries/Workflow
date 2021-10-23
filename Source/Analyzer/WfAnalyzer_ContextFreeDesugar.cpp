@@ -139,7 +139,7 @@ ContextFreeModuleDesugar
 						{
 							Ptr<WfStringExpression> expression = new WfStringExpression;
 							expression->codeRange = node->codeRange;
-							expression->value.value = WString(reading, vint(begin - reading));
+							expression->value.value = WString::CopyFrom(reading, vint(begin - reading));
 							expressions.Add(expression);
 						}
 						else
@@ -175,7 +175,7 @@ ContextFreeModuleDesugar
 						}
 						else
 						{
-							WString input(begin + 2, vint(end - begin - 3));
+							WString input = WString::CopyFrom(begin + 2, vint(end - begin - 3));
 							List<Ptr<ParsingError>> errors;
 							if (auto expression = WfParseExpression(input, manager->parsingTable, errors))
 							{

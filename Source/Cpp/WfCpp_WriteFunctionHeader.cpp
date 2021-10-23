@@ -50,7 +50,7 @@ namespace vl
 						{
 							return scope->symbols.GetByIndex(index)[0]->name;
 						})
-						.OrderBy((vint(*)(const WString&, const WString&))&WString::Compare)
+						.OrderBy((vint64_t(*)(const WString&, const WString&))&WString::Compare)
 					);
 
 				return WriteFunctionHeader(writer, typeInfo, arguments, name, writeReturnType);

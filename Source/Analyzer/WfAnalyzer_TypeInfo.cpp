@@ -83,7 +83,7 @@ GetTypeFragments
 					const wchar_t* delimiter = wcsstr(reading, L"::");
 					if (delimiter)
 					{
-						fragments.Add(WString(reading, vint(delimiter - reading)));
+						fragments.Add(WString::CopyFrom(reading, vint(delimiter - reading)));
 						reading = delimiter + 2;
 					}
 					else

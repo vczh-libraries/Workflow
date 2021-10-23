@@ -195,7 +195,7 @@ WfCppConfig::Collect
 									tds.Add(globalDep.allTds.Values()[indexKey]);
 								}
 
-								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
 									return WString::Compare(a->GetTypeName(), b->GetTypeName());
 								});
@@ -287,7 +287,7 @@ WfCppConfig::Collect
 									}
 								}
 
-								Sort<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
 									return WString::Compare(a->GetTypeName(), b->GetTypeName());
 								});

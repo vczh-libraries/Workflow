@@ -308,7 +308,7 @@ MergeCpp
 							if (wcsncmp(reading32, reading64, digitCount) == 0 && reading64[digitCount] == L'L' && reading32[digitCount] == L')')
 							{
 								writer.WriteString(L"static_cast<::vl::vint>(");
-								writer.WriteString(WString(reading32, digitCount));
+								writer.WriteString(WString::CopyFrom(reading32, digitCount));
 								writer.WriteChar(L')');
 								reading64 += digitCount + 1;
 								reading32 += digitCount + 1;
@@ -323,7 +323,7 @@ MergeCpp
 							if (wcsncmp(reading64, reading32, digitCount) == 0 && reading64[digitCount] == L'L' && reading64[digitCount + 1] == L')')
 							{
 								writer.WriteString(L"static_cast<::vl::vint>(");
-								writer.WriteString(WString(reading64, digitCount));
+								writer.WriteString(WString::CopyFrom(reading64, digitCount));
 								writer.WriteChar(L')');
 								reading64 += digitCount + 2;
 								reading32 += digitCount;

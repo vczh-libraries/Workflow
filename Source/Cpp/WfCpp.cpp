@@ -59,7 +59,7 @@ WfCppConfig
 
 			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType)
 			{
-				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString(L"\t", false), expectedType);
+				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString::Unmanaged(L"\t"), expectedType);
 			}
 
 			WString WfCppConfig::CppNameToHeaderEnumStructName(const WString& fullName, const WString& type)
@@ -100,7 +100,7 @@ WfCppConfig
 
 			WString WfCppConfig::ConvertName(const WString& name)
 			{
-				return ConvertNameInternal(name, WString(L"__vwsn_", false), false);
+				return ConvertNameInternal(name, WString::Unmanaged(L"__vwsn_"), false);
 			}
 
 			WString WfCppConfig::ConvertName(const WString& name, const WString& specialNameCategory)
@@ -420,7 +420,7 @@ WfCppConfig
 				WString prefix;
 				for (vint i = 0; i < nss.Count(); i++)
 				{
-					prefix += L'\t';
+					prefix += WString::FromChar(L'\t');
 				}
 
 				for (vint i = commonPrefix; i < nss2.Count(); i++)
@@ -433,7 +433,7 @@ WfCppConfig
 					writer.WriteLine(L"{");
 
 					nss.Add(nss2[i]);
-					prefix += L'\t';
+					prefix += WString::FromChar(L'\t');
 				}
 
 				return prefix;
