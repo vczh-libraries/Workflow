@@ -30978,7 +30978,7 @@ TypeVisitor
 			void TypeVisitor::CopyFields(WfFunctionType* from, WfFunctionType* to)
 			{
 				to->result = CreateField(from->result);
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfType>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31184,7 +31184,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfLetExpression* from, WfLetExpression* to)
 			{
-				for (auto listItem : from->variables)
+				FOREACH(vl::Ptr<WfLetVariable>, listItem, from->variables)
 				{
 					to->variables.Add(CreateField(listItem));
 				}
@@ -31228,7 +31228,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfConstructorExpression* from, WfConstructorExpression* to)
 			{
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfConstructorArgument>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31299,7 +31299,7 @@ ExpressionVisitor
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
 				to->expression = CreateField(from->expression);
-				for (auto listItem : from->events)
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->events)
 				{
 					to->events.Add(CreateField(listItem));
 				}
@@ -31309,7 +31309,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfCallExpression* from, WfCallExpression* to)
 			{
 				to->function = CreateField(from->function);
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31325,7 +31325,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
 			{
 				to->anonymity = from->anonymity;
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31336,7 +31336,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31367,7 +31367,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31381,7 +31381,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfNewClassExpression* from, WfNewClassExpression* to)
 			{
 				to->type = CreateField(from->type);
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31391,7 +31391,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to)
 			{
 				to->type = CreateField(from->type);
-				for (auto listItem : from->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -31741,7 +31741,7 @@ StatementVisitor
 
 			void StatementVisitor::CopyFields(WfBlockStatement* from, WfBlockStatement* to)
 			{
-				for (auto listItem : from->statements)
+				FOREACH(vl::Ptr<WfStatement>, listItem, from->statements)
 				{
 					to->statements.Add(CreateField(listItem));
 				}
@@ -31774,7 +31774,7 @@ StatementVisitor
 
 			void StatementVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31944,7 +31944,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfNamespaceDeclaration* from, WfNamespaceDeclaration* to)
 			{
-				for (auto listItem : from->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -31953,7 +31953,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31985,7 +31985,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
 			{
 				to->anonymity = from->anonymity;
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31996,7 +31996,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32016,7 +32016,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfEventDeclaration* from, WfEventDeclaration* to)
 			{
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfType>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32041,11 +32041,11 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfConstructorDeclaration* from, WfConstructorDeclaration* to)
 			{
 				to->constructorType = from->constructorType;
-				for (auto listItem : from->baseConstructorCalls)
+				FOREACH(vl::Ptr<WfBaseConstructorCall>, listItem, from->baseConstructorCalls)
 				{
 					to->baseConstructorCalls.Add(CreateField(listItem));
 				}
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32056,7 +32056,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfBaseConstructorCall* from, WfBaseConstructorCall* to)
 			{
 				to->type = CreateField(from->type);
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32073,11 +32073,11 @@ DeclarationVisitor
 			{
 				to->kind = from->kind;
 				to->constructorType = from->constructorType;
-				for (auto listItem : from->baseTypes)
+				FOREACH(vl::Ptr<WfType>, listItem, from->baseTypes)
 				{
 					to->baseTypes.Add(CreateField(listItem));
 				}
-				for (auto listItem : from->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -32087,7 +32087,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to)
 			{
 				to->kind = from->kind;
-				for (auto listItem : from->items)
+				FOREACH(vl::Ptr<WfEnumItem>, listItem, from->items)
 				{
 					to->items.Add(CreateField(listItem));
 				}
@@ -32096,7 +32096,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfEnumItem* from, WfEnumItem* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32107,7 +32107,7 @@ DeclarationVisitor
 				to->number.codeRange = from->number.codeRange;
 				to->number.tokenIndex = from->number.tokenIndex;
 				to->number.value = from->number.value;
-				for (auto listItem : from->intersections)
+				FOREACH(vl::Ptr<WfEnumItemIntersection>, listItem, from->intersections)
 				{
 					to->intersections.Add(CreateField(listItem));
 				}
@@ -32124,7 +32124,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfStructDeclaration* from, WfStructDeclaration* to)
 			{
-				for (auto listItem : from->members)
+				FOREACH(vl::Ptr<WfStructMember>, listItem, from->members)
 				{
 					to->members.Add(CreateField(listItem));
 				}
@@ -32133,7 +32133,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfStructMember* from, WfStructMember* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32301,7 +32301,7 @@ VirtualCfeDeclarationVisitor
 
 			void VirtualCfeDeclarationVisitor::CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to)
 			{
-				for (auto listItem : from->expandedDeclarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
 				{
 					to->expandedDeclarations.Add(CreateField(listItem));
 				}
@@ -32310,7 +32310,7 @@ VirtualCfeDeclarationVisitor
 
 			void VirtualCfeDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32388,11 +32388,11 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to)
 			{
-				for (auto listItem : from->inputs)
+				FOREACH(vl::Ptr<WfStateInput>, listItem, from->inputs)
 				{
 					to->inputs.Add(CreateField(listItem));
 				}
-				for (auto listItem : from->states)
+				FOREACH(vl::Ptr<WfStateDeclaration>, listItem, from->states)
 				{
 					to->states.Add(CreateField(listItem));
 				}
@@ -32401,7 +32401,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to)
 			{
-				for (auto listItem : from->expandedDeclarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
 				{
 					to->expandedDeclarations.Add(CreateField(listItem));
 				}
@@ -32410,7 +32410,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32444,7 +32444,7 @@ VirtualCseDeclarationVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32453,7 +32453,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				for (auto listItem : from->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32469,7 +32469,7 @@ VirtualCseDeclarationVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32559,7 +32559,7 @@ VirtualCseStatementVisitor
 			void VirtualCseStatementVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
 			{
 				to->expression = CreateField(from->expression);
-				for (auto listItem : from->caseBranches)
+				FOREACH(vl::Ptr<WfSwitchCase>, listItem, from->caseBranches)
 				{
 					to->caseBranches.Add(CreateField(listItem));
 				}
@@ -32646,7 +32646,7 @@ CoroutineStatementVisitor
 				to->opName.codeRange = from->opName.codeRange;
 				to->opName.tokenIndex = from->opName.tokenIndex;
 				to->opName.value = from->opName.value;
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32678,7 +32678,7 @@ StateMachineStatementVisitor
 			void StateMachineStatementVisitor::CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to)
 			{
 				to->type = from->type;
-				for (auto listItem : from->caseBranches)
+				FOREACH(vl::Ptr<WfStateSwitchCase>, listItem, from->caseBranches)
 				{
 					to->caseBranches.Add(CreateField(listItem));
 				}
@@ -32700,7 +32700,7 @@ StateMachineStatementVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfStateSwitchArgument>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32722,7 +32722,7 @@ StateMachineStatementVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				for (auto listItem : from->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32947,11 +32947,11 @@ ModuleVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				for (auto listItem : from->paths)
+				FOREACH(vl::Ptr<WfModuleUsingPath>, listItem, from->paths)
 				{
 					to->paths.Add(CreateField(listItem));
 				}
-				for (auto listItem : from->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -32960,7 +32960,7 @@ ModuleVisitor
 
 			void ModuleVisitor::CopyFields(WfModuleUsingPath* from, WfModuleUsingPath* to)
 			{
-				for (auto listItem : from->items)
+				FOREACH(vl::Ptr<WfModuleUsingItem>, listItem, from->items)
 				{
 					to->items.Add(CreateField(listItem));
 				}
@@ -32969,7 +32969,7 @@ ModuleVisitor
 
 			void ModuleVisitor::CopyFields(WfModuleUsingItem* from, WfModuleUsingItem* to)
 			{
-				for (auto listItem : from->fragments)
+				FOREACH(vl::Ptr<WfModuleUsingFragment>, listItem, from->fragments)
 				{
 					to->fragments.Add(CreateField(listItem));
 				}
@@ -37910,7 +37910,7 @@ TypeVisitor
 				Traverse(static_cast<WfType*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->result.Obj());
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfType>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38117,13 +38117,13 @@ ExpressionVisitor
 				Traverse(static_cast<WfFunctionDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
 				VisitField(node->returnType.Obj());
 				VisitField(node->statement.Obj());
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38153,7 +38153,7 @@ ExpressionVisitor
 				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38273,7 +38273,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfLetExpression*>(node));
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->variables)
+				FOREACH(vl::Ptr<WfLetVariable>, listItem, node->variables)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38313,7 +38313,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfConstructorExpression*>(node));
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfConstructorArgument>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38388,7 +38388,7 @@ ExpressionVisitor
 				VisitField(node->parent.Obj());
 				Traverse(node->name);
 				VisitField(node->expression.Obj());
-				for (auto listItem : node->events)
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->events)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38400,7 +38400,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->function.Obj());
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38420,7 +38420,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38432,7 +38432,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
-				for (auto listItem : node->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38540,7 +38540,7 @@ StatementVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
 				VisitField(node->expression.Obj());
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38642,7 +38642,7 @@ StatementVisitor
 				Traverse(static_cast<WfBlockStatement*>(node));
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->statements)
+				FOREACH(vl::Ptr<WfStatement>, listItem, node->statements)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38798,7 +38798,7 @@ DeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38812,7 +38812,7 @@ DeclarationVisitor
 				Traverse(static_cast<WfBaseConstructorCall*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38823,13 +38823,13 @@ DeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfEnumItem*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
 				Traverse(node->number);
-				for (auto listItem : node->intersections)
+				FOREACH(vl::Ptr<WfEnumItemIntersection>, listItem, node->intersections)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38848,7 +38848,7 @@ DeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfStructMember*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38863,11 +38863,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfNamespaceDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38880,13 +38880,13 @@ DeclarationVisitor
 				Traverse(static_cast<WfFunctionDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
 				VisitField(node->returnType.Obj());
 				VisitField(node->statement.Obj());
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38901,7 +38901,7 @@ DeclarationVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
 				VisitField(node->expression.Obj());
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38914,11 +38914,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfEventDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfType>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38935,7 +38935,7 @@ DeclarationVisitor
 				Traverse(node->getter);
 				Traverse(node->setter);
 				Traverse(node->valueChangedEvent);
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38948,16 +38948,16 @@ DeclarationVisitor
 				Traverse(static_cast<WfConstructorDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->baseConstructorCalls)
+				FOREACH(vl::Ptr<WfBaseConstructorCall>, listItem, node->baseConstructorCalls)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
 				VisitField(node->statement.Obj());
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38971,7 +38971,7 @@ DeclarationVisitor
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->statement.Obj());
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38984,15 +38984,15 @@ DeclarationVisitor
 				Traverse(static_cast<WfClassDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->baseTypes)
+				FOREACH(vl::Ptr<WfType>, listItem, node->baseTypes)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39005,11 +39005,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfEnumDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->items)
+				FOREACH(vl::Ptr<WfEnumItem>, listItem, node->items)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39022,11 +39022,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfStructDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->members)
+				FOREACH(vl::Ptr<WfStructMember>, listItem, node->members)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39111,11 +39111,11 @@ VirtualCfeDeclarationVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
 				VisitField(node->expression.Obj());
-				for (auto listItem : node->expandedDeclarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39131,11 +39131,11 @@ VirtualCfeDeclarationVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->baseType.Obj());
 				VisitField(node->elementType.Obj());
-				for (auto listItem : node->expandedDeclarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39214,7 +39214,7 @@ VirtualCseDeclarationVisitor
 				Traverse(static_cast<WfStateInput*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39225,7 +39225,7 @@ VirtualCseDeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39239,7 +39239,7 @@ VirtualCseDeclarationVisitor
 				Traverse(static_cast<WfStateDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39254,19 +39254,19 @@ VirtualCseDeclarationVisitor
 				Traverse(static_cast<WfVirtualCseDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->inputs)
+				FOREACH(vl::Ptr<WfStateInput>, listItem, node->inputs)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->states)
+				FOREACH(vl::Ptr<WfStateDeclaration>, listItem, node->states)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->expandedDeclarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->attributes)
+				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39344,7 +39344,7 @@ VirtualCseStatementVisitor
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->expression.Obj());
-				for (auto listItem : node->caseBranches)
+				FOREACH(vl::Ptr<WfSwitchCase>, listItem, node->caseBranches)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39412,7 +39412,7 @@ CoroutineStatementVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->varName);
 				Traverse(node->opName);
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39464,7 +39464,7 @@ StateMachineStatementVisitor
 				Traverse(static_cast<WfStateSwitchCase*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfStateSwitchArgument>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39487,7 +39487,7 @@ StateMachineStatementVisitor
 				Traverse(static_cast<WfStateMachineStatement*>(node));
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->caseBranches)
+				FOREACH(vl::Ptr<WfStateSwitchCase>, listItem, node->caseBranches)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39500,7 +39500,7 @@ StateMachineStatementVisitor
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				for (auto listItem : node->arguments)
+				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39692,11 +39692,11 @@ ModuleVisitor
 				Traverse(static_cast<WfModule*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				for (auto listItem : node->paths)
+				FOREACH(vl::Ptr<WfModuleUsingPath>, listItem, node->paths)
 				{
 					VisitField(listItem.Obj());
 				}
-				for (auto listItem : node->declarations)
+				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39731,7 +39731,7 @@ ModuleVisitor
 				if (!node) return;
 				Traverse(static_cast<WfModuleUsingPath*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->items)
+				FOREACH(vl::Ptr<WfModuleUsingItem>, listItem, node->items)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39742,7 +39742,7 @@ ModuleVisitor
 				if (!node) return;
 				Traverse(static_cast<WfModuleUsingItem*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				for (auto listItem : node->fragments)
+				FOREACH(vl::Ptr<WfModuleUsingFragment>, listItem, node->fragments)
 				{
 					VisitField(listItem.Obj());
 				}
