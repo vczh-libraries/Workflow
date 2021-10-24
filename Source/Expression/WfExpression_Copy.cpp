@@ -88,8 +88,7 @@ TypeVisitor
 			void TypeVisitor::CopyFields(WfFunctionType* from, WfFunctionType* to)
 			{
 				to->result = CreateField(from->result);
-				FOREACH(vl::Ptr<WfType>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
@@ -294,8 +293,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfLetExpression* from, WfLetExpression* to)
 			{
-				FOREACH(vl::Ptr<WfLetVariable>, listItem, from->variables)
-				{
+				for (auto listItem : from->variables)				{
 					to->variables.Add(CreateField(listItem));
 				}
 				to->expression = CreateField(from->expression);
@@ -338,8 +336,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfConstructorExpression* from, WfConstructorExpression* to)
 			{
-				FOREACH(vl::Ptr<WfConstructorArgument>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
@@ -409,8 +406,7 @@ ExpressionVisitor
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
 				to->expression = CreateField(from->expression);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->events)
-				{
+				for (auto listItem : from->events)				{
 					to->events.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
@@ -419,8 +415,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfCallExpression* from, WfCallExpression* to)
 			{
 				to->function = CreateField(from->function);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
@@ -435,8 +430,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
 			{
 				to->anonymity = from->anonymity;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				to->returnType = CreateField(from->returnType);
@@ -446,8 +440,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -477,8 +470,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -491,8 +483,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfNewClassExpression* from, WfNewClassExpression* to)
 			{
 				to->type = CreateField(from->type);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
@@ -501,8 +492,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to)
 			{
 				to->type = CreateField(from->type);
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
-				{
+				for (auto listItem : from->declarations)				{
 					to->declarations.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
@@ -851,8 +841,7 @@ StatementVisitor
 
 			void StatementVisitor::CopyFields(WfBlockStatement* from, WfBlockStatement* to)
 			{
-				FOREACH(vl::Ptr<WfStatement>, listItem, from->statements)
-				{
+				for (auto listItem : from->statements)				{
 					to->statements.Add(CreateField(listItem));
 				}
 				to->endLabel.codeRange = from->endLabel.codeRange;
@@ -884,8 +873,7 @@ StatementVisitor
 
 			void StatementVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1054,8 +1042,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfNamespaceDeclaration* from, WfNamespaceDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
-				{
+				for (auto listItem : from->declarations)				{
 					to->declarations.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1063,8 +1050,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1095,8 +1081,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
 			{
 				to->anonymity = from->anonymity;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				to->returnType = CreateField(from->returnType);
@@ -1106,8 +1091,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1126,8 +1110,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfEventDeclaration* from, WfEventDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfType>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1151,12 +1134,10 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfConstructorDeclaration* from, WfConstructorDeclaration* to)
 			{
 				to->constructorType = from->constructorType;
-				FOREACH(vl::Ptr<WfBaseConstructorCall>, listItem, from->baseConstructorCalls)
-				{
+				for (auto listItem : from->baseConstructorCalls)				{
 					to->baseConstructorCalls.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				to->statement = CreateField(from->statement);
@@ -1166,8 +1147,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfBaseConstructorCall* from, WfBaseConstructorCall* to)
 			{
 				to->type = CreateField(from->type);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				to->codeRange = from->codeRange;
@@ -1183,12 +1163,10 @@ DeclarationVisitor
 			{
 				to->kind = from->kind;
 				to->constructorType = from->constructorType;
-				FOREACH(vl::Ptr<WfType>, listItem, from->baseTypes)
-				{
+				for (auto listItem : from->baseTypes)				{
 					to->baseTypes.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
-				{
+				for (auto listItem : from->declarations)				{
 					to->declarations.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1197,8 +1175,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to)
 			{
 				to->kind = from->kind;
-				FOREACH(vl::Ptr<WfEnumItem>, listItem, from->items)
-				{
+				for (auto listItem : from->items)				{
 					to->items.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1206,8 +1183,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfEnumItem* from, WfEnumItem* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1217,8 +1193,7 @@ DeclarationVisitor
 				to->number.codeRange = from->number.codeRange;
 				to->number.tokenIndex = from->number.tokenIndex;
 				to->number.value = from->number.value;
-				FOREACH(vl::Ptr<WfEnumItemIntersection>, listItem, from->intersections)
-				{
+				for (auto listItem : from->intersections)				{
 					to->intersections.Add(CreateField(listItem));
 				}
 				to->codeRange = from->codeRange;
@@ -1234,8 +1209,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfStructDeclaration* from, WfStructDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfStructMember>, listItem, from->members)
-				{
+				for (auto listItem : from->members)				{
 					to->members.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1243,8 +1217,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfStructMember* from, WfStructMember* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1411,8 +1384,7 @@ VirtualCfeDeclarationVisitor
 
 			void VirtualCfeDeclarationVisitor::CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
-				{
+				for (auto listItem : from->expandedDeclarations)				{
 					to->expandedDeclarations.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1420,8 +1392,7 @@ VirtualCfeDeclarationVisitor
 
 			void VirtualCfeDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1498,12 +1469,10 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfStateInput>, listItem, from->inputs)
-				{
+				for (auto listItem : from->inputs)				{
 					to->inputs.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfStateDeclaration>, listItem, from->states)
-				{
+				for (auto listItem : from->states)				{
 					to->states.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfVirtualCseDeclaration*>(from), static_cast<WfVirtualCseDeclaration*>(to));
@@ -1511,8 +1480,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
-				{
+				for (auto listItem : from->expandedDeclarations)				{
 					to->expandedDeclarations.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1520,8 +1488,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1554,8 +1521,7 @@ VirtualCseDeclarationVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				to->codeRange = from->codeRange;
@@ -1563,8 +1529,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
-				{
+				for (auto listItem : from->attributes)				{
 					to->attributes.Add(CreateField(listItem));
 				}
 				to->name.codeRange = from->name.codeRange;
@@ -1579,8 +1544,7 @@ VirtualCseDeclarationVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				to->statement = CreateField(from->statement);
@@ -1669,8 +1633,7 @@ VirtualCseStatementVisitor
 			void VirtualCseStatementVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
 			{
 				to->expression = CreateField(from->expression);
-				FOREACH(vl::Ptr<WfSwitchCase>, listItem, from->caseBranches)
-				{
+				for (auto listItem : from->caseBranches)				{
 					to->caseBranches.Add(CreateField(listItem));
 				}
 				to->defaultBranch = CreateField(from->defaultBranch);
@@ -1756,8 +1719,7 @@ CoroutineStatementVisitor
 				to->opName.codeRange = from->opName.codeRange;
 				to->opName.tokenIndex = from->opName.tokenIndex;
 				to->opName.value = from->opName.value;
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfCoroutineStatement*>(from), static_cast<WfCoroutineStatement*>(to));
@@ -1788,8 +1750,7 @@ StateMachineStatementVisitor
 			void StateMachineStatementVisitor::CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to)
 			{
 				to->type = from->type;
-				FOREACH(vl::Ptr<WfStateSwitchCase>, listItem, from->caseBranches)
-				{
+				for (auto listItem : from->caseBranches)				{
 					to->caseBranches.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfStateMachineStatement*>(from), static_cast<WfStateMachineStatement*>(to));
@@ -1810,8 +1771,7 @@ StateMachineStatementVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfStateSwitchArgument>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				to->statement = CreateField(from->statement);
@@ -1832,8 +1792,7 @@ StateMachineStatementVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
-				{
+				for (auto listItem : from->arguments)				{
 					to->arguments.Add(CreateField(listItem));
 				}
 				CopyFields(static_cast<WfStateMachineStatement*>(from), static_cast<WfStateMachineStatement*>(to));
@@ -2057,12 +2016,10 @@ ModuleVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfModuleUsingPath>, listItem, from->paths)
-				{
+				for (auto listItem : from->paths)				{
 					to->paths.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
-				{
+				for (auto listItem : from->declarations)				{
 					to->declarations.Add(CreateField(listItem));
 				}
 				to->codeRange = from->codeRange;
@@ -2070,8 +2027,7 @@ ModuleVisitor
 
 			void ModuleVisitor::CopyFields(WfModuleUsingPath* from, WfModuleUsingPath* to)
 			{
-				FOREACH(vl::Ptr<WfModuleUsingItem>, listItem, from->items)
-				{
+				for (auto listItem : from->items)				{
 					to->items.Add(CreateField(listItem));
 				}
 				to->codeRange = from->codeRange;
@@ -2079,8 +2035,7 @@ ModuleVisitor
 
 			void ModuleVisitor::CopyFields(WfModuleUsingItem* from, WfModuleUsingItem* to)
 			{
-				FOREACH(vl::Ptr<WfModuleUsingFragment>, listItem, from->fragments)
-				{
+				for (auto listItem : from->fragments)				{
 					to->fragments.Add(CreateField(listItem));
 				}
 				to->codeRange = from->codeRange;
