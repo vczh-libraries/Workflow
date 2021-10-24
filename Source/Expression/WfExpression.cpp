@@ -14,7 +14,7 @@ Unescaping Functions
 
 		void SetDefaultClassMember(vl::collections::List<vl::Ptr<WfDeclaration>>& value, const vl::collections::List<vl::regex::RegexToken>& tokens)
 		{
-			FOREACH(Ptr<WfDeclaration>, decl, value)
+			for (auto decl : value)
 			{
 				if (!decl->classMember)
 				{
@@ -238,7 +238,7 @@ Print (Type)
 				writer.BeforePrint(node);
 				writer.WriteString(L"(func ");
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfType>, type, index, node->arguments)
+				for (auto [type, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -495,7 +495,7 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"let ");
-				FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
+				for (auto [var, index] : indexed(node->variables))
 				{
 					if (index > 0)
 					{
@@ -579,7 +579,7 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"{");
-				FOREACH_INDEXER(Ptr<WfConstructorArgument>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -721,7 +721,7 @@ Print (Expression)
 				if (node->events.Count() > 0)
 				{
 					writer.WriteString(L" on ");
-					FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->events)
+					for (auto [argument, index] : indexed(node->events))
 					{
 						if (index > 0)
 						{
@@ -739,7 +739,7 @@ Print (Expression)
 				writer.BeforePrint(node);
 				WfPrint(node->function, indent, writer);
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -766,7 +766,7 @@ Print (Expression)
 				writer.WriteString(L")");
 
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -789,7 +789,7 @@ Print (Expression)
 				writer.WriteLine(L"");
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
+				for (auto [decl, index] : indexed(node->declarations))
 				{
 					if (index > 0)
 					{
@@ -1067,7 +1067,7 @@ Print (Statement)
 			{
 				writer.BeforePrint(node);
 				writer.WriteLine(L"{");
-				FOREACH(Ptr<WfStatement>, statement, node->statements)
+				for (auto statement : node->statements)
 				{
 					writer.WriteString(indent + L"    ");
 					WfPrint(statement, indent + L"    ", writer);
@@ -1133,7 +1133,7 @@ Print (Statement)
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
 
-				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+				for (auto switchCase : node->caseBranches)
 				{
 					writer.BeforePrint(switchCase.Obj());
 					writer.WriteString(indent);
@@ -1229,7 +1229,7 @@ Print (Statement)
 				}
 				writer.WriteString(node->opName.value);
 
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					writer.WriteString(index == 0 ? L" " : L", ");
 					WfPrint(argument, indent, writer);
@@ -1270,14 +1270,14 @@ Print (Statement)
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
 
-				FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+				for (auto switchCase : node->caseBranches)
 				{
 					writer.BeforePrint(switchCase.Obj());
 					writer.WriteString(indent);
 					writer.WriteString(L"    case ");
 					writer.WriteString(switchCase->name.value);
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, switchCase->arguments)
+					for (auto [argument, index] : indexed(switchCase->arguments))
 					{
 						if (index != 0) writer.WriteString(L", ");
 						writer.BeforePrint(argument.Obj());
@@ -1313,7 +1313,7 @@ Print (Statement)
 
 				writer.WriteString(node->name.value);
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index != 0) writer.WriteString(L", ");
 					WfPrint(argument, indent, writer);
@@ -1348,7 +1348,7 @@ Print (Declaration)
 				writer.WriteLine(L"namespace " + node->name.value);
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
+				for (auto [decl, index] : indexed(node->declarations))
 				{
 					if (index != 0)
 					{
@@ -1379,14 +1379,14 @@ Print (Declaration)
 				}
 
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
 						writer.WriteString(L", ");
 					}
 					writer.BeforePrint(argument.Obj());
-					FOREACH(Ptr<WfAttribute>, attribute, argument->attributes)
+					for (auto attribute : argument->attributes)
 					{
 						WfPrint(attribute, indent, writer);
 						writer.WriteString(L" ");
@@ -1437,7 +1437,7 @@ Print (Declaration)
 				writer.WriteString(L"event ");
 				writer.WriteString(node->name.value);
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfType>, type, index, node->arguments)
+				for (auto [type, index] : indexed(node->arguments))
 				{
 					if (index != 0)
 					{
@@ -1488,7 +1488,7 @@ Print (Declaration)
 				}
 				
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -1501,7 +1501,7 @@ Print (Declaration)
 					writer.AfterPrint(argument.Obj());
 				}
 				writer.WriteString(L")");
-				FOREACH_INDEXER(Ptr<WfBaseConstructorCall>, call, callIndex, node->baseConstructorCalls)
+				for (auto [call, callIndex] : indexed(node->baseConstructorCalls))
 				{
 					writer.WriteLine(L"");
 					writer.WriteString(indent + L"    ");
@@ -1516,7 +1516,7 @@ Print (Declaration)
 					writer.BeforePrint(call.Obj());
 					WfPrint(call->type, indent + L"    ", writer);
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfExpression>, argument, argumentIndex, call->arguments)
+					for (auto [argument, argumentIndex] : indexed(call->arguments))
 					{
 						if (argumentIndex != 0)
 						{
@@ -1582,7 +1582,7 @@ Print (Declaration)
 					break;
 				}
 
-				FOREACH_INDEXER(Ptr<WfType>, type, index, node->baseTypes)
+				for (auto [type, index] : indexed(node->baseTypes))
 				{
 					if (index == 0)
 					{
@@ -1598,7 +1598,7 @@ Print (Declaration)
 				writer.WriteLine(L"");
 				writer.WriteLine(indent + L"{");
 
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
+				for (auto [decl, index] : indexed(node->declarations))
 				{
 					if (index > 0)
 					{
@@ -1632,10 +1632,10 @@ Print (Declaration)
 				writer.WriteLine(indent + L"{");
 
 				auto newIndent = indent + L"    ";
-				FOREACH(Ptr<WfEnumItem>, item, node->items)
+				for (auto item : node->items)
 				{
 					writer.BeforePrint(item.Obj());
-					FOREACH(Ptr<WfAttribute>, attribute, item->attributes)
+					for (auto attribute : item->attributes)
 					{
 						writer.WriteString(newIndent);
 						WfPrint(attribute, newIndent, writer);
@@ -1650,7 +1650,7 @@ Print (Declaration)
 						writer.WriteString(item->number.value);
 						break;
 					case WfEnumItemKind::Intersection:
-						FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, itemInt, index, item->intersections)
+						for (auto [itemInt, index] : indexed(item->intersections))
 						{
 							if (index != 0)writer.WriteString(L" | ");
 							writer.WriteString(itemInt->name.value);
@@ -1675,10 +1675,10 @@ Print (Declaration)
 				writer.WriteLine(indent + L"{");
 
 				auto newIndent = indent + L"    ";
-				FOREACH(Ptr<WfStructMember>, member, node->members)
+				for (auto member : node->members)
 				{
 					writer.BeforePrint(member.Obj());
-					FOREACH(Ptr<WfAttribute>, attribute, member->attributes)
+					for (auto attribute : member->attributes)
 					{
 						writer.WriteString(newIndent);
 						WfPrint(attribute, newIndent, writer);
@@ -1698,7 +1698,7 @@ Print (Declaration)
 
 			void PrintExpandedDeclarations(List<Ptr<WfDeclaration>>& decls)
 			{
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, decls)
+				for (auto [decl, index] : indexed(decls))
 				{
 					if (index > 0)
 					{
@@ -1807,7 +1807,7 @@ Print (Declaration)
 				writer.WriteLine(L"$state_machine");
 				writer.WriteLine(indent + L"{");
 
-				FOREACH_INDEXER(Ptr<WfStateInput>, input, index, node->inputs)
+				for (auto [input, index] : indexed(node->inputs))
 				{
 					if (index != 0) writer.WriteLine(L"");
 
@@ -1815,7 +1815,7 @@ Print (Declaration)
 					writer.WriteString(indent + L"    $state_input ");
 					writer.WriteString(input->name.value);
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					for (auto [argument, index] : indexed(input->arguments))
 					{
 						if (index > 0)
 						{
@@ -1831,7 +1831,7 @@ Print (Declaration)
 					writer.AfterPrint(input.Obj());
 				}
 
-				FOREACH_INDEXER(Ptr<WfStateDeclaration>, state, index, node->states)
+				for (auto [state, index] : indexed(node->states))
 				{
 					if (index != 0 || node->inputs.Count() > 0) writer.WriteLine(L"");
 
@@ -1846,7 +1846,7 @@ Print (Declaration)
 						writer.WriteString(state->name.value);
 					}
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, state->arguments)
+					for (auto [argument, index] : indexed(state->arguments))
 					{
 						if (index > 0)
 						{
@@ -1910,7 +1910,7 @@ Print (Module)
 
 		void WfPrint(Ptr<WfDeclaration> node, const WString& indent, parsing::ParsingWriter& writer)
 		{
-			FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
+			for (auto attribute : node->attributes)
 			{
 				WfPrint(attribute, indent, writer);
 				writer.WriteLine(L"");
@@ -1953,17 +1953,17 @@ Print (Module)
 				CHECK_FAIL(L"Internal error: Unknown value.");
 			}
 
-			FOREACH(Ptr<WfModuleUsingPath>, path, node->paths)
+			for (auto path : node->paths)
 			{
 				writer.WriteString(indent);
 				writer.WriteString(L"using ");
-				FOREACH_INDEXER(Ptr<WfModuleUsingItem>, item, index, path->items)
+				for (auto [item, index] : indexed(path->items))
 				{
 					if (index > 0)
 					{
 						writer.WriteString(L"::");
 					}
-					FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+					for (auto fragment : item->fragments)
 					{
 						if (auto name = fragment.Cast<WfModuleUsingNameFragment>())
 						{
@@ -1978,7 +1978,7 @@ Print (Module)
 				writer.WriteLine(L";");
 			}
 
-			FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+			for (auto decl : node->declarations)
 			{
 				writer.WriteLine(L"");
 				writer.WriteString(indent);

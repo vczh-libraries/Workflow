@@ -148,7 +148,7 @@ GenerateAssembly
 				assembly->insAfterCodegen = new WfInstructionDebugInfo;
 				
 				WfCodegenContext context(assembly, manager);
-				FOREACH_INDEXER(Ptr<WfModule>, module, index, manager->GetModules())
+				for (auto [module, index] : indexed(manager->GetModules()))
 				{
 					auto codeBeforeCodegen = manager->GetModuleCodes()[index];
 
@@ -176,7 +176,7 @@ GenerateAssembly
 				if (manager->declarationTypes.Count() > 0)
 				{
 					assembly->typeImpl = new WfTypeImpl;
-					FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
+					for (auto td : manager->declarationTypes.Values())
 					{
 						if (auto tdClass = td.Cast<WfClass>())
 						{
@@ -197,9 +197,9 @@ GenerateAssembly
 					}
 				}
 
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+					for (auto decl : module->declarations)
 					{
 						GenerateGlobalDeclarationMetadata(context, decl);
 					}
@@ -216,9 +216,9 @@ GenerateAssembly
 					context.functionContext = functionContext;
 					
 					meta->firstInstruction = assembly->instructions.Count();
-					FOREACH(Ptr<WfModule>, module, manager->GetModules())
+					for (auto module : manager->GetModules())
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+						for (auto decl : module->declarations)
 						{
 							GenerateInitializeInstructions(context, decl);
 						}
@@ -235,10 +235,10 @@ GenerateAssembly
 					GenerateClosureInstructions(context, functionContext);
 				}
 
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
 					EXECUTE_CALLBACK(OnGenerateCode(module));
-					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+					for (auto decl : module->declarations)
 					{
 						GenerateDeclarationInstructions(context, decl);
 					}
@@ -261,7 +261,7 @@ Compile
 			Ptr<runtime::WfAssembly> Compile(Ptr<parsing::tabling::ParsingTable> table, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors)
 			{
 				manager->Clear(true, true);
-				FOREACH(WString, code, moduleCodes)
+				for (auto code : moduleCodes)
 				{
 					manager->AddModule(code);
 				}

@@ -154,7 +154,7 @@ WfLexicalScopeName
 
 			void WfLexicalScopeName::RemoveNonTypeDescriptorNames(WfLexicalScopeManager* manager)
 			{
-				FOREACH(Ptr<WfLexicalScopeName>, name, children.Values())
+				for (auto name : children.Values())
 				{
 					name->RemoveNonTypeDescriptorNames(manager);
 				}
@@ -489,7 +489,7 @@ WfLexicalScopeManager
 				}while (0)
 				
 				EXIT_IF_ERRORS_EXIST;
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					ContextFreeModuleDesugar(this, module);
 					ValidateModuleStructure(this, module);
@@ -497,7 +497,7 @@ WfLexicalScopeManager
 				
 				EXIT_IF_ERRORS_EXIST;
 				BuildGlobalNameFromModules(this);
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					BuildScopeForModule(this, module);
 				}
@@ -505,7 +505,7 @@ WfLexicalScopeManager
 				CheckScopes_DuplicatedSymbol(this);
 				
 				EXIT_IF_ERRORS_EXIST;
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					CompleteScopeForModule(this, module);
 				}
@@ -513,7 +513,7 @@ WfLexicalScopeManager
 				CheckScopes_CycleDependency(this);
 				
 				EXIT_IF_ERRORS_EXIST;
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					EXECUTE_CALLBACK(OnValidateModule(module));
 					ValidateModuleSemantic(this, module);
@@ -676,7 +676,7 @@ WfLexicalScopeManager
 						{
 							if (scope->ownerNode.Cast<WfNewInterfaceExpression>())
 							{
-								FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+								for (auto symbol : scope->symbols.GetByIndex(index))
 								{
 									if (symbol->creatorNode.Cast<WfVariableDeclaration>())
 									{
@@ -702,7 +702,7 @@ WfLexicalScopeManager
 						}
 						else
 						{
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+							for (auto symbol : scope->symbols.GetByIndex(index))
 							{
 								auto result = ResolveExpressionResult::Symbol(symbol);
 								if (!results.Contains(result))
@@ -758,13 +758,13 @@ WfLexicalScopeManager
 
 				if (auto module = scope->ownerNode.Cast<WfModule>())
 				{
-					FOREACH(Ptr<WfModuleUsingPath>, path, module->paths)
+					for (auto path : module->paths)
 					{
 						auto scopeName = globalName;
-						FOREACH(Ptr<WfModuleUsingItem>, item, path->items)
+						for (auto item : path->items)
 						{
 							WString fragmentName;
-							FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+							for (auto fragment : item->fragments)
 							{
 								fragmentName += UsingPathToNameVisitor::Execute(fragment, name);
 							}

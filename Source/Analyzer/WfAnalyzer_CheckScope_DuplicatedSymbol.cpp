@@ -15,7 +15,7 @@ CheckScopes_DuplicatedSymbol
 			bool CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
+				for (auto scope : manager->nodeScopes.Values())
 				{
 					if (!manager->checkedScopes_DuplicatedSymbol.Contains(scope.Obj()))
 					{
@@ -30,7 +30,7 @@ CheckScopes_DuplicatedSymbol
 								{
 									if (symbols.Count() > 1)
 									{
-										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
+										for (auto symbol : From(symbols))
 										{
 											if (auto decl = symbol->creatorNode.Cast<WfDeclaration>())
 											{

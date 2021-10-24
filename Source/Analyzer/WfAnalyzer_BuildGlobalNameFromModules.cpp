@@ -72,7 +72,7 @@ BuildGlobalNameFromModules
 					}
 					AddCustomType(manager, scopeName, declaration, td);
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, declaration->declarations)
+					for (auto memberDecl : declaration->declarations)
 					{
 						BuildClassMemberVisitor visitor(manager, scopeName, declaration, td);
 						memberDecl->Accept(&visitor);
@@ -177,7 +177,7 @@ BuildGlobalNameFromModules
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -190,13 +190,13 @@ BuildGlobalNameFromModules
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					for (auto input : node->inputs)
 					{
 						auto info = MakePtr<WfClassMethod>();
 						td->AddMember(input->name.value, info);
 						manager->stateInputMethods.Add(input, info);
 
-						FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+						for (auto argument : input->arguments)
 						{
 							auto info = MakePtr<WfField>(td.Obj(), L"<stateip-" + input->name.value + L">" + argument->name.value);
 							td->AddMember(info);
@@ -204,9 +204,9 @@ BuildGlobalNameFromModules
 						}
 					}
 					
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
-						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						for (auto argument : state->arguments)
 						{
 							auto info = MakePtr<WfField>(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value);
 							td->AddMember(info);
@@ -239,7 +239,7 @@ BuildGlobalNameFromModules
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -253,7 +253,7 @@ BuildGlobalNameFromModules
 				void Visit(WfNamespaceDeclaration* node)override
 				{
 					manager->namespaceNames.Add(node, scopeName);
-					FOREACH(Ptr<WfDeclaration>, subDecl, node->declarations)
+					for (auto subDecl : node->declarations)
 					{
 						BuildNameForDeclaration(manager, scopeName, subDecl.Obj());
 					}
@@ -288,9 +288,9 @@ BuildGlobalNameFromModules
 
 			void BuildGlobalNameFromModules(WfLexicalScopeManager* manager)
 			{
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+					for (auto decl : module->declarations)
 					{
 						BuildNameForDeclaration(manager, manager->globalName, decl.Obj());
 					}

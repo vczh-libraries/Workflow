@@ -66,7 +66,7 @@ Copy(Type|Expression|Statement|Declaration)
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
 					expanded = true;
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Execute(decls, decl);
 					}
@@ -75,7 +75,7 @@ Copy(Type|Expression|Statement|Declaration)
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
 					expanded = true;
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Execute(decls, decl);
 					}
@@ -100,7 +100,7 @@ Copy(Type|Expression|Statement|Declaration)
 					CopyFrom(copied, decls);
 					decls.Clear();
 
-					FOREACH(Ptr<WfDeclaration>, decl, copied)
+					for (auto decl : copied)
 					{
 						CopyDeclarationWithExpandVirtualVisitor::Execute(decls, decl);
 					}
@@ -313,7 +313,7 @@ CreateBindContext
 					vint index = context.exprCauses.Keys().IndexOf(parent);
 					if (index != -1)
 					{
-						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						for (auto observe : context.exprCauses.GetByIndex(index))
 						{
 							context.observeAffects.Add(observe, expr);
 							context.observeCauses.Add(expr, observe);
@@ -334,7 +334,7 @@ CreateBindContext
 					vint index = context.exprCauses.Keys().IndexOf(depended);
 					if (index != -1)
 					{
-						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						for (auto observe : context.exprCauses.GetByIndex(index))
 						{
 							context.exprCauses.Add(expr, observe);
 							context.exprAffects.Add(observe, expr);
@@ -462,7 +462,7 @@ CreateBindContext
 
 				void Visit(WfLetExpression* node)override
 				{
-					FOREACH(Ptr<WfLetVariable>, var, node->variables)
+					for (auto var : node->variables)
 					{
 						DirectDepend(node, var->value.Obj());
 					}
@@ -493,7 +493,7 @@ CreateBindContext
 					auto result = manager->expressionResolvings[node];
 					bool isStruct = (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct);
 
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (!isStruct)
 						{
@@ -545,7 +545,7 @@ CreateBindContext
 					Call(node->parent.Obj());
 					ObservableDepend(node, node->parent.Obj());
 					Call(node->expression.Obj());
-					FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+					for (auto eventExpr : node->events)
 					{
 						auto result = manager->expressionResolvings[eventExpr.Obj()];
 						context.observeEvents.Add(node, result.eventInfo);
@@ -556,7 +556,7 @@ CreateBindContext
 				void Visit(WfCallExpression* node)override
 				{
 					DirectDepend(node, node->function.Obj());
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						DirectDepend(node, argument.Obj());
 					}
@@ -569,7 +569,7 @@ CreateBindContext
 
 				void Visit(WfNewClassExpression* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						DirectDepend(node, argument.Obj());
 					}
@@ -648,7 +648,7 @@ ExpandObserveExpression
 				void Visit(WfLetExpression* node)override
 				{
 					auto letExpr = MakePtr<WfLetExpression>();
-					FOREACH(Ptr<WfLetVariable>, var, node->variables)
+					for (auto var : node->variables)
 					{
 						if (context.GetCachedExpressionIndexRecursively(var->value.Obj(), false) == -1)
 						{
@@ -885,7 +885,7 @@ CreateBindAttachStatement
 
 			void CreateBindAttachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindContext& context, BindCallbackInfo& info)
 			{
-				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
+				for (auto callbackInfo : info.observeCallbackInfos[observe])
 				{
 					auto attach = MakePtr<WfAttachEventExpression>();
 					attach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
@@ -916,7 +916,7 @@ CreateBindDetachStatement
 
 			void CreateBindDetachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindContext& context, BindCallbackInfo& info)
 			{
-				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
+				for (auto callbackInfo : info.observeCallbackInfos[observe])
 				{
 					auto testNull = MakePtr<WfTypeTestingExpression>();
 					testNull->expression = CreateReference(callbackInfo.handlerName);
@@ -1041,7 +1041,7 @@ IValueSubscription::Open
 									})
 								);
 
-							FOREACH(WfExpression*, observe, context.orderedObserves)
+							for (auto observe : context.orderedObserves)
 							{
 								if (freeObserves.Contains(observe))
 								{
@@ -1054,7 +1054,7 @@ IValueSubscription::Open
 								}
 							}
 
-							FOREACH(WfExpression*, observe, freeObserves)
+							for (auto observe : freeObserves)
 							{
 								observes.Remove(observe);
 							}
@@ -1062,7 +1062,7 @@ IValueSubscription::Open
 						}
 					}
 					{
-						FOREACH(WfExpression*, observe, context.orderedObserves)
+						for (auto observe : context.orderedObserves)
 						{
 							CreateBindAttachStatement(ifBlock, manager, observe, context, info);
 						}
@@ -1194,7 +1194,7 @@ IValueSubscription::Close
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
-					FOREACH(WfExpression*, observe, context.orderedObserves)
+					for (auto observe : context.orderedObserves)
 					{
 						CreateBindDetachStatement(ifBlock, manager, observe, context, info);
 					}
@@ -1277,7 +1277,7 @@ ExpandBindExpression
 						});
 					};
 
-					FOREACH_INDEXER(WfExpression*, parent, index, context.cachedExprs)
+					for (auto [parent, index] : indexed(context.cachedExprs))
 					{
 						WString cacheName = context.GetCacheVariableName(index);
 						{
@@ -1286,10 +1286,10 @@ ExpandBindExpression
 						}
 					}
 
-					FOREACH_INDEXER(WfExpression*, observe, observeIndex, context.orderedObserves)
+					for (auto [observe, observeIndex] : indexed(context.orderedObserves))
 					{
 						const auto& events = context.observeEvents[observe];
-						FOREACH_INDEXER(IEventInfo*, ev, eventIndex, events)
+						for (auto [ev, eventIndex] : indexed(events))
 						{
 							WString handlerName = L"<bind-handler>" + itow(observeIndex) + L"_" + itow(eventIndex);
 							{
@@ -1344,9 +1344,9 @@ ExpandBindExpression
 					
 						newSubscription->declarations.Add(AssignNormalMember(func));
 					}
-					FOREACH(WfExpression*, observe, context.orderedObserves)
+					for (auto observe : context.orderedObserves)
 					{
-						FOREACH(CallbackInfo, callbackInfo, bcInfo.observeCallbackInfos[observe])
+						for (auto callbackInfo : bcInfo.observeCallbackInfos[observe])
 						{
 							auto func = MakePtr<WfFunctionDeclaration>();
 							func->name.value = callbackInfo.callbackName;
@@ -1374,7 +1374,7 @@ ExpandBindExpression
 									vint dependencyIndex = context.observeAffects.Keys().IndexOf(current);
 									if (dependencyIndex != -1)
 									{
-										FOREACH(WfExpression*, affectedObserve, context.observeAffects.GetByIndex(dependencyIndex))
+										for (auto affectedObserve : context.observeAffects.GetByIndex(dependencyIndex))
 										{
 											if (affectedObserve && !affected.Contains(affectedObserve))
 											{
@@ -1385,13 +1385,13 @@ ExpandBindExpression
 								}
 								affected.Remove(observe);
 
-								FOREACH(WfExpression*, affectedObserve, From(affected).Reverse())
+								for (auto affectedObserve : From(affected).Reverse())
 								{
 									CreateBindDetachStatement(block, manager, affectedObserve, context, bcInfo);
 								}
 								{
 									SortedList<vint> assignedParents;
-									FOREACH(WfExpression*, affectedObserve, affected)
+									for (auto affectedObserve : affected)
 									{
 										auto parent = context.GetCachedExpressionIndexRecursively(context.observeParents[affectedObserve], true);
 										if (!assignedParents.Contains(parent))
@@ -1401,7 +1401,7 @@ ExpandBindExpression
 										}
 									}
 								}
-								FOREACH(WfExpression*, affectedObserve, affected)
+								for (auto affectedObserve : affected)
 								{
 									CreateBindAttachStatement(block, manager, affectedObserve, context, bcInfo);
 								}

@@ -48,7 +48,7 @@ TEST_FILE
 		LoadSampleIndex(L"Codegen", codegenNames);
 
 		WfLexicalScopeManager manager(table);
-		FOREACH(WString, codegenName, codegenNames)
+		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)
 			{

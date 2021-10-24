@@ -243,7 +243,7 @@ ValidateStructure(Type)
 					}
 
 					ValidateTypeStructure(manager, node->result, ValidateTypeStragety::ReturnType);
-					FOREACH(Ptr<WfType>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateTypeStructure(manager, argument);
 					}

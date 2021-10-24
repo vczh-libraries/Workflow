@@ -22,7 +22,7 @@ WfCppConfig::GenerateGlobalDep
 				vint index = classDecls.Keys().IndexOf(parent.Obj());
 				if (index == -1) return;
 
-				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(index))
+				for (auto subDecl : classDecls.GetByIndex(index))
 				{
 					ExpandClassDeclGroup(subDecl, globalDep);
 				}
@@ -59,7 +59,7 @@ WfCppConfig::GenerateGlobalDep
 					auto stringKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
 					ASSIGN_INDEX_KEY(, indexKey, stringKey);
 				}
-				FOREACH(vint, subDecl, directChildren.Concat(indirectChildren))
+				for (auto subDecl : directChildren.Concat(indirectChildren))
 				{
 					globalDep.expandedClassDecls.Add(indexKey, subDecl);
 				}
@@ -67,7 +67,7 @@ WfCppConfig::GenerateGlobalDep
 
 			void WfCppConfig::GenerateClassDependencies(GlobalDep& globalDep)
 			{
-				FOREACH_INDEXER(ITypeDescriptor*, td, tdIndex, globalDep.allTds.Values())
+				for (auto [td, tdIndex] : indexed(globalDep.allTds.Values()))
 				{
 					vint count = td->GetBaseTypeDescriptorCount();
 					for (vint i = 0; i < count; i++)
@@ -84,7 +84,7 @@ WfCppConfig::GenerateGlobalDep
 
 			void WfCppConfig::GenerateGlobalDep(GlobalDep& globalDep)
 			{
-				FOREACH_INDEXER(ITypeDescriptor*, td, index, tdDecls.Keys())
+				for (auto [td, index] : indexed(tdDecls.Keys()))
 				{
 					if (tdDecls.Values()[index].Cast<WfClassDeclaration>())
 					{
@@ -103,12 +103,12 @@ WfCppConfig::GenerateClassLevelDep
 			void WfCppConfig::CollectExpandedDepGroup(vint parentIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
 			{
 				const auto& items = globalDep.expandedClassDecls[parentIndexKey];
-				FOREACH(vint, subDecl, items)
+				for (auto subDecl : items)
 				{
 					vint index = globalDep.dependencies.Keys().IndexOf(subDecl);
 					if (index != -1)
 					{
-						FOREACH(vint, dep, globalDep.dependencies.GetByIndex(index))
+						for (auto dep : globalDep.dependencies.GetByIndex(index))
 						{
 							if (items.Contains(dep))
 							{
@@ -126,7 +126,7 @@ WfCppConfig::GenerateClassLevelDep
 				vint index = globalDep.expandedClassDecls.Keys().IndexOf(subDeclIndexKey);
 				if (index != -1)
 				{
-					FOREACH(vint, expandDecl, globalDep.expandedClassDecls.GetByIndex(index))
+					for (auto expandDecl : globalDep.expandedClassDecls.GetByIndex(index))
 					{
 						classLevelDep.subClass.Add(expandDecl, subDeclIndexKey);
 					}
@@ -147,7 +147,7 @@ WfCppConfig::GenerateClassLevelDep
 				// find all direct and indirect internal classes
 				// copy their dependencies, and generate sub classes by grouping them using the second level of classes
 				CollectExpandedDepGroup(classLevelDep.parentIndexKey, globalDep, classLevelDep);
-				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.Get(parent.Obj()))
+				for (auto subDecl : classDecls.Get(parent.Obj()))
 				{
 					auto subDeclStringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
 					ASSIGN_INDEX_KEY(auto, subDeclIndexKey, subDeclStringKey);
@@ -256,7 +256,7 @@ WfCppConfig::Collect
 							WString key = customFilesClasses.Keys()[i];
 							if (key != L"")
 							{
-								FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(i))
+								for (auto decl : customFilesClasses.GetByIndex(i))
 								{
 									auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
 									ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
@@ -461,7 +461,7 @@ WfCppConfig::Collect
 
 					auto addToHeaders = [&](const List<Ptr<WfClassDeclaration>>& decls, vint headerIndex)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						for (auto decl : decls)
 						{
 							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
 							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
@@ -471,7 +471,7 @@ WfCppConfig::Collect
 
 					auto calculateIncludes = [&](const List<Ptr<WfClassDeclaration>>& decls, SortedList<vint>& includes)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						for (auto decl : decls)
 						{
 							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
 							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);

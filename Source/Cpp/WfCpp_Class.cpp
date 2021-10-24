@@ -143,7 +143,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -151,7 +151,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -215,7 +215,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -223,7 +223,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -318,7 +318,7 @@ WfGenerateClassMemberImplVisitor
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
 
 					List<WString> arguments;
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						arguments.Add(config->ConvertName(argument->name.value));
 					}
@@ -328,7 +328,7 @@ WfGenerateClassMemberImplVisitor
 					writer.WriteLine(L"");
 
 					vint callIndex = 0;
-					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					for (auto call : node->baseConstructorCalls)
 					{
 						auto callType = CreateTypeInfoFromType(scope, call->type, false);
 						auto callCtor = config->manager->baseConstructorCallResolvings[{node, callType->GetTypeDescriptor()}].value;
@@ -345,7 +345,7 @@ WfGenerateClassMemberImplVisitor
 
 						writer.WriteString(config->ConvertType(callType->GetTypeDescriptor()));
 						writer.WriteString(L"(");
-						FOREACH_INDEXER(Ptr<WfExpression>, argument, argumentIndex, call->arguments)
+						for (auto [argument, argumentIndex] : indexed(call->arguments))
 						{
 							if (argumentIndex) writer.WriteString(L", ");
 							GenerateExpression(config, writer, argument, callCtor->GetParameter(argumentIndex)->GetType());
@@ -356,7 +356,7 @@ WfGenerateClassMemberImplVisitor
 					if (classDef)
 					{
 						WfGenerateClassMemberInitVisitor visitor(config, writer, prefix, callIndex);
-						FOREACH(Ptr<WfDeclaration>, member, classDef->declarations)
+						for (auto member : classDef->declarations)
 						{
 							member->Accept(&visitor);
 						}
@@ -404,7 +404,7 @@ WfGenerateClassMemberImplVisitor
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -412,7 +412,7 @@ WfGenerateClassMemberImplVisitor
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}

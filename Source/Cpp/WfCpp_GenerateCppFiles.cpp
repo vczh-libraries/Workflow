@@ -51,7 +51,7 @@ GenerateCppFiles
 					}
 					else
 					{
-						FOREACH(WString, include, input->reflectionIncludes)
+						for (auto include : input->reflectionIncludes)
 						{
 							writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + include + L") */");
 							writer.WriteLine(L"#include \"" + include + L"\"");
@@ -68,7 +68,7 @@ GenerateCppFiles
 				if (index != -1)
 				{
 					const auto& headers = config.headerIncludes.GetByIndex(index);
-					FOREACH(vint, header, headers)
+					for (auto header : headers)
 					{
 						if (header == 0)
 						{
@@ -93,7 +93,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName));
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName));
 				writer.WriteLine(L"");
-				FOREACH(WString, include, input->normalIncludes)
+				for (auto include : input->normalIncludes)
 				{
 					writer.WriteLine(L"#include \"" + include + L"\"");
 				}
@@ -139,7 +139,7 @@ GenerateCppFiles
 				if (input->reflectionIncludes.Count() > 0)
 				{
 					writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
-					FOREACH(WString, include, input->reflectionIncludes)
+					for (auto include : input->reflectionIncludes)
 					{
 						writer.WriteLine(L"#include \"" + include + L"\"");
 					}
@@ -169,14 +169,14 @@ GenerateCppFiles
 				writer.WriteLine(L"");
 
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				FOREACH(WString, fileName, config.customFilesClasses.Keys())
+				for (auto fileName : config.customFilesClasses.Keys())
 				{
 					if (fileName != L"")
 					{
 						writer.WriteLine(L"#include \"" + fileName + L".h\"");
 					}
 				}
-				FOREACH(vint, fileIndex, config.headerFilesClasses.Keys())
+				for (auto fileIndex : config.headerFilesClasses.Keys())
 				{
 					if (fileIndex != 0)
 					{
@@ -269,7 +269,7 @@ GenerateCppFiles
 				{
 					WriteHeader(input, output, config, multiFile, reflection, writer);
 				}));
-				FOREACH(vint, fileIndex, config.headerFilesClasses.Keys())
+				for (auto fileIndex : config.headerFilesClasses.Keys())
 				{
 					if (fileIndex != 0)
 					{
@@ -305,7 +305,7 @@ GenerateCppFiles
 						WriteIncludesHeader(input, output, config, multiFile, reflection, writer);
 					}));
 
-					FOREACH(WString, fileName, config.customFilesClasses.Keys())
+					for (auto fileName : config.customFilesClasses.Keys())
 					{
 						if (fileName != L"")
 						{

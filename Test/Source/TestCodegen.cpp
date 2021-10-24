@@ -48,7 +48,7 @@ TEST_FILE
 		LoadSampleIndex(L"Codegen", codegenNames);
 
 		WfLexicalScopeManager manager(table);
-		FOREACH(WString, codegenName, codegenNames)
+		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)
 			{
@@ -96,7 +96,7 @@ TEST_FILE
 						assemblyEntries.Add(input->assemblyName, output->entryFileName);
 					}
 
-					FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+					for (auto [fileName, index] : indexed(output->cppFiles.Keys()))
 					{
 						WString code = output->cppFiles.Values()[index];
 						File file(GetCppOutputPath() + fileName);
@@ -117,7 +117,7 @@ TEST_FILE
 			EncoderStream encoderStream(fileStream, encoder);
 			StreamWriter writer(encoderStream);
 
-			FOREACH(WString, codegenName, codegenNames)
+			for (auto codegenName : codegenNames)
 			{
 				DECODE_CODEGEN_NAME(continue)
 				if (!cppCodegen) continue;
@@ -135,7 +135,7 @@ TEST_FILE
 			writer.WriteLine(L"");
 			writer.WriteLine(L"void LoadTestCaseTypes()");
 			writer.WriteLine(L"{");
-			FOREACH(WString, name, reflectableAssemblies)
+			for (auto name : reflectableAssemblies)
 			{
 				writer.WriteString(L"\t Load");
 				writer.WriteString(name);
@@ -147,7 +147,7 @@ TEST_FILE
 			writer.WriteLine(L"TEST_FILE");
 			writer.WriteLine(L"{");
 
-			FOREACH(WString, codegenName, codegenNames)
+			for (auto codegenName : codegenNames)
 			{
 				DECODE_CODEGEN_NAME(continue)
 				if (!cppCodegen) continue;

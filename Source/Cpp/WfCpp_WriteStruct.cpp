@@ -15,7 +15,7 @@ namespace vl
 					auto td = manager->declarationTypes[decl.Obj()].Obj();
 					writer.WriteLine(prefix + L"struct " + name);
 					writer.WriteLine(prefix + L"{");
-					FOREACH(Ptr<WfStructMember>, member, decl->members)
+					for (auto member : decl->members)
 					{
 						auto prop = td->GetPropertyByName(member->name.value, false);
 						auto defaultValue = DefaultValue(prop->GetReturn());
@@ -60,7 +60,7 @@ namespace vl
 					writer.WriteString(prefix);
 					writer.WriteLine(L"{");
 
-					FOREACH(Ptr<WfStructMember>, member, decl->members)
+					for (auto member : decl->members)
 					{
 						writer.WriteString(prefix);
 						writer.WriteString(L"\tif (a.");
@@ -111,7 +111,7 @@ namespace vl
 				SortDeclsByName(allStructs);
 
 				Group<Ptr<WfStructDeclaration>, Ptr<WfStructDeclaration>> depGroup;
-				FOREACH(Ptr<WfStructDeclaration>, decl, allStructs)
+				for (auto decl : allStructs)
 				{
 					auto td = manager->declarationTypes[decl.Obj()].Obj();
 					vint count = td->GetPropertyCount();

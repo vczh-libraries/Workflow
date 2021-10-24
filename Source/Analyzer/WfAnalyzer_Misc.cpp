@@ -94,7 +94,7 @@ IsExpressionDependOnExpectedType(Expression)
 						bool unresolvableField = false;
 						auto scope = manager->nodeScopes[node].Obj();
 
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							if (argument->value)
 							{

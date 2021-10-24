@@ -154,7 +154,7 @@ ValidateScopeName
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -174,12 +174,12 @@ ValidateScopeName
 			void ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name)
 			{
 				ValidateScopeNameDeclarationVisitor visitor(manager, name);
-				FOREACH(Ptr<WfDeclaration>, declaration, name->declarations)
+				for (auto declaration : name->declarations)
 				{
 					declaration->Accept(&visitor);
 				}
 
-				FOREACH(Ptr<WfLexicalScopeName>, child, name->children.Values())
+				for (auto child : name->children.Values())
 				{
 					ValidateScopeName(manager, child);
 				}

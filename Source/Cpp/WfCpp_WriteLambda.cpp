@@ -94,7 +94,7 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L";");
 				writer.WriteLine(L"");
 
-				FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
+				for (auto memberDecl : lambda->declarations)
 				{
 					GenerateClassMemberDecl(this, writer, name, memberDecl, L"\t\t", true);
 				}
@@ -105,7 +105,7 @@ WfCppConfig::WriteCpp
 			{
 				auto info = closureInfos[closure.Obj()];
 
-				FOREACH(Ptr<WfLexicalSymbol>, symbol, info->symbols.Values())
+				for (auto symbol : info->symbols.Values())
 				{
 					writer.WriteString(L"\t\t");
 					writer.WriteString(ConvertType(symbol->typeInfo.Obj()));
@@ -114,7 +114,7 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L";");
 				}
 
-				FOREACH_INDEXER(ITypeDescriptor*, thisType, index, info->thisTypes)
+				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
 					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
 
@@ -137,7 +137,7 @@ WfCppConfig::WriteCpp
 
 				vint argumentIndex = 0;
 
-				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, From(info->symbols.Values()).Concat(info->ctorArgumentSymbols.Values()))
+				for (auto [symbol, index] : indexed(From(info->symbols.Values()).Concat(info->ctorArgumentSymbols.Values())))
 				{
 					if (argumentIndex++ > 0)
 					{
@@ -148,7 +148,7 @@ WfCppConfig::WriteCpp
 					writer.WriteString(ConvertName(symbol->name));
 				}
 
-				FOREACH_INDEXER(ITypeDescriptor*, thisType, index, info->thisTypes)
+				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
 					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
 
@@ -167,7 +167,7 @@ WfCppConfig::WriteCpp
 			{
 				auto info = closureInfos[closure.Obj()];
 
-				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, info->symbols.Values())
+				for (auto [symbol, index] : indexed(info->symbols.Values()))
 				{
 					if (index > 0)
 					{
@@ -183,7 +183,7 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L")");
 				}
 
-				FOREACH_INDEXER(ITypeDescriptor*, thisType, index, info->thisTypes)
+				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
 					if (index > 0 || info->symbols.Count() > 0)
 					{
@@ -254,7 +254,7 @@ WfCppConfig::WriteCpp
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -262,7 +262,7 @@ WfCppConfig::WriteCpp
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -296,7 +296,7 @@ WfCppConfig::WriteCpp
 
 				{
 					WriteCpp_ClassExprImpl_InitFieldVisitor visitor(this, writer);
-					FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
+					for (auto memberDecl : lambda->declarations)
 					{
 						memberDecl->Accept(&visitor);
 					}
@@ -306,7 +306,7 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"");
 
 				WString classFullName = L"::" + assemblyNamespace + L"::" + name;
-				FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
+				for (auto memberDecl : lambda->declarations)
 				{
 					if (GenerateClassMemberImpl(this, writer, nullptr, name, name, classFullName, memberDecl, L"\t"))
 					{

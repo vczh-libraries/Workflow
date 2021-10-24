@@ -79,12 +79,12 @@ namespace vl
 						writer.WriteLine(assemblyNamespace);
 						writer.WriteLine(L"{");
 
-						FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+						for (auto expr : reversedLambdaExprs.Values())
 						{
 							WriteHeader_ClosurePreDecl(writer, expr);
 						}
 
-						FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+						for (auto expr : reversedClassExprs.Values())
 						{
 							WriteHeader_ClosurePreDecl(writer, expr);
 						}
@@ -101,7 +101,7 @@ namespace vl
 					WriteHeader_MainHeaderEnums(writer, nss);
 					if (enumDecls.Keys().Contains(nullptr))
 					{
-						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
+						for (auto decl : enumDecls[nullptr])
 						{
 							WriteHeader_Enum(writer, decl, nss, false);
 						}
@@ -114,7 +114,7 @@ namespace vl
 					WriteHeader_MainHeaderStructs(writer, nss);
 					if (structDecls.Keys().Contains(nullptr))
 					{
-						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
+						for (auto decl : structDecls[nullptr])
 						{
 							WriteHeader_Struct(writer, decl, nss, false);
 						}
@@ -124,7 +124,7 @@ namespace vl
 
 				if (classDecls.Keys().Contains(nullptr))
 				{
-					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+					for (auto decl : classDecls[nullptr])
 					{
 						WriteHeader_ClassPreDecl(writer, decl, nss);
 					}
@@ -134,7 +134,7 @@ namespace vl
 						vint index = headerFilesClasses.Keys().IndexOf(0);
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
+							for (auto decl : headerFilesClasses.GetByIndex(index))
 							{
 								WriteHeader_Class(writer, decl, nss);
 								writer.WriteLine(L"");
@@ -143,7 +143,7 @@ namespace vl
 					}
 					else
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+						for (auto decl : classDecls[nullptr])
 						{
 							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
@@ -169,7 +169,7 @@ namespace vl
 					vint index = headerFilesClasses.Keys().IndexOf(fileIndex);
 					if (index != -1)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
+						for (auto decl : headerFilesClasses.GetByIndex(index))
 						{
 							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
@@ -201,7 +201,7 @@ namespace vl
 						vint index = customFilesClasses.Keys().IndexOf(L"");
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(index))
+							for (auto decl : customFilesClasses.GetByIndex(index))
 							{
 								WriteCpp_Class(writer, decl, nss);
 							}
@@ -209,7 +209,7 @@ namespace vl
 					}
 					else
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+						for (auto decl : classDecls[nullptr])
 						{
 							WriteCpp_Class(writer, decl, nss);
 						}
@@ -230,7 +230,7 @@ namespace vl
 				writer.WriteLine(L"");
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
+				for (auto decl : customFilesClasses.Get(fileName))
 				{
 					WriteHeader_Class(writer, decl, nss);
 					writer.WriteLine(L"");
@@ -260,7 +260,7 @@ namespace vl
 
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
+				for (auto decl : customFilesClasses.Get(fileName))
 				{
 					WriteCpp_Class(writer, decl, nss);
 				}

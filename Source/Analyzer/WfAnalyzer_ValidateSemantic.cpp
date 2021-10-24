@@ -62,7 +62,7 @@ Helper Functions
 
 				List<bool> resolvables;
 				List<Ptr<ITypeInfo>> types;
-				FOREACH(Ptr<WfExpression>, argument, arguments)
+				for (auto argument : arguments)
 				{
 					if (!argument || IsExpressionDependOnExpectedType(manager, argument))
 					{
@@ -216,7 +216,7 @@ ValidateSemantic
 			
 			void ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+				for (auto declaration : module->declarations)
 				{
 					ValidateDeclarationSemantic(manager, declaration);
 				}
@@ -344,7 +344,7 @@ GetExpressionTypes
 
 					if (results.Count() == 0)
 					{
-						FOREACH(Ptr<ITypeInfo>, type, failedTypes)
+						for (auto type : failedTypes)
 						{
 							manager->errors.Add(WfErrors::ExpressionCannotImplicitlyConvertToType(expression.Obj(), type.Obj(), expectedType.Obj()));
 						}

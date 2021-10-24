@@ -14,7 +14,7 @@ namespace vl
 				{
 					writer.WriteLine(prefix + L"enum class " + name + L" : vl::vuint64_t");
 					writer.WriteLine(prefix + L"{");
-					FOREACH(Ptr<WfEnumItem>, item, decl->items)
+					for (auto item : decl->items)
 					{
 						switch (item->kind)
 						{
@@ -23,7 +23,7 @@ namespace vl
 							break;
 						case WfEnumItemKind::Intersection:
 							writer.WriteString(prefix + L"\t" + ConvertName(item->name.value) + L" = ");
-							FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
+							for (auto [enumInt, index] : indexed(item->intersections))
 							{
 								if (index > 0)
 								{
@@ -100,7 +100,7 @@ namespace vl
 				CopyFrom(allEnums, Range<vint>(0, enumDecls.Count()).SelectMany([&](vint index) {return From(enumDecls.GetByIndex(index)); }));
 				SortDeclsByName(allEnums);
 
-				FOREACH(Ptr<WfEnumDeclaration>, decl, allEnums)
+				for (auto decl : allEnums)
 				{
 					WriteHeader_Enum(writer, decl, nss, true);
 					writer.WriteLine(L"");

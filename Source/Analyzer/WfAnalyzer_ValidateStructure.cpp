@@ -28,12 +28,12 @@ ValidateStructure
 
 			void ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				FOREACH(Ptr<WfModuleUsingPath>, path, module->paths)
+				for (auto path : module->paths)
 				{
-					FOREACH_INDEXER(Ptr<WfModuleUsingItem>, item, index, path->items)
+					for (auto [item, index] : indexed(path->items))
 					{
 						vint counter = 0;
-						FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+						for (auto fragment : item->fragments)
 						{
 							if (fragment.Cast<WfModuleUsingWildCardFragment>())
 							{

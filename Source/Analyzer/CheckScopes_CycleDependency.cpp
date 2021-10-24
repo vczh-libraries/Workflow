@@ -34,7 +34,7 @@ CheckBaseClass
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -47,7 +47,7 @@ CheckBaseClass
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						decl->Accept(this);
 					}
@@ -158,7 +158,7 @@ CheckBaseClass
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						memberDecl->Accept(this);
 					}
@@ -167,9 +167,9 @@ CheckBaseClass
 				void Execute(vint _step)
 				{
 					step = _step;
-					FOREACH(Ptr<WfModule>, module, manager->GetModules())
+					for (auto module : manager->GetModules())
 					{
-						FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+						for (auto declaration : module->declarations)
 						{
 							declaration->Accept(this);
 						}

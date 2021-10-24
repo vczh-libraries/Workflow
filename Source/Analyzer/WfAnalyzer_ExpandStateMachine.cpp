@@ -163,13 +163,13 @@ ExpandStateMachineStatementVisitor
 					}
 					block->statements.Add(switchStat);
 
-					FOREACH(Ptr<WfStateSwitchCase>, stateSwitchCase, node->caseBranches)
+					for (auto stateSwitchCase : node->caseBranches)
 					{
 						Ptr<WfStateInput> input;
 						Ptr<WfBlockStatement> caseBlock;
 						GenerateStateSwitchCase(stateSwitchCase->name.value, smcScope, switchStat, input, caseBlock);
 
-						FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, stateSwitchCase->arguments)
+						for (auto [argument, index] : indexed(stateSwitchCase->arguments))
 						{
 							auto refThis = MakePtr<WfReferenceExpression>();
 							refThis->name.value = L"<state>stateMachineObject";
@@ -198,7 +198,7 @@ ExpandStateMachineStatementVisitor
 								From(node->caseBranches)
 								.Select([](Ptr<WfStateSwitchCase> switchCase) {return switchCase->name.value; })
 								);
-						FOREACH(WString, inputName, invalidInputs)
+						for (auto inputName : invalidInputs)
 						{
 							Ptr<WfStateInput> input;
 							Ptr<WfBlockStatement> caseBlock;
@@ -270,7 +270,7 @@ ExpandStateMachineStatementVisitor
 
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, stateDecl->arguments)
+					for (auto [argument, index] : indexed(stateDecl->arguments))
 					{
 						auto refThis = MakePtr<WfReferenceExpression>();
 						refThis->name.value = L"<state>stateMachineObject";
@@ -356,11 +356,11 @@ ExpandStateMachine
 			{
 				auto& smInfo = manager->stateMachineInfos[node];
 
-				FOREACH(Ptr<WfStateInput>, input, node->inputs)
+				for (auto input : node->inputs)
 				{
 					smInfo->inputIds.Add(input->name.value, smInfo->inputIds.Count());
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+					for (auto argument : input->arguments)
 					{
 						// var <stateip-INPUT>NAME = <DEFAULT-VALUE>;
 						auto fieldInfo = manager->stateInputArguments[argument.Obj()];
@@ -385,14 +385,14 @@ ExpandStateMachine
 				}
 
 				smInfo->stateIds.Add(L"", 0);
-				FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+				for (auto state : node->states)
 				{
 					if (state->name.value != L"")
 					{
 						smInfo->stateIds.Add(state->name.value, smInfo->stateIds.Count());
 					}
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+					for (auto argument : state->arguments)
 					{
 						// var <statesp-INPUT>NAME = <DEFAULT-VALUE>;
 						auto fieldInfo = manager->stateDeclArguments[argument.Obj()];
@@ -416,7 +416,7 @@ ExpandStateMachine
 					}
 				}
 
-				FOREACH(Ptr<WfStateInput>, input, node->inputs)
+				for (auto input : node->inputs)
 				{
 					auto methodInfo = manager->stateInputMethods[input.Obj()];
 
@@ -425,7 +425,7 @@ ExpandStateMachine
 					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = methodInfo->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					for (auto [argument, index] : indexed(input->arguments))
 					{
 						auto funcArgument = MakePtr<WfFunctionArgument>();
 						funcArgument->name.value = argument->name.value;
@@ -527,7 +527,7 @@ ExpandStateMachine
 						exprStat->expression = assignExpr;
 						block->statements.Add(exprStat);
 					}
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					for (auto [argument, index] : indexed(input->arguments))
 					{
 						// this.<stateip-INPUT>NAME = NAME;
 						auto refField = MakePtr<WfMemberExpression>();
@@ -719,7 +719,7 @@ ExpandStateMachine
 									switchStat->expression = refCurrentState;
 									whileBlock->statements.Add(switchStat);
 
-									FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+									for (auto state : node->states)
 									{
 										auto switchCase = MakePtr<WfSwitchCase>();
 										switchStat->caseBranches.Add(switchCase);
@@ -731,7 +731,7 @@ ExpandStateMachine
 										auto caseBlock = MakePtr<WfBlockStatement>();
 										switchCase->statement = caseBlock;
 
-										FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+										for (auto argument : state->arguments)
 										{
 											auto refThis = MakePtr<WfReferenceExpression>();
 											refThis->name.value = L"<state>stateMachineObject";

@@ -43,7 +43,7 @@ namespace vl
 				writer.WriteLine(L"\t\t{");
 				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
 
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					writer.WriteString(L"\t\t\tDECL_TYPE_INFO(");
 					writer.WriteString(ConvertType(td));
@@ -84,7 +84,7 @@ namespace vl
 				{
 					writer.WriteLine(L"");
 					writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
-					FOREACH(ITypeDescriptor*, td, tdInterfaces)
+					for (auto td : tdInterfaces)
 					{
 						List<ITypeDescriptor*> baseTds;
 						CopyFrom(
@@ -105,7 +105,7 @@ namespace vl
 						{
 							writer.WriteString(L"\t\t\tBEGIN_INTERFACE_PROXY_SHAREDPTR(");
 							writer.WriteString(ConvertType(td));
-							FOREACH(ITypeDescriptor*, baseTd, baseTds)
+							for (auto baseTd : baseTds)
 							{
 								writer.WriteString(L", ");
 								writer.WriteString(ConvertType(baseTd));
@@ -202,7 +202,7 @@ namespace vl
 				writer.WriteLine(L"\t\t{");
 				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
 
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					writer.WriteString(L"\t\t\tIMPL_CPP_TYPE_INFO(");
 					WString type = ConvertType(td);
@@ -217,7 +217,7 @@ namespace vl
 
 				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"#define _ ,");
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					switch (td->GetTypeDescriptorFlags())
 					{
@@ -481,7 +481,7 @@ namespace vl
 				writer.WriteLine(L"\t\t\t\tvoid Load(ITypeManager* manager)");
 				writer.WriteLine(L"\t\t\t\t{");
 
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					writer.WriteString(L"\t\t\t\t\tADD_TYPE_INFO(");
 					writer.WriteString(ConvertType(td));

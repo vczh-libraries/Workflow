@@ -15,7 +15,7 @@ CheckScopes_SymbolType
 			bool CheckScopes_SymbolType(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
+				for (auto scope : manager->nodeScopes.Values())
 				{
 					if (!manager->checkedScopes_SymbolType.Contains(scope.Obj()))
 					{
@@ -23,7 +23,7 @@ CheckScopes_SymbolType
 
 						for (vint i = 0; i < scope->symbols.Count(); i++)
 						{
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(i))
+							for (auto symbol : scope->symbols.GetByIndex(i))
 							{
 								if (symbol->type)
 								{

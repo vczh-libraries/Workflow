@@ -171,7 +171,7 @@ WfCppConfig::CollectClosureInfo
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -179,7 +179,7 @@ WfCppConfig::CollectClosureInfo
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -188,7 +188,7 @@ WfCppConfig::CollectClosureInfo
 				void Execute(WfNewInterfaceExpression* node)
 				{
 					capture = config->manager->lambdaCaptures[node];
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						memberDecl->Accept(this);
 					}
@@ -294,19 +294,19 @@ WfCppConfig::Collect
 
 			void WfCppConfig::Collect()
 			{
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
 					CollectModule(this, module);
 				}
 
-				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
+				for (auto lambda : lambdaExprs.Keys())
 				{
 					auto closureInfo = CollectClosureInfo(lambda);
 					closureInfo->lambdaClassName = lambdaExprs[lambda.Obj()];
 					closureInfos.Add(lambda, closureInfo);
 				}
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
+				for (auto classExpr : classExprs.Keys())
 				{
 					auto closureInfo = CollectClosureInfo(classExpr);
 					closureInfo->lambdaClassName = classExprs[classExpr.Obj()];

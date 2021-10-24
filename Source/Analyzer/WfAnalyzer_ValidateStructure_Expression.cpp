@@ -95,7 +95,7 @@ ValidateStructure(Expression)
 
 				void Visit(WfLetExpression* node)override
 				{
-					FOREACH(Ptr<WfLetVariable>, variable, node->variables)
+					for (auto variable : node->variables)
 					{
 						ValidateExpressionStructure(manager, context, variable->value);
 					}
@@ -125,7 +125,7 @@ ValidateStructure(Expression)
 				{
 					vint listElementCount = 0;
 					vint mapElementCount = 0;
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateExpressionStructure(manager, context, argument->key);
 						if (argument->value)
@@ -213,7 +213,7 @@ ValidateStructure(Expression)
 						{
 							manager->errors.Add(WfErrors::WrongSimpleObserveExpression(node->expression.Obj()));
 						}
-						FOREACH(Ptr<WfExpression>, event, node->events)
+						for (auto event : node->events)
 						{
 							if (!event.Cast<WfReferenceExpression>())
 							{
@@ -262,7 +262,7 @@ ValidateStructure(Expression)
 				void Visit(WfNewInterfaceExpression* node)override
 				{
 					ValidateTypeStructure(manager, node->type);
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						ValidateDeclarationStructure(manager, memberDecl, nullptr, node);
 					}

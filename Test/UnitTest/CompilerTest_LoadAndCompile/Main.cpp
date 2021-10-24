@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 		{
 			List<File> files;
 			CHECK_ERROR(folder.GetFiles(files) == true, L"Failed to get files from GetWorkflowOutputPath()");
-			FOREACH(File, file, files)
+			for (auto file : files)
 			{
 				CHECK_ERROR(file.Delete() == true, L"Failed to delete file");
 			}
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 		{
 			List<File> files;
 			CHECK_ERROR(folder.GetFiles(files) == true, L"Failed to get files from GetCppOutputPath()");
-			FOREACH(File, file, files)
+			for (auto file : files)
 			{
 				CHECK_ERROR(file.Delete() == true, L"Failed to delete file");
 			}

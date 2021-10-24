@@ -448,7 +448,7 @@ WfGenerateExpressionVisitor
 				{
 					List<Ptr<RegexMatch>> matches;
 					config->regexTemplate.Cut(templateValue, false, matches);
-					FOREACH(Ptr<RegexMatch>, match, matches)
+					for (auto match : matches)
 					{
 						WString item = match->Result().Value();
 						if (match->Success())
@@ -471,7 +471,7 @@ WfGenerateExpressionVisitor
 				{
 					if (auto closureInfo = GetClosureInfo(node))
 					{
-						FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
+						for (auto [thisType, index] : indexed(closureInfo->thisTypes))
 						{
 							if (thisType->CanConvertTo(td))
 							{
@@ -545,7 +545,7 @@ WfGenerateExpressionVisitor
 							writer.WriteString(closureInfo->lambdaClassName);
 							writer.WriteString(L"(");
 
-							FOREACH_INDEXER(WString, symbolName, index, closureInfo->symbols.Keys())
+							for (auto [symbolName, index] : indexed(closureInfo->symbols.Keys()))
 							{
 								if (index > 0)
 								{
@@ -554,7 +554,7 @@ WfGenerateExpressionVisitor
 								writer.WriteString(config->ConvertName(symbol->name));
 							}
 
-							FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
+							for (auto [thisType, index] : indexed(closureInfo->thisTypes))
 							{
 								if (index > 0 || closureInfo->symbols.Count() > 0)
 								{
@@ -969,7 +969,7 @@ WfGenerateExpressionVisitor
 				{
 					vint index = 0;
 
-					FOREACH(Ptr<WfLexicalSymbol>, symbol, From(closureInfo->symbols.Values()).Union(closureInfo->ctorArgumentSymbols.Values()))
+					for (auto symbol : From(closureInfo->symbols.Values()).Union(closureInfo->ctorArgumentSymbols.Values()))
 					{
 						if (index++ > 0)
 						{
@@ -978,7 +978,7 @@ WfGenerateExpressionVisitor
 						VisitSymbol(node, symbol, true);
 					}
 
-					FOREACH(ITypeDescriptor*, thisType, closureInfo->thisTypes)
+					for (auto thisType : closureInfo->thisTypes)
 					{
 						if (index++ > 0)
 						{
@@ -1556,7 +1556,7 @@ WfGenerateExpressionVisitor
 				{
 					auto scope = config->manager->nodeScopes[node];
 					writer.WriteString(L"[&](");
-					FOREACH_INDEXER(Ptr<WfLetVariable>, letVar, index, node->variables)
+					for (auto [letVar, index] : indexed(node->variables))
 					{
 						if (index > 0)
 						{
@@ -1568,7 +1568,7 @@ WfGenerateExpressionVisitor
 					writer.WriteString(L"){ return ");
 					Call(node->expression);
 					writer.WriteString(L"; }(");
-					FOREACH_INDEXER(Ptr<WfLetVariable>, letVar, index, node->variables)
+					for (auto [letVar, index] : indexed(node->variables))
 					{
 						if (index > 0)
 						{
@@ -1685,7 +1685,7 @@ WfGenerateExpressionVisitor
 							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
 							writer.WriteString(L"(::vl::__vwsn::CreateList()");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L".Add(");
 								Call(argument->key);
@@ -1699,7 +1699,7 @@ WfGenerateExpressionVisitor
 							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
 							writer.WriteString(L"(::vl::__vwsn::CreateObservableList()");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L".Add(");
 								Call(argument->key);
@@ -1714,7 +1714,7 @@ WfGenerateExpressionVisitor
 							auto valueType = result.type->GetElementType()->GetGenericArgument(1);
 							writer.WriteString(L"(::vl::__vwsn::CreateDictionary()");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L".Add(");
 								Call(argument->key);
@@ -1731,7 +1731,7 @@ WfGenerateExpressionVisitor
 							writer.WriteString(config->ConvertType(td));
 							writer.WriteString(L" __vwsn_temp__;");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L" __vwsn_temp__.");
 								writer.WriteString(argument->key.Cast<WfReferenceExpression>()->name.value);

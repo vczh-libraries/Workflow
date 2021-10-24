@@ -79,7 +79,7 @@ void FillFileNames(const WString& path, SortedList<WString>& fileNames)
 	List<File> files;
 	CHECK_ERROR(folder.GetFiles(files), L"Failed to enumerate files");
 
-	FOREACH(File, file, files)
+	for (auto file : files)
 	{
 		fileNames.Add(file.GetFilePath().GetName());
 	}
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 			CHECK_ERROR(CompareEnumerable(fileNames32, fileNames64) == 0, L"File names in x64 and x86 folder are different.");
 		}
 
-		FOREACH(WString, fileName, fileNames32)
+		for (auto fileName : fileNames32)
 		{
 			Console::WriteLine(fileName);
 			auto file32 = GetCppOutputPath32() + fileName;

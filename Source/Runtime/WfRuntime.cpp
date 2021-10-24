@@ -48,7 +48,7 @@ WfRuntimeCallStackInfo
 					if (!context)
 					{
 						Dictionary<WString, Value> map;
-						FOREACH_INDEXER(WString, name, index, names)
+						for (auto [name, index] : indexed(names))
 						{
 							map.Add(name, context->variables[index]);
 						}

@@ -18,7 +18,7 @@ GenerateGlobalDeclarationMetadata
 
 			void GenerateFunctionDeclarationMetadata(WfCodegenContext& context, WfFunctionDeclaration* node, Ptr<WfAssemblyFunction> meta)
 			{
-				FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+				for (auto argument : node->arguments)
 				{
 					meta->argumentNames.Add(argument->name.value);
 				}
@@ -27,7 +27,7 @@ GenerateGlobalDeclarationMetadata
 					if (index != -1)
 					{
 						auto capture = context.manager->lambdaCaptures.Values()[index];
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+						for (auto symbol : capture->symbols)
 						{
 							meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
 						}
@@ -98,7 +98,7 @@ GenerateGlobalDeclarationMetadata
 				{
 					auto meta = MakePtr<WfAssemblyFunction>();
 					meta->name = namePrefix + L"#ctor";
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						meta->argumentNames.Add(argument->name.value);
 					}
@@ -141,7 +141,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -149,7 +149,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -170,7 +170,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						GenerateGlobalDeclarationMetadata(context, decl, namePrefix + node->name.value + L"::");
 					}
@@ -217,7 +217,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", node);
 						memberDecl->Accept(&visitor);
@@ -234,7 +234,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -242,7 +242,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}

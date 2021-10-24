@@ -146,7 +146,7 @@ ValidateStructure(Statement)
 				void Visit(WfSwitchStatement* node)override
 				{
 					ValidateExpressionStructure(manager, context, node->expression);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						ValidateExpressionStructure(manager, context, switchCase->expression);
 						ValidateStatementStructure(manager, context, switchCase->statement);
@@ -214,7 +214,7 @@ ValidateStructure(Statement)
 						manager->errors.Add(WfErrors::WrongStateSwitchStatement(node));
 					}
 
-					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						ValidateStatementStructure(manager, context, switchCase->statement);
 					}
@@ -227,7 +227,7 @@ ValidateStructure(Statement)
 						manager->errors.Add(WfErrors::WrongStateInvokeStatement(node));
 					}
 
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateExpressionStructure(manager, context, argument);
 					}

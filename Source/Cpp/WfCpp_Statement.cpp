@@ -234,7 +234,7 @@ namespace vl
 						prefix += L"\t";
 					}
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						statement = SearchUntilNonVirtualStatement(statement);
 

@@ -127,7 +127,7 @@ ValidateStructure(Declaration)
 
 
 					ValidateTypeStructure(manager, node->returnType, ValidateTypeStragety::ReturnType);
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateTypeStructure(manager, argument->type);
 					}
@@ -180,7 +180,7 @@ ValidateStructure(Declaration)
 							break;
 						}
 
-						FOREACH(Ptr<WfType>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							ValidateTypeStructure(manager, argument);
 						}
@@ -219,7 +219,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							Execute(decl);
 						}
@@ -291,7 +291,7 @@ ValidateStructure(Declaration)
 						ValidateTypeStructure(manager, node->type);
 						FindPropertyRelatedDeclVisitor visitor(manager, classDecl, node);
 
-						FOREACH(Ptr<WfDeclaration>, memberDecl, classDecl->declarations)
+						for (auto memberDecl : classDecl->declarations)
 						{
 							visitor.Execute(memberDecl);
 						}
@@ -340,10 +340,10 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::WrongDeclaration(node));
 						}
 
-						FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+						for (auto call : node->baseConstructorCalls)
 						{
 							ValidateTypeStructure(manager, call->type, ValidateTypeStragety::BaseType, classDecl);
-							FOREACH(Ptr<WfExpression>, argument, call->arguments)
+							for (auto argument : call->arguments)
 							{
 								ValidateStructureContext context;
 								ValidateExpressionStructure(manager, &context, argument);
@@ -397,7 +397,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -431,7 +431,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -484,7 +484,7 @@ ValidateStructure(Declaration)
 							}
 							{
 								FindCtorVisitor visitor;
-								FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+								for (auto memberDecl : node->declarations)
 								{
 									memberDecl->Accept(&visitor);
 								}
@@ -510,7 +510,7 @@ ValidateStructure(Declaration)
 						break;
 					}
 
-					FOREACH(Ptr<WfType>, type, node->baseTypes)
+					for (auto type : node->baseTypes)
 					{
 						ValidateTypeStructure(manager, type, ValidateTypeStragety::BaseType, node);
 					}
@@ -518,7 +518,7 @@ ValidateStructure(Declaration)
 					{
 						TooManyDtorVisitor visitor(manager, node);
 						bool hasStateMachine = false;
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+						for (auto memberDecl : node->declarations)
 						{
 							if (auto smDecl = memberDecl.Cast<WfStateMachineDeclaration>())
 							{
@@ -559,7 +559,7 @@ ValidateStructure(Declaration)
 					vuint64_t current = 0;
 					bool reportedNotConsecutive = false;
 					SortedList<WString> discoveredItems;
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						switch (item->kind)
 						{
@@ -592,7 +592,7 @@ ValidateStructure(Declaration)
 							}
 							break;
 						case WfEnumItemKind::Intersection:
-							FOREACH(Ptr<WfEnumItemIntersection>, enumInt, item->intersections)
+							for (auto enumInt : item->intersections)
 							{
 								if (!discoveredItems.Contains(enumInt->name.value))
 								{
@@ -633,7 +633,7 @@ ValidateStructure(Declaration)
 					}
 
 					SortedList<WString> discoveredItems;
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						if (discoveredItems.Contains(member->name.value))
 						{
@@ -649,7 +649,7 @@ ValidateStructure(Declaration)
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
 					node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -727,7 +727,7 @@ ValidateStructure(Declaration)
 				{
 					if (classDecl)
 					{
-						FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+						for (auto state : node->states)
 						{
 							ValidateStructureContext context;
 							context.currentStateDeclaration = state.Obj();

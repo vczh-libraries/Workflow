@@ -288,7 +288,7 @@ ValidateSemantic(Expression)
 					{
 						if (nameResults.Count() > 0)
 						{
-							FOREACH(ResolveExpressionResult, result, nameResults)
+							for (auto result : nameResults)
 							{
 								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, result.symbol));
 							}
@@ -324,7 +324,7 @@ ValidateSemantic(Expression)
 					}
 
 					ResolveName(node, node->name.value);
-					FOREACH(ResolveExpressionResult, result, results)
+					for (auto result : results)
 					{
 						ITypeDescriptor* td = nullptr;
 						if (result.methodInfo)
@@ -436,7 +436,7 @@ ValidateSemantic(Expression)
 						}
 
 						Ptr<ITypeInfo> resultType = type->GetGenericArgument(0);
-						FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, parameterSymbols)
+						for (auto [symbol, index] : indexed(parameterSymbols))
 						{
 							symbol->typeInfo = type->GetGenericArgument(index + 1);
 							symbol->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
@@ -499,7 +499,7 @@ ValidateSemantic(Expression)
 
 							if (results.Count() > 0)
 							{
-								FOREACH(ResolveExpressionResult, result, results)
+								for (auto result : results)
 								{
 									if (result.methodInfo)
 									{
@@ -1008,7 +1008,7 @@ ValidateSemantic(Expression)
 				{
 					auto scope = manager->nodeScopes[node].Obj();
 
-					FOREACH(Ptr<WfLetVariable>, variable, node->variables)
+					for (auto variable : node->variables)
 					{
 						auto symbol = scope->symbols[variable->name.value][0];
 						symbol->typeInfo = GetExpressionType(manager, variable->value, 0);
@@ -1172,7 +1172,7 @@ ValidateSemantic(Expression)
 					if (expectedType && expectedType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
 					{
 						SortedList<WString> fields;
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							if (!argument->value)
 							{
@@ -1257,7 +1257,7 @@ ValidateSemantic(Expression)
 
 						bool map = node->arguments[0]->value;
 						Ptr<ITypeInfo> keyType, valueType;
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							{
 								Ptr<ITypeInfo> newKeyType = GetExpressionType(manager, argument->key, expectedKeyType);
@@ -1459,7 +1459,7 @@ ValidateSemantic(Expression)
 							}
 							else
 							{
-								FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+								for (auto eventExpr : node->events)
 								{
 									auto ref = eventExpr.Cast<WfReferenceExpression>();
 									IEventInfo* info = td->GetEventByName(ref->name.value, true);
@@ -1482,7 +1482,7 @@ ValidateSemantic(Expression)
 							symbol->type = GetTypeFromTypeInfo(parentType.Obj());
 
 							observeeType = GetExpressionType(manager, node->expression, 0);
-							FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+							for (auto eventExpr : node->events)
 							{
 								GetExpressionEventInfo(manager, eventExpr);
 							}
@@ -1517,7 +1517,7 @@ ValidateSemantic(Expression)
 					auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
 					auto genericType = MakePtr<GenericTypeInfo>(classType);
 					genericType->AddGenericArgument(CreateTypeInfoFromType(scope, node->function->returnType));
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->function->arguments)
+					for (auto argument : node->function->arguments)
 					{
 						genericType->AddGenericArgument(scope->symbols[argument->name.value][0]->typeInfo);
 					}
@@ -1553,7 +1553,7 @@ ValidateSemantic(Expression)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -1587,7 +1587,7 @@ ValidateSemantic(Expression)
 
 					void Execute(WfNewInterfaceExpression* node)
 					{
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+						for (auto memberDecl : node->declarations)
 						{
 							memberDecl->Accept(this);
 							ValidateDeclarationSemantic(manager, memberDecl);
@@ -1694,7 +1694,7 @@ ValidateSemantic(Expression)
 
 									if (declVisitor.lastFunction)
 									{
-										FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
+										for (auto func : declVisitor.overrideFunctions)
 										{
 											implementMethods.Add(func->name.value, func);
 										}
@@ -1746,14 +1746,14 @@ ValidateSemantic(Expression)
 
 								auto discardFirst = [=](const WString& key, const List<IMethodInfo*>& methods)
 									{
-										FOREACH(IMethodInfo*, method, methods)
+										for (auto method : methods)
 										{
 											manager->errors.Add(WfErrors::InterfaceMethodNotImplemented(node, method));
 										}
 									};
 								auto discardSecond = [=](const WString& key, const List<Ptr<WfFunctionDeclaration>>& methods)
 									{
-										FOREACH(Ptr<WfFunctionDeclaration>, decl, methods)
+										for (auto decl : methods)
 										{
 											Ptr<ITypeInfo> declType = GetFunctionDeclarationType(scope, decl);
 											manager->errors.Add(WfErrors::InterfaceMethodNotFound(decl.Obj(), type.Obj(), declType.Obj()));
@@ -1770,13 +1770,13 @@ ValidateSemantic(Expression)
 										Group<WString, IMethodInfo*> typedInterfaceMethods;
 										Group<WString, Ptr<WfFunctionDeclaration>> typedImplementMethods;
 
-										FOREACH(IMethodInfo*, method, interfaces)
+										for (auto method : interfaces)
 										{
 											Ptr<ITypeInfo> methodType = CreateTypeInfoFromMethodInfo(method);
 											typedInterfaceMethods.Add(methodType->GetTypeFriendlyName(), method);
 										}
 
-										FOREACH(Ptr<WfFunctionDeclaration>, decl, implements)
+										for (auto decl : implements)
 										{
 											Ptr<ITypeInfo> methodType = GetFunctionDeclarationType(scope, decl);
 											typedImplementMethods.Add(methodType->GetTypeFriendlyName(), decl);
@@ -1792,7 +1792,7 @@ ValidateSemantic(Expression)
 												if (interfaces.Count() > 1)
 												{
 													List<ResolveExpressionResult> functions;
-													FOREACH(IMethodInfo*, method, interfaces)
+													for (auto method : interfaces)
 													{
 														functions.Add(ResolveExpressionResult::Constructor(method));
 														manager->errors.Add(WfErrors::CannotPickOverloadedInterfaceMethods(node, functions));
@@ -2105,7 +2105,7 @@ IsConstantExpression
 					auto result = manager->expressionResolvings[node];
 					bool isStruct = (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct);
 
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (argument->key && !isStruct)
 						{
@@ -2158,7 +2158,7 @@ ValidateSemantic
 					if (result.scopeName && result.scopeName->declarations.Count() > 0)
 					{
 						List<ResolveExpressionResult> replaces;
-						FOREACH(Ptr<WfDeclaration>, decl, result.scopeName->declarations)
+						for (auto decl : result.scopeName->declarations)
 						{
 							vint index = manager->nodeScopes.Keys().IndexOf(decl.Obj());
 							if (index == -1) continue;
@@ -2170,7 +2170,7 @@ ValidateSemantic
 
 							index = scope->symbols.Keys().IndexOf(decl->name.value);
 							if (index == -1) continue;
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+							for (auto symbol : scope->symbols.GetByIndex(index))
 							{
 								if (symbol->creatorNode == decl && symbol->typeInfo)
 								{
@@ -2182,7 +2182,7 @@ ValidateSemantic
 						if (replaces.Count() > 0)
 						{
 							results.RemoveAt(i);
-							FOREACH_INDEXER(ResolveExpressionResult, replaceResult, index, replaces)
+							for (auto [replaceResult, index] : indexed(replaces))
 							{
 								results.Insert(i + index, replaceResult);
 							}

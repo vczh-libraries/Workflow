@@ -223,7 +223,7 @@ ValidateSemantic(Statement)
 
 				void Visit(WfBlockStatement* node)override
 				{
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						ValidateStatementSemantic(manager, statement);
 					}
@@ -303,7 +303,7 @@ ValidateSemantic(Statement)
 				void Visit(WfSwitchStatement* node)override
 				{
 					Ptr<ITypeInfo> type = GetExpressionType(manager, node->expression, 0);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						Ptr<ITypeInfo> caseType;
 						if (IsExpressionDependOnExpectedType(manager, switchCase->expression))
@@ -593,7 +593,7 @@ ValidateSemantic(Statement)
 								}
 
 								List<ResolveExpressionResult> functions;
-								FOREACH(IMethodGroupInfo*, group, groups)
+								for (auto group : groups)
 								{
 									vint count = group->GetMethodCount();
 									for (vint i = 0; i < count; i++)
@@ -629,7 +629,7 @@ ValidateSemantic(Statement)
 											auto symbol = scope->symbols[node->varName.value][0];
 											List<ITypeInfo*> types;
 
-											FOREACH(Ptr<WfExpression>, argument, node->arguments)
+											for (auto argument : node->arguments)
 											{
 												vint index = manager->expressionResolvings.Keys().IndexOf(argument.Obj());
 												if (index != -1)
@@ -684,7 +684,7 @@ ValidateSemantic(Statement)
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
 					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' location.");
 
-					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						auto caseScope = manager->nodeScopes[switchCase.Obj()].Obj();
 						Ptr<WfLexicalSymbol> inputSymbol;
@@ -709,7 +709,7 @@ ValidateSemantic(Statement)
 							}
 							else
 							{
-								FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, switchCase->arguments)
+								for (auto [argument, index] : indexed(switchCase->arguments))
 								{
 									auto argumentSymbol = caseScope->symbols[argument->name.value][0];
 									argumentSymbol->typeInfo = CopyTypeInfo(inputMethod->GetParameter(index)->GetType());
@@ -749,7 +749,7 @@ ValidateSemantic(Statement)
 						else
 						{
 							auto stateScope = manager->nodeScopes[stateDecl.Obj()];
-							FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+							for (auto [argument, index] : indexed(node->arguments))
 							{
 								auto typeInfo = stateScope->symbols[stateDecl->arguments[index]->name.value][0]->typeInfo;
 								GetExpressionType(manager, argument, typeInfo);

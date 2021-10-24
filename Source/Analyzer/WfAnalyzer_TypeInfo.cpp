@@ -104,7 +104,7 @@ GetExpressionFromTypeDescriptor
 				GetTypeFragments(typeDescriptor, fragments);
 
 				Ptr<WfExpression> parentExpr;
-				FOREACH(WString, fragment, fragments)
+				for (auto fragment : fragments)
 				{
 					if (!parentExpr)
 					{
@@ -177,7 +177,7 @@ GetTypeFromTypeInfo
 						GetTypeFragments(typeInfo->GetTypeDescriptor(), fragments);
 
 						Ptr<WfType> parentType;
-						FOREACH(WString, fragment, fragments)
+						for (auto fragment : fragments)
 						{
 							if (!parentType)
 							{
@@ -738,7 +738,7 @@ CreateTypeInfoFromType
 						auto enumerableTypeInfo = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
 						auto genericTypeInfo = MakePtr<GenericTypeInfo>(enumerableTypeInfo);
 						genericTypeInfo->AddGenericArgument(returnType);
-						FOREACH(Ptr<WfType>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							if (Ptr<ITypeInfo> argumentType = Call(argument.Obj(), true))
 							{

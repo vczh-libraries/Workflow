@@ -36,7 +36,7 @@ ExpandSwitchStatement
 				Ptr<WfStatement> rootIfStat;
 				auto tailIfStat = &rootIfStat;
 
-				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+				for (auto switchCase : node->caseBranches)
 				{
 					auto ifStat = MakePtr<WfIfStatement>();
 					*tailIfStat = ifStat;
@@ -444,7 +444,7 @@ ExpandCoProviderStatement
 						auto callExpr = MakePtr<WfCallExpression>();
 						callExpr->function = funcExpr;
 						callExpr->arguments.Add(refImpl);
-						FOREACH(Ptr<WfExpression>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							callExpr->arguments.Add(CreateField(argument));
 						}
@@ -556,7 +556,7 @@ ExpandCoProviderStatement
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						statement = SearchUntilNonVirtualStatement(statement);
 

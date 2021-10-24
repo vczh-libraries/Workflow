@@ -49,7 +49,7 @@ namespace vl
 				if (varDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					for (auto decl : varDecls)
 					{
 						auto scope = manager->nodeScopes[decl.Obj()].Obj();
 						auto symbol = scope->symbols[decl->name.value][0];
@@ -67,7 +67,7 @@ namespace vl
 				if (funcDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+					for (auto decl : funcDecls)
 					{
 						writer.WriteString(L"\t\t");
 						WriteFunctionHeader(writer, decl, ConvertName(decl->name.value), true);
@@ -85,13 +85,13 @@ namespace vl
 					writer.WriteLine(L"Closures");
 					writer.WriteLine(L"***********************************************************************/");
 
-					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+					for (auto expr : reversedLambdaExprs.Values())
 					{
 						writer.WriteLine(L"");
 						WriteHeader_LambdaExprDecl(writer, expr);
 					}
 
-					FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+					for (auto expr : reversedClassExprs.Values())
 					{
 						writer.WriteLine(L"");
 						WriteHeader_ClassExprDecl(writer, expr);
@@ -119,7 +119,7 @@ namespace vl
 				if (varDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					for (auto decl : varDecls)
 					{
 						auto scope = manager->nodeScopes[decl.Obj()].Obj();
 						auto symbol = scope->symbols[decl->name.value][0];
@@ -136,7 +136,7 @@ namespace vl
 				if (varDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					for (auto decl : varDecls)
 					{
 						auto scope = manager->nodeScopes[decl.Obj()].Obj();
 						auto symbol = scope->symbols[decl->name.value][0];
@@ -175,7 +175,7 @@ namespace vl
 				writer.WriteLine(L"Global Functions");
 				writer.WriteLine(L"***********************************************************************/");
 
-				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+				for (auto decl : funcDecls)
 				{
 					writer.WriteLine(L"");
 					writer.WriteString(L"\t");
@@ -197,7 +197,7 @@ namespace vl
 					writer.WriteLine(L"Closures");
 					writer.WriteLine(L"***********************************************************************/");
 
-					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+					for (auto expr : reversedLambdaExprs.Values())
 					{
 						writer.WriteLine(L"");
 						writer.WriteLine(L"\t//-------------------------------------------------------------------");
@@ -208,7 +208,7 @@ namespace vl
 					if (reversedClassExprs.Count() > 0)
 					{
 						writer.WriteLine(L"");
-						FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+						for (auto expr : reversedClassExprs.Values())
 						{
 							writer.WriteLine(L"\t//-------------------------------------------------------------------");
 							writer.WriteLine(L"");

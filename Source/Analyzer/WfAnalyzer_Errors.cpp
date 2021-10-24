@@ -213,7 +213,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedFunctions(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				FOREACH_INDEXER(ResolveExpressionResult, result, index, results)
+				for (auto [result, index] : indexed(results))
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
@@ -392,7 +392,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates)
 			{
 				WString description;
-				FOREACH(WString, candidate, candidates)
+				for (auto candidate : candidates)
 				{
 					description += L"\r\n\t";
 					description += candidate;
@@ -440,7 +440,7 @@ WfErrors
 				else
 				{
 					WString description;
-					FOREACH(ITypeInfo*, type, types)
+					for (auto type : types)
 					{
 						description += L"\r\n\t";
 						description += type->GetTypeFriendlyName();
@@ -573,7 +573,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				FOREACH(ResolveExpressionResult, result, results)
+				for (auto result : results)
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
@@ -649,7 +649,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -710,7 +710,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name)
 			{
 				WString description;
-				FOREACH_INDEXER(ResolveExpressionResult, result, index, results)
+				for (auto [result, index] : indexed(results))
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
@@ -837,7 +837,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -848,7 +848,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -884,7 +884,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -895,7 +895,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();

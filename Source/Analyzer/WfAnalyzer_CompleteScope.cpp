@@ -41,7 +41,7 @@ CompleteScopeForClassMember
 					auto scope = manager->nodeScopes[node];
 					auto info = manager->declarationMemberInfos[node].Cast<WfMethodBase>();
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 						{
@@ -75,7 +75,7 @@ CompleteScopeForClassMember
 						voidType->name = WfPredefinedTypeName::Void;
 						type->result = voidType;
 					}
-					FOREACH(Ptr<WfType>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						type->arguments.Add(argument);
 					}
@@ -113,7 +113,7 @@ CompleteScopeForClassMember
 					auto scope = manager->nodeScopes[node];
 					auto info = manager->declarationMemberInfos[node].Cast<WfClassConstructor>();
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 						{
@@ -144,7 +144,7 @@ CompleteScopeForClassMember
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -158,12 +158,12 @@ CompleteScopeForClassMember
 				void Visit(WfStateMachineDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
-					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					for (auto input : node->inputs)
 					{
 						auto method = manager->stateInputMethods[input.Obj()];
 						method->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 
-						FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+						for (auto argument : input->arguments)
 						{
 							if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 							{
@@ -175,9 +175,9 @@ CompleteScopeForClassMember
 						}
 					}
 
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
-						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						for (auto argument : state->arguments)
 						{
 							if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 							{
@@ -220,7 +220,7 @@ CompleteScopeForDeclaration
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						CompleteScopeForDeclaration(manager, decl);
 					}
@@ -257,7 +257,7 @@ CompleteScopeForDeclaration
 
 					if (node->baseTypes.Count() > 0)
 					{
-						FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+						for (auto baseType : node->baseTypes)
 						{
 							if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
 							{
@@ -303,7 +303,7 @@ CompleteScopeForDeclaration
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						CompleteScopeForClassMember(manager, td, node, memberDecl);
 					}
@@ -313,7 +313,7 @@ CompleteScopeForDeclaration
 				{
 					auto td = manager->declarationTypes[node].Cast<WfEnum>();
 					Dictionary<WString, vuint64_t> items;
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						vuint64_t value = 0;
 						switch (item->kind)
@@ -322,7 +322,7 @@ CompleteScopeForDeclaration
 							TypedValueSerializerProvider<vuint64_t>::Deserialize(item->number.value, value);
 							break;
 						case WfEnumItemKind::Intersection:
-							FOREACH(Ptr<WfEnumItemIntersection>, itemInt, item->intersections)
+							for (auto itemInt : item->intersections)
 							{
 								value |= items[itemInt->name.value];
 							}
@@ -337,7 +337,7 @@ CompleteScopeForDeclaration
 				{
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node].Cast<WfStruct>();
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), member->type))
 						{
@@ -350,7 +350,7 @@ CompleteScopeForDeclaration
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -359,7 +359,7 @@ CompleteScopeForDeclaration
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -392,7 +392,7 @@ CompleteScope
 
 			void CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+				for (auto declaration : module->declarations)
 				{
 					CompleteScopeForDeclaration(manager, declaration);
 				}

@@ -196,7 +196,7 @@ ContextFreeModuleDesugar
 								}
 								SetCodeRange(expression, { formatPos,formatPos,node->codeRange.codeIndex }, true);
 							}
-							FOREACH(Ptr<ParsingError>, originalError, errors)
+							for (auto originalError : errors)
 							{
 								auto error = WfErrors::WrongFormatStringSyntax(node);
 								error->errorMessage += L" (" + originalError->errorMessage + L")";
@@ -216,7 +216,7 @@ ContextFreeModuleDesugar
 					if (expressions.Count() > 0)
 					{
 						Ptr<WfExpression> current = expressions[0];
-						FOREACH(Ptr<WfExpression>, expression, From(expressions).Skip(1))
+						for (auto expression : From(expressions).Skip(1))
 						{
 							Ptr<WfBinaryExpression> binary = new WfBinaryExpression;
 							binary->codeRange = node->codeRange;
@@ -427,7 +427,7 @@ ContextFreeModuleDesugar
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						auto classMember = MakePtr<WfClassMember>();
 						decl->classMember = classMember;

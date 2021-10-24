@@ -278,7 +278,7 @@ GenerateInstructions(Expression)
 					});
 
 					auto capture = context.manager->lambdaCaptures.Get(node);
-					FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+					for (auto symbol : capture->symbols)
 					{
 						GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 					}
@@ -640,7 +640,7 @@ GenerateInstructions(Expression)
 					auto scope = context.manager->nodeScopes[node].Obj();
 					Array<vint> variableIndices(node->variables.Count());
 					auto function = context.functionContext->function;
-					FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
+					for (auto [var, index] : indexed(node->variables))
 					{
 						auto symbol = scope->symbols[var->name.value][0];
 						vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<let>" + var->name.value);
@@ -651,7 +651,7 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 					}
 					GenerateExpressionInstructions(context, node->expression);
-					FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
+					for (auto [var, index] : indexed(node->variables))
 					{
 						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(variableIndices[index]));
@@ -786,7 +786,7 @@ GenerateInstructions(Expression)
 						auto td = result.type->GetTypeDescriptor();
 						INSTRUCTION(Ins::CreateStruct(Value::BoxedValue, td));
 
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							auto prop = td->GetPropertyByName(argument->key.Cast<WfReferenceExpression>()->name.value, true);
 							GenerateExpressionInstructions(context, argument->value, CopyTypeInfo(prop->GetReturn()));
@@ -798,7 +798,7 @@ GenerateInstructions(Expression)
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
-						FOREACH(Ptr<WfConstructorArgument>, argument, From(node->arguments).Reverse())
+						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
@@ -807,7 +807,7 @@ GenerateInstructions(Expression)
 					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
-						FOREACH(Ptr<WfConstructorArgument>, argument, From(node->arguments).Reverse())
+						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
@@ -817,7 +817,7 @@ GenerateInstructions(Expression)
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
 						Ptr<ITypeInfo> valueType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(1));
-						FOREACH(Ptr<WfConstructorArgument>, argument, From(node->arguments).Reverse())
+						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 							GenerateExpressionInstructions(context, argument->value, valueType);
@@ -931,7 +931,7 @@ GenerateInstructions(Expression)
 
 				void Visit(WfCallExpression* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						GenerateExpressionInstructions(context, argument);
 					}
@@ -1008,7 +1008,7 @@ GenerateInstructions(Expression)
 					else
 					{
 						auto capture = context.manager->lambdaCaptures.Get(node);
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+						for (auto symbol : capture->symbols)
 						{
 							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 						}
@@ -1046,7 +1046,7 @@ GenerateInstructions(Expression)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -1081,7 +1081,7 @@ GenerateInstructions(Expression)
 
 					void Execute(WfNewInterfaceExpression* node)
 					{
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+						for (auto memberDecl : node->declarations)
 						{
 							memberDecl->Accept(this);
 						}
@@ -1097,7 +1097,7 @@ GenerateInstructions(Expression)
 				void Visit(WfNewClassExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node];
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						GenerateExpressionInstructions(context, argument);
 					}
@@ -1129,7 +1129,7 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + thisCount + 1));
 
-						FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.closureFunctions)
+						for (auto func : declVisitor.closureFunctions)
 						{
 							WfCodegenLambdaContext lc;
 							lc.functionDeclaration = func.Obj();
@@ -1143,7 +1143,7 @@ GenerateInstructions(Expression)
 							context.closureFunctions.Add(symbol.Obj(), functionIndex);
 						}
 
-						FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
+						for (auto func : declVisitor.overrideFunctions)
 						{
 							auto methodInfo = context.manager->interfaceMethodImpls[func.Obj()];
 							INSTRUCTION(Ins::LoadMethodInfo(methodInfo));

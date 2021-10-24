@@ -28,7 +28,7 @@ TEST_FILE
 			Ptr<ParsingTable> table = GetWorkflowTable();
 			List<WString> itemNames;
 			LoadSampleIndex(category, itemNames);
-			FOREACH(WString, itemName, itemNames)
+			for (auto itemName : itemNames)
 			{
 				TEST_CASE(itemName)
 				{

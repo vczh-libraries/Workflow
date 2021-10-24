@@ -103,7 +103,7 @@ FindCoroutineAwaredStatements
 				void Visit(WfBlockStatement* node)override
 				{
 					bool result = false;
-					FOREACH(Ptr<WfStatement>, stat, node->statements)
+					for (auto stat : node->statements)
 					{
 						bool a = Call(stat);
 						result |= a;
@@ -185,7 +185,7 @@ FindCoroutineAwaredVariables
 				void Visit(WfBlockStatement* node)override
 				{
 					FindCoroutineAwaredVariableVisitor visitor(awaredVariables);
-					FOREACH(Ptr<WfStatement>, stat, node->statements)
+					for (auto stat : node->statements)
 					{
 						stat->Accept(&visitor);
 					}
@@ -220,7 +220,7 @@ FindCoroutineReferenceRenaming
 					}
 				};
 
-				FOREACH(WfVariableStatement*, stat, awaredVariables)
+				for (auto stat : awaredVariables)
 				{
 					auto scope = manager->nodeScopes[stat];
 					auto symbol = scope->symbols[stat->variable->name.value][0];
@@ -228,7 +228,7 @@ FindCoroutineReferenceRenaming
 					referenceRenaming.Add(symbol.Obj(), name);
 				}
 
-				FOREACH(WfStatement*, stat, awaredStatements)
+				for (auto stat : awaredStatements)
 				{
 					if (auto tryStat = dynamic_cast<WfTryStatement*>(stat))
 					{
@@ -775,7 +775,7 @@ GenerateFlowChart
 						resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
 						resultLast = resultHead;
 
-						FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
+						for (auto [stat, index] : indexed(node->statements))
 						{
 							auto pair = Execute(resultLast, catchNode, scopeContext, stat);
 							resultLast = pair.value;
@@ -794,7 +794,7 @@ GenerateFlowChart
 						blockContext.enterNode = resultHead;
 						blockContext.leaveNode = blockEnd;
 
-						FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
+						for (auto [stat, index] : indexed(node->statements))
 						{
 							auto pair = Execute(resultLast, catchNode, &blockContext, stat);
 							resultLast = pair.value;
@@ -914,7 +914,7 @@ RemoveUnnecessaryNodes
 				const auto& keys = enterCounts.Keys();
 				auto& values = const_cast<Dictionary<FlowChartNode*, vint>::ValueContainer&>(enterCounts.Values());
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					enterCounts.Add(node.Obj(), 0);
 				}
@@ -929,12 +929,12 @@ RemoveUnnecessaryNodes
 					}
 				};
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					Inc(node->destination);
 					Inc(node->exceptionDestination);
 					Inc(node->pauseDestination);
-					FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+					for (auto branch : node->branches)
 					{
 						Inc(branch->destination);
 					}
@@ -948,7 +948,7 @@ RemoveUnnecessaryNodes
 
 				SortedList<FlowChartNode*> mergableNodes;
 				List<Ptr<FlowChartNode>> keepingNodes;
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					bool mergable = false;
 
@@ -975,7 +975,7 @@ RemoveUnnecessaryNodes
 				}
 
 				Dictionary<FlowChartNode*, FlowChartNode*> merging;
-				FOREACH(FlowChartNode*, node, mergableNodes)
+				for (auto node : mergableNodes)
 				{
 					auto current = node;
 					while (mergableNodes.Contains(current))
@@ -1009,14 +1009,14 @@ RemoveUnnecessaryNodes
 					if (index != -1) DESTINATION = merging.Values()[index];\
 				}\
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					if (!mergableNodes.Contains(node.Obj()))
 					{
 						MERGE_FLOW_CHART_NODE(node->destination);
 						MERGE_FLOW_CHART_NODE(node->exceptionDestination);
 						MERGE_FLOW_CHART_NODE(node->pauseDestination);
-						FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+						for (auto branch : node->branches)
 						{
 							MERGE_FLOW_CHART_NODE(branch->destination);
 						}
@@ -1041,7 +1041,7 @@ RemoveUnnecessaryNodes
 			{
 				RemoveUnnecessaryNodesPass(flowChart);
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					if (node->pauseDestination && node->statements.Count() > 0 && node->statements[node->statements.Count() - 1].Cast<WfCoPauseStatement>())
 					{
@@ -1051,9 +1051,9 @@ RemoveUnnecessaryNodes
 
 				Dictionary<FlowChartNode*, vint> enterCounts;
 				CalculateEnterCounts(flowChart, enterCounts);
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
-					FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+					for (auto branch : node->branches)
 					{
 						if (enterCounts[branch->destination] == 1)
 						{
@@ -1216,7 +1216,7 @@ ExpandFlowChartNode
 				}
 
 				bool exited = false;
-				FOREACH(Ptr<WfStatement>, stat, flowChartNode->statements)
+				for (auto stat : flowChartNode->statements)
 				{
 					if (stat.Cast<WfCoPauseStatement>())
 					{
@@ -1249,7 +1249,7 @@ ExpandFlowChartNode
 					}
 				}
 
-				FOREACH(Ptr<FlowChartBranch>, branch, flowChartNode->branches)
+				for (auto branch : flowChartNode->branches)
 				{
 					Ptr<WfBlockStatement> trueBlock;
 
@@ -1316,7 +1316,7 @@ ExpandNewCoroutineExpression
 				Dictionary<WfLexicalSymbol*, WString> referenceRenaming;
 
 				FindCoroutineAwaredStatements(node->statement, awaredStatements);
-				FOREACH(WfStatement*, stat, awaredStatements)
+				for (auto stat : awaredStatements)
 				{
 					FindCoroutineAwaredVariables(stat, awaredVariables);
 				}
@@ -1346,12 +1346,11 @@ ExpandNewCoroutineExpression
 				// Coroutine Awared Variables
 				/////////////////////////////////////////////////////////////////////////////
 
-				FOREACH(WfLexicalSymbol*, symbol,
-					From(referenceRenaming.Keys())
-						.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
-						{
-							return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
-						}))
+				for (auto symbol : From(referenceRenaming.Keys())
+					.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
+					{
+						return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
+					}))
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);
@@ -1620,7 +1619,7 @@ ExpandNewCoroutineExpression
 											return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
 										});
 
-									FOREACH(GroupPair, group, nodeByCatches)
+									for (auto group : nodeByCatches)
 									{
 										auto catchNode = group.key;
 										if (!catchNode) continue;
@@ -1628,7 +1627,7 @@ ExpandNewCoroutineExpression
 										Ptr<WfExpression> condition;
 										{
 											List<Tuple<vint, vint>> conditionRanges;
-											FOREACH(FlowChartNode*, flowChartNode, group.value)
+											for (auto flowChartNode : group.value)
 											{
 												vint state = nodeOrders.IndexOf(flowChartNode);
 												if (conditionRanges.Count() == 0)
@@ -1787,7 +1786,7 @@ ExpandNewCoroutineExpression
 									return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
 								});
 
-							FOREACH(GroupPair, group, nodeByCatches)
+							for (auto group : nodeByCatches)
 							{
 								auto catchNode = group.key;
 								auto groupBlock = whileBlock;
@@ -1796,7 +1795,7 @@ ExpandNewCoroutineExpression
 									groupBlock = ExpandExceptionDestination(catchNode, referenceRenaming, nodeOrders, whileBlock);
 								}
 
-								FOREACH(FlowChartNode*, flowChartNode, group.value)
+								for (auto flowChartNode : group.value)
 								{
 									/////////////////////////////////////////////////////////////////////////////
 									// if (<co-state> == THE_CURRENT_STATE) { ... }

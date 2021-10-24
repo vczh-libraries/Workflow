@@ -206,7 +206,7 @@ void LogSampleParseResult(const WString& sampleName, const WString& itemName, co
 		writer.WriteLine(L"========================================================");
 		writer.WriteLine(L"Errors");
 		writer.WriteLine(L"========================================================");
-		FOREACH(Ptr<ParsingError>, error, manager->errors)
+		for (auto error : manager->errors)
 		{
 			writer.WriteLine(L"Line: " + itow(error->codeRange.start.row + 1) + L", Column: " + itow(error->codeRange.start.column + 1) + L", Message: " + error->errorMessage);
 		}
@@ -228,7 +228,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 	writer.WriteLine(L"========================================================");
 	writer.WriteLine(L"Global Variables:");
 	writer.WriteLine(L"========================================================");
-	FOREACH(WString, name, assembly->variableNames)
+	for (auto name : assembly->variableNames)
 	{
 		writer.WriteLine(name);
 	}
@@ -237,24 +237,24 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 	writer.WriteLine(L"========================================================");
 	writer.WriteLine(L"Functions:");
 	writer.WriteLine(L"========================================================");
-	FOREACH(Ptr<WfAssemblyFunction>, function, assembly->functions)
+	for (auto function : assembly->functions)
 	{
 		writer.WriteLine(function->name + L" (" + itow(function->firstInstruction) + L" .. " + itow(function->lastInstruction) + L")");
 
 		writer.WriteLine(L"    Arguments:");
-		FOREACH(WString, name, function->argumentNames)
+		for (auto name : function->argumentNames)
 		{
 			writer.WriteLine(L"        " + name);
 		}
 
 		writer.WriteLine(L"    Captured Variables:");
-		FOREACH(WString, name, function->capturedVariableNames)
+		for (auto name : function->capturedVariableNames)
 		{
 			writer.WriteLine(L"        " + name);
 		}
 
 		writer.WriteLine(L"    Local Variables:");
-		FOREACH(WString, name, function->localVariableNames)
+		for (auto name : function->localVariableNames)
 		{
 			writer.WriteLine(L"        " + name);
 		}
@@ -410,7 +410,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 #define LOG_LABEL(NAME)					case WfInsCode::NAME: writer.WriteLine(formatText(itow(index), 5) + L": " + formatText(L"    " L ## #NAME, 18) + L": label = " + itow(ins.indexParameter)); break;
 #define LOG_TYPE(NAME)					case WfInsCode::NAME: writer.WriteLine(formatText(itow(index), 5) + L": " + formatText(L"    " L ## #NAME, 18) + L": type = " + formatType(ins.typeParameter)); break;
 
-	FOREACH_INDEXER(WfInstruction, ins, index, assembly->instructions)
+	for (auto [ins, index] : indexed(assembly->instructions))
 	{
 		auto range = assembly->insAfterCodegen->instructionCodeMapping[index];
 		if (range.codeIndex != -1)

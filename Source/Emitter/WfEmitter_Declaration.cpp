@@ -33,7 +33,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						GenerateInitializeInstructions(context, decl);
 					}
@@ -82,7 +82,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -90,7 +90,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -113,11 +113,11 @@ GenerateInstructions(Declaration)
 				functionContext->function = meta;
 				context.functionContext = functionContext;
 				{
-					FOREACH_INDEXER(Ptr<WfLexicalSymbol>, argumentSymbol, index, argumentSymbols)
+					for (auto [argumentSymbol, index] : indexed(argumentSymbols))
 					{
 						functionContext->arguments.Add(argumentSymbol.Obj(), index);
 					}
-					FOREACH_INDEXER(Ptr<WfLexicalSymbol>, capturedSymbol, index, capturedSymbols)
+					for (auto [capturedSymbol, index] : indexed(capturedSymbols))
 					{
 						functionContext->capturedVariables.Add(capturedSymbol.Obj(), index);
 					}
@@ -168,7 +168,7 @@ GenerateInstructions(Declaration)
 			{
 				List<Ptr<WfLexicalSymbol>> argumentSymbols, capturedSymbols;
 				{
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						auto symbol = scope->symbols[argument->name.value][0];
 						argumentSymbols.Add(symbol);
@@ -178,7 +178,7 @@ GenerateInstructions(Declaration)
 					if (index != -1)
 					{
 						auto capture = context.manager->lambdaCaptures.Values()[index];
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+						for (auto symbol : capture->symbols)
 						{
 							capturedSymbols.Add(symbol);
 						}
@@ -242,7 +242,7 @@ GenerateInstructions(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -250,7 +250,7 @@ GenerateInstructions(Declaration)
 
 					void Dispatch(WfVirtualCseDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -275,7 +275,7 @@ GenerateInstructions(Declaration)
 					
 					auto scope = context.manager->nodeScopes[node].Obj();
 					{
-						FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+						for (auto [argument, index] : indexed(node->arguments))
 						{
 							auto symbol = scope->symbols[argument->name.value][0];
 							functionContext->arguments.Add(symbol.Obj(), index);
@@ -292,7 +292,7 @@ GenerateInstructions(Declaration)
 							auto ctor = context.manager->baseConstructorCallResolvings[{node, baseTd}];
 							if (ctor.key)
 							{
-								FOREACH(Ptr<WfExpression>, argument, ctor.key->arguments)
+								for (auto argument : ctor.key->arguments)
 								{
 									GenerateExpressionInstructions(context, argument);
 								}
@@ -310,7 +310,7 @@ GenerateInstructions(Declaration)
 
 					{
 						InitializeFieldVisitor visitor(context);
-						FOREACH(Ptr<WfDeclaration>, memberDecl, classDecl->declarations)
+						for (auto memberDecl : classDecl->declarations)
 						{
 							memberDecl->Accept(&visitor);
 						}
@@ -357,7 +357,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -365,7 +365,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -384,7 +384,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						GenerateDeclarationInstructions(context, decl);
 					}
@@ -420,7 +420,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						GenerateClassMemberInstructionsVisitor visitor(context, node);
 						memberDecl->Accept(&visitor);
@@ -437,7 +437,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -445,7 +445,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -492,13 +492,13 @@ GenerateInstructions(Closure)
 					);
 
 				auto meta = context.assembly->functions[functionIndex];
-				FOREACH(Ptr<WfLexicalSymbol>, symbol, argumentSymbols)
+				for (auto symbol : argumentSymbols)
 				{
 					meta->argumentNames.Add(symbol->name);
 				}
 				{
 					auto capture = context.manager->lambdaCaptures.Get(node);
-					FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+					for (auto symbol : capture->symbols)
 					{
 						meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
 						capturedSymbols.Add(symbol);

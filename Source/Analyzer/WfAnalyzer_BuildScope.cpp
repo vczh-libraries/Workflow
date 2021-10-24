@@ -35,7 +35,7 @@ BuildScopeForDeclaration
 
 				void Visit(Ptr<WfLexicalScope> scope, List<Ptr<WfAttribute>>& attributes)
 				{
-					FOREACH(Ptr<WfAttribute>, attribute, attributes)
+					for (auto attribute : attributes)
 					{
 						if (attribute->value)
 						{
@@ -52,7 +52,7 @@ BuildScopeForDeclaration
 					parentScope->symbols.Add(symbol->name, symbol);
 
 					resultScope = new WfLexicalScope(parentScope);
-					FOREACH(Ptr<WfDeclaration>, declaration, node->declarations)
+					for (auto declaration : node->declarations)
 					{
 						BuildScopeForDeclaration(manager, resultScope, declaration, node);
 					}
@@ -101,7 +101,7 @@ BuildScopeForDeclaration
 						{
 							Ptr<WfFunctionType> type = new WfFunctionType;
 							type->result = node->returnType;
-							FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								type->arguments.Add(argument->type);
 							}
@@ -112,7 +112,7 @@ BuildScopeForDeclaration
 
 					if (node->statement)
 					{
-						FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
 							argumentSymbol->name = argument->name.value;
@@ -159,7 +159,7 @@ BuildScopeForDeclaration
 				{
 					resultScope = new WfLexicalScope(parentScope);
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
 						argumentSymbol->name = argument->name.value;
@@ -168,9 +168,9 @@ BuildScopeForDeclaration
 						resultScope->symbols.Add(argumentSymbol->name, argumentSymbol);
 					}
 
-					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					for (auto call : node->baseConstructorCalls)
 					{
-						FOREACH(Ptr<WfExpression>, argument, call->arguments)
+						for (auto argument : call->arguments)
 						{
 							BuildScopeForExpression(manager, resultScope, argument);
 						}
@@ -212,7 +212,7 @@ BuildScopeForDeclaration
 					auto td = manager->declarationTypes[node];
 					resultScope = new WfLexicalScope(parentScope);
 					resultScope->typeOfThisExpr = td.Obj();
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						BuildScopeForDeclaration(manager, resultScope, memberDecl, node);
 					}
@@ -225,7 +225,7 @@ BuildScopeForDeclaration
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
 
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						Visit(parentScope, item->attributes);
 					}
@@ -238,7 +238,7 @@ BuildScopeForDeclaration
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
 
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						Visit(parentScope, member->attributes);
 					}
@@ -246,7 +246,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Execute(manager, parentScope, source, decl);
 					}
@@ -259,7 +259,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					for (auto input : node->inputs)
 					{
 						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
 						stateSymbol->name = input->name.value;
@@ -267,7 +267,7 @@ BuildScopeForDeclaration
 						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
 					}
 
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
 						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
 						stateSymbol->name = state->name.value;
@@ -286,7 +286,7 @@ BuildScopeForDeclaration
 						stateScope->ownerNode = state;
 						manager->nodeScopes.Add(state.Obj(), stateScope);
 
-						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						for (auto argument : state->arguments)
 						{
 							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(stateScope.Obj());
 							argumentSymbol->name = argument->name.value;
@@ -433,7 +433,7 @@ BuildScopeForStatement
 				{
 					resultScope = new WfLexicalScope(parentScope);
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						BuildScopeForStatement(manager, resultScope, statement);
 					}
@@ -461,7 +461,7 @@ BuildScopeForStatement
 				void Visit(WfSwitchStatement* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->expression);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						BuildScopeForExpression(manager, parentScope, switchCase->expression);
 						BuildScopeForStatement(manager, parentScope, switchCase->statement);
@@ -526,7 +526,7 @@ BuildScopeForStatement
 						parentScope->symbols.Add(symbol->name, symbol);
 					}
 
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -541,13 +541,13 @@ BuildScopeForStatement
 				{
 					resultScope = new WfLexicalScope(parentScope);
 
-					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						auto caseScope = MakePtr<WfLexicalScope>(resultScope);
 						caseScope->ownerNode = switchCase;
 						manager->nodeScopes.Add(switchCase.Obj(), caseScope);
 
-						FOREACH(Ptr<WfStateSwitchArgument>, argument, switchCase->arguments)
+						for (auto argument : switchCase->arguments)
 						{
 							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(caseScope.Obj());
 							symbol->name = argument->name.value;
@@ -561,7 +561,7 @@ BuildScopeForStatement
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -635,7 +635,7 @@ BuildScopeForExpression
 					config->thisAccessable = false;
 					config->parentThisAccessable = true;
 
-					FOREACH(vint, name, names)
+					for (auto name : names)
 					{
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = L"$" + itow(name);
@@ -686,7 +686,7 @@ BuildScopeForExpression
 				void Visit(WfLetExpression* node)override
 				{
 					resultScope = new WfLexicalScope(parentScope);
-					FOREACH(Ptr<WfLetVariable>, variable, node->variables)
+					for (auto variable : node->variables)
 					{
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = variable->name.value;
@@ -719,7 +719,7 @@ BuildScopeForExpression
 
 				void Visit(WfConstructorExpression* node)override
 				{
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument->key);
 						if (argument->value)
@@ -774,7 +774,7 @@ BuildScopeForExpression
 					if (node->observeType == WfObserveType::SimpleObserve)
 					{
 						BuildScopeForExpression(manager, parentScope, node->expression);
-						FOREACH(Ptr<WfExpression>, event, node->events)
+						for (auto event : node->events)
 						{
 							BuildScopeForExpression(manager, parentScope, event);
 						}
@@ -790,7 +790,7 @@ BuildScopeForExpression
 						}
 
 						BuildScopeForExpression(manager, resultScope, node->expression);
-						FOREACH(Ptr<WfExpression>, event, node->events)
+						for (auto event : node->events)
 						{
 							BuildScopeForExpression(manager, resultScope, event);
 						}
@@ -800,7 +800,7 @@ BuildScopeForExpression
 				void Visit(WfCallExpression* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->function);
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -814,7 +814,7 @@ BuildScopeForExpression
 
 				void Visit(WfNewClassExpression* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -835,7 +835,7 @@ BuildScopeForExpression
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -858,7 +858,7 @@ BuildScopeForExpression
 					manager->CreateLambdaCapture(node, capture);
 
 					CreateLambdaCaptureVisitor visitor(manager, capture);
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						memberDecl->Accept(&visitor);
 						BuildScopeForDeclaration(manager, resultScope, memberDecl, node);
@@ -946,7 +946,7 @@ BuildScope
 				scope->ownerNode = module;
 				manager->nodeScopes.Add(module.Obj(), scope);
 
-				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+				for (auto declaration : module->declarations)
 				{
 					BuildScopeForDeclaration(manager, scope, declaration, module.Obj());
 				}

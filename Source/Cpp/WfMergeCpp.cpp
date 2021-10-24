@@ -428,7 +428,7 @@ MergeCpp
 					if (userContentsFull.Count() > 0)
 					{
 						writer.WriteLine(L"// UNUSED_USER_CONTENT:");
-						FOREACH(WString, content, userContentsFull.Values())
+						for (auto content : userContentsFull.Values())
 						{
 							writer.WriteString(content);
 						}

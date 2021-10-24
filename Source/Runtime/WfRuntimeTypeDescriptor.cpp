@@ -351,7 +351,7 @@ WfEvent
 					if (index != -1)
 					{
 						auto& values = record->handlers.GetByIndex(index);
-						FOREACH(Ptr<EventHandlerImpl>, handler, values)
+						for (auto handler : values)
 						{
 							handler->proxy->Invoke(arguments);
 						}
@@ -933,7 +933,7 @@ WfInterfaceInstance
 				arguments[0] = Value::From(_proxy);
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				InitializeAggregation(baseCtors.Count());
-				FOREACH_INDEXER(IMethodInfo*, ctor, index, baseCtors)
+				for (auto [ctor, index] : indexed(baseCtors))
 				{
 					Ptr<DescriptableObject> ptr;
 					{
@@ -979,11 +979,11 @@ WfTypeImpl
 				}
 
 				globalContext = _globalContext;
-				FOREACH(Ptr<WfClass>, td, classes)
+				for (auto td : classes)
 				{
 					td->SetGlobalContext(globalContext);
 				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
+				for (auto td : interfaces)
 				{
 					td->SetGlobalContext(globalContext);
 				}
@@ -1000,7 +1000,7 @@ WfTypeImpl
 
 			void WfTypeImpl::Load(reflection::description::ITypeManager* manager)
 			{
-				FOREACH(Ptr<WfClass>, td, classes)
+				for (auto td : classes)
 				{
 					if (td->GetBaseTypeDescriptorCount() == 0)
 					{
@@ -1008,7 +1008,7 @@ WfTypeImpl
 					}
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
+				for (auto td : interfaces)
 				{
 					if (td->GetBaseTypeDescriptorCount() == 0)
 					{
@@ -1016,11 +1016,11 @@ WfTypeImpl
 					}
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
-				FOREACH(Ptr<WfStruct>, td, structs)
+				for (auto td : structs)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
-				FOREACH(Ptr<WfEnum>, td, enums)
+				for (auto td : enums)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
@@ -1028,19 +1028,19 @@ WfTypeImpl
 
 			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
 			{
-				FOREACH(Ptr<WfClass>, td, classes)
+				for (auto td : classes)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
+				for (auto td : interfaces)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
-				FOREACH(Ptr<WfStruct>, td, structs)
+				for (auto td : structs)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
-				FOREACH(Ptr<WfEnum>, td, enums)
+				for (auto td : enums)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}

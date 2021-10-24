@@ -186,11 +186,11 @@ GenerateInstructions(Statement)
 					INSTRUCTION(Ins::Jump(loopLabelIndex));
 					breakLabelIndex = context.assembly->instructions.Count();
 
-					FOREACH(vint, index, loopContext->continueInstructions)
+					for (auto index : loopContext->continueInstructions)
 					{
 						FILL_LABEL_TO_INS(index, continueLabelIndex);
 					}
-					FOREACH(vint, index, loopContext->breakInstructions)
+					for (auto index : loopContext->breakInstructions)
 					{
 						FILL_LABEL_TO_INS(index, breakLabelIndex);
 					}
@@ -300,7 +300,7 @@ GenerateInstructions(Statement)
 						blockContext = context.functionContext->PushScopeContext(WfCodegenScopeType::Block, node->endLabel.value);
 					}
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						GenerateStatementInstructions(context, statement);
 					}
@@ -308,7 +308,7 @@ GenerateInstructions(Statement)
 					if (blockContext)
 					{
 						vint breakLabelIndex = context.assembly->instructions.Count();
-						FOREACH(vint, index, blockContext->breakInstructions)
+						for (auto index : blockContext->breakInstructions)
 						{
 							FILL_LABEL_TO_INS(index, breakLabelIndex);
 						}

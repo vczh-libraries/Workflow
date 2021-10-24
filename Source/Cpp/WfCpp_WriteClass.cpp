@@ -36,7 +36,7 @@ namespace vl
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -44,7 +44,7 @@ namespace vl
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -114,7 +114,7 @@ namespace vl
 					List<Ptr<WfClassDeclaration>> unprocessed;
 					unprocessed.Add(decl);
 
-					FOREACH(Ptr<WfAttribute>, attribute, attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
+					for (auto attribute : attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 					{
 						auto attValue = attributeEvaluator->GetAttributeValue(attribute);
 						CHECK_ERROR(attValue.type == runtime::WfInsType::Unknown && attValue.typeDescriptor != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
@@ -169,14 +169,14 @@ namespace vl
 										closureInfos[closure.Obj()]->lambdaClassName;
 								})
 							);
-							FOREACH(WString, closureName, closureNames)
+							for (auto closureName : closureNames)
 							{
 								writer.WriteLine(prefix + L"\tfriend " + closureName + L";");
 							}
 						}
 
 						WriteHeader_Class_FindClassDeclVisitor visitor(unprocessed);
-						FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
+						for (auto memberDecl : current->declarations)
 						{
 							memberDecl->Accept(&visitor);
 						}
@@ -200,7 +200,7 @@ namespace vl
 							accessor = PUBLIC;
 							writer.WriteLine(prefix + L"public:");
 						}
-						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls.GetByIndex(index))
+						for (auto decl : enumDecls.GetByIndex(index))
 						{
 							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
@@ -217,7 +217,7 @@ namespace vl
 							accessor = PUBLIC;
 							writer.WriteLine(prefix + L"public:");
 						}
-						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls.GetByIndex(index))
+						for (auto decl : structDecls.GetByIndex(index))
 						{
 							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
@@ -234,19 +234,19 @@ namespace vl
 							accessor = PUBLIC;
 							writer.WriteLine(prefix + L"public:");
 						}
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
+						for (auto decl : classDecls.GetByIndex(index))
 						{
 							WriteHeader_ClassPreDecl(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
 						}
 						writer.WriteLine(L"");
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
+						for (auto decl : classDecls.GetByIndex(index))
 						{
 							WriteHeader_Class(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
 						}
 					}
 				}
 
-				FOREACH(Ptr<WfDeclaration>, memberDecl, decl->declarations)
+				for (auto memberDecl : decl->declarations)
 				{
 					vint memberAccessor = PUBLIC;
 					if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"Private"))
@@ -323,7 +323,7 @@ namespace vl
 					writer.WriteLine(L"***********************************************************************/");
 					writer.WriteLine(L"");
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
+					for (auto memberDecl : current->declarations)
 					{
 						if (WriteCpp_ClassMember(writer, current, memberDecl, nss))
 						{

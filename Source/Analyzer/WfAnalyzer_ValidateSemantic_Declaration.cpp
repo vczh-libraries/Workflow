@@ -120,7 +120,7 @@ ValidateSemantic(ClassMember)
 						}
 					}
 
-					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					for (auto call : node->baseConstructorCalls)
 					{
 						if (auto scopeName = GetScopeNameFromReferenceType(classScope, call->type))
 						{
@@ -238,7 +238,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(List<Ptr<WfAttribute>>& attributes)
 				{
-					FOREACH(Ptr<WfAttribute>, attribute, attributes)
+					for (auto attribute : attributes)
 					{
 						auto key = Pair<WString, WString>(attribute->category.value, attribute->name.value);
 						vint index = manager->attributes.Keys().IndexOf(key);
@@ -263,7 +263,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, declaration, node->declarations)
+					for (auto declaration : node->declarations)
 					{
 						ValidateDeclarationSemantic(manager, declaration);
 					}
@@ -275,7 +275,7 @@ ValidateSemantic(Declaration)
 					{
 						ValidateStatementSemantic(manager, node->statement);
 					}
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						Visit(argument->attributes);
 					}
@@ -315,7 +315,7 @@ ValidateSemantic(Declaration)
 
 					if (node->kind == WfClassKind::Interface)
 					{
-						FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+						for (auto baseType : node->baseTypes)
 						{
 							auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType);
 							auto baseTd = scopeName->typeDescriptor;
@@ -345,7 +345,7 @@ ValidateSemantic(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						ValidateClassMemberSemantic(manager, td, node, memberDecl);
 					}
@@ -353,7 +353,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						Visit(item->attributes);
 					}
@@ -363,7 +363,7 @@ ValidateSemantic(Declaration)
 				{
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node].Cast<WfStruct>();
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						auto memberTd = td->GetPropertyByName(member->name.value, false)->GetReturn()->GetTypeDescriptor();
 						if ((memberTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
@@ -372,7 +372,7 @@ ValidateSemantic(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						Visit(member->attributes);
 					}
@@ -380,7 +380,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						ValidateDeclarationSemantic(manager, decl);
 					}
@@ -397,7 +397,7 @@ ValidateSemantic(Declaration)
 						ExpandVirtualDeclarationVisitor visitor(manager);
 						node->Accept(&visitor);
 
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							SetCodeRange(decl, node->codeRange);
 						}
@@ -408,11 +408,11 @@ ValidateSemantic(Declaration)
 							parentScope = parentScope->parentScope;
 						}
 
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							ContextFreeDeclarationDesugar(manager, decl);
 						}
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[node]);
 						}
@@ -425,7 +425,7 @@ ValidateSemantic(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						ValidateDeclarationSemantic(manager, decl);
 					}
@@ -435,7 +435,7 @@ ValidateSemantic(Declaration)
 				{
 					bool foundDefaultState = false;
 
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
 						if (state->name.value == L"")
 						{

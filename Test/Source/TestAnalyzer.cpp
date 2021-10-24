@@ -6,7 +6,7 @@ void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleNa
 	Ptr<ParsingTable> table = GetWorkflowTable();
 	List<WString> itemNames;
 	LoadSampleIndex(sampleName, itemNames);
-	FOREACH(WString, itemName, itemNames)
+	for (auto itemName : itemNames)
 	{
 		WString sample = LoadSample(sampleName, itemName);
 
@@ -99,7 +99,7 @@ TEST_FILE
 		manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint>>::CreateTypeInfo());
 		manager.attributes.Add({ L"test",L"Point" }, TypeInfoRetriver<test::Point>::CreateTypeInfo());
 
-		FOREACH(WString, itemName, itemNames)
+		for (auto itemName : itemNames)
 		{
 			TEST_CASE(itemName)
 			{
