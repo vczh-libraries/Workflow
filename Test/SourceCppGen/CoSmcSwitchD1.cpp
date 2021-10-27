@@ -18,11 +18,11 @@ https://github.com/vczh-libraries
 #if defined( _MSC_VER)
 #pragma warning(push)
 #pragma warning(disable:4250)
-#elif defined(__GNUC__)
-#pragma GCC diagnostic push
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses-equality"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
 #endif
 
 #define GLOBAL_SYMBOL ::vl_workflow_global::CoSmcSwitchD1::
@@ -310,8 +310,8 @@ SMSwitchD1::SMSwitchD1()
 
 #if defined( _MSC_VER)
 #pragma warning(pop)
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
 #elif defined(__clang__)
 #pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
