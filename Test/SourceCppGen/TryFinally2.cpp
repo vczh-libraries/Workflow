@@ -58,7 +58,7 @@ Global Functions
 								(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1)));
 							}
 							;
-							::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+							::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 							try
 							{
 								{
@@ -93,7 +93,7 @@ Global Functions
 								(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(10)));
 							}
 							;
-							::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+							::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 							try
 							{
 								{
@@ -121,7 +121,7 @@ Global Functions
 					(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(100)));
 				}
 				;
-				::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+				::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 				try
 				{
 					{
@@ -145,7 +145,7 @@ Global Functions
 					(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1000)));
 				}
 				;
-				::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+				::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 				try
 				{
 					{
@@ -155,7 +155,7 @@ Global Functions
 								(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1000)));
 							}
 							;
-							::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
+							::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_1)>> __vwsnb_1_dtor(&__vwsnb_1);
 							try
 							{
 								{
@@ -165,7 +165,7 @@ Global Functions
 											(GLOBAL_NAME sum = (GLOBAL_NAME sum + static_cast<::vl::vint>(1000)));
 										}
 										;
-										::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_2)>::Type> __vwsnb_2_dtor(&__vwsnb_2);
+										::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_2)>> __vwsnb_2_dtor(&__vwsnb_2);
 										try
 										{
 											{

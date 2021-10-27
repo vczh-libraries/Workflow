@@ -68,7 +68,7 @@ Global Functions
 				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test2::finally]")));
 			}
 			;
-			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
@@ -98,7 +98,7 @@ Global Functions
 				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test3::finally2]")));
 			}
 			;
-			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
@@ -108,7 +108,7 @@ Global Functions
 							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test3::finally1]")));
 						}
 						;
-						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
+						::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_1)>> __vwsnb_1_dtor(&__vwsnb_1);
 						try
 						{
 							{
@@ -144,7 +144,7 @@ Global Functions
 				(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test4::finally2]")));
 			}
 			;
-			::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_0)>::Type> __vwsnb_0_dtor(&__vwsnb_0);
+			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
 				{
@@ -154,7 +154,7 @@ Global Functions
 							(GLOBAL_NAME log = (GLOBAL_NAME log + ::vl::WString::Unmanaged(L"[Test4::finally1]")));
 						}
 						;
-						::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(__vwsnb_1)>::Type> __vwsnb_1_dtor(&__vwsnb_1);
+						::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_1)>> __vwsnb_1_dtor(&__vwsnb_1);
 						try
 						{
 							{
