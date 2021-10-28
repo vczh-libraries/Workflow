@@ -31,7 +31,7 @@ TEST_FILE
 			if (current < 5)
 			{
 				status = CoroutineStatus::Executing;
-				EC::YieldAndPause(impl, BoxParameter<vint>(current));
+				EC::YieldAndPause(impl, BoxParameter(current));
 				current++;
 				status = CoroutineStatus::Waiting;
 			}
@@ -127,7 +127,7 @@ TEST_FILE
 				status = CoroutineStatus::Executing;
 				if (current % 2 == 0)
 				{
-					EC::YieldAndPause(impl, BoxParameter<vint>(current));
+					EC::YieldAndPause(impl, BoxParameter(current));
 				}
 				else
 				{
