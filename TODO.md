@@ -6,6 +6,9 @@
 - Dump binary type metadata including only new types created in Workflow.
 - Type inferencing on all methods in generic collection intertfaces.
   - Consider adding a compile-time general generic mechanism.
+- In generated C++ code, when a collection instance is required from an interface:
+  - Try to cast to the collection instance directly using the pointer inside the implementation of the interface.
+  - Create the collection instance and copy all the data if the above step failed.
 
 ## With VlppParser2
 
