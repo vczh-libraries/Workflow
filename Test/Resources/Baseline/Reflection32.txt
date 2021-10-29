@@ -1111,6 +1111,10 @@ class test::Hinters : system::ReferenceType {
     property ObservableList : system::ObservableList<system::Int32>^ { get:GetObservableList }
     property Storage : system::List<system::Int32>^ { get:GetStorage set:SetStorage }
 
+    function CountArray(xs : system::Array<system::Int32>^) : system::Int32;
+    function CountList(xs : system::List<system::Int32>^) : system::Int32;
+    function CountObservableList(xs : system::ObservableList<system::Int32>^) : system::Int32;
+    function CountSortedList(xs : system::ReadonlyList<system::Int32>^) : system::Int32;
     @InvokeTemplate:::test::CreateHinter($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::test::CreateHinter)
     static function CreateHinter(x : system::Int32) : test::Hinters*;
