@@ -6636,6 +6636,14 @@ ParameterAccessor<TContainer>
 				{
 					return GetValueFromEnumerable<IValueObservableList>(object);
 				}
+
+				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef typename T::ElementType ElementType;
+					Ptr<IValueList> listProxy = UnboxValue<Ptr<IValueList>>(value, typeDescriptor, valueName);
+					collections::LazyList<ElementType> lazyList = GetLazyList<ElementType>(listProxy);
+					collections::CopyFrom(result, lazyList);
+				}
 			};
 
 			template<typename T>

@@ -140,6 +140,26 @@ Hinters
 		CopyFrom(list, xs);
 	}
 
+	vint Hinters::CountList(List<vint>& xs)
+	{
+		return xs.Count();
+	}
+
+	vint Hinters::CountArray(Array<vint>& xs)
+	{
+		return xs.Count();
+	}
+
+	vint Hinters::CountSortedList(SortedList<vint>& xs)
+	{
+		return xs.Count();
+	}
+
+	vint Hinters::CountObservableList(ObservableList<vint>& xs)
+	{
+		return xs.Count();
+	}
+
 	Ptr<Hinters> CreateHinter()
 	{
 		return new Hinters();
@@ -261,6 +281,10 @@ namespace vl
 				CLASS_MEMBER_METHOD(GetReadonlyList, { L"xs" })
 				CLASS_MEMBER_METHOD(GetReadonlyArray, { L"xs" })
 				CLASS_MEMBER_METHOD_RENAME(GetReadonlySortedList, GetReadonlySL, { L"xs" })
+				CLASS_MEMBER_METHOD(CountList, { L"xs" })
+				CLASS_MEMBER_METHOD(CountArray, { L"xs" })
+				CLASS_MEMBER_METHOD(CountSortedList, { L"xs" })
+				CLASS_MEMBER_METHOD(CountObservableList, { L"xs" })
 
 				using T1 = Dictionary<vint, vint>&(Hinters::*)(Dictionary<vint, vint>&);
 				using T2 = const Dictionary<vint, vint>&(Hinters::*)(const Dictionary<vint, vint>&);

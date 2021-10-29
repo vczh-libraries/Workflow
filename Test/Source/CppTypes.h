@@ -94,6 +94,11 @@ namespace test
 
 		List<vint>&							GetStorage();
 		void								SetStorage(List<vint>& xs);
+
+		vint								CountList(List<vint>& xs);
+		vint								CountArray(Array<vint>& xs);
+		vint								CountSortedList(SortedList<vint>& xs);
+		vint								CountObservableList(ObservableList<vint>& xs);
 	};
 	extern Ptr<Hinters>						CreateHinter();
 	extern Hinters*							CreateHinter(vint);
