@@ -702,7 +702,7 @@ TEST_CASE(L"EnumCtor2")
 
 TEST_CASE(L"WorkflowHints")
 {
-	WString expected = L"[1][10][100][1000][2][20][1][100][3][4]";
+	WString expected = L"[1][10][100][1000][2][20][1][100][3][4][5][5][5][5]";
 	WString actual = ::vl_workflow_global::WorkflowHints::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
