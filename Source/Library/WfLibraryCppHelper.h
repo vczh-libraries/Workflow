@@ -230,6 +230,30 @@ namespace vl
 			return result;
 		}
 
+		struct CreateArray
+		{
+			using IValueArray = reflection::description::IValueArray;
+
+			Ptr<IValueArray>		list;
+
+			CreateArray();
+			CreateArray(Ptr<IValueArray> _list);
+
+			template<typename T>
+			CreateArray Resize(vint size)
+			{
+				list->Resize(size);
+				return{ list };
+			}
+
+			template<typename T>
+			CreateArray Set(vint index, const T& value)
+			{
+				list->Set(index, Box(value));
+				return{ list };
+			}
+		};
+
 		struct CreateList
 		{
 			using IValueList = reflection::description::IValueList;
