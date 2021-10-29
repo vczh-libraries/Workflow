@@ -64,7 +64,7 @@ Helper Functions
 				List<Ptr<ITypeInfo>> types;
 				for (auto argument : arguments)
 				{
-					if (!argument || IsExpressionDependOnExpectedType(manager, argument))
+					if (!argument || IsExpressionDependOnExpectedType(manager, argument, true))
 					{
 						resolvables.Add(false);
 						types.Add(nullptr);

@@ -20,10 +20,12 @@ IsExpressionDependOnExpectedType(Expression)
 			{
 			public:
 				WfLexicalScopeManager*				manager;
+				bool								hasExpectedType;
 				bool								result = false;
 
-				IsExpressionDependOnExpectedTypeVisitor(WfLexicalScopeManager* _manager)
+				IsExpressionDependOnExpectedTypeVisitor(WfLexicalScopeManager* _manager, bool _hasExpectedType)
 					:manager(_manager)
+					, hasExpectedType(_hasExpectedType)
 				{
 				}
 
@@ -84,7 +86,7 @@ IsExpressionDependOnExpectedType(Expression)
 
 				void Visit(WfConstructorExpression* node)override
 				{
-					if (node->arguments.Count() == 0)
+					if (hasExpectedType || node->arguments.Count() == 0)
 					{
 						result = true;
 					}
@@ -121,9 +123,9 @@ IsExpressionDependOnExpectedType(Expression)
 				}
 			};
 
-			bool IsExpressionDependOnExpectedType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			bool IsExpressionDependOnExpectedType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, bool hasExpectedType)
 			{
-				IsExpressionDependOnExpectedTypeVisitor visitor(manager);
+				IsExpressionDependOnExpectedTypeVisitor visitor(manager, hasExpectedType);
 				expression->Accept(&visitor);
 				return visitor.result;
 			}

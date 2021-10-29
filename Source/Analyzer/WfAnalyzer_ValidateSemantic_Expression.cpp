@@ -827,7 +827,7 @@ ValidateSemantic(Expression)
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{
 						Ptr<ITypeInfo> firstType = GetExpressionType(manager, node->first, 0);
-						bool depend = IsExpressionDependOnExpectedType(manager, node->second);
+						bool depend = IsExpressionDependOnExpectedType(manager, node->second, firstType);
 						Ptr<ITypeInfo> secondType = GetExpressionType(manager, node->second, (depend ? firstType : nullptr));
 
 						if (firstType && secondType)
@@ -1038,8 +1038,8 @@ ValidateSemantic(Expression)
 					}
 					else
 					{
-						bool resolveFirst = !IsExpressionDependOnExpectedType(manager, node->trueBranch);
-						bool resolveSecond = !IsExpressionDependOnExpectedType(manager, node->falseBranch);
+						bool resolveFirst = !IsExpressionDependOnExpectedType(manager, node->trueBranch, false);
+						bool resolveSecond = !IsExpressionDependOnExpectedType(manager, node->falseBranch, false);
 
 						if (resolveFirst == resolveSecond)
 						{

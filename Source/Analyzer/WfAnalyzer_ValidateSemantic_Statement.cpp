@@ -306,7 +306,7 @@ ValidateSemantic(Statement)
 					for (auto switchCase : node->caseBranches)
 					{
 						Ptr<ITypeInfo> caseType;
-						if (IsExpressionDependOnExpectedType(manager, switchCase->expression))
+						if (IsExpressionDependOnExpectedType(manager, switchCase->expression, type))
 						{
 							caseType = GetExpressionType(manager, switchCase->expression, type);
 						}
