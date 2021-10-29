@@ -4,8 +4,6 @@
 
 - Generated C++ code try not to create IValueList if apply `{1 2 3}` on `List<int>` argument.
 - Dump binary type metadata including only new types created in Workflow.
-- `CreateArray` instruction is now creating `IValueList`, should have one that creates `IValueArray`
-  - Could be `CreateValueArray`, `CreateValueList`, `CreateValueObservableList`, `CreateValueDictionary`, ...
 - Type inferencing on all methods in generic collection intertfaces.
   - Consider adding a compile-time general generic mechanism.
 - In generated C++ code, when a collection instance is required from an interface:

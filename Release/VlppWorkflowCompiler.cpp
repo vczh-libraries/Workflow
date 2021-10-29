@@ -25855,15 +25855,23 @@ GenerateInstructions(Expression)
 					}
 					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>()
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
-						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>()
-						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
 						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
-						INSTRUCTION(Ins::CreateArray(node->arguments.Count()));
+						INSTRUCTION(Ins::NewArray(node->arguments.Count()));
+					}
+					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+					{
+						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
+						for (auto argument : From(node->arguments).Reverse())
+						{
+							GenerateExpressionInstructions(context, argument->key, keyType);
+						}
+						INSTRUCTION(Ins::NewList(node->arguments.Count()));
 					}
 					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 					{
@@ -25872,7 +25880,7 @@ GenerateInstructions(Expression)
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
-						INSTRUCTION(Ins::CreateObservableList(node->arguments.Count()));
+						INSTRUCTION(Ins::NewObservableList(node->arguments.Count()));
 					}
 					else
 					{
@@ -25883,7 +25891,7 @@ GenerateInstructions(Expression)
 							GenerateExpressionInstructions(context, argument->key, keyType);
 							GenerateExpressionInstructions(context, argument->value, valueType);
 						}
-						INSTRUCTION(Ins::CreateMap(node->arguments.Count() * 2));
+						INSTRUCTION(Ins::NewDictionary(node->arguments.Count() * 2));
 					}
 				}
 
