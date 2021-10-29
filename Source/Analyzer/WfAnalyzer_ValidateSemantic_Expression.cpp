@@ -691,6 +691,12 @@ ValidateSemantic(Expression)
 										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 									}
+									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
+									{
+										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
+										leftValue = true;
+									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
 										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
@@ -725,6 +731,12 @@ ValidateSemantic(Expression)
 									{
 										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
+									}
+									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
+									{
+										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
+										leftValue = true;
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
@@ -1242,6 +1254,7 @@ ValidateSemantic(Expression)
 										}
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
@@ -1310,9 +1323,29 @@ ValidateSemantic(Expression)
 							if (keyType)
 							{
 								Ptr<ITypeInfo> classType;
-								if (expectedType && expectedType->GetTypeDescriptor()==description::GetTypeDescriptor<IValueObservableList>())
+								if (expectedType)
 								{
-									classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueObservableList>(), TypeInfoHint::Normal);
+									switch (expectedType->GetHint())
+									{
+									case TypeInfoHint::ObservableList:
+										classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueObservableList>(), expectedType->GetHint());
+										break;
+									case TypeInfoHint::Array:
+										classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueArray>(), expectedType->GetHint());
+										break;
+									case TypeInfoHint::Normal:
+										if (expectedType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
+										{
+											classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueObservableList>(), expectedType->GetHint());
+										}
+										else
+										{
+											classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), expectedType->GetHint());
+										}
+										break;
+									default:
+										classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), expectedType->GetHint());
+									}
 								}
 								else
 								{

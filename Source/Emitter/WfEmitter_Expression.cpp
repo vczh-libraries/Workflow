@@ -795,6 +795,7 @@ GenerateInstructions(Expression)
 					}
 					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>()
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
+						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>()
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));

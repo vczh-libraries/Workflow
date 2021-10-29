@@ -239,7 +239,6 @@ namespace vl
 			CreateArray();
 			CreateArray(Ptr<IValueArray> _list);
 
-			template<typename T>
 			CreateArray Resize(vint size)
 			{
 				list->Resize(size);
