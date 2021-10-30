@@ -53,7 +53,7 @@ class parsing::ParsingTreeArray : system::ReferenceType {
 
 class parsing::ParsingTreeCustomBase : system::ReferenceType {
     property codeRange : parsing::ParsingTextRange;
-    property creatorRules : system::List<system::String>^;
+    property creatorRules : system::List<system::String>^ { get }
 
 }
 
@@ -334,7 +334,7 @@ interface system::Exception : system::Interface {
 
 @FullName:vl::reflection::description::IValueFunctionProxy
 interface system::Function : system::Interface {
-    function Invoke(arguments : system::List^) : system::Object;
+    function Invoke(arguments : system::ReadonlyList^) : system::Object;
 
 }
 
@@ -373,13 +373,13 @@ interface system::Interface {
 
 @FullName:vl::reflection::description::IValueInterfaceProxy
 interface system::InterfaceProxy : system::Interface {
-    function Invoke(methodInfo : system::reflection::MethodInfo*, arguments : system::List^) : system::Object;
+    function Invoke(methodInfo : system::reflection::MethodInfo*, arguments : system::ReadonlyList^) : system::Object;
 
 }
 
 @FullName:vl::parsing::json::JsonArray
 class system::JsonArray : system::JsonNode {
-    property items : system::List<system::JsonNode^>^;
+    property items : system::List<system::JsonNode^>^ { get }
 
     constructor () : system::JsonArray^;
 }
@@ -436,7 +436,7 @@ class system::JsonNumber : system::JsonNode {
 
 @FullName:vl::parsing::json::JsonObject
 class system::JsonObject : system::JsonNode {
-    property fields : system::List<system::JsonObjectField^>^;
+    property fields : system::List<system::JsonObjectField^>^ { get }
 
     constructor () : system::JsonObject^;
 }
@@ -801,7 +801,7 @@ class system::XmlComment : system::XmlNode {
 
 @FullName:vl::parsing::xml::XmlDocument
 class system::XmlDocument : system::XmlNode {
-    property prologs : system::List<system::XmlNode^>^;
+    property prologs : system::List<system::XmlNode^>^ { get }
     property rootElement : system::XmlElement^;
 
     constructor () : system::XmlDocument^;
@@ -809,12 +809,12 @@ class system::XmlDocument : system::XmlNode {
 
 @FullName:vl::parsing::xml::XmlElement
 class system::XmlElement : system::XmlNode {
-    property attributes : system::List<system::XmlAttribute^>^;
+    property attributes : system::List<system::XmlAttribute^>^ { get }
     @ReferenceTemplate:$This->$Name.value
     property closingName : system::String { get:get_closingName set:set_closingName }
     @ReferenceTemplate:$This->$Name.value
     property name : system::String { get:get_name set:set_name }
-    property subNodes : system::List<system::XmlNode^>^;
+    property subNodes : system::List<system::XmlNode^>^ { get }
 
     @InvokeTemplate:*
     @ClosureTemplate:*
@@ -834,7 +834,7 @@ class system::XmlElement : system::XmlNode {
 
 @FullName:vl::parsing::xml::XmlInstruction
 class system::XmlInstruction : system::XmlNode {
-    property attributes : system::List<system::XmlAttribute^>^;
+    property attributes : system::List<system::XmlAttribute^>^ { get }
     @ReferenceTemplate:$This->$Name.value
     property name : system::String { get:get_name set:set_name }
 
@@ -917,7 +917,7 @@ interface system::reflection::EventInfo : system::reflection::MemberInfo {
     function GetHandlerType() : system::reflection::TypeInfo*;
     function GetObservingProperty(index : system::Int32) : system::reflection::PropertyInfo*;
     function GetObservingPropertyCount() : system::Int32;
-    function Invoke(thisObject : system::Object, arguments : system::List^) : system::Void;
+    function Invoke(thisObject : system::Object, arguments : system::ReadonlyList^) : system::Void;
 
 }
 

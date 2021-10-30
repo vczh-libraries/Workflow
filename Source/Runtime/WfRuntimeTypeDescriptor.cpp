@@ -26,7 +26,7 @@ WfMethodProxy
 			{
 			}
 				
-			Value WfMethodProxy::Invoke(Ptr<IValueList> arguments)
+			Value WfMethodProxy::Invoke(Ptr<IValueReadonlyList> arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				Array<Value> values;
@@ -341,7 +341,7 @@ WfEvent
 #endif
 			}
 
-			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
+			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueReadonlyList> arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetEventRecord(thisObject, false);
