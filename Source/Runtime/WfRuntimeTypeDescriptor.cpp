@@ -29,9 +29,7 @@ WfMethodProxy
 			Value WfMethodProxy::Invoke(Ptr<IValueReadonlyList> arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				Array<Value> values;
-				UnboxParameter(Value::From(arguments), values);
-				return methodInfo->Invoke(thisObject, values);
+				return methodInfo->Invoke(thisObject, UnboxParameter<Array<Value>>(Value::From(arguments)).Ref());
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
