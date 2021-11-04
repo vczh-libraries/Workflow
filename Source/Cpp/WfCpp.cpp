@@ -22,6 +22,8 @@ WfCppConfig
 				, regexSplitName(L"::")
 				, regexSpecialName(L"/<(<category>/w+)(-(<category>/w+))*/>(<name>/w*)")
 				, regexTemplate(L", /$Arguments|/$Arguments, |/$/l+")
+				, specialName_category(regexSpecialName.CaptureNames().IndexOf(L"category"))
+				, specialName_name(regexSpecialName.CaptureNames().IndexOf(L"name"))
 				, assemblyName(_assemblyName)
 				, assemblyNamespace(_assemblyNamespace)
 			{
@@ -78,7 +80,7 @@ WfCppConfig
 				if (match)
 				{
 					return specialNameCategory
-						+ From(match->Groups()[L"category"])
+						+ From(match->Groups()[specialName_category])
 							.Select([](const RegexString& rs)
 							{
 								return rs.Value();
@@ -87,7 +89,7 @@ WfCppConfig
 							{
 								return a + L"_" + b;
 							})
-						+ L"_" + match->Groups()[L"name"][0].Value();
+						+ L"_" + match->Groups()[specialName_name][0].Value();
 				}
 				else if (alwaysUseCategory)
 				{

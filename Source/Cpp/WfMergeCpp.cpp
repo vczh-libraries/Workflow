@@ -38,6 +38,7 @@ MergeCpp
 			void ProcessCppContent(const WString& code, const TCallback& callback)
 			{
 				Regex regexUserContentBegin(L"/.*?(?/{)?///* USER_CONTENT_BEGIN/((<name>[^)]*?)/) /*//");
+				vint _name = regexUserContentBegin.CaptureNames().IndexOf(L"name");
 
 				vint state = NORMAL;
 				vint counter = 0;
@@ -70,7 +71,7 @@ MergeCpp
 						case NORMAL:
 							if (auto match = regexUserContentBegin.MatchHead(content))
 							{
-								content = L"USERIMPL(/* " + match->Groups()[L"name"][0].Value() + L" */)";
+								content = L"USERIMPL(/* " + match->Groups()[_name][0].Value() + L" */)";
 								if (match->Captures().Count() > 0)
 								{
 									content += previousContent;
