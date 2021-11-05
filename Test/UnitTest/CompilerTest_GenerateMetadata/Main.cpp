@@ -6,6 +6,7 @@
 #endif
 
 using namespace vl;
+using namespace vl::collections;
 using namespace vl::filesystem;
 using namespace vl::stream;
 using namespace vl::reflection;
@@ -78,14 +79,12 @@ TEST_FILE
 			StreamWriter writer(encoderStream);
 			LogTypeManager(writer);
 		}
-#ifdef VCZH_MSVC
-		// Need to normalize CRLF and LF before comparing
 		{
-			auto first = File(GetTestOutputPath() + REFLECTION_OUTPUT).ReadAllTextByBom();
-			auto second = File(GetTestOutputPath() + L"../Resources/Baseline/" REFLECTION_BASELINE).ReadAllTextByBom();
-			TEST_ASSERT(first == second);
+			List<WString> first, second;
+			File(GetTestOutputPath() + REFLECTION_OUTPUT).ReadAllLinesByBom(first);
+			File(GetTestOutputPath() + L"../Resources/Baseline/" REFLECTION_BASELINE).ReadAllLinesByBom(second);
+			TEST_ASSERT(CompareEnumerable(first, second) == 0);
 		}
-#endif
 		TEST_ASSERT(ResetGlobalTypeManager());
 	});
 }
