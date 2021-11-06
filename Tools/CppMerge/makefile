@@ -16,17 +16,26 @@ clean:
 
 all:pre-build ./Bin/CppMerge
 
-./Bin/CppMerge:./Obj/Vlpp.o ./Obj/VlppWorkflow.o ./Obj/VlppWorkflowCompiler.o ./Obj/Main.o
+./Bin/CppMerge:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppRegex.o ./Obj/WfMergeCpp.o ./Obj/Main.o
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../Import/Vlpp.cpp ../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/VlppWorkflow.o: ../../Release/VlppWorkflow.cpp ../../Release/VlppWorkflow.h ../../Import/Vlpp.h
+./Obj/Vlpp.Linux.o: ../../Import/Vlpp.Linux.cpp ../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/VlppWorkflowCompiler.o: ../../Release/VlppWorkflowCompiler.cpp ../../Release/VlppWorkflowCompiler.h ../../Release/VlppWorkflow.h ../../Import/Vlpp.h
+./Obj/VlppOS.o: ../../Import/VlppOS.cpp ../../Import/VlppOS.h ../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/Main.o: CppMerge/Main.cpp ../../Release/VlppWorkflowCompiler.h ../../Release/VlppWorkflow.h ../../Import/Vlpp.h
+./Obj/VlppOS.Linux.o: ../../Import/VlppOS.Linux.cpp ../../Import/VlppOS.h ../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/VlppRegex.o: ../../Import/VlppRegex.cpp ../../Import/VlppRegex.h ../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/WfMergeCpp.o: ../../Source/Cpp/WfMergeCpp.cpp ../../Source/Cpp/WfMergeCpp.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h
+	$(CPP_COMPILE)
+
+./Obj/Main.o: CppMerge/Main.cpp CppMerge/../../../Source/Cpp/WfMergeCpp.h ../../Import/VlppOS.h ../../Import/Vlpp.h
 	$(CPP_COMPILE)
