@@ -685,7 +685,6 @@ WfLexicalScopeManager
 										}
 									}
 
-								ADD_RESOLVING_RESULT:
 									auto result = ResolveExpressionResult::Symbol(symbol);
 									if (!results.Contains(result))
 									{

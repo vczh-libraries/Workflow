@@ -7,7 +7,6 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
-			using namespace parsing;
 			using namespace reflection::description;
 
 /***********************************************************************
@@ -21,12 +20,12 @@ BuildScopeForDeclaration
 			{
 			public:
 				WfLexicalScopeManager*					manager;
-				ParsingTreeCustomBase*					source;
+				glr::ParsingAstBase*					source;
 				Ptr<WfLexicalScope>						parentScope;
 
 				Ptr<WfLexicalScope>						resultScope;
 
-				BuildScopeForDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScope> _parentScope, ParsingTreeCustomBase* _source)
+				BuildScopeForDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScope> _parentScope, glr::ParsingAstBase* _source)
 					:manager(_manager)
 					, source(_source)
 					, parentScope(_parentScope)
@@ -82,7 +81,7 @@ BuildScopeForDeclaration
 						else if (dynamic_cast<WfClassDeclaration*>(source))
 						{
 							config->lambda = false;
-							config->thisAccessable = node->classMember->kind != WfClassMemberKind::Static;
+							config->thisAccessable = node->functionKind != WfFunctionKind::Static;
 							config->parentThisAccessable = false;
 						}
 					}
@@ -299,7 +298,7 @@ BuildScopeForDeclaration
 					}
 				}
 
-				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, ParsingTreeCustomBase* source, Ptr<WfDeclaration> declaration)
+				static Ptr<WfLexicalScope> Execute(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, glr::ParsingAstBase* source, Ptr<WfDeclaration> declaration)
 				{
 					BuildScopeForDeclarationVisitor visitor(manager, parentScope, source);
 					declaration->Accept(&visitor);
@@ -952,7 +951,7 @@ BuildScope
 				}
 			}
 
-			void BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source)
+			void BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, glr::ParsingAstBase* source)
 			{
 				BuildScopeForDeclarationVisitor::Execute(manager, parentScope, source, declaration);
 			}

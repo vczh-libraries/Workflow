@@ -77,7 +77,7 @@ ValidateSemantic(ClassMember)
 					}
 				}
 
-				static void SelectConstructor(WfLexicalScopeManager* manager, WfConstructorDeclaration* ctorDecl, parsing::ParsingTreeCustomBase* node, ITypeDescriptor* td, List<Ptr<WfExpression>>& arguments)
+				static void SelectConstructor(WfLexicalScopeManager* manager, WfConstructorDeclaration* ctorDecl, glr::ParsingAstBase* node, ITypeDescriptor* td, List<Ptr<WfExpression>>& arguments)
 				{
 					List<ResolveExpressionResult> functions;
 					if (auto ctors = td->GetConstructorGroup())

@@ -56,7 +56,7 @@ Helper Functions
 				}
 			}
 
-			Ptr<ITypeInfo> SelectFunction(WfLexicalScopeManager* manager, parsing::ParsingTreeCustomBase* node, Ptr<WfExpression> functionExpression, List<ResolveExpressionResult>& functions, List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex)
+			Ptr<ITypeInfo> SelectFunction(WfLexicalScopeManager* manager, glr::ParsingAstBase* node, Ptr<WfExpression> functionExpression, List<ResolveExpressionResult>& functions, List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex)
 			{
 				selectedFunctionIndex = -1;
 
@@ -76,7 +76,7 @@ Helper Functions
 					}
 				}
 
-				List<Ptr<parsing::ParsingError>> functionErrors, nonFunctionErrors;
+				List<glr::ParsingError> functionErrors, nonFunctionErrors;
 				List<Pair<vint, vint>> selectedFunctionIndices;
 				ITypeDescriptor* functionFd = description::GetTypeDescriptor<IValueFunctionProxy>();
 				for (vint i = 0; i < functions.Count(); i++)

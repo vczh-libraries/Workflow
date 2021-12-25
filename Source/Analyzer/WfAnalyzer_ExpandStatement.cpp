@@ -7,7 +7,6 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
-			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
 
@@ -144,7 +143,7 @@ ExpandForEachStatement
 						}
 						scope = scope->parentScope;
 					}
-					copy_visitor::StatementVisitor::Visit(node);
+					copy_visitor::AstVisitor::Visit(node);
 				}
 			};
 
@@ -237,8 +236,7 @@ ExpandForEachStatement
 
 							{
 								CopyForEachRangeBodyVisitor visitor(manager, node);
-								node->statement->Accept(&visitor);
-								whileBlock->statements.Add(visitor.result.Cast<WfStatement>());
+								whileBlock->statements.Add(visitor.CopyNode(node->statement.Obj()));
 							}
 							whileBlock->statements.Add(GenerateForEachStepStatement(node));
 						}
@@ -383,7 +381,7 @@ ExpandCoProviderStatement
 						callExpr->arguments.Add(refImpl);
 						if (node->expression)
 						{
-							auto returnValue = CreateField(node->expression);
+							auto returnValue = CopyNode(node->expression.Obj());
 							{
 								auto scope = manager->nodeScopes[node].Obj();
 								auto functionScope = scope->FindFunctionScope();
@@ -446,7 +444,7 @@ ExpandCoProviderStatement
 						callExpr->arguments.Add(refImpl);
 						for (auto argument : node->arguments)
 						{
-							callExpr->arguments.Add(CreateField(argument));
+							callExpr->arguments.Add(CopyNode(argument.Obj()));
 						}
 
 						auto stat = MakePtr<WfExpressionStatement>();
@@ -567,7 +565,7 @@ ExpandCoProviderStatement
 						}
 						else
 						{
-							block->statements.Add(CreateField(statement));
+							block->statements.Add(CopyNode(statement.Obj()));
 						}
 					}
 
@@ -588,7 +586,7 @@ ExpandCoProviderStatement
 				auto coroutineExpr = MakePtr<WfNewCoroutineExpression>();
 				{
 					coroutineExpr->name.value = L"<co-result>";
-					coroutineExpr->statement = ExpandCoProviderStatementVisitor(manager).CreateField(node->statement);
+					coroutineExpr->statement = ExpandCoProviderStatementVisitor(manager).CopyNode(node->statement.Obj());
 				}
 				manager->coNewCoroutineResolvings.Add(coroutineExpr, ResolveExpressionResult::ReadonlyType(providerType));
 

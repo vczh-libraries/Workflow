@@ -85,7 +85,7 @@ BuildGlobalNameFromModules
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (node->classMember->kind == WfClassMemberKind::Static)
+					if (node->functionKind == WfFunctionKind::Static)
 					{
 						auto info = MakePtr<WfStaticMethod>();
 						td->AddMember(node->name.value, info);

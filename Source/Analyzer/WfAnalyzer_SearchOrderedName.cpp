@@ -12,7 +12,7 @@ namespace vl
 SearchOrderedName
 ***********************************************************************/
 
-			class SearchOrderedNameVisitor : public traverse_visitor::ModuleVisitor
+			class SearchOrderedNameVisitor : public traverse_visitor::AstVisitor
 			{
 			public:
 				WfLexicalScope*							scope;

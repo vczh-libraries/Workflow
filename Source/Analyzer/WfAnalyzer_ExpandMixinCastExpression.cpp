@@ -25,10 +25,6 @@ ExpandNewCoroutineExpression
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);
-					{
-						varDecl->classMember = MakePtr<WfClassMember>();
-						varDecl->classMember->kind = WfClassMemberKind::Normal;
-					}
 					varDecl->name.value = L"<mixin-source>";
 					varDecl->expression = CopyExpression(node->expression, true);
 
@@ -62,10 +58,7 @@ ExpandNewCoroutineExpression
 							{
 								auto funcDecl = MakePtr<WfFunctionDeclaration>();
 								newExpr->declarations.Add(funcDecl);
-								{
-									funcDecl->classMember = MakePtr<WfClassMember>();
-									funcDecl->classMember->kind = WfClassMemberKind::Override;
-								}
+								funcDecl->functionKind = WfFunctionKind::Override;
 								funcDecl->anonymity = WfFunctionAnonymity::Named;
 								funcDecl->name.value = method->GetName();
 								funcDecl->returnType = GetTypeFromTypeInfo(method->GetReturn());
