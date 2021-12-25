@@ -1426,6 +1426,20 @@ Print (Declaration)
 
 			void Visit(WfFunctionDeclaration* node)override
 			{
+				switch (node->functionKind)
+				{
+				case WfFunctionKind::Normal:
+					break;
+				case WfFunctionKind::Static:
+					writer.WriteString(L"static ");
+					break;
+				case WfFunctionKind::Override:
+					writer.WriteString(L"override ");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
+				}
+
 				writer.BeforePrint(node);
 				writer.WriteString(L"func ");
 				switch (node->anonymity)
@@ -1790,6 +1804,20 @@ Print (Declaration)
 
 			void Visit(WfAutoPropertyDeclaration* node)override
 			{
+				switch (node->functionKind)
+				{
+				case WfFunctionKind::Normal:
+					break;
+				case WfFunctionKind::Static:
+					writer.WriteString(L"static ");
+					break;
+				case WfFunctionKind::Override:
+					writer.WriteString(L"override ");
+					break;
+				default:
+					CHECK_FAIL(L"Internal error: Unknown value.");
+				}
+
 				writer.BeforePrint(node);
 				writer.WriteString(L"prop ");
 				writer.WriteString(node->name.value);
@@ -1935,7 +1963,7 @@ Print (Declaration)
 Print (Module)
 ***********************************************************************/
 
-		void WfPrint(Ptr<WfAttribute> node, const WString& indent, parsing::ParsingWriter& writer)
+		void WfPrint(Ptr<WfAttribute> node, const WString& indent, glr::ParsingWriter& writer)
 		{
 			writer.BeforePrint(node.Obj());
 			writer.WriteString(L"@");
@@ -1951,25 +1979,25 @@ Print (Module)
 			writer.AfterPrint(node.Obj());
 		}
 
-		void WfPrint(Ptr<WfType> node, const WString& indent, parsing::ParsingWriter& writer)
+		void WfPrint(Ptr<WfType> node, const WString& indent, glr::ParsingWriter& writer)
 		{
 			PrintTypeVisitor visitor(indent, writer);
 			node->Accept(&visitor);
 		}
 
-		void WfPrint(Ptr<WfExpression> node, const WString& indent, parsing::ParsingWriter& writer)
+		void WfPrint(Ptr<WfExpression> node, const WString& indent, glr::ParsingWriter& writer)
 		{
 			PrintExpressionVisitor visitor(indent, writer);
 			node->Accept(&visitor);
 		}
 
-		void WfPrint(Ptr<WfStatement> node, const WString& indent, parsing::ParsingWriter& writer)
+		void WfPrint(Ptr<WfStatement> node, const WString& indent, glr::ParsingWriter& writer)
 		{
 			PrintStatementVisitor visitor(indent, writer);
 			node->Accept(&visitor);
 		}
 
-		void WfPrint(Ptr<WfDeclaration> node, const WString& indent, parsing::ParsingWriter& writer)
+		void WfPrint(Ptr<WfDeclaration> node, const WString& indent, glr::ParsingWriter& writer)
 		{
 			for (auto attribute : node->attributes)
 			{
@@ -1978,28 +2006,11 @@ Print (Module)
 				writer.WriteString(indent);
 			}
 
-			if (node->classMember)
-			{
-				switch (node->classMember->kind)
-				{
-				case WfClassMemberKind::Normal:
-					break;
-				case WfClassMemberKind::Static:
-					writer.WriteString(L"static ");
-					break;
-				case WfClassMemberKind::Override:
-					writer.WriteString(L"override ");
-					break;
-				default:
-					CHECK_FAIL(L"Internal error: Unknown value.");
-				}
-			}
-
 			PrintDeclarationVisitor visitor(indent, writer);
 			node->Accept(&visitor);
 		}
 
-		void WfPrint(Ptr<WfModule> node, const WString& indent, parsing::ParsingWriter& writer)
+		void WfPrint(Ptr<WfModule> node, const WString& indent, glr::ParsingWriter& writer)
 		{
 			writer.WriteString(indent);
 			switch (node->moduleType)
