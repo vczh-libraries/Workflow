@@ -1,0 +1,458 @@
+//////////////////////////////////////////////////////////////////
+// Rule (Type)
+//////////////////////////////////////////////////////////////////
+
+_Type
+    ::= "void" as PredefinedType {name = Void}
+    ::= "object" as PredefinedType {name = Object}
+    ::= "interface" as PredefinedType {name = Interface}
+    ::= "int" as PredefinedType {name = Int}
+    ::= "uint" as PredefinedType {name = UInt}
+    ::= "float" as PredefinedType {name = Float}
+    ::= "double" as PredefinedType {name = Double}
+    ::= "string" as PredefinedType {name = String}
+    ::= "char" as PredefinedType {name = Char}
+    ::= "bool" as PredefinedType {name = Bool}
+    ::= NAME : name as ReferenceType
+    ::= "func" "(" {_Type : arguments ; ","} ")" ":" _Type : result as FunctionType
+    ::= _Type : element "*" as RawPointerType
+    ::= _Type : element "^" as SharedPointerType
+    ::= _Type : element "?" as NullableType
+    ::= _Type : element "{" "}" as EnumerableType
+    ::= _Type : value "[" [_Type : key] "]" as MapType {writability = Writable}
+    ::= "observe" _Type : element "[" "]" as ObservableListType
+    ::= "const" _Type : value "[" [_Type : key] "]" as MapType {writability = Readonly}
+    ::= _Type : parent "::" NAME : name as ChildType
+    ::= "::" NAME : name as TopQualifiedType
+    ::= "(" !_Type ")"
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Expression)
+//////////////////////////////////////////////////////////////////
+
+_CtorFragment
+    ::= _Expression : key [ ":" _Expression : value] as ConstructorArgument
+    ;
+
+_LetVariable
+    ::= NAME : name "=" _Expression : value as LetVariable
+    ;
+
+_VirtualExpression
+    ::= FORMATSTRING : value as FormatExpression
+    ::= "bind" "(" _Expression : expression ")" as BindExpression
+    ::= "$coroutine" ["(" NAME : name ")"] _Block : statement as NewCoroutineExpression
+    ::= "new" _Type : type "(" "using" _Expression : expression ")" as MixinCastExpression
+    ::= "$" "." NAME : name as CoOperatorExpression
+    ;
+
+_BeginBoundary
+    ::= "(" as partial RangeExpression {beginBoundary = Exclusive}
+    ::= "[" as partial RangeExpression {beginBoundary = Inclusive}
+    ;
+
+_EndBoundary
+    ::= ")" as partial RangeExpression {endBoundary = Exclusive}
+    ::= "]" as partial RangeExpression {endBoundary = Inclusive}
+    ;
+
+_SetTestingOperator
+    ::= "in" as partial SetTestingExpression {test = In}
+    ::= "not" "in" as partial SetTestingExpression {test = NotIn}
+    ;
+
+_ExpPrimitive
+    ::= "null" as LiteralExpression {value = Null}
+    ::= "true" as LiteralExpression {value = True}
+    ::= "false" as LiteralExpression {value = False}
+    ::= INTEGER : value as IntegerExpression
+    ::= FLOAT : value as FloatingExpression
+    ::= STRING : value as StringExpression
+    ::= "this" as ThisExpression
+    ::= NAME : name as ReferenceExpression
+    ::= ORDERED_NAME : name as OrderedNameExpression
+    ::= "(" !_Expression ")"
+    ::= "[" _Expression : body "]" as OrderedLambdaExpression
+    ::= _Function : function as FunctionExpression
+    ::= "let" _LetVariable : variables {"," _LetVariable : variables} "in" "(" _Expression : expression ")" as LetExpression
+    ::= "range" _BeginBoundary _Expression : begin "," _Expression : end _EndBoundary as RangeExpression
+    ::= "{" [
+            _CtorFragment : arguments
+            ({_CtorFragment : arguments} |{";" _CtorFragment : arguments} ";")
+        ] "}" as ConstructorExpression
+    ::= "new" _Type : type "(" {_Expression : arguments ; ","} ")" as NewClassExpression
+    ::= "new" _Type : type "{" {_Declaration : declarations} "}" as NewInterfaceExpression
+    ::= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression {observeType = SimpleObserve}
+    ::= _ExpPrimitive : parent "." "observe" "as" NAME : name "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression {observeType = ExtendedObserve}
+    ::= _ExpPrimitive : function "(" [_Expression : arguments {"," _Expression : arguments}] ")" as CallExpression
+    ::= _ExpPrimitive : parent "." NAME : name as MemberExpression
+    ::= _ExpPrimitive : parent "::" NAME : name as ChildExpression
+    ::= _ExpPrimitive : first "[" _Expression : second "]" as BinaryExpression {op = Index}
+    ::= _ExpPrimitive : element _SetTestingOperator _Expression : collection as SetTestingExpression
+    ::= _ExpPrimitive : expression "of" _Type : type as InferExpression
+    ::= _ExpPrimitive : expression "is" _Type : type as TypeTestingExpression {test = IsType}
+    ::= _ExpPrimitive : expression "is" "not" _Type : type as TypeTestingExpression {test = IsNotType}
+    ::= _ExpPrimitive : expression "is" "null" as TypeTestingExpression {test = IsNull}
+    ::= _ExpPrimitive : expression "is" "not" "null" as TypeTestingExpression {test = IsNotNull}
+    ::= _ExpPrimitive : expression "as" _Type : type as TypeCastingExpression {strategy = Weak}
+    ::= _ExpPrimitive : expression "as" "*" as ExpectedTypeCastExpression {strategy = Weak}
+    ::= "typeof" "(" _Type : type ")" as TypeOfTypeExpression
+    ::= "type" "(" _Expression : expression ")" as TypeOfExpressionExpression
+    ::= "attach" "(" _Expression : event "," _Expression : function ")" as AttachEventExpression
+    ::= "detach" "(" _Expression : event "," _Expression : handler ")" as DetachEventExpression
+    ::= "::" NAME : name as TopQualifiedExpression
+    ::= !_VirtualExpression
+    ;
+
+_Exp0
+    ::= !_ExpPrimitive
+    ::= "+" _Exp0 : operand as UnaryExpression {op = Positive}
+    ::= "-" _Exp0 : operand as UnaryExpression {op = Negative}
+    ::= "not" _Exp0 : operand as UnaryExpression {op = Not}
+    ::= "cast" _Type : type _Exp0 : expression as TypeCastingExpression {strategy = Strong}
+    ::= "cast" "*" _Exp0 : expression as ExpectedTypeCastExpression {strategy = Strong}
+    ;
+
+_Exp1
+    ::= !_Exp0
+    ::= _Exp1 : first "^" _Exp0 : second as BinaryExpression {op = Exp}
+    ;
+_Exp2
+    ::= !_Exp1
+    ::= _Exp2 : first "*" _Exp1 : second as BinaryExpression {op = Mul}
+    ::= _Exp2 : first "/" _Exp1 : second as BinaryExpression {op = Div}
+    ::= _Exp2 : first "%" _Exp1 : second as BinaryExpression {op = Mod}
+    ;
+_Exp3
+    ::= !_Exp2
+    ::= _Exp3 : first "+" _Exp2 : second as BinaryExpression {op = Add}
+    ::= _Exp3 : first "-" _Exp2 : second as BinaryExpression {op = Sub}
+    ::= _Exp3 : first "&" _Exp2 : second as BinaryExpression {op = FlagAnd}
+    ::= _Exp3 : first "|" _Exp2 : second as BinaryExpression {op = FlagOr}
+    ;
+_Exp4
+    ::= !_Exp3
+    ::= _Exp4 : first "shl" _Exp3 : second as BinaryExpression {op = Shl}
+    ::= _Exp4 : first "shr" _Exp3 : second as BinaryExpression {op = Shr}
+    ;
+_Exp5
+    ::= !_Exp4
+    ::= _Exp5 : first "<" _Exp4 : second as BinaryExpression {op = LT}
+    ::= _Exp5 : first ">" _Exp4 : second as BinaryExpression {op = GT}
+    ::= _Exp5 : first "<=" _Exp4 : second as BinaryExpression {op = LE}
+    ::= _Exp5 : first ">=" _Exp4 : second as BinaryExpression {op = GE}
+    ::= _Exp5 : first "==" _Exp4 : second as BinaryExpression {op = EQ}
+    ::= _Exp5 : first "!=" _Exp4 : second as BinaryExpression {op = NE}
+    ;
+_Exp6
+    ::= !_Exp5
+    ::= _Exp6 : first "xor" _Exp5 : second as BinaryExpression {op = Xor}
+    ;
+_Exp7
+    ::= !_Exp6
+    ::= _Exp7 : first "and" _Exp6 : second as BinaryExpression {op = And}
+    ;
+_Exp8
+    ::= !_Exp7
+    ::= _Exp8 : first "or" _Exp7 : second as BinaryExpression {op = Or}
+    ;
+_Exp9
+    ::= !_Exp8
+    ::= _Exp9 : first "??" _Exp8 : second as BinaryExpression {op = FailedThen}
+    ;
+_Exp10
+    ::= !_Exp9
+    ::= _Exp9 : condition "?" _Exp10 : trueBranch ":" _Exp10 : falseBranch as IfExpression
+    ;
+_Exp11
+    ::= !_Exp10
+    ::= _Exp10 : first "=" _Exp11 : second as BinaryExpression {op = Assign}
+    ;
+
+_Expression
+    ::= !_Exp11
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Statement)
+//////////////////////////////////////////////////////////////////
+
+_SwitchCase
+    ::= "case" _Expression : expression ":" _Block : statement as SwitchCase
+    ;
+
+_Block
+    ::= "{" {_Statement : statements} [NAME : endLabel ":" ";"] "}" as BlockStatement
+    ;
+
+_ElseStat
+    ::= !_Block
+    ::= !_If
+    ;
+
+_If
+    ::= "if" "(" ["var" NAME : name ":" _Type : type "="] _Expression : expression ")" _Block : trueBranch +["else" _ElseStat : falseBranch] as IfStatement
+    ;
+
+_ForOperator
+    ::= "in" as partial ForEachStatement {direction = Normal}
+    ::= "in" "reversed" as partial ForEachStatement {direction = Reversed}
+    ;
+
+_VirtualStatement
+    ::= "switch" "(" _Expression : expression ")" "{" {_SwitchCase : caseBranches} ["default" ":" _Block : defaultBranch] "}" as SwitchStatement
+    ::= "for" "(" NAME : name _ForOperator _Expression : collection ")" _Block : statement as ForEachStatement
+    ;
+
+_CoStatement
+    ::= "$pause" (";" | _Block : statement) as CoPauseStatement
+    ::= ["var" NAME : varName "="] COROUTINE_OPERATOR : opName {_Expression : arguments ;"," } ";" as CoOperatorStatement
+    ;
+
+_CoProvider
+    ::= ("$" | COROUTINE_OPERATOR : name) _Block : statement as CoProviderStatement
+    ;
+
+_StateSwitchHead
+    ::= "$switch" "(" "raise" ")" as StateSwitchStatement {type = Default}
+    ::= "$switch" "(" "continue" ")" as StateSwitchStatement {type = Pass}
+    ::= "$switch" "(" "continue" "," "return" ")" as StateSwitchStatement {type = PassAndReturn}
+    ::= "$switch" "(" ")" as StateSwitchStatement {type = Ignore}
+    ::= "$switch" "(" "return" ")" as StateSwitchStatement {type = IgnoreAndReturn}
+    ;
+
+_StateSwitchArgument
+    ::= NAME : name as StateSwitchArgument
+    ;
+
+_StateSwitchCase
+    ::= "case" NAME : name "(" [_StateSwitchArgument : arguments {"," _StateSwitchArgument : arguments}] ")" ":" _Block : statement as StateSwitchCase
+    ;
+
+_StateStatement
+    ::= !_StateSwitchHead "{" {_StateSwitchCase : caseBranches} "}"
+    ::= "$goto_state" NAME : name "(" {_Expression : arguments ; ","} ")" ";" as StateInvokeStatement {type = Goto}
+    ::= "$push_state" NAME : name "(" {_Expression : arguments ; ","} ")" ";" as StateInvokeStatement {type = Push}
+    ;
+
+_Statement
+    ::= !_Block
+    ::= "goto" NAME : label ";" as GotoStatement
+    ::= _Variable : variable as VariableStatement
+    ::= "break" ";" as BreakStatement
+    ::= "continue" ";" as ContinueStatement
+    ::= "return" [_Expression : expression] ";" as ReturnStatement
+    ::= "delete" _Expression : expression ";" as DeleteStatement
+    ::= "raise" [_Expression : expression] ";" as RaiseExceptionStatement
+    ::= !_If
+    ::= "while" "(" _Expression : condition ")" _Block : statement as WhileStatement
+    ::= "try" _Block : protectedStatement ["catch" "(" NAME : name ")" _Block : catchStatement] ["finally" _Block : finallyStatement] as TryStatement
+    ::= _Expression : expression ";" as ExpressionStatement
+    ::= !_VirtualStatement
+    ::= !_CoStatement
+    ::= !_StateStatement
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- State Machine)
+//////////////////////////////////////////////////////////////////
+
+_StateInput
+    ::= "$state_input" NAME : name "(" {_FunctionArgument : arguments ; ","} ")" ";" as StateInput
+    ;
+
+_StateDecl
+    ::= "$state" ("default" | NAME : name) "(" {_FunctionArgument : arguments ; ","} ")" _Block : statement as StateDeclaration
+    ;
+
+_StateMachine
+    ::= "$state_machine" "{" { _StateInput : inputs | _StateDecl : states} "}" as StateMachineDeclaration
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- Basic)
+//////////////////////////////////////////////////////////////////
+
+_Attribute
+    ::= "@" NAME : category ":" NAME : name ["(" _Expression : value ")"] as Attribute
+    ;
+
+_Namespace
+    ::= "namespace" NAME : name "{" {_Declaration : declarations} "}" as NamespaceDeclaration
+    ;
+
+_FunctionArgument
+    ::= {_Attribute : attributes} NAME : name ":" _Type : type as FunctionArgument
+    ;
+
+_FunctionArgumentList
+    ::= "(" {_FunctionArgument : arguments ; ","} ")" as partial FunctionDeclaration
+    ;
+
+_FunctionStat
+    ::= !_Block
+    ::= !_CoProvider
+    ;
+
+_FunctionBody
+    ::= "(" {_FunctionArgument : arguments ; ","} ")"
+        ":" _Type : returnType
+        (_FunctionStat : statement | ";") as partial FunctionDeclaration
+    ;
+
+_FunctionKind
+    ::= "static" "func" as partial FunctionDeclaration {functionKind = Static}
+    ::= "override" "func" as partial FunctionDeclaration {functionKind = Override}
+    ::= "func" as partial FunctionDeclaration {functionKind = Normal}
+    ;
+
+_Function
+    ::= _FunctionKind NAME : name _FunctionBody as FunctionDeclaration {anonymity = Named}
+    ::= _FunctionKind _FunctionBody as FunctionDeclaration {anonymity = Anonymous}
+    ;
+
+_Variable
+    ::= "var" NAME : name [":" _Type : type] "=" _Expression : expression ";" as VariableDeclaration
+    ;
+
+_Event
+    ::= "event" NAME : name "(" {_Type : arguments ; ","} ")" ";" as EventDeclaration
+    ;
+
+_Property
+    ::= "prop" NAME : name ":" _Type : type "{" NAME : getter ["," NAME : setter] [":" NAME : valueChangedEvent] "}" as PropertyDeclaration
+    ;
+
+_BaseConstructorCall
+    ::= _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as BaseConstructorCall
+    ;
+
+_ConstructorType
+    ::= "new" as partial ConstructorDeclaration {constructorType = SharedPtr}
+    ::= "new" "*" as partial ConstructorDeclaration {constructorType = RawPtr}
+    ;
+
+_Constructor
+    ::= _ConstructorType
+        "(" {_FunctionArgument : arguments ; ","} ")"
+        [":" {_BaseConstructorCall : baseConstructorCalls ; ","}]
+        _Block : statement as ConstructorDeclaration
+    ;
+
+_Destructor
+    ::= "delete" _Block : statement as DestructorDeclaration
+    ;
+
+_ClassBody
+    ::= [":" {_Type : baseTypes ; ","}] "{" {_Declaration : declarations} [_StateMachine : declarations] "}" as partial ClassDeclaration
+    ;
+
+_Class
+    ::= "class" NAME : name _ClassBody as ClassDeclaration {kind = Class, constructorType = Undefined}
+    ::= "interface" NAME : name _ClassBody as ClassDeclaration {kind = Interface, constructorType = SharedPtr}
+    ::= "interface" NAME : name "*" _ClassBody as ClassDeclaration {kind = Interface, constructorType = RawPtr}
+    ;
+
+_EnumItemInt
+    ::= NAME : name as EnumItemIntersection
+    ;
+
+_EnumItemA
+    ::= {_Attribute : attributes} NAME : name "=" INTEGER : number "," as EnumItem {kind = Constant}
+    ;
+
+_EnumItemB
+    ::= {_Attribute : attributes} NAME : name "=" _EnumItemInt : intersections {"|" _EnumItemInt : intersections} "," as EnumItem {kind = Intersection}
+    ;
+
+_Enum
+    ::= "enum" NAME : name "{" _EnumItemA : items {_EnumItemA : items} "}" as EnumDeclaration {kind = Normal}
+    ::= "flagenum" NAME : name "{" _EnumItemA : items {_EnumItemA : items} {_EnumItemB : items} "}" as EnumDeclaration {kind = Flag}
+    ;
+
+_StructMember
+    ::= {_Attribute : attributes} NAME : name ":" _Type : type ";" as StructMember
+    ;
+
+_Struct
+    ::= "struct" NAME : name "{" {_StructMember : members} "}" as StructDeclaration
+    ;
+
+_APConfig
+    ::= "{" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Writable, configObserve = Observable}
+    ::= "{" "const" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Readonly, configObserve = Observable}
+    ::= "{" "not" "observe" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Writable, configObserve = NotObservable}
+    ::= "{" "const" "," "not" "observe" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Readonly, configObserve = NotObservable}
+    ;
+
+_AutoPropertyKind
+    ::= "static" "prop" as partial AutoPropertyDeclaration {functionKind = Static}
+    ::= "override" "prop" as partial AutoPropertyDeclaration {functionKind = Override}
+    ::= "prop" as partial AutoPropertyDeclaration {functionKind = Normal}
+    ;
+
+_AutoProperty
+    ::= _AutoPropertyKind NAME : name ":" _Type : type ["=" _Expression : expression] _APConfig as AutoPropertyDeclaration
+    ;
+
+_CastResultInterface
+    ::= "$interface" NAME : name ":" _Type : baseType "<" _Type : elementType ">" ";" as CastResultInterfaceDeclaration
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- Branches)
+//////////////////////////////////////////////////////////////////
+
+_DeclarationCandidates
+    ::= !_Namespace
+    ::= !_Variable
+    ::= !_Event
+    ::= !_Property
+    ::= !_Constructor
+    ::= !_Destructor
+    ::= !_Class
+    ::= !_Enum
+    ::= !_Struct
+    ::= !_CastResultInterface
+    ::= !_Function
+    ::= !_AutoProperty
+    ;
+
+_Declaration
+    ::= {_Attribute : attributes} !_DeclarationCandidates
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Module)
+//////////////////////////////////////////////////////////////////
+
+_UsingFragment
+    ::= NAME : name as ModuleUsingNameFragment
+    ::= "*" as ModuleUsingWildCardFragment
+    ;
+
+_UsingItem
+    ::= _UsingFragment : fragments {_UsingFragment : fragments} as ModuleUsingItem
+    ;
+
+_UsingPath
+    ::= "using" _UsingItem : items {"::" _UsingItem : items} ";" as ModuleUsingPath
+    ;
+
+_ModuleBody
+    ::= NAME : name ";" {_UsingPath : paths} {_Declaration : declarations} as partial Module
+    ;
+
+_Module
+    ::= "module" _ModuleBody as Module {moduleType = Module}
+    ::= "unit" _ModuleBody as Module {moduleType = Unit}
+    ;

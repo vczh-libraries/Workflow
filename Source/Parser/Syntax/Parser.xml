@@ -1,0 +1,33 @@
+<Parser name="Workflow">
+  <Name>Workflow</Name>
+  <Includes>&lt;VlppGlrParser.h&gt;</Includes>
+  <CppNamespace>vl::workflow</CppNamespace>
+  <HeaderGuard>VCZH_WORKFLOW_PARSER</HeaderGuard>
+  <OutputDir>../Generated</OutputDir>
+
+  <Asts>
+    <Ast name="Ast" file="Ast.txt">
+      <CppNamespace>vl::workflow</CppNamespace>
+      <ReflectionNamespace>system::workflow</ReflectionNamespace>
+      <ClassPrefix>Wf</ClassPrefix>
+      <FileName>Ast.txt</FileName>
+      <Utilities>
+        <Empty/>
+        <Copy/>
+        <Traverse/>
+        <Json/>
+        <Builder/>
+      </Utilities>
+    </Ast>
+  </Asts>
+
+  <Lexer file="Lexer.txt"/>
+
+  <Syntax file="Syntax.txt">
+    <Export rule="_Type"/>
+    <Export rule="_Expression"/>
+    <Export rule="_Statement"/>
+    <Export rule="_Declaration"/>
+    <Export rule="_Module" type="vl::workflow::WfModule"/>
+  </Syntax>
+</Parser>
