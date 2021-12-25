@@ -96,7 +96,14 @@ WriteAstHeaderFile
 				writer.WriteLine(L"");
 				for (auto include : file->Owner()->Global().includes)
 				{
-					writer.WriteLine(L"#include \"" + include + L"\"");
+					if (include.Length() > 0 && include[0] == L'<')
+					{
+						writer.WriteLine(L"#include " + include);
+					}
+					else
+					{
+						writer.WriteLine(L"#include \"" + include + L"\"");
+					}
 				}
 				writer.WriteLine(L"");
 
@@ -3061,7 +3068,14 @@ WriteLexerHeaderFile
 				writer.WriteLine(L"");
 				for (auto include : manager.Global().includes)
 				{
-					writer.WriteLine(L"#include \"" + include + L"\"");
+					if (include.Length() > 0 && include[0] == L'<')
+					{
+						writer.WriteLine(L"#include " + include);
+					}
+					else
+					{
+						writer.WriteLine(L"#include \"" + include + L"\"");
+					}
 				}
 				writer.WriteLine(L"");
 

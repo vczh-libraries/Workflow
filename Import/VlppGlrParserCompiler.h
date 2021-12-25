@@ -66,7 +66,7 @@ ParserSymbolManager
 				DuplicatedSymbol,							// (fileName, symbolName)
 				DuplicatedSymbolGlobally,					// (fileName, symbolName, anotherFileName)
 				DuplicatedClassProp,						// (fileName, className, propName)
-				DuplicatedEnumItem,							// (fileName, enumName, propName
+				DuplicatedEnumItem,							// (fileName, enumName, propName)
 				BaseClassNotExists,							// (fileName, className, typeName)
 				BaseClassNotClass,							// (fileName, className, typeName)
 				BaseClassCyclicDependency,					// (fileName, className)
@@ -2219,7 +2219,7 @@ SyntaxSymbolManager
 				template<typename ...TArgs>
 				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args)
 				{
-					global.AddError(type, { ParserDefFileType::Syntax,WString::Empty,codeRange }, std::forward<TArgs&&>(args)...);
+					global.AddError(type, { ParserDefFileType::Syntax,name,codeRange }, std::forward<TArgs&&>(args)...);
 				}
 			};
 
