@@ -1,4 +1,4 @@
-#include <VlppParser.h>
+#include <VlppGlrParser.h>
 #include "../../../Source/Library/WfLibraryReflection.h"
 #include "../../Source/CppTypes.h"
 #ifdef VCZH_MSVC
@@ -62,9 +62,9 @@ TEST_FILE
 	TEST_CASE(L"Run GenerateMetaonlyTypes()")
 	{
 		TEST_ASSERT(LoadPredefinedTypes());
-		TEST_ASSERT(LoadParsingTypes());
-		TEST_ASSERT(XmlLoadTypes());
-		TEST_ASSERT(JsonLoadTypes());
+		TEST_ASSERT(LoadParsing2Types());
+		TEST_ASSERT(XmlAstLoadTypes());
+		TEST_ASSERT(JsonAstLoadTypes());
 		TEST_ASSERT(WfLoadLibraryTypes());
 		TEST_ASSERT(LoadCppTypes());
 		GetGlobalTypeManager()->Load();
