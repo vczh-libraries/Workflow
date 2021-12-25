@@ -1,5 +1,4 @@
 <Parser name="Workflow">
-  <Name>Workflow</Name>
   <Includes>&lt;VlppGlrParser.h&gt;</Includes>
   <CppNamespace>vl::workflow</CppNamespace>
   <HeaderGuard>VCZH_WORKFLOW_PARSER</HeaderGuard>
@@ -10,20 +9,21 @@
       <CppNamespace>vl::workflow</CppNamespace>
       <ReflectionNamespace>system::workflow</ReflectionNamespace>
       <ClassPrefix>Wf</ClassPrefix>
-      <FileName>Ast.txt</FileName>
-      <Utilities>
+      <BlockedUtilities>
+        <!--
         <Empty/>
         <Copy/>
         <Traverse/>
-        <Json/>
         <Builder/>
-      </Utilities>
+        -->
+        <Json/>
+      </BlockedUtilities>
     </Ast>
   </Asts>
 
   <Lexer file="Lexer.txt"/>
 
-  <Syntax file="Syntax.txt">
+  <Syntax name="Parser" file="Syntax.txt">
     <Export rule="_Type"/>
     <Export rule="_Expression"/>
     <Export rule="_Statement"/>
