@@ -7,7 +7,6 @@ namespace vl
 		namespace emitter
 		{
 			using namespace collections;
-			using namespace parsing;
 			using namespace reflection;
 			using namespace reflection::description;
 			using namespace analyzer;
@@ -35,7 +34,7 @@ GenerateInstructions(Expression)
 				{
 				}
 
-				static void GenerateLoadSymbolInstructions(WfCodegenContext& context, WfLexicalSymbol* symbol, parsing::ParsingTreeCustomBase* node)
+				static void GenerateLoadSymbolInstructions(WfCodegenContext& context, WfLexicalSymbol* symbol, glr::ParsingAstBase* node)
 				{
 					vint index = -1;
 					if ((index = context.globalFunctions.Keys().IndexOf(symbol)) != -1)
@@ -78,7 +77,7 @@ GenerateInstructions(Expression)
 					}
 				}
 
-				static vint PushCapturedThisValues(WfCodegenContext& context, WfLexicalScope* lambdaScopeParent, ParsingTreeCustomBase* node)
+				static vint PushCapturedThisValues(WfCodegenContext& context, WfLexicalScope* lambdaScopeParent, glr::ParsingAstBase* node)
 				{
 					auto scope = lambdaScopeParent;
 					while (scope)
@@ -1073,7 +1072,7 @@ GenerateInstructions(Expression)
 							firstFunction = node;
 						}
 
-						if (node->classMember->kind == WfClassMemberKind::Normal)
+						if (node->functionKind == WfFunctionKind::Normal)
 						{
 							closureFunctions.Add(node);
 						}

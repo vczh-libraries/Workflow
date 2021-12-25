@@ -142,11 +142,10 @@ Code Generation
 
 			/// <summary>Compile a Workflow program.</summary>
 			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>
-			/// <param name="workflowParser">The generated parser class.</param>
 			/// <param name="manager">The scope manager. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
 			/// <param name="moduleCodes">All workflow module codes.</param>
 			/// <param name="errors">Container to get all errors generated during compiling.</param>
-			extern Ptr<runtime::WfAssembly>					Compile(workflow::Parser& workflowParser, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<glr::ParsingError>>& errors);
+			extern Ptr<runtime::WfAssembly>					Compile(analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<glr::ParsingError>>& errors);
 			
 			/// <summary>Compile a Workflow program. Use the other one whenever possible, which alloes reusing <see cref="analyzer::WfLexicalScopeManager"/> to improve performance.</summary>
 			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>

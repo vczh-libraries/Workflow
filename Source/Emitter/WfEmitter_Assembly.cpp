@@ -6,7 +6,7 @@ namespace vl
 	{
 		namespace emitter
 		{
-			using namespace parsing;
+			using namespace glr;
 			using namespace reflection::description;
 			using namespace analyzer;
 			using namespace runtime;
@@ -225,7 +225,7 @@ GenerateAssembly
 					}
 
 					// define node for INSTRUCTION
-					parsing::ParsingTreeCustomBase* node = nullptr;
+					glr::ParsingAstBase* node = nullptr;
 					INSTRUCTION(Ins::LoadValue({}));
 					INSTRUCTION(Ins::Return());
 
@@ -258,7 +258,7 @@ GenerateAssembly
 Compile
 ***********************************************************************/
 
-			Ptr<runtime::WfAssembly> Compile(Ptr<parsing::tabling::ParsingTable> table, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors)
+			Ptr<runtime::WfAssembly> Compile(analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors)
 			{
 				manager->Clear(true, true);
 				for (auto code : moduleCodes)
@@ -282,10 +282,10 @@ Compile
 				return GenerateAssembly(manager);
 			}
 
-			Ptr<runtime::WfAssembly> Compile(Ptr<parsing::tabling::ParsingTable> table, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors)
+			Ptr<runtime::WfAssembly> Compile(workflow::Parser& workflowParser, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors)
 			{
-				WfLexicalScopeManager manager(table);
-				return Compile(table, &manager, moduleCodes, errors);
+				WfLexicalScopeManager manager(workflowParser);
+				return Compile(&manager, moduleCodes, errors);
 			}
 		}
 	}

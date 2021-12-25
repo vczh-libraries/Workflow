@@ -62,7 +62,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (node->classMember->kind == WfClassMemberKind::Static)
+					if (node->functionKind == WfFunctionKind::Static)
 					{
 						GenerateGlobalDeclarationMetadata(context, node, namePrefix);
 						auto scope = context.manager->nodeScopes[node].Obj();

@@ -6,7 +6,6 @@ namespace vl
 	{
 		namespace emitter
 		{
-			using namespace parsing;
 			using namespace reflection::description;
 			using namespace analyzer;
 			using namespace runtime;
@@ -115,7 +114,7 @@ WfCodegenContext
 			{
 			}
 
-			vint WfCodegenContext::AddInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins)
+			vint WfCodegenContext::AddInstruction(glr::ParsingAstBase* node, const runtime::WfInstruction& ins)
 			{
 				auto index = assembly->instructions.Add(ins);
 				if (assembly->insBeforeCodegen && assembly->insAfterCodegen)
@@ -127,7 +126,7 @@ WfCodegenContext
 					}
 					else
 					{
-						parsing::ParsingTextRange range;
+						glr::ParsingTextRange range;
 						assembly->insBeforeCodegen->instructionCodeMapping.Add(range);
 						assembly->insAfterCodegen->instructionCodeMapping.Add(range);
 					}
@@ -135,7 +134,7 @@ WfCodegenContext
 				return index;
 			}
 
-			void WfCodegenContext::AddExitInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins)
+			void WfCodegenContext::AddExitInstruction(glr::ParsingAstBase* node, const runtime::WfInstruction& ins)
 			{
 				auto context = functionContext->GetCurrentScopeContext();
 				context->exitInstructions.Add(ins);
