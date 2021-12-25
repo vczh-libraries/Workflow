@@ -3,8 +3,9 @@
 #endif
 
 #include "Helper.h"
+#include "../../Source/Parser/Generated/WorkflowAst_Json.h"
 
-Ptr<ParsingTable> workflowTable;
+Ptr<workflow::Parser> workflowParser;
 
 #define BEGIN_TIMER\
 		DateTime beginTime = DateTime::LocalTime();\
@@ -15,40 +16,21 @@ Ptr<ParsingTable> workflowTable;
 		TEST_PRINT(L"Time elapsed: " + ftow((endTime.totalMilliseconds - beginTime.totalMilliseconds) / 1000.0) + L" seconds");\
 		beginTime = endTime\
 
-Ptr<ParsingTable> GetWorkflowTable()
+workflow::Parser& GetWorkflowParser()
 {
-	if (!workflowTable)
+	if (!workflowParser)
 	{
 		BEGIN_TIMER;
-
-		TEST_PRINT(L"GetWorkFlowTable()");
-		auto table = WfLoadTable();
-		TEST_PRINT(L"Finished WfLoadTable()");
+		workflowParser = new workflow::Parser();
+		TEST_PRINT(L"new workflow::Parser()");
 		PRINT_TIMER;
-
-		MemoryStream stream;
-		table->Serialize(stream);
-		stream.SeekFromBegin(0);
-		TEST_PRINT(L"Finished serializing parsing table: " + i64tow(stream.Size()) + L" bytes");
-		PRINT_TIMER;
-
-		Ptr<ParsingTable> deserializedTable = new ParsingTable(stream);
-		CHECK_ERROR(stream.Position() == stream.Size(), L"Table stream is not comsumed to the end");
-		TEST_PRINT(L"Finished deserializing parsing table");
-		PRINT_TIMER;
-
-		deserializedTable->Initialize();
-		TEST_PRINT(L"Finished initializing parsing table");
-		PRINT_TIMER;
-
-		workflowTable = deserializedTable;
 	}
-	return workflowTable;
+	return *workflowParser.Obj();
 }
 
 void ReleaseWorkflowTable()
 {
-	workflowTable = nullptr;
+	workflowParser = nullptr;
 }
 
 #if defined VCZH_MSVC
@@ -165,7 +147,7 @@ void LoadSampleAssemblyBinary(const WString& sampleName, const WString& itemName
 	TEST_ASSERT(assembly);
 }
 
-void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<ParsingTreeNode> node, Ptr<ParsingTreeCustomBase> typedNode, WfLexicalScopeManager* manager)
+void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<glr::ParsingAstBase> typedNode, WfLexicalScopeManager* manager)
 {
 	FileStream fileStream(GetWorkflowOutputPath() + L"Parsing." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
 	BomEncoder encoder(BomEncoder::Utf16);
@@ -208,14 +190,33 @@ void LogSampleParseResult(const WString& sampleName, const WString& itemName, co
 		writer.WriteLine(L"========================================================");
 		for (auto error : manager->errors)
 		{
-			writer.WriteLine(L"Line: " + itow(error->codeRange.start.row + 1) + L", Column: " + itow(error->codeRange.start.column + 1) + L", Message: " + error->errorMessage);
+			writer.WriteLine(L"Line: " + itow(error.codeRange.start.row + 1) + L", Column: " + itow(error.codeRange.start.column + 1) + L", Message: " + error.message);
 		}
 	}
 
 	writer.WriteLine(L"========================================================");
 	writer.WriteLine(L"AST");
 	writer.WriteLine(L"========================================================");
-	Log(node.Obj(), L"", writer);
+	if (auto typeAst = typedNode.Cast<WfType>())
+	{
+		json_visitor::AstVisitor(writer).Print(typeAst.Obj());
+	}
+	else if (auto exprAst = typedNode.Cast<WfExpression>())
+	{
+		json_visitor::AstVisitor(writer).Print(exprAst.Obj());
+	}
+	else if (auto statAst = typedNode.Cast<WfStatement>())
+	{
+		json_visitor::AstVisitor(writer).Print(statAst.Obj());
+	}
+	else if (auto declAst = typedNode.Cast<WfDeclaration>())
+	{
+		json_visitor::AstVisitor(writer).Print(declAst.Obj());
+	}
+	else if (auto moduleAst = typedNode.Cast<WfModule>())
+	{
+		json_visitor::AstVisitor(writer).Print(moduleAst.Obj());
+	}
 }
 
 void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, Ptr<WfAssembly> assembly)

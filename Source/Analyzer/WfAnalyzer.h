@@ -215,7 +215,7 @@ Scope Manager
 				vint										usedCodeIndex = 0;
 
 			public:
-				workflow::Parser							workflowParser;
+				workflow::Parser&							workflowParser;
 				AttributeTypeMap							attributes;
 
 				Ptr<WfLexicalScopeName>						globalName;							// root scope

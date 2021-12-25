@@ -61,7 +61,7 @@ Code Generation
 			{
 				typedef collections::List<vint>										InstructionIndexList;
 				typedef collections::List<runtime::WfInstruction>					InstructionList;
-				typedef collections::List<parsing::ParsingTextRange>				RangeMap;
+				typedef collections::List<glr::ParsingTextRange>					RangeMap;
 			public:
 				WfCodegenScopeType					type = WfCodegenScopeType::Function;
 				InstructionIndexList				continueInstructions;
@@ -100,7 +100,7 @@ Code Generation
 				typedef collections::Dictionary<analyzer::WfLexicalSymbol*, vint>								SymbolIndexMap;
 				typedef collections::Dictionary<WfConstructorDeclaration*, vint>								ConstructorIndexMap;
 				typedef collections::Dictionary<WfDestructorDeclaration*, vint>									DestructorIndexMap;
-				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, parsing::ParsingTextRange>		NodePositionMap;
+				typedef collections::Dictionary<glr::ParsingAstBase*, glr::ParsingTextRange>					NodePositionMap;
 				typedef collections::Dictionary<Ptr<analyzer::WfLexicalFunctionConfig>, vint>					ThisStackCountMap;
 			public:
 				Ptr<runtime::WfAssembly>			assembly;
@@ -117,8 +117,8 @@ Code Generation
 
 				WfCodegenContext(Ptr<runtime::WfAssembly> _assembly, analyzer::WfLexicalScopeManager* _manager);
 
-				vint								AddInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins);
-				void								AddExitInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins);
+				vint								AddInstruction(glr::ParsingAstBase* node, const runtime::WfInstruction& ins);
+				void								AddExitInstruction(glr::ParsingAstBase* node, const runtime::WfInstruction& ins);
 				void								ApplyExitInstructions(Ptr<WfCodegenScopeContext> scopeContext);
 				vint								GetThisStackCount(analyzer::WfLexicalScope* scope);
 			};
@@ -142,18 +142,18 @@ Code Generation
 
 			/// <summary>Compile a Workflow program.</summary>
 			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>
-			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable]. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
+			/// <param name="workflowParser">The generated parser class.</param>
 			/// <param name="manager">The scope manager. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
 			/// <param name="moduleCodes">All workflow module codes.</param>
 			/// <param name="errors">Container to get all errors generated during compiling.</param>
-			extern Ptr<runtime::WfAssembly>					Compile(Ptr<parsing::tabling::ParsingTable> table, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors);
+			extern Ptr<runtime::WfAssembly>					Compile(workflow::Parser& workflowParser, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<glr::ParsingError>>& errors);
 			
 			/// <summary>Compile a Workflow program. Use the other one whenever possible, which alloes reusing <see cref="analyzer::WfLexicalScopeManager"/> to improve performance.</summary>
 			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>
-			/// <param name="table">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable]. This is reusable, it is recommended to keep this object alive between multiple compiling to improve performance.</param>
+			/// <param name="workflowParser">The generated parser class.</param>
 			/// <param name="moduleCodes">All workflow module codes.</param>
 			/// <param name="errors">Container to get all errors generated during compiling.</param>
-			extern Ptr<runtime::WfAssembly>					Compile(Ptr<parsing::tabling::ParsingTable> table, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors);
+			extern Ptr<runtime::WfAssembly>					Compile(workflow::Parser& workflowParser, collections::List<WString>& moduleCodes, collections::List<Ptr<glr::ParsingError>>& errors);
 		}
 	}
 }

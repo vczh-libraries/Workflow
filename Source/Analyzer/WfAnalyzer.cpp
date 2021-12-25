@@ -372,6 +372,7 @@ WfLexicalScopeManager
 			WfLexicalScopeManager::WfLexicalScopeManager(workflow::Parser& _workflowParser)
 				:workflowParser(_workflowParser)
 			{
+				glr::InstallDefaultErrorMessageGenerator(workflowParser, errors);
 				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
@@ -385,7 +386,7 @@ WfLexicalScopeManager
 
 			vint WfLexicalScopeManager::AddModule(const WString& moduleCode)
 			{
-				if (auto module = WfParseModule(moduleCode, parsingTable, errors, usedCodeIndex))
+				if (auto module = ParseModule(moduleCode, workflowParser, usedCodeIndex))
 				{
 					modules.Add(module);
 					moduleCodes.Add(moduleCode);
@@ -669,24 +670,26 @@ WfLexicalScopeManager
 							{
 								for (auto symbol : scope->symbols.GetByIndex(index))
 								{
-									if (symbol->creatorNode.Cast<WfVariableDeclaration>())
+									if (auto functionDecl = symbol->creatorNode.Cast<WfFunctionDeclaration>())
 									{
-										auto result = ResolveExpressionResult::Symbol(symbol);
-										if (!results.Contains(result))
+										if (functionDecl->functionKind != WfFunctionKind::Normal)
 										{
-											results.Add(result);
+											continue;
 										}
 									}
-									else if (symbol->creatorNode.Cast<WfDeclaration>()->classMember->kind == WfClassMemberKind::Normal)
+									else if (auto autoPropDecl = symbol->creatorNode.Cast<WfAutoPropertyDeclaration>())
 									{
-										if (firstConfigScope->parentScope == scope)
+										if (autoPropDecl->functionKind != WfFunctionKind::Normal)
 										{
-											auto result = ResolveExpressionResult::Symbol(symbol);
-											if (!results.Contains(result))
-											{
-												results.Add(result);
-											}
+											continue;
 										}
+									}
+
+								ADD_RESOLVING_RESULT:
+									auto result = ResolveExpressionResult::Symbol(symbol);
+									if (!results.Contains(result))
+									{
+										results.Add(result);
 									}
 								}
 							}
@@ -789,7 +792,7 @@ WfLexicalScopeManager
 				return symbol;
 			}
 
-			void WfLexicalScopeManager::CreateLambdaCapture(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalCapture> capture)
+			void WfLexicalScopeManager::CreateLambdaCapture(glr::ParsingAstBase* node, Ptr<WfLexicalCapture> capture)
 			{
 				if (!capture)
 				{
