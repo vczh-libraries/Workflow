@@ -1600,7 +1600,7 @@ ValidateSemantic(Expression)
 					void Visit(WfFunctionDeclaration* node)override
 					{
 						lastFunction = node;
-						if (node->classMember->kind == WfClassMemberKind::Override)
+						if (node->functionKind == WfFunctionKind::Override)
 						{
 							overrideFunctions.Add(node);
 						}

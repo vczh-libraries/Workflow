@@ -62,7 +62,7 @@ WfGenerateClassMemberDeclVisitor
 					{
 						writer.WriteString(L"virtual ");
 					}
-					else if (node->classMember->kind == WfClassMemberKind::Static)
+					else if (node->functionKind == WfFunctionKind::Static)
 					{
 						writer.WriteString(L"static ");
 					}
@@ -71,7 +71,7 @@ WfGenerateClassMemberDeclVisitor
 					{
 						writer.WriteString(L" = 0");
 					}
-					else if (node->classMember->kind == WfClassMemberKind::Override)
+					else if (node->functionKind == WfFunctionKind::Override)
 					{
 						writer.WriteString(L" override");
 					}

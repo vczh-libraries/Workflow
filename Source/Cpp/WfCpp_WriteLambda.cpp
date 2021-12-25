@@ -7,7 +7,6 @@ namespace vl
 		namespace cppcodegen
 		{
 			using namespace collections;
-			using namespace parsing;
 			using namespace analyzer;
 			using namespace reflection;
 			using namespace reflection::description;

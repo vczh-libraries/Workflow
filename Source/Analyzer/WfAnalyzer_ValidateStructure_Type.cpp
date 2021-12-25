@@ -7,7 +7,6 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
-			using namespace parsing;
 			using namespace reflection::description;
 
 /***********************************************************************

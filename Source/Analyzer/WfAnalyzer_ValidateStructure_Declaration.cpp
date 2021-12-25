@@ -7,7 +7,6 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
-			using namespace parsing;
 			using namespace reflection::description;
 
 /***********************************************************************
@@ -38,10 +37,6 @@ ValidateStructure(Declaration)
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
-					if (node->classMember)
-					{
-						manager->errors.Add(WfErrors::WrongClassMember(node));
-					}
 
 					for (vint i = 0; i < node->declarations.Count(); i++)
 					{
@@ -51,22 +46,22 @@ ValidateStructure(Declaration)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
+					if (classDecl && !surroundingLambda)
 					{
 						switch (classDecl->kind)
 						{
 						case WfClassKind::Class:
 							{
-								switch (node->classMember->kind)
+								switch (node->functionKind)
 								{
-								case WfClassMemberKind::Normal:
-								case WfClassMemberKind::Static:
+								case WfFunctionKind::Normal:
+								case WfFunctionKind::Static:
 									if (!node->statement)
 									{
 										manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
 									}
 									break;
-								case WfClassMemberKind::Override:
+								case WfFunctionKind::Override:
 									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 									break;
 								}
@@ -74,21 +69,21 @@ ValidateStructure(Declaration)
 							break;
 						case WfClassKind::Interface:
 							{
-								switch (node->classMember->kind)
+								switch (node->functionKind)
 								{
-								case WfClassMemberKind::Normal:
+								case WfFunctionKind::Normal:
 									if (node->statement)
 									{
 										manager->errors.Add(WfErrors::InterfaceMethodShouldNotHaveImplementation(node));
 									}
 									break;
-								case WfClassMemberKind::Static:
+								case WfFunctionKind::Static:
 									if (!node->statement)
 									{
 										manager->errors.Add(WfErrors::FunctionShouldHaveImplementation(node));
 									}
 									break;
-								case WfClassMemberKind::Override:
+								case WfFunctionKind::Override:
 									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 									break;
 								}
@@ -100,14 +95,14 @@ ValidateStructure(Declaration)
 					{
 						if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
 						{
-							switch (node->classMember->kind)
+							switch (node->functionKind)
 							{
-							case WfClassMemberKind::Normal:
+							case WfFunctionKind::Normal:
 								break;
-							case WfClassMemberKind::Static:
+							case WfFunctionKind::Static:
 								manager->errors.Add(WfErrors::FunctionInNewTypeExpressionCannotBeStatic(node));
 								break;
-							case WfClassMemberKind::Override:
+							case WfFunctionKind::Override:
 								break;
 							}
 						}
@@ -141,19 +136,6 @@ ValidateStructure(Declaration)
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
-					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-					}
-
 					if (node->type)
 					{
 						ValidateTypeStructure(manager, node->type);
@@ -168,18 +150,8 @@ ValidateStructure(Declaration)
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
+					if (classDecl)
 					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-
 						for (auto argument : node->arguments)
 						{
 							ValidateTypeStructure(manager, argument);
@@ -276,18 +248,8 @@ ValidateStructure(Declaration)
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
+					if (classDecl)
 					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-
 						ValidateTypeStructure(manager, node->type);
 						FindPropertyRelatedDeclVisitor visitor(manager, classDecl, node);
 
@@ -296,17 +258,34 @@ ValidateStructure(Declaration)
 							visitor.Execute(memberDecl);
 						}
 
-						if (!visitor.getter || visitor.getter->classMember->kind == WfClassMemberKind::Static || !visitor.getter.Cast<WfFunctionDeclaration>())
+						if (auto getter = visitor.getter.Cast<WfFunctionDeclaration>())
+						{
+							if (getter->functionKind == WfFunctionKind::Static)
+							{
+								manager->errors.Add(WfErrors::PropertyGetterNotFound(node, classDecl));
+							}
+						}
+						else
 						{
 							manager->errors.Add(WfErrors::PropertyGetterNotFound(node, classDecl));
 						}
 
-						if (node->setter.value != L"" && (!visitor.setter || visitor.setter->classMember->kind == WfClassMemberKind::Static || !visitor.setter.Cast<WfFunctionDeclaration>()))
+						if (node->setter.value != L"")
 						{
-							manager->errors.Add(WfErrors::PropertySetterNotFound(node, classDecl));
+							if (auto setter = visitor.setter.Cast<WfFunctionDeclaration>())
+							{
+								if (setter->functionKind == WfFunctionKind::Static)
+								{
+									manager->errors.Add(WfErrors::PropertyGetterNotFound(node, classDecl));
+								}
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::PropertyGetterNotFound(node, classDecl));
+							}
 						}
 
-						if (node->valueChangedEvent.value != L"" && (!visitor.valueChangedEvent || visitor.valueChangedEvent->classMember->kind == WfClassMemberKind::Static || !visitor.valueChangedEvent.Cast<WfEventDeclaration>()))
+						if (node->valueChangedEvent.value != L"" && (!visitor.valueChangedEvent || !visitor.valueChangedEvent.Cast<WfEventDeclaration>()))
 						{
 							manager->errors.Add(WfErrors::PropertyEventNotFound(node, classDecl));
 						}
@@ -323,18 +302,8 @@ ValidateStructure(Declaration)
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
+					if (classDecl)
 					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-
 						if (classDecl->kind != WfClassKind::Class)
 						{
 							manager->errors.Add(WfErrors::WrongDeclaration(node));
@@ -362,18 +331,8 @@ ValidateStructure(Declaration)
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
+					if (classDecl)
 					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-
 						if (classDecl->kind != WfClassKind::Class)
 						{
 							manager->errors.Add(WfErrors::WrongDeclaration(node));
@@ -457,19 +416,7 @@ ValidateStructure(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
-					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-					}
-					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
@@ -494,9 +441,6 @@ ValidateStructure(Declaration)
 									auto ctor = MakePtr<WfConstructorDeclaration>();
 									node->declarations.Add(ctor);
 									ctor->codeRange = node->codeRange;
-									ctor->classMember = MakePtr<WfClassMember>();
-									ctor->classMember->codeRange = node->codeRange;
-									ctor->classMember->kind = WfClassMemberKind::Normal;
 									ctor->constructorType = WfConstructorType::SharedPtr;
 
 									auto stat = MakePtr<WfBlockStatement>();
@@ -539,19 +483,7 @@ ValidateStructure(Declaration)
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
-					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-					}
-					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
@@ -615,19 +547,7 @@ ValidateStructure(Declaration)
 
 				void Visit(WfStructDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
-					{
-						switch (node->classMember->kind)
-						{
-						case WfClassMemberKind::Normal:
-							break;
-						case WfClassMemberKind::Static:
-						case WfClassMemberKind::Override:
-							manager->errors.Add(WfErrors::WrongClassMemberConfig(node));
-							break;
-						}
-					}
-					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
 					}
@@ -657,18 +577,18 @@ ValidateStructure(Declaration)
 
 				void Visit(WfAutoPropertyDeclaration* node)override
 				{
-					switch (node->classMember->kind)
+					switch (node->functionKind)
 					{
-					case WfClassMemberKind::Normal:
+					case WfFunctionKind::Normal:
 						if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
 						{
 							manager->errors.Add(WfErrors::AutoPropertyCannotBeNormalOutsideOfClass(node));
 						}
 						break;
-					case WfClassMemberKind::Static:
+					case WfFunctionKind::Static:
 						manager->errors.Add(WfErrors::AutoPropertyCannotBeStatic(node));
 						break;
-					case WfClassMemberKind::Override:
+					case WfFunctionKind::Override:
 						if (!dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
 						{
 							manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));

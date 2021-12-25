@@ -15,7 +15,7 @@ namespace vl
 CollectModule
 ***********************************************************************/
 
-			class WfCollectModuleVisitor : public traverse_visitor::ModuleVisitor
+			class WfCollectModuleVisitor : public traverse_visitor::AstVisitor
 			{
 			public:
 				WfCppConfig*							config;
@@ -110,7 +110,7 @@ CollectModule
 
 					auto oldSurroundingClassDecl = surroundingClassDecl;
 					surroundingClassDecl = node;
-					traverse_visitor::DeclarationVisitor::Visit(node);
+					traverse_visitor::AstVisitor::Visit(node);
 					surroundingClassDecl = oldSurroundingClassDecl;
 				}
 
@@ -130,7 +130,7 @@ CollectModule
 				{
 					auto old = funcDeclToSkip;
 					funcDeclToSkip = node->function.Obj();
-					traverse_visitor::ExpressionVisitor::Visit(node);
+					traverse_visitor::AstVisitor::Visit(node);
 					funcDeclToSkip = old;
 				}
 
@@ -138,14 +138,14 @@ CollectModule
 				{
 					auto old = varDeclToSkip;
 					varDeclToSkip = node->variable.Obj();
-					traverse_visitor::StatementVisitor::Visit(node);
+					traverse_visitor::AstVisitor::Visit(node);
 					varDeclToSkip = old;
 				}
 			};
 
 			void CollectModule(WfCppConfig* config, Ptr<WfModule> module)
 			{
-				WfCollectModuleVisitor(config).VisitField(module.Obj());
+				WfCollectModuleVisitor(config).InspectInto(module.Obj());
 			}
 
 /***********************************************************************
