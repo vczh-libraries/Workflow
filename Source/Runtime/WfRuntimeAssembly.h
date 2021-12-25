@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMEASSEMBLY
 #define VCZH_WORKFLOW_RUNTIME_WFRUNTIMEASSEMBLY
 
-#include <VlppParser.h>
+#include <VlppGlrParser.h>
 #include "WfRuntimeInstruction.h"
 #include "WfRuntimeTypeDescriptor.h"
 
@@ -50,7 +50,7 @@ Assembly
 				/// <summary>Module codes.</summary>
 				collections::List<WString>							moduleCodes;				// codeIndex -> code
 				/// <summary>Mapping information from every instruction to code. Use[F:vl.parsing.ParsingTextRange.codeIndex] for accessing <see cref="moduleCodes"/>.</summary>
-				collections::List<parsing::ParsingTextRange>		instructionCodeMapping;		// instruction -> range
+				collections::List<glr::ParsingTextRange>			instructionCodeMapping;		// instruction -> range
 				/// <summary>Mapping information from every row in codes to instructions. Value of the key is (codeIndex, row).</summary>
 				collections::Group<Tuple<vint, vint>, vint>			codeInstructionMapping;		// (codeIndex, row) -> instruction [generated]
 

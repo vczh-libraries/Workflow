@@ -113,15 +113,6 @@ WfLexicalScope
 				}
 			}
 
-			Ptr<WfClassMember> WfLexicalScope::GetOwnerClassMember()
-			{
-				if (auto decl = ownerNode.Cast<WfDeclaration>())
-				{
-					return decl->classMember;
-				}
-				return nullptr;
-			}
-
 /***********************************************************************
 WfLexicalScopeName
 ***********************************************************************/
@@ -378,8 +369,8 @@ ResolveExpressionResult
 WfLexicalScopeManager
 ***********************************************************************/
 
-			WfLexicalScopeManager::WfLexicalScopeManager(Ptr<parsing::tabling::ParsingTable> _parsingTable)
-				:parsingTable(_parsingTable)
+			WfLexicalScopeManager::WfLexicalScopeManager(workflow::Parser& _workflowParser)
+				:workflowParser(_workflowParser)
 			{
 				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<void>::CreateTypeInfo());

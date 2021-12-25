@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_WORKFLOW_ANALYZER_WFANALYZER
 
 #include "../Library/WfLibraryReflection.h"
-#include "../Expression/WfExpression.h"
+#include "../Parser/WfExpression.h"
 #include "../Runtime/WfRuntime.h"
 
 namespace vl
@@ -66,7 +66,7 @@ Scope
 				WString										name;				// name of this symbol
 				Ptr<WfType>									type;				// type of this symbol
 				Ptr<reflection::description::ITypeInfo>		typeInfo;			// reflection type info of this symbol, nullable
-				Ptr<parsing::ParsingTreeCustomBase>			creatorNode;		// nullable
+				Ptr<glr::ParsingAstBase>					creatorNode;		// nullable
 				WfLexicalScope*								ownerScope;			// scope that contains this symbol
 
 				WfLexicalSymbol(WfLexicalScope* _ownerScope);
@@ -88,8 +88,8 @@ Scope
 				typedef collections::Group<WString, Ptr<WfLexicalSymbol>>		TypeGroup;
 			public:
 				WfLexicalScopeManager*						ownerManager;				// nullable
-				Ptr<parsing::ParsingTreeCustomBase>			ownerNode;					// nullable
-				parsing::ParsingTreeCustomBase*				ownerNodeSource = nullptr;	// nullable
+				Ptr<glr::ParsingAstBase>					ownerNode;					// nullable
+				glr::ParsingAstBase*						ownerNodeSource = nullptr;	// nullable
 
 				Ptr<WfLexicalFunctionConfig>				functionConfig;
 				reflection::description::ITypeDescriptor*	typeOfThisExpr = nullptr;	// visible members to this scope
@@ -105,7 +105,6 @@ Scope
 				Ptr<WfModule>								FindModule();
 				WfLexicalScope*								FindFunctionScope();
 				WString										GetFriendlyName();
-				Ptr<WfClassMember>							GetOwnerClassMember();
 			};
 
 /***********************************************************************
@@ -189,9 +188,9 @@ Scope Manager
 
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 
-				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
+				typedef collections::List<glr::ParsingError>												ParsingErrorList;
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
-				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
+				typedef collections::Dictionary<glr::ParsingAstBase*, Ptr<WfLexicalScope>>					NodeScopeMap;
 				typedef collections::SortedList<WfLexicalScope*>											AnalyzedScopeList;
 
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
@@ -200,9 +199,9 @@ Scope Manager
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 
-				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
+				typedef collections::Dictionary<glr::ParsingAstBase*, Ptr<WfLexicalCapture>>				LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
-				typedef collections::Dictionary<Ptr<WfDeclaration>, parsing::ParsingTreeCustomBase*>		DeclarationSourceMap;
+				typedef collections::Dictionary<Ptr<WfDeclaration>, glr::ParsingAstBase*>					DeclarationSourceMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
@@ -216,7 +215,7 @@ Scope Manager
 				vint										usedCodeIndex = 0;
 
 			public:
-				Ptr<parsing::tabling::ParsingTable>			parsingTable;
+				workflow::Parser							workflowParser;
 				AttributeTypeMap							attributes;
 
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
@@ -248,7 +247,7 @@ Scope Manager
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
-				WfLexicalScopeManager(Ptr<parsing::tabling::ParsingTable> _parsingTable);
+				WfLexicalScopeManager(workflow::Parser& _workflowParser);
 				~WfLexicalScopeManager();
 				
 				/// <summary>Add a Workflow module. Syntax errors can be found at <see cref="errors"/>.</summary>
@@ -283,7 +282,7 @@ Scope Manager
 				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);
 				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
 				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);
-				void										CreateLambdaCapture(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalCapture> capture = nullptr);
+				void										CreateLambdaCapture(glr::ParsingAstBase* node, Ptr<WfLexicalCapture> capture = nullptr);
 			};
 
 /***********************************************************************
@@ -358,11 +357,11 @@ Structure Analyzing
 				BaseType,
 			};
 
-			extern void										SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
-			extern void										SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
-			extern void										SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
-			extern void										SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
-			extern void										SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfType> node, glr::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfExpression> node, glr::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfStatement> node, glr::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfDeclaration> node, glr::ParsingTextRange codeRange, bool asOffset = false);
+			extern void										SetCodeRange(Ptr<WfModule> node, glr::ParsingTextRange codeRange, bool asOffset = false);
 
 			extern void										ContextFreeModuleDesugar(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ContextFreeDeclarationDesugar(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
@@ -393,7 +392,7 @@ Scope Analyzing
 			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source);
+			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, glr::ParsingAstBase* source);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
 			extern bool										CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager);
@@ -405,7 +404,7 @@ Semantic Analyzing
 ***********************************************************************/
 
 			extern reflection::description::IMethodInfo*	FindInterfaceConstructor(reflection::description::ITypeDescriptor* type);
-			extern Ptr<reflection::description::ITypeInfo>	SelectFunction(WfLexicalScopeManager* manager, parsing::ParsingTreeCustomBase* node, Ptr<WfExpression> functionExpression, collections::List<ResolveExpressionResult>& functions, collections::List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex);
+			extern Ptr<reflection::description::ITypeInfo>	SelectFunction(WfLexicalScopeManager* manager, glr::ParsingAstBase* node, Ptr<WfExpression> functionExpression, collections::List<ResolveExpressionResult>& functions, collections::List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex);
 
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl);
@@ -425,22 +424,23 @@ Semantic Analyzing
 Expanding Virtual Nodes
 ***********************************************************************/
 
-			class CopyWithExpandVirtualVisitor : public copy_visitor::ModuleVisitor
+			class CopyWithExpandVirtualVisitor : public copy_visitor::AstVisitor
 			{
 			private:
 				bool										expandVirtualAst;
 
 				void										Expand(collections::List<Ptr<WfDeclaration>>& decls);
-			public:
-				CopyWithExpandVirtualVisitor(bool _expandVirtualAst);
 
-				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualCfeExpression* node)override;
-				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualCseExpression* node)override;
-				Ptr<parsing::ParsingTreeCustomBase>			Dispatch(WfVirtualCseStatement* node)override;
+				void										Visit(WfVirtualCfeExpression* node)override;
+				void										Visit(WfVirtualCseExpression* node)override;
+				void										Visit(WfVirtualCseStatement* node)override;
 
 				void										Visit(WfNamespaceDeclaration* node)override;
 				void										Visit(WfClassDeclaration* node)override;
 				void										Visit(WfNewInterfaceExpression* node)override;
+
+			public:
+				CopyWithExpandVirtualVisitor(bool _expandVirtualAst);
 			};
 
 			extern Ptr<WfStatement>							SearchUntilNonVirtualStatement(Ptr<WfStatement> statement);
@@ -467,179 +467,179 @@ Error Messages
 			struct WfErrors
 			{
 				// A: Expression error
-				static Ptr<parsing::ParsingError>			WrongFormatStringSyntax(WfExpression* node);
-				static Ptr<parsing::ParsingError>			WrongSimpleObserveExpression(WfExpression* node);
-				static Ptr<parsing::ParsingError>			WrongSimpleObserveEvent(WfExpression* node);
-				static Ptr<parsing::ParsingError>			EmptyObserveEvent(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ObserveNotInBind(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ObserveInObserveEvent(WfExpression* node);
-				static Ptr<parsing::ParsingError>			BindInBind(WfExpression* node);
-				static Ptr<parsing::ParsingError>			AttachInBind(WfExpression* node);
-				static Ptr<parsing::ParsingError>			DetachInBind(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ConstructorMixMapAndList(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ConstructorMixStructAndList(WfExpression* node);
-				static Ptr<parsing::ParsingError>			DuplicatedConstructorField(WfReferenceExpression* node);
-				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewClassExpression* node);
-				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewInterfaceExpression* node);
-				static Ptr<parsing::ParsingError>			ScopeNameIsNotExpression(WfExpression* node, Ptr<WfLexicalScopeName> scopeName);
-				static Ptr<parsing::ParsingError>			EventIsNotExpression(WfExpression* node, reflection::description::IEventInfo* eventInfo);
-				static Ptr<parsing::ParsingError>			ExpressionIsNotScopeName(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ExpressionIsNotEvent(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ExpressionCannotResolveType(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			NullCannotResolveType(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ConstructorCannotResolveType(WfExpression* node);
-				static Ptr<parsing::ParsingError>			OrderedLambdaCannotResolveType(WfExpression* node);
-				static Ptr<parsing::ParsingError>			NullCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			ConstructorCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			OrderedLambdaCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			ExpressionCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			ExpressionCannotExplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			CannotWeakCastToType(WfExpression* node, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			IntegerLiteralOutOfRange(WfIntegerExpression* node);
-				static Ptr<parsing::ParsingError>			FloatingLiteralOutOfRange(WfFloatingExpression* node);
-				static Ptr<parsing::ParsingError>			CannotMergeTwoType(WfExpression* node, reflection::description::ITypeInfo* firstType, reflection::description::ITypeInfo* secondType);
-				static Ptr<parsing::ParsingError>			RangeShouldBeInteger(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			UnaryOperatorOnWrongType(WfUnaryExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			BinaryOperatorOnWrongType(WfBinaryExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			IndexOperatorOnWrongType(WfBinaryExpression* node, reflection::description::ITypeInfo* containerType);
-				static Ptr<parsing::ParsingError>			ExpressionIsNotCollection(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			ExpressionIsNotFunction(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			FunctionArgumentCountMismatched(parsing::ParsingTreeCustomBase* node, vint expectedCount, const ResolveExpressionResult& function);
-				static Ptr<parsing::ParsingError>			FunctionArgumentTypeMismatched(parsing::ParsingTreeCustomBase* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			CannotPickOverloadedFunctions(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results);
-				static Ptr<parsing::ParsingError>			ClassContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			InterfaceContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			ConstructorReturnTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			ExpressionIsNotLeftValue(WfExpression* node, const ResolveExpressionResult& result);
-				static Ptr<parsing::ParsingError>			CannotCallMemberOutsideOfClass(WfExpression* node, const ResolveExpressionResult& result);
-				static Ptr<parsing::ParsingError>			CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result);
-				static Ptr<parsing::ParsingError>			FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result);
-				static Ptr<parsing::ParsingError>			WrongThisExpression(WfExpression* node);
-				static Ptr<parsing::ParsingError>			IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			ExpressionIsNotConstant(WfExpression* node);
-				static Ptr<parsing::ParsingError>			WrongMixinTargetType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			ExpectedTypeCastCannotResolveType(WfExpression* node);
+				static glr::ParsingError					WrongFormatStringSyntax(WfExpression* node);
+				static glr::ParsingError					WrongSimpleObserveExpression(WfExpression* node);
+				static glr::ParsingError					WrongSimpleObserveEvent(WfExpression* node);
+				static glr::ParsingError					EmptyObserveEvent(WfExpression* node);
+				static glr::ParsingError					ObserveNotInBind(WfExpression* node);
+				static glr::ParsingError					ObserveInObserveEvent(WfExpression* node);
+				static glr::ParsingError					BindInBind(WfExpression* node);
+				static glr::ParsingError					AttachInBind(WfExpression* node);
+				static glr::ParsingError					DetachInBind(WfExpression* node);
+				static glr::ParsingError					ConstructorMixMapAndList(WfExpression* node);
+				static glr::ParsingError					ConstructorMixStructAndList(WfExpression* node);
+				static glr::ParsingError					DuplicatedConstructorField(WfReferenceExpression* node);
+				static glr::ParsingError					ConstructorMixClassAndInterface(WfNewClassExpression* node);
+				static glr::ParsingError					ConstructorMixClassAndInterface(WfNewInterfaceExpression* node);
+				static glr::ParsingError					ScopeNameIsNotExpression(WfExpression* node, Ptr<WfLexicalScopeName> scopeName);
+				static glr::ParsingError					EventIsNotExpression(WfExpression* node, reflection::description::IEventInfo* eventInfo);
+				static glr::ParsingError					ExpressionIsNotScopeName(WfExpression* node);
+				static glr::ParsingError					ExpressionIsNotEvent(WfExpression* node);
+				static glr::ParsingError					ExpressionCannotResolveType(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					NullCannotResolveType(WfExpression* node);
+				static glr::ParsingError					ConstructorCannotResolveType(WfExpression* node);
+				static glr::ParsingError					OrderedLambdaCannotResolveType(WfExpression* node);
+				static glr::ParsingError					NullCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					ConstructorCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					OrderedLambdaCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					ExpressionCannotImplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					ExpressionCannotExplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					CannotWeakCastToType(WfExpression* node, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					IntegerLiteralOutOfRange(WfIntegerExpression* node);
+				static glr::ParsingError					FloatingLiteralOutOfRange(WfFloatingExpression* node);
+				static glr::ParsingError					CannotMergeTwoType(WfExpression* node, reflection::description::ITypeInfo* firstType, reflection::description::ITypeInfo* secondType);
+				static glr::ParsingError					RangeShouldBeInteger(WfExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					UnaryOperatorOnWrongType(WfUnaryExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					BinaryOperatorOnWrongType(WfBinaryExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					IndexOperatorOnWrongType(WfBinaryExpression* node, reflection::description::ITypeInfo* containerType);
+				static glr::ParsingError					ExpressionIsNotCollection(WfExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					ExpressionIsNotFunction(WfExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					FunctionArgumentCountMismatched(glr::ParsingAstBase* node, vint expectedCount, const ResolveExpressionResult& function);
+				static glr::ParsingError					FunctionArgumentTypeMismatched(glr::ParsingAstBase* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					CannotPickOverloadedFunctions(glr::ParsingAstBase* node, collections::List<ResolveExpressionResult>& results);
+				static glr::ParsingError					ClassContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					InterfaceContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					ConstructorReturnTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					ExpressionIsNotLeftValue(WfExpression* node, const ResolveExpressionResult& result);
+				static glr::ParsingError					CannotCallMemberOutsideOfClass(WfExpression* node, const ResolveExpressionResult& result);
+				static glr::ParsingError					CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result);
+				static glr::ParsingError					FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result);
+				static glr::ParsingError					WrongThisExpression(WfExpression* node);
+				static glr::ParsingError					IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					ExpressionIsNotConstant(WfExpression* node);
+				static glr::ParsingError					WrongMixinTargetType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static glr::ParsingError					ExpectedTypeCastCannotResolveType(WfExpression* node);
 
 				// B: Type error
-				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);
-				static Ptr<parsing::ParsingError>			WrongInterfaceType(WfType* node);
-				static Ptr<parsing::ParsingError>			RawPointerToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
-				static Ptr<parsing::ParsingError>			SharedPointerToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
-				static Ptr<parsing::ParsingError>			NullableToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
-				static Ptr<parsing::ParsingError>			ChildOfNonReferenceType(WfType* node);
-				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, Ptr<WfLexicalScopeName> scopeName);
-				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, const ResolveExpressionResult& result);
-				static Ptr<parsing::ParsingError>			TypeNotForValue(WfType* node, reflection::description::ITypeInfo* typeInfo);
+				static glr::ParsingError					WrongVoidType(WfType* node);
+				static glr::ParsingError					WrongInterfaceType(WfType* node);
+				static glr::ParsingError					RawPointerToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
+				static glr::ParsingError					SharedPointerToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
+				static glr::ParsingError					NullableToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
+				static glr::ParsingError					ChildOfNonReferenceType(WfType* node);
+				static glr::ParsingError					TypeNotExists(WfType* node, Ptr<WfLexicalScopeName> scopeName);
+				static glr::ParsingError					TypeNotExists(WfType* node, const ResolveExpressionResult& result);
+				static glr::ParsingError					TypeNotForValue(WfType* node, reflection::description::ITypeInfo* typeInfo);
 				
 				// C: Statement error
-				static Ptr<parsing::ParsingError>			BreakNotInLoop(WfStatement* node);
-				static Ptr<parsing::ParsingError>			ContinueNotInLoop(WfStatement* node);
-				static Ptr<parsing::ParsingError>			RethrowNotInCatch(WfStatement* node);
-				static Ptr<parsing::ParsingError>			TryMissCatchAndFinally(WfStatement* node);
-				static Ptr<parsing::ParsingError>			ReturnMissExpression(WfStatement* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			DeleteNonRawPointer(WfStatement* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			CannotReturnExpression(WfStatement* node);
-				static Ptr<parsing::ParsingError>			WrongCoPause(WfStatement* node);
-				static Ptr<parsing::ParsingError>			WrongCoOperator(WfStatement* node);
-				static Ptr<parsing::ParsingError>			WrongCoOperator(WfExpression* node);
-				static Ptr<parsing::ParsingError>			CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates);
-				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfReturnStatement* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfCoOperatorStatement* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			CoOperatorNotExists(WfCoOperatorExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			CoOperatorCannotResolveResultType(WfCoOperatorStatement* node, collections::List<reflection::description::ITypeInfo*>& types);
-				static Ptr<parsing::ParsingError>			CoProviderCreateNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			CoProviderCreateAndRunNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			GotoLabelNotExists(WfGotoStatement* node);
-				static Ptr<parsing::ParsingError>			TooManyGotoLabel(WfGotoStatement* node);
-				static Ptr<parsing::ParsingError>			WrongStateSwitchStatement(WfStateSwitchStatement* node);
-				static Ptr<parsing::ParsingError>			WrongStateInvokeStatement(WfStateInvokeStatement* node);
-				static Ptr<parsing::ParsingError>			StateInputNotExists(WfStateSwitchCase* node);
-				static Ptr<parsing::ParsingError>			StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node);
-				static Ptr<parsing::ParsingError>			StateNotExists(WfStateInvokeStatement* node);
-				static Ptr<parsing::ParsingError>			StateArgumentCountNotMatch(WfStateInvokeStatement* node);
+				static glr::ParsingError					BreakNotInLoop(WfStatement* node);
+				static glr::ParsingError					ContinueNotInLoop(WfStatement* node);
+				static glr::ParsingError					RethrowNotInCatch(WfStatement* node);
+				static glr::ParsingError					TryMissCatchAndFinally(WfStatement* node);
+				static glr::ParsingError					ReturnMissExpression(WfStatement* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					DeleteNonRawPointer(WfStatement* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					CannotReturnExpression(WfStatement* node);
+				static glr::ParsingError					WrongCoPause(WfStatement* node);
+				static glr::ParsingError					WrongCoOperator(WfStatement* node);
+				static glr::ParsingError					WrongCoOperator(WfExpression* node);
+				static glr::ParsingError					CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates);
+				static glr::ParsingError					CoOperatorNotExists(WfReturnStatement* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					CoOperatorNotExists(WfCoOperatorStatement* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					CoOperatorNotExists(WfCoOperatorExpression* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					CoOperatorCannotResolveResultType(WfCoOperatorStatement* node, collections::List<reflection::description::ITypeInfo*>& types);
+				static glr::ParsingError					CoProviderCreateNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					CoProviderCreateAndRunNotExists(WfCoProviderStatement* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					GotoLabelNotExists(WfGotoStatement* node);
+				static glr::ParsingError					TooManyGotoLabel(WfGotoStatement* node);
+				static glr::ParsingError					WrongStateSwitchStatement(WfStateSwitchStatement* node);
+				static glr::ParsingError					WrongStateInvokeStatement(WfStateInvokeStatement* node);
+				static glr::ParsingError					StateInputNotExists(WfStateSwitchCase* node);
+				static glr::ParsingError					StateSwitchArgumentCountNotMatch(WfStateSwitchCase* node);
+				static glr::ParsingError					StateNotExists(WfStateInvokeStatement* node);
+				static glr::ParsingError					StateArgumentCountNotMatch(WfStateInvokeStatement* node);
 
 				// D: Declaration error
-				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			FunctionShouldHaveImplementation(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			InterfaceMethodShouldNotHaveImplementation(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			DuplicatedDeclaration(WfDeclaration* node, const WString& firstDeclarationCategory);
-				static Ptr<parsing::ParsingError>			DuplicatedDeclaration(WfStateMachineDeclaration* node);
-				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfDeclaration* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStatement* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
-				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
-				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
-				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrongDeclaration(WfAutoPropertyDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrongDeclaration(WfStateMachineDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
-				static Ptr<parsing::ParsingError>			FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
-				static Ptr<parsing::ParsingError>			FlagValueNotExists(WfEnumItemIntersection* node, WfEnumDeclaration* owner);
-				static Ptr<parsing::ParsingError>			DuplicatedEnumValue(WfEnumItem* node, WfEnumDeclaration* owner);
-				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
-				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
-				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
-				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
-				static Ptr<parsing::ParsingError>			AttributeMissValue(WfAttribute* node);
-				static Ptr<parsing::ParsingError>			StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node);
-				static Ptr<parsing::ParsingError>			MissingDefaultState(WfStateMachineDeclaration* node);
+				static glr::ParsingError					FunctionShouldHaveName(WfDeclaration* node);
+				static glr::ParsingError					FunctionShouldHaveImplementation(WfDeclaration* node);
+				static glr::ParsingError					InterfaceMethodShouldNotHaveImplementation(WfDeclaration* node);
+				static glr::ParsingError					DuplicatedDeclaration(WfDeclaration* node, const WString& firstDeclarationCategory);
+				static glr::ParsingError					DuplicatedDeclaration(WfStateMachineDeclaration* node);
+				static glr::ParsingError					DuplicatedSymbol(WfDeclaration* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					DuplicatedSymbol(WfStatement* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					DuplicatedSymbol(WfStateInput* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					DuplicatedSymbol(WfStateDeclaration* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					DuplicatedSymbol(WfStateSwitchArgument* node, Ptr<WfLexicalSymbol> symbol);
+				static glr::ParsingError					InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
+				static glr::ParsingError					InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
+				static glr::ParsingError					CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
+				static glr::ParsingError					CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
+				static glr::ParsingError					WrongDeclaration(WfEventDeclaration* node);
+				static glr::ParsingError					WrongDeclaration(WfPropertyDeclaration* node);
+				static glr::ParsingError					WrongDeclaration(WfConstructorDeclaration* node);
+				static glr::ParsingError					WrongDeclaration(WfDestructorDeclaration* node);
+				static glr::ParsingError					WrongDeclaration(WfAutoPropertyDeclaration* node);
+				static glr::ParsingError					WrongDeclaration(WfStateMachineDeclaration* node);
+				static glr::ParsingError					WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
+				static glr::ParsingError					EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
+				static glr::ParsingError					FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
+				static glr::ParsingError					FlagValueNotExists(WfEnumItemIntersection* node, WfEnumDeclaration* owner);
+				static glr::ParsingError					DuplicatedEnumValue(WfEnumItem* node, WfEnumDeclaration* owner);
+				static glr::ParsingError					StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
+				static glr::ParsingError					StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static glr::ParsingError					DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
+				static glr::ParsingError					AttributeNotExists(WfAttribute* node);
+				static glr::ParsingError					AttributeMissValue(WfAttribute* node);
+				static glr::ParsingError					StateMachineClassNotInheritFromStateMachine(WfClassDeclaration* node);
+				static glr::ParsingError					MissingDefaultState(WfStateMachineDeclaration* node);
 
 				// E: Module error
-				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);
+				static glr::ParsingError					WrongUsingPathWildCard(WfModuleUsingPath* node);
 
 				// F: Symbol Error
-				static Ptr<parsing::ParsingError>			TopQualifiedSymbolNotExists(parsing::ParsingTreeCustomBase* node, const WString& name);
-				static Ptr<parsing::ParsingError>			ChildSymbolNotExists(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalScopeName> scopeName, const WString& name);
-				static Ptr<parsing::ParsingError>			MemberNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
-				static Ptr<parsing::ParsingError>			ReferenceNotExists(parsing::ParsingTreeCustomBase* node, const WString& name);
-				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name);
-				static Ptr<parsing::ParsingError>			EnumItemNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
+				static glr::ParsingError					TopQualifiedSymbolNotExists(glr::ParsingAstBase* node, const WString& name);
+				static glr::ParsingError					ChildSymbolNotExists(glr::ParsingAstBase* node, Ptr<WfLexicalScopeName> scopeName, const WString& name);
+				static glr::ParsingError					MemberNotExists(glr::ParsingAstBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
+				static glr::ParsingError					ReferenceNotExists(glr::ParsingAstBase* node, const WString& name);
+				static glr::ParsingError					TooManyTargets(glr::ParsingAstBase* node, collections::List<ResolveExpressionResult>& results, const WString& name);
+				static glr::ParsingError					EnumItemNotExists(glr::ParsingAstBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
 
 				// G: Class error
-				static Ptr<parsing::ParsingError>			WrongClassMemberConfig(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			FunctionInNewTypeExpressionCannotBeStatic(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeNormalOutsideOfClass(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeStatic(WfDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
-				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			PropertyEventNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			TooManyPropertySetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			TooManyPropertyEvent(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			PropertyGetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			PropertySetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			WrongBaseType(WfClassDeclaration* node, WfType* type);
-				static Ptr<parsing::ParsingError>			WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
-				static Ptr<parsing::ParsingError>			WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
-				static Ptr<parsing::ParsingError>			WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
-				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
-				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
-				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfAutoPropertyDeclaration* node);
-				static Ptr<parsing::ParsingError>			MissingFieldType(WfVariableDeclaration* node);
-				static Ptr<parsing::ParsingError>			DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
-				static Ptr<parsing::ParsingError>			ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
-				static Ptr<parsing::ParsingError>			InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
-				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
-				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
-				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
-				static Ptr<parsing::ParsingError>			AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
-				static Ptr<parsing::ParsingError>			AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					WrongClassMemberConfig(WfDeclaration* node);
+				static glr::ParsingError					FunctionInNewTypeExpressionCannotBeStatic(WfDeclaration* node);
+				static glr::ParsingError					AutoPropertyCannotBeNormalOutsideOfClass(WfDeclaration* node);
+				static glr::ParsingError					AutoPropertyCannotBeStatic(WfDeclaration* node);
+				static glr::ParsingError					WrongClassMember(WfNamespaceDeclaration* node);
+				static glr::ParsingError					PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					PropertyEventNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					TooManyPropertySetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					TooManyPropertyEvent(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					PropertyGetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					PropertySetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					WrongBaseType(WfClassDeclaration* node, WfType* type);
+				static glr::ParsingError					WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static glr::ParsingError					WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static glr::ParsingError					WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static glr::ParsingError					ClassWithInterfaceConstructor(WfClassDeclaration* node);
+				static glr::ParsingError					OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
+				static glr::ParsingError					OverrideShouldImplementInterfaceMethod(WfAutoPropertyDeclaration* node);
+				static glr::ParsingError					MissingFieldType(WfVariableDeclaration* node);
+				static glr::ParsingError					DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static glr::ParsingError					ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static glr::ParsingError					InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static glr::ParsingError					WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
+				static glr::ParsingError					DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
+				static glr::ParsingError					TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
+				static glr::ParsingError					AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
 
 				// CPP: C++ code generation error
-				static Ptr<parsing::ParsingError>			CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
-				static Ptr<parsing::ParsingError>			CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static glr::ParsingError					CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
+				static glr::ParsingError					CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 			};
 		}
 	}

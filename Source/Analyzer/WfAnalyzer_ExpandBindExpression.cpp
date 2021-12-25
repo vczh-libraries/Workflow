@@ -112,51 +112,48 @@ Copy(Type|Expression|Statement|Declaration)
 			{
 			}
 
-			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualCfeExpression* node)
+			void CopyWithExpandVirtualVisitor::Visit(WfVirtualCfeExpression* node)
 			{
 				if (!expandVirtualAst || !node->expandedExpression)
 				{
-					return copy_visitor::ModuleVisitor::Dispatch(node);
+					return copy_visitor::AstVisitor::Visit(node);
 				}
 				node->expandedExpression->Accept(this);
-				return result;
 			}
 
-			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualCseExpression* node)
+			void CopyWithExpandVirtualVisitor::Visit(WfVirtualCseExpression* node)
 			{
 				if (!expandVirtualAst || !node->expandedExpression)
 				{
-					return copy_visitor::ModuleVisitor::Dispatch(node);
+					return copy_visitor::AstVisitor::Visit(node);
 				}
 				node->expandedExpression->Accept(this);
-				return result;
 			}
 
-			Ptr<ParsingTreeCustomBase> CopyWithExpandVirtualVisitor::Dispatch(WfVirtualCseStatement* node)
+			void CopyWithExpandVirtualVisitor::Visit(WfVirtualCseStatement* node)
 			{
 				if (!expandVirtualAst || !node->expandedStatement)
 				{
-					return copy_visitor::ModuleVisitor::Dispatch(node);
+					return copy_visitor::AstVisitor::Visit(node);
 				}
 				node->expandedStatement->Accept(this);
-				return result;
 			}
 
 			void CopyWithExpandVirtualVisitor::Visit(WfNamespaceDeclaration* node)
 			{
-				copy_visitor::DeclarationVisitor::Visit(node);
+				copy_visitor::AstVisitor::Visit(node);
 				Expand(result.Cast<WfNamespaceDeclaration>()->declarations);
 			}
 
 			void CopyWithExpandVirtualVisitor::Visit(WfClassDeclaration* node)
 			{
-				copy_visitor::DeclarationVisitor::Visit(node);
+				copy_visitor::AstVisitor::Visit(node);
 				Expand(result.Cast<WfClassDeclaration>()->declarations);
 			}
 
 			void CopyWithExpandVirtualVisitor::Visit(WfNewInterfaceExpression* node)
 			{
-				copy_visitor::ExpressionVisitor::Visit(node);
+				copy_visitor::AstVisitor::Visit(node);
 				Expand(result.Cast<WfNewInterfaceExpression>()->declarations);
 			}
 
