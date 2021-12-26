@@ -31,7 +31,7 @@ Parsing
 		extern Ptr<WfType>				ParseType(const WString& input, const Parser& parser, vint codeIndex = -1);
 		extern Ptr<WfExpression>		ParseExpression(const WString& input, const Parser& parser, vint codeIndex = -1);
 		extern Ptr<WfStatement>			ParseStatement(const WString& input, const Parser& parser, vint codeIndex = -1);
-		extern Ptr<WfDeclaration>		ParserDeclaration(const WString& input, const Parser& parser, vint codeIndex = -1);
+		extern Ptr<WfDeclaration>		ParseDeclaration(const WString& input, const Parser& parser, vint codeIndex = -1);
 		extern Ptr<WfModule>			ParseModule(const WString& input, const Parser& parser, vint codeIndex = -1);
 		
 /***********************************************************************

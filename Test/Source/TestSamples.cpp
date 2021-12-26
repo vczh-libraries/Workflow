@@ -31,16 +31,16 @@ TEST_FILE
 					switch (i)
 					{
 					case 0:
-						node = parser.Parse_Expression(sample);
+						node = ParseExpression(sample, parser);
 						break;
 					case 1:
-						node = parser.Parse_Statement(sample);
+						node = ParseStatement(sample, parser);
 						break;
 					case 2:
-						node = parser.Parse_Declaration(sample);
+						node = ParseDeclaration(sample, parser);
 						break;
 					case 3:
-						node = parser.Parse_Module(sample);
+						node = ParseModule(sample, parser);
 						break;
 					}
 					parser.OnError.Remove(handler);

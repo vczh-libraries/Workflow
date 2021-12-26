@@ -3,13 +3,12 @@
 
 void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleName)
 {
-	auto&& parser = GetWorkflowParser();
 	List<WString> itemNames;
 	LoadSampleIndex(sampleName, itemNames);
 	for (auto itemName : itemNames)
 	{
 		WString sample = LoadSample(sampleName, itemName);
-		auto module = parser.Parse_Module(sample);
+		auto module = ParseModule(sample, GetWorkflowParser());
 		manager->AddModule(module);
 
 		auto sampleModule = GenerateToStream([&](StreamWriter& writer)
@@ -82,11 +81,10 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test against illegal scripts")
 	{
-		auto&& parser = GetWorkflowParser();
 		List<WString> itemNames;
 		LoadSampleIndex(L"AnalyzerError", itemNames);
 
-		WfLexicalScopeManager manager(parser);
+		WfLexicalScopeManager manager(GetWorkflowParser());
 		manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint>::CreateTypeInfo());
 		manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint>>::CreateTypeInfo());
 		manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint>>::CreateTypeInfo());
@@ -99,7 +97,7 @@ TEST_FILE
 			{
 				manager.Clear(true, true);
 				WString sample = LoadSample(L"AnalyzerError", itemName);
-				auto module = parser.Parse_Module(sample);
+				auto module = ParseModule(sample, GetWorkflowParser());
 				TEST_ASSERT(module);
 				manager.AddModule(sample);
 				manager.Rebuild(true);

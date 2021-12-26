@@ -42,12 +42,11 @@ TEST_FILE
 {
 	TEST_CATEGORY(L"Code generation")
 	{
-		auto&& parser = GetWorkflowParser();
 		List<WString> codegenNames, reflectableAssemblies;
 		Dictionary<WString, WString> assemblyEntries;
 		LoadSampleIndex(L"Codegen", codegenNames);
 
-		WfLexicalScopeManager manager(parser);
+		WfLexicalScopeManager manager(GetWorkflowParser());
 		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)
@@ -58,7 +57,7 @@ TEST_FILE
 				WString sample = LoadSample(L"Codegen", itemName);
 				manager.Clear(true, true);
 				{
-					auto module = parser.Parse_Module(sample);
+					auto module = ParseModule(sample, GetWorkflowParser());
 					TEST_ASSERT(module);
 					TEST_ASSERT(manager.errors.Count() == 0);
 

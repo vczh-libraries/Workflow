@@ -142,7 +142,7 @@ Parsing
 			return ast;
 		}
 
-		Ptr<WfDeclaration> ParserDeclaration(const WString& input, const Parser& parser, vint codeIndex)
+		Ptr<WfDeclaration> ParseDeclaration(const WString& input, const Parser& parser, vint codeIndex)
 		{
 			List<regex::RegexToken> tokens;
 			parser.Tokenize(input, tokens, codeIndex);
