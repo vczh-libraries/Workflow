@@ -178,7 +178,11 @@ ValidateSemantic(Expression)
 												{
 													readonlyCaptured = firstConfigScope != lastConfigScope;
 
-													if (lastConfigScope->parentScope != currentScope || lastConfigScope->ownerNodeSource)
+													if (
+														lastConfigScope->parentScope != currentScope ||
+														!lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>() ||
+														(lastConfigScope->ownerNodeSource && lastConfigScope->ownerNodeSource != currentScope->ownerNode)
+														)
 													{
 														manager->errors.Add(WfErrors::FieldCannotInitializeUsingEachOther(node, result));
 													}
@@ -262,7 +266,10 @@ ValidateSemantic(Expression)
 									{
 										if (firstConfigScope)
 										{
-											bool inMethodBody = lastConfigScope->parentScope == currentScope && !lastConfigScope->ownerNodeSource && lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
+											bool inMethodBody = 
+												lastConfigScope->parentScope == currentScope &&
+												lastConfigScope->ownerNodeSource == currentScope->ownerNode &&
+												lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>();
 											bool inDtorBody = lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>();
 											bool inCtorBody = lastConfigScope->parentScope->ownerNode.Cast<WfConstructorDeclaration>();
 											bool inStateBody = lastConfigScope->ownerNode.Cast<WfStateDeclaration>();

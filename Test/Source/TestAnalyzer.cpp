@@ -97,12 +97,10 @@ TEST_FILE
 		{
 			TEST_CASE(itemName)
 			{
+				manager.Clear(true, true);
 				WString sample = LoadSample(L"AnalyzerError", itemName);
 				auto module = parser.Parse_Module(sample);
-				TEST_ASSERT(manager.errors.Count() == 0);
 				TEST_ASSERT(module);
-
-				manager.Clear(true, true);
 				manager.AddModule(sample);
 				manager.Rebuild(true);
 

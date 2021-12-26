@@ -34,6 +34,11 @@ ValidateStructure(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					if (classDecl)
+					{
+						manager->errors.Add(WfErrors::WrongClassMember(node));
+					}
+
 					if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
 					{
 						manager->errors.Add(WfErrors::WrongDeclarationInInterfaceConstructor(node));
