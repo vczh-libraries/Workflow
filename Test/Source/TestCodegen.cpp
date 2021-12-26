@@ -42,12 +42,12 @@ TEST_FILE
 {
 	TEST_CATEGORY(L"Code generation")
 	{
-		Ptr<ParsingTable> table = GetWorkflowTable();
+		auto&& parser = GetWorkflowParser();
 		List<WString> codegenNames, reflectableAssemblies;
 		Dictionary<WString, WString> assemblyEntries;
 		LoadSampleIndex(L"Codegen", codegenNames);
 
-		WfLexicalScopeManager manager(table);
+		WfLexicalScopeManager manager(parser);
 		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)
@@ -56,17 +56,15 @@ TEST_FILE
 
 				TEST_PRINT(itemName);
 				WString sample = LoadSample(L"Codegen", itemName);
-				List<Ptr<ParsingError>> errors;
-				Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
-				TEST_ASSERT(node);
-
 				manager.Clear(true, true);
 				{
-					List<RegexToken> tokens;
-					Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
+					auto module = parser.Parse_Module(sample);
+					TEST_ASSERT(module);
+					TEST_ASSERT(manager.errors.Count() == 0);
+
 					manager.AddModule(module);
 					manager.Rebuild(true);
-					LogSampleParseResult(L"Codegen", itemName, sample, node, module, &manager);
+					LogSampleParseResult(L"Codegen", itemName, sample, module, &manager);
 					TEST_ASSERT(manager.errors.Count() == 0);
 				}
 				Ptr<WfAssembly> assembly = GenerateAssembly(&manager);

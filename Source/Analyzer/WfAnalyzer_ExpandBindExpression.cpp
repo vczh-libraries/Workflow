@@ -9,7 +9,6 @@ namespace vl
 			using namespace collections;
 			using namespace reflection;
 			using namespace reflection::description;
-			using namespace parsing;
 			using namespace stream;
 
 /***********************************************************************
@@ -159,27 +158,27 @@ Copy(Type|Expression|Statement|Declaration)
 
 			Ptr<WfType> CopyType(Ptr<WfType> type)
 			{
-				return CopyWithExpandVirtualVisitor(false).CreateField(type);
+				return CopyWithExpandVirtualVisitor(false).CopyNode(type.Obj());
 			}
 
 			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(expression);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(expression.Obj());
 			}
 
 			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(statement);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(statement.Obj());
 			}
 
 			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(declaration);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(declaration.Obj());
 			}
 
 			Ptr<WfModule> CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CreateField(module);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(module.Obj());
 			}
 
 /***********************************************************************
@@ -610,9 +609,9 @@ ExpandObserveExpression
 				{
 				}
 
-				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				vl::Ptr<WfExpression> CopyNode(WfExpression* node)override
 				{
-					return Execute(from.Obj(), context);
+					return Execute(node, context);
 				}
 
 				static Ptr<WfExpression> Execute(WfExpression* expression, BindContext& context, bool expandImmediately = true)
@@ -672,13 +671,13 @@ ExpandObserveExpression
 					if (node->observeType == WfObserveType::SimpleObserve)
 					{
 						auto expr = MakePtr<WfMemberExpression>();
-						expr->parent = CreateField(node->parent);
+						expr->parent = CopyNode(node->parent.Obj());
 						expr->name.value = node->expression.Cast<WfReferenceExpression>()->name.value;
 						result = expr;
 					}
 					else
 					{
-						result = CreateField(node->expression);
+						result = CopyNode(node->expression.Obj());
 					}
 				}
 			};
@@ -829,17 +828,15 @@ CreateBindWritableVariable
 IValueSubscription::Subscribe
 ***********************************************************************/
 
-			Ptr<WfDeclaration> AssignNormalMember(Ptr<WfDeclaration> decl)
+			Ptr<WfFunctionDeclaration> AssignNormalMember(Ptr<WfFunctionDeclaration> decl)
 			{
-				decl->classMember = MakePtr<WfClassMember>();
-				decl->classMember->kind = WfClassMemberKind::Normal;
+				decl->functionKind = WfFunctionKind::Normal;
 				return decl;
 			}
 
-			Ptr<WfDeclaration> AssignOverrideMember(Ptr<WfDeclaration> decl)
+			Ptr<WfFunctionDeclaration> AssignOverrideMember(Ptr<WfFunctionDeclaration> decl)
 			{
-				decl->classMember = MakePtr<WfClassMember>();
-				decl->classMember->kind = WfClassMemberKind::Override;
+				decl->functionKind = WfFunctionKind::Override;
 				return decl;
 			}
 
@@ -1279,7 +1276,7 @@ ExpandBindExpression
 						WString cacheName = context.GetCacheVariableName(index);
 						{
 							auto elementType = manager->expressionResolvings[parent].type;
-							newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(cacheName, elementType.Obj())));
+							newSubscription->declarations.Add(CreateWritableVariable(cacheName, elementType.Obj()));
 						}
 					}
 
@@ -1292,7 +1289,7 @@ ExpandBindExpression
 							{
 								auto elementType = TypeInfoRetriver<Ptr<IEventHandler>>::CreateTypeInfo();
 								bcInfo.handlerVariables.Add(handlerName, elementType);
-								newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(handlerName, elementType.Obj())));
+								newSubscription->declarations.Add(CreateWritableVariable(handlerName, elementType.Obj()));
 							}
 						
 							WString callbackName = L"<bind-callback>" + itow(observeIndex) + L"_" + itow(eventIndex);
@@ -1310,8 +1307,8 @@ ExpandBindExpression
 							bcInfo.observeCallbackInfos.Add(observe, callbackInfo);
 						}
 					}
-					newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(L"<bind-opened>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
-					newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(L"<bind-closed>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj())));
+					newSubscription->declarations.Add(CreateWritableVariable(L"<bind-opened>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj()));
+					newSubscription->declarations.Add(CreateWritableVariable(L"<bind-closed>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj()));
 					{
 						auto func = MakePtr<WfFunctionDeclaration>();
 						func->name.value = L"<bind-activator>";

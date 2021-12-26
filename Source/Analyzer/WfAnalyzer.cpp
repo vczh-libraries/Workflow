@@ -372,7 +372,7 @@ WfLexicalScopeManager
 			WfLexicalScopeManager::WfLexicalScopeManager(workflow::Parser& _workflowParser)
 				:workflowParser(_workflowParser)
 			{
-				glr::InstallDefaultErrorMessageGenerator(workflowParser, errors);
+				workflowParserHandler = glr::InstallDefaultErrorMessageGenerator(workflowParser, errors);
 				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
@@ -382,6 +382,7 @@ WfLexicalScopeManager
 
 			WfLexicalScopeManager::~WfLexicalScopeManager()
 			{
+				workflowParser.OnError.Remove(workflowParserHandler);
 			}
 
 			vint WfLexicalScopeManager::AddModule(const WString& moduleCode)

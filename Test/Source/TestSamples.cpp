@@ -10,22 +10,12 @@ TEST_FILE
 		L"Module"
 	};
 
-	using ParseProc = Ptr<ParsingTreeNode>(*)(const WString&, Ptr<ParsingTable>, List<Ptr<ParsingError>>&, vint);
-	const ParseProc parseProcs[] =
-	{
-		WfParseExpressionAsParsingTreeNode,
-		WfParseStatementAsParsingTreeNode,
-		WfParseDeclarationAsParsingTreeNode,
-		WfParseModuleAsParsingTreeNode
-	};
-
 	for (vint i = 0; i < 4; i++)
 	{
 		auto category = categories[i];
-		auto parseProc = parseProcs[i];
 		TEST_CATEGORY(L"Test against legal script: " + WString(category))
 		{
-			Ptr<ParsingTable> table = GetWorkflowTable();
+			auto&& parser = GetWorkflowParser();
 			List<WString> itemNames;
 			LoadSampleIndex(category, itemNames);
 			for (auto itemName : itemNames)
@@ -34,13 +24,29 @@ TEST_FILE
 				{
 					TEST_PRINT(itemName);
 					WString sample = LoadSample(category, itemName);
-					List<Ptr<ParsingError>> errors;
-					Ptr<ParsingTreeNode> node = parseProc(sample, table, errors, -1);
+
+					List<glr::ParsingError> errors;
+					auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+					Ptr<glr::ParsingAstBase> node;
+					switch (i)
+					{
+					case 0:
+						node = parser.Parse_Expression(sample);
+						break;
+					case 1:
+						node = parser.Parse_Statement(sample);
+						break;
+					case 2:
+						node = parser.Parse_Declaration(sample);
+						break;
+					case 3:
+						node = parser.Parse_Module(sample);
+						break;
+					}
+					parser.OnError.Remove(handler);
 					TEST_ASSERT(node);
 
-					List<RegexToken> tokens;
-					auto typedNode = WfConvertParsingTreeNode(node, tokens);
-					LogSampleParseResult(category, itemName, sample, node, typedNode);
+					LogSampleParseResult(category, itemName, sample, node);
 				});
 			}
 		});

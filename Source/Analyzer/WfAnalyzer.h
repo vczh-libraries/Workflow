@@ -216,6 +216,7 @@ Scope Manager
 
 			public:
 				workflow::Parser&							workflowParser;
+				Ptr<EventHandler>							workflowParserHandler;
 				AttributeTypeMap							attributes;
 
 				Ptr<WfLexicalScopeName>						globalName;							// root scope

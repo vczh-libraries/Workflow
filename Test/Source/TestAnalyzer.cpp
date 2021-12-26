@@ -3,26 +3,20 @@
 
 void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleName)
 {
-	Ptr<ParsingTable> table = GetWorkflowTable();
+	auto&& parser = GetWorkflowParser();
 	List<WString> itemNames;
 	LoadSampleIndex(sampleName, itemNames);
 	for (auto itemName : itemNames)
 	{
 		WString sample = LoadSample(sampleName, itemName);
-
-		List<Ptr<ParsingError>> errors;
-		Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
-		TEST_ASSERT(node);
-
-		List<RegexToken> tokens;
-		Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
+		auto module = parser.Parse_Module(sample);
 		manager->AddModule(module);
 
 		auto sampleModule = GenerateToStream([&](StreamWriter& writer)
 		{
 			WfPrint(module, L"", writer);
 		});
-		LogSampleParseResult(sampleName, itemName, sampleModule, node, module);
+		LogSampleParseResult(sampleName, itemName, sampleModule, module);
 	}
 }
 
@@ -30,7 +24,7 @@ TEST_FILE
 {
 	TEST_CASE(L"Test building global name")
 	{
-		WfLexicalScopeManager manager(GetWorkflowTable());
+		WfLexicalScopeManager manager(GetWorkflowParser());
 		LoadMultipleSamples(&manager, L"AnalyzerScope");
 		manager.Rebuild(false);
 
@@ -88,11 +82,11 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test against illegal scripts")
 	{
-		Ptr<ParsingTable> table = GetWorkflowTable();
+		auto&& parser = GetWorkflowParser();
 		List<WString> itemNames;
 		LoadSampleIndex(L"AnalyzerError", itemNames);
 
-		WfLexicalScopeManager manager(table);
+		WfLexicalScopeManager manager(parser);
 		manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint>::CreateTypeInfo());
 		manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint>>::CreateTypeInfo());
 		manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint>>::CreateTypeInfo());
@@ -104,15 +98,12 @@ TEST_FILE
 			TEST_CASE(itemName)
 			{
 				WString sample = LoadSample(L"AnalyzerError", itemName);
-				List<Ptr<ParsingError>> errors;
-				Ptr<ParsingTreeNode> node = WfParseModuleAsParsingTreeNode(sample, table, errors);
-				TEST_ASSERT(errors.Count() == 0);
-				TEST_ASSERT(node);
+				auto module = parser.Parse_Module(sample);
+				TEST_ASSERT(manager.errors.Count() == 0);
+				TEST_ASSERT(module);
 
 				manager.Clear(true, true);
-				List<RegexToken> tokens;
-				Ptr<WfModule> module = WfConvertParsingTreeNode(node, tokens).Cast<WfModule>();
-				manager.AddModule(module);
+				manager.AddModule(sample);
 				manager.Rebuild(true);
 
 				if (manager.errors.Count() == 0)
@@ -124,13 +115,13 @@ TEST_FILE
 				{
 					WfPrint(module, L"", writer);
 				});
-				LogSampleParseResult(L"AnalyzerError", itemName, sampleModule, node, module, &manager);
+				LogSampleParseResult(L"AnalyzerError", itemName, sampleModule, module, &manager);
 
 				const wchar_t* reading = itemName.Buffer();
 				vint index = wcschr(reading, L'_') - reading;
 				WString errorCode = itemName.Left(index);
 				TEST_ASSERT(manager.errors.Count() > 0);
-				TEST_ASSERT(manager.errors[0]->errorMessage.Left(index + 1) == errorCode + L":");
+				TEST_ASSERT(manager.errors[0].message.Left(index + 1) == errorCode + L":");
 			});
 		}
 	});
