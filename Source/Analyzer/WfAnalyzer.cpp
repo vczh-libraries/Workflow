@@ -673,14 +673,14 @@ WfLexicalScopeManager
 								{
 									if (auto functionDecl = symbol->creatorNode.Cast<WfFunctionDeclaration>())
 									{
-										if (functionDecl->functionKind != WfFunctionKind::Normal)
+										if (firstConfigScope->parentScope != scope || functionDecl->functionKind != WfFunctionKind::Normal)
 										{
 											continue;
 										}
 									}
 									else if (auto autoPropDecl = symbol->creatorNode.Cast<WfAutoPropertyDeclaration>())
 									{
-										if (autoPropDecl->functionKind != WfFunctionKind::Normal)
+										if (firstConfigScope->parentScope != scope || autoPropDecl->functionKind != WfFunctionKind::Normal)
 										{
 											continue;
 										}
