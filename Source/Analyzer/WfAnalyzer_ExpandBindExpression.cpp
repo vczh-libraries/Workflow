@@ -181,6 +181,31 @@ Copy(Type|Expression|Statement|Declaration)
 				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(module.Obj());
 			}
 
+			Ptr<WfType> CopyType(WfType* type)
+			{
+				return CopyWithExpandVirtualVisitor(false).CopyNode(type);
+			}
+
+			Ptr<WfExpression> CopyExpression(WfExpression* expression, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(expression);
+			}
+
+			Ptr<WfStatement> CopyStatement(WfStatement* statement, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(statement);
+			}
+
+			Ptr<WfDeclaration> CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(declaration);
+			}
+
+			Ptr<WfModule> CopyModule(WfModule* module, bool expandVirtualExprStat)
+			{
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(module);
+			}
+
 /***********************************************************************
 observing expressions:
 	WfObserveExpression

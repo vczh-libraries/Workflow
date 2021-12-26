@@ -29,6 +29,7 @@ ValidateStructure(Declaration)
 					, classDecl(_classDecl)
 					, surroundingLambda(_surroundingLambda)
 				{
+					CHECK_ERROR(!(_classDecl && _surroundingLambda), L"vl::workflow::analyzer::ValidateStructureDeclarationVisitor(WfLexicalScopeManager*, WfClassDeclaration*, WfExpression*)#Both classDecl or surroundingLambda should not exist at the same time.");
 				}
 
 				void Visit(WfNamespaceDeclaration* node)override
@@ -46,7 +47,7 @@ ValidateStructure(Declaration)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (classDecl && node->classMember)
+					if (classDecl)
 					{
 						switch (classDecl->kind)
 						{

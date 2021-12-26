@@ -20,8 +20,7 @@ CollectModule
 			public:
 				WfCppConfig*							config;
 				WfClassDeclaration*						surroundingClassDecl = nullptr;
-				WfFunctionDeclaration*					funcDeclToSkip = nullptr;
-				WfVariableDeclaration*					varDeclToSkip = nullptr;
+				vint									skipCounter = 0;
 
 				WfCollectModuleVisitor(WfCppConfig* _config)
 					:config(_config)
@@ -77,7 +76,7 @@ CollectModule
 
 				void Traverse(WfFunctionDeclaration* node)override
 				{
-					if (node != funcDeclToSkip && !node->classMember)
+					if (skipCounter == 0)
 					{
 						config->funcDecls.Add(node);
 					}
@@ -85,7 +84,7 @@ CollectModule
 
 				void Traverse(WfVariableDeclaration* node)override
 				{
-					if (node != varDeclToSkip && !node->classMember)
+					if (skipCounter == 0)
 					{
 						config->varDecls.Add(node);
 					}
@@ -110,7 +109,9 @@ CollectModule
 
 					auto oldSurroundingClassDecl = surroundingClassDecl;
 					surroundingClassDecl = node;
+					skipCounter++;
 					traverse_visitor::AstVisitor::Visit(node);
+					skipCounter--;
 					surroundingClassDecl = oldSurroundingClassDecl;
 				}
 
@@ -128,18 +129,16 @@ CollectModule
 
 				void Visit(WfFunctionExpression* node)override
 				{
-					auto old = funcDeclToSkip;
-					funcDeclToSkip = node->function.Obj();
+					skipCounter++;
 					traverse_visitor::AstVisitor::Visit(node);
-					funcDeclToSkip = old;
+					skipCounter--;
 				}
 
 				void Visit(WfVariableStatement* node)override
 				{
-					auto old = varDeclToSkip;
-					varDeclToSkip = node->variable.Obj();
+					skipCounter++;
 					traverse_visitor::AstVisitor::Visit(node);
-					varDeclToSkip = old;
+					skipCounter--;
 				}
 			};
 

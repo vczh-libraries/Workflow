@@ -371,7 +371,7 @@ Structure Analyzing
 
 			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, ValidateTypeStragety strategy = ValidateTypeStragety::Value, WfClassDeclaration* classDecl = nullptr);
 			extern void										ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, WfClassDeclaration* classDecl = 0 , WfExpression* surroundingLambda = 0);
+			extern void										ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, WfClassDeclaration* classDecl = nullptr , WfExpression* surroundingLambda = nullptr);
 			extern void										ValidateStatementStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfStatement>& statement);
 			extern void										ValidateExpressionStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfExpression>& expression);
 
@@ -445,12 +445,19 @@ Expanding Virtual Nodes
 			};
 
 			extern Ptr<WfStatement>							SearchUntilNonVirtualStatement(Ptr<WfStatement> statement);
+			extern Ptr<WfExpression>						CreateDefaultValue(reflection::description::ITypeInfo* elementType);
+
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat);
 			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat);
 			extern Ptr<WfModule>							CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat);
-			extern Ptr<WfExpression>						CreateDefaultValue(reflection::description::ITypeInfo* elementType);
+
+			extern Ptr<WfType>								CopyType(WfType* type);
+			extern Ptr<WfExpression>						CopyExpression(WfExpression* expression, bool expandVirtualExprStat);
+			extern Ptr<WfStatement>							CopyStatement(WfStatement* statement, bool expandVirtualExprStat);
+			extern Ptr<WfDeclaration>						CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat);
+			extern Ptr<WfModule>							CopyModule(WfModule* module, bool expandVirtualExprStat);
 
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 			extern void										ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node);

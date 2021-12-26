@@ -40,9 +40,10 @@ ExpandStateMachineStatementVisitor
 				{
 				}
 
-				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
+				using copy_visitor::AstVisitor::CopyNode;
+				vl::Ptr<WfExpression> CopyNode(WfExpression* node)override
 				{
-					return CopyExpression(from, true);
+					return CopyExpression(node, true);
 				}
 
 				void Visit(WfCoroutineStatement* node)override
@@ -256,7 +257,7 @@ ExpandStateMachineStatementVisitor
 						auto assignExpr = MakePtr<WfBinaryExpression>();
 						assignExpr->op = WfBinaryOperator::Assign;
 						assignExpr->first = refArgument;
-						assignExpr->second = CreateField(node->arguments[index]);
+						assignExpr->second = CopyNode(node->arguments[index].Obj());
 
 						auto exprStat = MakePtr<WfExpressionStatement>();
 						exprStat->expression = assignExpr;
