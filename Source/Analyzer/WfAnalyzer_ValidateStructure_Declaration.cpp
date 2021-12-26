@@ -46,7 +46,7 @@ ValidateStructure(Declaration)
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					if (classDecl && !surroundingLambda)
+					if (classDecl && node->classMember)
 					{
 						switch (classDecl->kind)
 						{

@@ -7,14 +7,14 @@ namespace vl
 		namespace analyzer
 		{
 			using namespace collections;
-			using namespace parsing;
+			using namespace glr;
 			using namespace reflection::description;
 
 /***********************************************************************
 SetCodeRange
 ***********************************************************************/
 
-			class SetCodeRangeVisitor : public traverse_visitor::ModuleVisitor
+			class SetCodeRangeVisitor : public traverse_visitor::AstVisitor
 			{
 			public:
 				ParsingTextRange						range;
@@ -42,7 +42,7 @@ SetCodeRange
 					}
 				}
 
-				void Traverse(ParsingTreeCustomBase* node)override
+				void Traverse(ParsingAstBase *node)override
 				{
 					if (node->codeRange == ParsingTextRange())
 					{
@@ -77,36 +77,36 @@ SetCodeRange
 				}
 			};
 
-			void SetCodeRange(Ptr<WfType> node, parsing::ParsingTextRange codeRange, bool asOffset)
+			void SetCodeRange(Ptr<WfType> node, glr::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).InspectInto(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfExpression> node, parsing::ParsingTextRange codeRange, bool asOffset)
+			void SetCodeRange(Ptr<WfExpression> node, glr::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).InspectInto(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfStatement> node, parsing::ParsingTextRange codeRange, bool asOffset)
+			void SetCodeRange(Ptr<WfStatement> node, glr::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).InspectInto(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfDeclaration> node, parsing::ParsingTextRange codeRange, bool asOffset)
+			void SetCodeRange(Ptr<WfDeclaration> node, glr::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).InspectInto(node.Obj());
 			}
 
-			void SetCodeRange(Ptr<WfModule> node, parsing::ParsingTextRange codeRange, bool asOffset)
+			void SetCodeRange(Ptr<WfModule> node, glr::ParsingTextRange codeRange, bool asOffset)
 			{
-				SetCodeRangeVisitor(codeRange, asOffset).VisitField(node.Obj());
+				SetCodeRangeVisitor(codeRange, asOffset).InspectInto(node.Obj());
 			}
 
 /***********************************************************************
 ContextFreeModuleDesugar
 ***********************************************************************/
 
-			class ContextFreeDesugarVisitor : public traverse_visitor::ModuleVisitor
+			class ContextFreeDesugarVisitor : public traverse_visitor::AstVisitor
 			{
 			public:
 				WfLexicalScopeManager*					manager;
@@ -169,15 +169,16 @@ ContextFreeModuleDesugar
 						if (counter != 0)
 						{
 							auto error = WfErrors::WrongFormatStringSyntax(node);
-							error->errorMessage += L" (Does not find matched close bracket.)";
+							error.message += L" (Does not find matched close bracket.)";
 							manager->errors.Add(error);
 							return;
 						}
 						else
 						{
 							WString input = WString::CopyFrom(begin + 2, vint(end - begin - 3));
-							List<Ptr<ParsingError>> errors;
-							if (auto expression = WfParseExpression(input, manager->parsingTable, errors))
+							vint currentErrorCount = manager->errors.Count();
+
+							if (auto expression = ParseExpression(input, manager->workflowParser))
 							{
 								expressions.Add(expression);
 
@@ -196,11 +197,12 @@ ContextFreeModuleDesugar
 								}
 								SetCodeRange(expression, { formatPos,formatPos,node->codeRange.codeIndex }, true);
 							}
-							for (auto originalError : errors)
+
+							for (vint i = currentErrorCount; i < manager->errors.Count(); i++)
 							{
+								auto&& existing = manager->errors[i];
 								auto error = WfErrors::WrongFormatStringSyntax(node);
-								error->errorMessage += L" (" + originalError->errorMessage + L")";
-								manager->errors.Add(error);
+								existing.message = error.message + L" (" + existing.message + L")";
 							}
 							reading = end;
 						}
@@ -297,6 +299,7 @@ ContextFreeModuleDesugar
 						auto decl = MakePtr<WfFunctionDeclaration>();
 						node->expandedDeclarations.Add(decl);
 
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = getterName;
 						decl->returnType = CopyType(node->type);
@@ -320,6 +323,7 @@ ContextFreeModuleDesugar
 						auto decl = MakePtr<WfFunctionDeclaration>();
 						node->expandedDeclarations.Add(decl);
 
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = setterName;
 
@@ -427,23 +431,20 @@ ContextFreeModuleDesugar
 						}
 					}
 
-					for (auto decl : node->expandedDeclarations)
+					for (auto decl : From(node->expandedDeclarations).FindType<WfFunctionDeclaration>())
 					{
-						auto classMember = MakePtr<WfClassMember>();
-						decl->classMember = classMember;
-
-						classMember->kind = WfClassMemberKind::Normal;
+						decl->functionKind = WfFunctionKind::Normal;
 						if (surroundingLambda)
 						{
 							if (decl->name.value == getterName)
 							{
-								classMember->kind = WfClassMemberKind::Override;
+								decl->functionKind = WfFunctionKind::Override;
 							}
 							else if (decl->name.value == setterName)
 							{
 								if (node->configConst == WfAPConst::Writable)
 								{
-									classMember->kind = WfClassMemberKind::Override;
+									decl->functionKind = WfFunctionKind::Override;
 								}
 							}
 						}
@@ -469,10 +470,7 @@ ContextFreeModuleDesugar
 					{
 						auto funcDecl = MakePtr<WfFunctionDeclaration>();
 						decl->declarations.Add(funcDecl);
-						{
-							funcDecl->classMember = MakePtr<WfClassMember>();
-							funcDecl->classMember->kind = WfClassMemberKind::Static;
-						}
+						funcDecl->functionKind = WfFunctionKind::Static;
 						funcDecl->anonymity = WfFunctionAnonymity::Named;
 						funcDecl->name.value = L"CastResult";
 						funcDecl->returnType = CopyType(node->elementType);
@@ -503,10 +501,7 @@ ContextFreeModuleDesugar
 					{
 						auto funcDecl = MakePtr<WfFunctionDeclaration>();
 						decl->declarations.Add(funcDecl);
-						{
-							funcDecl->classMember = MakePtr<WfClassMember>();
-							funcDecl->classMember->kind = WfClassMemberKind::Static;
-						}
+						funcDecl->functionKind = WfFunctionKind::Static;
 						funcDecl->anonymity = WfFunctionAnonymity::Named;
 						funcDecl->name.value = L"StoreResult";
 						funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
@@ -547,7 +542,7 @@ ContextFreeModuleDesugar
 				{
 					PUSH_SURROUNDING
 					surroundingClassDecl = node;
-					traverse_visitor::DeclarationVisitor::Visit(node);
+					traverse_visitor::AstVisitor::Visit(node);
 					POP_SURROUNDING
 				}
 
@@ -555,7 +550,7 @@ ContextFreeModuleDesugar
 				{
 					PUSH_SURROUNDING
 					surroundingLambda = node;
-					traverse_visitor::ExpressionVisitor::Visit(node);
+					traverse_visitor::AstVisitor::Visit(node);
 					POP_SURROUNDING
 				}
 
@@ -565,22 +560,22 @@ ContextFreeModuleDesugar
 
 			void ContextFreeModuleDesugar(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				ContextFreeDesugarVisitor(manager).VisitField(module.Obj());
+				ContextFreeDesugarVisitor(manager).InspectInto(module.Obj());
 			}
 
 			void ContextFreeDeclarationDesugar(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
 			{
-				ContextFreeDesugarVisitor(manager).VisitField(declaration.Obj());
+				ContextFreeDesugarVisitor(manager).InspectInto(declaration.Obj());
 			}
 
 			void ContextFreeStatementDesugar(WfLexicalScopeManager* manager, Ptr<WfStatement> statement)
 			{
-				ContextFreeDesugarVisitor(manager).VisitField(statement.Obj());
+				ContextFreeDesugarVisitor(manager).InspectInto(statement.Obj());
 			}
 
 			void ContextFreeExpressionDesugar(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
 			{
-				ContextFreeDesugarVisitor(manager).VisitField(expression.Obj());
+				ContextFreeDesugarVisitor(manager).InspectInto(expression.Obj());
 			}
 		}
 	}

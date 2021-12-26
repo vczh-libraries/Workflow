@@ -594,6 +594,7 @@ ExpandCoProviderStatement
 				{
 					auto creatorDecl = MakePtr<WfFunctionDeclaration>();
 					creatorExpr->function = creatorDecl;
+					creatorDecl->functionKind = WfFunctionKind::Normal;
 					creatorDecl->anonymity = WfFunctionAnonymity::Anonymous;
 					creatorDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo().Obj());
 					{

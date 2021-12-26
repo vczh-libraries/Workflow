@@ -980,6 +980,7 @@ IValueSubscription::Open
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				func->name.value = L"Open";
+				func->functionKind = WfFunctionKind::Normal;
 				func->anonymity = WfFunctionAnonymity::Named;
 				{
 					auto typeInfo = TypeInfoRetriver<bool>::CreateTypeInfo();
@@ -1090,6 +1091,7 @@ IValueSubscription::Update
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				func->name.value = L"Update";
+				func->functionKind = WfFunctionKind::Normal;
 				func->anonymity = WfFunctionAnonymity::Named;
 				{
 					auto typeInfo = TypeInfoRetriver<bool>::CreateTypeInfo();
@@ -1155,6 +1157,7 @@ IValueSubscription::Close
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				func->name.value = L"Close";
+				func->functionKind = WfFunctionKind::Normal;
 				func->anonymity = WfFunctionAnonymity::Named;
 				{
 					auto typeInfo = TypeInfoRetriver<bool>::CreateTypeInfo();
@@ -1312,6 +1315,7 @@ ExpandBindExpression
 					{
 						auto func = MakePtr<WfFunctionDeclaration>();
 						func->name.value = L"<bind-activator>";
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					
@@ -1344,6 +1348,7 @@ ExpandBindExpression
 						{
 							auto func = MakePtr<WfFunctionDeclaration>();
 							func->name.value = callbackInfo.callbackName;
+							func->functionKind = WfFunctionKind::Normal;
 							func->anonymity = WfFunctionAnonymity::Named;
 							{
 								auto genericType = bcInfo.callbackFunctions[callbackInfo.callbackName]->GetElementType();

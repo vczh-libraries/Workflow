@@ -353,7 +353,7 @@ GenerateFlowChart
 
 				void Visit(WfReferenceExpression* node)override
 				{
-					copy_visitor::ExpressionVisitor::Visit(node);
+					copy_visitor::AstVisitor::Visit(node);
 					vint index = manager->expressionResolvings.Keys().IndexOf(node);
 					if (index != -1)
 					{
@@ -414,7 +414,8 @@ GenerateFlowChart
 				{
 				}
 
-#define COPY_AST(STATEMENT) GenerateFlowChartModuleVisitor(manager, referenceRenaming).CreateField(STATEMENT)
+#define COPY_AST_RAW(STATEMENT) GenerateFlowChartModuleVisitor(manager, referenceRenaming).CopyNode(STATEMENT)
+#define COPY_AST_SHARED(STATEMENT) COPY_AST_RAW((STATEMENT).Obj())
 
 				void AppendAwaredStatement(FlowChartNode* catchNode, ScopeContext* scopeContext, Ptr<WfStatement> statement)
 				{
@@ -470,7 +471,7 @@ GenerateFlowChart
 					}
 					else
 					{
-						visitor.AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(statement));
+						visitor.AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST_SHARED(statement));
 					}
 					return{ visitor.resultHead,visitor.resultLast };
 				}
@@ -505,7 +506,7 @@ GenerateFlowChart
 				void Visit(WfReturnStatement* node)override
 				{
 					auto targetContext = InlineScopeExitCode(ScopeType::Function, false);
-					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST_RAW(node));
 
 					auto branch = MakePtr<FlowChartBranch>();
 					branch->destination = targetContext->leaveNode;
@@ -514,12 +515,12 @@ GenerateFlowChart
 
 				void Visit(WfDeleteStatement* node)override
 				{
-					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST_RAW(node));
 				}
 
 				void Visit(WfRaiseExceptionStatement* node)override
 				{
-					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST_RAW(node));
 				}
 
 				void GenerateIfWithVar(WfIfStatement* node)
@@ -538,7 +539,7 @@ GenerateFlowChart
 							auto assignExpr = MakePtr<WfBinaryExpression>();
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refExpr;
-							assignExpr->second = COPY_AST(node->expression);
+							assignExpr->second = COPY_AST_SHARED(node->expression);
 
 							auto stat = MakePtr<WfExpressionStatement>();
 							stat->expression = assignExpr;
@@ -587,7 +588,7 @@ GenerateFlowChart
 					{
 						auto branch = MakePtr<FlowChartBranch>();
 						resultHead->branches.Add(branch);
-						branch->condition = COPY_AST(node->expression);
+						branch->condition = COPY_AST_SHARED(node->expression);
 
 						auto pair = Execute(nullptr, catchNode, scopeContext, node->trueBranch);
 						pair.value->destination = resultLast;
@@ -634,13 +635,13 @@ GenerateFlowChart
 					{
 						auto branch = MakePtr<FlowChartBranch>();
 						resultHead->branches.Add(branch);
-						branch->condition = COPY_AST(node->condition);
+						branch->condition = COPY_AST_SHARED(node->condition);
 					}
 					auto loopEnd = flowChart->CreateNode(catchNode);
 					{
 						auto branch = MakePtr<FlowChartBranch>();
 						loopEnd->branches.Add(branch);
-						branch->condition = COPY_AST(node->condition);
+						branch->condition = COPY_AST_SHARED(node->condition);
 					}
 					resultLast = flowChart->CreateNode(catchNode);
 
@@ -830,7 +831,7 @@ GenerateFlowChart
 					auto assignExpr = MakePtr<WfBinaryExpression>();
 					assignExpr->op = WfBinaryOperator::Assign;
 					assignExpr->first = refExpr;
-					assignExpr->second = COPY_AST(node->variable->expression);
+					assignExpr->second = COPY_AST_SHARED(node->variable->expression);
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = assignExpr;
@@ -841,7 +842,7 @@ GenerateFlowChart
 
 				void Visit(WfExpressionStatement* node)override
 				{
-					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node));
+					AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST_RAW(node));
 				}
 
 				void Visit(WfVirtualCseStatement* node)override
@@ -860,7 +861,7 @@ GenerateFlowChart
 					resultLast = resultHead;
 					if (node->statement)
 					{
-						AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST(node->statement));
+						AppendUnawaredCopiedStatement(catchNode, scopeContext, COPY_AST_SHARED(node->statement));
 					}
 
 					resultLast = flowChart->AppendNode(resultLast, catchNode);
@@ -1354,12 +1355,6 @@ ExpandNewCoroutineExpression
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);
-					{
-						auto member = MakePtr<WfClassMember>();
-						member->kind = WfClassMemberKind::Normal;
-						varDecl->classMember = member;
-					}
-
 					varDecl->name.value = referenceRenaming[symbol];
 					varDecl->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
 					varDecl->expression = CreateDefaultValue(symbol->typeInfo.Obj());
@@ -1372,12 +1367,6 @@ ExpandNewCoroutineExpression
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);
-					{
-						auto member = MakePtr<WfClassMember>();
-						member->kind = WfClassMemberKind::Normal;
-						varDecl->classMember = member;
-					}
-
 					varDecl->name.value = L"<co-state>";
 					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
 
@@ -1393,12 +1382,6 @@ ExpandNewCoroutineExpression
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);
-					{
-						auto member = MakePtr<WfClassMember>();
-						member->kind = WfClassMemberKind::Normal;
-						varDecl->classMember = member;
-					}
-
 					varDecl->name.value = L"<co-state-before-pause>";
 					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
 					varDecl->expression = GenerateCoroutineInvalidId();
@@ -1411,12 +1394,7 @@ ExpandNewCoroutineExpression
 				{
 					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
 					newExpr->declarations.Add(propDecl);
-					{
-						auto member = MakePtr<WfClassMember>();
-						member->kind = WfClassMemberKind::Override;
-						propDecl->classMember = member;
-					}
-
+					propDecl->functionKind = WfFunctionKind::Override;
 					propDecl->name.value = L"Failure";
 					propDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IValueException>>::CreateTypeInfo().Obj());
 					propDecl->configConst = WfAPConst::Readonly;
@@ -1434,12 +1412,7 @@ ExpandNewCoroutineExpression
 				{
 					auto propDecl = MakePtr<WfAutoPropertyDeclaration>();
 					newExpr->declarations.Add(propDecl);
-					{
-						auto member = MakePtr<WfClassMember>();
-						member->kind = WfClassMemberKind::Override;
-						propDecl->classMember = member;
-					}
-
+					propDecl->functionKind = WfFunctionKind::Override;
 					propDecl->name.value = L"Status";
 					propDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<CoroutineStatus>::CreateTypeInfo().Obj());
 					propDecl->configConst = WfAPConst::Readonly;
@@ -1459,12 +1432,7 @@ ExpandNewCoroutineExpression
 				{
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
 					newExpr->declarations.Add(funcDecl);
-					{
-						auto member = MakePtr<WfClassMember>();
-						member->kind = WfClassMemberKind::Override;
-						funcDecl->classMember = member;
-					}
-
+					funcDecl->functionKind = WfFunctionKind::Override;
 					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = L"Resume";
 					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());

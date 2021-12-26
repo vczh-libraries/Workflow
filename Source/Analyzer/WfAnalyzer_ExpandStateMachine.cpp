@@ -27,9 +27,7 @@ ExpandStateMachineStatementVisitor
 			}
 
 			class ExpandStateMachineStatementVisitor
-				: public copy_visitor::StatementVisitor
-				, public copy_visitor::VirtualCseStatementVisitor
-				, public WfStateMachineStatement::IVisitor
+				: public copy_visitor::AstVisitor
 			{
 			protected:
 				WfLexicalScopeManager*							manager;
@@ -47,33 +45,9 @@ ExpandStateMachineStatementVisitor
 					return CopyExpression(from, true);
 				}
 
-				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
-				{
-					return CopyType(from);
-				}
-
-				vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from)override
-				{
-					if (!from) return nullptr;
-					from->Accept(this);
-					return result.Cast<WfStatement>();
-				}
-
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfVirtualCseStatement* node)override
-				{
-					node->Accept((WfVirtualCseStatement::IVisitor*)this);
-					return result;
-				}
-
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfCoroutineStatement* node)override
+				void Visit(WfCoroutineStatement* node)override
 				{
 					CHECK_FAIL(L"ExpandStateMachineStatementVisitor::Dispatch(WfCoroutineStatement*)#ValidateStatementStructure should check coroutine statement's location.");
-				}
-
-				vl::Ptr<vl::parsing::ParsingTreeCustomBase> Dispatch(WfStateMachineStatement* node)override
-				{
-					node->Accept((WfStateMachineStatement::IVisitor*)this);
-					return result;
 				}
 
 				Ptr<WfStatement> GenerateIngoreInputStatement()
@@ -186,7 +160,7 @@ ExpandStateMachineStatementVisitor
 							varStat->variable = varDecl;
 							caseBlock->statements.Add(varStat);
 						}
-						caseBlock->statements.Add(CreateField(stateSwitchCase->statement));
+						caseBlock->statements.Add(CopyNode(stateSwitchCase->statement.Obj()));
 						SetCodeRange(Ptr<WfStatement>(caseBlock), stateSwitchCase->codeRange);
 					}
 
@@ -370,10 +344,6 @@ ExpandStateMachine
 						varDecl->type = GetTypeFromTypeInfo(fieldInfo->GetReturn());
 						varDecl->expression = CreateDefaultValue(fieldInfo->GetReturn());
 
-						auto classMember = MakePtr<WfClassMember>();
-						classMember->kind = WfClassMemberKind::Normal;
-						varDecl->classMember = classMember;
-
 						auto att = MakePtr<WfAttribute>();
 						att->category.value = L"cpp";
 						att->name.value = L"Private";
@@ -402,10 +372,6 @@ ExpandStateMachine
 						varDecl->type = GetTypeFromTypeInfo(fieldInfo->GetReturn());
 						varDecl->expression = CreateDefaultValue(fieldInfo->GetReturn());
 
-						auto classMember = MakePtr<WfClassMember>();
-						classMember->kind = WfClassMemberKind::Normal;
-						varDecl->classMember = classMember;
-
 						auto att = MakePtr<WfAttribute>();
 						att->category.value = L"cpp";
 						att->name.value = L"Private";
@@ -422,6 +388,7 @@ ExpandStateMachine
 
 					// func INPUT(ARGUMENTS ...): void
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->functionKind = WfFunctionKind::Normal;
 					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = methodInfo->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
@@ -432,10 +399,6 @@ ExpandStateMachine
 						funcArgument->type = GetTypeFromTypeInfo(methodInfo->GetParameter(index)->GetType());
 						funcDecl->arguments.Add(funcArgument);
 					}
-
-					auto classMember = MakePtr<WfClassMember>();
-					classMember->kind = WfClassMemberKind::Normal;
-					funcDecl->classMember = classMember;
 
 					node->expandedDeclarations.Add(funcDecl);
 					manager->declarationMemberInfos.Add(funcDecl, methodInfo);
@@ -564,6 +527,7 @@ ExpandStateMachine
 				{
 					// func <state>CreateCoroutine(<state>startState: int): void
 					auto funcDecl = MakePtr<WfFunctionDeclaration>();
+					funcDecl->functionKind = WfFunctionKind::Normal;
 					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = smInfo->createCoroutineMethod->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
@@ -575,10 +539,6 @@ ExpandStateMachine
 						funcArgument->type = GetTypeFromTypeInfo(parameterInfo->GetType());
 						funcDecl->arguments.Add(funcArgument);
 					}
-
-					auto classMember = MakePtr<WfClassMember>();
-					classMember->kind = WfClassMemberKind::Normal;
-					funcDecl->classMember = classMember;
 
 					auto att = MakePtr<WfAttribute>();
 					att->category.value = L"cpp";
@@ -748,7 +708,7 @@ ExpandStateMachine
 											varStat->variable = varDecl;
 											caseBlock->statements.Add(varStat);
 										}
-										caseBlock->statements.Add(ExpandStateMachineStatementVisitor(manager, smInfo.Obj()).CreateField(state->statement));
+										caseBlock->statements.Add(ExpandStateMachineStatementVisitor(manager, smInfo.Obj()).CopyNode(state->statement.Obj()));
 										{
 											auto gotoStat = MakePtr<WfGotoStatement>();
 											gotoStat->label.value = L"<state-label>OUT_OF_STATE_MACHINE";
