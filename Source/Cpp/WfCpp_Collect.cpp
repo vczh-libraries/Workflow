@@ -76,7 +76,7 @@ CollectModule
 
 				void Traverse(WfFunctionDeclaration* node)override
 				{
-					if (skipCounter == 0)
+					if (skipCounter == 1)
 					{
 						config->funcDecls.Add(node);
 					}
@@ -84,7 +84,7 @@ CollectModule
 
 				void Traverse(WfVariableDeclaration* node)override
 				{
-					if (skipCounter == 0)
+					if (skipCounter == 1)
 					{
 						config->varDecls.Add(node);
 					}
@@ -127,14 +127,14 @@ CollectModule
 					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
 				}
 
-				void Visit(WfFunctionExpression* node)override
+				void Visit(WfFunctionDeclaration* node)override
 				{
 					skipCounter++;
 					traverse_visitor::AstVisitor::Visit(node);
 					skipCounter--;
 				}
 
-				void Visit(WfVariableStatement* node)override
+				void Visit(WfVariableDeclaration* node)override
 				{
 					skipCounter++;
 					traverse_visitor::AstVisitor::Visit(node);
