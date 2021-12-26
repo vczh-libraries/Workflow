@@ -42,12 +42,12 @@ TEST_FILE
 {
 	TEST_CATEGORY(L"Runtime with Binary Assembly")
 	{
-		Ptr<ParsingTable> table = GetWorkflowTable();
+		auto&& parser = GetWorkflowParser();
 		List<WString> codegenNames, reflectableAssemblies;
 		Dictionary<WString, WString> assemblyEntries;
 		LoadSampleIndex(L"Codegen", codegenNames);
 
-		WfLexicalScopeManager manager(table);
+		WfLexicalScopeManager manager(parser);
 		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)
@@ -104,7 +104,7 @@ TEST_FILE
 
 	TEST_CASE(L"Hello, world!")
 	{
-		List<Ptr<ParsingError>> errors;
+		List<glr::ParsingError> errors;
 		List<WString> moduleCodes;
 		moduleCodes.Add(LR"workflow(
 module test;
@@ -115,8 +115,8 @@ func main():string
 }
 )workflow");
 
-		auto table = GetWorkflowTable();
-		auto assembly = Compile(table, moduleCodes, errors);
+		auto&& parser = GetWorkflowParser();
+		auto assembly = Compile(parser, moduleCodes, errors);
 		TEST_ASSERT(errors.Count() == 0);
 
 		WfRuntimeThreadContext context(assembly);

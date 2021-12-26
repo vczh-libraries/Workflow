@@ -384,7 +384,7 @@ Debugger
 				/// <param name="beforeCodegen">Set to true to apply the source code information to original source code.</param>
 				/// <param name="context">Specify a thread context. Set to null to use the top thread context.</param>
 				/// <param name="callStackIndex">Specify a call stack index. Set to null to use the top call stack item of the specified thread context.</param>
-				const parsing::ParsingTextRange&		GetCurrentPosition(bool beforeCodegen = true, WfRuntimeThreadContext* context = nullptr, vint callStackIndex = -1);
+				const glr::ParsingTextRange&			GetCurrentPosition(bool beforeCodegen = true, WfRuntimeThreadContext* context = nullptr, vint callStackIndex = -1);
 				/// <summary>Get the variable value by name in the current scope.</summary>
 				/// <returns>The value.</returns>
 				/// <param name="name">The name.</param>

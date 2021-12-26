@@ -1,4 +1,4 @@
-#include <VlppParser.h>
+#include <VlppGlrParser.h>
 #include "../../Source/CppTypes.h"
 
 using namespace vl;
@@ -10,9 +10,9 @@ extern void LoadTestCaseTypes();
 void LoadTypes()
 {
 	LoadPredefinedTypes();
-	LoadParsingTypes();
-	XmlLoadTypes();
-	JsonLoadTypes();
+	LoadParsing2Types();
+	XmlAstLoadTypes();
+	JsonAstLoadTypes();
 	LoadCppTypes();
 	LoadTestCaseTypes();
 	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");

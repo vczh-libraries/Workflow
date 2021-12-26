@@ -8,11 +8,11 @@ using namespace vl::filesystem;
 void LoadTypes()
 {
 	LoadPredefinedTypes();
-	LoadParsingTypes();
-	XmlLoadTypes();
-	JsonLoadTypes();
+	LoadParsing2Types();
+	XmlAstLoadTypes();
+	JsonAstLoadTypes();
 	WfLoadLibraryTypes();
-	WfLoadTypes();
+	WorkflowAstLoadTypes();
 	LoadCppTypes();
 	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
 }

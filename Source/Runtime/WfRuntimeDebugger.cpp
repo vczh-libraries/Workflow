@@ -685,7 +685,7 @@ WfDebugger
 				return threadContexts[threadContexts.Count() - 1];
 			}
 
-			const parsing::ParsingTextRange& WfDebugger::GetCurrentPosition(bool beforeCodegen, WfRuntimeThreadContext* context, vint callStackIndex)
+			const glr::ParsingTextRange& WfDebugger::GetCurrentPosition(bool beforeCodegen, WfRuntimeThreadContext* context, vint callStackIndex)
 			{
 				if (!context)
 				{

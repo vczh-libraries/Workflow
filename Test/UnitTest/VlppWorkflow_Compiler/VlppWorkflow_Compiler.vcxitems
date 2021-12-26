@@ -63,7 +63,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Emitter\WfEmitter_Expression.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Emitter\WfEmitter_Metadata.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Emitter\WfEmitter_Statement.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Parser\Generated\WorkflowAst.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Parser\Generated\WorkflowAst.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Parser\Generated\WorkflowAst_Builder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Parser\Generated\WorkflowAst_Copy.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Parser\Generated\WorkflowAst_Empty.cpp" />

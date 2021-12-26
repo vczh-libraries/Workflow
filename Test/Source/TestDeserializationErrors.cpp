@@ -24,9 +24,9 @@ class B
 		MemoryStream streamA, streamB;
 		{
 			List<WString> codes;
-			List<Ptr<ParsingError>> errors;
+			List<glr::ParsingError> errors;
 			codes.Add(scriptA);
-			auto assembly = Compile(GetWorkflowTable(), codes, errors);
+			auto assembly = Compile(GetWorkflowParser(), codes, errors);
 			TEST_ASSERT(assembly);
 			assembly->Serialize(streamA);
 		}
@@ -43,9 +43,9 @@ class B
 			WfRuntimeGlobalContext globalContext(assemblyA);
 
 			List<WString> codes;
-			List<Ptr<ParsingError>> errors;
+			List<glr::ParsingError> errors;
 			codes.Add(scriptB);
-			auto assembly = Compile(GetWorkflowTable(), codes, errors);
+			auto assembly = Compile(GetWorkflowParser(), codes, errors);
 			TEST_ASSERT(assembly);
 			assembly->Serialize(streamB);
 		}
@@ -72,9 +72,9 @@ class A
 		MemoryStream streamA;
 		{
 			List<WString> codes;
-			List<Ptr<ParsingError>> errors;
+			List<glr::ParsingError> errors;
 			codes.Add(scriptA);
-			auto assembly = Compile(GetWorkflowTable(), codes, errors);
+			auto assembly = Compile(GetWorkflowParser(), codes, errors);
 			TEST_ASSERT(assembly);
 			assembly->Serialize(streamA);
 		}
