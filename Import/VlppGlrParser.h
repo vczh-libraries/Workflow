@@ -1329,12 +1329,13 @@ ParserBase<TTokens, TStates, TReceiver, TStateTypes>
 
 			void Tokenize(const WString& input, TokenList& tokens, vint codeIndex = -1) const
 			{
+				input.Buffer();
 				auto enumerable = lexer->Parse(input, {}, codeIndex);
 				Ptr<collections::IEnumerator<regex::RegexToken>> enumerator = enumerable.CreateEnumerator();
 				while (enumerator->Next())
 				{
 					auto&& token = enumerator->Current();
-					if (token.token == -1)
+					if (token.token == -1 || !token.completeToken)
 					{
 						auto args = ErrorArgs::UnrecognizedToken(token);
 						args.throwError = false;
