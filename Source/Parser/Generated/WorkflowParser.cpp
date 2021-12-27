@@ -1658,6 +1658,16 @@ namespace vl
 			 return Parse<ParserStates::_Expression>(tokens, this, codeIndex);
 		};
 
+		vl::Ptr<vl::workflow::WfCoProviderStatement> Parser::Parse_CoProvider(const vl::WString& input, vl::vint codeIndex) const
+		{
+			 return Parse<ParserStates::_CoProvider>(input, this, codeIndex);
+		};
+
+		vl::Ptr<vl::workflow::WfCoProviderStatement> Parser::Parse_CoProvider(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
+		{
+			 return Parse<ParserStates::_CoProvider>(tokens, this, codeIndex);
+		};
+
 		vl::Ptr<vl::workflow::WfStatement> Parser::Parse_Statement(const vl::WString& input, vl::vint codeIndex) const
 		{
 			 return Parse<ParserStates::_Statement>(input, this, codeIndex);

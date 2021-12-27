@@ -13,7 +13,7 @@ namespace vl
 
 			ParsingError MakeParsingError(ParsingAstBase* node, const WString& message)
 			{
-				return { node->codeRange, message };
+				return { node, node->codeRange, message };
 			}
 
 /***********************************************************************

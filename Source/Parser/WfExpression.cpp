@@ -142,6 +142,15 @@ Parsing
 			return ast;
 		}
 
+		Ptr<WfCoProviderStatement> ParseCoProviderStatement(const WString& input, const Parser& parser, vint codeIndex)
+		{
+			List<regex::RegexToken> tokens;
+			parser.Tokenize(input, tokens, codeIndex);
+			auto ast = parser.Parse_CoProvider(tokens, codeIndex);
+			WorkflowUnescapeVisitor(tokens).InspectInto(ast.Obj());
+			return ast;
+		}
+
 		Ptr<WfDeclaration> ParseDeclaration(const WString& input, const Parser& parser, vint codeIndex)
 		{
 			List<regex::RegexToken> tokens;
