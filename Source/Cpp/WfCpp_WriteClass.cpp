@@ -106,6 +106,7 @@ namespace vl
 						}
 					}
 					break;
+				default:;
 				}
 				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
 				writer.WriteLine(prefix + L"{");

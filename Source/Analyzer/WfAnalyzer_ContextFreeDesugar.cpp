@@ -265,6 +265,7 @@ ContextFreeModuleDesugar
 								needProperty = true;
 							}
 							break;
+						default:;
 						}
 					}
 					else if (surroundingLambda)

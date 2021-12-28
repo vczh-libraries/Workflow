@@ -69,6 +69,7 @@ BuildGlobalNameFromModules
 					case WfClassKind::Interface:
 						td = MakePtr<WfInterface>(typeName);
 						break;
+					default:;
 					}
 					AddCustomType(manager, scopeName, declaration, td);
 
@@ -109,6 +110,7 @@ BuildGlobalNameFromModules
 								manager->declarationMemberInfos.Add(node, info);
 							}
 							break;
+						default:;
 						}
 					}
 				}

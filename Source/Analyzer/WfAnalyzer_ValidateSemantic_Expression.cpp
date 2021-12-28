@@ -661,6 +661,7 @@ ValidateSemantic(Expression)
 							default:;
 							}
 							break;
+						default:;
 						}
 
 						results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));

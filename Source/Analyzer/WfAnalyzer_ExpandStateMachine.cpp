@@ -219,6 +219,7 @@ ExpandStateMachineStatementVisitor
 							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
+					default:;
 					}
 
 					if (defaultBlock->statements.Count() > 0)
@@ -317,6 +318,7 @@ ExpandStateMachineStatementVisitor
 							}
 						}
 						break;
+					default:;
 					}
 					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
 					result = block;

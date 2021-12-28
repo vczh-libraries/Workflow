@@ -33,6 +33,7 @@ namespace vl
 							}
 							writer.WriteLine(L",");
 							break;
+						default:;
 						}
 					}
 					writer.WriteLine(prefix + L"};");

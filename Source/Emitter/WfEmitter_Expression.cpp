@@ -327,6 +327,7 @@ GenerateInstructions(Expression)
 					case WfLiteralValue::False:
 						INSTRUCTION(Ins::LoadValue({ false }));
 						break;
+					default:;
 					}
 				}
 
@@ -383,6 +384,7 @@ GenerateInstructions(Expression)
 					case WfUnaryOperator::Negative:
 						INSTRUCTION(Ins::OpNegative(GetInstructionTypeArgument(type)));
 						break;
+					default:;
 					}
 				}
 
@@ -887,6 +889,7 @@ GenerateInstructions(Expression)
 							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 						}
 						break;
+					default:;
 					}
 				}
 

@@ -1664,6 +1664,7 @@ Print (Declaration)
 						CHECK_FAIL(L"Internal error: Unknown value.");
 					}
 					break;
+				default:;
 				}
 
 				for (auto [type, index] : indexed(node->baseTypes))

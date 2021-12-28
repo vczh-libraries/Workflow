@@ -326,6 +326,7 @@ CompleteScopeForDeclaration
 								value |= items[itemInt->name.value];
 							}
 							break;
+						default:;
 						}
 						td->AddEnumItem(item->name.value, value);
 						items.Add(item->name.value, value);

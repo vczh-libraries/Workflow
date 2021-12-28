@@ -70,6 +70,7 @@ ValidateStructure(Declaration)
 								case WfFunctionKind::Override:
 									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 									break;
+								default:;
 								}
 							}
 							break;
@@ -92,9 +93,11 @@ ValidateStructure(Declaration)
 								case WfFunctionKind::Override:
 									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 									break;
+								default:;
 								}
 							}
 							break;
+						default:;
 						}
 					}
 					else
@@ -110,6 +113,7 @@ ValidateStructure(Declaration)
 								break;
 							case WfFunctionKind::Override:
 								break;
+							default:;
 							}
 						}
 						if (!node->statement)
@@ -456,8 +460,7 @@ ValidateStructure(Declaration)
 							}
 						}
 						break;
-					case WfClassKind::Interface:
-						break;
+					default:;
 					}
 
 					for (auto type : node->baseTypes)
@@ -516,6 +519,7 @@ ValidateStructure(Declaration)
 									case WfEnumKind::Flag:
 										manager->errors.Add(WfErrors::FlagValuesNotConsecutiveFromZero(node));
 										break;
+									default:;
 									}
 								}
 								switch (node->kind)
@@ -526,6 +530,7 @@ ValidateStructure(Declaration)
 								case WfEnumKind::Flag:
 									current = current == 0 ? 1 : current * 2;
 									break;
+								default:;
 								}
 							}
 							break;
@@ -538,6 +543,7 @@ ValidateStructure(Declaration)
 								}
 							}
 							break;
+						default:;
 						}
 
 						if (discoveredItems.Contains(item->name.value))
@@ -600,6 +606,7 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 						}
 						break;
+					default:;
 					}
 
 					if (classDecl)
@@ -618,6 +625,7 @@ ValidateStructure(Declaration)
 								manager->errors.Add(WfErrors::AutoPropertyCannotBeInitializedInInterface(node, classDecl));
 							}
 							break;
+						default:;
 						}
 					}
 					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))

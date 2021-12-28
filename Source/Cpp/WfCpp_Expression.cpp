@@ -1055,6 +1055,7 @@ WfGenerateExpressionVisitor
 					case WfLiteralValue::False:
 						writer.WriteString(L"false");
 						break;
+					default:;
 					}
 				}
 
@@ -1158,6 +1159,7 @@ WfGenerateExpressionVisitor
 							writer.WriteString(L")");
 						}
 						break;
+					default:;
 					}
 				}
 
@@ -1783,6 +1785,7 @@ WfGenerateExpressionVisitor
 									writer.WriteString(L" nullptr)");
 								}
 								break;
+							default:;
 							}
 						}
 						break;
@@ -1835,6 +1838,7 @@ WfGenerateExpressionVisitor
 									writer.WriteString(L" nullptr)");
 								}
 								break;
+							default:;
 							}
 						}
 						break;
@@ -1874,6 +1878,7 @@ WfGenerateExpressionVisitor
 									writer.WriteString(L"true");
 								}
 								break;
+							default:;
 							}
 						}
 						break;
@@ -1922,6 +1927,7 @@ WfGenerateExpressionVisitor
 										writer.WriteString(L" nullptr)");
 									}
 									break;
+								default:;
 								}
 							}
 							else if ((type->GetTypeDescriptor() == result.type->GetTypeDescriptor()) == (node->test == WfTypeTesting::IsType))

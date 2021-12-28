@@ -131,6 +131,7 @@ CheckBaseClass
 									}
 								}
 								break;
+							default:;
 							}
 
 							if (!depItems.Keys().Contains(baseTd)) continue;
