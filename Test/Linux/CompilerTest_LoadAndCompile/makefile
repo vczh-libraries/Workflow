@@ -10,6 +10,7 @@ pre-build:
 	if ! [ -d ./Coverage ]; then mkdir ./Coverage; fi
 	if ! [ -d ../../Output ]; then mkdir ../../Output; fi
 	if ! [ -d ../../Output/Workflow64 ]; then mkdir ../../Output/Workflow64; fi
+	if ! [ -d ../../Output/Cpp64 ]; then mkdir ../../Output/Cpp64; fi
 
 clean:
 	if [ -d ./Bin ]; then rm -r ./Bin; fi
@@ -17,6 +18,7 @@ clean:
 	if [ -d ./Coverage ]; then rm -r ./Coverage; fi
 	if [ -d ./../../Output ]; then rm -r ../../Output; fi
 	if [ -d ./../../Output/Workflow64 ]; then rm -r ../../Output/Workflow64; fi
+	if [ -d ./../../Output/Cpp64 ]; then rm -r ../../Output/Cpp64; fi
 
 all:pre-build ./Bin/UnitTest
 
