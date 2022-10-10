@@ -5,17 +5,17 @@ project(CppMerge LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 set(SRCS
-    Vlpp.cpp
-    VlppOS.cpp
-    VlppRegex.cpp
-    ../Source/Cpp/WfMergeCpp.cpp
-    ../Tools/CppMerge/CppMerge/Main.cpp
+    ../../Import/Vlpp.cpp
+    ../../Import/VlppOS.cpp
+    ../../Import/VlppRegex.cpp
+    ../../Source/Cpp/WfMergeCpp.cpp
+    CppMerge/Main.cpp
 )
 
 if (WIN32)
-    list(APPEND SRCS Vlpp.Windows.cpp VlppOS.Windows.cpp)
+    list(APPEND SRCS ../../Import/Vlpp.Windows.cpp ../../Import/VlppOS.Windows.cpp)
 else()
-    list(APPEND SRCS Vlpp.Linux.cpp VlppOS.Linux.cpp)
+    list(APPEND SRCS ../../Import/Vlpp.Linux.cpp ../../Import/VlppOS.Linux.cpp)
 endif()
 
 add_executable(CppMerge ${SRCS})
