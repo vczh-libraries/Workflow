@@ -6,9 +6,11 @@
 
 This project is licensed under [the License repo](https://github.com/vczh-libraries/License).
 
-This project is not open sourced and for development only. But you are able to use the open sourced version in [the Release repo](https://github.com/vczh-libraries/Release).
+Source code in this repo is for reference only, please use the source code in [the Release repo](https://github.com/vczh-libraries/Release).
 
-The documentation for this library has not been done yet. Currently you can refer to the unit test to learn how to write this script and how to integrate this scripting system into your C++ projects:
+You are welcome to contribute to this repo by opening pull requests.
+
+You are allowed to build `Tools/CppMerge` and run the executable in your local machine if it is not convenient for you to use the executable in **the Release repo** directly, but you should be awared that, the development of this repo could be ahead of **the Release repo**, so there could be compatible issues.
 
 ## Document
 
@@ -38,3 +40,16 @@ You can also get rid of runtime reflection overhead in this way.
 - **Coroutine** allows creating your own coroutine syntax.
 - **State Machine** offers a new way to write classes, taking methods as input and drive the state machine forward.
 - Being able to install a **debugger** on a thread to track Workflow script.
+
+## Unit Test
+
+For **Windows**, open `Test/UnitTest/UnitTest.sln`, and run the following projects in order:
+- **CompilerTest_GenerateMetadata** : Generate metadata file for involved C++ types (including classes only for unit test).
+- **CompilerTest_LoadAndCompile** : Load the generated metadata, compile and run Workflow scripts, and generate C++ code from Workflow scripts.
+- **CppTest** : Run generated C++ code.
+- **CppTest_Metaonly** : Run generated C++ code.
+- **CppTest_Reflection** : Run generated C++ code.
+- **LibraryTest** : Test built-in library for Workflow.
+- **RuntimeTest** : Test Workflow debugger.
+
+For **Linux**, use `Test/Linux/*/makefile` to build and run unit test projects as described above.
