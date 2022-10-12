@@ -10,7 +10,7 @@ Source code in this repo is for reference only, please use the source code in [t
 
 You are welcome to contribute to this repo by opening pull requests.
 
-You are allowed to build `Tools/CppMerge` and run the executable in your local machine if it is not convenient for you to use the executable in **the Release repo** directly, but you should be awared that, the development of this repo could be ahead of **the Release repo**, so there could be compatible issues.
+You are allowed to build `Tools/CppMerge` and run the executable **in your local machine** if it is not convenient for you to use the executable in **the Release repo** directly, with modification to its project file to satisfy to your need, but you should be aware that, the development progress of this repo could be ahead of **the Release repo**, so there could be compatible issues.
 
 ## Document
 
