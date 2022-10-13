@@ -25,6 +25,6 @@ if(MSVC)
     target_compile_definitions(CppMerge PRIVATE UNICODE _UNICODE)
 endif()
 
-target_include_directories(CppMerge PRIVATE Import)
+target_include_directories(CppMerge PRIVATE ../../Import)
 
 install(TARGETS CppMerge RUNTIME DESTINATION "bin")
