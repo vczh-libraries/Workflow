@@ -94,7 +94,8 @@ namespace vl
 		extern void WorkflowParserData(vl::stream::IStream& outputStream);
 
 		class Parser
-			: public vl::glr::ParserBase<WorkflowTokens, ParserStates, WorkflowAstInsReceiver>			, protected vl::glr::automaton::TraceManager::ITypeCallback
+			: public vl::glr::ParserBase<WorkflowTokens, ParserStates, WorkflowAstInsReceiver>
+			, protected vl::glr::automaton::IExecutor::ITypeCallback
 		{
 		protected:
 			vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
