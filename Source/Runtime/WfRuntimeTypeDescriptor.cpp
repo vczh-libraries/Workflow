@@ -85,7 +85,7 @@ WfStaticMethod
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto argumentArray = IValueList::Create(arguments);
-				return WfRuntimeLambda::Invoke(globalContext, nullptr, functionIndex, argumentArray);
+				return WfRuntimeLambda::Invoke(Ptr(globalContext), nullptr, functionIndex, argumentArray);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -135,7 +135,7 @@ WfClassConstructor
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 					
 				auto argumentArray = IValueList::Create(arguments);
-				WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+				WfRuntimeLambda::Invoke(Ptr(globalContext), capturedVariables, functionIndex, argumentArray);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -153,7 +153,7 @@ WfClassMethod
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 
 				auto argumentArray = IValueList::Create(arguments);
-				return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, argumentArray);
+				return WfRuntimeLambda::Invoke(Ptr(globalContext), capturedVariables, functionIndex, argumentArray);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -288,7 +288,7 @@ GetInfoRecord
 				}
 				else if(createIfNotExist)
 				{
-					typedValue = new TRecord;
+					typedValue = Ptr(new TRecord);
 					thisObject->SetInternalProperty(key, typedValue);
 				}
 				return typedValue;
@@ -691,7 +691,7 @@ WfStruct
 			Value WfStruct::WfValueType::CreateDefault()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
+				return Value::From(Ptr(new IValueType::TypedBox<WfStructInstance>), owner);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -792,7 +792,7 @@ WfEnum::WfEnumType
 			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto boxedValue = MakePtr<IValueType::TypedBox<WfEnumInstance>>();
+				auto boxedValue = Ptr(new IValueType::TypedBox<WfEnumInstance>);
 				boxedValue->value.value = value;
 				return Value::From(boxedValue, owner);
 #else
@@ -826,7 +826,7 @@ WfEnum
 			Value WfEnum::WfValueType::CreateDefault()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
+				return Value::From(Ptr(new IValueType::TypedBox<WfEnumInstance>), owner);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -896,7 +896,7 @@ WfClassInstance
 					capturedVariables->variables[0] = Value::From(this);
 
 					auto argumentArray = IValueList::Create();
-					WfRuntimeLambda::Invoke(classType->GetGlobalContext(), capturedVariables, classType->destructorFunctionIndex, argumentArray);
+					WfRuntimeLambda::Invoke(Ptr(classType->GetGlobalContext()), capturedVariables, classType->destructorFunctionIndex, argumentArray);
 				}
 #endif
 			}
@@ -938,7 +938,7 @@ WfInterfaceInstance
 						auto value = ctor->Invoke(Value(), arguments);
 						if (!(ptr = value.GetSharedPtr()))
 						{
-							ptr = value.GetRawPtr();
+							ptr = Ptr(value.GetRawPtr());
 						}
 					}
 

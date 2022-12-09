@@ -4,10 +4,10 @@ TEST_FILE
 {
 	TEST_CASE(L"Test WfBreakPoint::Ins")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
-		auto assembly = MakePtr<WfAssembly>();
+		auto assembly = Ptr(new WfAssembly);
 
 		TEST_ASSERT(debugger->AddBreakPoint(WfBreakPoint::Ins(assembly.Obj(), 0)) == 0);
 		TEST_ASSERT(debugger->AddBreakPoint(WfBreakPoint::Ins(assembly.Obj(), 0)) == -1);
@@ -40,10 +40,10 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Read")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
-		auto assembly = MakePtr<WfAssembly>();
+		auto assembly = Ptr(new WfAssembly);
 		TEST_ASSERT(debugger->AddBreakPoint(WfBreakPoint::Read(assembly.Obj(), 0)) == 0);
 		TEST_ASSERT(callback->BreakRead(assembly.Obj(), 0) == true);
 		TEST_ASSERT(debugger->RemoveBreakPoint(0) == true);
@@ -52,10 +52,10 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Write")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
-		auto assembly = MakePtr<WfAssembly>();
+		auto assembly = Ptr(new WfAssembly);
 		TEST_ASSERT(debugger->AddBreakPoint(WfBreakPoint::Write(assembly.Obj(), 0)) == 0);
 		TEST_ASSERT(callback->BreakWrite(assembly.Obj(), 0) == true);
 		TEST_ASSERT(debugger->RemoveBreakPoint(0) == true);
@@ -64,7 +64,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Get")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
 		auto td = GetTypeDescriptor(L"test::ObservableValue");
@@ -87,7 +87,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Set")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
 		auto td = GetTypeDescriptor(L"test::ObservableValue");
@@ -110,7 +110,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Attach")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
 		auto td = GetTypeDescriptor(L"test::ObservableValue");
@@ -124,7 +124,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Detach")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
 		auto td = GetTypeDescriptor(L"test::ObservableValue");
@@ -138,7 +138,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Invoke")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
 		auto td = GetTypeDescriptor(L"test::ObservableValue");
@@ -152,7 +152,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test WfBreakPoint::Create")
 	{
-		auto debugger = MakePtr<WfDebugger>();
+		auto debugger = Ptr(new WfDebugger);
 		auto callback = GetDebuggerCallback(debugger.Obj());
 
 		auto td = GetTypeDescriptor(L"test::ObservableValue");
@@ -181,12 +181,12 @@ TEST_FILE
 		List<glr::ParsingError> errors;
 		auto assembly = Compile(GetWorkflowParser(), moduleCodes, errors);
 		TEST_ASSERT(assembly && errors.Count() == 0);
-		return MakePtr<WfRuntimeGlobalContext>(assembly);
+		return Ptr(new WfRuntimeGlobalContext(assembly));
 	};
 
 	TEST_CASE(L"Test debugger: no break point")
 	{
-		SetDebuggerForCurrentThread(new WfDebugger);
+		SetDebuggerForCurrentThread(Ptr(new WfDebugger));
 		auto context = CreateThreadContextFromSample(L"HelloWorld");
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<WString()>(context, L"Main")();
@@ -226,11 +226,11 @@ TEST_FILE
 		{
 			blockOperatorEvent.CreateAutoUnsignal(false);
 			blockDebuggerEvent.CreateAutoUnsignal(false);
-			debuggerOperatorThread = Thread::CreateAndStart(
+			debuggerOperatorThread = Ptr(Thread::CreateAndStart(
 				[=]()
 				{
 					debuggerOperator(this);
-				}, false);
+				}, false));
 		}
 
 		~MultithreadDebugger()
@@ -256,7 +256,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: break by code line")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -278,7 +278,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Assignment");
@@ -295,7 +295,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: stop")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -306,7 +306,7 @@ TEST_FILE
 				TEST_ASSERT(debugger->Stop());
 				TEST_ASSERT(debugger->GetState() == WfDebugger::RequiredToStop);
 				debugger->Continue();
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Assignment");
@@ -338,7 +338,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: step over 1")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -360,7 +360,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Assignment");
@@ -374,7 +374,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: step over 2")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -396,7 +396,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Function");
@@ -410,7 +410,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: step over 3")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -432,7 +432,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Event");
@@ -446,7 +446,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: step into 1")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -468,7 +468,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Assignment");
@@ -482,7 +482,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: step into 2")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -504,7 +504,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Function");
@@ -518,7 +518,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: step into 3")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -540,7 +540,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Event");
@@ -554,7 +554,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: integration 1")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -591,7 +591,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Operation");
@@ -603,7 +603,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: integration 2")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -657,7 +657,7 @@ TEST_FILE
 				}
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"Operation");
@@ -709,13 +709,13 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: exception 1")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
 				debugger->BeginExecution(false);
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"RaiseException");
@@ -737,7 +737,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: exception 2")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[&](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -751,7 +751,7 @@ TEST_FILE
 				debugger->Continue();
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"RaiseException");
@@ -773,7 +773,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: exception 3")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[&](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -787,7 +787,7 @@ TEST_FILE
 				debugger->Continue();
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"RaiseException");
@@ -809,7 +809,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test debugger: exception 4")
 	{
-		auto debugger = MakePtr<MultithreadDebugger>(
+		auto debugger = Ptr(new MultithreadDebugger(
 			[&](MultithreadDebugger* debugger)
 			{
 				debugger->BeginExecution(false);
@@ -823,7 +823,7 @@ TEST_FILE
 				debugger->Continue();
 
 				TEST_ASSERT(debugger->GetState() == WfDebugger::Stopped);
-			});
+			}));
 		SetDebuggerForCurrentThread(debugger);
 
 		auto context = CreateThreadContextFromSample(L"RaiseException");

@@ -257,7 +257,7 @@ WfRuntimeThreadContext (Range)
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
 				T firstValue = UnboxValue<T>(first);
 				T secondValue = UnboxValue<T>(second);
-				auto enumerable = MakePtr<WfRuntimeRange<T>>(firstValue, secondValue);
+				auto enumerable = Ptr(new WfRuntimeRange<T>(firstValue, secondValue));
 				CONTEXT_ACTION(PushValue(Value::From(enumerable)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
@@ -492,7 +492,7 @@ WfRuntimeThreadContext
 						Ptr<WfRuntimeVariableContext> capturedVariables;
 						if (ins.countParameter > 0)
 						{
-							capturedVariables = new WfRuntimeVariableContext;
+							capturedVariables = Ptr(new WfRuntimeVariableContext);
 							capturedVariables->variables.Resize(ins.countParameter);
 							Value operand;
 							for (vint i = 0; i < ins.countParameter; i++)
@@ -720,7 +720,7 @@ WfRuntimeThreadContext
 							arguments.Insert(0, argument);
 						}
 
-						Ptr<IValueList> list = new ValueListWrapper<List<Value>*>(&arguments);
+						Ptr<IValueList> list = Ptr(new ValueListWrapper<List<Value>*>(&arguments));
 						Value result = proxy->Invoke(list);
 						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;

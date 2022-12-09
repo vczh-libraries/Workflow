@@ -21,7 +21,7 @@ WfRuntimeGlobalContext
 			WfRuntimeGlobalContext::WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly)
 				:assembly(_assembly)
 			{
-				globalVariables = new WfRuntimeVariableContext;
+				globalVariables = Ptr(new WfRuntimeVariableContext);
 				globalVariables->variables.Resize(assembly->variableNames.Count());
 				if (assembly->typeImpl)
 				{
@@ -89,7 +89,7 @@ WfRuntimeCallStackInfo
 
 				if (function->argumentNames.Count() > 0)
 				{
-					arguments = new WfRuntimeVariableContext;
+					arguments = Ptr(new WfRuntimeVariableContext);
 					arguments->variables.Resize(function->argumentNames.Count());
 					for (vint i = 0; i < arguments->variables.Count(); i++)
 					{
@@ -99,7 +99,7 @@ WfRuntimeCallStackInfo
 
 				if (function->localVariableNames.Count()>0)
 				{
-					localVariables = new WfRuntimeVariableContext;
+					localVariables = Ptr(new WfRuntimeVariableContext);
 					localVariables->variables.Resize(function->localVariableNames.Count());
 					for (vint i = 0; i < localVariables->variables.Count(); i++)
 					{
@@ -465,12 +465,12 @@ WfRuntimeThreadContext
 							for (vint j = stackCount - 1; j >= 0; j--)
 							{
 								const auto& stackFrame = context->stackFrames[j];
-								info->callStack.Add(new WfRuntimeCallStackInfo(context, stackFrame));
+								info->callStack.Add(Ptr(new WfRuntimeCallStackInfo(context, stackFrame)));
 							}
 
 							if (i > 0)
 							{
-								info->callStack.Add(new WfRuntimeCallStackInfo);
+								info->callStack.Add(Ptr(new WfRuntimeCallStackInfo));
 							}
 						}
 
