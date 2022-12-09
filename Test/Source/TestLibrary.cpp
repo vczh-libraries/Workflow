@@ -54,7 +54,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test YieldAndPauseEnum coroutine")
 	{
-		auto ec = EC::Create([](auto* impl) {return MakePtr<YieldAndPauseEnum>(impl); });
+		auto ec = EC::Create([](auto* impl) {return Ptr(new YieldAndPauseEnum(impl)); });
 		List<vint> xs;
 		CopyFrom(xs, GetLazyList<vint>(ec));
 		int ys[] = { 0,1,2,3,4 };
@@ -101,7 +101,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test JoinAndPauseEnum coroutine")
 	{
-		auto ec = EC::Create([](auto* impl) {return MakePtr<JoinAndPauseEnum>(impl); });
+		auto ec = EC::Create([](auto* impl) {return Ptr(new JoinAndPauseEnum(impl)); });
 		List<vint> xs;
 		CopyFrom(xs, GetLazyList<vint>(ec));
 		int ys[] = { 0,1,2,1,2,3,2,3,4,3,4,5,4,5,6 };
@@ -155,7 +155,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test MixEnum coroutine")
 	{
-		auto ec = EC::Create([](auto* impl) {return MakePtr<MixEnum>(impl); });
+		auto ec = EC::Create([](auto* impl) {return Ptr(new MixEnum(impl)); });
 		List<vint> xs;
 		CopyFrom(xs, GetLazyList<vint>(ec));
 		int ys[] = { 0,1,2,3,2,3,4,5,4 };
@@ -228,7 +228,7 @@ TEST_FILE
 
 		static Ptr<IAsync> Create()
 		{
-			return AC::Create([](auto impl) { return MakePtr<EmptyAsync>(impl); });
+			return AC::Create([](auto impl) { return Ptr(new EmptyAsync(impl)); });
 		}
 	};
 
@@ -260,13 +260,13 @@ TEST_FILE
 
 		static Ptr<IAsync> Create()
 		{
-			return AC::Create([](auto impl) { return MakePtr<FailAsync>(impl); });
+			return AC::Create([](auto impl) { return Ptr(new FailAsync(impl)); });
 		}
 	};
 
 	TEST_CASE(L"Test EmptyAsync coroutine")
 	{
-		auto scheduler = MakePtr<SyncScheduler>();
+		auto scheduler = Ptr(new SyncScheduler);
 		IAsyncScheduler::RegisterDefaultScheduler(scheduler);
 		Ptr<CoroutineResult> cr;
 		{
@@ -284,7 +284,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test FailAsync coroutine")
 	{
-		auto scheduler = MakePtr<SyncScheduler>();
+		auto scheduler = Ptr(new SyncScheduler);
 		IAsyncScheduler::RegisterDefaultScheduler(scheduler);
 		Ptr<CoroutineResult> cr;
 		{
@@ -352,13 +352,13 @@ TEST_FILE
 
 		static Ptr<IAsync> Create()
 		{
-			return AC::Create([](auto impl) { return MakePtr<NestedAsync>(impl); });
+			return AC::Create([](auto impl) { return Ptr(new NestedAsync(impl)); });
 		}
 	};
 
 	TEST_CASE(L"Test NestedAsync coroutine")
 	{
-		auto scheduler = MakePtr<SyncScheduler>();
+		auto scheduler = Ptr(new SyncScheduler);
 		Ptr<CoroutineResult> cr;
 		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
@@ -412,13 +412,13 @@ TEST_FILE
 
 		static Ptr<IAsync> Create()
 		{
-			return AC::Create([](auto impl) { return MakePtr<DelayAsync>(impl); });
+			return AC::Create([](auto impl) { return Ptr(new DelayAsync(impl)); });
 		}
 	};
 
 	TEST_CASE(L"Test DelayAsync coroutine")
 	{
-		auto scheduler = MakePtr<SyncScheduler>();
+		auto scheduler = Ptr(new SyncScheduler);
 		Ptr<CoroutineResult> cr;
 		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
@@ -436,7 +436,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test succeeded Future/Promise")
 	{
-		auto scheduler = MakePtr<SyncScheduler>();
+		auto scheduler = Ptr(new SyncScheduler);
 		Ptr<CoroutineResult> cr;
 		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
@@ -463,7 +463,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test failed Future/Promise")
 	{
-		auto scheduler = MakePtr<SyncScheduler>();
+		auto scheduler = Ptr(new SyncScheduler);
 		Ptr<CoroutineResult> cr;
 		IAsyncScheduler::RegisterSchedulerForCurrentThread(scheduler);
 		{
