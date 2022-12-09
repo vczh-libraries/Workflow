@@ -63,7 +63,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<CoSmcSwitchPR1TypeLoader>());
+					return manager->AddTypeLoader(Ptr(new CoSmcSwitchPR1TypeLoader));
 				}
 #endif
 				return false;

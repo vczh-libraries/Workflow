@@ -59,7 +59,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<NullableCastTypeLoader>());
+					return manager->AddTypeLoader(Ptr(new NullableCastTypeLoader));
 				}
 #endif
 				return false;

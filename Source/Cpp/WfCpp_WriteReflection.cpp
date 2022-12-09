@@ -505,9 +505,9 @@ namespace vl
 				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"\t\t\t\tif (auto manager = GetGlobalTypeManager())");
 				writer.WriteLine(L"\t\t\t\t{");
-				writer.WriteString(L"\t\t\t\t\treturn manager->AddTypeLoader(MakePtr<");
+				writer.WriteString(L"\t\t\t\t\treturn manager->AddTypeLoader(Ptr(new ");
 				writer.WriteString(assemblyName);
-				writer.WriteLine(L"TypeLoader>());");
+				writer.WriteLine(L"TypeLoader));");
 				writer.WriteLine(L"\t\t\t\t}");
 				writer.WriteLine(L"#endif");
 				writer.WriteLine(L"\t\t\t\treturn false;");

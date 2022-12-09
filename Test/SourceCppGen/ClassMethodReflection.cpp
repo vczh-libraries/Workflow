@@ -66,7 +66,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<ClassMethodTypeLoader>());
+					return manager->AddTypeLoader(Ptr(new ClassMethodTypeLoader));
 				}
 #endif
 				return false;

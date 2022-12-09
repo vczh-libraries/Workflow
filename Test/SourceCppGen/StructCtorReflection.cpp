@@ -77,7 +77,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<StructCtorTypeLoader>());
+					return manager->AddTypeLoader(Ptr(new StructCtorTypeLoader));
 				}
 #endif
 				return false;

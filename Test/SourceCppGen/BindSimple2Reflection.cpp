@@ -81,7 +81,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<BindSimple2TypeLoader>());
+					return manager->AddTypeLoader(Ptr(new BindSimple2TypeLoader));
 				}
 #endif
 				return false;

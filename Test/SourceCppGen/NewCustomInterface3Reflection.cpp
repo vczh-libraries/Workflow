@@ -71,7 +71,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<NewCustomInterface3TypeLoader>());
+					return manager->AddTypeLoader(Ptr(new NewCustomInterface3TypeLoader));
 				}
 #endif
 				return false;

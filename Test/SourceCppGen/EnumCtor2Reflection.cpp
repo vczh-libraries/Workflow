@@ -65,7 +65,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<EnumCtor2TypeLoader>());
+					return manager->AddTypeLoader(Ptr(new EnumCtor2TypeLoader));
 				}
 #endif
 				return false;

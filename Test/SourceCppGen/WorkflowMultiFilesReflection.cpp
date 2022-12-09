@@ -170,7 +170,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(MakePtr<WorkflowMultiFilesTypeLoader>());
+					return manager->AddTypeLoader(Ptr(new WorkflowMultiFilesTypeLoader));
 				}
 #endif
 				return false;
