@@ -52,7 +52,7 @@ namespace vl
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					unprocessed.Add(node);
+					unprocessed.Add(Ptr(node));
 				}
 			};
 

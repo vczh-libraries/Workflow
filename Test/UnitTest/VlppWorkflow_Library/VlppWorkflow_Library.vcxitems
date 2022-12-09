@@ -16,7 +16,12 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Library\WfLibraryCppHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Library\WfLibraryPredefined.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Library\WfLibraryReflection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Library\WfLibraryReflection.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Library\WfLibraryCppHelper.h" />

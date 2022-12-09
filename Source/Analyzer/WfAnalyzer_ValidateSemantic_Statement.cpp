@@ -106,7 +106,7 @@ ValidateSemantic(Statement)
 										SelectFunction(manager, node, nullptr, functions, arguments, selectedFunctionIndex);
 										if (selectedFunctionIndex != -1)
 										{
-											manager->coOperatorResolvings.Add(node, functions[selectedFunctionIndex]);
+											manager->coOperatorResolvings.Add(Ptr(node), functions[selectedFunctionIndex]);
 										}
 									}
 									else
@@ -523,7 +523,7 @@ ValidateSemantic(Statement)
 								if (results.Count() == 1)
 								{
 									implSymbol->typeInfo = CopyTypeInfo(selectedImplType);
-									manager->coProviderResolvings.Add(node, ResolveExpressionResult::Method(selectedCreator));
+									manager->coProviderResolvings.Add(Ptr(node), ResolveExpressionResult::Method(selectedCreator));
 								}
 								else if (results.Count() > 1)
 								{
@@ -623,7 +623,7 @@ ValidateSemantic(Statement)
 									SelectFunction(manager, node, nullptr, functions, arguments, selectedFunctionIndex);
 									if (selectedFunctionIndex != -1)
 									{
-										manager->coOperatorResolvings.Add(node, functions[selectedFunctionIndex]);
+										manager->coOperatorResolvings.Add(Ptr(node), functions[selectedFunctionIndex]);
 										if (node->varName.value != L"" && manager->errors.Count() == oldErrorCount)
 										{
 											auto symbol = scope->symbols[node->varName.value][0];
@@ -651,7 +651,7 @@ ValidateSemantic(Statement)
 																		method->GetReturn()->GetTypeDescriptor() != description::GetTypeDescriptor<void>()
 																		)
 																	{
-																		manager->coCastResultResolvings.Add(node, ResolveExpressionResult::Method(method));
+																		manager->coCastResultResolvings.Add(Ptr(node), ResolveExpressionResult::Method(method));
 																		symbol->typeInfo = CopyTypeInfo(method->GetReturn());
 																		break;
 																	}

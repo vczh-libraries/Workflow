@@ -19,7 +19,7 @@ CollectModule
 			{
 			public:
 				WfCppConfig*							config;
-				WfClassDeclaration*						surroundingClassDecl = nullptr;
+				Ptr<WfClassDeclaration>					surroundingClassDecl = nullptr;
 				vint									skipCounter = 0;
 
 				WfCollectModuleVisitor(WfCppConfig* _config)
@@ -47,8 +47,8 @@ CollectModule
 					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
 					WString name = prefix + postfix;
 
-					config->lambdaExprs.Add(node, name);
-					config->classClosures.Add(surroundingClassDecl, node);
+					config->lambdaExprs.Add(Ptr(node), name);
+					config->classClosures.Add(surroundingClassDecl, Ptr(node));
 				}
 
 				void Traverse(WfFunctionExpression* node)override
@@ -57,8 +57,8 @@ CollectModule
 					WString postfix = GetScopePostfix(config->manager->nodeScopes[node].Obj());
 					WString name = prefix + postfix;
 
-					config->lambdaExprs.Add(node, name);
-					config->classClosures.Add(surroundingClassDecl, node);
+					config->lambdaExprs.Add(Ptr(node), name);
+					config->classClosures.Add(surroundingClassDecl, Ptr(node));
 				}
 
 				void Traverse(WfNewInterfaceExpression* node)override
@@ -70,15 +70,15 @@ CollectModule
 					auto td = result.constructorInfo->GetOwnerTypeDescriptor();
 					WString name = prefix + postfix + config->ConvertType(td, L"_");
 
-					config->classExprs.Add(node, name);
-					config->classClosures.Add(surroundingClassDecl, node);
+					config->classExprs.Add(Ptr(node), name);
+					config->classClosures.Add(surroundingClassDecl, Ptr(node));
 				}
 
 				void Traverse(WfFunctionDeclaration* node)override
 				{
 					if (skipCounter == 1)
 					{
-						config->funcDecls.Add(node);
+						config->funcDecls.Add(Ptr(node));
 					}
 				}
 
@@ -86,14 +86,14 @@ CollectModule
 				{
 					if (skipCounter == 1)
 					{
-						config->varDecls.Add(node);
+						config->varDecls.Add(Ptr(node));
 					}
 				}
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					config->classDecls.Add(surroundingClassDecl, node);
-					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
+					config->classDecls.Add(surroundingClassDecl, Ptr(node));
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), Ptr(node));
 
 					if (!surroundingClassDecl)
 					{
@@ -104,11 +104,11 @@ CollectModule
 							CHECK_ERROR(attValue.type == runtime::WfInsType::String, L"Unexpected value in attribute: @cpp.File.");
 							file = attValue.stringValue;
 						}
-						config->customFilesClasses.Add(file, node);
+						config->customFilesClasses.Add(file, Ptr(node));
 					}
 
 					auto oldSurroundingClassDecl = surroundingClassDecl;
-					surroundingClassDecl = node;
+					surroundingClassDecl = Ptr(node);
 					skipCounter++;
 					traverse_visitor::AstVisitor::Visit(node);
 					skipCounter--;
@@ -117,14 +117,14 @@ CollectModule
 
 				void Traverse(WfEnumDeclaration* node)override
 				{
-					config->enumDecls.Add(surroundingClassDecl, node);
-					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
+					config->enumDecls.Add(surroundingClassDecl, Ptr(node));
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), Ptr(node));
 				}
 
 				void Traverse(WfStructDeclaration* node)override
 				{
-					config->structDecls.Add(surroundingClassDecl, node);
-					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), node);
+					config->structDecls.Add(surroundingClassDecl, Ptr(node));
+					config->tdDecls.Add(config->manager->declarationTypes[node].Obj(), Ptr(node));
 				}
 
 				void Visit(WfFunctionDeclaration* node)override

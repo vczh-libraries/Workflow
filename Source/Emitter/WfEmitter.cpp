@@ -66,7 +66,7 @@ WfCodegenFunctionContext
 
 			WfCodegenFunctionContext::WfCodegenFunctionContext()
 			{
-				scopeContextStack.Add(new WfCodegenScopeContext);
+				scopeContextStack.Add(Ptr(new WfCodegenScopeContext));
 			}
 
 			Ptr<WfCodegenScopeContext> WfCodegenFunctionContext::GetCurrentScopeContext()
