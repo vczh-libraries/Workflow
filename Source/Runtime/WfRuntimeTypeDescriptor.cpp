@@ -222,7 +222,7 @@ WfInterfaceConstructor
 					}
 				}
 
-				Ptr<WfInterfaceInstance> instance = new WfInterfaceInstance(GetOwnerTypeDescriptor(), proxy, baseCtors);
+				auto instance = Ptr(new WfInterfaceInstance(GetOwnerTypeDescriptor(), proxy, baseCtors));
 
 				if (returnInfo->GetDecorator() == ITypeInfo::SharedPtr)
 				{

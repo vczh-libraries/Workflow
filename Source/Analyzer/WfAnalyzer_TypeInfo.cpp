@@ -136,7 +136,7 @@ GetTypeFromTypeInfo
 						Ptr<WfType> element = GetTypeFromTypeInfo(typeInfo->GetElementType());
 						if (element)
 						{
-							Ptr<WfRawPointerType> type = new WfRawPointerType;
+							auto type = Ptr(new WfRawPointerType);
 							type->element = element;
 							return type;
 						}
@@ -153,7 +153,7 @@ GetTypeFromTypeInfo
 							Ptr<WfType> element = GetTypeFromTypeInfo(typeInfo->GetElementType());
 							if (element)
 							{
-								Ptr<WfSharedPointerType> type = new WfSharedPointerType;
+								auto type = Ptr(new WfSharedPointerType);
 								type->element = element;
 								return type;
 							}
@@ -165,7 +165,7 @@ GetTypeFromTypeInfo
 						Ptr<WfType> element = GetTypeFromTypeInfo(typeInfo->GetElementType());
 						if (element)
 						{
-							Ptr<WfNullableType> type = new WfNullableType;
+							auto type = Ptr(new WfNullableType);
 							type->element = element;
 							return type;
 						}
@@ -205,7 +205,7 @@ GetTypeFromTypeInfo
 								{
 									if (Ptr<WfType> elementType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
 									{
-										Ptr<WfEnumerableType> type = new WfEnumerableType;
+										auto type = Ptr(new WfEnumerableType);
 										type->element = elementType;
 										return type;
 									}
@@ -217,7 +217,7 @@ GetTypeFromTypeInfo
 								{
 									if (Ptr<WfType> valueType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
 									{
-										Ptr<WfMapType> type = new WfMapType;
+										auto type = Ptr(new WfMapType);
 										type->writability = WfMapWritability::Readonly;
 										type->value = valueType;
 										return type;
@@ -230,7 +230,7 @@ GetTypeFromTypeInfo
 								{
 									if (Ptr<WfType> valueType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
 									{
-										Ptr<WfMapType> type = new WfMapType;
+										auto type = Ptr(new WfMapType);
 										type->writability = WfMapWritability::Writable;
 										type->value = valueType;
 										return type;
@@ -243,7 +243,7 @@ GetTypeFromTypeInfo
 								{
 									if (Ptr<WfType> elementType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
 									{
-										Ptr<WfObservableListType> type = new WfObservableListType;
+										auto type = Ptr(new WfObservableListType);
 										type->element = elementType;
 										return type;
 									}
@@ -256,7 +256,7 @@ GetTypeFromTypeInfo
 									if (Ptr<WfType> keyType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
 									if (Ptr<WfType> valueType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(1)))
 									{
-										Ptr<WfMapType> type = new WfMapType;
+										auto type = Ptr(new WfMapType);
 										type->writability = WfMapWritability::Readonly;
 										type->key = keyType;
 										type->value = valueType;
@@ -271,7 +271,7 @@ GetTypeFromTypeInfo
 									if (Ptr<WfType> keyType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
 									if (Ptr<WfType> valueType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(1)))
 									{
-										Ptr<WfMapType> type = new WfMapType;
+										auto type = Ptr(new WfMapType);
 										type->writability = WfMapWritability::Writable;
 										type->key = keyType;
 										type->value = valueType;
@@ -285,7 +285,7 @@ GetTypeFromTypeInfo
 								{
 									if (Ptr<WfType> returnType = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0)))
 									{
-										Ptr<WfFunctionType> type = new WfFunctionType;
+										auto type = Ptr(new WfFunctionType);
 										type->result = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(0));
 										for (vint i = 1; i < typeInfo->GetGenericArgumentCount(); i++)
 										{
@@ -380,10 +380,10 @@ GetScopeNameFromReferenceType
 						CHECK_FAIL(L"GetScopeNameFromReferenceTypeVisitor::Visit(WfPredefinedType*)#Internal error, ValidateTypeStructure function should check correctly.");
 					}
 
-					Ptr<WfTopQualifiedType> ns = new WfTopQualifiedType;
+					auto ns = Ptr(new WfTopQualifiedType);
 					ns->name.value = L"system";
 
-					Ptr<WfChildType> type = new WfChildType;
+					auto type = Ptr(new WfChildType);
 					type->parent = ns;
 					type->name.value = name;
 

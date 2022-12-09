@@ -137,7 +137,7 @@ ContextFreeModuleDesugar
 						const wchar_t* begin = wcsstr(reading, L"$(");
 						if (begin)
 						{
-							Ptr<WfStringExpression> expression = new WfStringExpression;
+							auto expression = Ptr(new WfStringExpression);
 							expression->codeRange = node->codeRange;
 							expression->value.value = WString::CopyFrom(reading, vint(begin - reading));
 							expressions.Add(expression);
@@ -209,7 +209,7 @@ ContextFreeModuleDesugar
 					}
 					if (*reading || expressions.Count() == 0)
 					{
-						Ptr<WfStringExpression> expression = new WfStringExpression;
+						auto expression = Ptr(new WfStringExpression);
 						expression->codeRange = node->codeRange;
 						expression->value.value = reading;
 						expressions.Add(expression);
@@ -220,7 +220,7 @@ ContextFreeModuleDesugar
 						Ptr<WfExpression> current = expressions[0];
 						for (auto expression : From(expressions).Skip(1))
 						{
-							Ptr<WfBinaryExpression> binary = new WfBinaryExpression;
+							auto binary = Ptr(new WfBinaryExpression);
 							binary->codeRange = node->codeRange;
 							binary->first = current;
 							binary->second = expression;

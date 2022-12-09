@@ -45,7 +45,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
@@ -94,11 +94,11 @@ BuildScopeForDeclaration
 							functionNameScope = resultScope;
 						}
 
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(functionNameScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(functionNameScope.Obj()));
 						symbol->name = node->name.value;
 						symbol->creatorNode = node;
 						{
-							Ptr<WfFunctionType> type = new WfFunctionType;
+							auto type = Ptr(new WfFunctionType);
 							type->result = node->returnType;
 							for (auto argument : node->arguments)
 							{
@@ -113,7 +113,7 @@ BuildScopeForDeclaration
 					{
 						for (auto argument : node->arguments)
 						{
-							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
+							auto argumentSymbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 							argumentSymbol->name = argument->name.value;
 							argumentSymbol->type = argument->type;
 							argumentSymbol->creatorNode = argument;
@@ -128,7 +128,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					symbol->type = node->type;
@@ -139,7 +139,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
@@ -147,7 +147,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					symbol->type = node->type;
@@ -160,7 +160,7 @@ BuildScopeForDeclaration
 
 					for (auto argument : node->arguments)
 					{
-						Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
+						auto argumentSymbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						argumentSymbol->name = argument->name.value;
 						argumentSymbol->type = argument->type;
 						argumentSymbol->creatorNode = argument;
@@ -203,7 +203,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
@@ -219,7 +219,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
@@ -232,7 +232,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfStructDeclaration* node)override
 				{
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
@@ -260,7 +260,7 @@ BuildScopeForDeclaration
 				{
 					for (auto input : node->inputs)
 					{
-						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
+						auto stateSymbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 						stateSymbol->name = input->name.value;
 						stateSymbol->creatorNode = input;
 						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
@@ -268,7 +268,7 @@ BuildScopeForDeclaration
 
 					for (auto state : node->states)
 					{
-						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
+						auto stateSymbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 						stateSymbol->name = state->name.value;
 						stateSymbol->creatorNode = state;
 						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
@@ -287,7 +287,7 @@ BuildScopeForDeclaration
 
 						for (auto argument : state->arguments)
 						{
-							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(stateScope.Obj());
+							auto argumentSymbol = Ptr(new WfLexicalSymbol(stateScope.Obj()));
 							argumentSymbol->name = argument->name.value;
 							argumentSymbol->type = argument->type;
 							argumentSymbol->creatorNode = argument;
@@ -374,7 +374,7 @@ BuildScopeForStatement
 					resultScope = new WfLexicalScope(parentScope);
 					if (node->type)
 					{
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						symbol->name = node->name.value;
 						symbol->type = node->type;
 						symbol->creatorNode = node;
@@ -402,7 +402,7 @@ BuildScopeForStatement
 					{
 						resultScope = new WfLexicalScope(parentScope);
 
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						symbol->name = node->name.value;
 						symbol->creatorNode = node;
 						{
@@ -475,7 +475,7 @@ BuildScopeForStatement
 				{
 					resultScope = new WfLexicalScope(parentScope);
 
-					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+					auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 					symbol->name = node->name.value;
 					symbol->creatorNode = node;
 					resultScope->symbols.Add(symbol->name, symbol);
@@ -488,13 +488,13 @@ BuildScopeForStatement
 				{
 					resultScope = new WfLexicalScope(parentScope);
 					{
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						symbol->name = L"$PROVIDER";
 						symbol->creatorNode = node;
 						resultScope->symbols.Add(symbol->name, symbol);
 					}
 					{
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						symbol->name = L"$IMPL";
 						symbol->creatorNode = node;
 						resultScope->symbols.Add(symbol->name, symbol);
@@ -519,7 +519,7 @@ BuildScopeForStatement
 				{
 					if (node->varName.value != L"")
 					{
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(parentScope.Obj()));
 						symbol->name = node->varName.value;
 						symbol->creatorNode = node;
 						parentScope->symbols.Add(symbol->name, symbol);
@@ -548,7 +548,7 @@ BuildScopeForStatement
 
 						for (auto argument : switchCase->arguments)
 						{
-							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(caseScope.Obj());
+							auto symbol = Ptr(new WfLexicalSymbol(caseScope.Obj()));
 							symbol->name = argument->name.value;
 							symbol->creatorNode = argument;
 							caseScope->symbols.Add(symbol->name, symbol);
@@ -636,7 +636,7 @@ BuildScopeForExpression
 
 					for (auto name : names)
 					{
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						symbol->name = L"$" + itow(name);
 						symbol->creatorNode = node;
 						resultScope->symbols.Add(symbol->name, symbol);
@@ -687,7 +687,7 @@ BuildScopeForExpression
 					resultScope = new WfLexicalScope(parentScope);
 					for (auto variable : node->variables)
 					{
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						symbol->name = variable->name.value;
 						symbol->creatorNode = node;
 						resultScope->symbols.Add(symbol->name, symbol);
@@ -782,7 +782,7 @@ BuildScopeForExpression
 					{
 						resultScope = new WfLexicalScope(parentScope);
 						{
-							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+							auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 							symbol->name = node->name.value;
 							symbol->creatorNode = node;
 							resultScope->symbols.Add(symbol->name, symbol);
@@ -889,7 +889,7 @@ BuildScopeForExpression
 
 					if (node->name.value != L"")
 					{
-						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
+						auto symbol = Ptr(new WfLexicalSymbol(resultScope.Obj()));
 						symbol->name = node->name.value;
 						symbol->creatorNode = node;
 						symbol->typeInfo = TypeInfoRetriver<Ptr<CoroutineResult>>::CreateTypeInfo();
@@ -941,7 +941,7 @@ BuildScope
 
 			void BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				Ptr<WfLexicalScope> scope = new WfLexicalScope(manager);
+				auto scope = Ptr(new WfLexicalScope(manager));
 				scope->ownerNode = module;
 				manager->nodeScopes.Add(module.Obj(), scope);
 
