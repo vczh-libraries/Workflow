@@ -410,7 +410,7 @@ Semantic Analyzing
 			extern Ptr<reflection::description::ITypeInfo>	SelectFunction(WfLexicalScopeManager* manager, glr::ParsingAstBase* node, Ptr<WfExpression> functionExpression, collections::List<ResolveExpressionResult>& functions, collections::List<Ptr<WfExpression>>& arguments, vint& selectedFunctionIndex);
 
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl);
+			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, WfClassDeclaration* classDecl, Ptr<WfDeclaration> memberDecl);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, WfDeclaration* declaration);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										ValidateStatementSemantic(WfLexicalScopeManager* manager, WfStatement* statement);

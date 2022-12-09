@@ -442,10 +442,10 @@ ValidateSemantic(Expression)
 							goto ORDERED_FAILED;
 						}
 
-						Ptr<ITypeInfo> resultType = type->GetGenericArgument(0);
+						auto resultType = Ptr(type->GetGenericArgument(0));
 						for (auto [symbol, index] : indexed(parameterSymbols))
 						{
-							symbol->typeInfo = type->GetGenericArgument(index + 1);
+							symbol->typeInfo = Ptr(type->GetGenericArgument(index + 1));
 							symbol->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
 						}
 						GetExpressionType(manager, node->body, resultType);
@@ -1243,8 +1243,8 @@ ValidateSemantic(Expression)
 					}
 					else
 					{
-						ITypeInfo* expectedKeyType = nullptr;
-						ITypeInfo* expectedValueType = nullptr;
+						Ptr<ITypeInfo> expectedKeyType;
+						Ptr<ITypeInfo> expectedValueType;
 						if (expectedType)
 						{
 							if (expectedType->GetDecorator() == ITypeInfo::SharedPtr)
@@ -1257,8 +1257,8 @@ ValidateSemantic(Expression)
 									{
 										if (genericType->GetGenericArgumentCount() == 2)
 										{
-											expectedKeyType = genericType->GetGenericArgument(0);
-											expectedValueType = genericType->GetGenericArgument(1);
+											expectedKeyType = Ptr(genericType->GetGenericArgument(0));
+											expectedValueType = Ptr(genericType->GetGenericArgument(1));
 										}
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>()
@@ -1269,7 +1269,7 @@ ValidateSemantic(Expression)
 									{
 										if (genericType->GetGenericArgumentCount() == 1)
 										{
-											expectedKeyType = genericType->GetGenericArgument(0);
+											expectedKeyType = Ptr(genericType->GetGenericArgument(0));
 										}
 									}
 								}
@@ -1610,7 +1610,7 @@ ValidateSemantic(Expression)
 						lastFunction = node;
 						if (node->functionKind == WfFunctionKind::Override)
 						{
-							overrideFunctions.Add(node);
+							overrideFunctions.Add(Ptr(node));
 						}
 					}
 
@@ -2034,7 +2034,7 @@ ValidateSemantic(Expression)
 					}
 				}
 
-				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType, List<ResolveExpressionResult>& results)
+				static void Execute(WfExpression* expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType, List<ResolveExpressionResult>& results)
 				{
 					ValidateSemanticExpressionVisitor visitor(manager, expectedType, results);
 					expression->Accept(&visitor);

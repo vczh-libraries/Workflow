@@ -22,9 +22,9 @@ ValidateSemantic(ClassMember)
 			public:
 				WfLexicalScopeManager*				manager;
 				Ptr<WfCustomType>					td;
-				Ptr<WfClassDeclaration>				classDecl;
+				WfClassDeclaration*					classDecl;
 
-				ValidateSemanticClassMemberVisitor(Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl, WfLexicalScopeManager* _manager)
+				ValidateSemanticClassMemberVisitor(Ptr<WfCustomType> _td, WfClassDeclaration* _classDecl, WfLexicalScopeManager* _manager)
 					:td(_td)
 					, classDecl(_classDecl)
 					, manager(_manager)
@@ -62,7 +62,7 @@ ValidateSemantic(ClassMember)
 							auto getter = td->GetMethodGroupByName(node->getter.value, false)->GetMethod(0);
 							if (!IsSameType(typeInfo.Obj(), getter->GetReturn()) || getter->GetParameterCount() != 0)
 							{
-								manager->errors.Add(WfErrors::PropertyGetterTypeMismatched(node, classDecl.Obj()));
+								manager->errors.Add(WfErrors::PropertyGetterTypeMismatched(node, classDecl));
 							}
 						}
 
@@ -71,7 +71,7 @@ ValidateSemantic(ClassMember)
 							auto setter = td->GetMethodGroupByName(node->setter.value, false)->GetMethod(0);
 							if (setter->GetReturn()->GetTypeDescriptor() != description::GetTypeDescriptor<void>() || setter->GetParameterCount() != 1 || !IsSameType(typeInfo.Obj(), setter->GetParameter(0)->GetType()))
 							{
-								manager->errors.Add(WfErrors::PropertySetterTypeMismatched(node, classDecl.Obj()));
+								manager->errors.Add(WfErrors::PropertySetterTypeMismatched(node, classDecl));
 							}
 						}
 					}
@@ -196,7 +196,7 @@ ValidateSemantic(ClassMember)
 					ValidateDeclarationSemantic(manager, node);
 				}
 
-				static void Execute(Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl, WfLexicalScopeManager* manager)
+				static void Execute(Ptr<WfCustomType> td, WfClassDeclaration* classDecl, Ptr<WfDeclaration> memberDecl, WfLexicalScopeManager* manager)
 				{
 					ValidateSemanticClassMemberVisitor visitor(td, classDecl, manager);
 					memberDecl->Accept(&visitor);
@@ -462,7 +462,7 @@ ValidateSemantic(Declaration)
 ValidateSemantic
 ***********************************************************************/
 
-			void ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
+			void ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, WfClassDeclaration* classDecl, Ptr<WfDeclaration> memberDecl)
 			{
 				return ValidateSemanticClassMemberVisitor::Execute(td, classDecl, memberDecl, manager);
 			}

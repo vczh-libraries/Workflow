@@ -170,7 +170,7 @@ Helper Functions
 								auto resolvingResult = manager->expressionResolvings.Values()[index];
 								CHECK_ERROR(resolvingResult.expectedType == nullptr, L"GetExpressionType should not set expectedType if it is null");
 								resolvingResult.expectedType = CopyTypeInfo(argumentType);
-								manager->expressionResolvings.Set(arguments[i].Obj(), resolvingResult);
+								manager->expressionResolvings.Set(arguments[i], resolvingResult);
 							}
 						}
 						else
@@ -252,7 +252,7 @@ GetExpressionScopeName
 				}
 
 				auto result = results[0];
-				manager->expressionResolvings.Add(expression, result);
+				manager->expressionResolvings.Add(Ptr(expression), result);
 				return result.scopeName;
 			}
 
@@ -291,7 +291,7 @@ GetExpressionEventInfo
 				}
 
 				auto result = results[0];
-				manager->expressionResolvings.Add(expression, result);
+				manager->expressionResolvings.Add(Ptr(expression), result);
 				return result.eventInfo;
 			}
 
@@ -385,7 +385,7 @@ GetExpressionType
 				{
 					auto result = results[0];
 					result.expectedType = expectedType;
-					manager->expressionResolvings.Add(expression, result);
+					manager->expressionResolvings.Add(Ptr(expression), result);
 					return expectedType ? expectedType : result.type;
 				}
 				else
@@ -417,7 +417,7 @@ GetLeftValueExpressionType
 					if (results[0].writableType)
 					{
 						auto result = results[0];
-						manager->expressionResolvings.Add(expression, result);
+						manager->expressionResolvings.Add(Ptr(expression), result);
 						return result.writableType;
 					}
 					else
