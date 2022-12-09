@@ -581,7 +581,7 @@ CreateTypeInfoFromType
 					{
 						if (scopeName->typeDescriptor)
 						{
-							result = MakePtr<TypeDescriptorTypeInfo>(scopeName->typeDescriptor, TypeInfoHint::Normal);
+							result = Ptr(new TypeDescriptorTypeInfo(scopeName->typeDescriptor, TypeInfoHint::Normal));
 						}
 						else
 						{
@@ -630,7 +630,7 @@ CreateTypeInfoFromType
 					}
 					if (typeDescriptor)
 					{
-						result = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+						result = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 					}
 				}
 
@@ -648,7 +648,7 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), false))
 					{
-						result = MakePtr<RawPtrTypeInfo>(element);
+						result = Ptr(new RawPtrTypeInfo(element));
 					}
 				}
 
@@ -656,7 +656,7 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), false))
 					{
-						result = MakePtr<SharedPtrTypeInfo>(element);
+						result = Ptr(new SharedPtrTypeInfo(element));
 					}
 				}
 
@@ -664,7 +664,7 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), false))
 					{
-						result = MakePtr<NullableTypeInfo>(element);
+						result = Ptr(new NullableTypeInfo(element));
 					}
 				}
 
@@ -672,10 +672,10 @@ CreateTypeInfoFromType
 				{
 					if (Ptr<ITypeInfo> element = Call(node->element.Obj(), true))
 					{
-						auto enumerableTypeInfo = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Normal);
-						auto genericTypeInfo = MakePtr<GenericTypeInfo>(enumerableTypeInfo);
+						auto enumerableTypeInfo = Ptr(new TypeDescriptorTypeInfo(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Normal));
+						auto genericTypeInfo = Ptr(new GenericTypeInfo(enumerableTypeInfo));
 						genericTypeInfo->AddGenericArgument(element);
-						result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
+						result = Ptr(new SharedPtrTypeInfo(genericTypeInfo));
 					}
 				}
 
@@ -712,11 +712,11 @@ CreateTypeInfoFromType
 						}
 					}
 
-					auto mapTypeInfo = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
-					auto genericTypeInfo = MakePtr<GenericTypeInfo>(mapTypeInfo);
+					auto mapTypeInfo = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
+					auto genericTypeInfo = Ptr(new GenericTypeInfo(mapTypeInfo));
 					if (key) genericTypeInfo->AddGenericArgument(key);
 					genericTypeInfo->AddGenericArgument(value);
-					result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
+					result = Ptr(new SharedPtrTypeInfo(genericTypeInfo));
 				}
 
 				void Visit(WfObservableListType* node)override
@@ -725,18 +725,18 @@ CreateTypeInfoFromType
 					if (!(element = Call(node->element.Obj(), true))) return;
 
 					auto typeDescriptor = description::GetTypeDescriptor<IValueObservableList>();
-					auto mapTypeInfo = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
-					auto genericTypeInfo = MakePtr<GenericTypeInfo>(mapTypeInfo);
+					auto mapTypeInfo = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
+					auto genericTypeInfo = Ptr(new GenericTypeInfo(mapTypeInfo));
 					genericTypeInfo->AddGenericArgument(element);
-					result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
+					result = Ptr(new SharedPtrTypeInfo(genericTypeInfo));
 				}
 
 				void Visit(WfFunctionType* node)override
 				{
 					if (Ptr<ITypeInfo> returnType = Call(node->result.Obj(), true))
 					{
-						auto enumerableTypeInfo = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
-						auto genericTypeInfo = MakePtr<GenericTypeInfo>(enumerableTypeInfo);
+						auto enumerableTypeInfo = Ptr(new TypeDescriptorTypeInfo(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal));
+						auto genericTypeInfo = Ptr(new GenericTypeInfo(enumerableTypeInfo));
 						genericTypeInfo->AddGenericArgument(returnType);
 						for (auto argument : node->arguments)
 						{
@@ -749,7 +749,7 @@ CreateTypeInfoFromType
 								return;
 							}
 						}
-						result = MakePtr<SharedPtrTypeInfo>(genericTypeInfo);
+						result = Ptr(new SharedPtrTypeInfo(genericTypeInfo));
 					}
 				}
 
@@ -778,16 +778,16 @@ CreateTypeInfoFromType
 				switch (typeInfo->GetDecorator())
 				{
 				case ITypeInfo::RawPtr:
-					return MakePtr<RawPtrTypeInfo>(CopyTypeInfo(typeInfo->GetElementType()));
+					return Ptr(new RawPtrTypeInfo(CopyTypeInfo(typeInfo->GetElementType())));
 				case ITypeInfo::SharedPtr:
-					return MakePtr<SharedPtrTypeInfo>(CopyTypeInfo(typeInfo->GetElementType()));
+					return Ptr(new SharedPtrTypeInfo(CopyTypeInfo(typeInfo->GetElementType())));
 				case ITypeInfo::Nullable:
-					return MakePtr<NullableTypeInfo>(CopyTypeInfo(typeInfo->GetElementType()));
+					return Ptr(new NullableTypeInfo(CopyTypeInfo(typeInfo->GetElementType())));
 				case ITypeInfo::TypeDescriptor:
-					return MakePtr<TypeDescriptorTypeInfo>(typeInfo->GetTypeDescriptor(), typeInfo->GetHint());
+					return Ptr(new TypeDescriptorTypeInfo(typeInfo->GetTypeDescriptor(), typeInfo->GetHint()));
 				case ITypeInfo::Generic:
 				{
-					auto impl = MakePtr<GenericTypeInfo>(typeInfo->GetElementType());
+					auto impl = Ptr(new GenericTypeInfo(typeInfo->GetElementType()));
 					vint count = typeInfo->GetGenericArgumentCount();
 					for (vint i = 0; i < count; i++)
 					{
@@ -1060,15 +1060,15 @@ CreateTypeInfoFromMethodInfo
 
 			Ptr<reflection::description::ITypeInfo> CreateTypeInfoFromMethodInfo(reflection::description::IMethodInfo* info)
 			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
-				auto genericType = MakePtr<GenericTypeInfo>(elementType);
+				auto elementType = Ptr(new TypeDescriptorTypeInfo(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal));
+				auto genericType = Ptr(new GenericTypeInfo(elementType));
 				genericType->AddGenericArgument(CopyTypeInfo(info->GetReturn()));
 				vint parameterCount = info->GetParameterCount();
 				for (vint j = 0; j < parameterCount; j++)
 				{
 					genericType->AddGenericArgument(CopyTypeInfo(info->GetParameter(j)->GetType()));
 				}
-				return MakePtr<SharedPtrTypeInfo>(genericType);
+				return Ptr(new SharedPtrTypeInfo(genericType));
 			}
 		}
 	}

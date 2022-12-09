@@ -42,7 +42,7 @@ WfMethodBase
 			Value WfMethodBase::CreateFunctionProxyInternal(const Value& thisObject)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				return Value::From(MakePtr<WfMethodProxy>(thisObject, this));
+				return Value::From(Ptr(new WfMethodProxy(thisObject, this)));
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -103,7 +103,7 @@ WfClassConstructor
 			Value WfClassConstructor::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto instance = MakePtr<WfClassInstance>(GetOwnerTypeDescriptor());
+				auto instance = Ptr(new WfClassInstance(GetOwnerTypeDescriptor()));
 				{
 					InvokeBaseCtor(Value::From(instance.Obj()), arguments);
 				}
@@ -241,7 +241,7 @@ WfInterfaceConstructor
 				:WfMethodBase(true)
 			{
 				auto argumentType = TypeInfoRetriver<Ptr<IValueInterfaceProxy>>::CreateTypeInfo();
-				auto parameter = MakePtr<ParameterInfoImpl>(this, L"proxy", argumentType);
+				auto parameter = Ptr(new ParameterInfoImpl(this, L"proxy", argumentType));
 				AddParameter(parameter);
 				SetReturn(type);
 			}
@@ -314,7 +314,7 @@ WfEvent
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetEventRecord(thisObject, true);
-				auto result = MakePtr<EventHandlerImpl>(handler);
+				auto result = Ptr(new EventHandlerImpl(handler));
 				record->handlers.Add(this, result);
 				return result;
 #else

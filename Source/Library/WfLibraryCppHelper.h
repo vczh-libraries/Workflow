@@ -349,7 +349,7 @@ namespace vl
 
 			static Ptr<reflection::description::IEventHandler> Attach(Event<void(TArgs...)>& e, Handler handler)
 			{
-				return MakePtr<EventHandlerImpl>(e.Add(handler));
+				return Ptr(new EventHandlerImpl(e.Add(handler)));
 			}
 
 			static bool Detach(Event<void(TArgs...)>& e, Ptr<reflection::description::IEventHandler> handler)

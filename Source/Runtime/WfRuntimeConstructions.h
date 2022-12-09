@@ -70,7 +70,7 @@ Range
 
 				Ptr<reflection::description::IValueEnumerator> CreateEnumerator()override
 				{
-					return MakePtr<Enumerator>(begin, end);
+					return Ptr(new Enumerator(begin, end));
 				}
 			};
 			

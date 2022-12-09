@@ -364,28 +364,28 @@ Serizliation (ITypeInfo)
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfo = MakePtr<RawPtrTypeInfo>(elementType);
+							typeInfo = Ptr(new RawPtrTypeInfo(elementType));
 						}
 						break;
 					case ITypeInfo::SharedPtr:
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfo = MakePtr<SharedPtrTypeInfo>(elementType);
+							typeInfo = Ptr(new SharedPtrTypeInfo(elementType));
 						}
 						break;
 					case ITypeInfo::Nullable:
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfo = MakePtr<NullableTypeInfo>(elementType);
+							typeInfo = Ptr(new NullableTypeInfo(elementType));
 						}
 						break;
 					case ITypeInfo::Generic:
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							auto genericType = MakePtr<GenericTypeInfo>(elementType);
+							auto genericType = Ptr(new GenericTypeInfo(elementType));
 							typeInfo = genericType;
 
 							vint count = 0;
@@ -405,7 +405,7 @@ Serizliation (ITypeInfo)
 
 							vint index;
 							reader << index;
-							typeInfo = MakePtr<TypeDescriptorTypeInfo>(reader.context->tdIndex[index], static_cast<TypeInfoHint>(hint));
+							typeInfo = Ptr(new TypeDescriptorTypeInfo(reader.context->tdIndex[index], static_cast<TypeInfoHint>(hint)));
 						}
 						break;
 					}
@@ -993,7 +993,7 @@ Serialization (TypeImpl)
 						Ptr<ITypeInfo> eventType;
 						IOType(reader, eventType);
 
-						auto info = MakePtr<WfEvent>(td, eventName);
+						auto info = Ptr(new WfEvent(td, eventName));
 						info->SetHandlerType(eventType);
 						td->AddMember(info);
 					}
@@ -1009,7 +1009,7 @@ Serialization (TypeImpl)
 
 						if (isProperty)
 						{
-							auto info = MakePtr<WfProperty>(td, propName);
+							auto info = Ptr(new WfProperty(td, propName));
 
 							WString getterName, setterName, eventName;
 							reader << getterName << setterName << eventName;
@@ -1034,7 +1034,7 @@ Serialization (TypeImpl)
 							Ptr<ITypeInfo> fieldType;
 							IOType(reader, fieldType);
 
-							auto info = MakePtr<WfField>(td, propName);
+							auto info = Ptr(new WfField(td, propName));
 							info->SetReturn(fieldType);
 							td->AddMember(info);
 						}
@@ -1196,7 +1196,7 @@ Serialization (TypeImpl)
 						Ptr<ITypeInfo> typeInfo;
 						IOType(reader, typeInfo);
 
-						auto field = MakePtr<WfStructField>(td, name);
+						auto field = Ptr(new WfStructField(td, name));
 						field->SetReturn(typeInfo);
 						td->AddMember(field);
 					}
@@ -1448,7 +1448,7 @@ Serialization (Assembly)
 						reader.context->errors.duplicatedTypes.Add(typeName);
 					}
 					reader << isFlags << typeName;
-					type = MakePtr<WfEnum>(isFlags, typeName);
+					type = Ptr(new WfEnum(isFlags, typeName));
 				}
 
 				static void IOCustomType(WfWriter& writer, Ptr<WfEnum>& type)
@@ -1467,7 +1467,7 @@ Serialization (Assembly)
 					{
 						reader.context->errors.duplicatedTypes.Add(typeName);
 					}
-					type = MakePtr<TType>(typeName);
+					type = Ptr(new TType(typeName));
 				}
 
 				template<typename TType>

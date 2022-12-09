@@ -30,8 +30,8 @@ ExpandNewCoroutineExpression
 
 					if (sourceType->GetDecorator() == ITypeInfo::RawPtr)
 					{
-						auto tdType = MakePtr<TypeDescriptorTypeInfo>(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal);
-						auto pointerType = MakePtr<SharedPtrTypeInfo>(tdType);
+						auto tdType = Ptr(new TypeDescriptorTypeInfo(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal));
+						auto pointerType = Ptr(new SharedPtrTypeInfo(tdType));
 
 						auto castExpr = Ptr(new WfTypeCastingExpression);
 						castExpr->strategy = WfTypeCastingStrategy::Strong;
@@ -93,16 +93,16 @@ ExpandNewCoroutineExpression
 										castExpr->strategy = WfTypeCastingStrategy::Strong;
 										castExpr->expression = refSource;
 										{
-											auto tdType = MakePtr<TypeDescriptorTypeInfo>(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal);
-											auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
+											auto tdType = Ptr(new TypeDescriptorTypeInfo(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal));
+											auto pointerType = Ptr(new RawPtrTypeInfo(tdType));
 											castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
 										}
 
 										auto inferExpr = Ptr(new WfInferExpression);
 										inferExpr->expression = castExpr;
 										{
-											auto tdType = MakePtr<TypeDescriptorTypeInfo>(method->GetOwnerTypeDescriptor(), TypeInfoHint::Normal);
-											auto pointerType = MakePtr<RawPtrTypeInfo>(tdType);
+											auto tdType = Ptr(new TypeDescriptorTypeInfo(method->GetOwnerTypeDescriptor(), TypeInfoHint::Normal));
+											auto pointerType = Ptr(new RawPtrTypeInfo(tdType));
 											inferExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
 										}
 

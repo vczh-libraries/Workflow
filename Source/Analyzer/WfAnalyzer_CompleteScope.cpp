@@ -44,7 +44,7 @@ CompleteScopeForClassMember
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 						{
-							auto paramInfo = MakePtr<ParameterInfoImpl>(info.Obj(), argument->name.value, typeInfo);
+							auto paramInfo = Ptr(new ParameterInfoImpl(info.Obj(), argument->name.value, typeInfo));
 							info->AddParameter(paramInfo);
 						}
 					}
@@ -116,7 +116,7 @@ CompleteScopeForClassMember
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 						{
-							auto paramInfo = MakePtr<ParameterInfoImpl>(info.Obj(), argument->name.value, typeInfo);
+							auto paramInfo = Ptr(new ParameterInfoImpl(info.Obj(), argument->name.value, typeInfo));
 							info->AddParameter(paramInfo);
 						}
 					}
@@ -169,7 +169,7 @@ CompleteScopeForClassMember
 								auto field = manager->stateInputArguments[argument.Obj()];
 								field->SetReturn(typeInfo);
 
-								method->AddParameter(MakePtr<ParameterInfoImpl>(method.Obj(), argument->name.value, typeInfo));
+								method->AddParameter(Ptr(new ParameterInfoImpl(method.Obj(), argument->name.value, typeInfo)));
 							}
 						}
 					}
@@ -187,7 +187,7 @@ CompleteScopeForClassMember
 					}
 
 					auto& smInfo = manager->stateMachineInfos[node];
-					smInfo->createCoroutineMethod->AddParameter(MakePtr<ParameterInfoImpl>(smInfo->createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo()));
+					smInfo->createCoroutineMethod->AddParameter(Ptr(new ParameterInfoImpl(smInfo->createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo())));
 					smInfo->createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 				}
 
@@ -209,11 +209,9 @@ CompleteScopeForDeclaration
 			{
 			public:
 				WfLexicalScopeManager*					manager;
-				Ptr<WfDeclaration>						declaration;
 
-				CompleteScopeForDeclarationVisitor(WfLexicalScopeManager* _manager, Ptr<WfDeclaration> _declaration)
+				CompleteScopeForDeclarationVisitor(WfLexicalScopeManager* _manager)
 					:manager(_manager)
-					, declaration(_declaration)
 				{
 				}
 
@@ -282,19 +280,19 @@ CompleteScopeForDeclaration
 						{
 						case WfConstructorType::SharedPtr:
 							{
-								auto elementType = MakePtr<TypeDescriptorTypeInfo>(td.Obj(), TypeInfoHint::Normal);
-								auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
+								auto elementType = Ptr(new TypeDescriptorTypeInfo(td.Obj(), TypeInfoHint::Normal));
+								auto pointerType = Ptr(new SharedPtrTypeInfo(elementType));
 
-								auto ctor = MakePtr<WfInterfaceConstructor>(pointerType);
+								auto ctor = Ptr(new WfInterfaceConstructor(pointerType));
 								td->AddMember(ctor);
 							}
 							break;
 						case WfConstructorType::RawPtr:
 							{
-								auto elementType = MakePtr<TypeDescriptorTypeInfo>(td.Obj(), TypeInfoHint::Normal);
-								auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
+								auto elementType = Ptr(new TypeDescriptorTypeInfo(td.Obj(), TypeInfoHint::Normal));
+								auto pointerType = Ptr(new RawPtrTypeInfo(elementType));
 
-								auto ctor = MakePtr<WfInterfaceConstructor>(pointerType);
+								auto ctor = Ptr(new WfInterfaceConstructor(pointerType));
 								td->AddMember(ctor);
 							}
 							break;
@@ -341,7 +339,7 @@ CompleteScopeForDeclaration
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), member->type))
 						{
-							auto field = MakePtr<WfStructField>(td.Obj(), member->name.value);
+							auto field = Ptr(new WfStructField(td.Obj(), member->name.value));
 							field->SetReturn(typeInfo);
 							td->AddMember(field);
 						}
@@ -369,9 +367,9 @@ CompleteScopeForDeclaration
 				{
 				}
 
-				static void Execute(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
+				static void Execute(WfLexicalScopeManager* manager, WfDeclaration* declaration)
 				{
-					CompleteScopeForDeclarationVisitor visitor(manager, declaration);
+					CompleteScopeForDeclarationVisitor visitor(manager);
 					declaration->Accept(&visitor);
 				}
 			};
@@ -385,7 +383,7 @@ CompleteScope
 				CompleteScopeForClassMemberVisitor::Execute(manager, td, classDecl, memberDecl);
 			}
 
-			void CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
+			void CompleteScopeForDeclaration(WfLexicalScopeManager* manager, WfDeclaration* declaration)
 			{
 				CompleteScopeForDeclarationVisitor::Execute(manager, declaration);
 			}

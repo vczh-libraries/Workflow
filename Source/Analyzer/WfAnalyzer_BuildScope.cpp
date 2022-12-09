@@ -175,7 +175,7 @@ BuildScopeForDeclaration
 						}
 					}
 
-					auto bodyScope = MakePtr<WfLexicalScope>(resultScope);
+					auto bodyScope = Ptr(new WfLexicalScope(resultScope));
 					{
 						auto config = Ptr(new WfLexicalFunctionConfig);
 						bodyScope->functionConfig = config;
@@ -273,7 +273,7 @@ BuildScopeForDeclaration
 						stateSymbol->creatorNode = state;
 						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
 
-						auto stateScope = MakePtr<WfLexicalScope>(parentScope);
+						auto stateScope = Ptr(new WfLexicalScope(parentScope));
 						{
 							auto config = Ptr(new WfLexicalFunctionConfig);
 							stateScope->functionConfig = config;
@@ -542,7 +542,7 @@ BuildScopeForStatement
 
 					for (auto switchCase : node->caseBranches)
 					{
-						auto caseScope = MakePtr<WfLexicalScope>(resultScope);
+						auto caseScope = Ptr(new WfLexicalScope(resultScope));
 						caseScope->ownerNode = switchCase;
 						manager->nodeScopes.Add(switchCase.Obj(), caseScope);
 

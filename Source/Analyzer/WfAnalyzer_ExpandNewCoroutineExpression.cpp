@@ -672,7 +672,7 @@ GenerateFlowChart
 						vint index = flowChart->tempExVars.Keys().IndexOf(node);
 						if (index == -1)
 						{
-							auto symbol = MakePtr<WfLexicalSymbol>(nullptr);
+							auto symbol = Ptr(new WfLexicalSymbol(nullptr));
 							symbol->name = L"ex";
 							symbol->typeInfo = TypeInfoRetriver<Ptr<IValueException>>::CreateTypeInfo();
 							flowChart->tempExVars.Add(node, symbol);

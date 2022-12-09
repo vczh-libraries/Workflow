@@ -444,7 +444,7 @@ WfRuntimeThreadContext
 
 			WfRuntimeThreadContextError WfRuntimeThreadContext::RaiseException(const WString& exception, bool fatalError, bool skipDebugger)
 			{
-				auto info = MakePtr<WfRuntimeExceptionInfo>(exception, fatalError);
+				auto info = Ptr(new WfRuntimeExceptionInfo(exception, fatalError));
 				return RaiseException(info, skipDebugger);
 			}
 

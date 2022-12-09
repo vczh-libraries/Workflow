@@ -72,7 +72,7 @@ TEST_FILE
 #ifdef VCZH_MSVC
 				if (cppCodegen)
 				{
-					auto input = MakePtr<WfCppInput>(itemName);
+					auto input = Ptr(new WfCppInput(itemName));
 					input->multiFile = WfCppFileSwitch::OnDemand;
 					input->reflection = WfCppFileSwitch::OnDemand;
 					input->comment = L"Source: ../Resources/Codegen/" + itemName + L".txt";

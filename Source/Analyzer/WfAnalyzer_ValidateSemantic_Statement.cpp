@@ -470,7 +470,7 @@ ValidateSemantic(Statement)
 				FINISH_SEARCHING:
 					if (selectedProviderTd)
 					{
-						providerSymbol->typeInfo = MakePtr<TypeDescriptorTypeInfo>(selectedProviderTd, TypeInfoHint::Normal);
+						providerSymbol->typeInfo = Ptr(new TypeDescriptorTypeInfo(selectedProviderTd, TypeInfoHint::Normal));
 
 						if (funcReturnType)
 						{

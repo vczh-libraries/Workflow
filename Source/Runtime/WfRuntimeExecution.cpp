@@ -276,7 +276,7 @@ Helper Functions
 				const auto& names = context->assembly->functionByName[name];
 				CHECK_ERROR(names.Count() == 1, L"vl::workflow::runtime::LoadFunction(Ptr<WfRUntimeGlobalContext>, const WString&)#Multiple functions are found.");
 				vint functionIndex = names[0];
-				auto lambda = MakePtr<WfRuntimeLambda>(context, nullptr, functionIndex);
+				auto lambda = Ptr(new WfRuntimeLambda(context, nullptr, functionIndex));
 				return lambda;
 			}
 
@@ -513,7 +513,7 @@ WfRuntimeThreadContext
 						auto capturedVariables = context.GetSharedPtr().Cast<WfRuntimeVariableContext>();
 						auto functionIndex = UnboxValue<vint>(function);
 
-						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, functionIndex);
+						auto lambda = Ptr(new WfRuntimeLambda(globalContext, capturedVariables, functionIndex));
 						CONTEXT_ACTION(PushValue(Value::From(lambda)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
