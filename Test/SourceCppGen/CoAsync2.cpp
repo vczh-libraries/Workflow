@@ -51,18 +51,18 @@ Global Functions
 
 	::vl::Ptr<::CoAsync2_types::IStringAsync> CoAsync2::GetStringAsync(::vl::vint x)
 	{
-		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoAsync2_GetStringAsync_(x)));
+		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf1_CoAsync2_GetStringAsync_(x)));
 		return ::vl::Ptr<::CoAsync2_types::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync2_GetStringAsync__CoAsync2_types_IStringAsync(__vwsn_co_mixin_source_variable_));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IAsync> CoAsync2::GetMultipleString()
 	{
-		return ::vl::reflection::description::AsyncCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf2_CoAsync2_GetMultipleString_()));
+		return ::vl::reflection::description::AsyncCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf2_CoAsync2_GetMultipleString_()));
 	}
 
 	::vl::WString CoAsync2::main()
 	{
-		::test::SyncScheduler::Run(LAMBDA(::vl_workflow_global::__vwsnf3_CoAsync2_main_()));
+		::test::SyncScheduler::Run(vl::Func(::vl_workflow_global::__vwsnf3_CoAsync2_main_()));
 		return GLOBAL_NAME s;
 	}
 
@@ -106,7 +106,7 @@ Closures
 
 	void __vwsnf3_CoAsync2_main_::operator()() const
 	{
-		::vl::__vwsn::This(GLOBAL_NAME GetMultipleString().Obj())->Execute(LAMBDA(::vl_workflow_global::__vwsnf4_CoAsync2_main__()), ::vl::Ptr<::vl::reflection::description::AsyncContext>(new ::vl::reflection::description::AsyncContext(::vl::reflection::description::Value())));
+		::vl::__vwsn::This(GLOBAL_NAME GetMultipleString().Obj())->Execute(vl::Func(::vl_workflow_global::__vwsnf4_CoAsync2_main__()), ::vl::Ptr<::vl::reflection::description::AsyncContext>(new ::vl::reflection::description::AsyncContext(::vl::reflection::description::Value())));
 	}
 
 	//-------------------------------------------------------------------

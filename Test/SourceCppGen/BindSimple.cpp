@@ -185,7 +185,7 @@ void OuterClass::Base::Initialize(::Derived* derived)
 {
 	(this->subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindSimple_OuterClass_Base_Initialize__vl_reflection_description_IValueSubscription(derived, this)));
 	::vl::__vwsn::This(this->subscription.Obj())->Open();
-	::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->subscription.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(this)));
+	::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->subscription.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_BindSimple_OuterClass_Base_Initialize_(this)));
 }
 
 OuterClass::Base::Base()

@@ -61,7 +61,7 @@ Global Functions
 		}
 		{
 			auto a = ::vl::Ptr<::Methods>(new ::Methods(static_cast<::vl::vint>(1)));
-			auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(a.Obj())->XChanged, LAMBDA(::vl_workflow_global::__vwsnf1_ClassMethod_main_(a)));
+			auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(a.Obj())->XChanged, vl::Func(::vl_workflow_global::__vwsnf1_ClassMethod_main_(a)));
 			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() + static_cast<::vl::vint>(1)));
 			::vl::__vwsn::This(a.Obj())->SetX((::vl::__vwsn::This(a.Obj())->GetX() - static_cast<::vl::vint>(1)));
 			::vl::__vwsn::This(a.Obj())->SetX(::vl::__vwsn::This(a.Obj())->GetX());

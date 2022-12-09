@@ -54,7 +54,7 @@ Global Functions
 		auto a = ::vl::Ptr<::A>(new ::A());
 		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindNull_main__vl_reflection_description_IValueSubscription(a));
 		::vl::__vwsn::This(subscription.Obj())->Open();
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(subscription.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_BindNull_main_()));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(subscription.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_BindNull_main_()));
 		::vl::__vwsn::This(a.Obj())->Setb(::vl::Ptr<::B>(new ::B()));
 		::vl::__vwsn::This(::vl::__vwsn::This(a.Obj())->Getb().Obj())->Setc(::vl::Ptr<::C>(new ::C()));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(a.Obj())->Getb().Obj())->Getc().Obj())->Setx(static_cast<::vl::vint>(100));

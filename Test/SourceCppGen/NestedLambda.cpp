@@ -82,7 +82,7 @@ Closures
 
 	::vl::vint __vwsnf4_NestedLambda_main_H_Calculate_::operator()() const
 	{
-		return (LAMBDA(::vl_workflow_global::__vwsno5_NestedLambda_main_H_Calculate__(__vwsnthis_0, __vwsnthis_1))() + __vwsnthis_0->GetB());
+		return (vl::Func(::vl_workflow_global::__vwsno5_NestedLambda_main_H_Calculate__(__vwsnthis_0, __vwsnthis_1))() + __vwsnthis_0->GetB());
 	}
 
 	//-------------------------------------------------------------------
@@ -106,7 +106,7 @@ Closures
 
 	::vl::vint __vwsnf8_NestedLambda_main_Calculate_::operator()() const
 	{
-		return LAMBDA(::vl_workflow_global::__vwsno9_NestedLambda_main_Calculate__(__vwsnthis_0))();
+		return vl::Func(::vl_workflow_global::__vwsno9_NestedLambda_main_Calculate__(__vwsnthis_0))();
 	}
 
 	//-------------------------------------------------------------------
@@ -131,7 +131,7 @@ Closures
 
 	::vl::vint __vwsno2_NestedLambda_main_H_Calculate_::operator()() const
 	{
-		return (LAMBDA(::vl_workflow_global::__vwsnf3_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1))() + __vwsnthis_0->GetB());
+		return (vl::Func(::vl_workflow_global::__vwsnf3_NestedLambda_main_H_Calculate_(__vwsnthis_0, __vwsnthis_1))() + __vwsnthis_0->GetB());
 	}
 
 	//-------------------------------------------------------------------
@@ -156,7 +156,7 @@ Closures
 
 	::vl::vint __vwsno6_NestedLambda_main_Calculate_::operator()() const
 	{
-		return LAMBDA(::vl_workflow_global::__vwsnf7_NestedLambda_main_Calculate_(__vwsnthis_0))();
+		return vl::Func(::vl_workflow_global::__vwsnf7_NestedLambda_main_Calculate_(__vwsnthis_0))();
 	}
 
 	//-------------------------------------------------------------------
@@ -191,13 +191,13 @@ Closures
 
 	::vl::WString __vwsnc1_NestedLambda_main__IA::H()
 	{
-		return LAMBDA(::vl_workflow_global::__vwsno1_NestedLambda_main_H_(this))();
+		return vl::Func(::vl_workflow_global::__vwsno1_NestedLambda_main_H_(this))();
 	}
 
 	::vl::WString __vwsnc1_NestedLambda_main__IA::Calculate()
 	{
-		auto f = LAMBDA(::vl_workflow_global::__vwsno6_NestedLambda_main_Calculate_(this));
-		auto g = LAMBDA(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
+		auto f = vl::Func(::vl_workflow_global::__vwsno6_NestedLambda_main_Calculate_(this));
+		auto g = vl::Func(::vl_workflow_global::__vwsnf8_NestedLambda_main_Calculate_(this));
 		auto h = ::vl::Func<::vl::WString()>(this, &__vwsnc1_NestedLambda_main__IA::H);
 		auto s = ::vl::WString::Unmanaged(L"");
 		(a = static_cast<::vl::vint>(1));
@@ -235,8 +235,8 @@ Closures
 
 	::vl::WString __vwsnc2_NestedLambda_main_H__IB::Calculate()
 	{
-		auto f = LAMBDA(::vl_workflow_global::__vwsno2_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
-		auto g = LAMBDA(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
+		auto f = vl::Func(::vl_workflow_global::__vwsno2_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
+		auto g = vl::Func(::vl_workflow_global::__vwsnf4_NestedLambda_main_H_Calculate_(this, __vwsnthis_0));
 		auto h = ::vl::Func<::vl::WString()>(this, &__vwsnc2_NestedLambda_main_H__IB::H);
 		auto s = ::vl::WString::Unmanaged(L"");
 		(b = static_cast<::vl::vint>(1));

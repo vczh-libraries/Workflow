@@ -41,13 +41,13 @@ namespace calculator
 	::vl::WString Expression::Print()
 	{/* USER_CONTENT_BEGIN(::calculator::Expression) */
 		{
-			return GLOBAL_NAME Print(this);
+			return GLOBAL_NAME Print(vl::Ptr(this));
 		}
 	}/* USER_CONTENT_END() */
 
 	::vl::vint Expression::Evaluate()
 	{/* USER_CONTENT_BEGIN(::calculator::Expression) */
-		return GLOBAL_NAME Evaluate(this);
+		return GLOBAL_NAME Evaluate(vl::Ptr(this));
 	}/* USER_CONTENT_END() */
 
 	Expression::Expression()

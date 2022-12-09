@@ -41,7 +41,7 @@ Global Functions
 
 	::vl::WString NamedLambda::main()
 	{
-		auto fib = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		auto fib = vl::Func(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
 		return ((((((((::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(1))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(2)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(3)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(4)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString(fib(static_cast<::vl::vint>(5))));
 	}
 
@@ -62,7 +62,7 @@ Closures
 
 	::vl::vint __vwsnf1_NamedLambda_main_::operator()(::vl::vint n) const
 	{
-		auto fib2 = LAMBDA(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
+		auto fib2 = vl::Func(::vl_workflow_global::__vwsnf1_NamedLambda_main_());
 		return ((n <= static_cast<::vl::vint>(2)) ? static_cast<::vl::vint>(1) : ((*this)((n - static_cast<::vl::vint>(1))) + fib2((n - static_cast<::vl::vint>(2)))));
 	}
 }

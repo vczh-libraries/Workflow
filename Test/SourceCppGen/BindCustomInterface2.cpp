@@ -53,7 +53,7 @@ Global Functions
 	{
 		auto subscription = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_BindCustomInterface2_Bind__vl_reflection_description_IValueSubscription(summer));
 		::vl::__vwsn::This(subscription.Obj())->Open();
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(subscription.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf1_BindCustomInterface2_Bind_()));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(subscription.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_BindCustomInterface2_Bind_()));
 		return subscription;
 	}
 

@@ -45,7 +45,7 @@ Global Functions
 
 	::vl::collections::LazyList<::vl::vint> CoEnum::GetNumbers()
 	{
-		return ::vl::reflection::description::GetLazyList<::vl::vint>(::vl::reflection::description::EnumerableCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoEnum_GetNumbers_())));
+		return ::vl::reflection::description::GetLazyList<::vl::vint>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf1_CoEnum_GetNumbers_())));
 	}
 
 	::vl::WString CoEnum::main()

@@ -539,7 +539,7 @@ WfGenerateExpressionVisitor
 							auto scope = config->manager->nodeScopes[funcDecl.Obj()];
 							auto closureInfo = config->closureInfos[dynamic_cast<WfFunctionExpression*>(scope->ownerNodeSource)];
 
-							writer.WriteString(L"LAMBDA(::");
+							writer.WriteString(L"vl::Func(::");
 							writer.WriteString(config->assemblyNamespace);
 							writer.WriteString(L"::");
 							writer.WriteString(closureInfo->lambdaClassName);
@@ -974,7 +974,7 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfOrderedLambdaExpression* node)override
 				{
-					writer.WriteString(L"LAMBDA(::");
+					writer.WriteString(L"vl::Func(::");
 					writer.WriteString(config->assemblyNamespace);
 					writer.WriteString(L"::");
 					writer.WriteString(config->lambdaExprs[node]);
@@ -2123,7 +2123,7 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfFunctionExpression* node)override
 				{
-					writer.WriteString(L"LAMBDA(::");
+					writer.WriteString(L"vl::Func(::");
 					writer.WriteString(config->assemblyNamespace);
 					writer.WriteString(L"::");
 					writer.WriteString(config->lambdaExprs[node]);

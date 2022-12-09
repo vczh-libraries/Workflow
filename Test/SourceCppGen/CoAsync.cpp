@@ -51,25 +51,25 @@ Global Functions
 
 	::vl::Ptr<::CoAsync_types::IStringAsync> CoAsync::GetStringAsync(::vl::vint x)
 	{
-		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(LAMBDA(::vl_workflow_global::__vwsnf1_CoAsync_GetStringAsync_(x)));
+		auto __vwsn_co_mixin_source_variable_ = ::vl::reflection::description::AsyncCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf1_CoAsync_GetStringAsync_(x)));
 		return ::vl::Ptr<::CoAsync_types::IStringAsync>(new ::vl_workflow_global::__vwsnc2_CoAsync_GetStringAsync__CoAsync_types_IStringAsync(__vwsn_co_mixin_source_variable_));
 	}
 
 	::vl::Ptr<::CoAsync_types::IStringAsync> CoAsync::GetStringAsync2(::vl::vint x)
 	{
 		auto future = ::vl::reflection::description::IFuture::Create();
-		::vl::__vwsn::This(::vl::reflection::description::IAsyncScheduler::GetSchedulerForCurrentThread().Obj())->ExecuteInBackground(LAMBDA(::vl_workflow_global::__vwsnf2_CoAsync_GetStringAsync2_(future, x)));
+		::vl::__vwsn::This(::vl::reflection::description::IAsyncScheduler::GetSchedulerForCurrentThread().Obj())->ExecuteInBackground(vl::Func(::vl_workflow_global::__vwsnf2_CoAsync_GetStringAsync2_(future, x)));
 		return ::vl::Ptr<::CoAsync_types::IStringAsync>(new ::vl_workflow_global::__vwsnc3_CoAsync_GetStringAsync2__CoAsync_types_IStringAsync(future));
 	}
 
 	void CoAsync::GetMultipleString()
 	{
-		::vl::reflection::description::AsyncCoroutine::CreateAndRun(LAMBDA(::vl_workflow_global::__vwsnf3_CoAsync_GetMultipleString_()));
+		::vl::reflection::description::AsyncCoroutine::CreateAndRun(vl::Func(::vl_workflow_global::__vwsnf3_CoAsync_GetMultipleString_()));
 	}
 
 	::vl::WString CoAsync::main()
 	{
-		::test::SyncScheduler::Run(LAMBDA(::vl_workflow_global::__vwsno4_CoAsync_main_()));
+		::test::SyncScheduler::Run(vl::Func(::vl_workflow_global::__vwsno4_CoAsync_main_()));
 		return GLOBAL_NAME s;
 	}
 

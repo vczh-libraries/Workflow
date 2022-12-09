@@ -41,7 +41,7 @@ Global Functions
 
 	::vl::Func<::vl::Func<::vl::vint()>(::vl::vint)> AnonymousLambda::Adder(::vl::vint x)
 	{
-		return LAMBDA(::vl_workflow_global::__vwsnf1_AnonymousLambda_Adder_(x));
+		return vl::Func(::vl_workflow_global::__vwsnf1_AnonymousLambda_Adder_(x));
 	}
 
 	::vl::WString AnonymousLambda::main()
@@ -69,7 +69,7 @@ Closures
 
 	::vl::Func<::vl::vint()> __vwsnf1_AnonymousLambda_Adder_::operator()(::vl::vint y) const
 	{
-		return LAMBDA(::vl_workflow_global::__vwsnf2_AnonymousLambda_Adder__(x, y));
+		return vl::Func(::vl_workflow_global::__vwsnf2_AnonymousLambda_Adder__(x, y));
 	}
 
 	//-------------------------------------------------------------------

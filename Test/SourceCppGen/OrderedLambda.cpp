@@ -46,7 +46,7 @@ Global Functions
 
 	::vl::Func<::vl::vint(::vl::vint)> OrderedLambda::Adder(::vl::vint x)
 	{
-		return LAMBDA(::vl_workflow_global::__vwsno1_OrderedLambda_Adder_(x));
+		return vl::Func(::vl_workflow_global::__vwsno1_OrderedLambda_Adder_(x));
 	}
 
 	::vl::WString OrderedLambda::main()
@@ -74,7 +74,7 @@ Closures
 
 	::vl::vint __vwsno1_OrderedLambda_Adder_::operator()(::vl::vint __vwsno_1) const
 	{
-		return ((__vwsno_1 * static_cast<::vl::vint>(0)) + GLOBAL_NAME Apply(LAMBDA(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
+		return ((__vwsno_1 * static_cast<::vl::vint>(0)) + GLOBAL_NAME Apply(vl::Func(::vl_workflow_global::__vwsno2_OrderedLambda_Adder_(__vwsno_1)), x));
 	}
 
 	//-------------------------------------------------------------------
