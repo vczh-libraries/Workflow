@@ -21,199 +21,199 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			switch((WorkflowClasses)type)
 			{
 			case WorkflowClasses::AttachEventExpression:
-				return new vl::workflow::WfAttachEventExpression();
+				return vl::Ptr(new vl::workflow::WfAttachEventExpression);
 			case WorkflowClasses::Attribute:
-				return new vl::workflow::WfAttribute();
+				return vl::Ptr(new vl::workflow::WfAttribute);
 			case WorkflowClasses::AutoPropertyDeclaration:
-				return new vl::workflow::WfAutoPropertyDeclaration();
+				return vl::Ptr(new vl::workflow::WfAutoPropertyDeclaration);
 			case WorkflowClasses::BaseConstructorCall:
-				return new vl::workflow::WfBaseConstructorCall();
+				return vl::Ptr(new vl::workflow::WfBaseConstructorCall);
 			case WorkflowClasses::BinaryExpression:
-				return new vl::workflow::WfBinaryExpression();
+				return vl::Ptr(new vl::workflow::WfBinaryExpression);
 			case WorkflowClasses::BindExpression:
-				return new vl::workflow::WfBindExpression();
+				return vl::Ptr(new vl::workflow::WfBindExpression);
 			case WorkflowClasses::BlockStatement:
-				return new vl::workflow::WfBlockStatement();
+				return vl::Ptr(new vl::workflow::WfBlockStatement);
 			case WorkflowClasses::BreakStatement:
-				return new vl::workflow::WfBreakStatement();
+				return vl::Ptr(new vl::workflow::WfBreakStatement);
 			case WorkflowClasses::CallExpression:
-				return new vl::workflow::WfCallExpression();
+				return vl::Ptr(new vl::workflow::WfCallExpression);
 			case WorkflowClasses::CastResultInterfaceDeclaration:
-				return new vl::workflow::WfCastResultInterfaceDeclaration();
+				return vl::Ptr(new vl::workflow::WfCastResultInterfaceDeclaration);
 			case WorkflowClasses::ChildExpression:
-				return new vl::workflow::WfChildExpression();
+				return vl::Ptr(new vl::workflow::WfChildExpression);
 			case WorkflowClasses::ChildType:
-				return new vl::workflow::WfChildType();
+				return vl::Ptr(new vl::workflow::WfChildType);
 			case WorkflowClasses::ClassDeclaration:
-				return new vl::workflow::WfClassDeclaration();
+				return vl::Ptr(new vl::workflow::WfClassDeclaration);
 			case WorkflowClasses::CoOperatorExpression:
-				return new vl::workflow::WfCoOperatorExpression();
+				return vl::Ptr(new vl::workflow::WfCoOperatorExpression);
 			case WorkflowClasses::CoOperatorStatement:
-				return new vl::workflow::WfCoOperatorStatement();
+				return vl::Ptr(new vl::workflow::WfCoOperatorStatement);
 			case WorkflowClasses::CoPauseStatement:
-				return new vl::workflow::WfCoPauseStatement();
+				return vl::Ptr(new vl::workflow::WfCoPauseStatement);
 			case WorkflowClasses::CoProviderStatement:
-				return new vl::workflow::WfCoProviderStatement();
+				return vl::Ptr(new vl::workflow::WfCoProviderStatement);
 			case WorkflowClasses::ConstructorArgument:
-				return new vl::workflow::WfConstructorArgument();
+				return vl::Ptr(new vl::workflow::WfConstructorArgument);
 			case WorkflowClasses::ConstructorDeclaration:
-				return new vl::workflow::WfConstructorDeclaration();
+				return vl::Ptr(new vl::workflow::WfConstructorDeclaration);
 			case WorkflowClasses::ConstructorExpression:
-				return new vl::workflow::WfConstructorExpression();
+				return vl::Ptr(new vl::workflow::WfConstructorExpression);
 			case WorkflowClasses::ContinueStatement:
-				return new vl::workflow::WfContinueStatement();
+				return vl::Ptr(new vl::workflow::WfContinueStatement);
 			case WorkflowClasses::DeleteStatement:
-				return new vl::workflow::WfDeleteStatement();
+				return vl::Ptr(new vl::workflow::WfDeleteStatement);
 			case WorkflowClasses::DestructorDeclaration:
-				return new vl::workflow::WfDestructorDeclaration();
+				return vl::Ptr(new vl::workflow::WfDestructorDeclaration);
 			case WorkflowClasses::DetachEventExpression:
-				return new vl::workflow::WfDetachEventExpression();
+				return vl::Ptr(new vl::workflow::WfDetachEventExpression);
 			case WorkflowClasses::EnumDeclaration:
-				return new vl::workflow::WfEnumDeclaration();
+				return vl::Ptr(new vl::workflow::WfEnumDeclaration);
 			case WorkflowClasses::EnumItem:
-				return new vl::workflow::WfEnumItem();
+				return vl::Ptr(new vl::workflow::WfEnumItem);
 			case WorkflowClasses::EnumItemIntersection:
-				return new vl::workflow::WfEnumItemIntersection();
+				return vl::Ptr(new vl::workflow::WfEnumItemIntersection);
 			case WorkflowClasses::EnumerableType:
-				return new vl::workflow::WfEnumerableType();
+				return vl::Ptr(new vl::workflow::WfEnumerableType);
 			case WorkflowClasses::EventDeclaration:
-				return new vl::workflow::WfEventDeclaration();
+				return vl::Ptr(new vl::workflow::WfEventDeclaration);
 			case WorkflowClasses::ExpectedTypeCastExpression:
-				return new vl::workflow::WfExpectedTypeCastExpression();
+				return vl::Ptr(new vl::workflow::WfExpectedTypeCastExpression);
 			case WorkflowClasses::ExpressionStatement:
-				return new vl::workflow::WfExpressionStatement();
+				return vl::Ptr(new vl::workflow::WfExpressionStatement);
 			case WorkflowClasses::FloatingExpression:
-				return new vl::workflow::WfFloatingExpression();
+				return vl::Ptr(new vl::workflow::WfFloatingExpression);
 			case WorkflowClasses::ForEachStatement:
-				return new vl::workflow::WfForEachStatement();
+				return vl::Ptr(new vl::workflow::WfForEachStatement);
 			case WorkflowClasses::FormatExpression:
-				return new vl::workflow::WfFormatExpression();
+				return vl::Ptr(new vl::workflow::WfFormatExpression);
 			case WorkflowClasses::FunctionArgument:
-				return new vl::workflow::WfFunctionArgument();
+				return vl::Ptr(new vl::workflow::WfFunctionArgument);
 			case WorkflowClasses::FunctionDeclaration:
-				return new vl::workflow::WfFunctionDeclaration();
+				return vl::Ptr(new vl::workflow::WfFunctionDeclaration);
 			case WorkflowClasses::FunctionExpression:
-				return new vl::workflow::WfFunctionExpression();
+				return vl::Ptr(new vl::workflow::WfFunctionExpression);
 			case WorkflowClasses::FunctionType:
-				return new vl::workflow::WfFunctionType();
+				return vl::Ptr(new vl::workflow::WfFunctionType);
 			case WorkflowClasses::GotoStatement:
-				return new vl::workflow::WfGotoStatement();
+				return vl::Ptr(new vl::workflow::WfGotoStatement);
 			case WorkflowClasses::IfExpression:
-				return new vl::workflow::WfIfExpression();
+				return vl::Ptr(new vl::workflow::WfIfExpression);
 			case WorkflowClasses::IfStatement:
-				return new vl::workflow::WfIfStatement();
+				return vl::Ptr(new vl::workflow::WfIfStatement);
 			case WorkflowClasses::InferExpression:
-				return new vl::workflow::WfInferExpression();
+				return vl::Ptr(new vl::workflow::WfInferExpression);
 			case WorkflowClasses::IntegerExpression:
-				return new vl::workflow::WfIntegerExpression();
+				return vl::Ptr(new vl::workflow::WfIntegerExpression);
 			case WorkflowClasses::LetExpression:
-				return new vl::workflow::WfLetExpression();
+				return vl::Ptr(new vl::workflow::WfLetExpression);
 			case WorkflowClasses::LetVariable:
-				return new vl::workflow::WfLetVariable();
+				return vl::Ptr(new vl::workflow::WfLetVariable);
 			case WorkflowClasses::LiteralExpression:
-				return new vl::workflow::WfLiteralExpression();
+				return vl::Ptr(new vl::workflow::WfLiteralExpression);
 			case WorkflowClasses::MapType:
-				return new vl::workflow::WfMapType();
+				return vl::Ptr(new vl::workflow::WfMapType);
 			case WorkflowClasses::MemberExpression:
-				return new vl::workflow::WfMemberExpression();
+				return vl::Ptr(new vl::workflow::WfMemberExpression);
 			case WorkflowClasses::MixinCastExpression:
-				return new vl::workflow::WfMixinCastExpression();
+				return vl::Ptr(new vl::workflow::WfMixinCastExpression);
 			case WorkflowClasses::Module:
-				return new vl::workflow::WfModule();
+				return vl::Ptr(new vl::workflow::WfModule);
 			case WorkflowClasses::ModuleUsingItem:
-				return new vl::workflow::WfModuleUsingItem();
+				return vl::Ptr(new vl::workflow::WfModuleUsingItem);
 			case WorkflowClasses::ModuleUsingNameFragment:
-				return new vl::workflow::WfModuleUsingNameFragment();
+				return vl::Ptr(new vl::workflow::WfModuleUsingNameFragment);
 			case WorkflowClasses::ModuleUsingPath:
-				return new vl::workflow::WfModuleUsingPath();
+				return vl::Ptr(new vl::workflow::WfModuleUsingPath);
 			case WorkflowClasses::ModuleUsingWildCardFragment:
-				return new vl::workflow::WfModuleUsingWildCardFragment();
+				return vl::Ptr(new vl::workflow::WfModuleUsingWildCardFragment);
 			case WorkflowClasses::NamespaceDeclaration:
-				return new vl::workflow::WfNamespaceDeclaration();
+				return vl::Ptr(new vl::workflow::WfNamespaceDeclaration);
 			case WorkflowClasses::NewClassExpression:
-				return new vl::workflow::WfNewClassExpression();
+				return vl::Ptr(new vl::workflow::WfNewClassExpression);
 			case WorkflowClasses::NewCoroutineExpression:
-				return new vl::workflow::WfNewCoroutineExpression();
+				return vl::Ptr(new vl::workflow::WfNewCoroutineExpression);
 			case WorkflowClasses::NewInterfaceExpression:
-				return new vl::workflow::WfNewInterfaceExpression();
+				return vl::Ptr(new vl::workflow::WfNewInterfaceExpression);
 			case WorkflowClasses::NullableType:
-				return new vl::workflow::WfNullableType();
+				return vl::Ptr(new vl::workflow::WfNullableType);
 			case WorkflowClasses::ObservableListType:
-				return new vl::workflow::WfObservableListType();
+				return vl::Ptr(new vl::workflow::WfObservableListType);
 			case WorkflowClasses::ObserveExpression:
-				return new vl::workflow::WfObserveExpression();
+				return vl::Ptr(new vl::workflow::WfObserveExpression);
 			case WorkflowClasses::OrderedLambdaExpression:
-				return new vl::workflow::WfOrderedLambdaExpression();
+				return vl::Ptr(new vl::workflow::WfOrderedLambdaExpression);
 			case WorkflowClasses::OrderedNameExpression:
-				return new vl::workflow::WfOrderedNameExpression();
+				return vl::Ptr(new vl::workflow::WfOrderedNameExpression);
 			case WorkflowClasses::PredefinedType:
-				return new vl::workflow::WfPredefinedType();
+				return vl::Ptr(new vl::workflow::WfPredefinedType);
 			case WorkflowClasses::PropertyDeclaration:
-				return new vl::workflow::WfPropertyDeclaration();
+				return vl::Ptr(new vl::workflow::WfPropertyDeclaration);
 			case WorkflowClasses::RaiseExceptionStatement:
-				return new vl::workflow::WfRaiseExceptionStatement();
+				return vl::Ptr(new vl::workflow::WfRaiseExceptionStatement);
 			case WorkflowClasses::RangeExpression:
-				return new vl::workflow::WfRangeExpression();
+				return vl::Ptr(new vl::workflow::WfRangeExpression);
 			case WorkflowClasses::RawPointerType:
-				return new vl::workflow::WfRawPointerType();
+				return vl::Ptr(new vl::workflow::WfRawPointerType);
 			case WorkflowClasses::ReferenceExpression:
-				return new vl::workflow::WfReferenceExpression();
+				return vl::Ptr(new vl::workflow::WfReferenceExpression);
 			case WorkflowClasses::ReferenceType:
-				return new vl::workflow::WfReferenceType();
+				return vl::Ptr(new vl::workflow::WfReferenceType);
 			case WorkflowClasses::ReturnStatement:
-				return new vl::workflow::WfReturnStatement();
+				return vl::Ptr(new vl::workflow::WfReturnStatement);
 			case WorkflowClasses::SetTestingExpression:
-				return new vl::workflow::WfSetTestingExpression();
+				return vl::Ptr(new vl::workflow::WfSetTestingExpression);
 			case WorkflowClasses::SharedPointerType:
-				return new vl::workflow::WfSharedPointerType();
+				return vl::Ptr(new vl::workflow::WfSharedPointerType);
 			case WorkflowClasses::StateDeclaration:
-				return new vl::workflow::WfStateDeclaration();
+				return vl::Ptr(new vl::workflow::WfStateDeclaration);
 			case WorkflowClasses::StateInput:
-				return new vl::workflow::WfStateInput();
+				return vl::Ptr(new vl::workflow::WfStateInput);
 			case WorkflowClasses::StateInvokeStatement:
-				return new vl::workflow::WfStateInvokeStatement();
+				return vl::Ptr(new vl::workflow::WfStateInvokeStatement);
 			case WorkflowClasses::StateMachineDeclaration:
-				return new vl::workflow::WfStateMachineDeclaration();
+				return vl::Ptr(new vl::workflow::WfStateMachineDeclaration);
 			case WorkflowClasses::StateSwitchArgument:
-				return new vl::workflow::WfStateSwitchArgument();
+				return vl::Ptr(new vl::workflow::WfStateSwitchArgument);
 			case WorkflowClasses::StateSwitchCase:
-				return new vl::workflow::WfStateSwitchCase();
+				return vl::Ptr(new vl::workflow::WfStateSwitchCase);
 			case WorkflowClasses::StateSwitchStatement:
-				return new vl::workflow::WfStateSwitchStatement();
+				return vl::Ptr(new vl::workflow::WfStateSwitchStatement);
 			case WorkflowClasses::StringExpression:
-				return new vl::workflow::WfStringExpression();
+				return vl::Ptr(new vl::workflow::WfStringExpression);
 			case WorkflowClasses::StructDeclaration:
-				return new vl::workflow::WfStructDeclaration();
+				return vl::Ptr(new vl::workflow::WfStructDeclaration);
 			case WorkflowClasses::StructMember:
-				return new vl::workflow::WfStructMember();
+				return vl::Ptr(new vl::workflow::WfStructMember);
 			case WorkflowClasses::SwitchCase:
-				return new vl::workflow::WfSwitchCase();
+				return vl::Ptr(new vl::workflow::WfSwitchCase);
 			case WorkflowClasses::SwitchStatement:
-				return new vl::workflow::WfSwitchStatement();
+				return vl::Ptr(new vl::workflow::WfSwitchStatement);
 			case WorkflowClasses::ThisExpression:
-				return new vl::workflow::WfThisExpression();
+				return vl::Ptr(new vl::workflow::WfThisExpression);
 			case WorkflowClasses::TopQualifiedExpression:
-				return new vl::workflow::WfTopQualifiedExpression();
+				return vl::Ptr(new vl::workflow::WfTopQualifiedExpression);
 			case WorkflowClasses::TopQualifiedType:
-				return new vl::workflow::WfTopQualifiedType();
+				return vl::Ptr(new vl::workflow::WfTopQualifiedType);
 			case WorkflowClasses::TryStatement:
-				return new vl::workflow::WfTryStatement();
+				return vl::Ptr(new vl::workflow::WfTryStatement);
 			case WorkflowClasses::TypeCastingExpression:
-				return new vl::workflow::WfTypeCastingExpression();
+				return vl::Ptr(new vl::workflow::WfTypeCastingExpression);
 			case WorkflowClasses::TypeOfExpressionExpression:
-				return new vl::workflow::WfTypeOfExpressionExpression();
+				return vl::Ptr(new vl::workflow::WfTypeOfExpressionExpression);
 			case WorkflowClasses::TypeOfTypeExpression:
-				return new vl::workflow::WfTypeOfTypeExpression();
+				return vl::Ptr(new vl::workflow::WfTypeOfTypeExpression);
 			case WorkflowClasses::TypeTestingExpression:
-				return new vl::workflow::WfTypeTestingExpression();
+				return vl::Ptr(new vl::workflow::WfTypeTestingExpression);
 			case WorkflowClasses::UnaryExpression:
-				return new vl::workflow::WfUnaryExpression();
+				return vl::Ptr(new vl::workflow::WfUnaryExpression);
 			case WorkflowClasses::VariableDeclaration:
-				return new vl::workflow::WfVariableDeclaration();
+				return vl::Ptr(new vl::workflow::WfVariableDeclaration);
 			case WorkflowClasses::VariableStatement:
-				return new vl::workflow::WfVariableStatement();
+				return vl::Ptr(new vl::workflow::WfVariableStatement);
 			case WorkflowClasses::WhileStatement:
-				return new vl::workflow::WfWhileStatement();
+				return vl::Ptr(new vl::workflow::WfWhileStatement);
 			default:
 				return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
 			}
