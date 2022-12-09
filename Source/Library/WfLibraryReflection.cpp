@@ -263,7 +263,7 @@ WfLoadLibraryTypes
 				ITypeManager* manager = GetGlobalTypeManager();
 				if (manager)
 				{
-					Ptr<ITypeLoader> loader = new WfLibraryTypeLoader;
+					auto loader = Ptr(new WfLibraryTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif

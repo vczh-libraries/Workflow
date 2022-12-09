@@ -37,7 +37,7 @@ ObservableValue
 
 	Ptr<ObservableValue> ObservableValue::Create(vint value, const WString& name)
 	{
-		auto ov = MakePtr<ObservableValue>(value);
+		auto ov = Ptr(new ObservableValue(value));
 		ov->name = name;
 		return ov;
 	}
@@ -162,7 +162,7 @@ Hinters
 
 	Ptr<Hinters> CreateHinter()
 	{
-		return new Hinters();
+		return Ptr(new Hinters);
 	}
 
 	Hinters* CreateHinter(vint)
@@ -188,7 +188,7 @@ SyncScheduler
 
 	void SyncScheduler::Run(const Func<void()>& callback)
 	{
-		auto scheduler = MakePtr<SyncScheduler>();
+		auto scheduler = Ptr(new SyncScheduler);
 		IAsyncScheduler::RegisterDefaultScheduler(scheduler);
 		callback();
 		while (scheduler->tasks.Count() > 0)
@@ -321,7 +321,7 @@ namespace vl
 				ITypeManager* manager = GetGlobalTypeManager();
 				if (manager)
 				{
-					Ptr<ITypeLoader> loader = new UnitTestTypeLoader;
+					auto loader = Ptr(new UnitTestTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
