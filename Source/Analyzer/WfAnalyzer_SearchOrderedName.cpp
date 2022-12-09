@@ -47,16 +47,21 @@ SearchOrderedName
 					// names in nested ordered lambda expression is not counted
 				}
 
-				static void Execute(WfLexicalScope* scope, Ptr<WfExpression> expression, SortedList<vint>& names)
+				static void Execute(WfLexicalScope* scope, WfExpression* expression, SortedList<vint>& names)
 				{
 					SearchOrderedNameVisitor visitor(scope, names);
 					expression->Accept(&visitor);
 				}
 			};
 
-			void SearchOrderedName(WfLexicalScope* scope, Ptr<WfExpression> expression, collections::SortedList<vint>& names)
+			void SearchOrderedName(WfLexicalScope* scope, WfExpression* expression, collections::SortedList<vint>& names)
 			{
 				SearchOrderedNameVisitor::Execute(scope, expression, names);
+			}
+
+			void SearchOrderedName(WfLexicalScope* scope, Ptr<WfExpression> expression, collections::SortedList<vint>& names)
+			{
+				SearchOrderedNameVisitor::Execute(scope, expression.Obj(), names);
 			}
 		}
 	}

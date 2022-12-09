@@ -221,7 +221,7 @@ GenerateCppFiles
 					return nullptr;
 				}
 
-				auto output = MakePtr<WfCppOutput>();
+				auto output = Ptr(new WfCppOutput);
 				if (config.manager->declarationTypes.Count() > 0)
 				{
 					output->containsReflectionInfo = true;

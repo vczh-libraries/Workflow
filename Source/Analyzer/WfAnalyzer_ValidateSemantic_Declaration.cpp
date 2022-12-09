@@ -450,7 +450,7 @@ ValidateSemantic(Declaration)
 					}
 				}
 
-				static void Execute(Ptr<WfDeclaration> declaration, WfLexicalScopeManager* manager)
+				static void Execute(WfDeclaration* declaration, WfLexicalScopeManager* manager)
 				{
 					ValidateSemanticDeclarationVisitor visitor(manager);
 					declaration->Accept(&visitor);
@@ -467,9 +467,14 @@ ValidateSemantic
 				return ValidateSemanticClassMemberVisitor::Execute(td, classDecl, memberDecl, manager);
 			}
 
-			void ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
+			void ValidateDeclarationSemantic(WfLexicalScopeManager* manager, WfDeclaration* declaration)
 			{
 				return ValidateSemanticDeclarationVisitor::Execute(declaration, manager);
+			}
+
+			void ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration)
+			{
+				return ValidateSemanticDeclarationVisitor::Execute(declaration.Obj(), manager);
 			}
 		}
 	}

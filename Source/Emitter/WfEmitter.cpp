@@ -48,7 +48,7 @@ WfAttributeEvaluator
 					}
 				}
 
-				auto attributeAssembly = MakePtr<WfAssembly>();
+				auto attributeAssembly = Ptr(new WfAssembly);
 				WfCodegenContext context(attributeAssembly, manager);
 				auto typeInfo = manager->attributes[{att->category.value, att->name.value}];
 				GenerateExpressionInstructions(context, att->value, typeInfo);
@@ -92,7 +92,7 @@ WfCodegenFunctionContext
 
 			Ptr<WfCodegenScopeContext> WfCodegenFunctionContext::PushScopeContext(WfCodegenScopeType type, const WString& name)
 			{
-				auto context = MakePtr<WfCodegenScopeContext>();
+				auto context = Ptr(new WfCodegenScopeContext);
 				context->type = type;
 				context->name = name;
 				scopeContextStack.Add(context);

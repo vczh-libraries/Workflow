@@ -108,13 +108,13 @@ GetExpressionFromTypeDescriptor
 				{
 					if (!parentExpr)
 					{
-						auto expr = MakePtr<WfTopQualifiedExpression>();
+						auto expr = Ptr(new WfTopQualifiedExpression);
 						expr->name.value = fragment;
 						parentExpr = expr;
 					}
 					else
 					{
-						auto expr = MakePtr<WfChildExpression>();
+						auto expr = Ptr(new WfChildExpression);
 						expr->parent = parentExpr;
 						expr->name.value = fragment;
 						parentExpr = expr;
@@ -181,13 +181,13 @@ GetTypeFromTypeInfo
 						{
 							if (!parentType)
 							{
-								auto type = MakePtr<WfTopQualifiedType>();
+								auto type = Ptr(new WfTopQualifiedType);
 								type->name.value = fragment;
 								parentType = type;
 							}
 							else
 							{
-								auto type = MakePtr<WfChildType>();
+								auto type = Ptr(new WfChildType);
 								type->parent = parentType;
 								type->name.value = fragment;
 								parentType = type;

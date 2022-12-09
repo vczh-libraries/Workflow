@@ -16,18 +16,18 @@ ExpandSwitchStatement
 
 			void ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node)
 			{
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				node->expandedStatement = block;
 				auto varName = L"<switch>" + itow(manager->usedTempVars++);
 
 				{
 					auto result = manager->expressionResolvings[node->expression.Obj()];
-					auto decl = MakePtr<WfVariableDeclaration>();
+					auto decl = Ptr(new WfVariableDeclaration);
 					decl->name.value = varName;
 					decl->type = GetTypeFromTypeInfo(result.type.Obj());
 					decl->expression = CopyExpression(node->expression, true);
 
-					auto stat = MakePtr<WfVariableStatement>();
+					auto stat = Ptr(new WfVariableStatement);
 					stat->variable = decl;
 					block->statements.Add(stat);
 				}
@@ -37,22 +37,22 @@ ExpandSwitchStatement
 
 				for (auto switchCase : node->caseBranches)
 				{
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					*tailIfStat = ifStat;
 					tailIfStat = &ifStat->falseBranch;
 
 					{
-						auto refExpr = MakePtr<WfReferenceExpression>();
+						auto refExpr = Ptr(new WfReferenceExpression);
 						refExpr->name.value = varName;
 
-						auto inferExpr = MakePtr<WfInferExpression>();
+						auto inferExpr = Ptr(new WfInferExpression);
 						inferExpr->expression= CopyExpression(switchCase->expression, true);
 						{
 							auto result = manager->expressionResolvings[switchCase->expression.Obj()];
 							inferExpr->type = GetTypeFromTypeInfo(result.type.Obj());
 						}
 
-						auto compare = MakePtr<WfBinaryExpression>();
+						auto compare = Ptr(new WfBinaryExpression);
 						compare->first = refExpr;
 						compare->second = inferExpr;
 						compare->op = WfBinaryOperator::EQ;
@@ -79,26 +79,26 @@ ExpandForEachStatement
 
 			Ptr<WfStatement> GenerateForEachStepStatement(WfForEachStatement* node)
 			{
-				auto refVar1 = MakePtr<WfReferenceExpression>();
+				auto refVar1 = Ptr(new WfReferenceExpression);
 				refVar1->name.value = node->name.value;
 
-				auto refVar2 = MakePtr<WfReferenceExpression>();
+				auto refVar2 = Ptr(new WfReferenceExpression);
 				refVar2->name.value = node->name.value;
 
-				auto one = MakePtr<WfIntegerExpression>();
+				auto one = Ptr(new WfIntegerExpression);
 				one->value.value = L"1";
 
-				auto stepExpr = MakePtr<WfBinaryExpression>();
+				auto stepExpr = Ptr(new WfBinaryExpression);
 				stepExpr->first = refVar2;
 				stepExpr->second = one;
 				stepExpr->op = node->direction == WfForEachDirection::Normal ? WfBinaryOperator::Add : WfBinaryOperator::Sub;
 
-				auto assignExpr = MakePtr<WfBinaryExpression>();
+				auto assignExpr = Ptr(new WfBinaryExpression);
 				assignExpr->first = refVar1;
 				assignExpr->second = stepExpr;
 				assignExpr->op = WfBinaryOperator::Assign;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = assignExpr;
 				return stat;
 			}
@@ -133,9 +133,9 @@ ExpandForEachStatement
 							}
 							else
 							{
-								auto block = MakePtr<WfBlockStatement>();
+								auto block = Ptr(new WfBlockStatement);
 								block->statements.Add(GenerateForEachStepStatement(forEach));
-								block->statements.Add(MakePtr<WfContinueStatement>());
+								block->statements.Add(Ptr(new WfContinueStatement));
 								SetCodeRange((Ptr<WfStatement>)block, node->codeRange);
 								result = block;
 								return;
@@ -149,7 +149,7 @@ ExpandForEachStatement
 
 			void ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node)
 			{
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				node->expandedStatement = block;
 
 				if (auto range = node->collection.Cast<WfRangeExpression>())
@@ -158,16 +158,16 @@ ExpandForEachStatement
 					auto varEnd = L"<for-end>" + node->name.value;
 					{
 						auto result = manager->expressionResolvings[range->begin.Obj()];
-						auto decl = MakePtr<WfVariableDeclaration>();
+						auto decl = Ptr(new WfVariableDeclaration);
 						decl->name.value = varBegin;
 						decl->type = GetTypeFromTypeInfo(result.type.Obj());
 						decl->expression = CopyExpression(range->begin, true);
 						if (range->beginBoundary == WfRangeBoundary::Exclusive)
 						{
-							auto one = MakePtr<WfIntegerExpression>();
+							auto one = Ptr(new WfIntegerExpression);
 							one->value.value = L"1";
 
-							auto addExpr = MakePtr<WfBinaryExpression>();
+							auto addExpr = Ptr(new WfBinaryExpression);
 							addExpr->first = decl->expression;
 							addExpr->second = one;
 							addExpr->op = WfBinaryOperator::Add;
@@ -175,22 +175,22 @@ ExpandForEachStatement
 							decl->expression = addExpr;
 						}
 
-						auto stat = MakePtr<WfVariableStatement>();
+						auto stat = Ptr(new WfVariableStatement);
 						stat->variable = decl;
 						block->statements.Add(stat);
 					}
 					{
 						auto result = manager->expressionResolvings[range->end.Obj()];
-						auto decl = MakePtr<WfVariableDeclaration>();
+						auto decl = Ptr(new WfVariableDeclaration);
 						decl->name.value = varEnd;
 						decl->type = GetTypeFromTypeInfo(result.type.Obj());
 						decl->expression = CopyExpression(range->end, true);
 						if (range->endBoundary == WfRangeBoundary::Exclusive)
 						{
-							auto one = MakePtr<WfIntegerExpression>();
+							auto one = Ptr(new WfIntegerExpression);
 							one->value.value = L"1";
 
-							auto subExpr = MakePtr<WfBinaryExpression>();
+							auto subExpr = Ptr(new WfBinaryExpression);
 							subExpr->first = decl->expression;
 							subExpr->second = one;
 							subExpr->op = WfBinaryOperator::Sub;
@@ -198,32 +198,32 @@ ExpandForEachStatement
 							decl->expression = subExpr;
 						}
 
-						auto stat = MakePtr<WfVariableStatement>();
+						auto stat = Ptr(new WfVariableStatement);
 						stat->variable = decl;
 						block->statements.Add(stat);
 					}
 					{
-						auto refBegin = MakePtr<WfReferenceExpression>();
+						auto refBegin = Ptr(new WfReferenceExpression);
 						refBegin->name.value = node->direction == WfForEachDirection::Normal ? varBegin : varEnd;
 
-						auto decl = MakePtr<WfVariableDeclaration>();
+						auto decl = Ptr(new WfVariableDeclaration);
 						decl->name.value = node->name.value;
 						decl->expression = refBegin;
 
-						auto stat = MakePtr<WfVariableStatement>();
+						auto stat = Ptr(new WfVariableStatement);
 						stat->variable = decl;
 						block->statements.Add(stat);
 					}
 					{
-						auto whileStat = MakePtr<WfWhileStatement>();
+						auto whileStat = Ptr(new WfWhileStatement);
 						{
-							auto refVar = MakePtr<WfReferenceExpression>();
+							auto refVar = Ptr(new WfReferenceExpression);
 							refVar->name.value = node->name.value;
 
-							auto refBegin = MakePtr<WfReferenceExpression>();
+							auto refBegin = Ptr(new WfReferenceExpression);
 							refBegin->name.value = node->direction == WfForEachDirection::Normal ? varEnd : varBegin;
 
-							auto compare = MakePtr<WfBinaryExpression>();
+							auto compare = Ptr(new WfBinaryExpression);
 							compare->first = refVar;
 							compare->second = refBegin;
 							compare->op = node->direction == WfForEachDirection::Normal ? WfBinaryOperator::LE : WfBinaryOperator::GE;
@@ -231,7 +231,7 @@ ExpandForEachStatement
 							whileStat->condition = compare;
 						}
 						{
-							auto whileBlock = MakePtr<WfBlockStatement>();
+							auto whileBlock = Ptr(new WfBlockStatement);
 							whileStat->statement = whileBlock;
 
 							{
@@ -248,11 +248,11 @@ ExpandForEachStatement
 					auto varEnum = L"<for-enumerable>" + node->name.value;
 					auto varIter = L"<for-enumerator>" + node->name.value;
 					{
-						auto decl = MakePtr<WfVariableDeclaration>();
+						auto decl = Ptr(new WfVariableDeclaration);
 						decl->name.value = varEnum;
 						if (node->direction == WfForEachDirection::Normal)
 						{
-							auto inferExpr = MakePtr<WfInferExpression>();
+							auto inferExpr = Ptr(new WfInferExpression);
 							inferExpr->expression = CopyExpression(node->collection, true);
 							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IValueEnumerable>>::CreateTypeInfo().Obj());
 
@@ -260,71 +260,71 @@ ExpandForEachStatement
 						}
 						else
 						{
-							auto refMethod = MakePtr<WfChildExpression>();
+							auto refMethod = Ptr(new WfChildExpression);
 							refMethod->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Sys>());
 							refMethod->name.value = L"ReverseEnumerable";
 
-							auto refCall = MakePtr<WfCallExpression>();
+							auto refCall = Ptr(new WfCallExpression);
 							refCall->function = refMethod;
 							refCall->arguments.Add(CopyExpression(node->collection, true));
 
 							decl->expression = refCall;
 						}
 
-						auto stat = MakePtr<WfVariableStatement>();
+						auto stat = Ptr(new WfVariableStatement);
 						stat->variable = decl;
 						block->statements.Add(stat);
 					}
 					{
-						auto refEnum = MakePtr<WfReferenceExpression>();
+						auto refEnum = Ptr(new WfReferenceExpression);
 						refEnum->name.value = varEnum;
 
-						auto refMethod = MakePtr<WfMemberExpression>();
+						auto refMethod = Ptr(new WfMemberExpression);
 						refMethod->parent = refEnum;
 						refMethod->name.value = L"CreateEnumerator";
 
-						auto callExpr = MakePtr<WfCallExpression>();
+						auto callExpr = Ptr(new WfCallExpression);
 						callExpr->function = refMethod;
 
-						auto decl = MakePtr<WfVariableDeclaration>();
+						auto decl = Ptr(new WfVariableDeclaration);
 						decl->name.value = varIter;
 						decl->expression = callExpr;
 
-						auto stat = MakePtr<WfVariableStatement>();
+						auto stat = Ptr(new WfVariableStatement);
 						stat->variable = decl;
 						block->statements.Add(stat);
 					}
 					{
-						auto whileStat = MakePtr<WfWhileStatement>();
+						auto whileStat = Ptr(new WfWhileStatement);
 						{
-							auto refIter = MakePtr<WfReferenceExpression>();
+							auto refIter = Ptr(new WfReferenceExpression);
 							refIter->name.value = varIter;
 
-							auto refMethod = MakePtr<WfMemberExpression>();
+							auto refMethod = Ptr(new WfMemberExpression);
 							refMethod->parent = refIter;
 							refMethod->name.value = L"Next";
 
-							auto callExpr = MakePtr<WfCallExpression>();
+							auto callExpr = Ptr(new WfCallExpression);
 							callExpr->function = refMethod;
 
 							whileStat->condition = callExpr;
 						}
 						{
-							auto whileBlock = MakePtr<WfBlockStatement>();
+							auto whileBlock = Ptr(new WfBlockStatement);
 							whileStat->statement = whileBlock;
 
 							{
-								auto refIter = MakePtr<WfReferenceExpression>();
+								auto refIter = Ptr(new WfReferenceExpression);
 								refIter->name.value = varIter;
 
-								auto refMethod = MakePtr<WfMemberExpression>();
+								auto refMethod = Ptr(new WfMemberExpression);
 								refMethod->parent = refIter;
 								refMethod->name.value = L"GetCurrent";
 
-								auto callExpr = MakePtr<WfCallExpression>();
+								auto callExpr = Ptr(new WfCallExpression);
 								callExpr->function = refMethod;
 
-								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								auto castExpr = Ptr(new WfTypeCastingExpression);
 								castExpr->expression = callExpr;
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 								{
@@ -333,11 +333,11 @@ ExpandForEachStatement
 									castExpr->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
 								}
 
-								auto decl = MakePtr<WfVariableDeclaration>();
+								auto decl = Ptr(new WfVariableDeclaration);
 								decl->name.value = node->name.value;
 								decl->expression = castExpr;
 
-								auto stat = MakePtr<WfVariableStatement>();
+								auto stat = Ptr(new WfVariableStatement);
 								stat->variable = decl;
 								whileBlock->statements.Add(stat);
 							}
@@ -366,17 +366,17 @@ ExpandCoProviderStatement
 				void Visit(WfReturnStatement* node)override
 				{
 					auto opInfo = manager->coOperatorResolvings[node].methodInfo;
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					{
-						auto refImpl = MakePtr<WfReferenceExpression>();
+						auto refImpl = Ptr(new WfReferenceExpression);
 						refImpl->name.value = L"<co-impl>";
 
-						auto funcExpr = MakePtr<WfChildExpression>();
+						auto funcExpr = Ptr(new WfChildExpression);
 						funcExpr->parent = GetExpressionFromTypeDescriptor(opInfo->GetOwnerTypeDescriptor());
 						funcExpr->name.value = opInfo->GetName();
 
-						auto callExpr = MakePtr<WfCallExpression>();
+						auto callExpr = Ptr(new WfCallExpression);
 						callExpr->function = funcExpr;
 						callExpr->arguments.Add(refImpl);
 						if (node->expression)
@@ -398,11 +398,11 @@ ExpandCoProviderStatement
 											{
 												auto refType = GetExpressionFromTypeDescriptor(returnType->GetTypeDescriptor());
 
-												auto refStoreResult = MakePtr<WfChildExpression>();
+												auto refStoreResult = Ptr(new WfChildExpression);
 												refStoreResult->parent = refType;
 												refStoreResult->name.value = L"StoreResult";
 
-												auto callExpr = MakePtr<WfCallExpression>();
+												auto callExpr = Ptr(new WfCallExpression);
 												callExpr->function = refStoreResult;
 												callExpr->arguments.Add(returnValue);
 
@@ -416,11 +416,11 @@ ExpandCoProviderStatement
 							callExpr->arguments.Add(returnValue);
 						}
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = callExpr;
 						block->statements.Add(stat);
 					}
-					block->statements.Add(MakePtr<WfReturnStatement>());
+					block->statements.Add(Ptr(new WfReturnStatement));
 
 					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
 					result = block;
@@ -429,17 +429,17 @@ ExpandCoProviderStatement
 				void Visit(WfCoOperatorStatement* node)override
 				{
 					auto opInfo = manager->coOperatorResolvings[node].methodInfo;
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					{
-						auto refImpl = MakePtr<WfReferenceExpression>();
+						auto refImpl = Ptr(new WfReferenceExpression);
 						refImpl->name.value = L"<co-impl>";
 
-						auto funcExpr = MakePtr<WfChildExpression>();
+						auto funcExpr = Ptr(new WfChildExpression);
 						funcExpr->parent = GetExpressionFromTypeDescriptor(opInfo->GetOwnerTypeDescriptor());
 						funcExpr->name.value = opInfo->GetName();
 
-						auto callExpr = MakePtr<WfCallExpression>();
+						auto callExpr = Ptr(new WfCallExpression);
 						callExpr->function = funcExpr;
 						callExpr->arguments.Add(refImpl);
 						for (auto argument : node->arguments)
@@ -447,13 +447,13 @@ ExpandCoProviderStatement
 							callExpr->arguments.Add(CopyNode(argument.Obj()));
 						}
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = callExpr;
 
-						auto pauseBlock = MakePtr<WfBlockStatement>();
+						auto pauseBlock = Ptr(new WfBlockStatement);
 						pauseBlock->statements.Add(stat);
 
-						auto pauseStat = MakePtr<WfCoPauseStatement>();
+						auto pauseStat = Ptr(new WfCoPauseStatement);
 						pauseStat->statement = pauseBlock;
 
 						block->statements.Add(pauseStat);
@@ -463,12 +463,12 @@ ExpandCoProviderStatement
 
 						if (node->varName.value == L"")
 						{
-							ifHasResultStat = MakePtr<WfIfStatement>();
+							ifHasResultStat = Ptr(new WfIfStatement);
 							{
-								auto refCoResult = MakePtr<WfReferenceExpression>();
+								auto refCoResult = Ptr(new WfReferenceExpression);
 								refCoResult->name.value = L"<co-result>";
 
-								auto testExpr = MakePtr<WfTypeTestingExpression>();
+								auto testExpr = Ptr(new WfTypeTestingExpression);
 								testExpr->expression = refCoResult;
 								testExpr->test = WfTypeTesting::IsNotNull;
 
@@ -476,40 +476,40 @@ ExpandCoProviderStatement
 							}
 						}
 
-						auto ifStat = MakePtr<WfIfStatement>();
+						auto ifStat = Ptr(new WfIfStatement);
 						{
-							auto refCoResult = MakePtr<WfReferenceExpression>();
+							auto refCoResult = Ptr(new WfReferenceExpression);
 							refCoResult->name.value = L"<co-result>";
 
-							auto refFailure = MakePtr<WfMemberExpression>();
+							auto refFailure = Ptr(new WfMemberExpression);
 							refFailure->parent = refCoResult;
 							refFailure->name.value = L"Failure";
 
-							auto testExpr = MakePtr<WfTypeTestingExpression>();
+							auto testExpr = Ptr(new WfTypeTestingExpression);
 							testExpr->expression = refFailure;
 							testExpr->test = WfTypeTesting::IsNotNull;
 
 							ifStat->expression = testExpr;
 						}
 						{
-							auto refCoResult = MakePtr<WfReferenceExpression>();
+							auto refCoResult = Ptr(new WfReferenceExpression);
 							refCoResult->name.value = L"<co-result>";
 
-							auto refFailure = MakePtr<WfMemberExpression>();
+							auto refFailure = Ptr(new WfMemberExpression);
 							refFailure->parent = refCoResult;
 							refFailure->name.value = L"Failure";
 
-							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+							auto raiseStat = Ptr(new WfRaiseExceptionStatement);
 							raiseStat->expression = refFailure;
 
-							auto ifBlock = MakePtr<WfBlockStatement>();
+							auto ifBlock = Ptr(new WfBlockStatement);
 							ifBlock->statements.Add(raiseStat);
 							ifStat->trueBranch = ifBlock;
 						}
 
 						if (ifHasResultStat)
 						{
-							auto ifBlock = MakePtr<WfBlockStatement>();
+							auto ifBlock = Ptr(new WfBlockStatement);
 							ifHasResultStat->trueBranch = ifBlock;
 							ifBlock->statements.Add(ifStat);
 							block->statements.Add(ifHasResultStat);
@@ -521,27 +521,27 @@ ExpandCoProviderStatement
 					}
 					if (node->varName.value != L"")
 					{
-						auto refCoResult = MakePtr<WfReferenceExpression>();
+						auto refCoResult = Ptr(new WfReferenceExpression);
 						refCoResult->name.value = L"<co-result>";
 
-						auto refResult = MakePtr<WfMemberExpression>();
+						auto refResult = Ptr(new WfMemberExpression);
 						refResult->parent = refCoResult;
 						refResult->name.value = L"Result";
 
 						auto castResultInfo = manager->coCastResultResolvings[node].methodInfo;
-						auto refCastResult = MakePtr<WfChildExpression>();
+						auto refCastResult = Ptr(new WfChildExpression);
 						refCastResult->parent = GetExpressionFromTypeDescriptor(castResultInfo->GetOwnerTypeDescriptor());
 						refCastResult->name.value = L"CastResult";
 
-						auto callExpr = MakePtr<WfCallExpression>();
+						auto callExpr = Ptr(new WfCallExpression);
 						callExpr->function = refCastResult;
 						callExpr->arguments.Add(refResult);
 
-						auto varDecl = MakePtr<WfVariableDeclaration>();
+						auto varDecl = Ptr(new WfVariableDeclaration);
 						varDecl->name.value = node->varName.value;
 						varDecl->expression = callExpr;
 
-						auto stat = MakePtr<WfVariableStatement>();
+						auto stat = Ptr(new WfVariableStatement);
 						stat->variable = varDecl;
 						block->statements.Add(stat);
 					}
@@ -552,7 +552,7 @@ ExpandCoProviderStatement
 
 				void Visit(WfBlockStatement* node)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto statement : node->statements)
 					{
@@ -583,51 +583,51 @@ ExpandCoProviderStatement
 				auto providerType = providerScope->symbols[L"$PROVIDER"][0]->typeInfo;
 				auto implType = providerScope->symbols[L"$IMPL"][0]->typeInfo;
 
-				auto coroutineExpr = MakePtr<WfNewCoroutineExpression>();
+				auto coroutineExpr = Ptr(new WfNewCoroutineExpression);
 				{
 					coroutineExpr->name.value = L"<co-result>";
 					coroutineExpr->statement = ExpandCoProviderStatementVisitor(manager).CopyNode(node->statement.Obj());
 				}
 				manager->coNewCoroutineResolvings.Add(coroutineExpr, ResolveExpressionResult::ReadonlyType(providerType));
 
-				auto creatorExpr = MakePtr<WfFunctionExpression>();
+				auto creatorExpr = Ptr(new WfFunctionExpression);
 				{
-					auto creatorDecl = MakePtr<WfFunctionDeclaration>();
+					auto creatorDecl = Ptr(new WfFunctionDeclaration);
 					creatorExpr->function = creatorDecl;
 					creatorDecl->functionKind = WfFunctionKind::Normal;
 					creatorDecl->anonymity = WfFunctionAnonymity::Anonymous;
 					creatorDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<ICoroutine>>::CreateTypeInfo().Obj());
 					{
-						auto argument = MakePtr<WfFunctionArgument>();
+						auto argument = Ptr(new WfFunctionArgument);
 						creatorDecl->arguments.Add(argument);
 						argument->name.value = L"<co-impl>";
 						argument->type = GetTypeFromTypeInfo(implType.Obj());
 					}
 
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 					creatorDecl->statement = block;
 
-					auto returnStat = MakePtr<WfReturnStatement>();
+					auto returnStat = Ptr(new WfReturnStatement);
 					returnStat->expression = coroutineExpr;
 					block->statements.Add(returnStat);
 				}
 
-				auto providerBlock = MakePtr<WfBlockStatement>();
+				auto providerBlock = Ptr(new WfBlockStatement);
 				{
 					auto funcReturnType = CreateTypeInfoFromType(functionScope, funcDecl->returnType);
 					auto creatorInfo = manager->coProviderResolvings[node].methodInfo;
 
-					auto funcExpr = MakePtr<WfChildExpression>();
+					auto funcExpr = Ptr(new WfChildExpression);
 					funcExpr->parent = GetExpressionFromTypeDescriptor(creatorInfo->GetOwnerTypeDescriptor());
 					funcExpr->name.value = creatorInfo->GetName();
 
-					auto callExpr = MakePtr<WfCallExpression>();
+					auto callExpr = Ptr(new WfCallExpression);
 					callExpr->function = funcExpr;
 					callExpr->arguments.Add(creatorExpr);
 
 					if (funcReturnType->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
 					{
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = callExpr;
 						providerBlock->statements.Add(stat);
 					}
@@ -635,41 +635,41 @@ ExpandCoProviderStatement
 					{
 						if (IsSameType(funcReturnType.Obj(), creatorInfo->GetReturn()))
 						{
-							auto stat = MakePtr<WfReturnStatement>();
+							auto stat = Ptr(new WfReturnStatement);
 							stat->expression = callExpr;
 							providerBlock->statements.Add(stat);
 						}
 						else if (funcReturnType->GetTypeDescriptor() == creatorInfo->GetReturn()->GetTypeDescriptor())
 						{
-							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							auto castExpr = Ptr(new WfTypeCastingExpression);
 							castExpr->strategy = WfTypeCastingStrategy::Strong;
 							castExpr->type = GetTypeFromTypeInfo(funcReturnType.Obj());
 							castExpr->expression = callExpr;
 
-							auto stat = MakePtr<WfReturnStatement>();
+							auto stat = Ptr(new WfReturnStatement);
 							stat->expression = castExpr;
 							providerBlock->statements.Add(stat);
 						}
 						else
 						{
 							{
-								auto varDecl = MakePtr<WfVariableDeclaration>();
+								auto varDecl = Ptr(new WfVariableDeclaration);
 								varDecl->name.value = L"<co-mixin-source-variable>";
 								varDecl->expression = callExpr;
 
-								auto stat = MakePtr<WfVariableStatement>();
+								auto stat = Ptr(new WfVariableStatement);
 								stat->variable = varDecl;
 								providerBlock->statements.Add(stat);
 							}
 							{
-								auto refExpr = MakePtr<WfReferenceExpression>();
+								auto refExpr = Ptr(new WfReferenceExpression);
 								refExpr->name.value = L"<co-mixin-source-variable>";
 
-								auto castExpr = MakePtr<WfMixinCastExpression>();
+								auto castExpr = Ptr(new WfMixinCastExpression);
 								castExpr->type = GetTypeFromTypeInfo(funcReturnType.Obj());
 								castExpr->expression = refExpr;
 
-								auto stat = MakePtr<WfReturnStatement>();
+								auto stat = Ptr(new WfReturnStatement);
 								stat->expression = castExpr;
 								providerBlock->statements.Add(stat);
 							}

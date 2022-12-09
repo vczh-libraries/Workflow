@@ -198,7 +198,7 @@ WfCppConfig::CollectClosureInfo
 			{
 				using SymbolPair = Pair<WString, Ptr<analyzer::WfLexicalSymbol>>;
 
-				auto info = MakePtr<ClosureInfo>();
+				auto info = Ptr(new ClosureInfo);
 				WfLexicalScope* scope = nullptr;
 
 				if (auto ordered = closure.Cast<WfOrderedLambdaExpression>())

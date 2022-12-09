@@ -519,7 +519,7 @@ WfRuntimeThreadContext
 					}
 				case WfInsCode::CreateInterface:
 					{
-						auto proxy = MakePtr<WfRuntimeInterfaceInstance>();
+						auto proxy = Ptr(new WfRuntimeInterfaceInstance);
 						Value key, value, operand;
 						for (vint i = 0; i < ins.countParameter; i+=2)
 						{
@@ -744,7 +744,7 @@ WfRuntimeThreadContext
 						{
 							if (classMethod->GetGlobalContext() == globalContext.Obj())
 							{
-								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
+								auto capturedVariable = Ptr(new WfRuntimeVariableContext);
 								capturedVariable->variables.Resize(1);
 								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
 
@@ -793,7 +793,7 @@ WfRuntimeThreadContext
 						{
 							if (ctor->GetGlobalContext() == globalContext.Obj())
 							{
-								auto capturedVariable = MakePtr<WfRuntimeVariableContext>();
+								auto capturedVariable = Ptr(new WfRuntimeVariableContext);
 								capturedVariable->variables.Resize(1);
 								capturedVariable->variables[0] = Value::From(thisValue.GetRawPtr());
 

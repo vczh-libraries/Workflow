@@ -143,7 +143,7 @@ GenerateAssembly
 			Ptr<runtime::WfAssembly> GenerateAssembly(analyzer::WfLexicalScopeManager* manager, IWfCompilerCallback* callback)
 			{
 				EXECUTE_CALLBACK(OnGenerateMetadata());
-				auto assembly = MakePtr<WfAssembly>();
+				auto assembly = Ptr(new WfAssembly);
 				assembly->insBeforeCodegen = new WfInstructionDebugInfo;
 				assembly->insAfterCodegen = new WfInstructionDebugInfo;
 				
@@ -206,12 +206,12 @@ GenerateAssembly
 				}
 
 				{
-					auto meta = MakePtr<WfAssemblyFunction>();
+					auto meta = Ptr(new WfAssemblyFunction);
 					meta->name = L"<initialize>";
 					vint functionIndex = assembly->functions.Add(meta);
 					assembly->functionByName.Add(meta->name, functionIndex);
 
-					auto functionContext = MakePtr<WfCodegenFunctionContext>();
+					auto functionContext = Ptr(new WfCodegenFunctionContext);
 					functionContext->function = meta;
 					context.functionContext = functionContext;
 					

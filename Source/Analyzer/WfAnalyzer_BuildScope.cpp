@@ -60,7 +60,7 @@ BuildScopeForDeclaration
 				void Visit(WfFunctionDeclaration* node)override
 				{
 					resultScope = new WfLexicalScope(parentScope);
-					auto config = MakePtr<WfLexicalFunctionConfig>();
+					auto config = Ptr(new WfLexicalFunctionConfig);
 					resultScope->functionConfig = config;
 					resultScope->ownerNodeSource = source;
 
@@ -177,7 +177,7 @@ BuildScopeForDeclaration
 
 					auto bodyScope = MakePtr<WfLexicalScope>(resultScope);
 					{
-						auto config = MakePtr<WfLexicalFunctionConfig>();
+						auto config = Ptr(new WfLexicalFunctionConfig);
 						bodyScope->functionConfig = config;
 
 						config->lambda = false;
@@ -191,7 +191,7 @@ BuildScopeForDeclaration
 				{
 					resultScope = new WfLexicalScope(parentScope);
 					{
-						auto config = MakePtr<WfLexicalFunctionConfig>();
+						auto config = Ptr(new WfLexicalFunctionConfig);
 						resultScope->functionConfig = config;
 
 						config->lambda = false;
@@ -275,7 +275,7 @@ BuildScopeForDeclaration
 
 						auto stateScope = MakePtr<WfLexicalScope>(parentScope);
 						{
-							auto config = MakePtr<WfLexicalFunctionConfig>();
+							auto config = Ptr(new WfLexicalFunctionConfig);
 							stateScope->functionConfig = config;
 
 							config->lambda = false;
@@ -406,14 +406,14 @@ BuildScopeForStatement
 						symbol->name = node->name.value;
 						symbol->creatorNode = node;
 						{
-							auto system = MakePtr<WfTopQualifiedType>();
+							auto system = Ptr(new WfTopQualifiedType);
 							system->name.value = L"system";
 
-							auto exception = MakePtr<WfChildType>();
+							auto exception = Ptr(new WfChildType);
 							exception->parent = system;
 							exception->name.value = L"Exception";
 
-							auto sharedPtr = MakePtr<WfSharedPointerType>();
+							auto sharedPtr = Ptr(new WfSharedPointerType);
 							sharedPtr->element = exception;
 
 							symbol->type = sharedPtr;
@@ -627,7 +627,7 @@ BuildScopeForExpression
 					SearchOrderedName(parentScope.Obj(), node->body, names);
 
 					resultScope = new WfLexicalScope(parentScope);
-					auto config = MakePtr<WfLexicalFunctionConfig>();
+					auto config = Ptr(new WfLexicalFunctionConfig);
 					resultScope->functionConfig = config;
 
 					config->lambda = true;
@@ -853,7 +853,7 @@ BuildScopeForExpression
 				void Visit(WfNewInterfaceExpression* node)override
 				{
 					resultScope = new WfLexicalScope(parentScope);
-					auto capture = MakePtr<WfLexicalCapture>();
+					auto capture = Ptr(new WfLexicalCapture);
 					manager->CreateLambdaCapture(node, capture);
 
 					CreateLambdaCaptureVisitor visitor(manager, capture);
@@ -884,7 +884,7 @@ BuildScopeForExpression
 					manager->CreateLambdaCapture(node);
 
 					resultScope = new WfLexicalScope(parentScope);
-					auto config = MakePtr<WfLexicalFunctionConfig>();
+					auto config = Ptr(new WfLexicalFunctionConfig);
 					resultScope->functionConfig = config;
 
 					if (node->name.value != L"")

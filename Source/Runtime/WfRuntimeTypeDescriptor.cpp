@@ -130,7 +130,7 @@ WfClassConstructor
 			void WfClassConstructor::InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+				auto capturedVariables = Ptr(new WfRuntimeVariableContext);
 				capturedVariables->variables.Resize(1);
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 					
@@ -148,7 +148,7 @@ WfClassMethod
 			Value WfClassMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+				auto capturedVariables = Ptr(new WfRuntimeVariableContext);
 				capturedVariables->variables.Resize(1);
 				capturedVariables->variables[0] = Value::From(thisObject.GetRawPtr());
 
@@ -891,7 +891,7 @@ WfClassInstance
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (classType->destructorFunctionIndex != -1)
 				{
-					auto capturedVariables = MakePtr<WfRuntimeVariableContext>();
+					auto capturedVariables = Ptr(new WfRuntimeVariableContext);
 					capturedVariables->variables.Resize(1);
 					capturedVariables->variables[0] = Value::From(this);
 

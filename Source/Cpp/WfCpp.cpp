@@ -27,7 +27,7 @@ WfCppConfig
 				, assemblyName(_assemblyName)
 				, assemblyNamespace(_assemblyNamespace)
 			{
-				attributeEvaluator = MakePtr<WfAttributeEvaluator>(manager);
+				attributeEvaluator = Ptr(new WfAttributeEvaluator(manager));
 				Collect();
 				for (vint i = 0; i < enumDecls.Count(); i++)
 				{
@@ -61,7 +61,7 @@ WfCppConfig
 
 			void WfCppConfig::WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType)
 			{
-				GenerateStatement(this, MakePtr<FunctionRecord>(), writer, stat, prefix, WString::Unmanaged(L"\t"), expectedType);
+				GenerateStatement(this, Ptr(new FunctionRecord), writer, stat, prefix, WString::Unmanaged(L"\t"), expectedType);
 			}
 
 			WString WfCppConfig::CppNameToHeaderEnumStructName(const WString& fullName, const WString& type)

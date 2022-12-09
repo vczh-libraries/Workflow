@@ -96,7 +96,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
-					auto meta = MakePtr<WfAssemblyFunction>();
+					auto meta = Ptr(new WfAssemblyFunction);
 					meta->name = namePrefix + L"#ctor";
 					for (auto argument : node->arguments)
 					{
@@ -114,7 +114,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
-					auto meta = MakePtr<WfAssemblyFunction>();
+					auto meta = Ptr(new WfAssemblyFunction);
 					meta->name = namePrefix + L"#dtor";
 					meta->capturedVariableNames.Add(L"<captured-this>0");
 
@@ -178,7 +178,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfFunctionDeclaration* node)override
 				{
-					auto meta = MakePtr<WfAssemblyFunction>();
+					auto meta = Ptr(new WfAssemblyFunction);
 					meta->name = namePrefix + node->name.value;
 					GenerateFunctionDeclarationMetadata(context, node, meta);
 

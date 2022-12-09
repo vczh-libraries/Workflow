@@ -618,7 +618,7 @@ ExpandObserveExpression
 
 			Ptr<WfExpression> CreateReference(const WString& name)
 			{
-				auto ref = MakePtr<WfReferenceExpression>();
+				auto ref = Ptr(new WfReferenceExpression);
 				ref->name.value = name;
 				return ref;
 			}
@@ -668,12 +668,12 @@ ExpandObserveExpression
 
 				void Visit(WfLetExpression* node)override
 				{
-					auto letExpr = MakePtr<WfLetExpression>();
+					auto letExpr = Ptr(new WfLetExpression);
 					for (auto var : node->variables)
 					{
 						if (context.GetCachedExpressionIndexRecursively(var->value.Obj(), false) == -1)
 						{
-							auto letVar = MakePtr<WfLetVariable>();
+							auto letVar = Ptr(new WfLetVariable);
 							letVar->name.value = var->name.value;
 							letVar->value = Execute(var->value.Obj(), context);
 							letExpr->variables.Add(letVar);
@@ -695,7 +695,7 @@ ExpandObserveExpression
 				{
 					if (node->observeType == WfObserveType::SimpleObserve)
 					{
-						auto expr = MakePtr<WfMemberExpression>();
+						auto expr = Ptr(new WfMemberExpression);
 						expr->parent = CopyNode(node->parent.Obj());
 						expr->name.value = node->expression.Cast<WfReferenceExpression>()->name.value;
 						result = expr;
@@ -720,15 +720,15 @@ CreateDefaultValue
 					{
 					case TypeFlag::Enum:
 						{
-							auto intExpr = MakePtr<WfIntegerExpression>();
+							auto intExpr = Ptr(new WfIntegerExpression);
 							intExpr->value.value = L"0";
 
-							auto inferExpr = MakePtr<WfTypeCastingExpression>();
+							auto inferExpr = Ptr(new WfTypeCastingExpression);
 							inferExpr->strategy = WfTypeCastingStrategy::Strong;
 							inferExpr->expression = intExpr;
 							inferExpr->type = GetTypeFromTypeInfo(CreateTypeInfoFromTypeFlag(TypeFlag::U8).Obj());
 
-							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							auto castExpr = Ptr(new WfTypeCastingExpression);
 							castExpr->strategy = WfTypeCastingStrategy::Strong;
 							castExpr->expression = inferExpr;
 							castExpr->type = GetTypeFromTypeInfo(elementType);
@@ -737,16 +737,16 @@ CreateDefaultValue
 						}
 					case TypeFlag::String:
 						{
-							auto stringExpr = MakePtr<WfStringExpression>();
+							auto stringExpr = Ptr(new WfStringExpression);
 							return stringExpr;
 						}
 						break;
 					case TypeFlag::Struct:
 						if (elementType->GetTypeDescriptor()->GetSerializableType() == nullptr)
 						{
-							auto ctorExpr = MakePtr<WfConstructorExpression>();
+							auto ctorExpr = Ptr(new WfConstructorExpression);
 
-							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							auto castExpr = Ptr(new WfTypeCastingExpression);
 							castExpr->strategy = WfTypeCastingStrategy::Strong;
 							castExpr->expression = ctorExpr;
 							castExpr->type = GetTypeFromTypeInfo(elementType);
@@ -758,22 +758,22 @@ CreateDefaultValue
 							auto td = elementType->GetTypeDescriptor();
 							if (td == description::GetTypeDescriptor<bool>())
 							{
-								auto expr = MakePtr<WfLiteralExpression>();
+								auto expr = Ptr(new WfLiteralExpression);
 								expr->value = WfLiteralValue::False;
 								return expr;
 							}
 							if (td == description::GetTypeDescriptor<WString>())
 							{
-								auto expr = MakePtr<WfStringExpression>();
+								auto expr = Ptr(new WfStringExpression);
 								return expr;
 							}
 							else if (td == description::GetTypeDescriptor<float>()
 								|| td == description::GetTypeDescriptor<double>())
 							{
-								auto valueExpr = MakePtr<WfFloatingExpression>();
+								auto valueExpr = Ptr(new WfFloatingExpression);
 								valueExpr->value.value = L"0";
 
-								auto inferExpr = MakePtr<WfInferExpression>();
+								auto inferExpr = Ptr(new WfInferExpression);
 								inferExpr->expression = valueExpr;
 								inferExpr->type = GetTypeFromTypeInfo(elementType);
 
@@ -788,10 +788,10 @@ CreateDefaultValue
 								|| td == description::GetTypeDescriptor<vuint32_t>()
 								|| td == description::GetTypeDescriptor<vuint64_t>())
 							{
-								auto valueExpr = MakePtr<WfIntegerExpression>();
+								auto valueExpr = Ptr(new WfIntegerExpression);
 								valueExpr->value.value = L"0";
 
-								auto inferExpr = MakePtr<WfInferExpression>();
+								auto inferExpr = Ptr(new WfInferExpression);
 								inferExpr->expression = valueExpr;
 								inferExpr->type = GetTypeFromTypeInfo(elementType);
 
@@ -802,10 +802,10 @@ CreateDefaultValue
 								// Consider adding a \"default (type)\" expression if CreateDefault() cannot be liminated from the compiler.
 								CHECK_FAIL(L"All serializable types should have been handled!");
 								/*
-								auto stringExpr = MakePtr<WfStringExpression>();
+								auto stringExpr = Ptr(new WfStringExpression);
 								elementType->GetTypeDescriptor()->GetSerializableType()->Serialize(valueType->CreateDefault(), stringExpr->value.value);
 
-								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								auto castExpr = Ptr(new WfTypeCastingExpression);
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 								castExpr->expression = stringExpr;
 								castExpr->type = GetTypeFromTypeInfo(elementType);
@@ -818,10 +818,10 @@ CreateDefaultValue
 				}
 				else
 				{
-					auto nullExpr = MakePtr<WfLiteralExpression>();
+					auto nullExpr = Ptr(new WfLiteralExpression);
 					nullExpr->value = WfLiteralValue::Null;
 
-					auto inferExpr = MakePtr<WfInferExpression>();
+					auto inferExpr = Ptr(new WfInferExpression);
 					inferExpr->expression = nullExpr;
 					inferExpr->type = GetTypeFromTypeInfo(elementType);
 
@@ -835,7 +835,7 @@ CreateBindWritableVariable
 
 			Ptr<WfVariableDeclaration> CreateWritableVariable(const WString& name, ITypeInfo* type, Ptr<WfExpression> value = nullptr)
 			{
-				auto decl = MakePtr<WfVariableDeclaration>();
+				auto decl = Ptr(new WfVariableDeclaration);
 				decl->name.value = name;
 				decl->type = GetTypeFromTypeInfo(type);
 				decl->expression = value ? value : CreateDefaultValue(type);
@@ -844,7 +844,7 @@ CreateBindWritableVariable
 
 			Ptr<WfVariableStatement> CreateWritableVariableStatement(const WString& name, ITypeInfo* type, Ptr<WfExpression> value = nullptr)
 			{
-				auto stat = MakePtr<WfVariableStatement>();
+				auto stat = Ptr(new WfVariableStatement);
 				stat->variable = CreateWritableVariable(name, type, value);
 				return stat;
 			}
@@ -876,7 +876,7 @@ ExpandObserveEvent
 				{
 					if (observeExpr->observeType == WfObserveType::SimpleObserve)
 					{
-						auto expr = MakePtr<WfMemberExpression>();
+						auto expr = Ptr(new WfMemberExpression);
 						expr->parent = CreateReference(cacheName);
 						expr->name.value = observeExpr->events[eventIndex].Cast<WfReferenceExpression>()->name.value;
 						return expr;
@@ -890,7 +890,7 @@ ExpandObserveEvent
 				{
 					auto eventName = context.observeEvents[observe][0]->GetName();
 
-					auto expr = MakePtr<WfMemberExpression>();
+					auto expr = Ptr(new WfMemberExpression);
 					expr->parent = CreateReference(cacheName);
 					expr->name.value = eventName;
 
@@ -906,24 +906,24 @@ CreateBindAttachStatement
 			{
 				for (auto callbackInfo : info.observeCallbackInfos[observe])
 				{
-					auto attach = MakePtr<WfAttachEventExpression>();
+					auto attach = Ptr(new WfAttachEventExpression);
 					attach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
 					attach->function = CreateReference(callbackInfo.callbackName);
 
-					auto nullExpr = MakePtr<WfLiteralExpression>();
+					auto nullExpr = Ptr(new WfLiteralExpression);
 					nullExpr->value = WfLiteralValue::Null;
 
-					auto protect = MakePtr<WfBinaryExpression>();
+					auto protect = Ptr(new WfBinaryExpression);
 					protect->first = attach;
 					protect->second = nullExpr;
 					protect->op = WfBinaryOperator::FailedThen;
 
-					auto assign = MakePtr<WfBinaryExpression>();
+					auto assign = Ptr(new WfBinaryExpression);
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = CreateReference(callbackInfo.handlerName);
 					assign->second = protect;
 
-					auto stat = MakePtr<WfExpressionStatement>();
+					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = assign;
 					block->statements.Add(stat);
 				}
@@ -937,36 +937,36 @@ CreateBindDetachStatement
 			{
 				for (auto callbackInfo : info.observeCallbackInfos[observe])
 				{
-					auto testNull = MakePtr<WfTypeTestingExpression>();
+					auto testNull = Ptr(new WfTypeTestingExpression);
 					testNull->expression = CreateReference(callbackInfo.handlerName);
 					testNull->test = WfTypeTesting::IsNotNull;
 
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					ifStat->expression = testNull;
 
-					auto trueBlock = MakePtr<WfBlockStatement>();
+					auto trueBlock = Ptr(new WfBlockStatement);
 					ifStat->trueBranch = trueBlock;
 
 					block->statements.Add(ifStat);
 					{
-						auto detach = MakePtr<WfDetachEventExpression>();
+						auto detach = Ptr(new WfDetachEventExpression);
 						detach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
 						detach->handler = CreateReference(callbackInfo.handlerName);
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = detach;
 						trueBlock->statements.Add(stat);
 					}
 					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
+						auto nullExpr = Ptr(new WfLiteralExpression);
 						nullExpr->value = WfLiteralValue::Null;
 
-						auto assignExpr = MakePtr<WfBinaryExpression>();
+						auto assignExpr = Ptr(new WfBinaryExpression);
 						assignExpr->first = CreateReference(callbackInfo.handlerName);
 						assignExpr->second = nullExpr;
 						assignExpr->op = WfBinaryOperator::Assign;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assignExpr;
 						trueBlock->statements.Add(stat);
 					}
@@ -982,17 +982,17 @@ CreateBindCacheAssignStatement
 				auto parent = context.observeParents[observe];
 				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(parent, true));
 
-				auto protect = MakePtr<WfBinaryExpression>();
+				auto protect = Ptr(new WfBinaryExpression);
 				protect->first = ExpandObserveExpressionVisitor::Execute(parent, context, false);
 				protect->second = CreateDefaultValue(manager->expressionResolvings[parent].type.Obj());
 				protect->op = WfBinaryOperator::FailedThen;
 
-				auto assign = MakePtr<WfBinaryExpression>();
+				auto assign = Ptr(new WfBinaryExpression);
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = CreateReference(cacheName);
 				assign->second = protect;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = assign;
 				block->statements.Add(stat);
 			}
@@ -1003,7 +1003,7 @@ IValueSubscription::Open
 
 			Ptr<WfFunctionDeclaration> CreateBindOpenFunction(WfLexicalScopeManager* manager, BindContext& context, BindCallbackInfo& info)
 			{
-				auto func = MakePtr<WfFunctionDeclaration>();
+				auto func = Ptr(new WfFunctionDeclaration);
 				func->name.value = L"Open";
 				func->functionKind = WfFunctionKind::Normal;
 				func->anonymity = WfFunctionAnonymity::Named;
@@ -1012,30 +1012,30 @@ IValueSubscription::Open
 					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
 				}
 
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				func->statement = block;
 				{
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					block->statements.Add(ifStat);
 					{
-						auto notExpr = MakePtr<WfUnaryExpression>();
+						auto notExpr = Ptr(new WfUnaryExpression);
 						notExpr->op = WfUnaryOperator::Not;
 						notExpr->operand = CreateReference(L"<bind-opened>");
 						ifStat->expression = notExpr;
 					}
 
-					auto ifBlock = MakePtr<WfBlockStatement>();
+					auto ifBlock = Ptr(new WfBlockStatement);
 					ifStat->trueBranch = ifBlock;
 					{
-						auto literal = MakePtr<WfLiteralExpression>();
+						auto literal = Ptr(new WfLiteralExpression);
 						literal->value = WfLiteralValue::True;
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = CreateReference(L"<bind-opened>");
 						assign->second = literal;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
@@ -1088,19 +1088,19 @@ IValueSubscription::Open
 						}
 					}
 					{
-						auto literal = MakePtr<WfLiteralExpression>();
+						auto literal = Ptr(new WfLiteralExpression);
 						literal->value = WfLiteralValue::True;
 
-						auto returnStat = MakePtr<WfReturnStatement>();
+						auto returnStat = Ptr(new WfReturnStatement);
 						returnStat->expression = literal;
 						ifBlock->statements.Add(returnStat);
 					}
 				}
 				{
-					auto literal = MakePtr<WfLiteralExpression>();
+					auto literal = Ptr(new WfLiteralExpression);
 					literal->value = WfLiteralValue::False;
 
-					auto returnStat = MakePtr<WfReturnStatement>();
+					auto returnStat = Ptr(new WfReturnStatement);
 					returnStat->expression = literal;
 					block->statements.Add(returnStat);
 				}
@@ -1114,7 +1114,7 @@ IValueSubscription::Update
 
 			Ptr<WfFunctionDeclaration> CreateBindUpdateFunction(BindCallbackInfo& info)
 			{
-				auto func = MakePtr<WfFunctionDeclaration>();
+				auto func = Ptr(new WfFunctionDeclaration);
 				func->name.value = L"Update";
 				func->functionKind = WfFunctionKind::Normal;
 				func->anonymity = WfFunctionAnonymity::Named;
@@ -1123,17 +1123,17 @@ IValueSubscription::Update
 					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
 				}
 
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				func->statement = block;
 				{
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					block->statements.Add(ifStat);
 					{
-						auto notExpr = MakePtr<WfUnaryExpression>();
+						auto notExpr = Ptr(new WfUnaryExpression);
 						notExpr->op = WfUnaryOperator::Not;
 						notExpr->operand = CreateReference(L"<bind-closed>");
 
-						auto andExpr = MakePtr<WfBinaryExpression>();
+						auto andExpr = Ptr(new WfBinaryExpression);
 						andExpr->op = WfBinaryOperator::And;
 						andExpr->first = CreateReference(L"<bind-opened>");
 						andExpr->second = notExpr;
@@ -1141,32 +1141,32 @@ IValueSubscription::Update
 						ifStat->expression = andExpr;
 					}
 
-					auto ifBlock = MakePtr<WfBlockStatement>();
+					auto ifBlock = Ptr(new WfBlockStatement);
 					ifStat->trueBranch = ifBlock;
 					{
 						auto ref = CreateReference(L"<bind-activator>");
 
-						auto call = MakePtr<WfCallExpression>();
+						auto call = Ptr(new WfCallExpression);
 						call->function = ref;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = call;
 						ifBlock->statements.Add(stat);
 					}
 					{
-						auto literal = MakePtr<WfLiteralExpression>();
+						auto literal = Ptr(new WfLiteralExpression);
 						literal->value = WfLiteralValue::True;
 
-						auto returnStat = MakePtr<WfReturnStatement>();
+						auto returnStat = Ptr(new WfReturnStatement);
 						returnStat->expression = literal;
 						ifBlock->statements.Add(returnStat);
 					}
 				}
 				{
-					auto literal = MakePtr<WfLiteralExpression>();
+					auto literal = Ptr(new WfLiteralExpression);
 					literal->value = WfLiteralValue::False;
 
-					auto returnStat = MakePtr<WfReturnStatement>();
+					auto returnStat = Ptr(new WfReturnStatement);
 					returnStat->expression = literal;
 					block->statements.Add(returnStat);
 				}
@@ -1180,7 +1180,7 @@ IValueSubscription::Close
 
 			Ptr<WfFunctionDeclaration> CreateBindCloseFunction(WfLexicalScopeManager* manager, BindContext& context, BindCallbackInfo& info)
 			{
-				auto func = MakePtr<WfFunctionDeclaration>();
+				auto func = Ptr(new WfFunctionDeclaration);
 				func->name.value = L"Close";
 				func->functionKind = WfFunctionKind::Normal;
 				func->anonymity = WfFunctionAnonymity::Named;
@@ -1189,30 +1189,30 @@ IValueSubscription::Close
 					func->returnType = GetTypeFromTypeInfo(typeInfo.Obj());
 				}
 
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				func->statement = block;
 				{
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					block->statements.Add(ifStat);
 					{
-						auto notExpr = MakePtr<WfUnaryExpression>();
+						auto notExpr = Ptr(new WfUnaryExpression);
 						notExpr->op = WfUnaryOperator::Not;
 						notExpr->operand = CreateReference(L"<bind-closed>");
 						ifStat->expression = notExpr;
 					}
 
-					auto ifBlock = MakePtr<WfBlockStatement>();
+					auto ifBlock = Ptr(new WfBlockStatement);
 					ifStat->trueBranch = ifBlock;
 					{
-						auto literal = MakePtr<WfLiteralExpression>();
+						auto literal = Ptr(new WfLiteralExpression);
 						literal->value = WfLiteralValue::True;
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = CreateReference(L"<bind-closed>");
 						assign->second = literal;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
@@ -1226,12 +1226,12 @@ IValueSubscription::Close
 						auto cacheName = context.GetCacheVariableName(i);
 						auto type = manager->expressionResolvings[context.cachedExprs[i]].type;
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = CreateReference(cacheName);
 						assign->second = CreateDefaultValue(type.Obj());
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
@@ -1240,30 +1240,30 @@ IValueSubscription::Close
 						auto cacheName = info.handlerVariables.Keys()[i];
 						auto result = info.handlerVariables.Values()[i];
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = CreateReference(cacheName);
 						assign->second = CreateDefaultValue(result.Obj());
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
 
 					{
-						auto literal = MakePtr<WfLiteralExpression>();
+						auto literal = Ptr(new WfLiteralExpression);
 						literal->value = WfLiteralValue::True;
 
-						auto returnStat = MakePtr<WfReturnStatement>();
+						auto returnStat = Ptr(new WfReturnStatement);
 						returnStat->expression = literal;
 						ifBlock->statements.Add(returnStat);
 					}
 				}
 				{
-					auto literal = MakePtr<WfLiteralExpression>();
+					auto literal = Ptr(new WfLiteralExpression);
 					literal->value = WfLiteralValue::False;
 
-					auto returnStat = MakePtr<WfReturnStatement>();
+					auto returnStat = Ptr(new WfReturnStatement);
 					returnStat->expression = literal;
 					block->statements.Add(returnStat);
 				}
@@ -1281,7 +1281,7 @@ ExpandBindExpression
 				CreateBindContextVisitor(manager, context).Call(node->expression.Obj());
 				BindCallbackInfo bcInfo;
 						
-				auto newSubscription = MakePtr<WfNewInterfaceExpression>();
+				auto newSubscription = Ptr(new WfNewInterfaceExpression);
 				node->expandedExpression = newSubscription;
 				{
 					auto typeInfo = TypeInfoRetriver<Ptr<IValueSubscription>>::CreateTypeInfo();
@@ -1338,29 +1338,29 @@ ExpandBindExpression
 					newSubscription->declarations.Add(CreateWritableVariable(L"<bind-opened>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj()));
 					newSubscription->declarations.Add(CreateWritableVariable(L"<bind-closed>", TypeInfoRetriver<bool>::CreateTypeInfo().Obj()));
 					{
-						auto func = MakePtr<WfFunctionDeclaration>();
+						auto func = Ptr(new WfFunctionDeclaration);
 						func->name.value = L"<bind-activator>";
 						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					
-						auto block = MakePtr<WfBlockStatement>();
+						auto block = Ptr(new WfBlockStatement);
 						func->statement = block;
 						{
-							auto var = MakePtr<WfVariableDeclaration>();
+							auto var = Ptr(new WfVariableDeclaration);
 							var->name.value = L"<bind-activator-result>";
 							var->expression = ExpandObserveExpressionVisitor::Execute(node->expression.Obj(), context);
 
-							auto varStat = MakePtr<WfVariableStatement>();
+							auto varStat = Ptr(new WfVariableStatement);
 							varStat->variable = var;
 							block->statements.Add(varStat);
 						}
 						{
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = CreateReference(L"ValueChanged");
 							call->arguments.Add(CreateReference(L"<bind-activator-result>"));
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
@@ -1371,7 +1371,7 @@ ExpandBindExpression
 					{
 						for (auto callbackInfo : bcInfo.observeCallbackInfos[observe])
 						{
-							auto func = MakePtr<WfFunctionDeclaration>();
+							auto func = Ptr(new WfFunctionDeclaration);
 							func->name.value = callbackInfo.callbackName;
 							func->functionKind = WfFunctionKind::Normal;
 							func->anonymity = WfFunctionAnonymity::Named;
@@ -1381,13 +1381,13 @@ ExpandBindExpression
 								vint count = genericType->GetGenericArgumentCount();
 								for (vint i = 1; i < count; i++)
 								{
-									auto arg = MakePtr<WfFunctionArgument>();
+									auto arg = Ptr(new WfFunctionArgument);
 									arg->name.value = L"<bind-callback-argument>" + itow(i - 1);
 									arg->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(i));
 									func->arguments.Add(arg);
 								}
 							}
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							func->statement = block;
 							{
 								List<WfExpression*> affected;
@@ -1433,10 +1433,10 @@ ExpandBindExpression
 							{
 								auto ref = CreateReference(L"<bind-activator>");
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = ref;
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = call;
 								block->statements.Add(stat);
 							}

@@ -908,7 +908,7 @@ WfGenerateExpressionVisitor
 								}
 								else
 								{
-									enumValueType = MakePtr<TypeDescriptorTypeInfo>(result.type->GetTypeDescriptor(), TypeInfoHint::Normal);
+									enumValueType = Ptr(new TypeDescriptorTypeInfo(result.type->GetTypeDescriptor(), TypeInfoHint::Normal));
 								}
 								vint index = enumType->IndexOfItem(name);
 								if (index != -1)
@@ -1797,7 +1797,7 @@ WfGenerateExpressionVisitor
 								{
 									return GenerateToStream([&](StreamWriter& writer)
 									{
-										WfPrint(node, WString::Empty, writer);
+										WfPrint(Ptr(node), WString::Empty, writer);
 									});
 								};
 

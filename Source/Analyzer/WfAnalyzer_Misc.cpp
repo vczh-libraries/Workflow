@@ -177,11 +177,16 @@ GetExpressionName(Expression)
 				}
 			};
 
-			WString GetExpressionName(Ptr<WfExpression> expression)
+			WString GetExpressionName(WfExpression* expression)
 			{
 				GetExpressionNameVisitor visitor;
 				expression->Accept(&visitor);
 				return visitor.result;
+			}
+
+			WString GetExpressionName(Ptr<WfExpression> expression)
+			{
+				return GetExpressionName(expression.Obj());
 			}
 		}
 	}

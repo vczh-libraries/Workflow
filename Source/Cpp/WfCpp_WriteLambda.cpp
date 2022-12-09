@@ -115,7 +115,7 @@ WfCppConfig::WriteCpp
 
 				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
-					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
+					auto typeInfo = Ptr(new RawPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(thisType, TypeInfoHint::Normal))));
 
 					writer.WriteString(L"\t\t");
 					writer.WriteString(ConvertType(typeInfo.Obj()));
@@ -149,7 +149,7 @@ WfCppConfig::WriteCpp
 
 				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
-					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
+					auto typeInfo = Ptr(new RawPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(thisType, TypeInfoHint::Normal))));
 
 					if (argumentIndex++ > 0)
 					{

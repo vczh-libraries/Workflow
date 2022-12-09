@@ -44,7 +44,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfExpectedTypeCastExpression* node)override
 				{
-					auto castExpr = MakePtr<WfTypeCastingExpression>();
+					auto castExpr = Ptr(new WfTypeCastingExpression);
 					castExpr->strategy = node->strategy;
 					castExpr->expression = CopyExpression(node->expression, true);
 					castExpr->type = GetTypeFromTypeInfo(expectedType.Obj());
@@ -2172,7 +2172,7 @@ IsConstantExpression
 					isConstant = true;
 				}
 
-				static void Execute(Ptr<WfExpression> expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType)
+				static void Execute(WfExpression* expression, WfLexicalScopeManager* manager, Ptr<ITypeInfo> expectedType)
 				{
 					if (GetExpressionType(manager, expression, expectedType))
 					{
@@ -2180,7 +2180,7 @@ IsConstantExpression
 						expression->Accept(&visitor);
 						if (!visitor.isConstant)
 						{
-							manager->errors.Add(WfErrors::ExpressionIsNotConstant(expression.Obj()));
+							manager->errors.Add(WfErrors::ExpressionIsNotConstant(expression));
 						}
 					}
 				}
@@ -2190,7 +2190,7 @@ IsConstantExpression
 ValidateSemantic
 ***********************************************************************/
 
-			void ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results)
+			void ValidateExpressionSemantic(WfLexicalScopeManager* manager, WfExpression* expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results)
 			{
 				ValidateSemanticExpressionVisitor::Execute(expression, manager, expectedType, results);
 				for (vint i = results.Count() - 1; i >= 0; i--)
@@ -2232,9 +2232,19 @@ ValidateSemantic
 				}
 			}
 
-			void ValidateConstantExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
+			void ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results)
+			{
+				ValidateExpressionSemantic(manager, expression.Obj(), expectedType, results);
+			}
+
+			void ValidateConstantExpression(WfLexicalScopeManager* manager, WfExpression* expression, Ptr<reflection::description::ITypeInfo> expectedType)
 			{
 				ValidateConstantExpressionVisitor::Execute(expression, manager, expectedType);
+			}
+
+			void ValidateConstantExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
+			{
+				ValidateConstantExpressionVisitor::Execute(expression.Obj(), manager, expectedType);
 			}
 		}
 	}

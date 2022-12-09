@@ -448,12 +448,12 @@ ValidateStructure(Declaration)
 
 								if (!visitor.ctor)
 								{
-									auto ctor = MakePtr<WfConstructorDeclaration>();
+									auto ctor = Ptr(new WfConstructorDeclaration);
 									node->declarations.Add(ctor);
 									ctor->codeRange = node->codeRange;
 									ctor->constructorType = WfConstructorType::SharedPtr;
 
-									auto stat = MakePtr<WfBlockStatement>();
+									auto stat = Ptr(new WfBlockStatement);
 									ctor->statement = stat;
 									stat->codeRange = node->codeRange;
 								}

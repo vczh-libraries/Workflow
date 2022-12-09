@@ -66,7 +66,7 @@ WfGenerateClassMemberDeclVisitor
 					{
 						writer.WriteString(L"static ");
 					}
-					config->WriteFunctionHeader(writer, node, config->ConvertName(node->name.value), true);
+					config->WriteFunctionHeader(writer, Ptr(node), config->ConvertName(node->name.value), true);
 					if (isVirtual)
 					{
 						writer.WriteString(L" = 0");
@@ -284,7 +284,7 @@ WfGenerateClassMemberImplVisitor
 						printableMember = true;
 
 						writer.WriteString(prefix);
-						auto returnType = config->WriteFunctionHeader(writer, node, classBaseName + L"::" + config->ConvertName(node->name.value), true);
+						auto returnType = config->WriteFunctionHeader(writer, Ptr(node), classBaseName + L"::" + config->ConvertName(node->name.value), true);
 						writer.WriteLine(L"");
 
 						bool userImpl = config->attributeEvaluator->GetAttribute(node->attributes, L"cpp", L"UserImpl");

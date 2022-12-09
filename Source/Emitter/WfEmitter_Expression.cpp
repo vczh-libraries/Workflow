@@ -108,7 +108,7 @@ GenerateInstructions(Expression)
 
 				static vint AddClosure(WfCodegenContext& context, WfCodegenLambdaContext lc, const Func<WString(vint)>& getName)
 				{
-					auto meta = MakePtr<WfAssemblyFunction>();
+					auto meta = Ptr(new WfAssemblyFunction);
 					vint functionIndex = context.assembly->functions.Add(meta);
 					meta->name = getName(functionIndex);
 					context.assembly->functionByName.Add(meta->name, functionIndex);

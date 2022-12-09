@@ -108,7 +108,7 @@ GenerateInstructions(Declaration)
 
 			Ptr<WfCodegenFunctionContext> GenerateFunctionInstructions_Prolog(WfCodegenContext& context, WfLexicalScope* scope, Ptr<WfAssemblyFunction> meta, Ptr<ITypeInfo> returnType, Ptr<WfLexicalSymbol> recursiveLambdaSymbol, const List<Ptr<WfLexicalSymbol>>& argumentSymbols, const List<Ptr<WfLexicalSymbol>>& capturedSymbols, glr::ParsingAstBase* node)
 			{
-				auto functionContext = MakePtr<WfCodegenFunctionContext>();
+				auto functionContext = Ptr(new WfCodegenFunctionContext);
 				functionContext->function = meta;
 				context.functionContext = functionContext;
 				{
@@ -267,7 +267,7 @@ GenerateInstructions(Declaration)
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					auto meta = context.assembly->functions[context.constructors[node]];
-					auto functionContext = MakePtr<WfCodegenFunctionContext>();
+					auto functionContext = Ptr(new WfCodegenFunctionContext);
 					functionContext->function = meta;
 					context.functionContext = functionContext;
 					meta->firstInstruction = context.assembly->instructions.Count();
@@ -326,7 +326,7 @@ GenerateInstructions(Declaration)
 				void Visit(WfDestructorDeclaration* node)override
 				{
 					auto meta = context.assembly->functions[context.destructors[node]];
-					auto functionContext = MakePtr<WfCodegenFunctionContext>();
+					auto functionContext = Ptr(new WfCodegenFunctionContext);
 					functionContext->function = meta;
 					context.functionContext = functionContext;
 					meta->firstInstruction = context.assembly->instructions.Count();

@@ -963,19 +963,19 @@ Serialization (TypeImpl)
 
 							if (isStaticMethod)
 							{
-								auto info = MakePtr<WfStaticMethod>();
+								auto info = Ptr(new WfStaticMethod);
 								td->AddMember(methodName, info);
 								IOStaticMethod(reader, info.Obj());
 							}
 							else if (isClass)
 							{
-								auto info = MakePtr<WfClassMethod>();
+								auto info = Ptr(new WfClassMethod);
 								td->AddMember(methodName, info);
 								IOClassMethod(reader, info.Obj());
 							}
 							else
 							{
-								auto info = MakePtr<WfInterfaceMethod>();
+								auto info = Ptr(new WfInterfaceMethod);
 								td->AddMember(methodName, info);
 								IOInterfaceMethod(reader, info.Obj());
 							}
@@ -1699,7 +1699,7 @@ WfAssembly
 			{
 				try
 				{
-					auto assembly = MakePtr<WfAssembly>();
+					auto assembly = Ptr(new WfAssembly);
 					stream::internal::WfReader reader(input);
 					stream::internal::Serialization<WfAssembly>::IO(reader, *assembly.Obj(), errors);
 					assembly->Initialize();

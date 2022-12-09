@@ -68,9 +68,9 @@ CompleteScopeForClassMember
 				void Visit(WfEventDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
-					auto type = MakePtr<WfFunctionType>();
+					auto type = Ptr(new WfFunctionType);
 					{
-						auto voidType = MakePtr<WfPredefinedType>();
+						auto voidType = Ptr(new WfPredefinedType);
 						voidType->name = WfPredefinedTypeName::Void;
 						type->result = voidType;
 					}

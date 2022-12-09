@@ -18,12 +18,12 @@ ExpandNewCoroutineExpression
 			{
 				auto sourceType = manager->expressionResolvings[node->expression.Obj()].type;
 
-				auto newExpr = MakePtr<WfNewInterfaceExpression>();
+				auto newExpr = Ptr(new WfNewInterfaceExpression);
 				node->expandedExpression = newExpr;
 
 				newExpr->type = CopyType(node->type);
 				{
-					auto varDecl = MakePtr<WfVariableDeclaration>();
+					auto varDecl = Ptr(new WfVariableDeclaration);
 					newExpr->declarations.Add(varDecl);
 					varDecl->name.value = L"<mixin-source>";
 					varDecl->expression = CopyExpression(node->expression, true);
@@ -33,7 +33,7 @@ ExpandNewCoroutineExpression
 						auto tdType = MakePtr<TypeDescriptorTypeInfo>(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal);
 						auto pointerType = MakePtr<SharedPtrTypeInfo>(tdType);
 
-						auto castExpr = MakePtr<WfTypeCastingExpression>();
+						auto castExpr = Ptr(new WfTypeCastingExpression);
 						castExpr->strategy = WfTypeCastingStrategy::Strong;
 						castExpr->expression = varDecl->expression;
 						castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
@@ -56,7 +56,7 @@ ExpandNewCoroutineExpression
 							auto method = group->GetMethod(k);
 							if (!method->IsStatic())
 							{
-								auto funcDecl = MakePtr<WfFunctionDeclaration>();
+								auto funcDecl = Ptr(new WfFunctionDeclaration);
 								newExpr->declarations.Add(funcDecl);
 								funcDecl->functionKind = WfFunctionKind::Override;
 								funcDecl->anonymity = WfFunctionAnonymity::Named;
@@ -66,19 +66,19 @@ ExpandNewCoroutineExpression
 								for (vint l = 0; l < parameterCount; l++)
 								{
 									auto parameter = method->GetParameter(l);
-									auto argument = MakePtr<WfFunctionArgument>();
+									auto argument = Ptr(new WfFunctionArgument);
 									argument->name.value = L"<mixin-parameter>" + parameter->GetName();
 									argument->type = GetTypeFromTypeInfo(parameter->GetType());
 									funcDecl->arguments.Add(argument);
 								}
 
-								auto implBlock = MakePtr<WfBlockStatement>();
+								auto implBlock = Ptr(new WfBlockStatement);
 								funcDecl->statement = implBlock;
 								{
-									auto refSource = MakePtr<WfReferenceExpression>();
+									auto refSource = Ptr(new WfReferenceExpression);
 									refSource->name.value = L"<mixin-source>";
 
-									auto memberExpr = MakePtr<WfMemberExpression>();
+									auto memberExpr = Ptr(new WfMemberExpression);
 									if (sourceType->GetTypeDescriptor() == method->GetOwnerTypeDescriptor())
 									{
 										memberExpr->parent = refSource;
@@ -89,7 +89,7 @@ ExpandNewCoroutineExpression
 									}
 									else
 									{
-										auto castExpr = MakePtr<WfTypeCastingExpression>();
+										auto castExpr = Ptr(new WfTypeCastingExpression);
 										castExpr->strategy = WfTypeCastingStrategy::Strong;
 										castExpr->expression = refSource;
 										{
@@ -98,7 +98,7 @@ ExpandNewCoroutineExpression
 											castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
 										}
 
-										auto inferExpr = MakePtr<WfInferExpression>();
+										auto inferExpr = Ptr(new WfInferExpression);
 										inferExpr->expression = castExpr;
 										{
 											auto tdType = MakePtr<TypeDescriptorTypeInfo>(method->GetOwnerTypeDescriptor(), TypeInfoHint::Normal);
@@ -110,27 +110,27 @@ ExpandNewCoroutineExpression
 									}
 									memberExpr->name.value = method->GetName();
 
-									auto callExpr = MakePtr<WfCallExpression>();
+									auto callExpr = Ptr(new WfCallExpression);
 									callExpr->function = memberExpr;
 
 									for (vint l = 0; l < parameterCount; l++)
 									{
 										auto parameter = method->GetParameter(l);
 
-										auto argumentExpr = MakePtr<WfReferenceExpression>();
+										auto argumentExpr = Ptr(new WfReferenceExpression);
 										argumentExpr->name.value = L"<mixin-parameter>" + parameter->GetName();
 										callExpr->arguments.Add(argumentExpr);
 									}
 
 									if (method->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
 									{
-										auto stat = MakePtr<WfExpressionStatement>();
+										auto stat = Ptr(new WfExpressionStatement);
 										stat->expression = callExpr;
 										implBlock->statements.Add(stat);
 									}
 									else
 									{
-										auto stat = MakePtr<WfReturnStatement>();
+										auto stat = Ptr(new WfReturnStatement);
 										stat->expression = callExpr;
 										implBlock->statements.Add(stat);
 									}

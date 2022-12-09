@@ -88,7 +88,7 @@ BuildGlobalNameFromModules
 				{
 					if (node->functionKind == WfFunctionKind::Static)
 					{
-						auto info = MakePtr<WfStaticMethod>();
+						auto info = Ptr(new WfStaticMethod);
 						td->AddMember(node->name.value, info);
 						manager->declarationMemberInfos.Add(node, info);
 					}
@@ -98,14 +98,14 @@ BuildGlobalNameFromModules
 						{
 						case WfClassKind::Class:
 							{
-								auto info = MakePtr<WfClassMethod>();
+								auto info = Ptr(new WfClassMethod);
 								td->AddMember(node->name.value, info);
 								manager->declarationMemberInfos.Add(node, info);
 							}
 							break;
 						case WfClassKind::Interface:
 							{
-								auto info = MakePtr<WfInterfaceMethod>();
+								auto info = Ptr(new WfInterfaceMethod);
 								td->AddMember(node->name.value, info);
 								manager->declarationMemberInfos.Add(node, info);
 							}
@@ -194,7 +194,7 @@ BuildGlobalNameFromModules
 				{
 					for (auto input : node->inputs)
 					{
-						auto info = MakePtr<WfClassMethod>();
+						auto info = Ptr(new WfClassMethod);
 						td->AddMember(input->name.value, info);
 						manager->stateInputMethods.Add(input, info);
 
@@ -216,9 +216,9 @@ BuildGlobalNameFromModules
 						}
 					}
 
-					auto smInfo = MakePtr<WfStateMachineInfo>();
+					auto smInfo = Ptr(new WfStateMachineInfo);
 					{
-						smInfo->createCoroutineMethod = MakePtr<WfClassMethod>();
+						smInfo->createCoroutineMethod = Ptr(new WfClassMethod);
 						td->AddMember(L"<state>CreateCoroutine", smInfo->createCoroutineMethod);
 					}
 					manager->stateMachineInfos.Add(node, smInfo);

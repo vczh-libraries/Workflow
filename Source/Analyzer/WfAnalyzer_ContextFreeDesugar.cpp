@@ -283,21 +283,21 @@ ContextFreeModuleDesugar
 
 					if (needVariable && node->expression)
 					{
-						auto decl = MakePtr<WfVariableDeclaration>();
+						auto decl = Ptr(new WfVariableDeclaration);
 						node->expandedDeclarations.Add(decl);
 
 						decl->name.value = varName;
 						decl->type = CopyType(node->type);
 						decl->expression = CopyExpression(node->expression, true);
 
-						auto att = MakePtr<WfAttribute>();
+						auto att = Ptr(new WfAttribute);
 						att->category.value = L"cpp";
 						att->name.value = L"Private";
 						decl->attributes.Add(att);
 					}
 
 					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
+						auto decl = Ptr(new WfFunctionDeclaration);
 						node->expandedDeclarations.Add(decl);
 
 						decl->functionKind = WfFunctionKind::Normal;
@@ -307,13 +307,13 @@ ContextFreeModuleDesugar
 
 						if (!needVirtual)
 						{
-							auto refExpr = MakePtr<WfReferenceExpression>();
+							auto refExpr = Ptr(new WfReferenceExpression);
 							refExpr->name.value = varName;
 
-							auto returnStat = MakePtr<WfReturnStatement>();
+							auto returnStat = Ptr(new WfReturnStatement);
 							returnStat->expression = refExpr;
 
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							block->statements.Add(returnStat);
 							decl->statement = block;
 						}
@@ -321,7 +321,7 @@ ContextFreeModuleDesugar
 
 					if (!needVirtual || node->configConst == WfAPConst::Writable)
 					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
+						auto decl = Ptr(new WfFunctionDeclaration);
 						node->expandedDeclarations.Add(decl);
 
 						decl->functionKind = WfFunctionKind::Normal;
@@ -330,38 +330,38 @@ ContextFreeModuleDesugar
 
 						if (node->configConst == WfAPConst::Readonly)
 						{
-							auto att = MakePtr<WfAttribute>();
+							auto att = Ptr(new WfAttribute);
 							att->category.value = L"cpp";
 							att->name.value = L"Protected";
 							decl->attributes.Add(att);
 						}
 
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<value>";
 							argument->type = CopyType(node->type);
 							decl->arguments.Add(argument);
 						}
 						{
-							auto voidType = MakePtr<WfPredefinedType>();
+							auto voidType = Ptr(new WfPredefinedType);
 							voidType->name = WfPredefinedTypeName::Void;
 							decl->returnType = voidType;
 						}
 
 						if (!needVirtual)
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							decl->statement = block;
 
 							auto createBinaryExpr = [&](WfBinaryOperator op)
 							{
-								auto refArgument = MakePtr<WfReferenceExpression>();
+								auto refArgument = Ptr(new WfReferenceExpression);
 								refArgument->name.value = L"<value>";
 
-								auto refVar = MakePtr<WfReferenceExpression>();
+								auto refVar = Ptr(new WfReferenceExpression);
 								refVar->name.value = varName;
 
-								auto binaryExpr = MakePtr<WfBinaryExpression>();
+								auto binaryExpr = Ptr(new WfBinaryExpression);
 								binaryExpr->first = refVar;
 								binaryExpr->second = refArgument;
 								binaryExpr->op = op;
@@ -371,25 +371,25 @@ ContextFreeModuleDesugar
 
 							if (node->configObserve == WfAPObserve::Observable)
 							{
-								auto ifStat = MakePtr<WfIfStatement>();
+								auto ifStat = Ptr(new WfIfStatement);
 								ifStat->expression = createBinaryExpr(WfBinaryOperator::NE);
 
-								auto trueBlock = MakePtr<WfBlockStatement>();
+								auto trueBlock = Ptr(new WfBlockStatement);
 								ifStat->trueBranch = trueBlock;
 
 								{
-									auto stat = MakePtr<WfExpressionStatement>();
+									auto stat = Ptr(new WfExpressionStatement);
 									stat->expression = createBinaryExpr(WfBinaryOperator::Assign);
 									trueBlock->statements.Add(stat);
 								}
 								{
-									auto refEvent = MakePtr<WfReferenceExpression>();
+									auto refEvent = Ptr(new WfReferenceExpression);
 									refEvent->name.value = eventName;
 
-									auto callExpr = MakePtr<WfCallExpression>();
+									auto callExpr = Ptr(new WfCallExpression);
 									callExpr->function = refEvent;
 
-									auto stat = MakePtr<WfExpressionStatement>();
+									auto stat = Ptr(new WfExpressionStatement);
 									stat->expression = callExpr;
 									trueBlock->statements.Add(stat);
 								}
@@ -398,7 +398,7 @@ ContextFreeModuleDesugar
 							}
 							else
 							{
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = createBinaryExpr(WfBinaryOperator::Assign);
 
 								block->statements.Add(stat);
@@ -408,7 +408,7 @@ ContextFreeModuleDesugar
 
 					if (needEvent)
 					{
-						auto decl = MakePtr<WfEventDeclaration>();
+						auto decl = Ptr(new WfEventDeclaration);
 						node->expandedDeclarations.Add(decl);
 
 						decl->name.value = eventName;
@@ -416,7 +416,7 @@ ContextFreeModuleDesugar
 
 					if (needProperty)
 					{
-						auto decl = MakePtr<WfPropertyDeclaration>();
+						auto decl = Ptr(new WfPropertyDeclaration);
 						node->expandedDeclarations.Add(decl);
 
 						decl->type = CopyType(node->type);
@@ -461,7 +461,7 @@ ContextFreeModuleDesugar
 						return;
 					}
 
-					auto decl = MakePtr<WfClassDeclaration>();
+					auto decl = Ptr(new WfClassDeclaration);
 					node->expandedDeclarations.Add(decl);
 					decl->kind = WfClassKind::Interface;
 					decl->constructorType = WfConstructorType::SharedPtr;
@@ -469,57 +469,57 @@ ContextFreeModuleDesugar
 					decl->baseTypes.Add(CopyType(node->baseType));
 
 					{
-						auto funcDecl = MakePtr<WfFunctionDeclaration>();
+						auto funcDecl = Ptr(new WfFunctionDeclaration);
 						decl->declarations.Add(funcDecl);
 						funcDecl->functionKind = WfFunctionKind::Static;
 						funcDecl->anonymity = WfFunctionAnonymity::Named;
 						funcDecl->name.value = L"CastResult";
 						funcDecl->returnType = CopyType(node->elementType);
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							funcDecl->arguments.Add(argument);
 							argument->name.value = L"value";
 							argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
 						}
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							funcDecl->statement = block;
 
-							auto refValue = MakePtr<WfReferenceExpression>();
+							auto refValue = Ptr(new WfReferenceExpression);
 							refValue->name.value = L"value";
 
-							auto castExpr = MakePtr<WfTypeCastingExpression>();
+							auto castExpr = Ptr(new WfTypeCastingExpression);
 							castExpr->strategy = WfTypeCastingStrategy::Strong;
 							castExpr->type = CopyType(node->elementType);
 							castExpr->expression = refValue;
 
-							auto stat = MakePtr<WfReturnStatement>();
+							auto stat = Ptr(new WfReturnStatement);
 							stat->expression = castExpr;
 
 							block->statements.Add(stat);
 						}
 					}
 					{
-						auto funcDecl = MakePtr<WfFunctionDeclaration>();
+						auto funcDecl = Ptr(new WfFunctionDeclaration);
 						decl->declarations.Add(funcDecl);
 						funcDecl->functionKind = WfFunctionKind::Static;
 						funcDecl->anonymity = WfFunctionAnonymity::Named;
 						funcDecl->name.value = L"StoreResult";
 						funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							funcDecl->arguments.Add(argument);
 							argument->name.value = L"value";
 							argument->type = CopyType(node->elementType);
 						}
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							funcDecl->statement = block;
 
-							auto refValue = MakePtr<WfReferenceExpression>();
+							auto refValue = Ptr(new WfReferenceExpression);
 							refValue->name.value = L"value";
 
-							auto stat = MakePtr<WfReturnStatement>();
+							auto stat = Ptr(new WfReturnStatement);
 							stat->expression = refValue;
 
 							block->statements.Add(stat);

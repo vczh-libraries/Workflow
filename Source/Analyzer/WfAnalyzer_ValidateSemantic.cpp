@@ -226,7 +226,7 @@ ValidateSemantic
 GetExpressionScopeName
 ***********************************************************************/
 
-			Ptr<WfLexicalScopeName> GetExpressionScopeName(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			Ptr<WfLexicalScopeName> GetExpressionScopeName(WfLexicalScopeManager* manager, WfExpression* expression)
 			{
 				List<ResolveExpressionResult> results;
 				ValidateExpressionSemantic(manager, expression, 0, results);
@@ -242,12 +242,12 @@ GetExpressionScopeName
 				}
 				if (results.Count() == 0)
 				{
-					manager->errors.Add(WfErrors::ExpressionIsNotScopeName(expression.Obj()));
+					manager->errors.Add(WfErrors::ExpressionIsNotScopeName(expression));
 					return 0;
 				}
 				else if (results.Count() > 1)
 				{
-					manager->errors.Add(WfErrors::TooManyTargets(expression.Obj(), results, GetExpressionName(expression)));
+					manager->errors.Add(WfErrors::TooManyTargets(expression, results, GetExpressionName(expression)));
 					return 0;
 				}
 
@@ -256,11 +256,16 @@ GetExpressionScopeName
 				return result.scopeName;
 			}
 
+			Ptr<WfLexicalScopeName> GetExpressionScopeName(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			{
+				return GetExpressionScopeName(manager, expression.Obj());
+			}
+
 /***********************************************************************
 GetExpressionEventInfo
 ***********************************************************************/
 
-			reflection::description::IEventInfo* GetExpressionEventInfo(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			reflection::description::IEventInfo* GetExpressionEventInfo(WfLexicalScopeManager* manager, WfExpression* expression)
 			{
 				List<ResolveExpressionResult> results;
 				ValidateExpressionSemantic(manager, expression, 0, results);
@@ -276,12 +281,12 @@ GetExpressionEventInfo
 				}
 				if (results.Count() == 0)
 				{
-					manager->errors.Add(WfErrors::ExpressionIsNotEvent(expression.Obj()));
+					manager->errors.Add(WfErrors::ExpressionIsNotEvent(expression));
 					return 0;
 				}
 				else if (results.Count() > 1)
 				{
-					manager->errors.Add(WfErrors::TooManyTargets(expression.Obj(), results, GetExpressionName(expression)));
+					manager->errors.Add(WfErrors::TooManyTargets(expression, results, GetExpressionName(expression)));
 					return 0;
 				}
 
@@ -290,11 +295,16 @@ GetExpressionEventInfo
 				return result.eventInfo;
 			}
 
+			reflection::description::IEventInfo* GetExpressionEventInfo(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			{
+				return GetExpressionEventInfo(manager, expression.Obj());
+			}
+
 /***********************************************************************
 GetExpressionTypes
 ***********************************************************************/
 
-			void GetExpressionTypes(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, bool allowEvent, collections::List<ResolveExpressionResult>& results)
+			void GetExpressionTypes(WfLexicalScopeManager* manager, WfExpression* expression, Ptr<reflection::description::ITypeInfo> expectedType, bool allowEvent, collections::List<ResolveExpressionResult>& results)
 			{
 				ValidateExpressionSemantic(manager, expression, expectedType, results);
 				if (results.Count() == 0) return;
@@ -321,11 +331,11 @@ GetExpressionTypes
 				{
 					if (scopeName)
 					{
-						manager->errors.Add(WfErrors::ScopeNameIsNotExpression(expression.Obj(), scopeName));
+						manager->errors.Add(WfErrors::ScopeNameIsNotExpression(expression, scopeName));
 					}
 					if (eventInfo)
 					{
-						manager->errors.Add(WfErrors::EventIsNotExpression(expression.Obj(), eventInfo));
+						manager->errors.Add(WfErrors::EventIsNotExpression(expression, eventInfo));
 					}
 				}
 
@@ -346,24 +356,29 @@ GetExpressionTypes
 					{
 						for (auto type : failedTypes)
 						{
-							manager->errors.Add(WfErrors::ExpressionCannotImplicitlyConvertToType(expression.Obj(), type.Obj(), expectedType.Obj()));
+							manager->errors.Add(WfErrors::ExpressionCannotImplicitlyConvertToType(expression, type.Obj(), expectedType.Obj()));
 						}
 					}
 				}
+			}
+
+			void GetExpressionTypes(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, bool allowEvent, collections::List<ResolveExpressionResult>& results)
+			{
+				return GetExpressionTypes(manager, expression.Obj(), expectedType, allowEvent, results);
 			}
 
 /***********************************************************************
 GetExpressionType
 ***********************************************************************/
 
-			Ptr<reflection::description::ITypeInfo> GetExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
+			Ptr<reflection::description::ITypeInfo> GetExpressionType(WfLexicalScopeManager* manager, WfExpression* expression, Ptr<reflection::description::ITypeInfo> expectedType)
 			{
 				List<ResolveExpressionResult> results;
 				GetExpressionTypes(manager, expression, expectedType, false, results);
 				
 				if (results.Count() > 1)
 				{
-					manager->errors.Add(WfErrors::TooManyTargets(expression.Obj(), results, GetExpressionName(expression)));
+					manager->errors.Add(WfErrors::TooManyTargets(expression, results, GetExpressionName(expression)));
 					return expectedType;
 				}
 				else if (results.Count() == 1)
@@ -379,18 +394,23 @@ GetExpressionType
 				}
 			}
 
+			Ptr<reflection::description::ITypeInfo> GetExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
+			{
+				return GetExpressionType(manager, expression.Obj(), expectedType);
+			}
+
 /***********************************************************************
 GetLeftValueExpressionType
 ***********************************************************************/
 
-			Ptr<reflection::description::ITypeInfo>	GetLeftValueExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			Ptr<reflection::description::ITypeInfo>	GetLeftValueExpressionType(WfLexicalScopeManager* manager, WfExpression* expression)
 			{
 				List<ResolveExpressionResult> results;
 				GetExpressionTypes(manager, expression, nullptr, false, results);
 
 				if (results.Count() > 1)
 				{
-					manager->errors.Add(WfErrors::TooManyTargets(expression.Obj(), results, GetExpressionName(expression)));
+					manager->errors.Add(WfErrors::TooManyTargets(expression, results, GetExpressionName(expression)));
 				}
 				else if (results.Count() == 1)
 				{
@@ -402,17 +422,22 @@ GetLeftValueExpressionType
 					}
 					else
 					{
-						manager->errors.Add(WfErrors::ExpressionIsNotLeftValue(expression.Obj(), results[0]));
+						manager->errors.Add(WfErrors::ExpressionIsNotLeftValue(expression, results[0]));
 					}
 				}
 				return nullptr;
+			}
+
+			Ptr<reflection::description::ITypeInfo>	GetLeftValueExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			{
+				return GetLeftValueExpressionType(manager, expression.Obj());
 			}
 
 /***********************************************************************
 GetEnumerableExpressionItemType
 ***********************************************************************/
 
-			Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
+			Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, WfExpression* expression, Ptr<reflection::description::ITypeInfo> expectedType)
 			{
 				Ptr<ITypeInfo> collectionType = GetExpressionType(manager, expression, expectedType);
 				if (collectionType)
@@ -430,9 +455,14 @@ GetEnumerableExpressionItemType
 						return TypeInfoRetriver<Value>::CreateTypeInfo();
 					}
 
-					manager->errors.Add(WfErrors::ExpressionIsNotCollection(expression.Obj(), collectionType.Obj()));
+					manager->errors.Add(WfErrors::ExpressionIsNotCollection(expression, collectionType.Obj()));
 				}
 				return nullptr;
+			}
+
+			Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType)
+			{
+				return GetEnumerableExpressionItemType(manager, expression.Obj(), expectedType);
 			}
 		}
 	}

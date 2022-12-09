@@ -131,7 +131,7 @@ WfLexicalScopeName
 				vint index = children.Keys().IndexOf(name);
 				if (index == -1)
 				{
-					Ptr<WfLexicalScopeName> newName = new WfLexicalScopeName(imported);
+					auto newName = Ptr(new WfLexicalScopeName(imported));
 					newName->name = name;
 					newName->parent = this;
 					children.Add(name, newName);
@@ -468,7 +468,7 @@ WfLexicalScopeManager
 				Clear(keepTypeDescriptorNames, false);
 				if (!globalName)
 				{
-					globalName = new WfLexicalScopeName(true);
+					globalName = Ptr(new WfLexicalScopeName(true));
 					BuildGlobalNameFromTypeDescriptors(this);
 				}
 
@@ -537,7 +537,7 @@ WfLexicalScopeManager
 						vint index = enumType->IndexOfItem(name);
 						if (index != -1)
 						{
-							results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
+							results.Add(ResolveExpressionResult::ReadonlyType(Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal))));
 							return true;
 						}
 					}
@@ -796,7 +796,7 @@ WfLexicalScopeManager
 			{
 				if (!capture)
 				{
-					capture = MakePtr<WfLexicalCapture>();
+					capture = Ptr(new WfLexicalCapture);
 				}
 				lambdaCaptures.Add(node, capture);
 			}
