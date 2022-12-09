@@ -787,7 +787,7 @@ CreateTypeInfoFromType
 					return Ptr(new TypeDescriptorTypeInfo(typeInfo->GetTypeDescriptor(), typeInfo->GetHint()));
 				case ITypeInfo::Generic:
 				{
-					auto impl = Ptr(new GenericTypeInfo(typeInfo->GetElementType()));
+					auto impl = Ptr(new GenericTypeInfo(Ptr(typeInfo->GetElementType())));
 					vint count = typeInfo->GetGenericArgumentCount();
 					for (vint i = 0; i < count; i++)
 					{
