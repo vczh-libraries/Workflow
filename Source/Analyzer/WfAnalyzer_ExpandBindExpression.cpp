@@ -1291,14 +1291,6 @@ ExpandBindExpression
 					// stable symbol order by sorting them by code
 					List<WfExpression*> orderedObserves;
 
-					auto printExpression = [](WfExpression* observe)
-					{
-						return GenerateToStream([&](StreamWriter& writer)
-						{
-							WfPrint(observe, WString::Empty, writer);
-						});
-					};
-
 					for (auto [parent, index] : indexed(context.cachedExprs))
 					{
 						WString cacheName = context.GetCacheVariableName(index);

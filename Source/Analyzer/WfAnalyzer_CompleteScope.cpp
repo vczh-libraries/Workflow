@@ -23,9 +23,8 @@ CompleteScopeForClassMember
 			public:
 				WfLexicalScopeManager*					manager;
 				Ptr<WfCustomType>						td;
-				Ptr<WfClassDeclaration>					classDecl;
 
-				CompleteScopeForClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfCustomType> _td, Ptr<WfClassDeclaration> _classDecl)
+				CompleteScopeForClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfCustomType> _td)
 					:manager(_manager)
 					, td(_td)
 				{
@@ -191,9 +190,9 @@ CompleteScopeForClassMember
 					smInfo->createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 				}
 
-				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
+				static void Execute(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfDeclaration> memberDecl)
 				{
-					CompleteScopeForClassMemberVisitor visitor(manager, td, classDecl);
+					CompleteScopeForClassMemberVisitor visitor(manager, td);
 					memberDecl->Accept(&visitor);
 				}
 			};
@@ -219,7 +218,7 @@ CompleteScopeForDeclaration
 				{
 					for (auto decl : node->declarations)
 					{
-						CompleteScopeForDeclaration(manager, decl);
+						CompleteScopeForDeclaration(manager, decl.Obj());
 					}
 				}
 
@@ -302,7 +301,7 @@ CompleteScopeForDeclaration
 
 					for (auto memberDecl : node->declarations)
 					{
-						CompleteScopeForClassMember(manager, td, node, memberDecl);
+						CompleteScopeForClassMember(manager, td, memberDecl);
 					}
 				}
 
@@ -378,9 +377,9 @@ CompleteScopeForDeclaration
 CompleteScope
 ***********************************************************************/
 
-			void CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl)
+			void CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfCustomType> td, Ptr<WfDeclaration> memberDecl)
 			{
-				CompleteScopeForClassMemberVisitor::Execute(manager, td, classDecl, memberDecl);
+				CompleteScopeForClassMemberVisitor::Execute(manager, td, memberDecl);
 			}
 
 			void CompleteScopeForDeclaration(WfLexicalScopeManager* manager, WfDeclaration* declaration)
@@ -392,7 +391,7 @@ CompleteScope
 			{
 				for (auto declaration : module->declarations)
 				{
-					CompleteScopeForDeclaration(manager, declaration);
+					CompleteScopeForDeclaration(manager, declaration.Obj());
 				}
 			}
 		}

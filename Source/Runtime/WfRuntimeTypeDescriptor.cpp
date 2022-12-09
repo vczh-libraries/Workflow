@@ -705,7 +705,7 @@ WfStruct
 			WfStruct::WfStruct(const WString& typeName)
 				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>(TypeDescriptorFlags::Struct, typeName)
 			{
-				this->valueType = new WfValueType(this);
+				this->valueType = Ptr(new WfValueType(this));
 			}
 
 			WfStruct::~WfStruct()
@@ -858,8 +858,8 @@ WfEnum
 			WfEnum::WfEnum(bool isFlags, const WString& typeName)
 				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>((isFlags ? TypeDescriptorFlags::FlagEnum : TypeDescriptorFlags::NormalEnum), typeName)
 			{
-				this->valueType = new WfValueType(this);
-				this->enumType = new WfEnumType(this);
+				this->valueType = Ptr(new WfValueType(this));
+				this->enumType = Ptr(new WfEnumType(this));
 			}
 
 			WfEnum::~WfEnum()
@@ -907,7 +907,7 @@ WfClassInstance
 				{
 					if (!(ptr = value.GetSharedPtr()))
 					{
-						ptr = value.GetRawPtr();
+						ptr = Ptr(value.GetRawPtr());
 					}
 					value = Value();
 				}
