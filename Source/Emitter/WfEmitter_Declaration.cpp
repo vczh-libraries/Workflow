@@ -192,9 +192,9 @@ GenerateInstructions(Declaration)
 			{
 			public:
 				WfCodegenContext&						context;
-				Ptr<WfClassDeclaration>					classDecl;
+				WfClassDeclaration*						classDecl;
 
-				GenerateClassMemberInstructionsVisitor(WfCodegenContext& _context, Ptr<WfClassDeclaration> _classDecl)
+				GenerateClassMemberInstructionsVisitor(WfCodegenContext& _context, WfClassDeclaration* _classDecl)
 					:context(_context)
 					, classDecl(_classDecl)
 				{
@@ -385,7 +385,7 @@ GenerateInstructions(Declaration)
 				{
 					for (auto decl : node->declarations)
 					{
-						GenerateDeclarationInstructions(context, decl);
+						GenerateDeclarationInstructions(context, decl.Obj());
 					}
 				}
 
@@ -451,7 +451,7 @@ GenerateInstructions(Declaration)
 				}
 			};
 
-			void GenerateDeclarationInstructions(WfCodegenContext& context, Ptr<WfDeclaration> declaration)
+			void GenerateDeclarationInstructions(WfCodegenContext& context, WfDeclaration* declaration)
 			{
 				GenerateDeclarationInstructionsVisitor visitor(context);
 				declaration->Accept(&visitor);

@@ -674,7 +674,7 @@ GenerateInstructions(Expression)
 				void Visit(WfRangeExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node];
-					auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+					auto elementType = Ptr(result.type->GetElementType()->GetGenericArgument(0));
 					auto type = GetInstructionTypeArgument(elementType);
 					
 					GenerateExpressionInstructions(context, node->begin, elementType);
@@ -1077,11 +1077,11 @@ GenerateInstructions(Expression)
 
 						if (node->functionKind == WfFunctionKind::Normal)
 						{
-							closureFunctions.Add(node);
+							closureFunctions.Add(Ptr(node));
 						}
 						else
 						{
-							overrideFunctions.Add(node);
+							overrideFunctions.Add(Ptr(node));
 						}
 					}
 

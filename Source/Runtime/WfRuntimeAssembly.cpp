@@ -822,7 +822,7 @@ Serialization (TypeImpl)
 						WString name;
 						IOType(reader, type);
 						reader << name;
-						info->AddParameter(new ParameterInfoImpl(info, name, type));
+						info->AddParameter(Ptr(new ParameterInfoImpl(info, name, type)));
 					}
 				}
 					
@@ -874,7 +874,7 @@ Serialization (TypeImpl)
 
 				static void IOClassConstructor(WfReader& reader, Ptr<WfClassConstructor>& info)
 				{
-					info = new WfClassConstructor(nullptr);
+					info = Ptr(new WfClassConstructor(nullptr));
 					reader << info->functionIndex;
 					IOMethodBase(reader, info.Obj());
 				}
@@ -891,7 +891,7 @@ Serialization (TypeImpl)
 				{
 					Ptr<ITypeInfo> type;
 					IOType(reader, type);
-					info = new WfInterfaceConstructor(type);
+					info = Ptr(new WfInterfaceConstructor(type));
 				}
 
 				static void IOInterfaceConstructor(WfWriter& writer, WfInterfaceConstructor* info)
@@ -1520,12 +1520,12 @@ Serialization (Assembly)
 
 				static void IOPrepare(WfReader& reader, WfAssembly& value, WfAssemblyLoadErrors& errors)
 				{
-					reader.context = new WfReaderContext(errors);
+					reader.context = Ptr(new WfReaderContext(errors));
 					bool hasTypeImpl = false;
 					reader << hasTypeImpl;
 					if (hasTypeImpl)
 					{
-						value.typeImpl = new WfTypeImpl;
+						value.typeImpl = Ptr(new WfTypeImpl);
 						IOCustomTypeList(reader, value.typeImpl->classes);
 						IOCustomTypeList(reader, value.typeImpl->interfaces);
 						IOCustomTypeList(reader, value.typeImpl->structs);
@@ -1582,7 +1582,7 @@ Serialization (Assembly)
 
 				static void IOPrepare(WfWriter& writer, WfAssembly& value, WfAssemblyLoadErrors&)
 				{
-					writer.context = new WfWriterContext;
+					writer.context = Ptr(new WfWriterContext);
 					bool hasTypeImpl = value.typeImpl != nullptr;
 					writer << hasTypeImpl;
 					if (hasTypeImpl)

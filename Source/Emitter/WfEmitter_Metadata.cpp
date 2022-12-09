@@ -47,9 +47,9 @@ GenerateGlobalDeclarationMetadata
 			public:
 				WfCodegenContext&						context;
 				WString									namePrefix;
-				Ptr<WfClassDeclaration>					classDecl;
+				WfClassDeclaration*						classDecl;
 
-				GenerateGlobalClassMemberMetadataVisitor(WfCodegenContext& _context, const WString& _namePrefix, Ptr<WfClassDeclaration> _classDecl)
+				GenerateGlobalClassMemberMetadataVisitor(WfCodegenContext& _context, const WString& _namePrefix, WfClassDeclaration* _classDecl)
 					:context(_context)
 					, namePrefix(_namePrefix)
 					, classDecl(_classDecl)
@@ -122,7 +122,7 @@ GenerateGlobalDeclarationMetadata
 					context.assembly->functionByName.Add(meta->name, index);
 					context.destructors.Add(node, index);
 
-					auto info = context.manager->declarationTypes[classDecl.Obj()].Cast<WfClass>();
+					auto info = context.manager->declarationTypes[classDecl].Cast<WfClass>();
 					info->destructorFunctionIndex = index;
 				}
 
@@ -172,7 +172,7 @@ GenerateGlobalDeclarationMetadata
 				{
 					for (auto decl : node->declarations)
 					{
-						GenerateGlobalDeclarationMetadata(context, decl, namePrefix + node->name.value + L"::");
+						GenerateGlobalDeclarationMetadata(context, decl.Obj(), namePrefix + node->name.value + L"::");
 					}
 				}
 
@@ -249,7 +249,7 @@ GenerateGlobalDeclarationMetadata
 				}
 			};
 
-			void GenerateGlobalDeclarationMetadata(WfCodegenContext& context, Ptr<WfDeclaration> declaration, const WString& namePrefix)
+			void GenerateGlobalDeclarationMetadata(WfCodegenContext& context, WfDeclaration* declaration, const WString& namePrefix)
 			{
 				GenerateGlobalDeclarationMetadataVisitor visitor(context, namePrefix);
 				declaration->Accept(&visitor);

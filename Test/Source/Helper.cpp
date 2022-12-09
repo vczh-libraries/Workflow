@@ -21,7 +21,7 @@ workflow::Parser& GetWorkflowParser()
 	if (!workflowParser)
 	{
 		BEGIN_TIMER;
-		workflowParser = new workflow::Parser();
+		workflowParser =Ptr(new workflow::Parser);
 		TEST_PRINT(L"new workflow::Parser()");
 		PRINT_TIMER;
 	}

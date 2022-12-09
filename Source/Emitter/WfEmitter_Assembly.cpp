@@ -144,18 +144,18 @@ GenerateAssembly
 			{
 				EXECUTE_CALLBACK(OnGenerateMetadata());
 				auto assembly = Ptr(new WfAssembly);
-				assembly->insBeforeCodegen = new WfInstructionDebugInfo;
-				assembly->insAfterCodegen = new WfInstructionDebugInfo;
+				assembly->insBeforeCodegen = Ptr(new WfInstructionDebugInfo);
+				assembly->insAfterCodegen = Ptr(new WfInstructionDebugInfo);
 				
 				WfCodegenContext context(assembly, manager);
 				for (auto [module, index] : indexed(manager->GetModules()))
 				{
 					auto codeBeforeCodegen = manager->GetModuleCodes()[index];
 
-					auto recorderBefore = new ParsingGeneratedLocationRecorder(context.nodePositionsBeforeCodegen);
-					auto recorderAfter = new ParsingGeneratedLocationRecorder(context.nodePositionsAfterCodegen);
-					auto recorderOriginal = new ParsingOriginalLocationRecorder(recorderBefore);
-					auto recorderMultiple = new ParsingMultiplePrintNodeRecorder;
+					auto recorderBefore = Ptr(new ParsingGeneratedLocationRecorder(context.nodePositionsBeforeCodegen));
+					auto recorderAfter = Ptr(new ParsingGeneratedLocationRecorder(context.nodePositionsAfterCodegen));
+					auto recorderOriginal = Ptr(new ParsingOriginalLocationRecorder(recorderBefore));
+					auto recorderMultiple = Ptr(new ParsingMultiplePrintNodeRecorder);
 					recorderMultiple->AddRecorder(recorderOriginal);
 					recorderMultiple->AddRecorder(recorderAfter);
 
@@ -175,7 +175,7 @@ GenerateAssembly
 
 				if (manager->declarationTypes.Count() > 0)
 				{
-					assembly->typeImpl = new WfTypeImpl;
+					assembly->typeImpl = Ptr(new WfTypeImpl);
 					for (auto td : manager->declarationTypes.Values())
 					{
 						if (auto tdClass = td.Cast<WfClass>())
@@ -201,7 +201,7 @@ GenerateAssembly
 				{
 					for (auto decl : module->declarations)
 					{
-						GenerateGlobalDeclarationMetadata(context, decl);
+						GenerateGlobalDeclarationMetadata(context, decl.Obj());
 					}
 				}
 
@@ -240,7 +240,7 @@ GenerateAssembly
 					EXECUTE_CALLBACK(OnGenerateCode(module));
 					for (auto decl : module->declarations)
 					{
-						GenerateDeclarationInstructions(context, decl);
+						GenerateDeclarationInstructions(context, decl.Obj());
 					}
 				}
 
