@@ -382,7 +382,7 @@ Global Name
 ***********************************************************************/
 
 			extern void										BuildGlobalNameFromTypeDescriptors(WfLexicalScopeManager* manager);
-			extern void										BuildNameForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, WfDeclaration* decl);
+			extern void										BuildNameForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, Ptr<WfDeclaration> decl);
 			extern void										BuildGlobalNameFromModules(WfLexicalScopeManager* manager);
 			extern void										ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name);
 

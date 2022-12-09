@@ -21,10 +21,10 @@ BuildGlobalNameFromModules
 			public:
 				WfLexicalScopeManager*			manager;
 				Ptr<WfLexicalScopeName>			scopeName;
-				Ptr<WfClassDeclaration>			classDecl;
+				WfClassDeclaration*				classDecl;
 				Ptr<WfCustomType>				td;
 
-				BuildClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName, Ptr<WfClassDeclaration> _classDecl, Ptr<WfCustomType> _td)
+				BuildClassMemberVisitor(WfLexicalScopeManager* _manager, Ptr<WfLexicalScopeName> _scopeName, WfClassDeclaration* _classDecl, Ptr<WfCustomType> _td)
 					:manager(_manager)
 					, scopeName(_scopeName)
 					, classDecl(_classDecl)
@@ -46,9 +46,9 @@ BuildGlobalNameFromModules
 					return typeName;
 				}
 
-				static void AddCustomType(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, Ptr<WfDeclaration> declaration, Ptr<ITypeDescriptor> td)
+				static void AddCustomType(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, WfDeclaration* declaration, Ptr<ITypeDescriptor> td)
 				{
-					manager->declarationTypes.Add(declaration, td);
+					manager->declarationTypes.Add(Ptr(declaration), td);
 
 					if (!scopeName->typeDescriptor)
 					{
@@ -57,17 +57,17 @@ BuildGlobalNameFromModules
 					}
 				}
 
-				static void BuildClass(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, Ptr<WfClassDeclaration> declaration)
+				static void BuildClass(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> scopeName, WfClassDeclaration* declaration)
 				{
 					WString typeName = GetTypeName(manager, scopeName);
 					Ptr<WfCustomType> td;
 					switch (declaration->kind)
 					{
 					case WfClassKind::Class:
-						td = MakePtr<WfClass>(typeName);
+						td = Ptr(new WfClass(typeName));
 						break;
 					case WfClassKind::Interface:
-						td = MakePtr<WfInterface>(typeName);
+						td = Ptr(new WfInterface(typeName));
 						break;
 					default:;
 					}
@@ -90,7 +90,7 @@ BuildGlobalNameFromModules
 					{
 						auto info = Ptr(new WfStaticMethod);
 						td->AddMember(node->name.value, info);
-						manager->declarationMemberInfos.Add(node, info);
+						manager->declarationMemberInfos.Add(Ptr(node), info);
 					}
 					else
 					{
@@ -100,14 +100,14 @@ BuildGlobalNameFromModules
 							{
 								auto info = Ptr(new WfClassMethod);
 								td->AddMember(node->name.value, info);
-								manager->declarationMemberInfos.Add(node, info);
+								manager->declarationMemberInfos.Add(Ptr(node), info);
 							}
 							break;
 						case WfClassKind::Interface:
 							{
 								auto info = Ptr(new WfInterfaceMethod);
 								td->AddMember(node->name.value, info);
-								manager->declarationMemberInfos.Add(node, info);
+								manager->declarationMemberInfos.Add(Ptr(node), info);
 							}
 							break;
 						default:;
@@ -117,43 +117,43 @@ BuildGlobalNameFromModules
 
 				void Visit(WfVariableDeclaration* node)override
 				{
-					auto info = MakePtr<WfField>(td.Obj(), node->name.value);
+					auto info = Ptr(new WfField(td.Obj(), node->name.value));
 					td->AddMember(info);
-					manager->declarationMemberInfos.Add(node, info);
+					manager->declarationMemberInfos.Add(Ptr(node), info);
 				}
 
 				void Visit(WfEventDeclaration* node)override
 				{
-					auto info = MakePtr<WfEvent>(td.Obj(), node->name.value);
+					auto info = Ptr(new WfEvent(td.Obj(), node->name.value));
 					td->AddMember(info);
-					manager->declarationMemberInfos.Add(node, info);
+					manager->declarationMemberInfos.Add(Ptr(node), info);
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
-					auto info = MakePtr<WfProperty>(td.Obj(), node->name.value);
+					auto info = Ptr(new WfProperty(td.Obj(), node->name.value));
 					td->AddMember(info);
-					manager->declarationMemberInfos.Add(node, info);
+					manager->declarationMemberInfos.Add(Ptr(node), info);
 				}
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					Ptr<ITypeInfo> typeInfo;
 					{
-						auto elementType = MakePtr<TypeDescriptorTypeInfo>(td.Obj(), TypeInfoHint::Normal);
+						auto elementType = Ptr(new TypeDescriptorTypeInfo(td.Obj(), TypeInfoHint::Normal));
 						if (node->constructorType == WfConstructorType::RawPtr)
 						{
-							typeInfo = MakePtr<RawPtrTypeInfo>(elementType);
+							typeInfo = Ptr(new RawPtrTypeInfo(elementType));
 						}
 						else
 						{
-							typeInfo = MakePtr<SharedPtrTypeInfo>(elementType);
+							typeInfo = Ptr(new SharedPtrTypeInfo(elementType));
 						}
 					}
 
-					auto info = MakePtr<WfClassConstructor>(typeInfo);
+					auto info = Ptr(new WfClassConstructor(typeInfo));
 					td->AddMember(info);
-					manager->declarationMemberInfos.Add(node, info);
+					manager->declarationMemberInfos.Add(Ptr(node), info);
 				}
 				
 				void Visit(WfDestructorDeclaration* node)override
@@ -163,18 +163,18 @@ BuildGlobalNameFromModules
 				void Visit(WfClassDeclaration* node)override
 				{
 					auto newScopeName = scopeName->AccessChild(node->name.value, false);
-					newScopeName->declarations.Add(node);
+					newScopeName->declarations.Add(Ptr(node));
 					BuildClass(manager, newScopeName, node);
 				}
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					BuildNameForDeclaration(manager, scopeName, node);
+					BuildNameForDeclaration(manager, scopeName, Ptr(node));
 				}
 
 				void Visit(WfStructDeclaration* node)override
 				{
-					BuildNameForDeclaration(manager, scopeName, node);
+					BuildNameForDeclaration(manager, scopeName, Ptr(node));
 				}
 
 				void Visit(WfVirtualCfeDeclaration* node)override
@@ -200,9 +200,9 @@ BuildGlobalNameFromModules
 
 						for (auto argument : input->arguments)
 						{
-							auto info = MakePtr<WfField>(td.Obj(), L"<stateip-" + input->name.value + L">" + argument->name.value);
+							auto info = Ptr(new WfField(td.Obj(), L"<stateip-" + input->name.value + L">" + argument->name.value));
 							td->AddMember(info);
-							manager->stateInputArguments.Add(argument.Obj(), info);
+							manager->stateInputArguments.Add(argument, info);
 						}
 					}
 					
@@ -210,9 +210,9 @@ BuildGlobalNameFromModules
 					{
 						for (auto argument : state->arguments)
 						{
-							auto info = MakePtr<WfField>(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value);
+							auto info = Ptr(new WfField(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value));
 							td->AddMember(info);
-							manager->stateDeclArguments.Add(argument.Obj(), info);
+							manager->stateDeclArguments.Add(argument, info);
 						}
 					}
 
@@ -221,7 +221,7 @@ BuildGlobalNameFromModules
 						smInfo->createCoroutineMethod = Ptr(new WfClassMethod);
 						td->AddMember(L"<state>CreateCoroutine", smInfo->createCoroutineMethod);
 					}
-					manager->stateMachineInfos.Add(node, smInfo);
+					manager->stateMachineInfos.Add(Ptr(node), smInfo);
 				}
 			};
 
@@ -254,10 +254,10 @@ BuildGlobalNameFromModules
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					manager->namespaceNames.Add(node, scopeName);
+					manager->namespaceNames.Add(Ptr(node), scopeName);
 					for (auto subDecl : node->declarations)
 					{
-						BuildNameForDeclaration(manager, scopeName, subDecl.Obj());
+						BuildNameForDeclaration(manager, scopeName, subDecl);
 					}
 				}
 
@@ -268,18 +268,18 @@ BuildGlobalNameFromModules
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					auto td = MakePtr<WfEnum>(node->kind == WfEnumKind::Flag, BuildClassMemberVisitor::GetTypeName(manager, scopeName));
+					auto td = Ptr(new WfEnum(node->kind == WfEnumKind::Flag, BuildClassMemberVisitor::GetTypeName(manager, scopeName)));
 					BuildClassMemberVisitor::AddCustomType(manager, scopeName, node, td);
 				}
 
 				void Visit(WfStructDeclaration* node)override
 				{
-					auto td = MakePtr<WfStruct>(BuildClassMemberVisitor::GetTypeName(manager, scopeName));
+					auto td = Ptr(new WfStruct(BuildClassMemberVisitor::GetTypeName(manager, scopeName)));
 					BuildClassMemberVisitor::AddCustomType(manager, scopeName, node, td);
 				}
 			};
 
-			void BuildNameForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, WfDeclaration* decl)
+			void BuildNameForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, Ptr<WfDeclaration> decl)
 			{
 				auto scopeName = name->AccessChild(decl->name.value, false);
 				scopeName->declarations.Add(decl);
@@ -294,7 +294,7 @@ BuildGlobalNameFromModules
 				{
 					for (auto decl : module->declarations)
 					{
-						BuildNameForDeclaration(manager, manager->globalName, decl.Obj());
+						BuildNameForDeclaration(manager, manager->globalName, decl);
 					}
 				}
 			}
