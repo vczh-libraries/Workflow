@@ -31,7 +31,7 @@ all:pre-build ./Bin/CppMerge
 ./Obj/VlppOS.Linux.o: ../../Import/VlppOS.Linux.cpp ../../Import/VlppOS.h ../../Import/Vlpp.h
 	$(CPP_COMPILE)
 
-./Obj/VlppRegex.o: ../../Import/VlppRegex.cpp ../../Import/VlppRegex.h ../../Import/Vlpp.h
+./Obj/VlppRegex.o: ../../Import/VlppRegex.cpp ../../Import/VlppRegex.h ../../Import/Vlpp.h ../../Import/VlppOS.h
 	$(CPP_COMPILE)
 
 ./Obj/WfMergeCpp.o: ../../Source/Cpp/WfMergeCpp.cpp ../../Source/Cpp/WfMergeCpp.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h
