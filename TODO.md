@@ -9,7 +9,6 @@
 - In generated C++ code, when a collection instance is required from an interface:
   - Try to cast to the collection instance directly using the pointer inside the implementation of the interface.
   - Create the collection instance and copy all the data if the above step failed.
-- When compiling code but don't want to execute, allow switching between 32/64 in the same process.
 
 ## With VlppParser2
 
