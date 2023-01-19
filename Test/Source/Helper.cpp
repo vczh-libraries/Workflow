@@ -5,6 +5,7 @@
 #include "Helper.h"
 #include "../../Source/Parser/Generated/WorkflowAst_Json.h"
 
+WfCpuArchitecture testCpuArchitecture = WfCpuArchitecture::AsExecutable;
 Ptr<workflow::Parser> workflowParser;
 
 #define BEGIN_TIMER\
@@ -78,37 +79,36 @@ WString GetTestOutputBasePath()
 #endif
 }
 
+const wchar_t* GetBits()
+{
+	switch (testCpuArchitecture)
+	{
+	case WfCpuArchitecture::x86: return L"32";
+	case WfCpuArchitecture::x64: return L"64";
+	default:
+#ifdef VCZH_64
+		return L"64";
+#else
+		return L"32";
+#endif
+	}
+}
+
 WString GetCppOutputPath()
 {
 #if defined VCZH_MSVC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Cpp64\\";
-#else
-	return GetTestOutputBasePath() + L"Cpp32\\";
-#endif
+	return GetTestOutputBasePath() + L"Cpp" + GetBits() + L"\\";
 #elif defined VCZH_GCC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Cpp64/";
-#else
-	return GetTestOutputBasePath() + L"Cpp32/";
-#endif
+	return GetTestOutputBasePath() + L"Cpp" + GetBits() + L"/";
 #endif
 }
 
 WString GetWorkflowOutputPath()
 {
 #if defined VCZH_MSVC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Workflow64\\";
-#else
-	return GetTestOutputBasePath() + L"Workflow32\\";
-#endif
+	return GetTestOutputBasePath() + L"Workflow" + GetBits() + L"\\";
 #elif defined VCZH_GCC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Workflow64/";
-#else
-	return GetTestOutputBasePath() + L"Workflow32/";
-#endif
+	return GetTestOutputBasePath() + L"Workflow" + GetBits() + L"/";
 #endif
 }
 

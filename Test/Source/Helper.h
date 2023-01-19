@@ -17,6 +17,8 @@ using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::filesystem;
 
+extern WfCpuArchitecture testCpuArchitecture;
+
 extern workflow::Parser&	GetWorkflowParser();
 extern void					ReleaseWorkflowTable();
 extern WString				GetTestResourcePath();
