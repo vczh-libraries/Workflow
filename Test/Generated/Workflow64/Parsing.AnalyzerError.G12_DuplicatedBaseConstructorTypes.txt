@@ -1,0 +1,95 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A
+{
+    new ()
+        :A()
+        ,A()
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A
+{
+    new ()
+        :A()
+        ,A()
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 9, Column: 14, Message: G12: Base type "A" has already been initialized.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 9, "column": 0, "index": 70}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 28}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 33}, "end": {"row": 9, "column": 0, "index": 70}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 6, "column": 6, "index": 39}, "end": {"row": 6, "column": 6, "index": 39}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 8, "column": 1, "index": 50}, "end": {"row": 8, "column": 18, "index": 67}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "arguments": [],
+            "baseConstructorCalls": [{
+                "$ast": { "type": "BaseConstructorCall", "codeRange": {"start": {"row": 8, "column": 8, "index": 57}, "end": {"row": 8, "column": 10, "index": 59}, "codeIndex": -1}},
+                "arguments": [],
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 8, "index": 57}, "end": {"row": 8, "column": 8, "index": 57}, "codeIndex": -1}},
+                    "name": { "value": "A", "codeRange": {"start": {"row": 8, "column": 8, "index": 57}, "end": {"row": 8, "column": 8, "index": 57}, "codeIndex": -1}}
+                }
+            }, {
+                "$ast": { "type": "BaseConstructorCall", "codeRange": {"start": {"row": 8, "column": 13, "index": 62}, "end": {"row": 8, "column": 15, "index": 64}, "codeIndex": -1}},
+                "arguments": [],
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 13, "index": 62}, "end": {"row": 8, "column": 13, "index": 62}, "codeIndex": -1}},
+                    "name": { "value": "A", "codeRange": {"start": {"row": 8, "column": 13, "index": 62}, "end": {"row": 8, "column": 13, "index": 62}, "codeIndex": -1}}
+                }
+            }],
+            "constructorType": "SharedPtr",
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 8, "column": 17, "index": 66}, "end": {"row": 8, "column": 18, "index": 67}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

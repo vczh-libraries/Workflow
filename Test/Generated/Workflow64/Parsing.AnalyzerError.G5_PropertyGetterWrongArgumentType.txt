@@ -1,0 +1,101 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface A
+{
+    func GetX(value : int) : (int);
+
+    func SetX(value : int) : (void);
+
+    prop X : int{GetX, SetX}
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface A
+{
+    func GetX(value : int) : (int);
+
+    func SetX(value : int) : (void);
+
+    prop X : int{GetX, SetX}
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 2, Message: G5: Cannot match the getter "GetX" of property "X" in type "A". A property getter should have no argument, and its return type should be identical to the property type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 7, "column": 0, "index": 125}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 7, "column": 0, "index": 125}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 33}, "end": {"row": 4, "column": 29, "index": 61}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "GetX", "codeRange": {"start": {"row": 4, "column": 6, "index": 38}, "end": {"row": 4, "column": 9, "index": 41}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 4, "column": 11, "index": 43}, "end": {"row": 4, "column": 21, "index": 53}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "value", "codeRange": {"start": {"row": 4, "column": 11, "index": 43}, "end": {"row": 4, "column": 15, "index": 47}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 19, "index": 51}, "end": {"row": 4, "column": 21, "index": 53}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 26, "index": 58}, "end": {"row": 4, "column": 28, "index": 60}, "codeIndex": -1}},
+                "name": "Int"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 65}, "end": {"row": 5, "column": 30, "index": 94}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "SetX", "codeRange": {"start": {"row": 5, "column": 6, "index": 70}, "end": {"row": 5, "column": 9, "index": 73}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 11, "index": 75}, "end": {"row": 5, "column": 21, "index": 85}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "value", "codeRange": {"start": {"row": 5, "column": 11, "index": 75}, "end": {"row": 5, "column": 15, "index": 79}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 19, "index": 83}, "end": {"row": 5, "column": 21, "index": 85}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 26, "index": 90}, "end": {"row": 5, "column": 29, "index": 93}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 98}, "end": {"row": 6, "column": 25, "index": 122}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "X", "codeRange": {"start": {"row": 6, "column": 6, "index": 103}, "end": {"row": 6, "column": 6, "index": 103}, "codeIndex": -1}},
+            "getter": { "value": "GetX", "codeRange": {"start": {"row": 6, "column": 15, "index": 112}, "end": {"row": 6, "column": 18, "index": 115}, "codeIndex": -1}},
+            "setter": { "value": "SetX", "codeRange": {"start": {"row": 6, "column": 21, "index": 118}, "end": {"row": 6, "column": 24, "index": 121}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 6, "column": 10, "index": 107}, "end": {"row": 6, "column": 12, "index": 109}, "codeIndex": -1}},
+                "name": "Int"
+            },
+            "valueChangedEvent": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

@@ -1,0 +1,99 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IA
+{
+}
+
+func f() : (void)
+{
+    new (IA^)
+    {
+        prop P : string {}
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IA
+{
+}
+
+func f() : (void)
+{
+    new (IA^)
+    {
+        prop P : string {}
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 11, Column: 9, Message: G1: Auto property "P" cannot be normal outside of classes or interfaces.
+Line: 11, Column: 9, Message: G13: Auto property "P" should be initialized.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 12, "column": 0, "index": 114}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 33}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IA", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 11, "index": 27}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 38}, "end": {"row": 12, "column": 0, "index": 114}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "f", "codeRange": {"start": {"row": 6, "column": 5, "index": 43}, "end": {"row": 6, "column": 5, "index": 43}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 6, "column": 11, "index": 49}, "end": {"row": 6, "column": 14, "index": 52}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 7, "column": 0, "index": 55}, "end": {"row": 12, "column": 0, "index": 114}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 8, "column": 4, "index": 62}, "end": {"row": 11, "column": 5, "index": 111}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 8, "column": 4, "index": 62}, "end": {"row": 11, "column": 4, "index": 110}, "codeIndex": -1}},
+                    "declarations": [{
+                        "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 10, "column": 8, "index": 86}, "end": {"row": 10, "column": 25, "index": 103}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "P", "codeRange": {"start": {"row": 10, "column": 13, "index": 91}, "end": {"row": 10, "column": 13, "index": 91}, "codeIndex": -1}},
+                        "expandedDeclarations": [],
+                        "configConst": "Writable",
+                        "configObserve": "Observable",
+                        "expression": null,
+                        "functionKind": "Normal",
+                        "type": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 10, "column": 17, "index": 95}, "end": {"row": 10, "column": 22, "index": 100}, "codeIndex": -1}},
+                            "name": "String"
+                        }
+                    }],
+                    "type": {
+                        "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 8, "column": 8, "index": 66}, "end": {"row": 8, "column": 10, "index": 68}, "codeIndex": -1}},
+                        "element": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 8, "index": 66}, "end": {"row": 8, "column": 9, "index": 67}, "codeIndex": -1}},
+                            "name": { "value": "IA", "codeRange": {"start": {"row": 8, "column": 8, "index": 66}, "end": {"row": 8, "column": 9, "index": 67}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

@@ -1,0 +1,96 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+GetValue (2 .. 12)
+    Arguments:
+        value
+        increase
+        defaultValue
+    Captured Variables:
+    Local Variables:
+
+main (13 .. 34)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  ((value.Value + increase) ?? defaultValue)
+2    :     InstallTry    : label = 9
+//  value
+3    :     LoadLocalVar  : var = 0(value)
+//  value.Value
+4    :     InvokeMethod  : methodInfo = GetValue<test::ObservableValue>, stackPatternCount = 0
+//  increase
+5    :     LoadLocalVar  : var = 1(increase)
+//  (value.Value + increase)
+6    :     OpAdd         : type = I4
+//  ((value.Value + increase) ?? defaultValue)
+7    :     UninstallTry  : stackPatternCount = 1
+//  ((value.Value + increase) ?? defaultValue)
+8    :     Jump          : label = 10
+//  defaultValue
+9    :     LoadLocalVar  : var = 2(defaultValue)
+//  return ((value.Value + increase) ?? defaultValue);
+10   :     Return        
+//  func GetValue(value : ObservableValue^, increase : int, defaultValue : int) : (int)
+11   :     LoadValue     : value = <null>
+//  func GetValue(value : ObservableValue^, increase : int, defaultValue : int) : (int)
+12   :     Return        
+//  ""
+13   :     LoadValue     : value = <Bool, >
+//  null
+14   :     LoadValue     : value = <null>
+//  10
+15   :     LoadValue     : value = <I4, 10>
+//  1
+16   :     LoadValue     : value = <I4, 1>
+//  (-1)
+17   :     OpNegative    : type = I4
+//  GetValue(null, 10, (-1))
+18   :     Invoke        : func = 0(GetValue), stackPatternCount = 3
+//  GetValue(null, 10, (-1))
+19   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ("" & GetValue(null, 10, (-1)))
+20   :     OpConcat      
+//  ", "
+21   :     LoadValue     : value = <Bool, , >
+//  (("" & GetValue(null, 10, (-1))) & ", ")
+22   :     OpConcat      
+//  100
+23   :     LoadValue     : value = <I4, 100>
+//  new (ObservableValue^)(100)
+24   :     LoadValue     : value = <null>
+//  new (ObservableValue^)(100)
+25   :     InvokeMethod  : methodInfo = <test::ObservableValue>, stackPatternCount = 1
+//  10
+26   :     LoadValue     : value = <I4, 10>
+//  1
+27   :     LoadValue     : value = <I4, 1>
+//  (-1)
+28   :     OpNegative    : type = I4
+//  GetValue(new (ObservableValue^)(100), 10, (-1))
+29   :     Invoke        : func = 0(GetValue), stackPatternCount = 3
+//  GetValue(new (ObservableValue^)(100), 10, (-1))
+30   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((("" & GetValue(null, 10, (-1))) & ", ") & GetValue(new (ObservableValue^)(100), 10, (-1)))
+31   :     OpConcat      
+//  return ((("" & GetValue(null, 10, (-1))) & ", ") & GetValue(new (ObservableValue^)(100), 10, (-1)));
+32   :     Return        
+//  func main() : (string)
+33   :     LoadValue     : value = <null>
+//  func main() : (string)
+34   :     Return        

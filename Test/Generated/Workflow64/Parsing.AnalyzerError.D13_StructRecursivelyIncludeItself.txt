@@ -1,0 +1,154 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+enum E
+{
+    x = 0,
+}
+
+struct A
+{
+    x : B;
+    x2 : B?;
+    y : int;
+    y2 : int?;
+    z : E;
+    z2 : E?;
+}
+
+struct B
+{
+    x : A;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+enum E
+{
+    x = 0,
+}
+
+struct A
+{
+    x : B;
+    x2 : B?;
+    y : int;
+    y2 : int?;
+    z : E;
+    z2 : E?;
+}
+
+struct B
+{
+    x : A;
+}
+
+========================================================
+Errors
+========================================================
+Line: 18, Column: 1, Message: D13: Recursive references are found in these struct definitions:
+	B
+	A.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 20, "column": 0, "index": 145}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "EnumDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 36}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "E", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 5, "index": 21}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "EnumItem", "codeRange": {"start": {"row": 4, "column": 1, "index": 28}, "end": {"row": 4, "column": 6, "index": 33}, "codeIndex": -1}},
+            "attributes": [],
+            "intersections": [],
+            "kind": "Constant",
+            "name": { "value": "x", "codeRange": {"start": {"row": 4, "column": 1, "index": 28}, "end": {"row": 4, "column": 1, "index": 28}, "codeIndex": -1}},
+            "number": { "value": "0", "codeRange": {"start": {"row": 4, "column": 5, "index": 32}, "end": {"row": 4, "column": 5, "index": 32}, "codeIndex": -1}}
+        }],
+        "kind": "Normal"
+    }, {
+        "$ast": { "type": "StructDeclaration", "codeRange": {"start": {"row": 7, "column": 0, "index": 41}, "end": {"row": 15, "column": 0, "index": 118}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 7, "column": 7, "index": 48}, "end": {"row": 7, "column": 7, "index": 48}, "codeIndex": -1}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 9, "column": 1, "index": 55}, "end": {"row": 9, "column": 6, "index": 60}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 9, "column": 1, "index": 55}, "end": {"row": 9, "column": 1, "index": 55}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 9, "column": 5, "index": 59}, "end": {"row": 9, "column": 5, "index": 59}, "codeIndex": -1}},
+                "name": { "value": "B", "codeRange": {"start": {"row": 9, "column": 5, "index": 59}, "end": {"row": 9, "column": 5, "index": 59}, "codeIndex": -1}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 10, "column": 1, "index": 64}, "end": {"row": 10, "column": 8, "index": 71}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x2", "codeRange": {"start": {"row": 10, "column": 1, "index": 64}, "end": {"row": 10, "column": 2, "index": 65}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "NullableType", "codeRange": {"start": {"row": 10, "column": 6, "index": 69}, "end": {"row": 10, "column": 7, "index": 70}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 10, "column": 6, "index": 69}, "end": {"row": 10, "column": 6, "index": 69}, "codeIndex": -1}},
+                    "name": { "value": "B", "codeRange": {"start": {"row": 10, "column": 6, "index": 69}, "end": {"row": 10, "column": 6, "index": 69}, "codeIndex": -1}}
+                }
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 11, "column": 1, "index": 75}, "end": {"row": 11, "column": 8, "index": 82}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "y", "codeRange": {"start": {"row": 11, "column": 1, "index": 75}, "end": {"row": 11, "column": 1, "index": 75}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 11, "column": 5, "index": 79}, "end": {"row": 11, "column": 7, "index": 81}, "codeIndex": -1}},
+                "name": "Int"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 12, "column": 1, "index": 86}, "end": {"row": 12, "column": 10, "index": 95}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "y2", "codeRange": {"start": {"row": 12, "column": 1, "index": 86}, "end": {"row": 12, "column": 2, "index": 87}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "NullableType", "codeRange": {"start": {"row": 12, "column": 6, "index": 91}, "end": {"row": 12, "column": 9, "index": 94}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 12, "column": 6, "index": 91}, "end": {"row": 12, "column": 8, "index": 93}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 13, "column": 1, "index": 99}, "end": {"row": 13, "column": 6, "index": 104}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "z", "codeRange": {"start": {"row": 13, "column": 1, "index": 99}, "end": {"row": 13, "column": 1, "index": 99}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 13, "column": 5, "index": 103}, "end": {"row": 13, "column": 5, "index": 103}, "codeIndex": -1}},
+                "name": { "value": "E", "codeRange": {"start": {"row": 13, "column": 5, "index": 103}, "end": {"row": 13, "column": 5, "index": 103}, "codeIndex": -1}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 14, "column": 1, "index": 108}, "end": {"row": 14, "column": 8, "index": 115}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "z2", "codeRange": {"start": {"row": 14, "column": 1, "index": 108}, "end": {"row": 14, "column": 2, "index": 109}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "NullableType", "codeRange": {"start": {"row": 14, "column": 6, "index": 113}, "end": {"row": 14, "column": 7, "index": 114}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 14, "column": 6, "index": 113}, "end": {"row": 14, "column": 6, "index": 113}, "codeIndex": -1}},
+                    "name": { "value": "E", "codeRange": {"start": {"row": 14, "column": 6, "index": 113}, "end": {"row": 14, "column": 6, "index": 113}, "codeIndex": -1}}
+                }
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDeclaration", "codeRange": {"start": {"row": 17, "column": 0, "index": 123}, "end": {"row": 20, "column": 0, "index": 145}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 17, "column": 7, "index": 130}, "end": {"row": 17, "column": 7, "index": 130}, "codeIndex": -1}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 19, "column": 1, "index": 137}, "end": {"row": 19, "column": 6, "index": 142}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 19, "column": 1, "index": 137}, "end": {"row": 19, "column": 1, "index": 137}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 19, "column": 5, "index": 141}, "end": {"row": 19, "column": 5, "index": 141}, "codeIndex": -1}},
+                "name": { "value": "A", "codeRange": {"start": {"row": 19, "column": 5, "index": 141}, "end": {"row": 19, "column": 5, "index": 141}, "codeIndex": -1}}
+            }
+        }]
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

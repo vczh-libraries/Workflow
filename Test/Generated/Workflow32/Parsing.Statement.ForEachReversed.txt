@@ -1,0 +1,49 @@
+﻿========================================================
+Original
+========================================================
+for(x in reversed range [1,10)) {Fuck();} 
+
+========================================================
+Printed
+========================================================
+for (x in reversed range [1, 10])
+{
+    Fuck();
+}
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "ForEachStatement", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 40, "index": 40}, "codeIndex": -1}},
+    "expandedStatement": null,
+    "collection": {
+        "$ast": { "type": "RangeExpression", "codeRange": {"start": {"row": 0, "column": 18, "index": 18}, "end": {"row": 0, "column": 29, "index": 29}, "codeIndex": -1}},
+        "begin": {
+            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 0, "column": 25, "index": 25}, "end": {"row": 0, "column": 25, "index": 25}, "codeIndex": -1}},
+            "value": { "value": "1", "codeRange": {"start": {"row": 0, "column": 25, "index": 25}, "end": {"row": 0, "column": 25, "index": 25}, "codeIndex": -1}}
+        },
+        "beginBoundary": "Inclusive",
+        "end": {
+            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 0, "column": 27, "index": 27}, "end": {"row": 0, "column": 28, "index": 28}, "codeIndex": -1}},
+            "value": { "value": "10", "codeRange": {"start": {"row": 0, "column": 27, "index": 27}, "end": {"row": 0, "column": 28, "index": 28}, "codeIndex": -1}}
+        },
+        "endBoundary": "Exclusive"
+    },
+    "direction": "Reversed",
+    "name": { "value": "x", "codeRange": {"start": {"row": 0, "column": 4, "index": 4}, "end": {"row": 0, "column": 4, "index": 4}, "codeIndex": -1}},
+    "statement": {
+        "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 0, "column": 32, "index": 32}, "end": {"row": 0, "column": 40, "index": 40}, "codeIndex": -1}},
+        "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+        "statements": [{
+            "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 0, "column": 33, "index": 33}, "end": {"row": 0, "column": 39, "index": 39}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 0, "column": 33, "index": 33}, "end": {"row": 0, "column": 38, "index": 38}, "codeIndex": -1}},
+                "arguments": [],
+                "function": {
+                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 33, "index": 33}, "end": {"row": 0, "column": 36, "index": 36}, "codeIndex": -1}},
+                    "name": { "value": "Fuck", "codeRange": {"start": {"row": 0, "column": 33, "index": 33}, "end": {"row": 0, "column": 36, "index": 36}, "codeIndex": -1}}
+                }
+            }
+        }]
+    }
+}

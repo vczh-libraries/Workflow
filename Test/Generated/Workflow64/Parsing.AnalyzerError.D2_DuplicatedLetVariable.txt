@@ -1,0 +1,83 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    return let x = 100, x = 200 in ((x + x));
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    return let x = 100, x = 200 in ((x + x));
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 9, Message: D2: Duplicated symbol "x".
+Line: 5, Column: 9, Message: D2: Duplicated symbol "x".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 87}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 8, "column": 0, "index": 87}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 8, "column": 0, "index": 87}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 7, "column": 11, "index": 84}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "LetExpression", "codeRange": {"start": {"row": 4, "column": 8, "index": 45}, "end": {"row": 7, "column": 10, "index": 83}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 7, "column": 5, "index": 78}, "end": {"row": 7, "column": 9, "index": 82}, "codeIndex": -1}},
+                        "first": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 7, "column": 5, "index": 78}, "end": {"row": 7, "column": 5, "index": 78}, "codeIndex": -1}},
+                            "name": { "value": "x", "codeRange": {"start": {"row": 7, "column": 5, "index": 78}, "end": {"row": 7, "column": 5, "index": 78}, "codeIndex": -1}}
+                        },
+                        "op": "Add",
+                        "second": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 7, "column": 9, "index": 82}, "end": {"row": 7, "column": 9, "index": 82}, "codeIndex": -1}},
+                            "name": { "value": "x", "codeRange": {"start": {"row": 7, "column": 9, "index": 82}, "end": {"row": 7, "column": 9, "index": 82}, "codeIndex": -1}}
+                        }
+                    },
+                    "variables": [{
+                        "$ast": { "type": "LetVariable", "codeRange": {"start": {"row": 5, "column": 2, "index": 52}, "end": {"row": 5, "column": 8, "index": 58}, "codeIndex": -1}},
+                        "name": { "value": "x", "codeRange": {"start": {"row": 5, "column": 2, "index": 52}, "end": {"row": 5, "column": 2, "index": 52}, "codeIndex": -1}},
+                        "value": {
+                            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 5, "column": 6, "index": 56}, "end": {"row": 5, "column": 8, "index": 58}, "codeIndex": -1}},
+                            "value": { "value": "100", "codeRange": {"start": {"row": 5, "column": 6, "index": 56}, "end": {"row": 5, "column": 8, "index": 58}, "codeIndex": -1}}
+                        }
+                    }, {
+                        "$ast": { "type": "LetVariable", "codeRange": {"start": {"row": 6, "column": 2, "index": 64}, "end": {"row": 6, "column": 8, "index": 70}, "codeIndex": -1}},
+                        "name": { "value": "x", "codeRange": {"start": {"row": 6, "column": 2, "index": 64}, "end": {"row": 6, "column": 2, "index": 64}, "codeIndex": -1}},
+                        "value": {
+                            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 6, "column": 6, "index": 68}, "end": {"row": 6, "column": 8, "index": 70}, "codeIndex": -1}},
+                            "value": { "value": "200", "codeRange": {"start": {"row": 6, "column": 6, "index": 68}, "end": {"row": 6, "column": 8, "index": 70}, "codeIndex": -1}}
+                        }
+                    }]
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

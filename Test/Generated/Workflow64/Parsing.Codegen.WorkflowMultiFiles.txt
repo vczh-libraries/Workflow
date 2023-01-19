@@ -1,0 +1,627 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using test::*;
+using system::*;
+
+namespace multifiles
+{
+	class C1 {}
+	class C2 {}
+	class C3: C1, C2 {}
+	class C4 {}
+
+	@cpp:File("WorkflowMultiFiles_Animal")
+	class Animal {}
+
+	class Dog: Animal {}
+	class Cat: Animal {}
+
+	class FlyingObject {}
+	@cpp:File("WorkflowMultiFiles_Bird")
+	class Bird: Animal, FlyingObject {}
+
+	class BadDog: Dog {}
+	class GoodDog: Dog{}
+
+	class HuntingObject
+	{
+		class Inside: Bird {}
+	}
+
+	class Tiger: Cat, HuntingObject {}
+	class Leopard: Cat, HuntingObject {}
+	
+	@cpp:File("WorkflowMultiFiles_Lion")
+	class Lion: Cat, HuntingObject {}
+}
+
+func main():string
+{
+	return "MultiFiles";
+}
+========================================================
+Printed
+========================================================
+module test;
+using test::*;
+using system::*;
+
+namespace multifiles
+{
+    class C1
+    {
+        new ()
+        {
+        }
+    }
+
+    class C2
+    {
+        new ()
+        {
+        }
+    }
+
+    class C3 : C1, C2
+    {
+        new ()
+        {
+        }
+    }
+
+    class C4
+    {
+        new ()
+        {
+        }
+    }
+
+    @cpp:File("WorkflowMultiFiles_Animal")
+    class Animal
+    {
+        new ()
+        {
+        }
+    }
+
+    class Dog : Animal
+    {
+        new ()
+        {
+        }
+    }
+
+    class Cat : Animal
+    {
+        new ()
+        {
+        }
+    }
+
+    class FlyingObject
+    {
+        new ()
+        {
+        }
+    }
+
+    @cpp:File("WorkflowMultiFiles_Bird")
+    class Bird : Animal, FlyingObject
+    {
+        new ()
+        {
+        }
+    }
+
+    class BadDog : Dog
+    {
+        new ()
+        {
+        }
+    }
+
+    class GoodDog : Dog
+    {
+        new ()
+        {
+        }
+    }
+
+    class HuntingObject
+    {
+        class Inside : Bird
+        {
+            new ()
+            {
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+
+    class Tiger : Cat, HuntingObject
+    {
+        new ()
+        {
+        }
+    }
+
+    class Leopard : Cat, HuntingObject
+    {
+        new ()
+        {
+        }
+    }
+
+    @cpp:File("WorkflowMultiFiles_Lion")
+    class Lion : Cat, HuntingObject
+    {
+        new ()
+        {
+        }
+    }
+}
+
+func main() : (string)
+{
+    return "MultiFiles";
+}
+
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 39, "column": 0, "index": 663}, "codeIndex": 0}},
+    "declarations": [{
+        "$ast": { "type": "NamespaceDeclaration", "codeRange": {"start": {"row": 4, "column": 0, "index": 50}, "end": {"row": 34, "column": 0, "index": 612}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "multifiles", "codeRange": {"start": {"row": 4, "column": 10, "index": 60}, "end": {"row": 4, "column": 19, "index": 69}, "codeIndex": -1}},
+        "declarations": [{
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 76}, "end": {"row": 6, "column": 11, "index": 86}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "C1", "codeRange": {"start": {"row": 6, "column": 7, "index": 82}, "end": {"row": 6, "column": 8, "index": 83}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 76}, "end": {"row": 6, "column": 11, "index": 86}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 6, "column": 1, "index": 76}, "end": {"row": 6, "column": 11, "index": 86}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 7, "column": 1, "index": 90}, "end": {"row": 7, "column": 11, "index": 100}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "C2", "codeRange": {"start": {"row": 7, "column": 7, "index": 96}, "end": {"row": 7, "column": 8, "index": 97}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 7, "column": 1, "index": 90}, "end": {"row": 7, "column": 11, "index": 100}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 7, "column": 1, "index": 90}, "end": {"row": 7, "column": 11, "index": 100}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 8, "column": 1, "index": 104}, "end": {"row": 8, "column": 19, "index": 122}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "C3", "codeRange": {"start": {"row": 8, "column": 7, "index": 110}, "end": {"row": 8, "column": 8, "index": 111}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 11, "index": 114}, "end": {"row": 8, "column": 12, "index": 115}, "codeIndex": -1}},
+                "name": { "value": "C1", "codeRange": {"start": {"row": 8, "column": 11, "index": 114}, "end": {"row": 8, "column": 12, "index": 115}, "codeIndex": -1}}
+            }, {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 15, "index": 118}, "end": {"row": 8, "column": 16, "index": 119}, "codeIndex": -1}},
+                "name": { "value": "C2", "codeRange": {"start": {"row": 8, "column": 15, "index": 118}, "end": {"row": 8, "column": 16, "index": 119}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 8, "column": 1, "index": 104}, "end": {"row": 8, "column": 19, "index": 122}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 8, "column": 1, "index": 104}, "end": {"row": 8, "column": 19, "index": 122}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 9, "column": 1, "index": 126}, "end": {"row": 9, "column": 11, "index": 136}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "C4", "codeRange": {"start": {"row": 9, "column": 7, "index": 132}, "end": {"row": 9, "column": 8, "index": 133}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 9, "column": 1, "index": 126}, "end": {"row": 9, "column": 11, "index": 136}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 9, "column": 1, "index": 126}, "end": {"row": 9, "column": 11, "index": 136}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 11, "column": 1, "index": 142}, "end": {"row": 12, "column": 15, "index": 197}, "codeIndex": -1}},
+            "attributes": [{
+                "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 11, "column": 1, "index": 142}, "end": {"row": 11, "column": 38, "index": 179}, "codeIndex": -1}},
+                "category": { "value": "cpp", "codeRange": {"start": {"row": 11, "column": 2, "index": 143}, "end": {"row": 11, "column": 4, "index": 145}, "codeIndex": -1}},
+                "name": { "value": "File", "codeRange": {"start": {"row": 11, "column": 6, "index": 147}, "end": {"row": 11, "column": 9, "index": 150}, "codeIndex": -1}},
+                "value": {
+                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 11, "column": 11, "index": 152}, "end": {"row": 11, "column": 37, "index": 178}, "codeIndex": -1}},
+                    "value": { "value": "WorkflowMultiFiles_Animal", "codeRange": {"start": {"row": 11, "column": 11, "index": 152}, "end": {"row": 11, "column": 37, "index": 178}, "codeIndex": -1}}
+                }
+            }],
+            "name": { "value": "Animal", "codeRange": {"start": {"row": 12, "column": 7, "index": 189}, "end": {"row": 12, "column": 12, "index": 194}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 11, "column": 1, "index": 142}, "end": {"row": 12, "column": 15, "index": 197}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 11, "column": 1, "index": 142}, "end": {"row": 12, "column": 15, "index": 197}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 14, "column": 1, "index": 203}, "end": {"row": 14, "column": 20, "index": 222}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Dog", "codeRange": {"start": {"row": 14, "column": 7, "index": 209}, "end": {"row": 14, "column": 9, "index": 211}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 14, "column": 12, "index": 214}, "end": {"row": 14, "column": 17, "index": 219}, "codeIndex": -1}},
+                "name": { "value": "Animal", "codeRange": {"start": {"row": 14, "column": 12, "index": 214}, "end": {"row": 14, "column": 17, "index": 219}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 14, "column": 1, "index": 203}, "end": {"row": 14, "column": 20, "index": 222}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 14, "column": 1, "index": 203}, "end": {"row": 14, "column": 20, "index": 222}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 15, "column": 1, "index": 226}, "end": {"row": 15, "column": 20, "index": 245}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Cat", "codeRange": {"start": {"row": 15, "column": 7, "index": 232}, "end": {"row": 15, "column": 9, "index": 234}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 15, "column": 12, "index": 237}, "end": {"row": 15, "column": 17, "index": 242}, "codeIndex": -1}},
+                "name": { "value": "Animal", "codeRange": {"start": {"row": 15, "column": 12, "index": 237}, "end": {"row": 15, "column": 17, "index": 242}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 15, "column": 1, "index": 226}, "end": {"row": 15, "column": 20, "index": 245}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 15, "column": 1, "index": 226}, "end": {"row": 15, "column": 20, "index": 245}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 17, "column": 1, "index": 251}, "end": {"row": 17, "column": 21, "index": 271}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "FlyingObject", "codeRange": {"start": {"row": 17, "column": 7, "index": 257}, "end": {"row": 17, "column": 18, "index": 268}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 17, "column": 1, "index": 251}, "end": {"row": 17, "column": 21, "index": 271}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 17, "column": 1, "index": 251}, "end": {"row": 17, "column": 21, "index": 271}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 18, "column": 1, "index": 275}, "end": {"row": 19, "column": 35, "index": 348}, "codeIndex": -1}},
+            "attributes": [{
+                "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 18, "column": 1, "index": 275}, "end": {"row": 18, "column": 36, "index": 310}, "codeIndex": -1}},
+                "category": { "value": "cpp", "codeRange": {"start": {"row": 18, "column": 2, "index": 276}, "end": {"row": 18, "column": 4, "index": 278}, "codeIndex": -1}},
+                "name": { "value": "File", "codeRange": {"start": {"row": 18, "column": 6, "index": 280}, "end": {"row": 18, "column": 9, "index": 283}, "codeIndex": -1}},
+                "value": {
+                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 18, "column": 11, "index": 285}, "end": {"row": 18, "column": 35, "index": 309}, "codeIndex": -1}},
+                    "value": { "value": "WorkflowMultiFiles_Bird", "codeRange": {"start": {"row": 18, "column": 11, "index": 285}, "end": {"row": 18, "column": 35, "index": 309}, "codeIndex": -1}}
+                }
+            }],
+            "name": { "value": "Bird", "codeRange": {"start": {"row": 19, "column": 7, "index": 320}, "end": {"row": 19, "column": 10, "index": 323}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 19, "column": 13, "index": 326}, "end": {"row": 19, "column": 18, "index": 331}, "codeIndex": -1}},
+                "name": { "value": "Animal", "codeRange": {"start": {"row": 19, "column": 13, "index": 326}, "end": {"row": 19, "column": 18, "index": 331}, "codeIndex": -1}}
+            }, {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 19, "column": 21, "index": 334}, "end": {"row": 19, "column": 32, "index": 345}, "codeIndex": -1}},
+                "name": { "value": "FlyingObject", "codeRange": {"start": {"row": 19, "column": 21, "index": 334}, "end": {"row": 19, "column": 32, "index": 345}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 18, "column": 1, "index": 275}, "end": {"row": 19, "column": 35, "index": 348}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 18, "column": 1, "index": 275}, "end": {"row": 19, "column": 35, "index": 348}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 21, "column": 1, "index": 354}, "end": {"row": 21, "column": 20, "index": 373}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "BadDog", "codeRange": {"start": {"row": 21, "column": 7, "index": 360}, "end": {"row": 21, "column": 12, "index": 365}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 21, "column": 15, "index": 368}, "end": {"row": 21, "column": 17, "index": 370}, "codeIndex": -1}},
+                "name": { "value": "Dog", "codeRange": {"start": {"row": 21, "column": 15, "index": 368}, "end": {"row": 21, "column": 17, "index": 370}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 21, "column": 1, "index": 354}, "end": {"row": 21, "column": 20, "index": 373}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 21, "column": 1, "index": 354}, "end": {"row": 21, "column": 20, "index": 373}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 22, "column": 1, "index": 377}, "end": {"row": 22, "column": 20, "index": 396}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "GoodDog", "codeRange": {"start": {"row": 22, "column": 7, "index": 383}, "end": {"row": 22, "column": 13, "index": 389}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 22, "column": 16, "index": 392}, "end": {"row": 22, "column": 18, "index": 394}, "codeIndex": -1}},
+                "name": { "value": "Dog", "codeRange": {"start": {"row": 22, "column": 16, "index": 392}, "end": {"row": 22, "column": 18, "index": 394}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 22, "column": 1, "index": 377}, "end": {"row": 22, "column": 20, "index": 396}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 22, "column": 1, "index": 377}, "end": {"row": 22, "column": 20, "index": 396}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 24, "column": 1, "index": 402}, "end": {"row": 27, "column": 1, "index": 453}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "HuntingObject", "codeRange": {"start": {"row": 24, "column": 7, "index": 408}, "end": {"row": 24, "column": 19, "index": 420}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 26, "column": 2, "index": 429}, "end": {"row": 26, "column": 22, "index": 449}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "Inside", "codeRange": {"start": {"row": 26, "column": 8, "index": 435}, "end": {"row": 26, "column": 13, "index": 440}, "codeIndex": -1}},
+                "baseTypes": [{
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 26, "column": 16, "index": 443}, "end": {"row": 26, "column": 19, "index": 446}, "codeIndex": -1}},
+                    "name": { "value": "Bird", "codeRange": {"start": {"row": 26, "column": 16, "index": 443}, "end": {"row": 26, "column": 19, "index": 446}, "codeIndex": -1}}
+                }],
+                "constructorType": "Undefined",
+                "declarations": [{
+                    "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 26, "column": 2, "index": 429}, "end": {"row": 26, "column": 22, "index": 449}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "arguments": [],
+                    "baseConstructorCalls": [],
+                    "constructorType": "SharedPtr",
+                    "statement": {
+                        "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 26, "column": 2, "index": 429}, "end": {"row": 26, "column": 22, "index": 449}, "codeIndex": -1}},
+                        "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                        "statements": []
+                    }
+                }],
+                "kind": "Class"
+            }, {
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 24, "column": 1, "index": 402}, "end": {"row": 27, "column": 1, "index": 453}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 24, "column": 1, "index": 402}, "end": {"row": 27, "column": 1, "index": 453}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 29, "column": 1, "index": 459}, "end": {"row": 29, "column": 34, "index": 492}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Tiger", "codeRange": {"start": {"row": 29, "column": 7, "index": 465}, "end": {"row": 29, "column": 11, "index": 469}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 29, "column": 14, "index": 472}, "end": {"row": 29, "column": 16, "index": 474}, "codeIndex": -1}},
+                "name": { "value": "Cat", "codeRange": {"start": {"row": 29, "column": 14, "index": 472}, "end": {"row": 29, "column": 16, "index": 474}, "codeIndex": -1}}
+            }, {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 29, "column": 19, "index": 477}, "end": {"row": 29, "column": 31, "index": 489}, "codeIndex": -1}},
+                "name": { "value": "HuntingObject", "codeRange": {"start": {"row": 29, "column": 19, "index": 477}, "end": {"row": 29, "column": 31, "index": 489}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 29, "column": 1, "index": 459}, "end": {"row": 29, "column": 34, "index": 492}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 29, "column": 1, "index": 459}, "end": {"row": 29, "column": 34, "index": 492}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 30, "column": 1, "index": 496}, "end": {"row": 30, "column": 36, "index": 531}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Leopard", "codeRange": {"start": {"row": 30, "column": 7, "index": 502}, "end": {"row": 30, "column": 13, "index": 508}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 30, "column": 16, "index": 511}, "end": {"row": 30, "column": 18, "index": 513}, "codeIndex": -1}},
+                "name": { "value": "Cat", "codeRange": {"start": {"row": 30, "column": 16, "index": 511}, "end": {"row": 30, "column": 18, "index": 513}, "codeIndex": -1}}
+            }, {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 30, "column": 21, "index": 516}, "end": {"row": 30, "column": 33, "index": 528}, "codeIndex": -1}},
+                "name": { "value": "HuntingObject", "codeRange": {"start": {"row": 30, "column": 21, "index": 516}, "end": {"row": 30, "column": 33, "index": 528}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 30, "column": 1, "index": 496}, "end": {"row": 30, "column": 36, "index": 531}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 30, "column": 1, "index": 496}, "end": {"row": 30, "column": 36, "index": 531}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 32, "column": 1, "index": 538}, "end": {"row": 33, "column": 33, "index": 609}, "codeIndex": -1}},
+            "attributes": [{
+                "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 32, "column": 1, "index": 538}, "end": {"row": 32, "column": 36, "index": 573}, "codeIndex": -1}},
+                "category": { "value": "cpp", "codeRange": {"start": {"row": 32, "column": 2, "index": 539}, "end": {"row": 32, "column": 4, "index": 541}, "codeIndex": -1}},
+                "name": { "value": "File", "codeRange": {"start": {"row": 32, "column": 6, "index": 543}, "end": {"row": 32, "column": 9, "index": 546}, "codeIndex": -1}},
+                "value": {
+                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 32, "column": 11, "index": 548}, "end": {"row": 32, "column": 35, "index": 572}, "codeIndex": -1}},
+                    "value": { "value": "WorkflowMultiFiles_Lion", "codeRange": {"start": {"row": 32, "column": 11, "index": 548}, "end": {"row": 32, "column": 35, "index": 572}, "codeIndex": -1}}
+                }
+            }],
+            "name": { "value": "Lion", "codeRange": {"start": {"row": 33, "column": 7, "index": 583}, "end": {"row": 33, "column": 10, "index": 586}, "codeIndex": -1}},
+            "baseTypes": [{
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 13, "index": 589}, "end": {"row": 33, "column": 15, "index": 591}, "codeIndex": -1}},
+                "name": { "value": "Cat", "codeRange": {"start": {"row": 33, "column": 13, "index": 589}, "end": {"row": 33, "column": 15, "index": 591}, "codeIndex": -1}}
+            }, {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 18, "index": 594}, "end": {"row": 33, "column": 30, "index": 606}, "codeIndex": -1}},
+                "name": { "value": "HuntingObject", "codeRange": {"start": {"row": 33, "column": 18, "index": 594}, "end": {"row": 33, "column": 30, "index": 606}, "codeIndex": -1}}
+            }],
+            "constructorType": "Undefined",
+            "declarations": [{
+                "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 32, "column": 1, "index": 538}, "end": {"row": 33, "column": 33, "index": 609}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": [],
+                "baseConstructorCalls": [],
+                "constructorType": "SharedPtr",
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 32, "column": 1, "index": 538}, "end": {"row": 33, "column": 33, "index": 609}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                }
+            }],
+            "kind": "Class"
+        }]
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 36, "column": 0, "index": 617}, "end": {"row": 39, "column": 0, "index": 663}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 36, "column": 5, "index": 622}, "end": {"row": 36, "column": 8, "index": 625}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 36, "column": 12, "index": 629}, "end": {"row": 36, "column": 17, "index": 634}, "codeIndex": -1}},
+            "name": "String"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 37, "column": 0, "index": 637}, "end": {"row": 39, "column": 0, "index": 663}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 38, "column": 1, "index": 641}, "end": {"row": 38, "column": 20, "index": 660}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 38, "column": 8, "index": 648}, "end": {"row": 38, "column": 19, "index": 659}, "codeIndex": -1}},
+                    "value": { "value": "MultiFiles", "codeRange": {"start": {"row": 38, "column": 8, "index": 648}, "end": {"row": 38, "column": 19, "index": 659}, "codeIndex": -1}}
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}},
+                "name": { "value": "test", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}}
+            }]
+        }]
+    }, {
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 2, "column": 0, "index": 30}, "end": {"row": 2, "column": 15, "index": 45}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 6, "index": 36}, "end": {"row": 2, "column": 11, "index": 41}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 2, "column": 6, "index": 36}, "end": {"row": 2, "column": 11, "index": 41}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 2, "column": 6, "index": 36}, "end": {"row": 2, "column": 11, "index": 41}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 14, "index": 44}, "end": {"row": 2, "column": 14, "index": 44}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 2, "column": 14, "index": 44}, "end": {"row": 2, "column": 14, "index": 44}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

@@ -31,12 +31,12 @@ WString GetTestOutputPath()
 {
 #if defined VCZH_MSVC
 #ifdef VCZH_64
-	return GetExePath() + L"..\\..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\..\\Generated\\";
 #else
-	return GetExePath() + L"..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\Generated\\";
 #endif
 #elif defined VCZH_GCC
-	return L"../Output/";
+	return L"../Generated/";
 #endif
 }
 

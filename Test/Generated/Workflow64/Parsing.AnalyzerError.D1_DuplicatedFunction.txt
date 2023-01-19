@@ -1,0 +1,59 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+namespace system
+{
+    func String() : (void)
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+namespace system
+{
+    func String() : (void)
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 2, Message: D1: Duplicated declaration "String", it has already beed defined as a type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 7, "column": 0, "index": 66}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "NamespaceDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 7, "column": 0, "index": 66}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "system", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 6, "column": 1, "index": 63}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "String", "codeRange": {"start": {"row": 4, "column": 6, "index": 43}, "end": {"row": 4, "column": 11, "index": 48}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 15, "index": 52}, "end": {"row": 4, "column": 18, "index": 55}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 59}, "end": {"row": 6, "column": 1, "index": 63}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }]
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

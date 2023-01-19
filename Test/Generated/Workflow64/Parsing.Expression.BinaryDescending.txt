@@ -1,0 +1,159 @@
+﻿========================================================
+Original
+========================================================
+a ?? b or c and d xor e != f == g >= h <= i > j < k shr l shl m & n - o + p / q * r ^ s
+========================================================
+Printed
+========================================================
+(a ?? (b or (c and (d xor ((((((e != f) == g) >= h) <= i) > j) < ((k shr l) shl (((m & n) - o) + ((p / q) * (r ^ s)))))))))
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+    "first": {
+        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 0, "index": 0}, "codeIndex": -1}},
+        "name": { "value": "a", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 0, "index": 0}, "codeIndex": -1}}
+    },
+    "op": "FailedThen",
+    "second": {
+        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 5, "index": 5}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+        "first": {
+            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 5, "index": 5}, "end": {"row": 0, "column": 5, "index": 5}, "codeIndex": -1}},
+            "name": { "value": "b", "codeRange": {"start": {"row": 0, "column": 5, "index": 5}, "end": {"row": 0, "column": 5, "index": 5}, "codeIndex": -1}}
+        },
+        "op": "Or",
+        "second": {
+            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 10, "index": 10}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+            "first": {
+                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 10, "index": 10}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+                "name": { "value": "c", "codeRange": {"start": {"row": 0, "column": 10, "index": 10}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}}
+            },
+            "op": "And",
+            "second": {
+                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 16, "index": 16}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+                "first": {
+                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 16, "index": 16}, "end": {"row": 0, "column": 16, "index": 16}, "codeIndex": -1}},
+                    "name": { "value": "d", "codeRange": {"start": {"row": 0, "column": 16, "index": 16}, "end": {"row": 0, "column": 16, "index": 16}, "codeIndex": -1}}
+                },
+                "op": "Xor",
+                "second": {
+                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 46, "index": 46}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+                    "first": {
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 42, "index": 42}, "end": {"row": 0, "column": 46, "index": 46}, "codeIndex": -1}},
+                        "first": {
+                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 37, "index": 37}, "end": {"row": 0, "column": 42, "index": 42}, "codeIndex": -1}},
+                            "first": {
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 32, "index": 32}, "end": {"row": 0, "column": 37, "index": 37}, "codeIndex": -1}},
+                                "first": {
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 27, "index": 27}, "end": {"row": 0, "column": 32, "index": 32}, "codeIndex": -1}},
+                                    "first": {
+                                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 22, "index": 22}, "end": {"row": 0, "column": 27, "index": 27}, "codeIndex": -1}},
+                                        "first": {
+                                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 22, "index": 22}, "end": {"row": 0, "column": 22, "index": 22}, "codeIndex": -1}},
+                                            "name": { "value": "e", "codeRange": {"start": {"row": 0, "column": 22, "index": 22}, "end": {"row": 0, "column": 22, "index": 22}, "codeIndex": -1}}
+                                        },
+                                        "op": "NE",
+                                        "second": {
+                                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 27, "index": 27}, "end": {"row": 0, "column": 27, "index": 27}, "codeIndex": -1}},
+                                            "name": { "value": "f", "codeRange": {"start": {"row": 0, "column": 27, "index": 27}, "end": {"row": 0, "column": 27, "index": 27}, "codeIndex": -1}}
+                                        }
+                                    },
+                                    "op": "EQ",
+                                    "second": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 32, "index": 32}, "end": {"row": 0, "column": 32, "index": 32}, "codeIndex": -1}},
+                                        "name": { "value": "g", "codeRange": {"start": {"row": 0, "column": 32, "index": 32}, "end": {"row": 0, "column": 32, "index": 32}, "codeIndex": -1}}
+                                    }
+                                },
+                                "op": "GE",
+                                "second": {
+                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 37, "index": 37}, "end": {"row": 0, "column": 37, "index": 37}, "codeIndex": -1}},
+                                    "name": { "value": "h", "codeRange": {"start": {"row": 0, "column": 37, "index": 37}, "end": {"row": 0, "column": 37, "index": 37}, "codeIndex": -1}}
+                                }
+                            },
+                            "op": "LE",
+                            "second": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 42, "index": 42}, "end": {"row": 0, "column": 42, "index": 42}, "codeIndex": -1}},
+                                "name": { "value": "i", "codeRange": {"start": {"row": 0, "column": 42, "index": 42}, "end": {"row": 0, "column": 42, "index": 42}, "codeIndex": -1}}
+                            }
+                        },
+                        "op": "GT",
+                        "second": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 46, "index": 46}, "end": {"row": 0, "column": 46, "index": 46}, "codeIndex": -1}},
+                            "name": { "value": "j", "codeRange": {"start": {"row": 0, "column": 46, "index": 46}, "end": {"row": 0, "column": 46, "index": 46}, "codeIndex": -1}}
+                        }
+                    },
+                    "op": "LT",
+                    "second": {
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 56, "index": 56}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+                        "first": {
+                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 50, "index": 50}, "end": {"row": 0, "column": 56, "index": 56}, "codeIndex": -1}},
+                            "first": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 50, "index": 50}, "end": {"row": 0, "column": 50, "index": 50}, "codeIndex": -1}},
+                                "name": { "value": "k", "codeRange": {"start": {"row": 0, "column": 50, "index": 50}, "end": {"row": 0, "column": 50, "index": 50}, "codeIndex": -1}}
+                            },
+                            "op": "Shr",
+                            "second": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 56, "index": 56}, "end": {"row": 0, "column": 56, "index": 56}, "codeIndex": -1}},
+                                "name": { "value": "l", "codeRange": {"start": {"row": 0, "column": 56, "index": 56}, "end": {"row": 0, "column": 56, "index": 56}, "codeIndex": -1}}
+                            }
+                        },
+                        "op": "Shl",
+                        "second": {
+                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 70, "index": 70}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+                            "first": {
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 66, "index": 66}, "end": {"row": 0, "column": 70, "index": 70}, "codeIndex": -1}},
+                                "first": {
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 62, "index": 62}, "end": {"row": 0, "column": 66, "index": 66}, "codeIndex": -1}},
+                                    "first": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 62, "index": 62}, "end": {"row": 0, "column": 62, "index": 62}, "codeIndex": -1}},
+                                        "name": { "value": "m", "codeRange": {"start": {"row": 0, "column": 62, "index": 62}, "end": {"row": 0, "column": 62, "index": 62}, "codeIndex": -1}}
+                                    },
+                                    "op": "FlagAnd",
+                                    "second": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 66, "index": 66}, "end": {"row": 0, "column": 66, "index": 66}, "codeIndex": -1}},
+                                        "name": { "value": "n", "codeRange": {"start": {"row": 0, "column": 66, "index": 66}, "end": {"row": 0, "column": 66, "index": 66}, "codeIndex": -1}}
+                                    }
+                                },
+                                "op": "Sub",
+                                "second": {
+                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 70, "index": 70}, "end": {"row": 0, "column": 70, "index": 70}, "codeIndex": -1}},
+                                    "name": { "value": "o", "codeRange": {"start": {"row": 0, "column": 70, "index": 70}, "end": {"row": 0, "column": 70, "index": 70}, "codeIndex": -1}}
+                                }
+                            },
+                            "op": "Add",
+                            "second": {
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 78, "index": 78}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+                                "first": {
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 74, "index": 74}, "end": {"row": 0, "column": 78, "index": 78}, "codeIndex": -1}},
+                                    "first": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 74, "index": 74}, "end": {"row": 0, "column": 74, "index": 74}, "codeIndex": -1}},
+                                        "name": { "value": "p", "codeRange": {"start": {"row": 0, "column": 74, "index": 74}, "end": {"row": 0, "column": 74, "index": 74}, "codeIndex": -1}}
+                                    },
+                                    "op": "Div",
+                                    "second": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 78, "index": 78}, "end": {"row": 0, "column": 78, "index": 78}, "codeIndex": -1}},
+                                        "name": { "value": "q", "codeRange": {"start": {"row": 0, "column": 78, "index": 78}, "end": {"row": 0, "column": 78, "index": 78}, "codeIndex": -1}}
+                                    }
+                                },
+                                "op": "Mul",
+                                "second": {
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 82, "index": 82}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+                                    "first": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 82, "index": 82}, "end": {"row": 0, "column": 82, "index": 82}, "codeIndex": -1}},
+                                        "name": { "value": "r", "codeRange": {"start": {"row": 0, "column": 82, "index": 82}, "end": {"row": 0, "column": 82, "index": 82}, "codeIndex": -1}}
+                                    },
+                                    "op": "Exp",
+                                    "second": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 86, "index": 86}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}},
+                                        "name": { "value": "s", "codeRange": {"start": {"row": 0, "column": 86, "index": 86}, "end": {"row": 0, "column": 86, "index": 86}, "codeIndex": -1}}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,89 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using test::*;
+
+func main() : (void)
+{
+    new (ObservableValue^)(0, null);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using test::*;
+
+func main() : (void)
+{
+    new (ObservableValue^)(0, null);
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 2, Message: A22: Cannot decide which function to call in multiple targets: 
+	constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue*, system::Int64, system::Double?>^"
+	constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue*, system::Int64, system::Boolean?>^".
+Line: 6, Column: 2, Message: A20: Function constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue^>^"" is not allowed to call with 2 arguments.
+Line: 6, Column: 2, Message: A20: Function constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue^, system::Int64>^"" is not allowed to call with 2 arguments.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 86}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 32}, "end": {"row": 6, "column": 0, "index": 86}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 3, "column": 5, "index": 37}, "end": {"row": 3, "column": 8, "index": 40}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 12, "index": 44}, "end": {"row": 3, "column": 15, "index": 47}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 0, "index": 50}, "end": {"row": 6, "column": 0, "index": 86}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 54}, "end": {"row": 5, "column": 30, "index": 83}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "NewClassExpression", "codeRange": {"start": {"row": 5, "column": 1, "index": 54}, "end": {"row": 5, "column": 29, "index": 82}, "codeIndex": -1}},
+                    "arguments": [{
+                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 5, "column": 22, "index": 75}, "end": {"row": 5, "column": 22, "index": 75}, "codeIndex": -1}},
+                        "value": { "value": "0", "codeRange": {"start": {"row": 5, "column": 22, "index": 75}, "end": {"row": 5, "column": 22, "index": 75}, "codeIndex": -1}}
+                    }, {
+                        "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 5, "column": 25, "index": 78}, "end": {"row": 5, "column": 28, "index": 81}, "codeIndex": -1}},
+                        "value": "Null"
+                    }],
+                    "type": {
+                        "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 5, "column": 5, "index": 58}, "end": {"row": 5, "column": 20, "index": 73}, "codeIndex": -1}},
+                        "element": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 5, "column": 5, "index": 58}, "end": {"row": 5, "column": 19, "index": 72}, "codeIndex": -1}},
+                            "name": { "value": "ObservableValue", "codeRange": {"start": {"row": 5, "column": 5, "index": 58}, "end": {"row": 5, "column": 19, "index": 72}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}},
+                "name": { "value": "test", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

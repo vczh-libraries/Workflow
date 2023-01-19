@@ -1,0 +1,51 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    namespace b
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    namespace b
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 5, Message: G2: Namespace "b" cannot be a class member.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 7, "column": 0, "index": 59}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 7, "column": 0, "index": 59}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "NamespaceDeclaration", "codeRange": {"start": {"row": 4, "column": 4, "index": 32}, "end": {"row": 6, "column": 4, "index": 56}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "b", "codeRange": {"start": {"row": 4, "column": 14, "index": 42}, "end": {"row": 4, "column": 14, "index": 42}, "codeIndex": -1}},
+            "declarations": []
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

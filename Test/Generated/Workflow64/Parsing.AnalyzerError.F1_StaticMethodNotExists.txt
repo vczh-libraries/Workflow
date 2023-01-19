@@ -1,0 +1,84 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    static func X() : (void)
+    {
+        var y = A::Y();
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    static func X() : (void)
+    {
+        var y = A::Y();
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 11, Message: F1: Symbol "Y" does not exist in "A".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 80}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 8, "column": 0, "index": 80}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 29}, "end": {"row": 7, "column": 1, "index": 77}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "X", "codeRange": {"start": {"row": 4, "column": 13, "index": 41}, "end": {"row": 4, "column": 13, "index": 41}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 19, "index": 47}, "end": {"row": 4, "column": 22, "index": 50}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 54}, "end": {"row": 7, "column": 1, "index": 77}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 6, "column": 2, "index": 59}, "end": {"row": 6, "column": 16, "index": 73}, "codeIndex": -1}},
+                    "variable": {
+                        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 6, "column": 2, "index": 59}, "end": {"row": 6, "column": 16, "index": 73}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "y", "codeRange": {"start": {"row": 6, "column": 6, "index": 63}, "end": {"row": 6, "column": 6, "index": 63}, "codeIndex": -1}},
+                        "expression": {
+                            "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 6, "column": 10, "index": 67}, "end": {"row": 6, "column": 15, "index": 72}, "codeIndex": -1}},
+                            "arguments": [],
+                            "function": {
+                                "$ast": { "type": "ChildExpression", "codeRange": {"start": {"row": 6, "column": 10, "index": 67}, "end": {"row": 6, "column": 13, "index": 70}, "codeIndex": -1}},
+                                "name": { "value": "Y", "codeRange": {"start": {"row": 6, "column": 13, "index": 70}, "end": {"row": 6, "column": 13, "index": 70}, "codeIndex": -1}},
+                                "parent": {
+                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 6, "column": 10, "index": 67}, "end": {"row": 6, "column": 10, "index": 67}, "codeIndex": -1}},
+                                    "name": { "value": "A", "codeRange": {"start": {"row": 6, "column": 10, "index": 67}, "end": {"row": 6, "column": 10, "index": 67}, "codeIndex": -1}}
+                                }
+                            }
+                        },
+                        "type": null
+                    }
+                }]
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

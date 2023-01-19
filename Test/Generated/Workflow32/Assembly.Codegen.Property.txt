@@ -1,0 +1,166 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+main (2 .. 71)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        x
+        y
+        s1
+        s2
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  {x : 10; y : 20;}
+2    :     CreateStruct  : flag = BoxedValue, typeDescriptor = test::Point
+//  10
+3    :     LoadValue     : value = <I4, 10>
+//  {x : 10; y : 20;}
+4    :     UpdateProperty: propertyInfo = x<test::Point>
+//  20
+5    :     LoadValue     : value = <I4, 20>
+//  {x : 10; y : 20;}
+6    :     UpdateProperty: propertyInfo = y<test::Point>
+//  var x = {x : 10; y : 20;} of (Point);
+7    :     StoreLocalVar : var = 0(x)
+//  10
+8    :     LoadValue     : value = <I4, 10>
+//  new (ObservableValue^)(10)
+9    :     LoadValue     : value = <null>
+//  new (ObservableValue^)(10)
+10   :     InvokeMethod  : methodInfo = <test::ObservableValue>, stackPatternCount = 1
+//  var y = new (ObservableValue^)(10);
+11   :     StoreLocalVar : var = 1(y)
+//  x
+12   :     LoadLocalVar  : var = 0(x)
+//  x.x
+13   :     GetProperty   : propertyInfo = x<test::Point>
+//  x.x
+14   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+15   :     LoadValue     : value = <Bool, , >
+//  (x.x & ", ")
+16   :     OpConcat      
+//  x
+17   :     LoadLocalVar  : var = 0(x)
+//  x.y
+18   :     GetProperty   : propertyInfo = y<test::Point>
+//  x.y
+19   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((x.x & ", ") & x.y)
+20   :     OpConcat      
+//  ", "
+21   :     LoadValue     : value = <Bool, , >
+//  (((x.x & ", ") & x.y) & ", ")
+22   :     OpConcat      
+//  y
+23   :     LoadLocalVar  : var = 1(y)
+//  y.Value
+24   :     InvokeMethod  : methodInfo = GetValue<test::ObservableValue>, stackPatternCount = 0
+//  y.Value
+25   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((x.x & ", ") & x.y) & ", ") & y.Value)
+26   :     OpConcat      
+//  ", "
+27   :     LoadValue     : value = <Bool, , >
+//  (((((x.x & ", ") & x.y) & ", ") & y.Value) & ", ")
+28   :     OpConcat      
+//  y
+29   :     LoadLocalVar  : var = 1(y)
+//  y.Name
+30   :     InvokeMethod  : methodInfo = GetName<test::ObservableValue>, stackPatternCount = 0
+//  ((((((x.x & ", ") & x.y) & ", ") & y.Value) & ", ") & y.Name)
+31   :     OpConcat      
+//  ", "
+32   :     LoadValue     : value = <Bool, , >
+//  (((((((x.x & ", ") & x.y) & ", ") & y.Value) & ", ") & y.Name) & ", ")
+33   :     OpConcat      
+//  y
+34   :     LoadLocalVar  : var = 1(y)
+//  y.DisplayName
+35   :     InvokeMethod  : methodInfo = GetDisplayName<test::ObservableValue>, stackPatternCount = 0
+//  ((((((((x.x & ", ") & x.y) & ", ") & y.Value) & ", ") & y.Name) & ", ") & y.DisplayName)
+36   :     OpConcat      
+//  var s1 = ((((((((x.x & ", ") & x.y) & ", ") & y.Value) & ", ") & y.Name) & ", ") & y.DisplayName);
+37   :     StoreLocalVar : var = 2(s1)
+//  20
+38   :     LoadValue     : value = <I4, 20>
+//  (y.Value = 20)
+39   :     Duplicate     : stackPatternCount = 0
+//  y
+40   :     LoadLocalVar  : var = 1(y)
+//  (y.Value = 20)
+41   :     InvokeMethod  : methodInfo = SetValue<test::ObservableValue>, stackPatternCount = 1
+//  (y.Value = 20)
+42   :     Pop           
+//  (y.Value = 20);
+43   :     Pop           
+//  "Workflow"
+44   :     LoadValue     : value = <Bool, Workflow>
+//  (y.Name = "Workflow")
+45   :     Duplicate     : stackPatternCount = 0
+//  y
+46   :     LoadLocalVar  : var = 1(y)
+//  (y.Name = "Workflow")
+47   :     InvokeMethod  : methodInfo = SetName<test::ObservableValue>, stackPatternCount = 1
+//  (y.Name = "Workflow")
+48   :     Pop           
+//  (y.Name = "Workflow");
+49   :     Pop           
+//  y
+50   :     LoadLocalVar  : var = 1(y)
+//  y.Value
+51   :     InvokeMethod  : methodInfo = GetValue<test::ObservableValue>, stackPatternCount = 0
+//  y.Value
+52   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+53   :     LoadValue     : value = <Bool, , >
+//  (y.Value & ", ")
+54   :     OpConcat      
+//  y
+55   :     LoadLocalVar  : var = 1(y)
+//  y.Name
+56   :     InvokeMethod  : methodInfo = GetName<test::ObservableValue>, stackPatternCount = 0
+//  ((y.Value & ", ") & y.Name)
+57   :     OpConcat      
+//  ", "
+58   :     LoadValue     : value = <Bool, , >
+//  (((y.Value & ", ") & y.Name) & ", ")
+59   :     OpConcat      
+//  y
+60   :     LoadLocalVar  : var = 1(y)
+//  y.DisplayName
+61   :     InvokeMethod  : methodInfo = GetDisplayName<test::ObservableValue>, stackPatternCount = 0
+//  ((((y.Value & ", ") & y.Name) & ", ") & y.DisplayName)
+62   :     OpConcat      
+//  var s2 = ((((y.Value & ", ") & y.Name) & ", ") & y.DisplayName);
+63   :     StoreLocalVar : var = 3(s2)
+//  s1
+64   :     LoadLocalVar  : var = 2(s1)
+//  ", "
+65   :     LoadValue     : value = <Bool, , >
+//  (s1 & ", ")
+66   :     OpConcat      
+//  s2
+67   :     LoadLocalVar  : var = 3(s2)
+//  ((s1 & ", ") & s2)
+68   :     OpConcat      
+//  return ((s1 & ", ") & s2);
+69   :     Return        
+//  func main() : (string)
+70   :     LoadValue     : value = <null>
+//  func main() : (string)
+71   :     Return        

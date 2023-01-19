@@ -1,0 +1,54 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface A
+{
+    static func B() : (void);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface A
+{
+    static func B() : (void);
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 2, Message: D0: Function should be implemented.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 56}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 56}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 33}, "end": {"row": 4, "column": 21, "index": 53}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "B", "codeRange": {"start": {"row": 4, "column": 13, "index": 45}, "end": {"row": 4, "column": 13, "index": 45}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 17, "index": 49}, "end": {"row": 4, "column": 20, "index": 52}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

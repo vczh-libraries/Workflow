@@ -1,0 +1,89 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A
+{
+    new ()
+        :A(this)
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A
+{
+    new ()
+        :A(this)
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 9, Column: 11, Message: A29: The "this" expression can only be used in class methods or functions in new interface expressions
+Line: 9, Column: 9, Message: A20: Function constructor in "A" of type "system::Function<A^>^"" is not allowed to call with 1 arguments.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 9, "column": 0, "index": 69}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 28}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 33}, "end": {"row": 9, "column": 0, "index": 69}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 6, "column": 6, "index": 39}, "end": {"row": 6, "column": 6, "index": 39}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 8, "column": 1, "index": 50}, "end": {"row": 8, "column": 17, "index": 66}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "arguments": [],
+            "baseConstructorCalls": [{
+                "$ast": { "type": "BaseConstructorCall", "codeRange": {"start": {"row": 8, "column": 8, "index": 57}, "end": {"row": 8, "column": 14, "index": 63}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "ThisExpression", "codeRange": {"start": {"row": 8, "column": 10, "index": 59}, "end": {"row": 8, "column": 13, "index": 62}, "codeIndex": -1}}
+                }],
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 8, "index": 57}, "end": {"row": 8, "column": 8, "index": 57}, "codeIndex": -1}},
+                    "name": { "value": "A", "codeRange": {"start": {"row": 8, "column": 8, "index": 57}, "end": {"row": 8, "column": 8, "index": 57}, "codeIndex": -1}}
+                }
+            }],
+            "constructorType": "SharedPtr",
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 8, "column": 16, "index": 65}, "end": {"row": 8, "column": 17, "index": 66}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

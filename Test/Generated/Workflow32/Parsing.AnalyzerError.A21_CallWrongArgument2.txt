@@ -1,0 +1,142 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+class A
+{
+    new (x : int, y : string)
+    {
+    }
+}
+
+class B : A
+{
+    new ()
+        :A("text", "text")
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+class A
+{
+    new (x : int, y : string)
+    {
+    }
+}
+
+class B : A
+{
+    new ()
+        :A("text", "text")
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 11, Column: 9, Message: A21: The 1-th argument of function constructor in "A" of type "system::Function<A^, system::Int32, system::String>^" cannot implicitly convert from "system::String" to "system::Int32".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 11, "column": 0, "index": 127}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 6, "column": 0, "index": 76}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 3, "column": 6, "index": 40}, "end": {"row": 3, "column": 6, "index": 40}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 47}, "end": {"row": 5, "column": 27, "index": 73}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 5, "index": 51}, "end": {"row": 5, "column": 11, "index": 57}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "x", "codeRange": {"start": {"row": 5, "column": 5, "index": 51}, "end": {"row": 5, "column": 5, "index": 51}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 9, "index": 55}, "end": {"row": 5, "column": 11, "index": 57}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }, {
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 14, "index": 60}, "end": {"row": 5, "column": 23, "index": 69}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "y", "codeRange": {"start": {"row": 5, "column": 14, "index": 60}, "end": {"row": 5, "column": 14, "index": 60}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 18, "index": 64}, "end": {"row": 5, "column": 23, "index": 69}, "codeIndex": -1}},
+                    "name": "String"
+                }
+            }],
+            "baseConstructorCalls": [],
+            "constructorType": "SharedPtr",
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 26, "index": 72}, "end": {"row": 5, "column": 27, "index": 73}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 8, "column": 0, "index": 81}, "end": {"row": 11, "column": 0, "index": 127}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 8, "column": 6, "index": 87}, "end": {"row": 8, "column": 6, "index": 87}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 10, "index": 91}, "end": {"row": 8, "column": 10, "index": 91}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 8, "column": 10, "index": 91}, "end": {"row": 8, "column": 10, "index": 91}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 10, "column": 1, "index": 98}, "end": {"row": 10, "column": 27, "index": 124}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "arguments": [],
+            "baseConstructorCalls": [{
+                "$ast": { "type": "BaseConstructorCall", "codeRange": {"start": {"row": 10, "column": 8, "index": 105}, "end": {"row": 10, "column": 24, "index": 121}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 10, "column": 10, "index": 107}, "end": {"row": 10, "column": 15, "index": 112}, "codeIndex": -1}},
+                    "value": { "value": "text", "codeRange": {"start": {"row": 10, "column": 10, "index": 107}, "end": {"row": 10, "column": 15, "index": 112}, "codeIndex": -1}}
+                }, {
+                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 10, "column": 18, "index": 115}, "end": {"row": 10, "column": 23, "index": 120}, "codeIndex": -1}},
+                    "value": { "value": "text", "codeRange": {"start": {"row": 10, "column": 18, "index": 115}, "end": {"row": 10, "column": 23, "index": 120}, "codeIndex": -1}}
+                }],
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 10, "column": 8, "index": 105}, "end": {"row": 10, "column": 8, "index": 105}, "codeIndex": -1}},
+                    "name": { "value": "A", "codeRange": {"start": {"row": 10, "column": 8, "index": 105}, "end": {"row": 10, "column": 8, "index": 105}, "codeIndex": -1}}
+                }
+            }],
+            "constructorType": "SharedPtr",
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 10, "column": 26, "index": 123}, "end": {"row": 10, "column": 27, "index": 124}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

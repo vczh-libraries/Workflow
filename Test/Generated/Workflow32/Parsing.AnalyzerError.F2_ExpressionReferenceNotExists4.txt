@@ -1,0 +1,158 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IMyInterface
+{
+    func Do() : (void);
+}
+
+func main() : (void)
+{
+    new (IMyInterface^)
+    {
+        func Something() : (void)
+        {
+        }
+
+        override func Do() : (void)
+        {
+            [Something()];
+        }
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IMyInterface
+{
+    func Do() : (void);
+}
+
+func main() : (void)
+{
+    new (IMyInterface^)
+    {
+        func Something() : (void)
+        {
+        }
+
+        override func Do() : (void)
+        {
+            [Something()];
+        }
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 18, Column: 5, Message: F2: Symbol "Something" does not exist in the current scope.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 20, "column": 0, "index": 217}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 63}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IMyInterface", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 21, "index": 37}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 44}, "end": {"row": 4, "column": 17, "index": 60}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Do", "codeRange": {"start": {"row": 4, "column": 6, "index": 49}, "end": {"row": 4, "column": 7, "index": 50}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 13, "index": 56}, "end": {"row": 4, "column": 16, "index": 59}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 7, "column": 0, "index": 68}, "end": {"row": 20, "column": 0, "index": 217}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 7, "column": 5, "index": 73}, "end": {"row": 7, "column": 8, "index": 76}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 7, "column": 14, "index": 82}, "end": {"row": 7, "column": 17, "index": 85}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 8, "column": 0, "index": 88}, "end": {"row": 20, "column": 0, "index": 217}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 9, "column": 1, "index": 92}, "end": {"row": 19, "column": 2, "index": 214}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 9, "column": 1, "index": 92}, "end": {"row": 19, "column": 1, "index": 213}, "codeIndex": -1}},
+                    "declarations": [{
+                        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 11, "column": 2, "index": 117}, "end": {"row": 13, "column": 2, "index": 149}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "Something", "codeRange": {"start": {"row": 11, "column": 7, "index": 122}, "end": {"row": 11, "column": 15, "index": 130}, "codeIndex": -1}},
+                        "anonymity": "Named",
+                        "arguments": [],
+                        "functionKind": "Normal",
+                        "returnType": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 11, "column": 21, "index": 136}, "end": {"row": 11, "column": 24, "index": 139}, "codeIndex": -1}},
+                            "name": "Void"
+                        },
+                        "statement": {
+                            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 12, "column": 2, "index": 144}, "end": {"row": 13, "column": 2, "index": 149}, "codeIndex": -1}},
+                            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                            "statements": []
+                        }
+                    }, {
+                        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 15, "column": 2, "index": 156}, "end": {"row": 18, "column": 2, "index": 209}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "Do", "codeRange": {"start": {"row": 15, "column": 16, "index": 170}, "end": {"row": 15, "column": 17, "index": 171}, "codeIndex": -1}},
+                        "anonymity": "Named",
+                        "arguments": [],
+                        "functionKind": "Override",
+                        "returnType": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 15, "column": 23, "index": 177}, "end": {"row": 15, "column": 26, "index": 180}, "codeIndex": -1}},
+                            "name": "Void"
+                        },
+                        "statement": {
+                            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 16, "column": 2, "index": 185}, "end": {"row": 18, "column": 2, "index": 209}, "codeIndex": -1}},
+                            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                            "statements": [{
+                                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 17, "column": 3, "index": 191}, "end": {"row": 17, "column": 16, "index": 204}, "codeIndex": -1}},
+                                "expression": {
+                                    "$ast": { "type": "OrderedLambdaExpression", "codeRange": {"start": {"row": 17, "column": 3, "index": 191}, "end": {"row": 17, "column": 15, "index": 203}, "codeIndex": -1}},
+                                    "body": {
+                                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 17, "column": 4, "index": 192}, "end": {"row": 17, "column": 14, "index": 202}, "codeIndex": -1}},
+                                        "arguments": [],
+                                        "function": {
+                                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 17, "column": 4, "index": 192}, "end": {"row": 17, "column": 12, "index": 200}, "codeIndex": -1}},
+                                            "name": { "value": "Something", "codeRange": {"start": {"row": 17, "column": 4, "index": 192}, "end": {"row": 17, "column": 12, "index": 200}, "codeIndex": -1}}
+                                        }
+                                    }
+                                }
+                            }]
+                        }
+                    }],
+                    "type": {
+                        "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 9, "column": 5, "index": 96}, "end": {"row": 9, "column": 17, "index": 108}, "codeIndex": -1}},
+                        "element": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 9, "column": 5, "index": 96}, "end": {"row": 9, "column": 16, "index": 107}, "codeIndex": -1}},
+                            "name": { "value": "IMyInterface", "codeRange": {"start": {"row": 9, "column": 5, "index": 96}, "end": {"row": 9, "column": 16, "index": 107}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

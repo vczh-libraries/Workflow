@@ -1,0 +1,95 @@
+﻿========================================================
+Original
+========================================================
+new Delegate
+{
+    func Something(x : int) : string {}
+
+    @cpp:Good
+    @cpp:Better
+    @cpp:Best
+    override func Invoke():void {}
+}
+
+========================================================
+Printed
+========================================================
+new (Delegate)
+{
+    func Something(x : int) : (string)
+    {
+    }
+
+    @cpp:Good
+    @cpp:Better
+    @cpp:Best
+    override func Invoke() : (void)
+    {
+    }
+}
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 143}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 4, "index": 21}, "end": {"row": 2, "column": 38, "index": 55}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "Something", "codeRange": {"start": {"row": 2, "column": 9, "index": 26}, "end": {"row": 2, "column": 17, "index": 34}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [{
+            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 2, "column": 19, "index": 36}, "end": {"row": 2, "column": 25, "index": 42}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 2, "column": 19, "index": 36}, "end": {"row": 2, "column": 19, "index": 36}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 23, "index": 40}, "end": {"row": 2, "column": 25, "index": 42}, "codeIndex": -1}},
+                "name": "Int"
+            }
+        }],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 30, "index": 47}, "end": {"row": 2, "column": 35, "index": 52}, "codeIndex": -1}},
+            "name": "String"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 2, "column": 37, "index": 54}, "end": {"row": 2, "column": 38, "index": 55}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": []
+        }
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 4, "index": 64}, "end": {"row": 7, "column": 33, "index": 140}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 4, "column": 4, "index": 64}, "end": {"row": 4, "column": 12, "index": 72}, "codeIndex": -1}},
+            "category": { "value": "cpp", "codeRange": {"start": {"row": 4, "column": 5, "index": 65}, "end": {"row": 4, "column": 7, "index": 67}, "codeIndex": -1}},
+            "name": { "value": "Good", "codeRange": {"start": {"row": 4, "column": 9, "index": 69}, "end": {"row": 4, "column": 12, "index": 72}, "codeIndex": -1}},
+            "value": null
+        }, {
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 5, "column": 4, "index": 79}, "end": {"row": 5, "column": 14, "index": 89}, "codeIndex": -1}},
+            "category": { "value": "cpp", "codeRange": {"start": {"row": 5, "column": 5, "index": 80}, "end": {"row": 5, "column": 7, "index": 82}, "codeIndex": -1}},
+            "name": { "value": "Better", "codeRange": {"start": {"row": 5, "column": 9, "index": 84}, "end": {"row": 5, "column": 14, "index": 89}, "codeIndex": -1}},
+            "value": null
+        }, {
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 6, "column": 4, "index": 96}, "end": {"row": 6, "column": 12, "index": 104}, "codeIndex": -1}},
+            "category": { "value": "cpp", "codeRange": {"start": {"row": 6, "column": 5, "index": 97}, "end": {"row": 6, "column": 7, "index": 99}, "codeIndex": -1}},
+            "name": { "value": "Best", "codeRange": {"start": {"row": 6, "column": 9, "index": 101}, "end": {"row": 6, "column": 12, "index": 104}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "Invoke", "codeRange": {"start": {"row": 7, "column": 18, "index": 125}, "end": {"row": 7, "column": 23, "index": 130}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Override",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 7, "column": 27, "index": 134}, "end": {"row": 7, "column": 30, "index": 137}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 7, "column": 32, "index": 139}, "end": {"row": 7, "column": 33, "index": 140}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": []
+        }
+    }],
+    "type": {
+        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 0, "column": 4, "index": 4}, "end": {"row": 0, "column": 11, "index": 11}, "codeIndex": -1}},
+        "name": { "value": "Delegate", "codeRange": {"start": {"row": 0, "column": 4, "index": 4}, "end": {"row": 0, "column": 11, "index": 11}, "codeIndex": -1}}
+    }
+}

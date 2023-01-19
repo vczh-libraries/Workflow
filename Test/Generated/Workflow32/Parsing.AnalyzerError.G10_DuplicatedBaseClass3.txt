@@ -1,0 +1,100 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A
+{
+}
+
+class C : A
+{
+}
+
+class D : B, C
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A
+{
+}
+
+class C : A
+{
+}
+
+class D : B, C
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 15, Column: 1, Message: G10: Class "D" inherits from another class "A" for multiple times.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 16, "column": 0, "index": 94}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 28}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 33}, "end": {"row": 8, "column": 0, "index": 49}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 6, "column": 6, "index": 39}, "end": {"row": 6, "column": 6, "index": 39}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 10, "column": 0, "index": 54}, "end": {"row": 12, "column": 0, "index": 70}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "C", "codeRange": {"start": {"row": 10, "column": 6, "index": 60}, "end": {"row": 10, "column": 6, "index": 60}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 10, "column": 10, "index": 64}, "end": {"row": 10, "column": 10, "index": 64}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 10, "column": 10, "index": 64}, "end": {"row": 10, "column": 10, "index": 64}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 14, "column": 0, "index": 75}, "end": {"row": 16, "column": 0, "index": 94}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "D", "codeRange": {"start": {"row": 14, "column": 6, "index": 81}, "end": {"row": 14, "column": 6, "index": 81}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 14, "column": 10, "index": 85}, "end": {"row": 14, "column": 10, "index": 85}, "codeIndex": -1}},
+            "name": { "value": "B", "codeRange": {"start": {"row": 14, "column": 10, "index": 85}, "end": {"row": 14, "column": 10, "index": 85}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 14, "column": 13, "index": 88}, "end": {"row": 14, "column": 13, "index": 88}, "codeIndex": -1}},
+            "name": { "value": "C", "codeRange": {"start": {"row": 14, "column": 13, "index": 88}, "end": {"row": 14, "column": 13, "index": 88}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

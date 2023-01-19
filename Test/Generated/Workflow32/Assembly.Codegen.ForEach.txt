@@ -1,0 +1,261 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+Show1 (2 .. 44)
+    Arguments:
+        xs
+    Captured Variables:
+    Local Variables:
+        s
+        <for-enumerable>x
+        <for-enumerator>x
+        x
+
+Show2 (45 .. 89)
+    Arguments:
+        xs
+    Captured Variables:
+    Local Variables:
+        s
+        <for-enumerable>x
+        <for-enumerator>x
+        x
+
+main (90 .. 110)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        xs
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  ""
+2    :     LoadValue     : value = <Bool, >
+//  var s = "";
+3    :     StoreLocalVar : var = 1(s)
+//  xs
+4    :     LoadLocalVar  : var = 0(xs)
+//  xs
+5    :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>x = xs of (::system::Enumerable^);
+6    :     StoreLocalVar : var = 2(<for-enumerable>x)
+//  <for-enumerable>x
+7    :     LoadLocalVar  : var = 2(<for-enumerable>x)
+//  <for-enumerable>x.CreateEnumerator()
+8    :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>x = <for-enumerable>x.CreateEnumerator();
+9    :     StoreLocalVar : var = 3(<for-enumerator>x)
+//  <for-enumerator>x
+10   :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.Next()
+11   :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>x.Next())
+12   :     OpNot         : type = Bool
+//  while (<for-enumerator>x.Next())
+13   :     JumpIf        : label = 41
+//  <for-enumerator>x
+14   :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.GetCurrent()
+15   :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>x.GetCurrent()
+16   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  var x = (cast (::system::Int32) <for-enumerator>x.GetCurrent());
+17   :     StoreLocalVar : var = 4(x)
+//  s
+18   :     LoadLocalVar  : var = 1(s)
+//  ""
+19   :     LoadValue     : value = <Bool, >
+//  (s == "")
+20   :     CompareValue  
+//  if ((s == ""))
+21   :     OpNot         : type = Bool
+//  if ((s == ""))
+22   :     JumpIf        : label = 31
+//  s
+23   :     LoadLocalVar  : var = 1(s)
+//  x
+24   :     LoadLocalVar  : var = 4(x)
+//  x
+25   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (s & x)
+26   :     OpConcat      
+//  (s = (s & x))
+27   :     Duplicate     : stackPatternCount = 0
+//  (s = (s & x))
+28   :     StoreLocalVar : var = 1(s)
+//  (s = (s & x));
+29   :     Pop           
+//  if ((s == ""))
+30   :     Jump          : label = 40
+//  s
+31   :     LoadLocalVar  : var = 1(s)
+//  ", "
+32   :     LoadValue     : value = <Bool, , >
+//  (s & ", ")
+33   :     OpConcat      
+//  x
+34   :     LoadLocalVar  : var = 4(x)
+//  x
+35   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((s & ", ") & x)
+36   :     OpConcat      
+//  (s = ((s & ", ") & x))
+37   :     Duplicate     : stackPatternCount = 0
+//  (s = ((s & ", ") & x))
+38   :     StoreLocalVar : var = 1(s)
+//  (s = ((s & ", ") & x));
+39   :     Pop           
+//  while (<for-enumerator>x.Next())
+40   :     Jump          : label = 10
+//  s
+41   :     LoadLocalVar  : var = 1(s)
+//  return s;
+42   :     Return        
+//  func Show1(xs : int[]) : (string)
+43   :     LoadValue     : value = <null>
+//  func Show1(xs : int[]) : (string)
+44   :     Return        
+//  ""
+45   :     LoadValue     : value = <Bool, >
+//  var s = "";
+46   :     StoreLocalVar : var = 1(s)
+//  xs
+47   :     LoadLocalVar  : var = 0(xs)
+//  xs
+48   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  ::system::Sys::ReverseEnumerable(xs)
+49   :     LoadValue     : value = <null>
+//  ::system::Sys::ReverseEnumerable(xs)
+50   :     InvokeMethod  : methodInfo = ReverseEnumerable<system::Sys>, stackPatternCount = 1
+//  var <for-enumerable>x = ::system::Sys::ReverseEnumerable(xs);
+51   :     StoreLocalVar : var = 2(<for-enumerable>x)
+//  <for-enumerable>x
+52   :     LoadLocalVar  : var = 2(<for-enumerable>x)
+//  <for-enumerable>x.CreateEnumerator()
+53   :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>x = <for-enumerable>x.CreateEnumerator();
+54   :     StoreLocalVar : var = 3(<for-enumerator>x)
+//  <for-enumerator>x
+55   :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.Next()
+56   :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>x.Next())
+57   :     OpNot         : type = Bool
+//  while (<for-enumerator>x.Next())
+58   :     JumpIf        : label = 86
+//  <for-enumerator>x
+59   :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.GetCurrent()
+60   :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>x.GetCurrent()
+61   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  var x = (cast (::system::Int32) <for-enumerator>x.GetCurrent());
+62   :     StoreLocalVar : var = 4(x)
+//  s
+63   :     LoadLocalVar  : var = 1(s)
+//  ""
+64   :     LoadValue     : value = <Bool, >
+//  (s == "")
+65   :     CompareValue  
+//  if ((s == ""))
+66   :     OpNot         : type = Bool
+//  if ((s == ""))
+67   :     JumpIf        : label = 76
+//  s
+68   :     LoadLocalVar  : var = 1(s)
+//  x
+69   :     LoadLocalVar  : var = 4(x)
+//  x
+70   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (s & x)
+71   :     OpConcat      
+//  (s = (s & x))
+72   :     Duplicate     : stackPatternCount = 0
+//  (s = (s & x))
+73   :     StoreLocalVar : var = 1(s)
+//  (s = (s & x));
+74   :     Pop           
+//  if ((s == ""))
+75   :     Jump          : label = 85
+//  s
+76   :     LoadLocalVar  : var = 1(s)
+//  ", "
+77   :     LoadValue     : value = <Bool, , >
+//  (s & ", ")
+78   :     OpConcat      
+//  x
+79   :     LoadLocalVar  : var = 4(x)
+//  x
+80   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((s & ", ") & x)
+81   :     OpConcat      
+//  (s = ((s & ", ") & x))
+82   :     Duplicate     : stackPatternCount = 0
+//  (s = ((s & ", ") & x))
+83   :     StoreLocalVar : var = 1(s)
+//  (s = ((s & ", ") & x));
+84   :     Pop           
+//  while (<for-enumerator>x.Next())
+85   :     Jump          : label = 55
+//  s
+86   :     LoadLocalVar  : var = 1(s)
+//  return s;
+87   :     Return        
+//  func Show2(xs : int[]) : (string)
+88   :     LoadValue     : value = <null>
+//  func Show2(xs : int[]) : (string)
+89   :     Return        
+//  5
+90   :     LoadValue     : value = <I4, 5>
+//  4
+91   :     LoadValue     : value = <I4, 4>
+//  3
+92   :     LoadValue     : value = <I4, 3>
+//  2
+93   :     LoadValue     : value = <I4, 2>
+//  1
+94   :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+95   :     NewList       : stackPatternCount = 5
+//  var xs = {1; 2; 3; 4; 5;};
+96   :     StoreLocalVar : var = 0(xs)
+//  "["
+97   :     LoadValue     : value = <Bool, [>
+//  xs
+98   :     LoadLocalVar  : var = 0(xs)
+//  Show1(xs)
+99   :     Invoke        : func = 0(Show1), stackPatternCount = 1
+//  ("[" & Show1(xs))
+100  :     OpConcat      
+//  "]["
+101  :     LoadValue     : value = <Bool, ][>
+//  (("[" & Show1(xs)) & "][")
+102  :     OpConcat      
+//  xs
+103  :     LoadLocalVar  : var = 0(xs)
+//  Show2(xs)
+104  :     Invoke        : func = 1(Show2), stackPatternCount = 1
+//  ((("[" & Show1(xs)) & "][") & Show2(xs))
+105  :     OpConcat      
+//  "]"
+106  :     LoadValue     : value = <Bool, ]>
+//  (((("[" & Show1(xs)) & "][") & Show2(xs)) & "]")
+107  :     OpConcat      
+//  return (((("[" & Show1(xs)) & "][") & Show2(xs)) & "]");
+108  :     Return        
+//  func main() : (string)
+109  :     LoadValue     : value = <null>
+//  func main() : (string)
+110  :     Return        

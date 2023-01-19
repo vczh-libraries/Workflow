@@ -1,0 +1,292 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+main (2 .. 133)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        xs
+        ys
+        zs
+        <anonymous-range-test>
+        <anonymous-range-test>
+        <anonymous-range-test>
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  5
+2    :     LoadValue     : value = <I8, 5>
+//  4
+3    :     LoadValue     : value = <I8, 4>
+//  3
+4    :     LoadValue     : value = <I8, 3>
+//  2
+5    :     LoadValue     : value = <I8, 2>
+//  1
+6    :     LoadValue     : value = <I8, 1>
+//  {1; 2; 3; 4; 5;}
+7    :     NewList       : stackPatternCount = 5
+//  {1; 2; 3; 4; 5;}
+8    :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var xs = {1; 2; 3; 4; 5;} of (int{});
+9    :     StoreLocalVar : var = 0(xs)
+//  5
+10   :     LoadValue     : value = <I8, 5>
+//  4
+11   :     LoadValue     : value = <I8, 4>
+//  3
+12   :     LoadValue     : value = <I8, 3>
+//  2
+13   :     LoadValue     : value = <I8, 2>
+//  1
+14   :     LoadValue     : value = <I8, 1>
+//  {1; 2; 3; 4; 5;}
+15   :     NewList       : stackPatternCount = 5
+//  var ys = {1; 2; 3; 4; 5;} of (int[]);
+16   :     StoreLocalVar : var = 1(ys)
+//  1
+17   :     LoadValue     : value = <I8, 1>
+//  range (1, 5)
+18   :     LoadValue     : value = <I8, 1>
+//  range (1, 5)
+19   :     OpAdd         : type = I8
+//  5
+20   :     LoadValue     : value = <I8, 5>
+//  range (1, 5)
+21   :     LoadValue     : value = <I8, 1>
+//  range (1, 5)
+22   :     OpSub         : type = I8
+//  range (1, 5)
+23   :     CreateRange   : type = I8
+//  var zs = range (1, 5) of (int{});
+24   :     StoreLocalVar : var = 2(zs)
+//  3
+25   :     LoadValue     : value = <I8, 3>
+//  xs
+26   :     LoadLocalVar  : var = 0(xs)
+//  3 not in xs
+27   :     TestElementInSet
+//  3 not in xs
+28   :     OpNot         : type = Bool
+//  (!3 not in xs)
+29   :     OpNot         : type = Bool
+//  (!3 not in xs)
+30   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+31   :     LoadValue     : value = <Bool, , >
+//  ((!3 not in xs) & ", ")
+32   :     OpConcat      
+//  0
+33   :     LoadValue     : value = <I8, 0>
+//  xs
+34   :     LoadLocalVar  : var = 0(xs)
+//  0 in xs
+35   :     TestElementInSet
+//  0 in xs
+36   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((!3 not in xs) & ", ") & 0 in xs)
+37   :     OpConcat      
+//  ", "
+38   :     LoadValue     : value = <Bool, , >
+//  ((((!3 not in xs) & ", ") & 0 in xs) & ", ")
+39   :     OpConcat      
+//  3
+40   :     LoadValue     : value = <I8, 3>
+//  ys
+41   :     LoadLocalVar  : var = 1(ys)
+//  3 not in ys
+42   :     InvokeMethod  : methodInfo = Contains<system::ReadonlyList>, stackPatternCount = 1
+//  3 not in ys
+43   :     OpNot         : type = Bool
+//  (!3 not in ys)
+44   :     OpNot         : type = Bool
+//  (!3 not in ys)
+45   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys))
+46   :     OpConcat      
+//  ", "
+47   :     LoadValue     : value = <Bool, , >
+//  ((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ")
+48   :     OpConcat      
+//  0
+49   :     LoadValue     : value = <I8, 0>
+//  ys
+50   :     LoadLocalVar  : var = 1(ys)
+//  0 in ys
+51   :     InvokeMethod  : methodInfo = Contains<system::ReadonlyList>, stackPatternCount = 1
+//  0 in ys
+52   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys)
+53   :     OpConcat      
+//  ", "
+54   :     LoadValue     : value = <Bool, , >
+//  ((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ")
+55   :     OpConcat      
+//  3
+56   :     LoadValue     : value = <I8, 3>
+//  zs
+57   :     LoadLocalVar  : var = 2(zs)
+//  3 not in zs
+58   :     TestElementInSet
+//  3 not in zs
+59   :     OpNot         : type = Bool
+//  (!3 not in zs)
+60   :     OpNot         : type = Bool
+//  (!3 not in zs)
+61   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs))
+62   :     OpConcat      
+//  ", "
+63   :     LoadValue     : value = <Bool, , >
+//  ((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ")
+64   :     OpConcat      
+//  1
+65   :     LoadValue     : value = <I8, 1>
+//  zs
+66   :     LoadLocalVar  : var = 2(zs)
+//  1 in zs
+67   :     TestElementInSet
+//  1 in zs
+68   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs)
+69   :     OpConcat      
+//  ", "
+70   :     LoadValue     : value = <Bool, , >
+//  ((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ")
+71   :     OpConcat      
+//  5
+72   :     LoadValue     : value = <I8, 5>
+//  zs
+73   :     LoadLocalVar  : var = 2(zs)
+//  5 in zs
+74   :     TestElementInSet
+//  5 in zs
+75   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs)
+76   :     OpConcat      
+//  ", "
+77   :     LoadValue     : value = <Bool, , >
+//  ((((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs) & ", ")
+78   :     OpConcat      
+//  3
+79   :     LoadValue     : value = <I8, 3>
+//  3 not in range (1.0, 5)
+80   :     StoreLocalVar : var = 3(<anonymous-range-test>)
+//  3 not in range (1.0, 5)
+81   :     LoadLocalVar  : var = 3(<anonymous-range-test>)
+//  3 not in range (1.0, 5)
+82   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Double
+//  1.0
+83   :     LoadValue     : value = <F8, 1>
+//  3 not in range (1.0, 5)
+84   :     CompareLiteral: type = F8
+//  3 not in range (1.0, 5)
+85   :     OpGT          
+//  3 not in range (1.0, 5)
+86   :     LoadLocalVar  : var = 3(<anonymous-range-test>)
+//  5
+87   :     LoadValue     : value = <I8, 5>
+//  3 not in range (1.0, 5)
+88   :     CompareLiteral: type = I8
+//  3 not in range (1.0, 5)
+89   :     OpLT          
+//  3 not in range (1.0, 5)
+90   :     OpAnd         : type = Bool
+//  3 not in range (1.0, 5)
+91   :     OpNot         : type = Bool
+//  3 not in range (1.0, 5)
+92   :     LoadValue     : value = <null>
+//  3 not in range (1.0, 5)
+93   :     StoreLocalVar : var = 3(<anonymous-range-test>)
+//  (!3 not in range (1.0, 5))
+94   :     OpNot         : type = Bool
+//  (!3 not in range (1.0, 5))
+95   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs) & ", ") & (!3 not in range (1.0, 5)))
+96   :     OpConcat      
+//  ", "
+97   :     LoadValue     : value = <Bool, , >
+//  ((((((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs) & ", ") & (!3 not in range (1.0, 5))) & ", ")
+98   :     OpConcat      
+//  1
+99   :     LoadValue     : value = <I8, 1>
+//  1 in range [1, 5]
+100  :     StoreLocalVar : var = 4(<anonymous-range-test>)
+//  1 in range [1, 5]
+101  :     LoadLocalVar  : var = 4(<anonymous-range-test>)
+//  1
+102  :     LoadValue     : value = <I8, 1>
+//  1 in range [1, 5]
+103  :     CompareLiteral: type = I8
+//  1 in range [1, 5]
+104  :     OpGE          
+//  1 in range [1, 5]
+105  :     LoadLocalVar  : var = 4(<anonymous-range-test>)
+//  5
+106  :     LoadValue     : value = <I8, 5>
+//  1 in range [1, 5]
+107  :     CompareLiteral: type = I8
+//  1 in range [1, 5]
+108  :     OpLE          
+//  1 in range [1, 5]
+109  :     OpAnd         : type = Bool
+//  1 in range [1, 5]
+110  :     LoadValue     : value = <null>
+//  1 in range [1, 5]
+111  :     StoreLocalVar : var = 4(<anonymous-range-test>)
+//  1 in range [1, 5]
+112  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs) & ", ") & (!3 not in range (1.0, 5))) & ", ") & 1 in range [1, 5])
+113  :     OpConcat      
+//  ", "
+114  :     LoadValue     : value = <Bool, , >
+//  ((((((((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs) & ", ") & (!3 not in range (1.0, 5))) & ", ") & 1 in range [1, 5]) & ", ")
+115  :     OpConcat      
+//  0
+116  :     LoadValue     : value = <I8, 0>
+//  0 in range [1, 5]
+117  :     StoreLocalVar : var = 5(<anonymous-range-test>)
+//  0 in range [1, 5]
+118  :     LoadLocalVar  : var = 5(<anonymous-range-test>)
+//  1
+119  :     LoadValue     : value = <I8, 1>
+//  0 in range [1, 5]
+120  :     CompareLiteral: type = I8
+//  0 in range [1, 5]
+121  :     OpGE          
+//  0 in range [1, 5]
+122  :     LoadLocalVar  : var = 5(<anonymous-range-test>)
+//  5
+123  :     LoadValue     : value = <I8, 5>
+//  0 in range [1, 5]
+124  :     CompareLiteral: type = I8
+//  0 in range [1, 5]
+125  :     OpLE          
+//  0 in range [1, 5]
+126  :     OpAnd         : type = Bool
+//  0 in range [1, 5]
+127  :     LoadValue     : value = <null>
+//  0 in range [1, 5]
+128  :     StoreLocalVar : var = 5(<anonymous-range-test>)
+//  0 in range [1, 5]
+129  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((((((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs) & ", ") & (!3 not in range (1.0, 5))) & ", ") & 1 in range [1, 5]) & ", ") & 0 in range [1, 5])
+130  :     OpConcat      
+//  return (((((((((((((((((((!3 not in xs) & ", ") & 0 in xs) & ", ") & (!3 not in ys)) & ", ") & 0 in ys) & ", ") & (!3 not in zs)) & ", ") & 1 in zs) & ", ") & 5 in zs) & ", ") & (!3 not in range (1.0, 5))) & ", ") & 1 in range [1, 5]) & ", ") & 0 in range [1, 5]);
+131  :     Return        
+//  func main() : (string)
+132  :     LoadValue     : value = <null>
+//  func main() : (string)
+133  :     Return        

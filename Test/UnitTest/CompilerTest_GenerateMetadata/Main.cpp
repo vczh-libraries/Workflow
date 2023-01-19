@@ -33,15 +33,15 @@ WString GetExePath()
 WString GetTestOutputPath()
 {
 #ifdef _WIN64
-	return GetExePath() + L"../../../Output/";
+	return GetExePath() + L"../../../Generated/";
 #else
-	return GetExePath() + L"../../Output/";
+	return GetExePath() + L"../../Generated/";
 #endif
 }
 #elif defined VCZH_GCC
 WString GetTestOutputPath()
 {
-	return L"../../Output/";
+	return L"../../Generated/";
 }
 #endif
 

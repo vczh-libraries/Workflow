@@ -69,12 +69,12 @@ WString GetTestOutputBasePath()
 {
 #if defined VCZH_MSVC
 #ifdef VCZH_64
-	return GetExePath() + L"..\\..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\..\\Generated\\";
 #else
-	return GetExePath() + L"..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\Generated\\";
 #endif
 #elif defined VCZH_GCC
-	return L"../../Output/";
+	return L"../../Generated/";
 #endif
 }
 
@@ -150,7 +150,7 @@ void LoadSampleAssemblyBinary(const WString& sampleName, const WString& itemName
 void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<glr::ParsingAstBase> typedNode, WfLexicalScopeManager* manager)
 {
 	FileStream fileStream(GetWorkflowOutputPath() + L"Parsing." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
-	BomEncoder encoder(BomEncoder::Utf16);
+	BomEncoder encoder(BomEncoder::Utf8);
 	EncoderStream encoderStream(fileStream, encoder);
 	StreamWriter writer(encoderStream);
 
@@ -222,7 +222,7 @@ void LogSampleParseResult(const WString& sampleName, const WString& itemName, co
 void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, Ptr<WfAssembly> assembly)
 {
 	FileStream fileStream(GetWorkflowOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
-	BomEncoder encoder(BomEncoder::Utf16);
+	BomEncoder encoder(BomEncoder::Utf8);
 	EncoderStream encoderStream(fileStream, encoder);
 	StreamWriter writer(encoderStream);
 

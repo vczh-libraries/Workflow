@@ -1,0 +1,42 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+var x = (cast * 0);
+
+========================================================
+Printed
+========================================================
+module test;
+
+var x = (cast * 0);
+
+========================================================
+Errors
+========================================================
+Line: 3, Column: 9, Message: A33: Cannot resolve type "*". This expression should only appear on a place which has an explicit type, including variables and arguments.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 2, "column": 16, "index": 32}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 16, "index": 32}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "x", "codeRange": {"start": {"row": 2, "column": 4, "index": 20}, "end": {"row": 2, "column": 4, "index": 20}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "ExpectedTypeCastExpression", "codeRange": {"start": {"row": 2, "column": 8, "index": 24}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "expandedExpression": null,
+            "expression": {
+                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 2, "column": 15, "index": 31}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+                "value": { "value": "0", "codeRange": {"start": {"row": 2, "column": 15, "index": 31}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}}
+            },
+            "strategy": "Strong"
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

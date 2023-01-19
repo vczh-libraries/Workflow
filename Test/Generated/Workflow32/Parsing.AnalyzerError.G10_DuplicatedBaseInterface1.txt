@@ -1,0 +1,44 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface A : A
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface A : A
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 3, Column: 1, Message: G10: Recursive inheriting are found in these interface definitions:
+	A.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 4, "column": 0, "index": 36}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 36}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}}
+        }],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

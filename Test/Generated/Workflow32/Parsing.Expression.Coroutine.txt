@@ -1,0 +1,73 @@
+﻿========================================================
+Original
+========================================================
+{
+	$coroutine
+	{
+		$pause
+		{
+			if($.IsCancelled)
+			{
+				$pause;
+			}
+		}
+	}
+}
+========================================================
+Printed
+========================================================
+{$coroutine
+{
+    $pause
+    {
+        if ($.IsCancelled)
+        {
+            $pause;
+        }
+    }
+};}
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "ConstructorExpression", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 11, "column": 0, "index": 91}, "codeIndex": -1}},
+    "arguments": [{
+        "$ast": { "type": "ConstructorArgument", "codeRange": {"start": {"row": 1, "column": 1, "index": 4}, "end": {"row": 10, "column": 1, "index": 88}, "codeIndex": -1}},
+        "key": {
+            "$ast": { "type": "NewCoroutineExpression", "codeRange": {"start": {"row": 1, "column": 1, "index": 4}, "end": {"row": 10, "column": 1, "index": 88}, "codeIndex": -1}},
+            "expandedExpression": null,
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 2, "column": 1, "index": 17}, "end": {"row": 10, "column": 1, "index": 88}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "CoPauseStatement", "codeRange": {"start": {"row": 3, "column": 2, "index": 22}, "end": {"row": 9, "column": 2, "index": 84}, "codeIndex": -1}},
+                    "statement": {
+                        "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 2, "index": 32}, "end": {"row": 9, "column": 2, "index": 84}, "codeIndex": -1}},
+                        "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                        "statements": [{
+                            "$ast": { "type": "IfStatement", "codeRange": {"start": {"row": 5, "column": 3, "index": 38}, "end": {"row": 8, "column": 3, "index": 79}, "codeIndex": -1}},
+                            "expression": {
+                                "$ast": { "type": "CoOperatorExpression", "codeRange": {"start": {"row": 5, "column": 6, "index": 41}, "end": {"row": 5, "column": 18, "index": 53}, "codeIndex": -1}},
+                                "expandedExpression": null,
+                                "name": { "value": "IsCancelled", "codeRange": {"start": {"row": 5, "column": 8, "index": 43}, "end": {"row": 5, "column": 18, "index": 53}, "codeIndex": -1}}
+                            },
+                            "falseBranch": null,
+                            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                            "trueBranch": {
+                                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 6, "column": 3, "index": 60}, "end": {"row": 8, "column": 3, "index": 79}, "codeIndex": -1}},
+                                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                                "statements": [{
+                                    "$ast": { "type": "CoPauseStatement", "codeRange": {"start": {"row": 7, "column": 4, "index": 67}, "end": {"row": 7, "column": 10, "index": 73}, "codeIndex": -1}},
+                                    "statement": null
+                                }]
+                            },
+                            "type": null
+                        }]
+                    }
+                }]
+            }
+        },
+        "value": null
+    }]
+}

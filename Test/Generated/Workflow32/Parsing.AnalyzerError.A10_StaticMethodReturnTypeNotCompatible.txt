@@ -1,0 +1,111 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    static func X() : (bool)
+    {
+        return Y();
+    }
+
+    static func Y() : (double)
+    {
+        return X();
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    static func X() : (bool)
+    {
+        return Y();
+    }
+
+    static func Y() : (double)
+    {
+        return X();
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 10, Message: A10: Expression of type "system::Double" cannot implicitly convert to "system::Boolean".
+Line: 12, Column: 10, Message: A10: Expression of type "system::Boolean" cannot implicitly convert to "system::Double".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 13, "column": 0, "index": 128}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 13, "column": 0, "index": 128}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 29}, "end": {"row": 7, "column": 1, "index": 73}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "X", "codeRange": {"start": {"row": 4, "column": 13, "index": 41}, "end": {"row": 4, "column": 13, "index": 41}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 19, "index": 47}, "end": {"row": 4, "column": 22, "index": 50}, "codeIndex": -1}},
+                "name": "Bool"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 54}, "end": {"row": 7, "column": 1, "index": 73}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 6, "column": 2, "index": 59}, "end": {"row": 6, "column": 12, "index": 69}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 6, "column": 9, "index": 66}, "end": {"row": 6, "column": 11, "index": 68}, "codeIndex": -1}},
+                        "arguments": [],
+                        "function": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 6, "column": 9, "index": 66}, "end": {"row": 6, "column": 9, "index": 66}, "codeIndex": -1}},
+                            "name": { "value": "Y", "codeRange": {"start": {"row": 6, "column": 9, "index": 66}, "end": {"row": 6, "column": 9, "index": 66}, "codeIndex": -1}}
+                        }
+                    }
+                }]
+            }
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 9, "column": 1, "index": 79}, "end": {"row": 12, "column": 1, "index": 125}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Y", "codeRange": {"start": {"row": 9, "column": 13, "index": 91}, "end": {"row": 9, "column": 13, "index": 91}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 19, "index": 97}, "end": {"row": 9, "column": 24, "index": 102}, "codeIndex": -1}},
+                "name": "Double"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 10, "column": 1, "index": 106}, "end": {"row": 12, "column": 1, "index": 125}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 11, "column": 2, "index": 111}, "end": {"row": 11, "column": 12, "index": 121}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 11, "column": 9, "index": 118}, "end": {"row": 11, "column": 11, "index": 120}, "codeIndex": -1}},
+                        "arguments": [],
+                        "function": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 11, "column": 9, "index": 118}, "end": {"row": 11, "column": 9, "index": 118}, "codeIndex": -1}},
+                            "name": { "value": "X", "codeRange": {"start": {"row": 11, "column": 9, "index": 118}, "end": {"row": 11, "column": 9, "index": 118}, "codeIndex": -1}}
+                        }
+                    }
+                }]
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

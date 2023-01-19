@@ -1,0 +1,56 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    override prop P : string {}
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    override prop P : string {}
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 5, Message: G8: Auto-property "P" cannot be override because it doesn't implement any interface methods.
+Line: 5, Column: 5, Message: G13: Auto property "P" should be initialized.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 61}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 61}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 4, "column": 4, "index": 32}, "end": {"row": 4, "column": 30, "index": 58}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "P", "codeRange": {"start": {"row": 4, "column": 18, "index": 46}, "end": {"row": 4, "column": 18, "index": 46}, "codeIndex": -1}},
+            "expandedDeclarations": [],
+            "configConst": "Writable",
+            "configObserve": "Observable",
+            "expression": null,
+            "functionKind": "Override",
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 22, "index": 50}, "end": {"row": 4, "column": 27, "index": 55}, "codeIndex": -1}},
+                "name": "String"
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

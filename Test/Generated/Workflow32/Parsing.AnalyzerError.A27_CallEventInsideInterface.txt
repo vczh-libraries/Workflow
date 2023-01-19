@@ -1,0 +1,138 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IMyInterface
+{
+    func GetName() : (string);
+
+    func SetName(value : string) : (void);
+
+    event NameChanged();
+
+    prop Name : string{GetName, SetName : NameChanged}
+
+    static func Do() : (void)
+    {
+        NameChanged();
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IMyInterface
+{
+    func GetName() : (string);
+
+    func SetName(value : string) : (void);
+
+    event NameChanged();
+
+    prop Name : string{GetName, SetName : NameChanged}
+
+    static func Do() : (void)
+    {
+        NameChanged();
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 12, Column: 3, Message: A27: Event "NameChanged" in "IMyInterface" cannot be called in static functions of its class or interface.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 13, "column": 0, "index": 240}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 13, "column": 0, "index": 240}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IMyInterface", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 21, "index": 37}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 44}, "end": {"row": 4, "column": 24, "index": 67}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "GetName", "codeRange": {"start": {"row": 4, "column": 6, "index": 49}, "end": {"row": 4, "column": 12, "index": 55}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 18, "index": 61}, "end": {"row": 4, "column": 23, "index": 66}, "codeIndex": -1}},
+                "name": "String"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 71}, "end": {"row": 5, "column": 36, "index": 106}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "SetName", "codeRange": {"start": {"row": 5, "column": 6, "index": 76}, "end": {"row": 5, "column": 12, "index": 82}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 14, "index": 84}, "end": {"row": 5, "column": 27, "index": 97}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "value", "codeRange": {"start": {"row": 5, "column": 14, "index": 84}, "end": {"row": 5, "column": 18, "index": 88}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 22, "index": 92}, "end": {"row": 5, "column": 27, "index": 97}, "codeIndex": -1}},
+                    "name": "String"
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 32, "index": 102}, "end": {"row": 5, "column": 35, "index": 105}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "EventDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 110}, "end": {"row": 6, "column": 20, "index": 129}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "NameChanged", "codeRange": {"start": {"row": 6, "column": 7, "index": 116}, "end": {"row": 6, "column": 17, "index": 126}, "codeIndex": -1}},
+            "arguments": []
+        }, {
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 7, "column": 1, "index": 133}, "end": {"row": 7, "column": 51, "index": 183}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Name", "codeRange": {"start": {"row": 7, "column": 6, "index": 138}, "end": {"row": 7, "column": 9, "index": 141}, "codeIndex": -1}},
+            "getter": { "value": "GetName", "codeRange": {"start": {"row": 7, "column": 21, "index": 153}, "end": {"row": 7, "column": 27, "index": 159}, "codeIndex": -1}},
+            "setter": { "value": "SetName", "codeRange": {"start": {"row": 7, "column": 30, "index": 162}, "end": {"row": 7, "column": 36, "index": 168}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 7, "column": 13, "index": 145}, "end": {"row": 7, "column": 18, "index": 150}, "codeIndex": -1}},
+                "name": "String"
+            },
+            "valueChangedEvent": { "value": "NameChanged", "codeRange": {"start": {"row": 7, "column": 40, "index": 172}, "end": {"row": 7, "column": 50, "index": 182}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 9, "column": 1, "index": 189}, "end": {"row": 12, "column": 1, "index": 237}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Do", "codeRange": {"start": {"row": 9, "column": 13, "index": 201}, "end": {"row": 9, "column": 14, "index": 202}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 20, "index": 208}, "end": {"row": 9, "column": 23, "index": 211}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 10, "column": 1, "index": 215}, "end": {"row": 12, "column": 1, "index": 237}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 11, "column": 2, "index": 220}, "end": {"row": 11, "column": 15, "index": 233}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 11, "column": 2, "index": 220}, "end": {"row": 11, "column": 14, "index": 232}, "codeIndex": -1}},
+                        "arguments": [],
+                        "function": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 11, "column": 2, "index": 220}, "end": {"row": 11, "column": 12, "index": 230}, "codeIndex": -1}},
+                            "name": { "value": "NameChanged", "codeRange": {"start": {"row": 11, "column": 2, "index": 220}, "end": {"row": 11, "column": 12, "index": 230}, "codeIndex": -1}}
+                        }
+                    }
+                }]
+            }
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

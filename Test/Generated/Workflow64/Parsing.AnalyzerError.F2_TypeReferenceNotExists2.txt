@@ -1,0 +1,67 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class MyClass
+{
+    new (x : not_exists)
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class MyClass
+{
+    new (x : not_exists)
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 8, Message: F2: Symbol "not_exists" does not exist in the current scope.
+Line: 5, Column: 8, Message: F2: Symbol "not_exists" does not exist in the current scope.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 56}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 56}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "MyClass", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 12, "index": 28}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 35}, "end": {"row": 4, "column": 19, "index": 53}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 4, "column": 5, "index": 39}, "end": {"row": 4, "column": 16, "index": 50}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "x", "codeRange": {"start": {"row": 4, "column": 5, "index": 39}, "end": {"row": 4, "column": 5, "index": 39}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 4, "column": 7, "index": 41}, "end": {"row": 4, "column": 16, "index": 50}, "codeIndex": -1}},
+                    "name": { "value": "not_exists", "codeRange": {"start": {"row": 4, "column": 7, "index": 41}, "end": {"row": 4, "column": 16, "index": 50}, "codeIndex": -1}}
+                }
+            }],
+            "baseConstructorCalls": [],
+            "constructorType": "SharedPtr",
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 18, "index": 52}, "end": {"row": 4, "column": 19, "index": 53}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

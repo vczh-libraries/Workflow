@@ -1,0 +1,104 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IOuter
+{
+    func Something() : (void);
+
+    interface IInner
+    {
+        static func Do() : (void)
+        {
+            Something();
+        }
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IOuter
+{
+    func Something() : (void);
+
+    interface IInner
+    {
+        static func Do() : (void)
+        {
+            Something();
+        }
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 11, Column: 4, Message: A27: Method "Something" in "IOuter" of type "system::Function<system::Void>^" cannot be called in static functions of its class or interface.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 13, "column": 0, "index": 147}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 13, "column": 0, "index": 147}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IOuter", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 24, "index": 61}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Something", "codeRange": {"start": {"row": 4, "column": 6, "index": 43}, "end": {"row": 4, "column": 14, "index": 51}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 20, "index": 57}, "end": {"row": 4, "column": 23, "index": 60}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 67}, "end": {"row": 12, "column": 1, "index": 144}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "IInner", "codeRange": {"start": {"row": 6, "column": 11, "index": 77}, "end": {"row": 6, "column": 16, "index": 82}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "SharedPtr",
+            "declarations": [{
+                "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 8, "column": 2, "index": 91}, "end": {"row": 11, "column": 2, "index": 140}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "Do", "codeRange": {"start": {"row": 8, "column": 14, "index": 103}, "end": {"row": 8, "column": 15, "index": 104}, "codeIndex": -1}},
+                "anonymity": "Named",
+                "arguments": [],
+                "functionKind": "Static",
+                "returnType": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 8, "column": 21, "index": 110}, "end": {"row": 8, "column": 24, "index": 113}, "codeIndex": -1}},
+                    "name": "Void"
+                },
+                "statement": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 9, "column": 2, "index": 118}, "end": {"row": 11, "column": 2, "index": 140}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": [{
+                        "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 10, "column": 3, "index": 124}, "end": {"row": 10, "column": 14, "index": 135}, "codeIndex": -1}},
+                        "expression": {
+                            "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 10, "column": 3, "index": 124}, "end": {"row": 10, "column": 13, "index": 134}, "codeIndex": -1}},
+                            "arguments": [],
+                            "function": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 10, "column": 3, "index": 124}, "end": {"row": 10, "column": 11, "index": 132}, "codeIndex": -1}},
+                                "name": { "value": "Something", "codeRange": {"start": {"row": 10, "column": 3, "index": 124}, "end": {"row": 10, "column": 11, "index": 132}, "codeIndex": -1}}
+                            }
+                        }
+                    }]
+                }
+            }],
+            "kind": "Interface"
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

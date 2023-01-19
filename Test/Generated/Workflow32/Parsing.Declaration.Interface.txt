@@ -1,0 +1,281 @@
+﻿========================================================
+Original
+========================================================
+namespace test
+{
+    interface IBase {}
+    interface IDerived : IBase {}
+    interface ISuper* : IBase, IDerived {}
+
+    interface Members
+    {
+        static func Sum(begin : int, end : int) : int {}
+        func Product(begin : int, end : int) : int;
+
+        func GetData() : string;
+        func SetData(value : string) : void;
+        event DataChanged();
+        prop A : string { GetData }
+        prop B : string { GetData : DataChanged }
+        prop C : string { GetData, SetData }
+        prop D : string { GetData, SetData : DataChanged }
+
+        class NestedClass {}
+        interface NestedInterface {}
+    }
+}
+========================================================
+Printed
+========================================================
+namespace test
+{
+    interface IBase
+    {
+    }
+
+    interface IDerived : IBase
+    {
+    }
+
+    interface ISuper* : IBase, IDerived
+    {
+    }
+
+    interface Members
+    {
+        static func Sum(begin : int, end : int) : (int)
+        {
+        }
+
+        func Product(begin : int, end : int) : (int);
+
+        func GetData() : (string);
+
+        func SetData(value : string) : (void);
+
+        event DataChanged();
+
+        prop A : string{GetData}
+
+        prop B : string{GetData : DataChanged}
+
+        prop C : string{GetData, SetData}
+
+        prop D : string{GetData, SetData : DataChanged}
+
+        class NestedClass
+        {
+        }
+
+        interface NestedInterface
+        {
+        }
+    }
+}
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "NamespaceDeclaration", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 22, "column": 0, "index": 648}, "codeIndex": -1}},
+    "attributes": [],
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 10, "index": 10}, "end": {"row": 0, "column": 13, "index": 13}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 4, "index": 23}, "end": {"row": 2, "column": 21, "index": 40}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IBase", "codeRange": {"start": {"row": 2, "column": 14, "index": 33}, "end": {"row": 2, "column": 18, "index": 37}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 4, "index": 47}, "end": {"row": 3, "column": 32, "index": 75}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IDerived", "codeRange": {"start": {"row": 3, "column": 14, "index": 57}, "end": {"row": 3, "column": 21, "index": 64}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 3, "column": 25, "index": 68}, "end": {"row": 3, "column": 29, "index": 72}, "codeIndex": -1}},
+            "name": { "value": "IBase", "codeRange": {"start": {"row": 3, "column": 25, "index": 68}, "end": {"row": 3, "column": 29, "index": 72}, "codeIndex": -1}}
+        }],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 4, "column": 4, "index": 82}, "end": {"row": 4, "column": 41, "index": 119}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "ISuper", "codeRange": {"start": {"row": 4, "column": 14, "index": 92}, "end": {"row": 4, "column": 19, "index": 97}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 4, "column": 24, "index": 102}, "end": {"row": 4, "column": 28, "index": 106}, "codeIndex": -1}},
+            "name": { "value": "IBase", "codeRange": {"start": {"row": 4, "column": 24, "index": 102}, "end": {"row": 4, "column": 28, "index": 106}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 4, "column": 31, "index": 109}, "end": {"row": 4, "column": 38, "index": 116}, "codeIndex": -1}},
+            "name": { "value": "IDerived", "codeRange": {"start": {"row": 4, "column": 31, "index": 109}, "end": {"row": 4, "column": 38, "index": 116}, "codeIndex": -1}}
+        }],
+        "constructorType": "RawPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 4, "index": 128}, "end": {"row": 21, "column": 4, "index": 645}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "Members", "codeRange": {"start": {"row": 6, "column": 14, "index": 138}, "end": {"row": 6, "column": 20, "index": 144}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 8, "column": 8, "index": 162}, "end": {"row": 8, "column": 55, "index": 209}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Sum", "codeRange": {"start": {"row": 8, "column": 20, "index": 174}, "end": {"row": 8, "column": 22, "index": 176}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 8, "column": 24, "index": 178}, "end": {"row": 8, "column": 34, "index": 188}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "begin", "codeRange": {"start": {"row": 8, "column": 24, "index": 178}, "end": {"row": 8, "column": 28, "index": 182}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 8, "column": 32, "index": 186}, "end": {"row": 8, "column": 34, "index": 188}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }, {
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 8, "column": 37, "index": 191}, "end": {"row": 8, "column": 45, "index": 199}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "end", "codeRange": {"start": {"row": 8, "column": 37, "index": 191}, "end": {"row": 8, "column": 39, "index": 193}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 8, "column": 43, "index": 197}, "end": {"row": 8, "column": 45, "index": 199}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 8, "column": 50, "index": 204}, "end": {"row": 8, "column": 52, "index": 206}, "codeIndex": -1}},
+                "name": "Int"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 8, "column": 54, "index": 208}, "end": {"row": 8, "column": 55, "index": 209}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 9, "column": 8, "index": 220}, "end": {"row": 9, "column": 50, "index": 262}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Product", "codeRange": {"start": {"row": 9, "column": 13, "index": 225}, "end": {"row": 9, "column": 19, "index": 231}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 9, "column": 21, "index": 233}, "end": {"row": 9, "column": 31, "index": 243}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "begin", "codeRange": {"start": {"row": 9, "column": 21, "index": 233}, "end": {"row": 9, "column": 25, "index": 237}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 29, "index": 241}, "end": {"row": 9, "column": 31, "index": 243}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }, {
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 9, "column": 34, "index": 246}, "end": {"row": 9, "column": 42, "index": 254}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "end", "codeRange": {"start": {"row": 9, "column": 34, "index": 246}, "end": {"row": 9, "column": 36, "index": 248}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 40, "index": 252}, "end": {"row": 9, "column": 42, "index": 254}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 47, "index": 259}, "end": {"row": 9, "column": 49, "index": 261}, "codeIndex": -1}},
+                "name": "Int"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 11, "column": 8, "index": 275}, "end": {"row": 11, "column": 31, "index": 298}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "GetData", "codeRange": {"start": {"row": 11, "column": 13, "index": 280}, "end": {"row": 11, "column": 19, "index": 286}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 11, "column": 25, "index": 292}, "end": {"row": 11, "column": 30, "index": 297}, "codeIndex": -1}},
+                "name": "String"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 12, "column": 8, "index": 309}, "end": {"row": 12, "column": 43, "index": 344}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "SetData", "codeRange": {"start": {"row": 12, "column": 13, "index": 314}, "end": {"row": 12, "column": 19, "index": 320}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 12, "column": 21, "index": 322}, "end": {"row": 12, "column": 34, "index": 335}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "value", "codeRange": {"start": {"row": 12, "column": 21, "index": 322}, "end": {"row": 12, "column": 25, "index": 326}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 12, "column": 29, "index": 330}, "end": {"row": 12, "column": 34, "index": 335}, "codeIndex": -1}},
+                    "name": "String"
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 12, "column": 39, "index": 340}, "end": {"row": 12, "column": 42, "index": 343}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "EventDeclaration", "codeRange": {"start": {"row": 13, "column": 8, "index": 355}, "end": {"row": 13, "column": 27, "index": 374}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "DataChanged", "codeRange": {"start": {"row": 13, "column": 14, "index": 361}, "end": {"row": 13, "column": 24, "index": 371}, "codeIndex": -1}},
+            "arguments": []
+        }, {
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 14, "column": 8, "index": 385}, "end": {"row": 14, "column": 34, "index": 411}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "A", "codeRange": {"start": {"row": 14, "column": 13, "index": 390}, "end": {"row": 14, "column": 13, "index": 390}, "codeIndex": -1}},
+            "getter": { "value": "GetData", "codeRange": {"start": {"row": 14, "column": 26, "index": 403}, "end": {"row": 14, "column": 32, "index": 409}, "codeIndex": -1}},
+            "setter": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 14, "column": 17, "index": 394}, "end": {"row": 14, "column": 22, "index": 399}, "codeIndex": -1}},
+                "name": "String"
+            },
+            "valueChangedEvent": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 15, "column": 8, "index": 422}, "end": {"row": 15, "column": 48, "index": 462}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "B", "codeRange": {"start": {"row": 15, "column": 13, "index": 427}, "end": {"row": 15, "column": 13, "index": 427}, "codeIndex": -1}},
+            "getter": { "value": "GetData", "codeRange": {"start": {"row": 15, "column": 26, "index": 440}, "end": {"row": 15, "column": 32, "index": 446}, "codeIndex": -1}},
+            "setter": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 15, "column": 17, "index": 431}, "end": {"row": 15, "column": 22, "index": 436}, "codeIndex": -1}},
+                "name": "String"
+            },
+            "valueChangedEvent": { "value": "DataChanged", "codeRange": {"start": {"row": 15, "column": 36, "index": 450}, "end": {"row": 15, "column": 46, "index": 460}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 16, "column": 8, "index": 473}, "end": {"row": 16, "column": 43, "index": 508}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "C", "codeRange": {"start": {"row": 16, "column": 13, "index": 478}, "end": {"row": 16, "column": 13, "index": 478}, "codeIndex": -1}},
+            "getter": { "value": "GetData", "codeRange": {"start": {"row": 16, "column": 26, "index": 491}, "end": {"row": 16, "column": 32, "index": 497}, "codeIndex": -1}},
+            "setter": { "value": "SetData", "codeRange": {"start": {"row": 16, "column": 35, "index": 500}, "end": {"row": 16, "column": 41, "index": 506}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 16, "column": 17, "index": 482}, "end": {"row": 16, "column": 22, "index": 487}, "codeIndex": -1}},
+                "name": "String"
+            },
+            "valueChangedEvent": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 17, "column": 8, "index": 519}, "end": {"row": 17, "column": 57, "index": 568}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "D", "codeRange": {"start": {"row": 17, "column": 13, "index": 524}, "end": {"row": 17, "column": 13, "index": 524}, "codeIndex": -1}},
+            "getter": { "value": "GetData", "codeRange": {"start": {"row": 17, "column": 26, "index": 537}, "end": {"row": 17, "column": 32, "index": 543}, "codeIndex": -1}},
+            "setter": { "value": "SetData", "codeRange": {"start": {"row": 17, "column": 35, "index": 546}, "end": {"row": 17, "column": 41, "index": 552}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 17, "column": 17, "index": 528}, "end": {"row": 17, "column": 22, "index": 533}, "codeIndex": -1}},
+                "name": "String"
+            },
+            "valueChangedEvent": { "value": "DataChanged", "codeRange": {"start": {"row": 17, "column": 45, "index": 556}, "end": {"row": 17, "column": 55, "index": 566}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 19, "column": 8, "index": 581}, "end": {"row": 19, "column": 27, "index": 600}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "NestedClass", "codeRange": {"start": {"row": 19, "column": 14, "index": 587}, "end": {"row": 19, "column": 24, "index": 597}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [],
+            "kind": "Class"
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 20, "column": 8, "index": 611}, "end": {"row": 20, "column": 35, "index": 638}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "NestedInterface", "codeRange": {"start": {"row": 20, "column": 18, "index": 621}, "end": {"row": 20, "column": 32, "index": 635}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "SharedPtr",
+            "declarations": [],
+            "kind": "Interface"
+        }],
+        "kind": "Interface"
+    }]
+}

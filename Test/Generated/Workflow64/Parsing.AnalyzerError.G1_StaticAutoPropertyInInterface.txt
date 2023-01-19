@@ -1,0 +1,55 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IA
+{
+    static prop P : string {}
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IA
+{
+    static prop P : string {}
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 5, Message: G1: Auto property "P" cannot be static  .
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 64}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 64}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IA", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 11, "index": 27}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 4, "column": 4, "index": 37}, "end": {"row": 4, "column": 28, "index": 61}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "P", "codeRange": {"start": {"row": 4, "column": 16, "index": 49}, "end": {"row": 4, "column": 16, "index": 49}, "codeIndex": -1}},
+            "expandedDeclarations": [],
+            "configConst": "Writable",
+            "configObserve": "Observable",
+            "expression": null,
+            "functionKind": "Static",
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 20, "index": 53}, "end": {"row": 4, "column": 25, "index": 58}, "codeIndex": -1}},
+                "name": "String"
+            }
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

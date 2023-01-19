@@ -1,0 +1,117 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+@cpp:File("Custom")
+class A
+{
+}
+
+class B : A
+{
+}
+
+@cpp:File("Custom")
+class C : B
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+@cpp:File("Custom")
+class A
+{
+}
+
+class B : A
+{
+}
+
+@cpp:File("Custom")
+class C : B
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 1, Message: CPP2: (C++ Code Generation) @cpp:File atrribute values for these classes are invalid. Generating classes to source files specified by these attribute values will create source files which do not compile. It is probably caused by inheritance relationships of internal classes inside these classes:
+	A
+	B
+	C.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 15, "column": 0, "index": 130}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 6, "column": 0, "index": 67}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 18, "index": 52}, "codeIndex": -1}},
+            "category": { "value": "cpp", "codeRange": {"start": {"row": 3, "column": 1, "index": 35}, "end": {"row": 3, "column": 3, "index": 37}, "codeIndex": -1}},
+            "name": { "value": "File", "codeRange": {"start": {"row": 3, "column": 5, "index": 39}, "end": {"row": 3, "column": 8, "index": 42}, "codeIndex": -1}},
+            "value": {
+                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 3, "column": 10, "index": 44}, "end": {"row": 3, "column": 17, "index": 51}, "codeIndex": -1}},
+                "value": { "value": "Custom", "codeRange": {"start": {"row": 3, "column": 10, "index": 44}, "end": {"row": 3, "column": 17, "index": 51}, "codeIndex": -1}}
+            }
+        }],
+        "name": { "value": "A", "codeRange": {"start": {"row": 4, "column": 6, "index": 61}, "end": {"row": 4, "column": 6, "index": 61}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 8, "column": 0, "index": 72}, "end": {"row": 10, "column": 0, "index": 88}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 8, "column": 6, "index": 78}, "end": {"row": 8, "column": 6, "index": 78}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 10, "index": 82}, "end": {"row": 8, "column": 10, "index": 82}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 8, "column": 10, "index": 82}, "end": {"row": 8, "column": 10, "index": 82}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 12, "column": 0, "index": 93}, "end": {"row": 15, "column": 0, "index": 130}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 12, "column": 0, "index": 93}, "end": {"row": 12, "column": 18, "index": 111}, "codeIndex": -1}},
+            "category": { "value": "cpp", "codeRange": {"start": {"row": 12, "column": 1, "index": 94}, "end": {"row": 12, "column": 3, "index": 96}, "codeIndex": -1}},
+            "name": { "value": "File", "codeRange": {"start": {"row": 12, "column": 5, "index": 98}, "end": {"row": 12, "column": 8, "index": 101}, "codeIndex": -1}},
+            "value": {
+                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 12, "column": 10, "index": 103}, "end": {"row": 12, "column": 17, "index": 110}, "codeIndex": -1}},
+                "value": { "value": "Custom", "codeRange": {"start": {"row": 12, "column": 10, "index": 103}, "end": {"row": 12, "column": 17, "index": 110}, "codeIndex": -1}}
+            }
+        }],
+        "name": { "value": "C", "codeRange": {"start": {"row": 13, "column": 6, "index": 120}, "end": {"row": 13, "column": 6, "index": 120}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 13, "column": 10, "index": 124}, "end": {"row": 13, "column": 10, "index": 124}, "codeIndex": -1}},
+            "name": { "value": "B", "codeRange": {"start": {"row": 13, "column": 10, "index": 124}, "end": {"row": 13, "column": 10, "index": 124}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

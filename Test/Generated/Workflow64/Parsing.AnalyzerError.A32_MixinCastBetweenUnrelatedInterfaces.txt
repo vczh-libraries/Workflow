@@ -1,0 +1,91 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IA
+{
+}
+
+interface IB
+{
+}
+
+var a = new (IB^)(using new (IA^)
+{
+});
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IA
+{
+}
+
+interface IB
+{
+}
+
+var a = new (IB^)(using new (IA^)
+{
+});
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 9, Message: A32: Mixin cast cannot implicitly convert from "IB^" to "IA^". It is only for converting from an interface to a derived interface.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 32, "index": 82}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IA", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 11, "index": 27}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 32}, "end": {"row": 3, "column": 13, "index": 45}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IB", "codeRange": {"start": {"row": 3, "column": 10, "index": 42}, "end": {"row": 3, "column": 11, "index": 43}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 5, "column": 0, "index": 50}, "end": {"row": 5, "column": 32, "index": 82}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "a", "codeRange": {"start": {"row": 5, "column": 4, "index": 54}, "end": {"row": 5, "column": 4, "index": 54}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "MixinCastExpression", "codeRange": {"start": {"row": 5, "column": 8, "index": 58}, "end": {"row": 5, "column": 31, "index": 81}, "codeIndex": -1}},
+            "expandedExpression": null,
+            "expression": {
+                "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 5, "column": 22, "index": 72}, "end": {"row": 5, "column": 30, "index": 80}, "codeIndex": -1}},
+                "declarations": [],
+                "type": {
+                    "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 5, "column": 26, "index": 76}, "end": {"row": 5, "column": 28, "index": 78}, "codeIndex": -1}},
+                    "element": {
+                        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 5, "column": 26, "index": 76}, "end": {"row": 5, "column": 27, "index": 77}, "codeIndex": -1}},
+                        "name": { "value": "IA", "codeRange": {"start": {"row": 5, "column": 26, "index": 76}, "end": {"row": 5, "column": 27, "index": 77}, "codeIndex": -1}}
+                    }
+                }
+            },
+            "type": {
+                "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 5, "column": 12, "index": 62}, "end": {"row": 5, "column": 14, "index": 64}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 5, "column": 12, "index": 62}, "end": {"row": 5, "column": 13, "index": 63}, "codeIndex": -1}},
+                    "name": { "value": "IB", "codeRange": {"start": {"row": 5, "column": 12, "index": 62}, "end": {"row": 5, "column": 13, "index": 63}, "codeIndex": -1}}
+                }
+            }
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

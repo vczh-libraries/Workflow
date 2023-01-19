@@ -1,0 +1,59 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+interface A : interface
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+interface A : interface
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 1, Message: G6: Interface "system::Interface" should contain a constructor receiving an "system::InterfaceProxy^" to be the base type of "A".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 64}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 4, "column": 0, "index": 36}, "end": {"row": 6, "column": 0, "index": 64}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 4, "column": 10, "index": 46}, "end": {"row": 4, "column": 10, "index": 46}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 14, "index": 50}, "end": {"row": 4, "column": 22, "index": 58}, "codeIndex": -1}},
+            "name": "Interface"
+        }],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 11, "index": 27}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 11, "index": 27}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 11, "index": 27}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

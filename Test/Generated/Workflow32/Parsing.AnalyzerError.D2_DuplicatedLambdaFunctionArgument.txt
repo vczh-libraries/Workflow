@@ -1,0 +1,90 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    var x = func lambda(lambda : int) : (void)
+    {
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    var x = func lambda(lambda : int) : (void)
+    {
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 22, Message: D2: Duplicated symbol "lambda".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 80}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 80}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 5, "column": 0, "index": 80}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 40, "index": 77}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 40, "index": 77}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "x", "codeRange": {"start": {"row": 4, "column": 5, "index": 42}, "end": {"row": 4, "column": 5, "index": 42}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "FunctionExpression", "codeRange": {"start": {"row": 4, "column": 9, "index": 46}, "end": {"row": 4, "column": 39, "index": 76}, "codeIndex": -1}},
+                        "function": {
+                            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 9, "index": 46}, "end": {"row": 4, "column": 39, "index": 76}, "codeIndex": -1}},
+                            "attributes": [],
+                            "name": { "value": "lambda", "codeRange": {"start": {"row": 4, "column": 14, "index": 51}, "end": {"row": 4, "column": 19, "index": 56}, "codeIndex": -1}},
+                            "anonymity": "Named",
+                            "arguments": [{
+                                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 4, "column": 21, "index": 58}, "end": {"row": 4, "column": 30, "index": 67}, "codeIndex": -1}},
+                                "attributes": [],
+                                "name": { "value": "lambda", "codeRange": {"start": {"row": 4, "column": 21, "index": 58}, "end": {"row": 4, "column": 26, "index": 63}, "codeIndex": -1}},
+                                "type": {
+                                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 28, "index": 65}, "end": {"row": 4, "column": 30, "index": 67}, "codeIndex": -1}},
+                                    "name": "Int"
+                                }
+                            }],
+                            "functionKind": "Normal",
+                            "returnType": {
+                                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 33, "index": 70}, "end": {"row": 4, "column": 36, "index": 73}, "codeIndex": -1}},
+                                "name": "Void"
+                            },
+                            "statement": {
+                                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 38, "index": 75}, "end": {"row": 4, "column": 39, "index": 76}, "codeIndex": -1}},
+                                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                                "statements": []
+                            }
+                        }
+                    },
+                    "type": null
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

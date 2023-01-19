@@ -1,0 +1,62 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface A : B*
+{
+}
+
+interface B
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface A : B*
+{
+}
+
+interface B
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 3, Column: 1, Message: G6: A base type of the type "A" should be another custom type, it cannot be any predefined type, pointer type, shared pointer type, nullable type, collection type, or function type
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 58}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 37}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "RawPointerType", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "element": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}},
+                "name": { "value": "B", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}}
+            }
+        }],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 42}, "end": {"row": 8, "column": 0, "index": 58}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 6, "column": 10, "index": 52}, "end": {"row": 6, "column": 10, "index": 52}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

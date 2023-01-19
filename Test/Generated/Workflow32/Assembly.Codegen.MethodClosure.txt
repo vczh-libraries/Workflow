@@ -1,0 +1,87 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+main (2 .. 31)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        x
+        get
+        set
+        s1
+        s2
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  10
+2    :     LoadValue     : value = <I4, 10>
+//  new (ObservableValue^)(10)
+3    :     LoadValue     : value = <null>
+//  new (ObservableValue^)(10)
+4    :     InvokeMethod  : methodInfo = <test::ObservableValue>, stackPatternCount = 1
+//  var x = new (ObservableValue^)(10);
+5    :     StoreLocalVar : var = 0(x)
+//  x
+6    :     LoadLocalVar  : var = 0(x)
+//  x.GetValue
+7    :     LoadMethodClosure: methodInfo = GetValue<test::ObservableValue>
+//  var get = x.GetValue;
+8    :     StoreLocalVar : var = 1(get)
+//  x
+9    :     LoadLocalVar  : var = 0(x)
+//  x.SetValue
+10   :     LoadMethodClosure: methodInfo = SetValue<test::ObservableValue>
+//  var set = x.SetValue;
+11   :     StoreLocalVar : var = 2(set)
+//  get
+12   :     LoadLocalVar  : var = 1(get)
+//  get()
+13   :     InvokeProxy   : stackPatternCount = 0
+//  var s1 = get();
+14   :     StoreLocalVar : var = 3(s1)
+//  20
+15   :     LoadValue     : value = <I4, 20>
+//  set
+16   :     LoadLocalVar  : var = 2(set)
+//  set(20)
+17   :     InvokeProxy   : stackPatternCount = 1
+//  set(20);
+18   :     Pop           
+//  get
+19   :     LoadLocalVar  : var = 1(get)
+//  get()
+20   :     InvokeProxy   : stackPatternCount = 0
+//  var s2 = get();
+21   :     StoreLocalVar : var = 4(s2)
+//  s1
+22   :     LoadLocalVar  : var = 3(s1)
+//  s1
+23   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+24   :     LoadValue     : value = <Bool, , >
+//  (s1 & ", ")
+25   :     OpConcat      
+//  s2
+26   :     LoadLocalVar  : var = 4(s2)
+//  s2
+27   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((s1 & ", ") & s2)
+28   :     OpConcat      
+//  return ((s1 & ", ") & s2);
+29   :     Return        
+//  func main() : (string)
+30   :     LoadValue     : value = <null>
+//  func main() : (string)
+31   :     Return        

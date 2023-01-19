@@ -1,0 +1,1514 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+Ensure (2 .. 10)
+    Arguments:
+        condition
+    Captured Variables:
+    Local Variables:
+
+Ensure (11 .. 17)
+    Arguments:
+        a
+        b
+    Captured Variables:
+    Local Variables:
+
+Ensure (18 .. 24)
+    Arguments:
+        a
+        b
+    Captured Variables:
+    Local Variables:
+
+workflow::hints::Base::#ctor (25 .. 26)
+    Arguments:
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+workflow::hints::Base::#ctor (27 .. 28)
+    Arguments:
+        x
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+workflow::hints::Derived::#ctor (29 .. 33)
+    Arguments:
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+workflow::hints::Derived::#ctor (34 .. 38)
+    Arguments:
+        x
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+ExtraTests (39 .. 401)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        v
+        v
+        sBase
+        rBase
+        sDerived
+        rDerived
+        srBase
+        srDerived
+        iNull
+        iValue
+        sNull
+        sValue
+        x
+        y
+        z
+
+main (402 .. 701)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        hinters
+        hinters2
+        a
+        b
+        c
+        d
+        e
+        f
+        g1
+        xs
+        g2
+        ct1
+        ct2
+        ct3
+        ct4
+        <for-begin>x
+        <for-end>x
+        x
+        merge1
+        merge2
+        merge3
+        merge4
+        merge5
+        merge6
+        merge7
+        merge8
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  condition
+2    :     LoadLocalVar  : var = 0(condition)
+//  (!condition)
+3    :     OpNot         : type = Bool
+//  if ((!condition))
+4    :     OpNot         : type = Bool
+//  if ((!condition))
+5    :     JumpIf        : label = 9
+//  "Wrong!"
+6    :     LoadValue     : value = <Bool, Wrong!>
+//  raise "Wrong!";
+7    :     RaiseException
+//  if ((!condition))
+8    :     Jump          : label = 9
+//  func Ensure(condition : bool) : (void)
+9    :     LoadValue     : value = <null>
+//  func Ensure(condition : bool) : (void)
+10   :     Return        
+//  a
+11   :     LoadLocalVar  : var = 0(a)
+//  b
+12   :     LoadLocalVar  : var = 1(b)
+//  (a == b)
+13   :     CompareValue  
+//  Ensure((a == b))
+14   :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((a == b));
+15   :     Pop           
+//  func Ensure(a : bool, b : bool) : (void)
+16   :     LoadValue     : value = <null>
+//  func Ensure(a : bool, b : bool) : (void)
+17   :     Return        
+//  a
+18   :     LoadLocalVar  : var = 0(a)
+//  b
+19   :     LoadLocalVar  : var = 1(b)
+//  (a == b)
+20   :     CompareValue  
+//  Ensure((a == b))
+21   :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((a == b));
+22   :     Pop           
+//  func Ensure(a : int, b : int) : (void)
+23   :     LoadValue     : value = <null>
+//  func Ensure(a : int, b : int) : (void)
+24   :     Return        
+//  new ()
+25   :     LoadValue     : value = <null>
+//  new ()
+26   :     Return        
+//  new* (x : int)
+27   :     LoadValue     : value = <null>
+//  new* (x : int)
+28   :     Return        
+//  new ()
+29   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  new ()
+30   :     InvokeBaseCtor: methodInfo = <workflow::hints::Base>, stackPatternCount = 0
+//  new ()
+31   :     Pop           
+//  new ()
+32   :     LoadValue     : value = <null>
+//  new ()
+33   :     Return        
+//  new* (x : int)
+34   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  new* (x : int)
+35   :     InvokeBaseCtor: methodInfo = <workflow::hints::Base>, stackPatternCount = 0
+//  new* (x : int)
+36   :     Pop           
+//  new* (x : int)
+37   :     LoadValue     : value = <null>
+//  new* (x : int)
+38   :     Return        
+//  123
+39   :     LoadValue     : value = <I4, 123>
+//  123
+40   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  "123"
+41   :     LoadValue     : value = <Bool, 123>
+//  ((cast (string) 123) == "123")
+42   :     CompareValue  
+//  Ensure(((cast (string) 123) == "123"))
+43   :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(((cast (string) 123) == "123"));
+44   :     Pop           
+//  "123"
+45   :     LoadValue     : value = <Bool, 123>
+//  "123"
+46   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  123
+47   :     LoadValue     : value = <I4, 123>
+//  ((cast (int) "123") == 123)
+48   :     CompareValue  
+//  Ensure(((cast (int) "123") == 123))
+49   :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(((cast (int) "123") == 123));
+50   :     Pop           
+//  "true"
+51   :     LoadValue     : value = <Bool, true>
+//  "true"
+52   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Boolean
+//  true
+53   :     LoadValue     : value = <Bool, true>
+//  Ensure((cast (::system::Boolean) "true"), true)
+54   :     Invoke        : func = 1(Ensure), stackPatternCount = 2
+//  Ensure((cast (::system::Boolean) "true"), true);
+55   :     Pop           
+//  "123"
+56   :     LoadValue     : value = <Bool, 123>
+//  "123"
+57   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  123
+58   :     LoadValue     : value = <I4, 123>
+//  Ensure((cast (::system::Int32) "123"), 123)
+59   :     Invoke        : func = 2(Ensure), stackPatternCount = 2
+//  Ensure((cast (::system::Int32) "123"), 123);
+60   :     Pop           
+//  123
+61   :     LoadValue     : value = <I4, 123>
+//  123
+62   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  var v : string = (cast (::system::String) 123);
+63   :     StoreLocalVar : var = 0(v)
+//  v
+64   :     LoadLocalVar  : var = 0(v)
+//  "123"
+65   :     LoadValue     : value = <Bool, 123>
+//  (v == "123")
+66   :     CompareValue  
+//  Ensure((v == "123"))
+67   :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((v == "123"));
+68   :     Pop           
+//  "123"
+69   :     LoadValue     : value = <Bool, 123>
+//  "123"
+70   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  var v : int = (cast (::system::Int32) "123");
+71   :     StoreLocalVar : var = 1(v)
+//  v
+72   :     LoadLocalVar  : var = 1(v)
+//  123
+73   :     LoadValue     : value = <I4, 123>
+//  (v == 123)
+74   :     CompareValue  
+//  Ensure((v == 123))
+75   :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((v == 123));
+76   :     Pop           
+//  new (Base^)()
+77   :     LoadValue     : value = <null>
+//  new (Base^)()
+78   :     InvokeMethod  : methodInfo = <workflow::hints::Base>, stackPatternCount = 0
+//  var sBase = new (Base^)();
+79   :     StoreLocalVar : var = 2(sBase)
+//  0
+80   :     LoadValue     : value = <I4, 0>
+//  new (Base*)(0)
+81   :     LoadValue     : value = <null>
+//  new (Base*)(0)
+82   :     InvokeMethod  : methodInfo = <workflow::hints::Base>, stackPatternCount = 1
+//  var rBase = new (Base*)(0);
+83   :     StoreLocalVar : var = 3(rBase)
+//  new (Derived^)()
+84   :     LoadValue     : value = <null>
+//  new (Derived^)()
+85   :     InvokeMethod  : methodInfo = <workflow::hints::Derived>, stackPatternCount = 0
+//  var sDerived = new (Derived^)();
+86   :     StoreLocalVar : var = 4(sDerived)
+//  0
+87   :     LoadValue     : value = <I4, 0>
+//  new (Derived*)(0)
+88   :     LoadValue     : value = <null>
+//  new (Derived*)(0)
+89   :     InvokeMethod  : methodInfo = <workflow::hints::Derived>, stackPatternCount = 1
+//  var rDerived = new (Derived*)(0);
+90   :     StoreLocalVar : var = 5(rDerived)
+//  rBase
+91   :     LoadLocalVar  : var = 3(rBase)
+//  rBase
+92   :     ConvertToType : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  var srBase = (cast (Base^) rBase);
+93   :     StoreLocalVar : var = 6(srBase)
+//  rDerived
+94   :     LoadLocalVar  : var = 5(rDerived)
+//  rDerived
+95   :     ConvertToType : flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  var srDerived = (cast (Derived^) rDerived);
+96   :     StoreLocalVar : var = 7(srDerived)
+//  sDerived
+97   :     LoadLocalVar  : var = 4(sDerived)
+//  sDerived
+98   :     ConvertToType : flag = RawPtr, typeDescriptor = workflow::hints::Base
+//  (cast (Base*) sDerived) is not null
+99   :     LoadValue     : value = <null>
+//  (cast (Base*) sDerived) is not null
+100  :     CompareReference
+//  (cast (Base*) sDerived) is not null
+101  :     OpNot         : type = Bool
+//  Ensure((cast (Base*) sDerived) is not null)
+102  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((cast (Base*) sDerived) is not null);
+103  :     Pop           
+//  sDerived
+104  :     LoadLocalVar  : var = 4(sDerived)
+//  sDerived
+105  :     ConvertToType : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  (cast (Base^) sDerived) is not null
+106  :     LoadValue     : value = <null>
+//  (cast (Base^) sDerived) is not null
+107  :     CompareReference
+//  (cast (Base^) sDerived) is not null
+108  :     OpNot         : type = Bool
+//  Ensure((cast (Base^) sDerived) is not null)
+109  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((cast (Base^) sDerived) is not null);
+110  :     Pop           
+//  rDerived
+111  :     LoadLocalVar  : var = 5(rDerived)
+//  rDerived
+112  :     ConvertToType : flag = RawPtr, typeDescriptor = workflow::hints::Base
+//  (cast (Base*) rDerived) is not null
+113  :     LoadValue     : value = <null>
+//  (cast (Base*) rDerived) is not null
+114  :     CompareReference
+//  (cast (Base*) rDerived) is not null
+115  :     OpNot         : type = Bool
+//  Ensure((cast (Base*) rDerived) is not null)
+116  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((cast (Base*) rDerived) is not null);
+117  :     Pop           
+//  rDerived
+118  :     LoadLocalVar  : var = 5(rDerived)
+//  rDerived
+119  :     ConvertToType : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  (cast (Base^) rDerived) is not null
+120  :     LoadValue     : value = <null>
+//  (cast (Base^) rDerived) is not null
+121  :     CompareReference
+//  (cast (Base^) rDerived) is not null
+122  :     OpNot         : type = Bool
+//  Ensure((cast (Base^) rDerived) is not null)
+123  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((cast (Base^) rDerived) is not null);
+124  :     Pop           
+//  sBase
+125  :     LoadLocalVar  : var = 2(sBase)
+//  (sBase as (Derived*))
+126  :     TryConvertToType: flag = RawPtr, typeDescriptor = workflow::hints::Derived
+//  (sBase as (Derived*)) is null
+127  :     LoadValue     : value = <null>
+//  (sBase as (Derived*)) is null
+128  :     CompareReference
+//  Ensure((sBase as (Derived*)) is null)
+129  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((sBase as (Derived*)) is null);
+130  :     Pop           
+//  sBase
+131  :     LoadLocalVar  : var = 2(sBase)
+//  (sBase as (Derived^))
+132  :     TryConvertToType: flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  (sBase as (Derived^)) is null
+133  :     LoadValue     : value = <null>
+//  (sBase as (Derived^)) is null
+134  :     CompareReference
+//  Ensure((sBase as (Derived^)) is null)
+135  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((sBase as (Derived^)) is null);
+136  :     Pop           
+//  rBase
+137  :     LoadLocalVar  : var = 3(rBase)
+//  (rBase as (Derived*))
+138  :     TryConvertToType: flag = RawPtr, typeDescriptor = workflow::hints::Derived
+//  (rBase as (Derived*)) is null
+139  :     LoadValue     : value = <null>
+//  (rBase as (Derived*)) is null
+140  :     CompareReference
+//  Ensure((rBase as (Derived*)) is null)
+141  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((rBase as (Derived*)) is null);
+142  :     Pop           
+//  rBase
+143  :     LoadLocalVar  : var = 3(rBase)
+//  (rBase as (Derived^))
+144  :     TryConvertToType: flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  (rBase as (Derived^)) is null
+145  :     LoadValue     : value = <null>
+//  (rBase as (Derived^)) is null
+146  :     CompareReference
+//  Ensure((rBase as (Derived^)) is null)
+147  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((rBase as (Derived^)) is null);
+148  :     Pop           
+//  sBase
+149  :     LoadLocalVar  : var = 2(sBase)
+//  sBase is not (Base*)
+150  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Base
+//  sBase is not (Base*)
+151  :     OpNot         : type = Bool
+//  Ensure(sBase is not (Base*))
+152  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sBase is not (Base*));
+153  :     Pop           
+//  sBase
+154  :     LoadLocalVar  : var = 2(sBase)
+//  sBase is (Base^)
+155  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  Ensure(sBase is (Base^))
+156  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sBase is (Base^));
+157  :     Pop           
+//  sBase
+158  :     LoadLocalVar  : var = 2(sBase)
+//  sBase is not (Derived*)
+159  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Derived
+//  sBase is not (Derived*)
+160  :     OpNot         : type = Bool
+//  Ensure(sBase is not (Derived*))
+161  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sBase is not (Derived*));
+162  :     Pop           
+//  sBase
+163  :     LoadLocalVar  : var = 2(sBase)
+//  sBase is not (Derived^)
+164  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  sBase is not (Derived^)
+165  :     OpNot         : type = Bool
+//  Ensure(sBase is not (Derived^))
+166  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sBase is not (Derived^));
+167  :     Pop           
+//  rBase
+168  :     LoadLocalVar  : var = 3(rBase)
+//  rBase is (Base*)
+169  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Base
+//  Ensure(rBase is (Base*))
+170  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(rBase is (Base*));
+171  :     Pop           
+//  rBase
+172  :     LoadLocalVar  : var = 3(rBase)
+//  rBase is not (Base^)
+173  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  rBase is not (Base^)
+174  :     OpNot         : type = Bool
+//  Ensure(rBase is not (Base^))
+175  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(rBase is not (Base^));
+176  :     Pop           
+//  rBase
+177  :     LoadLocalVar  : var = 3(rBase)
+//  rBase is not (Derived*)
+178  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Derived
+//  rBase is not (Derived*)
+179  :     OpNot         : type = Bool
+//  Ensure(rBase is not (Derived*))
+180  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(rBase is not (Derived*));
+181  :     Pop           
+//  rBase
+182  :     LoadLocalVar  : var = 3(rBase)
+//  rBase is not (Derived^)
+183  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  rBase is not (Derived^)
+184  :     OpNot         : type = Bool
+//  Ensure(rBase is not (Derived^))
+185  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(rBase is not (Derived^));
+186  :     Pop           
+//  sDerived
+187  :     LoadLocalVar  : var = 4(sDerived)
+//  sDerived is not (Base*)
+188  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Base
+//  sDerived is not (Base*)
+189  :     OpNot         : type = Bool
+//  Ensure(sDerived is not (Base*))
+190  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sDerived is not (Base*));
+191  :     Pop           
+//  sDerived
+192  :     LoadLocalVar  : var = 4(sDerived)
+//  sDerived is (Base^)
+193  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  Ensure(sDerived is (Base^))
+194  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sDerived is (Base^));
+195  :     Pop           
+//  sDerived
+196  :     LoadLocalVar  : var = 4(sDerived)
+//  sDerived is not (Derived*)
+197  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Derived
+//  sDerived is not (Derived*)
+198  :     OpNot         : type = Bool
+//  Ensure(sDerived is not (Derived*))
+199  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sDerived is not (Derived*));
+200  :     Pop           
+//  sDerived
+201  :     LoadLocalVar  : var = 4(sDerived)
+//  sDerived is not (Derived^)
+202  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  sDerived is not (Derived^)
+203  :     OpNot         : type = Bool
+//  (!sDerived is not (Derived^))
+204  :     OpNot         : type = Bool
+//  Ensure((!sDerived is not (Derived^)))
+205  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((!sDerived is not (Derived^)));
+206  :     Pop           
+//  rDerived
+207  :     LoadLocalVar  : var = 5(rDerived)
+//  rDerived is (Base*)
+208  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Base
+//  Ensure(rDerived is (Base*))
+209  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(rDerived is (Base*));
+210  :     Pop           
+//  rDerived
+211  :     LoadLocalVar  : var = 5(rDerived)
+//  rDerived is not (Base^)
+212  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  rDerived is not (Base^)
+213  :     OpNot         : type = Bool
+//  Ensure(rDerived is not (Base^))
+214  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(rDerived is not (Base^));
+215  :     Pop           
+//  rDerived
+216  :     LoadLocalVar  : var = 5(rDerived)
+//  rDerived is not (Derived*)
+217  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Derived
+//  rDerived is not (Derived*)
+218  :     OpNot         : type = Bool
+//  (!rDerived is not (Derived*))
+219  :     OpNot         : type = Bool
+//  Ensure((!rDerived is not (Derived*)))
+220  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((!rDerived is not (Derived*)));
+221  :     Pop           
+//  rDerived
+222  :     LoadLocalVar  : var = 5(rDerived)
+//  rDerived is not (Derived^)
+223  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  rDerived is not (Derived^)
+224  :     OpNot         : type = Bool
+//  Ensure(rDerived is not (Derived^))
+225  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(rDerived is not (Derived^));
+226  :     Pop           
+//  null
+227  :     LoadValue     : value = <null>
+//  var iNull : int? = null;
+228  :     StoreLocalVar : var = 8(iNull)
+//  1
+229  :     LoadValue     : value = <I4, 1>
+//  1
+230  :     Duplicate     : stackPatternCount = 0
+//  1
+231  :     LoadValue     : value = <null>
+//  1
+232  :     CompareReference
+//  1
+233  :     JumpIf        : label = 236
+//  1
+234  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  1
+235  :     Jump          : label = 237
+//  1
+236  :     LoadValue     : value = <null>
+//  var iValue : int? = 1;
+237  :     StoreLocalVar : var = 9(iValue)
+//  null
+238  :     LoadValue     : value = <null>
+//  var sNull : string? = null;
+239  :     StoreLocalVar : var = 10(sNull)
+//  "2"
+240  :     LoadValue     : value = <Bool, 2>
+//  "2"
+241  :     Duplicate     : stackPatternCount = 0
+//  "2"
+242  :     LoadValue     : value = <null>
+//  "2"
+243  :     CompareReference
+//  "2"
+244  :     JumpIf        : label = 247
+//  "2"
+245  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  "2"
+246  :     Jump          : label = 248
+//  "2"
+247  :     LoadValue     : value = <null>
+//  var sValue : string? = "2";
+248  :     StoreLocalVar : var = 11(sValue)
+//  iNull
+249  :     LoadLocalVar  : var = 8(iNull)
+//  iNull is null
+250  :     LoadValue     : value = <null>
+//  iNull is null
+251  :     CompareReference
+//  Ensure(iNull is null)
+252  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(iNull is null);
+253  :     Pop           
+//  iValue
+254  :     LoadLocalVar  : var = 9(iValue)
+//  iValue is not null
+255  :     LoadValue     : value = <null>
+//  iValue is not null
+256  :     CompareReference
+//  iValue is not null
+257  :     OpNot         : type = Bool
+//  Ensure(iValue is not null)
+258  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(iValue is not null);
+259  :     Pop           
+//  sNull
+260  :     LoadLocalVar  : var = 10(sNull)
+//  sNull is null
+261  :     LoadValue     : value = <null>
+//  sNull is null
+262  :     CompareReference
+//  Ensure(sNull is null)
+263  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sNull is null);
+264  :     Pop           
+//  sValue
+265  :     LoadLocalVar  : var = 11(sValue)
+//  sValue is not null
+266  :     LoadValue     : value = <null>
+//  sValue is not null
+267  :     CompareReference
+//  sValue is not null
+268  :     OpNot         : type = Bool
+//  Ensure(sValue is not null)
+269  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sValue is not null);
+270  :     Pop           
+//  iNull
+271  :     LoadLocalVar  : var = 8(iNull)
+//  (iNull as (string?))
+272  :     Duplicate     : stackPatternCount = 0
+//  (iNull as (string?))
+273  :     LoadValue     : value = <null>
+//  (iNull as (string?))
+274  :     CompareReference
+//  (iNull as (string?))
+275  :     JumpIf        : label = 278
+//  (iNull as (string?))
+276  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::String
+//  (iNull as (string?))
+277  :     Jump          : label = 279
+//  (iNull as (string?))
+278  :     LoadValue     : value = <null>
+//  (iNull as (string?)) is null
+279  :     LoadValue     : value = <null>
+//  (iNull as (string?)) is null
+280  :     CompareReference
+//  Ensure((iNull as (string?)) is null)
+281  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((iNull as (string?)) is null);
+282  :     Pop           
+//  iValue
+283  :     LoadLocalVar  : var = 9(iValue)
+//  (iValue as (string?))
+284  :     Duplicate     : stackPatternCount = 0
+//  (iValue as (string?))
+285  :     LoadValue     : value = <null>
+//  (iValue as (string?))
+286  :     CompareReference
+//  (iValue as (string?))
+287  :     JumpIf        : label = 290
+//  (iValue as (string?))
+288  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::String
+//  (iValue as (string?))
+289  :     Jump          : label = 291
+//  (iValue as (string?))
+290  :     LoadValue     : value = <null>
+//  "1"
+291  :     LoadValue     : value = <Bool, 1>
+//  ((iValue as (string?)) == "1")
+292  :     CompareValue  
+//  Ensure(((iValue as (string?)) == "1"))
+293  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(((iValue as (string?)) == "1"));
+294  :     Pop           
+//  iValue
+295  :     LoadLocalVar  : var = 9(iValue)
+//  iValue
+296  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  "1"
+297  :     LoadValue     : value = <Bool, 1>
+//  ((cast (string) iValue) == "1")
+298  :     CompareValue  
+//  Ensure(((cast (string) iValue) == "1"))
+299  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(((cast (string) iValue) == "1"));
+300  :     Pop           
+//  sNull
+301  :     LoadLocalVar  : var = 10(sNull)
+//  (sNull as (int?))
+302  :     Duplicate     : stackPatternCount = 0
+//  (sNull as (int?))
+303  :     LoadValue     : value = <null>
+//  (sNull as (int?))
+304  :     CompareReference
+//  (sNull as (int?))
+305  :     JumpIf        : label = 308
+//  (sNull as (int?))
+306  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Int32
+//  (sNull as (int?))
+307  :     Jump          : label = 309
+//  (sNull as (int?))
+308  :     LoadValue     : value = <null>
+//  (sNull as (int?)) is null
+309  :     LoadValue     : value = <null>
+//  (sNull as (int?)) is null
+310  :     CompareReference
+//  Ensure((sNull as (int?)) is null)
+311  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((sNull as (int?)) is null);
+312  :     Pop           
+//  sValue
+313  :     LoadLocalVar  : var = 11(sValue)
+//  (sValue as (int?))
+314  :     Duplicate     : stackPatternCount = 0
+//  (sValue as (int?))
+315  :     LoadValue     : value = <null>
+//  (sValue as (int?))
+316  :     CompareReference
+//  (sValue as (int?))
+317  :     JumpIf        : label = 320
+//  (sValue as (int?))
+318  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Int32
+//  (sValue as (int?))
+319  :     Jump          : label = 321
+//  (sValue as (int?))
+320  :     LoadValue     : value = <null>
+//  2
+321  :     LoadValue     : value = <I4, 2>
+//  ((sValue as (int?)) == 2)
+322  :     CompareValue  
+//  Ensure(((sValue as (int?)) == 2))
+323  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(((sValue as (int?)) == 2));
+324  :     Pop           
+//  sValue
+325  :     LoadLocalVar  : var = 11(sValue)
+//  sValue
+326  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  2
+327  :     LoadValue     : value = <I4, 2>
+//  ((cast (int) sValue) == 2)
+328  :     CompareValue  
+//  Ensure(((cast (int) sValue) == 2))
+329  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(((cast (int) sValue) == 2));
+330  :     Pop           
+//  iNull
+331  :     LoadLocalVar  : var = 8(iNull)
+//  iNull is (int)
+332  :     TestType      : flag = BoxedValue, typeDescriptor = system::Int32
+//  (!iNull is (int))
+333  :     OpNot         : type = Bool
+//  Ensure((!iNull is (int)))
+334  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((!iNull is (int)));
+335  :     Pop           
+//  iValue
+336  :     LoadLocalVar  : var = 9(iValue)
+//  iValue is (int)
+337  :     TestType      : flag = BoxedValue, typeDescriptor = system::Int32
+//  Ensure(iValue is (int))
+338  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(iValue is (int));
+339  :     Pop           
+//  sNull
+340  :     LoadLocalVar  : var = 10(sNull)
+//  sNull is (string)
+341  :     TestType      : flag = BoxedValue, typeDescriptor = system::String
+//  (!sNull is (string))
+342  :     OpNot         : type = Bool
+//  Ensure((!sNull is (string)))
+343  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure((!sNull is (string)));
+344  :     Pop           
+//  sValue
+345  :     LoadLocalVar  : var = 11(sValue)
+//  sValue is (string)
+346  :     TestType      : flag = BoxedValue, typeDescriptor = system::String
+//  Ensure(sValue is (string))
+347  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(sValue is (string));
+348  :     Pop           
+//  null
+349  :     LoadValue     : value = <null>
+//  var x : object = null;
+350  :     StoreLocalVar : var = 12(x)
+//  2
+351  :     LoadValue     : value = <I4, 2>
+//  var y : object = 2;
+352  :     StoreLocalVar : var = 13(y)
+//  x
+353  :     LoadLocalVar  : var = 12(x)
+//  x is null
+354  :     LoadValue     : value = <null>
+//  x is null
+355  :     CompareReference
+//  Ensure(x is null)
+356  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(x is null);
+357  :     Pop           
+//  y
+358  :     LoadLocalVar  : var = 13(y)
+//  y is not null
+359  :     LoadValue     : value = <null>
+//  y is not null
+360  :     CompareReference
+//  y is not null
+361  :     OpNot         : type = Bool
+//  Ensure(y is not null)
+362  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(y is not null);
+363  :     Pop           
+//  x
+364  :     LoadLocalVar  : var = 12(x)
+//  x is not (int)
+365  :     TestType      : flag = BoxedValue, typeDescriptor = system::Int32
+//  x is not (int)
+366  :     OpNot         : type = Bool
+//  Ensure(x is not (int))
+367  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(x is not (int));
+368  :     Pop           
+//  y
+369  :     LoadLocalVar  : var = 13(y)
+//  y is (int)
+370  :     TestType      : flag = BoxedValue, typeDescriptor = system::Int32
+//  Ensure(y is (int))
+371  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(y is (int));
+372  :     Pop           
+//  rBase
+373  :     LoadLocalVar  : var = 3(rBase)
+//  var z : object = rBase;
+374  :     StoreLocalVar : var = 14(z)
+//  z
+375  :     LoadLocalVar  : var = 14(z)
+//  z is not null
+376  :     LoadValue     : value = <null>
+//  z is not null
+377  :     CompareReference
+//  z is not null
+378  :     OpNot         : type = Bool
+//  Ensure(z is not null)
+379  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(z is not null);
+380  :     Pop           
+//  z
+381  :     LoadLocalVar  : var = 14(z)
+//  z is (Base*)
+382  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Base
+//  Ensure(z is (Base*))
+383  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(z is (Base*));
+384  :     Pop           
+//  z
+385  :     LoadLocalVar  : var = 14(z)
+//  z is not (Base^)
+386  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Base
+//  z is not (Base^)
+387  :     OpNot         : type = Bool
+//  Ensure(z is not (Base^))
+388  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(z is not (Base^));
+389  :     Pop           
+//  z
+390  :     LoadLocalVar  : var = 14(z)
+//  z is not (Derived*)
+391  :     TestType      : flag = RawPtr, typeDescriptor = workflow::hints::Derived
+//  z is not (Derived*)
+392  :     OpNot         : type = Bool
+//  Ensure(z is not (Derived*))
+393  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(z is not (Derived*));
+394  :     Pop           
+//  z
+395  :     LoadLocalVar  : var = 14(z)
+//  z is not (Derived^)
+396  :     TestType      : flag = SharedPtr, typeDescriptor = workflow::hints::Derived
+//  z is not (Derived^)
+397  :     OpNot         : type = Bool
+//  Ensure(z is not (Derived^))
+398  :     Invoke        : func = 0(Ensure), stackPatternCount = 1
+//  Ensure(z is not (Derived^));
+399  :     Pop           
+//  func ExtraTests() : (void)
+400  :     LoadValue     : value = <null>
+//  func ExtraTests() : (void)
+401  :     Return        
+//  ExtraTests()
+402  :     Invoke        : func = 7(ExtraTests), stackPatternCount = 0
+//  ExtraTests();
+403  :     Pop           
+//  new (Hinters^)()
+404  :     LoadValue     : value = <null>
+//  new (Hinters^)()
+405  :     InvokeMethod  : methodInfo = <test::Hinters>, stackPatternCount = 0
+//  var hinters = new (Hinters^)();
+406  :     StoreLocalVar : var = 0(hinters)
+//  0
+407  :     LoadValue     : value = <I4, 0>
+//  Hinters::CreateHinter(0)
+408  :     LoadValue     : value = <null>
+//  Hinters::CreateHinter(0)
+409  :     InvokeMethod  : methodInfo = CreateHinter<test::Hinters>, stackPatternCount = 1
+//  var hinters2 = Hinters::CreateHinter(0);
+410  :     StoreLocalVar : var = 1(hinters2)
+//  hinters2
+411  :     LoadLocalVar  : var = 1(hinters2)
+//  delete hinters2;
+412  :     DeleteRawPtr  
+//  0
+413  :     LoadValue     : value = <I4, 0>
+//  3
+414  :     LoadValue     : value = <I4, 3>
+//  2
+415  :     LoadValue     : value = <I4, 2>
+//  1
+416  :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3;}
+417  :     NewList       : stackPatternCount = 3
+//  4
+418  :     LoadValue     : value = <I4, 4>
+//  hinters
+419  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.GetList({1; 2; 3;}, 4)
+420  :     InvokeMethod  : methodInfo = GetList<test::Hinters>, stackPatternCount = 2
+//  hinters.GetList({1; 2; 3;}, 4)[0]
+421  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  var a = hinters.GetList({1; 2; 3;}, 4)[0];
+422  :     StoreLocalVar : var = 2(a)
+//  0
+423  :     LoadValue     : value = <I4, 0>
+//  30
+424  :     LoadValue     : value = <I4, 30>
+//  20
+425  :     LoadValue     : value = <I4, 20>
+//  10
+426  :     LoadValue     : value = <I4, 10>
+//  {10; 20; 30;}
+427  :     NewList       : stackPatternCount = 3
+//  {10; 20; 30;}
+428  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ReadonlyList
+//  hinters
+429  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.GetReadonlyList({10; 20; 30;})
+430  :     InvokeMethod  : methodInfo = GetReadonlyList<test::Hinters>, stackPatternCount = 1
+//  hinters.GetReadonlyList({10; 20; 30;})[0]
+431  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  var b = hinters.GetReadonlyList({10; 20; 30;})[0];
+432  :     StoreLocalVar : var = 3(b)
+//  0
+433  :     LoadValue     : value = <I4, 0>
+//  300
+434  :     LoadValue     : value = <I4, 300>
+//  200
+435  :     LoadValue     : value = <I4, 200>
+//  100
+436  :     LoadValue     : value = <I4, 100>
+//  {100; 200; 300;}
+437  :     NewArray      : stackPatternCount = 3
+//  {100; 200; 300;}
+438  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ReadonlyList
+//  hinters
+439  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.GetReadonlyArray({100; 200; 300;})
+440  :     InvokeMethod  : methodInfo = GetReadonlyArray<test::Hinters>, stackPatternCount = 1
+//  hinters.GetReadonlyArray({100; 200; 300;}).Get(0)
+441  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  hinters.GetReadonlyArray({100; 200; 300;}).Get(0)
+442  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  var c = (cast (int) hinters.GetReadonlyArray({100; 200; 300;}).Get(0));
+443  :     StoreLocalVar : var = 4(c)
+//  0
+444  :     LoadValue     : value = <I4, 0>
+//  3000
+445  :     LoadValue     : value = <I4, 3000>
+//  2000
+446  :     LoadValue     : value = <I4, 2000>
+//  1000
+447  :     LoadValue     : value = <I4, 1000>
+//  {1000; 2000; 3000;}
+448  :     NewList       : stackPatternCount = 3
+//  {1000; 2000; 3000;}
+449  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ReadonlyList
+//  hinters
+450  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.GetReadonlySortedList({1000; 2000; 3000;})
+451  :     InvokeMethod  : methodInfo = GetReadonlySortedList<test::Hinters>, stackPatternCount = 1
+//  hinters.GetReadonlySortedList({1000; 2000; 3000;}).Get(0)
+452  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  hinters.GetReadonlySortedList({1000; 2000; 3000;}).Get(0)
+453  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  var d = (cast (int) hinters.GetReadonlySortedList({1000; 2000; 3000;}).Get(0));
+454  :     StoreLocalVar : var = 5(d)
+//  1
+455  :     LoadValue     : value = <I4, 1>
+//  3
+456  :     LoadValue     : value = <I4, 3>
+//  4
+457  :     LoadValue     : value = <I4, 4>
+//  1
+458  :     LoadValue     : value = <I4, 1>
+//  2
+459  :     LoadValue     : value = <I4, 2>
+//  {1 : 2; 3 : 4;}
+460  :     NewDictionary : stackPatternCount = 4
+//  hinters
+461  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.GetDictionary({1 : 2; 3 : 4;})
+462  :     InvokeMethod  : methodInfo = GetDictionary<test::Hinters>, stackPatternCount = 1
+//  hinters.GetDictionary({1 : 2; 3 : 4;})[1]
+463  :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+//  var e = hinters.GetDictionary({1 : 2; 3 : 4;})[1];
+464  :     StoreLocalVar : var = 6(e)
+//  10
+465  :     LoadValue     : value = <I4, 10>
+//  30
+466  :     LoadValue     : value = <I4, 30>
+//  40
+467  :     LoadValue     : value = <I4, 40>
+//  10
+468  :     LoadValue     : value = <I4, 10>
+//  20
+469  :     LoadValue     : value = <I4, 20>
+//  {10 : 20; 30 : 40;}
+470  :     NewDictionary : stackPatternCount = 4
+//  {10 : 20; 30 : 40;}
+471  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ReadonlyDictionary
+//  hinters
+472  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.GetReadonlyDictionary({10 : 20; 30 : 40;})
+473  :     InvokeMethod  : methodInfo = GetReadonlyDictionary<test::Hinters>, stackPatternCount = 1
+//  hinters.GetReadonlyDictionary({10 : 20; 30 : 40;})[10]
+474  :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+//  var f = hinters.GetReadonlyDictionary({10 : 20; 30 : 40;})[10];
+475  :     StoreLocalVar : var = 7(f)
+//  5
+476  :     LoadValue     : value = <I4, 5>
+//  4
+477  :     LoadValue     : value = <I4, 4>
+//  3
+478  :     LoadValue     : value = <I4, 3>
+//  2
+479  :     LoadValue     : value = <I4, 2>
+//  1
+480  :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+481  :     NewList       : stackPatternCount = 5
+//  (hinters.Storage = {1; 2; 3; 4; 5;})
+482  :     Duplicate     : stackPatternCount = 0
+//  hinters
+483  :     LoadLocalVar  : var = 0(hinters)
+//  (hinters.Storage = {1; 2; 3; 4; 5;})
+484  :     InvokeMethod  : methodInfo = SetStorage<test::Hinters>, stackPatternCount = 1
+//  (hinters.Storage = {1; 2; 3; 4; 5;})
+485  :     Pop           
+//  (hinters.Storage = {1; 2; 3; 4; 5;});
+486  :     Pop           
+//  0
+487  :     LoadValue     : value = <I4, 0>
+//  hinters
+488  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.Storage
+489  :     InvokeMethod  : methodInfo = GetStorage<test::Hinters>, stackPatternCount = 0
+//  hinters.Storage.Get(0)
+490  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  hinters.Storage.Get(0)
+491  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  var g1 = (cast (int) hinters.Storage.Get(0));
+492  :     StoreLocalVar : var = 8(g1)
+//  5
+493  :     LoadValue     : value = <I4, 5>
+//  4
+494  :     LoadValue     : value = <I4, 4>
+//  3
+495  :     LoadValue     : value = <I4, 3>
+//  2
+496  :     LoadValue     : value = <I4, 2>
+//  1
+497  :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+498  :     NewList       : stackPatternCount = 5
+//  var xs = {1; 2; 3; 4; 5;};
+499  :     StoreLocalVar : var = 9(xs)
+//  xs
+500  :     LoadLocalVar  : var = 9(xs)
+//  (hinters.Storage = xs)
+501  :     Duplicate     : stackPatternCount = 0
+//  hinters
+502  :     LoadLocalVar  : var = 0(hinters)
+//  (hinters.Storage = xs)
+503  :     InvokeMethod  : methodInfo = SetStorage<test::Hinters>, stackPatternCount = 1
+//  (hinters.Storage = xs)
+504  :     Pop           
+//  (hinters.Storage = xs);
+505  :     Pop           
+//  4
+506  :     LoadValue     : value = <I4, 4>
+//  (hinters.Storage[4] = 100)
+507  :     Duplicate     : stackPatternCount = 0
+//  100
+508  :     LoadValue     : value = <I4, 100>
+//  hinters
+509  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.Storage
+510  :     InvokeMethod  : methodInfo = GetStorage<test::Hinters>, stackPatternCount = 0
+//  (hinters.Storage[4] = 100)
+511  :     InvokeMethod  : methodInfo = Set<system::List>, stackPatternCount = 2
+//  (hinters.Storage[4] = 100)
+512  :     Pop           
+//  (hinters.Storage[4] = 100);
+513  :     Pop           
+//  4
+514  :     LoadValue     : value = <I4, 4>
+//  hinters
+515  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.Storage
+516  :     InvokeMethod  : methodInfo = GetStorage<test::Hinters>, stackPatternCount = 0
+//  hinters.Storage[4]
+517  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  var g2 = hinters.Storage[4];
+518  :     StoreLocalVar : var = 10(g2)
+//  5
+519  :     LoadValue     : value = <I4, 5>
+//  4
+520  :     LoadValue     : value = <I4, 4>
+//  3
+521  :     LoadValue     : value = <I4, 3>
+//  2
+522  :     LoadValue     : value = <I4, 2>
+//  1
+523  :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+524  :     NewList       : stackPatternCount = 5
+//  hinters
+525  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.CountList({1; 2; 3; 4; 5;})
+526  :     InvokeMethod  : methodInfo = CountList<test::Hinters>, stackPatternCount = 1
+//  var ct1 = hinters.CountList({1; 2; 3; 4; 5;});
+527  :     StoreLocalVar : var = 11(ct1)
+//  5
+528  :     LoadValue     : value = <I4, 5>
+//  4
+529  :     LoadValue     : value = <I4, 4>
+//  3
+530  :     LoadValue     : value = <I4, 3>
+//  2
+531  :     LoadValue     : value = <I4, 2>
+//  1
+532  :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+533  :     NewArray      : stackPatternCount = 5
+//  hinters
+534  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.CountArray({1; 2; 3; 4; 5;})
+535  :     InvokeMethod  : methodInfo = CountArray<test::Hinters>, stackPatternCount = 1
+//  var ct2 = hinters.CountArray({1; 2; 3; 4; 5;});
+536  :     StoreLocalVar : var = 12(ct2)
+//  5
+537  :     LoadValue     : value = <I4, 5>
+//  4
+538  :     LoadValue     : value = <I4, 4>
+//  3
+539  :     LoadValue     : value = <I4, 3>
+//  2
+540  :     LoadValue     : value = <I4, 2>
+//  1
+541  :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+542  :     NewList       : stackPatternCount = 5
+//  {1; 2; 3; 4; 5;}
+543  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ReadonlyList
+//  hinters
+544  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.CountSortedList({1; 2; 3; 4; 5;})
+545  :     InvokeMethod  : methodInfo = CountSortedList<test::Hinters>, stackPatternCount = 1
+//  var ct3 = hinters.CountSortedList({1; 2; 3; 4; 5;});
+546  :     StoreLocalVar : var = 13(ct3)
+//  5
+547  :     LoadValue     : value = <I4, 5>
+//  4
+548  :     LoadValue     : value = <I4, 4>
+//  3
+549  :     LoadValue     : value = <I4, 3>
+//  2
+550  :     LoadValue     : value = <I4, 2>
+//  1
+551  :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+552  :     NewObservableList: stackPatternCount = 5
+//  hinters
+553  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.CountObservableList({1; 2; 3; 4; 5;})
+554  :     InvokeMethod  : methodInfo = CountObservableList<test::Hinters>, stackPatternCount = 1
+//  var ct4 = hinters.CountObservableList({1; 2; 3; 4; 5;});
+555  :     StoreLocalVar : var = 14(ct4)
+//  1
+556  :     LoadValue     : value = <I4, 1>
+//  var <for-begin>x : ::system::Int32 = 1;
+557  :     StoreLocalVar : var = 15(<for-begin>x)
+//  5
+558  :     LoadValue     : value = <I4, 5>
+//  var <for-end>x : ::system::Int32 = 5;
+559  :     StoreLocalVar : var = 16(<for-end>x)
+//  <for-begin>x
+560  :     LoadLocalVar  : var = 15(<for-begin>x)
+//  var x = <for-begin>x;
+561  :     StoreLocalVar : var = 17(x)
+//  x
+562  :     LoadLocalVar  : var = 17(x)
+//  <for-end>x
+563  :     LoadLocalVar  : var = 16(<for-end>x)
+//  (x <= <for-end>x)
+564  :     CompareLiteral: type = I4
+//  (x <= <for-end>x)
+565  :     OpLE          
+//  while ((x <= <for-end>x))
+566  :     OpNot         : type = Bool
+//  while ((x <= <for-end>x))
+567  :     JumpIf        : label = 585
+//  x
+568  :     LoadLocalVar  : var = 17(x)
+//  hinters
+569  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.MyList
+570  :     InvokeMethod  : methodInfo = GetMyList<test::Hinters>, stackPatternCount = 0
+//  hinters.MyList.Add(x)
+571  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  hinters.MyList.Add(x);
+572  :     Pop           
+//  x
+573  :     LoadLocalVar  : var = 17(x)
+//  hinters
+574  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.ObservableList
+575  :     InvokeMethod  : methodInfo = GetObservableList<test::Hinters>, stackPatternCount = 0
+//  hinters.ObservableList.Add(x)
+576  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  hinters.ObservableList.Add(x);
+577  :     Pop           
+//  x
+578  :     LoadLocalVar  : var = 17(x)
+//  1
+579  :     LoadValue     : value = <I4, 1>
+//  (x + 1)
+580  :     OpAdd         : type = I4
+//  (x = (x + 1))
+581  :     Duplicate     : stackPatternCount = 0
+//  (x = (x + 1))
+582  :     StoreLocalVar : var = 17(x)
+//  (x = (x + 1));
+583  :     Pop           
+//  while ((x <= <for-end>x))
+584  :     Jump          : label = 562
+//  0
+585  :     LoadValue     : value = <I4, 0>
+//  Sys::Int32ToInt((cast (::system::Int32) 0))
+586  :     LoadValue     : value = <null>
+//  Sys::Int32ToInt((cast (::system::Int32) 0))
+587  :     InvokeMethod  : methodInfo = Int32ToInt<system::Sys>, stackPatternCount = 1
+//  var merge1 = Sys::Int32ToInt((cast (::system::Int32) 0));
+588  :     StoreLocalVar : var = 18(merge1)
+//  0
+589  :     LoadValue     : value = <I4, 0>
+//  0
+590  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  Sys::Int64ToInt((cast (::system::Int64) 0))
+591  :     LoadValue     : value = <null>
+//  Sys::Int64ToInt((cast (::system::Int64) 0))
+592  :     InvokeMethod  : methodInfo = Int64ToInt<system::Sys>, stackPatternCount = 1
+//  var merge2 = Sys::Int64ToInt((cast (::system::Int64) 0));
+593  :     StoreLocalVar : var = 19(merge2)
+//  0
+594  :     LoadValue     : value = <I4, 0>
+//  Sys::IntToInt32((cast (::system::Int32) 0))
+595  :     LoadValue     : value = <null>
+//  Sys::IntToInt32((cast (::system::Int32) 0))
+596  :     InvokeMethod  : methodInfo = IntToInt32<system::Sys>, stackPatternCount = 1
+//  var merge3 = Sys::IntToInt32((cast (::system::Int32) 0));
+597  :     StoreLocalVar : var = 20(merge3)
+//  0
+598  :     LoadValue     : value = <I4, 0>
+//  Sys::IntToInt64((cast (::system::Int32) 0))
+599  :     LoadValue     : value = <null>
+//  Sys::IntToInt64((cast (::system::Int32) 0))
+600  :     InvokeMethod  : methodInfo = IntToInt64<system::Sys>, stackPatternCount = 1
+//  var merge4 = Sys::IntToInt64((cast (::system::Int32) 0));
+601  :     StoreLocalVar : var = 21(merge4)
+//  0
+602  :     LoadValue     : value = <I4, 0>
+//  0
+603  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt32
+//  Sys::UInt32ToUInt((cast (::system::UInt32) 0))
+604  :     LoadValue     : value = <null>
+//  Sys::UInt32ToUInt((cast (::system::UInt32) 0))
+605  :     InvokeMethod  : methodInfo = UInt32ToUInt<system::Sys>, stackPatternCount = 1
+//  var merge5 = Sys::UInt32ToUInt((cast (::system::UInt32) 0));
+606  :     StoreLocalVar : var = 22(merge5)
+//  0
+607  :     LoadValue     : value = <I4, 0>
+//  0
+608  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt64
+//  Sys::UInt64ToUInt((cast (::system::UInt64) 0))
+609  :     LoadValue     : value = <null>
+//  Sys::UInt64ToUInt((cast (::system::UInt64) 0))
+610  :     InvokeMethod  : methodInfo = UInt64ToUInt<system::Sys>, stackPatternCount = 1
+//  var merge6 = Sys::UInt64ToUInt((cast (::system::UInt64) 0));
+611  :     StoreLocalVar : var = 23(merge6)
+//  0
+612  :     LoadValue     : value = <I4, 0>
+//  0
+613  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt32
+//  Sys::UIntToUInt32((cast (::system::UInt32) 0))
+614  :     LoadValue     : value = <null>
+//  Sys::UIntToUInt32((cast (::system::UInt32) 0))
+615  :     InvokeMethod  : methodInfo = UIntToUInt32<system::Sys>, stackPatternCount = 1
+//  var merge7 = Sys::UIntToUInt32((cast (::system::UInt32) 0));
+616  :     StoreLocalVar : var = 24(merge7)
+//  0
+617  :     LoadValue     : value = <I4, 0>
+//  0
+618  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt32
+//  Sys::UIntToUInt64((cast (::system::UInt32) 0))
+619  :     LoadValue     : value = <null>
+//  Sys::UIntToUInt64((cast (::system::UInt32) 0))
+620  :     InvokeMethod  : methodInfo = UIntToUInt64<system::Sys>, stackPatternCount = 1
+//  var merge8 = Sys::UIntToUInt64((cast (::system::UInt32) 0));
+621  :     StoreLocalVar : var = 25(merge8)
+//  "["
+622  :     LoadValue     : value = <Bool, [>
+//  a
+623  :     LoadLocalVar  : var = 2(a)
+//  a
+624  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ("[" & a)
+625  :     OpConcat      
+//  "]["
+626  :     LoadValue     : value = <Bool, ][>
+//  (("[" & a) & "][")
+627  :     OpConcat      
+//  b
+628  :     LoadLocalVar  : var = 3(b)
+//  b
+629  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((("[" & a) & "][") & b)
+630  :     OpConcat      
+//  "]["
+631  :     LoadValue     : value = <Bool, ][>
+//  (((("[" & a) & "][") & b) & "][")
+632  :     OpConcat      
+//  c
+633  :     LoadLocalVar  : var = 4(c)
+//  c
+634  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((("[" & a) & "][") & b) & "][") & c)
+635  :     OpConcat      
+//  "]["
+636  :     LoadValue     : value = <Bool, ][>
+//  (((((("[" & a) & "][") & b) & "][") & c) & "][")
+637  :     OpConcat      
+//  d
+638  :     LoadLocalVar  : var = 5(d)
+//  d
+639  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((("[" & a) & "][") & b) & "][") & c) & "][") & d)
+640  :     OpConcat      
+//  "]["
+641  :     LoadValue     : value = <Bool, ][>
+//  (((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][")
+642  :     OpConcat      
+//  e
+643  :     LoadLocalVar  : var = 6(e)
+//  e
+644  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e)
+645  :     OpConcat      
+//  "]["
+646  :     LoadValue     : value = <Bool, ][>
+//  (((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][")
+647  :     OpConcat      
+//  f
+648  :     LoadLocalVar  : var = 7(f)
+//  f
+649  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f)
+650  :     OpConcat      
+//  "]["
+651  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][")
+652  :     OpConcat      
+//  g1
+653  :     LoadLocalVar  : var = 8(g1)
+//  g1
+654  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1)
+655  :     OpConcat      
+//  "]["
+656  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][")
+657  :     OpConcat      
+//  g2
+658  :     LoadLocalVar  : var = 10(g2)
+//  g2
+659  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2)
+660  :     OpConcat      
+//  "]["
+661  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][")
+662  :     OpConcat      
+//  2
+663  :     LoadValue     : value = <I4, 2>
+//  hinters
+664  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.MyList
+665  :     InvokeMethod  : methodInfo = GetMyList<test::Hinters>, stackPatternCount = 0
+//  hinters.MyList[2]
+666  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  hinters.MyList[2]
+667  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2])
+668  :     OpConcat      
+//  "]["
+669  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][")
+670  :     OpConcat      
+//  3
+671  :     LoadValue     : value = <I4, 3>
+//  hinters
+672  :     LoadLocalVar  : var = 0(hinters)
+//  hinters.ObservableList
+673  :     InvokeMethod  : methodInfo = GetObservableList<test::Hinters>, stackPatternCount = 0
+//  hinters.ObservableList[3]
+674  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  hinters.ObservableList[3]
+675  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3])
+676  :     OpConcat      
+//  "]["
+677  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][")
+678  :     OpConcat      
+//  ct1
+679  :     LoadLocalVar  : var = 11(ct1)
+//  ct1
+680  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1)
+681  :     OpConcat      
+//  "]["
+682  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][")
+683  :     OpConcat      
+//  ct2
+684  :     LoadLocalVar  : var = 12(ct2)
+//  ct2
+685  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2)
+686  :     OpConcat      
+//  "]["
+687  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][")
+688  :     OpConcat      
+//  ct3
+689  :     LoadLocalVar  : var = 13(ct3)
+//  ct3
+690  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3)
+691  :     OpConcat      
+//  "]["
+692  :     LoadValue     : value = <Bool, ][>
+//  (((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][")
+693  :     OpConcat      
+//  ct4
+694  :     LoadLocalVar  : var = 14(ct4)
+//  ct4
+695  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][") & ct4)
+696  :     OpConcat      
+//  "]"
+697  :     LoadValue     : value = <Bool, ]>
+//  (((((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][") & ct4) & "]")
+698  :     OpConcat      
+//  return (((((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][") & ct4) & "]");
+699  :     Return        
+//  func main() : (string)
+700  :     LoadValue     : value = <null>
+//  func main() : (string)
+701  :     Return        

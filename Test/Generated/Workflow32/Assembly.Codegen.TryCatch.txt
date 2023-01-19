@@ -1,0 +1,511 @@
+﻿========================================================
+Global Variables:
+========================================================
+log
+
+========================================================
+Functions:
+========================================================
+Test1 (4 .. 23)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        <catch>ex
+
+Test2 (24 .. 62)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        <catch>ex
+
+Throw (63 .. 66)
+    Arguments:
+        message
+    Captured Variables:
+    Local Variables:
+
+Test3 (67 .. 143)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        <catch>ex
+        <catch>ex
+
+Test4 (144 .. 217)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        <catch>ex
+        <catch>ex
+
+main (218 .. 229)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<initialize> (0 .. 3)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  ""
+0    :     LoadValue     : value = <Bool, >
+//  var log = "";
+1    :     StoreGlobalVar: var = 0(log)
+2    :     LoadValue     : value = <null>
+3    :     Return        
+//  try
+4    :     InstallTry    : label = 9
+//  "Test1::catch"
+5    :     LoadValue     : value = <Bool, Test1::catch>
+//  raise "Test1::catch";
+6    :     RaiseException
+//  try
+7    :     UninstallTry  : stackPatternCount = 0
+//  try
+8    :     Jump          : label = 22
+//  try
+9    :     LoadException 
+//  try
+10   :     StoreLocalVar : var = 0(<catch>ex)
+//  log
+11   :     LoadGlobalVar : var = 0(log)
+//  "["
+12   :     LoadValue     : value = <Bool, [>
+//  (log & "[")
+13   :     OpConcat      
+//  ex
+14   :     LoadLocalVar  : var = 0(<catch>ex)
+//  ex.Message
+15   :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  ((log & "[") & ex.Message)
+16   :     OpConcat      
+//  "]"
+17   :     LoadValue     : value = <Bool, ]>
+//  (((log & "[") & ex.Message) & "]")
+18   :     OpConcat      
+//  (log = (((log & "[") & ex.Message) & "]"))
+19   :     Duplicate     : stackPatternCount = 0
+//  (log = (((log & "[") & ex.Message) & "]"))
+20   :     StoreGlobalVar: var = 0(log)
+//  (log = (((log & "[") & ex.Message) & "]"));
+21   :     Pop           
+//  func Test1() : (void)
+22   :     LoadValue     : value = <null>
+//  func Test1() : (void)
+23   :     Return        
+//  try
+24   :     InstallTry    : label = 29
+//  "Test2::catch"
+25   :     LoadValue     : value = <Bool, Test2::catch>
+//  raise "Test2::catch";
+26   :     RaiseException
+//  try
+27   :     UninstallTry  : stackPatternCount = 0
+//  try
+28   :     Jump          : label = 55
+//  try
+29   :     LoadException 
+//  try
+30   :     StoreLocalVar : var = 0(<catch>ex)
+//  try
+31   :     InstallTry    : label = 45
+//  log
+32   :     LoadGlobalVar : var = 0(log)
+//  "["
+33   :     LoadValue     : value = <Bool, [>
+//  (log & "[")
+34   :     OpConcat      
+//  ex
+35   :     LoadLocalVar  : var = 0(<catch>ex)
+//  ex.Message
+36   :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  ((log & "[") & ex.Message)
+37   :     OpConcat      
+//  "]"
+38   :     LoadValue     : value = <Bool, ]>
+//  (((log & "[") & ex.Message) & "]")
+39   :     OpConcat      
+//  (log = (((log & "[") & ex.Message) & "]"))
+40   :     Duplicate     : stackPatternCount = 0
+//  (log = (((log & "[") & ex.Message) & "]"))
+41   :     StoreGlobalVar: var = 0(log)
+//  (log = (((log & "[") & ex.Message) & "]"));
+42   :     Pop           
+//  try
+43   :     UninstallTry  : stackPatternCount = 0
+//  try
+44   :     Jump          : label = 55
+//  try
+45   :     LoadException 
+//  try
+46   :     StoreLocalVar : var = 0(<catch>ex)
+//  log
+47   :     LoadGlobalVar : var = 0(log)
+//  "[Test2::finally]"
+48   :     LoadValue     : value = <Bool, [Test2::finally]>
+//  (log & "[Test2::finally]")
+49   :     OpConcat      
+//  (log = (log & "[Test2::finally]"))
+50   :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test2::finally]"))
+51   :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test2::finally]"));
+52   :     Pop           
+//  try
+53   :     LoadLocalVar  : var = 0(<catch>ex)
+//  try
+54   :     RaiseException
+//  log
+55   :     LoadGlobalVar : var = 0(log)
+//  "[Test2::finally]"
+56   :     LoadValue     : value = <Bool, [Test2::finally]>
+//  (log & "[Test2::finally]")
+57   :     OpConcat      
+//  (log = (log & "[Test2::finally]"))
+58   :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test2::finally]"))
+59   :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test2::finally]"));
+60   :     Pop           
+//  func Test2() : (void)
+61   :     LoadValue     : value = <null>
+//  func Test2() : (void)
+62   :     Return        
+//  message
+63   :     LoadLocalVar  : var = 0(message)
+//  raise message;
+64   :     RaiseException
+//  func Throw(message : string) : (void)
+65   :     LoadValue     : value = <null>
+//  func Throw(message : string) : (void)
+66   :     Return        
+//  try
+67   :     InstallTry    : label = 110
+//  try
+68   :     InstallTry    : label = 74
+//  "Test3::catch"
+69   :     LoadValue     : value = <Bool, Test3::catch>
+//  Throw("Test3::catch")
+70   :     Invoke        : func = 2(Throw), stackPatternCount = 1
+//  Throw("Test3::catch");
+71   :     Pop           
+//  try
+72   :     UninstallTry  : stackPatternCount = 0
+//  try
+73   :     Jump          : label = 102
+//  try
+74   :     LoadException 
+//  try
+75   :     StoreLocalVar : var = 0(<catch>ex)
+//  try
+76   :     InstallTry    : label = 92
+//  log
+77   :     LoadGlobalVar : var = 0(log)
+//  "["
+78   :     LoadValue     : value = <Bool, [>
+//  (log & "[")
+79   :     OpConcat      
+//  ex
+80   :     LoadLocalVar  : var = 0(<catch>ex)
+//  ex.Message
+81   :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  ((log & "[") & ex.Message)
+82   :     OpConcat      
+//  "1]"
+83   :     LoadValue     : value = <Bool, 1]>
+//  (((log & "[") & ex.Message) & "1]")
+84   :     OpConcat      
+//  (log = (((log & "[") & ex.Message) & "1]"))
+85   :     Duplicate     : stackPatternCount = 0
+//  (log = (((log & "[") & ex.Message) & "1]"))
+86   :     StoreGlobalVar: var = 0(log)
+//  (log = (((log & "[") & ex.Message) & "1]"));
+87   :     Pop           
+//  raise;
+88   :     LoadLocalVar  : var = 0(<catch>ex)
+//  raise;
+89   :     RaiseException
+//  try
+90   :     UninstallTry  : stackPatternCount = 0
+//  try
+91   :     Jump          : label = 102
+//  try
+92   :     LoadException 
+//  try
+93   :     StoreLocalVar : var = 0(<catch>ex)
+//  log
+94   :     LoadGlobalVar : var = 0(log)
+//  "[Test3::finally1]"
+95   :     LoadValue     : value = <Bool, [Test3::finally1]>
+//  (log & "[Test3::finally1]")
+96   :     OpConcat      
+//  (log = (log & "[Test3::finally1]"))
+97   :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test3::finally1]"))
+98   :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test3::finally1]"));
+99   :     Pop           
+//  try
+100  :     LoadLocalVar  : var = 0(<catch>ex)
+//  try
+101  :     RaiseException
+//  log
+102  :     LoadGlobalVar : var = 0(log)
+//  "[Test3::finally1]"
+103  :     LoadValue     : value = <Bool, [Test3::finally1]>
+//  (log & "[Test3::finally1]")
+104  :     OpConcat      
+//  (log = (log & "[Test3::finally1]"))
+105  :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test3::finally1]"))
+106  :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test3::finally1]"));
+107  :     Pop           
+//  try
+108  :     UninstallTry  : stackPatternCount = 0
+//  try
+109  :     Jump          : label = 136
+//  try
+110  :     LoadException 
+//  try
+111  :     StoreLocalVar : var = 1(<catch>ex)
+//  try
+112  :     InstallTry    : label = 126
+//  log
+113  :     LoadGlobalVar : var = 0(log)
+//  "["
+114  :     LoadValue     : value = <Bool, [>
+//  (log & "[")
+115  :     OpConcat      
+//  ex
+116  :     LoadLocalVar  : var = 1(<catch>ex)
+//  ex.Message
+117  :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  ((log & "[") & ex.Message)
+118  :     OpConcat      
+//  "2]"
+119  :     LoadValue     : value = <Bool, 2]>
+//  (((log & "[") & ex.Message) & "2]")
+120  :     OpConcat      
+//  (log = (((log & "[") & ex.Message) & "2]"))
+121  :     Duplicate     : stackPatternCount = 0
+//  (log = (((log & "[") & ex.Message) & "2]"))
+122  :     StoreGlobalVar: var = 0(log)
+//  (log = (((log & "[") & ex.Message) & "2]"));
+123  :     Pop           
+//  try
+124  :     UninstallTry  : stackPatternCount = 0
+//  try
+125  :     Jump          : label = 136
+//  try
+126  :     LoadException 
+//  try
+127  :     StoreLocalVar : var = 1(<catch>ex)
+//  log
+128  :     LoadGlobalVar : var = 0(log)
+//  "[Test3::finally2]"
+129  :     LoadValue     : value = <Bool, [Test3::finally2]>
+//  (log & "[Test3::finally2]")
+130  :     OpConcat      
+//  (log = (log & "[Test3::finally2]"))
+131  :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test3::finally2]"))
+132  :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test3::finally2]"));
+133  :     Pop           
+//  try
+134  :     LoadLocalVar  : var = 1(<catch>ex)
+//  try
+135  :     RaiseException
+//  log
+136  :     LoadGlobalVar : var = 0(log)
+//  "[Test3::finally2]"
+137  :     LoadValue     : value = <Bool, [Test3::finally2]>
+//  (log & "[Test3::finally2]")
+138  :     OpConcat      
+//  (log = (log & "[Test3::finally2]"))
+139  :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test3::finally2]"))
+140  :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test3::finally2]"));
+141  :     Pop           
+//  func Test3() : (void)
+142  :     LoadValue     : value = <null>
+//  func Test3() : (void)
+143  :     Return        
+//  try
+144  :     InstallTry    : label = 184
+//  try
+145  :     InstallTry    : label = 148
+//  try
+146  :     UninstallTry  : stackPatternCount = 0
+//  try
+147  :     Jump          : label = 176
+//  try
+148  :     LoadException 
+//  try
+149  :     StoreLocalVar : var = 0(<catch>ex)
+//  try
+150  :     InstallTry    : label = 166
+//  log
+151  :     LoadGlobalVar : var = 0(log)
+//  "["
+152  :     LoadValue     : value = <Bool, [>
+//  (log & "[")
+153  :     OpConcat      
+//  ex
+154  :     LoadLocalVar  : var = 0(<catch>ex)
+//  ex.Message
+155  :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  ((log & "[") & ex.Message)
+156  :     OpConcat      
+//  "1]"
+157  :     LoadValue     : value = <Bool, 1]>
+//  (((log & "[") & ex.Message) & "1]")
+158  :     OpConcat      
+//  (log = (((log & "[") & ex.Message) & "1]"))
+159  :     Duplicate     : stackPatternCount = 0
+//  (log = (((log & "[") & ex.Message) & "1]"))
+160  :     StoreGlobalVar: var = 0(log)
+//  (log = (((log & "[") & ex.Message) & "1]"));
+161  :     Pop           
+//  raise;
+162  :     LoadLocalVar  : var = 0(<catch>ex)
+//  raise;
+163  :     RaiseException
+//  try
+164  :     UninstallTry  : stackPatternCount = 0
+//  try
+165  :     Jump          : label = 176
+//  try
+166  :     LoadException 
+//  try
+167  :     StoreLocalVar : var = 0(<catch>ex)
+//  log
+168  :     LoadGlobalVar : var = 0(log)
+//  "[Test4::finally1]"
+169  :     LoadValue     : value = <Bool, [Test4::finally1]>
+//  (log & "[Test4::finally1]")
+170  :     OpConcat      
+//  (log = (log & "[Test4::finally1]"))
+171  :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test4::finally1]"))
+172  :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test4::finally1]"));
+173  :     Pop           
+//  try
+174  :     LoadLocalVar  : var = 0(<catch>ex)
+//  try
+175  :     RaiseException
+//  log
+176  :     LoadGlobalVar : var = 0(log)
+//  "[Test4::finally1]"
+177  :     LoadValue     : value = <Bool, [Test4::finally1]>
+//  (log & "[Test4::finally1]")
+178  :     OpConcat      
+//  (log = (log & "[Test4::finally1]"))
+179  :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test4::finally1]"))
+180  :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test4::finally1]"));
+181  :     Pop           
+//  try
+182  :     UninstallTry  : stackPatternCount = 0
+//  try
+183  :     Jump          : label = 210
+//  try
+184  :     LoadException 
+//  try
+185  :     StoreLocalVar : var = 1(<catch>ex)
+//  try
+186  :     InstallTry    : label = 200
+//  log
+187  :     LoadGlobalVar : var = 0(log)
+//  "["
+188  :     LoadValue     : value = <Bool, [>
+//  (log & "[")
+189  :     OpConcat      
+//  ex
+190  :     LoadLocalVar  : var = 1(<catch>ex)
+//  ex.Message
+191  :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  ((log & "[") & ex.Message)
+192  :     OpConcat      
+//  "2]"
+193  :     LoadValue     : value = <Bool, 2]>
+//  (((log & "[") & ex.Message) & "2]")
+194  :     OpConcat      
+//  (log = (((log & "[") & ex.Message) & "2]"))
+195  :     Duplicate     : stackPatternCount = 0
+//  (log = (((log & "[") & ex.Message) & "2]"))
+196  :     StoreGlobalVar: var = 0(log)
+//  (log = (((log & "[") & ex.Message) & "2]"));
+197  :     Pop           
+//  try
+198  :     UninstallTry  : stackPatternCount = 0
+//  try
+199  :     Jump          : label = 210
+//  try
+200  :     LoadException 
+//  try
+201  :     StoreLocalVar : var = 1(<catch>ex)
+//  log
+202  :     LoadGlobalVar : var = 0(log)
+//  "[Test4::finally2]"
+203  :     LoadValue     : value = <Bool, [Test4::finally2]>
+//  (log & "[Test4::finally2]")
+204  :     OpConcat      
+//  (log = (log & "[Test4::finally2]"))
+205  :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test4::finally2]"))
+206  :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test4::finally2]"));
+207  :     Pop           
+//  try
+208  :     LoadLocalVar  : var = 1(<catch>ex)
+//  try
+209  :     RaiseException
+//  log
+210  :     LoadGlobalVar : var = 0(log)
+//  "[Test4::finally2]"
+211  :     LoadValue     : value = <Bool, [Test4::finally2]>
+//  (log & "[Test4::finally2]")
+212  :     OpConcat      
+//  (log = (log & "[Test4::finally2]"))
+213  :     Duplicate     : stackPatternCount = 0
+//  (log = (log & "[Test4::finally2]"))
+214  :     StoreGlobalVar: var = 0(log)
+//  (log = (log & "[Test4::finally2]"));
+215  :     Pop           
+//  func Test4() : (void)
+216  :     LoadValue     : value = <null>
+//  func Test4() : (void)
+217  :     Return        
+//  Test1()
+218  :     Invoke        : func = 0(Test1), stackPatternCount = 0
+//  Test1();
+219  :     Pop           
+//  Test2()
+220  :     Invoke        : func = 1(Test2), stackPatternCount = 0
+//  Test2();
+221  :     Pop           
+//  Test3()
+222  :     Invoke        : func = 3(Test3), stackPatternCount = 0
+//  Test3();
+223  :     Pop           
+//  Test4()
+224  :     Invoke        : func = 4(Test4), stackPatternCount = 0
+//  Test4();
+225  :     Pop           
+//  log
+226  :     LoadGlobalVar : var = 0(log)
+//  return log;
+227  :     Return        
+//  func main() : (string)
+228  :     LoadValue     : value = <null>
+//  func main() : (string)
+229  :     Return        

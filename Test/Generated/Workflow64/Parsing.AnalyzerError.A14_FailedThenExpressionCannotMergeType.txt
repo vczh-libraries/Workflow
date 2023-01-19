@@ -1,0 +1,109 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+using test::*;
+
+func main() : (void)
+{
+    var x = (new (ObservableValue^)() ?? "");
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+using test::*;
+
+func main() : (void)
+{
+    var x = (new (ObservableValue^)() ?? "");
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 10, Message: A14: Failed to merge type "test::ObservableValue^" with type "system::String" together to calculate the result type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 7, "column": 0, "index": 111}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 0, "index": 50}, "end": {"row": 7, "column": 0, "index": 111}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 4, "column": 5, "index": 55}, "end": {"row": 4, "column": 8, "index": 58}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 12, "index": 62}, "end": {"row": 4, "column": 15, "index": 65}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 0, "index": 68}, "end": {"row": 7, "column": 0, "index": 111}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 6, "column": 1, "index": 72}, "end": {"row": 6, "column": 37, "index": 108}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 72}, "end": {"row": 6, "column": 37, "index": 108}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "x", "codeRange": {"start": {"row": 6, "column": 5, "index": 76}, "end": {"row": 6, "column": 5, "index": 76}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 6, "column": 9, "index": 80}, "end": {"row": 6, "column": 36, "index": 107}, "codeIndex": -1}},
+                        "first": {
+                            "$ast": { "type": "NewClassExpression", "codeRange": {"start": {"row": 6, "column": 9, "index": 80}, "end": {"row": 6, "column": 30, "index": 101}, "codeIndex": -1}},
+                            "arguments": [],
+                            "type": {
+                                "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 6, "column": 13, "index": 84}, "end": {"row": 6, "column": 28, "index": 99}, "codeIndex": -1}},
+                                "element": {
+                                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 13, "index": 84}, "end": {"row": 6, "column": 27, "index": 98}, "codeIndex": -1}},
+                                    "name": { "value": "ObservableValue", "codeRange": {"start": {"row": 6, "column": 13, "index": 84}, "end": {"row": 6, "column": 27, "index": 98}, "codeIndex": -1}}
+                                }
+                            }
+                        },
+                        "op": "FailedThen",
+                        "second": {
+                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 6, "column": 35, "index": 106}, "end": {"row": 6, "column": 36, "index": 107}, "codeIndex": -1}},
+                            "value": { "value": "", "codeRange": {"start": {"row": 6, "column": 35, "index": 106}, "end": {"row": 6, "column": 36, "index": 107}, "codeIndex": -1}}
+                        }
+                    },
+                    "type": null
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }, {
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 2, "column": 0, "index": 32}, "end": {"row": 2, "column": 13, "index": 45}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 6, "index": 38}, "end": {"row": 2, "column": 9, "index": 41}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 2, "column": 6, "index": 38}, "end": {"row": 2, "column": 9, "index": 41}, "codeIndex": -1}},
+                "name": { "value": "test", "codeRange": {"start": {"row": 2, "column": 6, "index": 38}, "end": {"row": 2, "column": 9, "index": 41}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 12, "index": 44}, "end": {"row": 2, "column": 12, "index": 44}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 2, "column": 12, "index": 44}, "end": {"row": 2, "column": 12, "index": 44}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

@@ -1,0 +1,123 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    switch (10)
+    {
+        case true:
+        {
+        }
+        default:
+        {
+        }
+    }
+    switch (10)
+    {
+        case false:
+        {
+        }
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    switch (10)
+    {
+        case true:
+        {
+        }
+        default:
+        {
+        }
+    }
+    switch (10)
+    {
+        case false:
+        {
+        }
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 8, Message: A14: Failed to merge type "system::Int32" with type "system::Boolean" together to calculate the result type.
+Line: 12, Column: 8, Message: A14: Failed to merge type "system::Int32" with type "system::Boolean" together to calculate the result type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 13, "column": 0, "index": 126}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 13, "column": 0, "index": 126}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 13, "column": 0, "index": 126}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "SwitchStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 8, "column": 1, "index": 85}, "codeIndex": -1}},
+                "expandedStatement": null,
+                "caseBranches": [{
+                    "$ast": { "type": "SwitchCase", "codeRange": {"start": {"row": 6, "column": 2, "index": 56}, "end": {"row": 6, "column": 13, "index": 67}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 6, "column": 7, "index": 61}, "end": {"row": 6, "column": 10, "index": 64}, "codeIndex": -1}},
+                        "value": "True"
+                    },
+                    "statement": {
+                        "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 6, "column": 12, "index": 66}, "end": {"row": 6, "column": 13, "index": 67}, "codeIndex": -1}},
+                        "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                        "statements": []
+                    }
+                }],
+                "defaultBranch": {
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 7, "column": 10, "index": 80}, "end": {"row": 7, "column": 11, "index": 81}, "codeIndex": -1}},
+                    "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                    "statements": []
+                },
+                "expression": {
+                    "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 4, "column": 8, "index": 45}, "end": {"row": 4, "column": 9, "index": 46}, "codeIndex": -1}},
+                    "value": { "value": "10", "codeRange": {"start": {"row": 4, "column": 8, "index": 45}, "end": {"row": 4, "column": 9, "index": 46}, "codeIndex": -1}}
+                }
+            }, {
+                "$ast": { "type": "SwitchStatement", "codeRange": {"start": {"row": 9, "column": 1, "index": 89}, "end": {"row": 12, "column": 1, "index": 123}, "codeIndex": -1}},
+                "expandedStatement": null,
+                "caseBranches": [{
+                    "$ast": { "type": "SwitchCase", "codeRange": {"start": {"row": 11, "column": 2, "index": 107}, "end": {"row": 11, "column": 14, "index": 119}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 11, "column": 7, "index": 112}, "end": {"row": 11, "column": 11, "index": 116}, "codeIndex": -1}},
+                        "value": "False"
+                    },
+                    "statement": {
+                        "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 11, "column": 13, "index": 118}, "end": {"row": 11, "column": 14, "index": 119}, "codeIndex": -1}},
+                        "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                        "statements": []
+                    }
+                }],
+                "defaultBranch": null,
+                "expression": {
+                    "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 9, "column": 8, "index": 96}, "end": {"row": 9, "column": 9, "index": 97}, "codeIndex": -1}},
+                    "value": { "value": "10", "codeRange": {"start": {"row": 9, "column": 8, "index": 96}, "end": {"row": 9, "column": 9, "index": 97}, "codeIndex": -1}}
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}
