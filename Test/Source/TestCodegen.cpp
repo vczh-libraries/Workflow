@@ -1,5 +1,7 @@
 #include "Helper.h"
 
+extern WfCpuArchitecture testCpuArchitecture;
+
 bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& itemResult, bool& cppCodegen)
 {
 	const wchar_t* reading = codegenName.Buffer();
@@ -46,7 +48,7 @@ TEST_FILE
 		Dictionary<WString, WString> assemblyEntries;
 		LoadSampleIndex(L"Codegen", codegenNames);
 
-		WfLexicalScopeManager manager(GetWorkflowParser());
+		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
 		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)

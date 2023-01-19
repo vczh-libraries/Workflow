@@ -6,6 +6,7 @@ using namespace vl::stream;
 using namespace vl::filesystem;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
+using namespace vl::workflow::analyzer;
 #endif
 
 #ifdef VCZH_64
@@ -21,19 +22,27 @@ using namespace vl::reflection::description;
 #define INSTALL_SERIALIZABLE_TYPE(TYPE)\
 	serializableTypes.Add(TypeInfo<TYPE>::content.typeName, Ptr(new SerializableType<TYPE>));
 
-BEGIN_GLOBAL_STORAGE_CLASS(MetaonlyTypeDescriptors)
-	Ptr<ITypeLoader>		typeLoader;
+WfCpuArchitecture testCpuArchitecture = WfCpuArchitecture::AsExecutable;
+Ptr<ITypeLoader> testTypeLoader;
 
-INITIALIZE_GLOBAL_STORAGE_CLASS
-	collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
-	REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
-	FileStream fileStream(GetTestOutputBasePath() + REFLECTION_BIN, FileStream::ReadOnly);
-	typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+void LoadTypes()
+{
+	{
+		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
+		REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
+		FileStream fileStream(GetTestOutputBasePath() + REFLECTION_BIN, FileStream::ReadOnly);
+		testTypeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+	}
+	GetGlobalTypeManager()->AddTypeLoader(testTypeLoader);
+	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
+}
 
-FINALIZE_GLOBAL_STORAGE_CLASS
-	typeLoader = nullptr;
-
-END_GLOBAL_STORAGE_CLASS(MetaonlyTypeDescriptors)
+void UnloadTypes()
+{
+	CHECK_ERROR(GetGlobalTypeManager()->Unload(), L"Failed to unload types");
+	CHECK_ERROR(ResetGlobalTypeManager(), L"Failed to reset type manager");
+	testTypeLoader = nullptr;
+}
 
 TEST_FILE
 {
@@ -52,18 +61,6 @@ TEST_FILE
 			TEST_ASSERT(first == second);
 		}
 	});
-}
-
-void LoadTypes()
-{
-	GetGlobalTypeManager()->AddTypeLoader(GetMetaonlyTypeDescriptors().typeLoader);
-	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
-}
-
-void UnloadTypes()
-{
-	CHECK_ERROR(GetGlobalTypeManager()->Unload(), L"Failed to unload types");
-	CHECK_ERROR(ResetGlobalTypeManager(), L"Failed to reset type manager");
 }
 
 #if defined VCZH_MSVC
@@ -116,7 +113,6 @@ int main(int argc, char* argv[])
 	LoadTypes();
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 	UnloadTypes();
-	FinalizeGlobalStorage();
 	ReleaseWorkflowTable();
 	ThreadLocalStorage::DisposeStorages();
 #if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS

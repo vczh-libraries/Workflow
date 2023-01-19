@@ -369,8 +369,9 @@ ResolveExpressionResult
 WfLexicalScopeManager
 ***********************************************************************/
 
-			WfLexicalScopeManager::WfLexicalScopeManager(workflow::Parser& _workflowParser)
+			WfLexicalScopeManager::WfLexicalScopeManager(workflow::Parser& _workflowParser, WfCpuArchitecture _cpuArchitecture)
 				:workflowParser(_workflowParser)
+				, cpuArchitecture(_cpuArchitecture)
 			{
 				workflowParserHandler = glr::InstallDefaultErrorMessageGenerator(workflowParser, errors);
 				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());

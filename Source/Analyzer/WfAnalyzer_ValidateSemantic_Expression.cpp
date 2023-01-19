@@ -585,11 +585,18 @@ ValidateSemantic(Expression)
 					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
 					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor==description::GetTypeDescriptor<WString>())
 					{
-#ifdef VCZH_64
-						typeDescriptor = description::GetTypeDescriptor<vint64_t>();
-#else
-						typeDescriptor = description::GetTypeDescriptor<vint32_t>();
-#endif
+						switch (manager->cpuArchitecture)
+						{
+						case WfCpuArchitecture::x86:
+							typeDescriptor = description::GetTypeDescriptor<vint32_t>();
+							break;
+						case WfCpuArchitecture::x64:
+							typeDescriptor = description::GetTypeDescriptor<vint64_t>();
+							break;
+						case WfCpuArchitecture::AsExecutable:
+							typeDescriptor = description::GetTypeDescriptor<vint>();
+							break;
+						}
 					}
 
 					if (auto serializableType = typeDescriptor->GetSerializableType())

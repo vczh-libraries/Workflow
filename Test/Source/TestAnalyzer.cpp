@@ -1,6 +1,8 @@
 #include "Helper.h"
 #include "CppTypes.h"
 
+extern WfCpuArchitecture testCpuArchitecture;
+
 void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleName)
 {
 	List<WString> itemNames;
@@ -23,7 +25,7 @@ TEST_FILE
 {
 	TEST_CASE(L"Test building global name")
 	{
-		WfLexicalScopeManager manager(GetWorkflowParser());
+		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
 		LoadMultipleSamples(&manager, L"AnalyzerScope");
 		manager.Rebuild(false);
 
@@ -84,7 +86,7 @@ TEST_FILE
 		List<WString> itemNames;
 		LoadSampleIndex(L"AnalyzerError", itemNames);
 
-		WfLexicalScopeManager manager(GetWorkflowParser());
+		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
 		manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint>::CreateTypeInfo());
 		manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint>>::CreateTypeInfo());
 		manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint>>::CreateTypeInfo());
