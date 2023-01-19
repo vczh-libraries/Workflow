@@ -47,7 +47,6 @@ TEST_FILE
 		Dictionary<WString, WString> assemblyEntries;
 		LoadSampleIndex(L"Codegen", codegenNames);
 
-		WfLexicalScopeManager manager(parser, WfCpuArchitecture::AsExecutable);
 		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)
@@ -55,8 +54,7 @@ TEST_FILE
 				DECODE_CODEGEN_NAME(return)
 
 				TEST_PRINT(itemName);
-				Ptr<WfAssembly> assembly = GenerateAssembly(&manager);
-				TEST_ASSERT(assembly);
+				Ptr<WfAssembly> assembly;
 				LoadSampleAssemblyBinary(L"Codegen", itemName, assembly);
 				
 				WfRuntimeThreadContext context(assembly);
