@@ -1,4 +1,5 @@
 #include "../../Source/Helper.h"
+#include "../../../Source/Cpp/WfMergeCpp.h"
 
 #if defined VCZH_MSVC
 using namespace vl;
@@ -7,6 +8,7 @@ using namespace vl::filesystem;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::workflow::analyzer;
+using namespace vl::workflow::cppcodegen;
 #endif
 
 #define INSTALL_SERIALIZABLE_TYPE(TYPE)\
@@ -97,6 +99,20 @@ TEST_FILE
 	});
 }
 
+void FillFileNames(const WString& path, SortedList<WString>& fileNames)
+{
+	Folder folder(path);
+	CHECK_ERROR(folder.Exists(), L"Folder does not exist");
+
+	List<File> files;
+	CHECK_ERROR(folder.GetFiles(files), L"Failed to enumerate files");
+
+	for (auto file : files)
+	{
+		fileNames.Add(file.GetFilePath().GetName());
+	}
+}
+
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
@@ -162,6 +178,45 @@ int main(int argc, char* argv[])
 		result64 = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 		UnloadTypes();
 	}
+
+	{
+		console::Console::WriteLine(L"<Merging>");
+		SortedList<WString> fileNames32;
+		SortedList<WString> fileNames64;
+		{
+			FillFileNames(GetCppOutputPath32(), fileNames32);
+			FillFileNames(GetCppOutputPath64(), fileNames64);
+			CHECK_ERROR(CompareEnumerable(fileNames32, fileNames64) == 0, L"File names in x64 and x86 folder are different.");
+		}
+
+		for (auto fileName : fileNames32)
+		{
+			console::Console::WriteLine(L"    " + fileName);
+			auto file32 = GetCppOutputPath32() + fileName;
+			auto file64 = GetCppOutputPath64() + fileName;
+			auto fileOutput = GetCppMergePath() + fileName;
+
+			auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
+
+			File file(fileOutput);
+			if (file.Exists())
+			{
+				code = MergeCppFileContent(file.ReadAllTextByBom(), code);
+			}
+
+			if (file.Exists())
+			{
+				auto originalCode = file.ReadAllTextByBom();
+				if (originalCode == code)
+				{
+					continue;
+				}
+			}
+
+			file.WriteAllText(code, false, BomEncoder::Mbcs);
+		}
+	}
+
 	ReleaseWorkflowTable();
 	ThreadLocalStorage::DisposeStorages();
 #if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS

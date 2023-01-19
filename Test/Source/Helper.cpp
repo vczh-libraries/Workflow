@@ -103,6 +103,37 @@ WString GetCppOutputPath()
 #endif
 }
 
+WString GetCppOutputPath32()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Cpp32\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Cpp32/";
+#endif
+}
+
+WString GetCppOutputPath64()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Cpp64\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Cpp64/";
+#endif
+}
+
+WString GetCppMergePath()
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+	return GetExePath() + L"..\\..\\..\\SourceCppGen\\";
+#else
+	return GetExePath() + L"..\\..\\SourceCppGen\\";
+#endif
+#elif defined VCZH_GCC
+	return L"../SourceCppGen/";
+#endif
+}
+
 WString GetWorkflowOutputPath()
 {
 #if defined VCZH_MSVC
