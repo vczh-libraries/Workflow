@@ -148,6 +148,7 @@ int main(int argc, char* argv[])
 	int result64 = 0;
 
 	{
+		console::Console::WriteLine(L"<x86>");
 		testCpuArchitecture = WfCpuArchitecture::x86;
 		LoadTypes();
 		result32 = unittest::UnitTest::RunAndDisposeTests(argc, argv);
@@ -155,6 +156,7 @@ int main(int argc, char* argv[])
 	}
 
 	{
+		console::Console::WriteLine(L"<x64>");
 		testCpuArchitecture = WfCpuArchitecture::x64;
 		LoadTypes();
 		result64 = unittest::UnitTest::RunAndDisposeTests(argc, argv);
