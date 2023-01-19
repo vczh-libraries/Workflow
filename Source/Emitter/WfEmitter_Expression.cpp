@@ -676,18 +676,32 @@ GenerateInstructions(Expression)
 					auto result = context.manager->expressionResolvings[node];
 					auto elementType = Ptr(result.type->GetElementType()->GetGenericArgument(0));
 					auto type = GetInstructionTypeArgument(elementType);
+
+					WfRuntimeValue one;
+					switch (context.manager->cpuArchitecture)
+					{
+					case WfCpuArchitecture::x86:
+						one = {(vint32_t)1};
+						break;
+					case WfCpuArchitecture::x64:
+						one = { (vint64_t)1 };
+						break;
+					default:
+						one = { (vint)1 };
+						break;
+					}
 					
 					GenerateExpressionInstructions(context, node->begin, elementType);
 					if (node->beginBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
+						INSTRUCTION(Ins::LoadValue(one));
 						INSTRUCTION(Ins::OpAdd(type));
 					}
 					
 					GenerateExpressionInstructions(context, node->end, elementType);
 					if (node->endBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
+						INSTRUCTION(Ins::LoadValue(one));
 						INSTRUCTION(Ins::OpSub(type));
 					}
 
