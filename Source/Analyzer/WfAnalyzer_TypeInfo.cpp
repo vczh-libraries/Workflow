@@ -605,32 +605,10 @@ CreateTypeInfoFromType
 						typeDescriptor = description::GetTypeDescriptor<IDescriptable>();
 						break;
 					case WfPredefinedTypeName::Int:
-						switch (scope->FindManager()->cpuArchitecture)
-						{
-						case WfCpuArchitecture::x86:
-							typeDescriptor = description::GetTypeDescriptor<vint32_t>();
-							break;
-						case WfCpuArchitecture::x64:
-							typeDescriptor = description::GetTypeDescriptor<vint64_t>();
-							break;
-						case WfCpuArchitecture::AsExecutable:
-							typeDescriptor = description::GetTypeDescriptor<vint>();
-							break;
-						}
+						typeDescriptor = scope->FindManager()->cputdSInt;
 						break;
 					case WfPredefinedTypeName::UInt:
-						switch (scope->FindManager()->cpuArchitecture)
-						{
-						case WfCpuArchitecture::x86:
-							typeDescriptor = description::GetTypeDescriptor<vuint32_t>();
-							break;
-						case WfCpuArchitecture::x64:
-							typeDescriptor = description::GetTypeDescriptor<vuint64_t>();
-							break;
-						case WfCpuArchitecture::AsExecutable:
-							typeDescriptor = description::GetTypeDescriptor<vuint>();
-							break;
-						}
+						typeDescriptor = scope->FindManager()->cputdUInt;
 						break;
 					case WfPredefinedTypeName::Float:
 						typeDescriptor = description::GetTypeDescriptor<float>();

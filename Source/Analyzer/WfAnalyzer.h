@@ -226,6 +226,11 @@ Scope Manager
 
 			public:
 				WfCpuArchitecture							cpuArchitecture = WfCpuArchitecture::AsExecutable;
+				ITypeDescriptor*							cputdSInt = nullptr;
+				ITypeDescriptor*							cputdUInt = nullptr;
+				Ptr<ITypeInfo>								cputiSInt;
+				Ptr<ITypeInfo>								cputiUInt;
+
 				workflow::Parser&							workflowParser;
 				Ptr<EventHandler>							workflowParserHandler;
 				AttributeTypeMap							attributes;

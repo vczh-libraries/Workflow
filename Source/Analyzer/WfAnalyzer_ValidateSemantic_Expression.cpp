@@ -585,18 +585,7 @@ ValidateSemantic(Expression)
 					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
 					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor==description::GetTypeDescriptor<WString>())
 					{
-						switch (manager->cpuArchitecture)
-						{
-						case WfCpuArchitecture::x86:
-							typeDescriptor = description::GetTypeDescriptor<vint32_t>();
-							break;
-						case WfCpuArchitecture::x64:
-							typeDescriptor = description::GetTypeDescriptor<vint64_t>();
-							break;
-						case WfCpuArchitecture::AsExecutable:
-							typeDescriptor = description::GetTypeDescriptor<vint>();
-							break;
-						}
+						typeDescriptor = manager->cputdSInt;
 					}
 
 					if (auto serializableType = typeDescriptor->GetSerializableType())
@@ -703,24 +692,24 @@ ValidateSemantic(Expression)
 									ITypeInfo* classType = genericType->GetElementType();
 									if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 										leftValue = true;
 									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 										leftValue = true;
 									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 										leftValue = true;
 									}
@@ -744,24 +733,24 @@ ValidateSemantic(Expression)
 								{
 									if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 										leftValue = true;
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 										leftValue = true;
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 										leftValue = true;
 									}

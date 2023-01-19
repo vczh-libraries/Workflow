@@ -379,6 +379,28 @@ WfLexicalScopeManager
 				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Protected" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Friend" }, TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo());
+
+				switch (cpuArchitecture)
+				{
+				case WfCpuArchitecture::x86:
+					cputdSInt = reflection::description::GetTypeDescriptor<vint32_t>();
+					cputdUInt = reflection::description::GetTypeDescriptor<vuint32_t>();
+					cputiSInt = reflection::description::TypeInfoRetriver<vint32_t>::CreateTypeInfo();
+					cputiUInt = reflection::description::TypeInfoRetriver<vuint32_t>::CreateTypeInfo();
+					break;
+				case WfCpuArchitecture::x64:
+					cputdSInt = reflection::description::GetTypeDescriptor<vint64_t>();
+					cputdUInt = reflection::description::GetTypeDescriptor<vuint64_t>();
+					cputiSInt = reflection::description::TypeInfoRetriver<vint64_t>::CreateTypeInfo();
+					cputiUInt = reflection::description::TypeInfoRetriver<vuint64_t>::CreateTypeInfo();
+					break;
+				case WfCpuArchitecture::AsExecutable:
+					cputdSInt = reflection::description::GetTypeDescriptor<vint>();
+					cputdUInt = reflection::description::GetTypeDescriptor<vuint>();
+					cputiSInt = reflection::description::TypeInfoRetriver<vint>::CreateTypeInfo();
+					cputiUInt = reflection::description::TypeInfoRetriver<vuint>::CreateTypeInfo();
+					break;
+				}
 			}
 
 			WfLexicalScopeManager::~WfLexicalScopeManager()
