@@ -47,7 +47,7 @@ TEST_FILE
 		Dictionary<WString, WString> assemblyEntries;
 		LoadSampleIndex(L"Codegen", codegenNames);
 
-		WfLexicalScopeManager manager(parser);
+		WfLexicalScopeManager manager(parser, WfCpuArchitecture::AsExecutable);
 		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)
@@ -116,7 +116,7 @@ func main():string
 )workflow");
 
 		auto&& parser = GetWorkflowParser();
-		auto assembly = Compile(parser, moduleCodes, errors);
+		auto assembly = Compile(parser, WfCpuArchitecture::AsExecutable, moduleCodes, errors);
 		TEST_ASSERT(errors.Count() == 0);
 
 		WfRuntimeThreadContext context(assembly);
