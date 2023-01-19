@@ -10,10 +10,6 @@
   - Try to cast to the collection instance directly using the pointer inside the implementation of the interface.
   - Create the collection instance and copy all the data if the above step failed.
 
-## With VlppParser2
-
-- Move to new ParserGen.
-
 ## Issues
 
 - `let X = Y in (F(X.a.b.c))` reports `X does not exist in the current scope` in binding property value
