@@ -218,10 +218,13 @@ WfErrors
 			glr::ParsingError WfErrors::CannotPickOverloadedFunctions(glr::ParsingAstBase* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				for (auto [result, index] : indexed(results))
+				for (auto friendlyName : From(results)
+					.Select([](auto&& result) { return result.GetFriendlyName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += result.GetFriendlyName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"A22: Cannot decide which function to call in multiple targets: " + description + L".");
 			}
@@ -397,7 +400,9 @@ WfErrors
 			glr::ParsingError WfErrors::CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates)
 			{
 				WString description;
-				for (auto candidate : candidates)
+				for (auto candidate : From(candidates)
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
 					description += candidate;
@@ -445,10 +450,13 @@ WfErrors
 				else
 				{
 					WString description;
-					for (auto type : types)
+					for (auto friendlyName : From(types)
+						.Select([](auto&& type) { return type->GetTypeFriendlyName(); })
+						.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+						)
 					{
 						description += L"\r\n\t";
-						description += type->GetTypeFriendlyName();
+						description += friendlyName;
 					}
 					return MakeParsingError(node, L"C11: Failed to resolve the result type of coroutine operator \"" + operatorName + L"\", no appropriate static function \"CastResult\" is found in the following types. It requires exactly one argument of type \"object\" with a return type which is not \"void\": " + description + L".");
 				}
@@ -578,10 +586,13 @@ WfErrors
 			glr::ParsingError WfErrors::CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				for (auto result : results)
+				for (auto friendlyName : From(results)
+					.Select([](auto&& result) { return result.GetFriendlyName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += result.GetFriendlyName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"D5: Cannot decide which function to implement in multiple targets:" + description + L".");
 			}
@@ -654,10 +665,13 @@ WfErrors
 			glr::ParsingError WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				for (auto td : tds)
+				for (auto friendlyName : From(tds)
+					.Select([](auto&& td) { return td->GetTypeName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += td->GetTypeName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"D13: Recursive references are found in these struct definitions:" + description + L".");
 			}
@@ -715,10 +729,13 @@ WfErrors
 			glr::ParsingError WfErrors::TooManyTargets(glr::ParsingAstBase* node, collections::List<ResolveExpressionResult>& results, const WString& name)
 			{
 				WString description;
-				for (auto [result, index] : indexed(results))
+				for (auto friendlyName : From(results)
+					.Select([](auto&& result) { return result.GetFriendlyName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += result.GetFriendlyName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"F3: Symbol \"" + name + L"\" references to too many targets: " + description + L".");
 			}
@@ -842,10 +859,13 @@ WfErrors
 			glr::ParsingError WfErrors::ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				for (auto td : tds)
+				for (auto friendlyName : From(tds)
+					.Select([](auto&& td) { return td->GetTypeName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += td->GetTypeName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"G10: Recursive inheriting are found in these class definitions:" + description + L".");
 			}
@@ -853,10 +873,13 @@ WfErrors
 			glr::ParsingError WfErrors::InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				for (auto td : tds)
+				for (auto friendlyName : From(tds)
+					.Select([](auto&& td) { return td->GetTypeName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += td->GetTypeName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"G10: Recursive inheriting are found in these interface definitions:" + description + L".");
 			}
@@ -889,10 +912,13 @@ WfErrors
 			glr::ParsingError WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				for (auto td : tds)
+				for (auto friendlyName : From(tds)
+					.Select([](auto&& td) { return td->GetTypeName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += td->GetTypeName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"CPP1: (C++ Code Generation) Cannot decide order of the following classes. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
 			}
@@ -900,10 +926,13 @@ WfErrors
 			glr::ParsingError WfErrors::CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				for (auto td : tds)
+				for (auto friendlyName : From(tds)
+					.Select([](auto&& td) { return td->GetTypeName(); })
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
 				{
 					description += L"\r\n\t";
-					description += td->GetTypeName();
+					description += friendlyName;
 				}
 				return MakeParsingError(node, L"CPP2: (C++ Code Generation) @cpp:File atrribute values for these classes are invalid. Generating classes to source files specified by these attribute values will create source files which do not compile. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
 			}
