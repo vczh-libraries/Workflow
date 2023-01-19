@@ -1,0 +1,248 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+interface IA
+{
+}
+
+interface IB
+{
+}
+
+class XCoroutine
+{
+    static func AwaitAndRead(impl : object, a : IA^, b : IB^) : (void)
+    {
+    }
+
+    static func CreateAndRun(creator : (func (object) : (Coroutine^))) : (void)
+    {
+    }
+}
+
+func main() : (void)
+$X {
+    var result = $Await new (IA^)
+    {
+    }, new (IB^)
+    {
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+interface IA
+{
+}
+
+interface IB
+{
+}
+
+class XCoroutine
+{
+    static func AwaitAndRead(impl : object, a : IA^, b : IB^) : (void)
+    {
+    }
+
+    static func CreateAndRun(creator : (func (object) : (Coroutine^))) : (void)
+    {
+    }
+}
+
+func main() : (void)
+$X {
+    var result = $Await new (IA^)
+    {
+    }, new (IB^)
+    {
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 20, Column: 2, Message: C11: Failed to resolve the result type of coroutine operator "Await", no appropriate static function "CastResult" is found in the following types. It requires exactly one argument of type "object" with a return type which is not "void": 
+	IA^
+	IB^.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 20, "column": 0, "index": 317}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 5, "column": 0, "index": 51}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IA", "codeRange": {"start": {"row": 3, "column": 10, "index": 44}, "end": {"row": 3, "column": 11, "index": 45}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 7, "column": 0, "index": 56}, "end": {"row": 9, "column": 0, "index": 73}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IB", "codeRange": {"start": {"row": 7, "column": 10, "index": 66}, "end": {"row": 7, "column": 11, "index": 67}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 11, "column": 0, "index": 78}, "end": {"row": 15, "column": 0, "index": 245}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "XCoroutine", "codeRange": {"start": {"row": 11, "column": 6, "index": 84}, "end": {"row": 11, "column": 15, "index": 93}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 13, "column": 1, "index": 100}, "end": {"row": 13, "column": 67, "index": 166}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "AwaitAndRead", "codeRange": {"start": {"row": 13, "column": 13, "index": 112}, "end": {"row": 13, "column": 24, "index": 123}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 13, "column": 26, "index": 125}, "end": {"row": 13, "column": 38, "index": 137}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "impl", "codeRange": {"start": {"row": 13, "column": 26, "index": 125}, "end": {"row": 13, "column": 29, "index": 128}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 13, "column": 33, "index": 132}, "end": {"row": 13, "column": 38, "index": 137}, "codeIndex": -1}},
+                    "name": "Object"
+                }
+            }, {
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 13, "column": 41, "index": 140}, "end": {"row": 13, "column": 47, "index": 146}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "a", "codeRange": {"start": {"row": 13, "column": 41, "index": 140}, "end": {"row": 13, "column": 41, "index": 140}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 13, "column": 45, "index": 144}, "end": {"row": 13, "column": 47, "index": 146}, "codeIndex": -1}},
+                    "element": {
+                        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 13, "column": 45, "index": 144}, "end": {"row": 13, "column": 46, "index": 145}, "codeIndex": -1}},
+                        "name": { "value": "IA", "codeRange": {"start": {"row": 13, "column": 45, "index": 144}, "end": {"row": 13, "column": 46, "index": 145}, "codeIndex": -1}}
+                    }
+                }
+            }, {
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 13, "column": 50, "index": 149}, "end": {"row": 13, "column": 56, "index": 155}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "b", "codeRange": {"start": {"row": 13, "column": 50, "index": 149}, "end": {"row": 13, "column": 50, "index": 149}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 13, "column": 54, "index": 153}, "end": {"row": 13, "column": 56, "index": 155}, "codeIndex": -1}},
+                    "element": {
+                        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 13, "column": 54, "index": 153}, "end": {"row": 13, "column": 55, "index": 154}, "codeIndex": -1}},
+                        "name": { "value": "IB", "codeRange": {"start": {"row": 13, "column": 54, "index": 153}, "end": {"row": 13, "column": 55, "index": 154}, "codeIndex": -1}}
+                    }
+                }
+            }],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 13, "column": 61, "index": 160}, "end": {"row": 13, "column": 64, "index": 163}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 13, "column": 66, "index": 165}, "end": {"row": 13, "column": 67, "index": 166}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 14, "column": 1, "index": 170}, "end": {"row": 14, "column": 73, "index": 242}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "CreateAndRun", "codeRange": {"start": {"row": 14, "column": 13, "index": 182}, "end": {"row": 14, "column": 24, "index": 193}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 14, "column": 26, "index": 195}, "end": {"row": 14, "column": 62, "index": 231}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "creator", "codeRange": {"start": {"row": 14, "column": 26, "index": 195}, "end": {"row": 14, "column": 32, "index": 201}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "FunctionType", "codeRange": {"start": {"row": 14, "column": 36, "index": 205}, "end": {"row": 14, "column": 62, "index": 231}, "codeIndex": -1}},
+                    "arguments": [{
+                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 14, "column": 41, "index": 210}, "end": {"row": 14, "column": 46, "index": 215}, "codeIndex": -1}},
+                        "name": "Object"
+                    }],
+                    "result": {
+                        "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 14, "column": 51, "index": 220}, "end": {"row": 14, "column": 62, "index": 231}, "codeIndex": -1}},
+                        "element": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 14, "column": 52, "index": 221}, "end": {"row": 14, "column": 60, "index": 229}, "codeIndex": -1}},
+                            "name": { "value": "Coroutine", "codeRange": {"start": {"row": 14, "column": 52, "index": 221}, "end": {"row": 14, "column": 60, "index": 229}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 14, "column": 67, "index": 236}, "end": {"row": 14, "column": 70, "index": 239}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 14, "column": 72, "index": 241}, "end": {"row": 14, "column": 73, "index": 242}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 17, "column": 0, "index": 250}, "end": {"row": 20, "column": 0, "index": 317}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 17, "column": 5, "index": 255}, "end": {"row": 17, "column": 8, "index": 258}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 17, "column": 12, "index": 262}, "end": {"row": 17, "column": 15, "index": 265}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "CoProviderStatement", "codeRange": {"start": {"row": 18, "column": 0, "index": 268}, "end": {"row": 20, "column": 0, "index": 317}, "codeIndex": -1}},
+            "expandedStatement": null,
+            "name": { "value": "$X", "codeRange": {"start": {"row": 18, "column": 0, "index": 268}, "end": {"row": 18, "column": 1, "index": 269}, "codeIndex": -1}},
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 18, "column": 2, "index": 270}, "end": {"row": 20, "column": 0, "index": 317}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "CoOperatorStatement", "codeRange": {"start": {"row": 19, "column": 1, "index": 274}, "end": {"row": 19, "column": 41, "index": 314}, "codeIndex": -1}},
+                    "arguments": [{
+                        "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 19, "column": 21, "index": 294}, "end": {"row": 19, "column": 29, "index": 302}, "codeIndex": -1}},
+                        "declarations": [],
+                        "type": {
+                            "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 19, "column": 25, "index": 298}, "end": {"row": 19, "column": 27, "index": 300}, "codeIndex": -1}},
+                            "element": {
+                                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 19, "column": 25, "index": 298}, "end": {"row": 19, "column": 26, "index": 299}, "codeIndex": -1}},
+                                "name": { "value": "IA", "codeRange": {"start": {"row": 19, "column": 25, "index": 298}, "end": {"row": 19, "column": 26, "index": 299}, "codeIndex": -1}}
+                            }
+                        }
+                    }, {
+                        "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 19, "column": 32, "index": 305}, "end": {"row": 19, "column": 40, "index": 313}, "codeIndex": -1}},
+                        "declarations": [],
+                        "type": {
+                            "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 19, "column": 36, "index": 309}, "end": {"row": 19, "column": 38, "index": 311}, "codeIndex": -1}},
+                            "element": {
+                                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 19, "column": 36, "index": 309}, "end": {"row": 19, "column": 37, "index": 310}, "codeIndex": -1}},
+                                "name": { "value": "IB", "codeRange": {"start": {"row": 19, "column": 36, "index": 309}, "end": {"row": 19, "column": 37, "index": 310}, "codeIndex": -1}}
+                            }
+                        }
+                    }],
+                    "opName": { "value": "$Await", "codeRange": {"start": {"row": 19, "column": 14, "index": 287}, "end": {"row": 19, "column": 19, "index": 292}, "codeIndex": -1}},
+                    "varName": { "value": "result", "codeRange": {"start": {"row": 19, "column": 5, "index": 278}, "end": {"row": 19, "column": 10, "index": 283}, "codeIndex": -1}}
+                }]
+            }
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

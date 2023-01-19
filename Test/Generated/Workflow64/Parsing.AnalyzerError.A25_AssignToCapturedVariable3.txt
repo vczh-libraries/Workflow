@@ -1,0 +1,149 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IMyInterface
+{
+    func Do() : (void);
+}
+
+func main() : (void)
+{
+    var a = 1;
+    new (IMyInterface^)
+    {
+        override func Do() : (void)
+        {
+            (a = 2);
+        }
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IMyInterface
+{
+    func Do() : (void);
+}
+
+func main() : (void)
+{
+    var a = 1;
+    new (IMyInterface^)
+    {
+        override func Do() : (void)
+        {
+            (a = 2);
+        }
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 15, Column: 4, Message: A25: <test>::main::<>::a of type "system::Int64" is not assignable.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 17, "column": 0, "index": 179}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 63}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IMyInterface", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 21, "index": 37}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 44}, "end": {"row": 4, "column": 17, "index": 60}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Do", "codeRange": {"start": {"row": 4, "column": 6, "index": 49}, "end": {"row": 4, "column": 7, "index": 50}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 13, "index": 56}, "end": {"row": 4, "column": 16, "index": 59}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 7, "column": 0, "index": 68}, "end": {"row": 17, "column": 0, "index": 179}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 7, "column": 5, "index": 73}, "end": {"row": 7, "column": 8, "index": 76}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 7, "column": 12, "index": 80}, "end": {"row": 7, "column": 15, "index": 83}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 8, "column": 0, "index": 86}, "end": {"row": 17, "column": 0, "index": 179}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 9, "column": 1, "index": 90}, "end": {"row": 9, "column": 8, "index": 97}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 9, "column": 1, "index": 90}, "end": {"row": 9, "column": 8, "index": 97}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "a", "codeRange": {"start": {"row": 9, "column": 5, "index": 94}, "end": {"row": 9, "column": 5, "index": 94}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 9, "column": 7, "index": 96}, "end": {"row": 9, "column": 7, "index": 96}, "codeIndex": -1}},
+                        "value": { "value": "1", "codeRange": {"start": {"row": 9, "column": 7, "index": 96}, "end": {"row": 9, "column": 7, "index": 96}, "codeIndex": -1}}
+                    },
+                    "type": null
+                }
+            }, {
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 10, "column": 1, "index": 101}, "end": {"row": 16, "column": 2, "index": 176}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 10, "column": 1, "index": 101}, "end": {"row": 16, "column": 1, "index": 175}, "codeIndex": -1}},
+                    "declarations": [{
+                        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 12, "column": 2, "index": 126}, "end": {"row": 15, "column": 2, "index": 171}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "Do", "codeRange": {"start": {"row": 12, "column": 16, "index": 140}, "end": {"row": 12, "column": 17, "index": 141}, "codeIndex": -1}},
+                        "anonymity": "Named",
+                        "arguments": [],
+                        "functionKind": "Override",
+                        "returnType": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 12, "column": 23, "index": 147}, "end": {"row": 12, "column": 26, "index": 150}, "codeIndex": -1}},
+                            "name": "Void"
+                        },
+                        "statement": {
+                            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 13, "column": 2, "index": 155}, "end": {"row": 15, "column": 2, "index": 171}, "codeIndex": -1}},
+                            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                            "statements": [{
+                                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 14, "column": 3, "index": 161}, "end": {"row": 14, "column": 8, "index": 166}, "codeIndex": -1}},
+                                "expression": {
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 14, "column": 3, "index": 161}, "end": {"row": 14, "column": 7, "index": 165}, "codeIndex": -1}},
+                                    "first": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 14, "column": 3, "index": 161}, "end": {"row": 14, "column": 3, "index": 161}, "codeIndex": -1}},
+                                        "name": { "value": "a", "codeRange": {"start": {"row": 14, "column": 3, "index": 161}, "end": {"row": 14, "column": 3, "index": 161}, "codeIndex": -1}}
+                                    },
+                                    "op": "Assign",
+                                    "second": {
+                                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 14, "column": 7, "index": 165}, "end": {"row": 14, "column": 7, "index": 165}, "codeIndex": -1}},
+                                        "value": { "value": "2", "codeRange": {"start": {"row": 14, "column": 7, "index": 165}, "end": {"row": 14, "column": 7, "index": 165}, "codeIndex": -1}}
+                                    }
+                                }
+                            }]
+                        }
+                    }],
+                    "type": {
+                        "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 10, "column": 5, "index": 105}, "end": {"row": 10, "column": 17, "index": 117}, "codeIndex": -1}},
+                        "element": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 10, "column": 5, "index": 105}, "end": {"row": 10, "column": 16, "index": 116}, "codeIndex": -1}},
+                            "name": { "value": "IMyInterface", "codeRange": {"start": {"row": 10, "column": 5, "index": 105}, "end": {"row": 10, "column": 16, "index": 116}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

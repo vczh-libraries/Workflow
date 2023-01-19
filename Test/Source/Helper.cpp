@@ -5,6 +5,7 @@
 #include "Helper.h"
 #include "../../Source/Parser/Generated/WorkflowAst_Json.h"
 
+WfCpuArchitecture testCpuArchitecture = WfCpuArchitecture::AsExecutable;
 Ptr<workflow::Parser> workflowParser;
 
 #define BEGIN_TIMER\
@@ -69,46 +70,76 @@ WString GetTestOutputBasePath()
 {
 #if defined VCZH_MSVC
 #ifdef VCZH_64
-	return GetExePath() + L"..\\..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\..\\Generated\\";
 #else
-	return GetExePath() + L"..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\Generated\\";
 #endif
 #elif defined VCZH_GCC
-	return L"../../Output/";
+	return L"../../Generated/";
 #endif
+}
+
+const wchar_t* GetBits()
+{
+	switch (testCpuArchitecture)
+	{
+	case WfCpuArchitecture::x86: return L"32";
+	case WfCpuArchitecture::x64: return L"64";
+	default:
+#ifdef VCZH_64
+		return L"64";
+#else
+		return L"32";
+#endif
+	}
 }
 
 WString GetCppOutputPath()
 {
 #if defined VCZH_MSVC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Cpp64\\";
-#else
-	return GetTestOutputBasePath() + L"Cpp32\\";
-#endif
+	return GetTestOutputBasePath() + L"Cpp" + GetBits() + L"\\";
 #elif defined VCZH_GCC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Cpp64/";
-#else
+	return GetTestOutputBasePath() + L"Cpp" + GetBits() + L"/";
+#endif
+}
+
+WString GetCppOutputPath32()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Cpp32\\";
+#elif defined VCZH_GCC
 	return GetTestOutputBasePath() + L"Cpp32/";
 #endif
+}
+
+WString GetCppOutputPath64()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Cpp64\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Cpp64/";
+#endif
+}
+
+WString GetCppMergePath()
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+	return GetExePath() + L"..\\..\\..\\SourceCppGen\\";
+#else
+	return GetExePath() + L"..\\..\\SourceCppGen\\";
+#endif
+#elif defined VCZH_GCC
+	return L"../SourceCppGen/";
 #endif
 }
 
 WString GetWorkflowOutputPath()
 {
 #if defined VCZH_MSVC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Workflow64\\";
-#else
-	return GetTestOutputBasePath() + L"Workflow32\\";
-#endif
+	return GetTestOutputBasePath() + L"Workflow" + GetBits() + L"\\";
 #elif defined VCZH_GCC
-#ifdef VCZH_64
-	return GetTestOutputBasePath() + L"Workflow64/";
-#else
-	return GetTestOutputBasePath() + L"Workflow32/";
-#endif
+	return GetTestOutputBasePath() + L"Workflow" + GetBits() + L"/";
 #endif
 }
 
@@ -150,7 +181,7 @@ void LoadSampleAssemblyBinary(const WString& sampleName, const WString& itemName
 void LogSampleParseResult(const WString& sampleName, const WString& itemName, const WString& sample, Ptr<glr::ParsingAstBase> typedNode, WfLexicalScopeManager* manager)
 {
 	FileStream fileStream(GetWorkflowOutputPath() + L"Parsing." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
-	BomEncoder encoder(BomEncoder::Utf16);
+	BomEncoder encoder(BomEncoder::Utf8);
 	EncoderStream encoderStream(fileStream, encoder);
 	StreamWriter writer(encoderStream);
 
@@ -222,7 +253,7 @@ void LogSampleParseResult(const WString& sampleName, const WString& itemName, co
 void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, Ptr<WfAssembly> assembly)
 {
 	FileStream fileStream(GetWorkflowOutputPath() + L"Assembly." + sampleName + L"." + itemName + L".txt", FileStream::WriteOnly);
-	BomEncoder encoder(BomEncoder::Utf16);
+	BomEncoder encoder(BomEncoder::Utf8);
 	EncoderStream encoderStream(fileStream, encoder);
 	StreamWriter writer(encoderStream);
 

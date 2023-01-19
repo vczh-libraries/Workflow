@@ -1,0 +1,96 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using test::*;
+
+class A : ObservableValue
+{
+    new ()
+        :ObservableValue(0, null)
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using test::*;
+
+class A : ObservableValue
+{
+    new ()
+        :ObservableValue(0, null)
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 9, Message: A22: Cannot decide which function to call in multiple targets: 
+	constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue*, system::Int32, system::Boolean?>^"
+	constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue*, system::Int32, system::Double?>^".
+Line: 6, Column: 9, Message: A20: Function constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue^>^"" is not allowed to call with 2 arguments.
+Line: 6, Column: 9, Message: A20: Function constructor in "test::ObservableValue" of type "system::Function<test::ObservableValue^, system::Int32>^"" is not allowed to call with 2 arguments.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 99}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 32}, "end": {"row": 6, "column": 0, "index": 99}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 3, "column": 6, "index": 38}, "end": {"row": 3, "column": 6, "index": 38}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 3, "column": 10, "index": 42}, "end": {"row": 3, "column": 24, "index": 56}, "codeIndex": -1}},
+            "name": { "value": "ObservableValue", "codeRange": {"start": {"row": 3, "column": 10, "index": 42}, "end": {"row": 3, "column": 24, "index": 56}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 63}, "end": {"row": 5, "column": 34, "index": 96}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "arguments": [],
+            "baseConstructorCalls": [{
+                "$ast": { "type": "BaseConstructorCall", "codeRange": {"start": {"row": 5, "column": 8, "index": 70}, "end": {"row": 5, "column": 31, "index": 93}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 5, "column": 24, "index": 86}, "end": {"row": 5, "column": 24, "index": 86}, "codeIndex": -1}},
+                    "value": { "value": "0", "codeRange": {"start": {"row": 5, "column": 24, "index": 86}, "end": {"row": 5, "column": 24, "index": 86}, "codeIndex": -1}}
+                }, {
+                    "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 5, "column": 27, "index": 89}, "end": {"row": 5, "column": 30, "index": 92}, "codeIndex": -1}},
+                    "value": "Null"
+                }],
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 5, "column": 8, "index": 70}, "end": {"row": 5, "column": 22, "index": 84}, "codeIndex": -1}},
+                    "name": { "value": "ObservableValue", "codeRange": {"start": {"row": 5, "column": 8, "index": 70}, "end": {"row": 5, "column": 22, "index": 84}, "codeIndex": -1}}
+                }
+            }],
+            "constructorType": "SharedPtr",
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 33, "index": 95}, "end": {"row": 5, "column": 34, "index": 96}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}},
+                "name": { "value": "test", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 9, "index": 23}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

@@ -1,0 +1,118 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface A : C
+{
+    interface X
+    {
+    }
+}
+
+interface B : A, A
+{
+}
+
+interface C : B
+{
+    var x : X^ = null;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface A : C
+{
+    interface X
+    {
+    }
+}
+
+interface B : A, A
+{
+}
+
+interface C : B
+{
+    var x : X^ = null;
+}
+
+========================================================
+Errors
+========================================================
+Line: 12, Column: 1, Message: G10: Recursive inheriting are found in these interface definitions:
+	A
+	B
+	C.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 14, "column": 0, "index": 127}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 53}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}},
+            "name": { "value": "C", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 14, "index": 30}, "codeIndex": -1}}
+        }],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 37}, "end": {"row": 4, "column": 14, "index": 50}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "X", "codeRange": {"start": {"row": 4, "column": 11, "index": 47}, "end": {"row": 4, "column": 11, "index": 47}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "SharedPtr",
+            "declarations": [],
+            "kind": "Interface"
+        }],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 7, "column": 0, "index": 58}, "end": {"row": 9, "column": 0, "index": 81}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 7, "column": 10, "index": 68}, "end": {"row": 7, "column": 10, "index": 68}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 7, "column": 14, "index": 72}, "end": {"row": 7, "column": 14, "index": 72}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 7, "column": 14, "index": 72}, "end": {"row": 7, "column": 14, "index": 72}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 7, "column": 17, "index": 75}, "end": {"row": 7, "column": 17, "index": 75}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 7, "column": 17, "index": 75}, "end": {"row": 7, "column": 17, "index": 75}, "codeIndex": -1}}
+        }],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 11, "column": 0, "index": 86}, "end": {"row": 14, "column": 0, "index": 127}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "C", "codeRange": {"start": {"row": 11, "column": 10, "index": 96}, "end": {"row": 11, "column": 10, "index": 96}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 11, "column": 14, "index": 100}, "end": {"row": 11, "column": 14, "index": 100}, "codeIndex": -1}},
+            "name": { "value": "B", "codeRange": {"start": {"row": 11, "column": 14, "index": 100}, "end": {"row": 11, "column": 14, "index": 100}, "codeIndex": -1}}
+        }],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 13, "column": 1, "index": 107}, "end": {"row": 13, "column": 18, "index": 124}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 13, "column": 5, "index": 111}, "end": {"row": 13, "column": 5, "index": 111}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 13, "column": 14, "index": 120}, "end": {"row": 13, "column": 17, "index": 123}, "codeIndex": -1}},
+                "value": "Null"
+            },
+            "type": {
+                "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 13, "column": 9, "index": 115}, "end": {"row": 13, "column": 10, "index": 116}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 13, "column": 9, "index": 115}, "end": {"row": 13, "column": 9, "index": 115}, "codeIndex": -1}},
+                    "name": { "value": "X", "codeRange": {"start": {"row": 13, "column": 9, "index": 115}, "end": {"row": 13, "column": 9, "index": 115}, "codeIndex": -1}}
+                }
+            }
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

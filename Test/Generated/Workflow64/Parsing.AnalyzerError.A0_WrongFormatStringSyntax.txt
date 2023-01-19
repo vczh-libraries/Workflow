@@ -1,0 +1,57 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    raise $"1 + 2 = $(1+)";
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    raise $"1 + 2 = $(1+)";
+}
+
+========================================================
+Errors
+========================================================
+Line: 1, Column: 1, Message: A0: Wrong format string syntax. (Input is incomplete.)
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 63}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 63}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 5, "column": 0, "index": 63}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "RaiseExceptionStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 23, "index": 60}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 4, "column": 7, "index": 44}, "end": {"row": 4, "column": 22, "index": 59}, "codeIndex": -1}},
+                    "expandedExpression": null,
+                    "value": { "value": "1 + 2 = $(1+)", "codeRange": {"start": {"row": 4, "column": 7, "index": 44}, "end": {"row": 4, "column": 22, "index": 59}, "codeIndex": -1}}
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

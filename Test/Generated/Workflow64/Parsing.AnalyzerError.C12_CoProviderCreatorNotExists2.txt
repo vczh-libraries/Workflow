@@ -1,0 +1,107 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+class XCoroutine
+{
+    static func CreateAndReturn() : (void)
+    {
+    }
+}
+
+func main() : (void)
+$X {
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+class XCoroutine
+{
+    static func CreateAndReturn() : (void)
+    {
+    }
+}
+
+func main() : (void)
+$X {
+}
+
+========================================================
+Errors
+========================================================
+Line: 10, Column: 1, Message: C12: The required static function "CreateAndRun" does not exist in coroutine provider "XCoroutine". It is required to have exactly one argument of a function type, which consumes a pointer type and returns system::Coroutine^
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 10, "column": 0, "index": 125}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 6, "column": 0, "index": 97}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "XCoroutine", "codeRange": {"start": {"row": 3, "column": 6, "index": 40}, "end": {"row": 3, "column": 15, "index": 49}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 56}, "end": {"row": 5, "column": 39, "index": 94}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "CreateAndReturn", "codeRange": {"start": {"row": 5, "column": 13, "index": 68}, "end": {"row": 5, "column": 27, "index": 82}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 33, "index": 88}, "end": {"row": 5, "column": 36, "index": 91}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 38, "index": 93}, "end": {"row": 5, "column": 39, "index": 94}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 8, "column": 0, "index": 102}, "end": {"row": 10, "column": 0, "index": 125}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 8, "column": 5, "index": 107}, "end": {"row": 8, "column": 8, "index": 110}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 8, "column": 12, "index": 114}, "end": {"row": 8, "column": 15, "index": 117}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "CoProviderStatement", "codeRange": {"start": {"row": 9, "column": 0, "index": 120}, "end": {"row": 10, "column": 0, "index": 125}, "codeIndex": -1}},
+            "expandedStatement": null,
+            "name": { "value": "$X", "codeRange": {"start": {"row": 9, "column": 0, "index": 120}, "end": {"row": 9, "column": 1, "index": 121}, "codeIndex": -1}},
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 9, "column": 2, "index": 122}, "end": {"row": 10, "column": 0, "index": 125}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

@@ -1,0 +1,287 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+func main():string
+{
+	var fib = func Fib(n : int) : int
+	{
+		var fib2 = Fib;
+		return n <= 2 ? 1 : Fib(n-1) + fib2(n-2);
+	};
+	return fib(1) & ", " & fib(2) & ", " & fib(3) & ", " & fib(4) & ", " &  fib(5);
+}
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+func main() : (string)
+{
+    var fib = func Fib(n : int) : (int)
+    {
+        var fib2 = Fib;
+        return (n <= 2) ? 1 : (Fib((n - 1)) + fib2((n - 2)));
+    };
+    return ((((((((fib(1) & ", ") & fib(2)) & ", ") & fib(3)) & ", ") & fib(4)) & ", ") & fib(5));
+}
+
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 11, "column": 0, "index": 248}, "codeIndex": 0}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 11, "column": 0, "index": 248}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 3, "column": 5, "index": 39}, "end": {"row": 3, "column": 8, "index": 42}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 12, "index": 46}, "end": {"row": 3, "column": 17, "index": 51}, "codeIndex": -1}},
+            "name": "String"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 0, "index": 54}, "end": {"row": 11, "column": 0, "index": 248}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 58}, "end": {"row": 9, "column": 2, "index": 163}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 58}, "end": {"row": 9, "column": 2, "index": 163}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "fib", "codeRange": {"start": {"row": 5, "column": 5, "index": 62}, "end": {"row": 5, "column": 7, "index": 64}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "FunctionExpression", "codeRange": {"start": {"row": 5, "column": 11, "index": 68}, "end": {"row": 9, "column": 1, "index": 162}, "codeIndex": -1}},
+                        "function": {
+                            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 11, "index": 68}, "end": {"row": 9, "column": 1, "index": 162}, "codeIndex": -1}},
+                            "attributes": [],
+                            "name": { "value": "Fib", "codeRange": {"start": {"row": 5, "column": 16, "index": 73}, "end": {"row": 5, "column": 18, "index": 75}, "codeIndex": -1}},
+                            "anonymity": "Named",
+                            "arguments": [{
+                                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 20, "index": 77}, "end": {"row": 5, "column": 26, "index": 83}, "codeIndex": -1}},
+                                "attributes": [],
+                                "name": { "value": "n", "codeRange": {"start": {"row": 5, "column": 20, "index": 77}, "end": {"row": 5, "column": 20, "index": 77}, "codeIndex": -1}},
+                                "type": {
+                                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 24, "index": 81}, "end": {"row": 5, "column": 26, "index": 83}, "codeIndex": -1}},
+                                    "name": "Int"
+                                }
+                            }],
+                            "functionKind": "Normal",
+                            "returnType": {
+                                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 31, "index": 88}, "end": {"row": 5, "column": 33, "index": 90}, "codeIndex": -1}},
+                                "name": "Int"
+                            },
+                            "statement": {
+                                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 6, "column": 1, "index": 94}, "end": {"row": 9, "column": 1, "index": 162}, "codeIndex": -1}},
+                                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                                "statements": [{
+                                    "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 7, "column": 2, "index": 99}, "end": {"row": 7, "column": 16, "index": 113}, "codeIndex": -1}},
+                                    "variable": {
+                                        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 7, "column": 2, "index": 99}, "end": {"row": 7, "column": 16, "index": 113}, "codeIndex": -1}},
+                                        "attributes": [],
+                                        "name": { "value": "fib2", "codeRange": {"start": {"row": 7, "column": 6, "index": 103}, "end": {"row": 7, "column": 9, "index": 106}, "codeIndex": -1}},
+                                        "expression": {
+                                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 7, "column": 13, "index": 110}, "end": {"row": 7, "column": 15, "index": 112}, "codeIndex": -1}},
+                                            "name": { "value": "Fib", "codeRange": {"start": {"row": 7, "column": 13, "index": 110}, "end": {"row": 7, "column": 15, "index": 112}, "codeIndex": -1}}
+                                        },
+                                        "type": null
+                                    }
+                                }, {
+                                    "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 8, "column": 2, "index": 118}, "end": {"row": 8, "column": 42, "index": 158}, "codeIndex": -1}},
+                                    "expression": {
+                                        "$ast": { "type": "IfExpression", "codeRange": {"start": {"row": 8, "column": 9, "index": 125}, "end": {"row": 8, "column": 41, "index": 157}, "codeIndex": -1}},
+                                        "condition": {
+                                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 8, "column": 9, "index": 125}, "end": {"row": 8, "column": 14, "index": 130}, "codeIndex": -1}},
+                                            "first": {
+                                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 8, "column": 9, "index": 125}, "end": {"row": 8, "column": 9, "index": 125}, "codeIndex": -1}},
+                                                "name": { "value": "n", "codeRange": {"start": {"row": 8, "column": 9, "index": 125}, "end": {"row": 8, "column": 9, "index": 125}, "codeIndex": -1}}
+                                            },
+                                            "op": "LE",
+                                            "second": {
+                                                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 8, "column": 14, "index": 130}, "end": {"row": 8, "column": 14, "index": 130}, "codeIndex": -1}},
+                                                "value": { "value": "2", "codeRange": {"start": {"row": 8, "column": 14, "index": 130}, "end": {"row": 8, "column": 14, "index": 130}, "codeIndex": -1}}
+                                            }
+                                        },
+                                        "falseBranch": {
+                                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 8, "column": 41, "index": 157}, "end": {"row": 8, "column": 41, "index": 157}, "codeIndex": -1}},
+                                            "first": {
+                                                "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 8, "column": 22, "index": 138}, "end": {"row": 8, "column": 29, "index": 145}, "codeIndex": -1}},
+                                                "arguments": [{
+                                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 8, "column": 26, "index": 142}, "end": {"row": 8, "column": 28, "index": 144}, "codeIndex": -1}},
+                                                    "first": {
+                                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 8, "column": 26, "index": 142}, "end": {"row": 8, "column": 26, "index": 142}, "codeIndex": -1}},
+                                                        "name": { "value": "n", "codeRange": {"start": {"row": 8, "column": 26, "index": 142}, "end": {"row": 8, "column": 26, "index": 142}, "codeIndex": -1}}
+                                                    },
+                                                    "op": "Sub",
+                                                    "second": {
+                                                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 8, "column": 28, "index": 144}, "end": {"row": 8, "column": 28, "index": 144}, "codeIndex": -1}},
+                                                        "value": { "value": "1", "codeRange": {"start": {"row": 8, "column": 28, "index": 144}, "end": {"row": 8, "column": 28, "index": 144}, "codeIndex": -1}}
+                                                    }
+                                                }],
+                                                "function": {
+                                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 8, "column": 22, "index": 138}, "end": {"row": 8, "column": 24, "index": 140}, "codeIndex": -1}},
+                                                    "name": { "value": "Fib", "codeRange": {"start": {"row": 8, "column": 22, "index": 138}, "end": {"row": 8, "column": 24, "index": 140}, "codeIndex": -1}}
+                                                }
+                                            },
+                                            "op": "Add",
+                                            "second": {
+                                                "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 8, "column": 33, "index": 149}, "end": {"row": 8, "column": 41, "index": 157}, "codeIndex": -1}},
+                                                "arguments": [{
+                                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 8, "column": 38, "index": 154}, "end": {"row": 8, "column": 40, "index": 156}, "codeIndex": -1}},
+                                                    "first": {
+                                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 8, "column": 38, "index": 154}, "end": {"row": 8, "column": 38, "index": 154}, "codeIndex": -1}},
+                                                        "name": { "value": "n", "codeRange": {"start": {"row": 8, "column": 38, "index": 154}, "end": {"row": 8, "column": 38, "index": 154}, "codeIndex": -1}}
+                                                    },
+                                                    "op": "Sub",
+                                                    "second": {
+                                                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 8, "column": 40, "index": 156}, "end": {"row": 8, "column": 40, "index": 156}, "codeIndex": -1}},
+                                                        "value": { "value": "2", "codeRange": {"start": {"row": 8, "column": 40, "index": 156}, "end": {"row": 8, "column": 40, "index": 156}, "codeIndex": -1}}
+                                                    }
+                                                }],
+                                                "function": {
+                                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 8, "column": 33, "index": 149}, "end": {"row": 8, "column": 36, "index": 152}, "codeIndex": -1}},
+                                                    "name": { "value": "fib2", "codeRange": {"start": {"row": 8, "column": 33, "index": 149}, "end": {"row": 8, "column": 36, "index": 152}, "codeIndex": -1}}
+                                                }
+                                            }
+                                        },
+                                        "trueBranch": {
+                                            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 8, "column": 18, "index": 134}, "end": {"row": 8, "column": 18, "index": 134}, "codeIndex": -1}},
+                                            "value": { "value": "1", "codeRange": {"start": {"row": 8, "column": 18, "index": 134}, "end": {"row": 8, "column": 18, "index": 134}, "codeIndex": -1}}
+                                        }
+                                    }
+                                }]
+                            }
+                        }
+                    },
+                    "type": null
+                }
+            }, {
+                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 10, "column": 1, "index": 167}, "end": {"row": 10, "column": 79, "index": 245}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 8, "index": 174}, "end": {"row": 10, "column": 78, "index": 244}, "codeIndex": -1}},
+                    "first": {
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 61, "index": 227}, "end": {"row": 10, "column": 68, "index": 234}, "codeIndex": -1}},
+                        "first": {
+                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 49, "index": 215}, "end": {"row": 10, "column": 61, "index": 227}, "codeIndex": -1}},
+                            "first": {
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 45, "index": 211}, "end": {"row": 10, "column": 52, "index": 218}, "codeIndex": -1}},
+                                "first": {
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 33, "index": 199}, "end": {"row": 10, "column": 45, "index": 211}, "codeIndex": -1}},
+                                    "first": {
+                                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 29, "index": 195}, "end": {"row": 10, "column": 36, "index": 202}, "codeIndex": -1}},
+                                        "first": {
+                                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 17, "index": 183}, "end": {"row": 10, "column": 29, "index": 195}, "codeIndex": -1}},
+                                            "first": {
+                                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 10, "column": 13, "index": 179}, "end": {"row": 10, "column": 20, "index": 186}, "codeIndex": -1}},
+                                                "first": {
+                                                    "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 10, "column": 8, "index": 174}, "end": {"row": 10, "column": 13, "index": 179}, "codeIndex": -1}},
+                                                    "arguments": [{
+                                                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 10, "column": 12, "index": 178}, "end": {"row": 10, "column": 12, "index": 178}, "codeIndex": -1}},
+                                                        "value": { "value": "1", "codeRange": {"start": {"row": 10, "column": 12, "index": 178}, "end": {"row": 10, "column": 12, "index": 178}, "codeIndex": -1}}
+                                                    }],
+                                                    "function": {
+                                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 10, "column": 8, "index": 174}, "end": {"row": 10, "column": 10, "index": 176}, "codeIndex": -1}},
+                                                        "name": { "value": "fib", "codeRange": {"start": {"row": 10, "column": 8, "index": 174}, "end": {"row": 10, "column": 10, "index": 176}, "codeIndex": -1}}
+                                                    }
+                                                },
+                                                "op": "FlagAnd",
+                                                "second": {
+                                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 10, "column": 17, "index": 183}, "end": {"row": 10, "column": 20, "index": 186}, "codeIndex": -1}},
+                                                    "value": { "value": ", ", "codeRange": {"start": {"row": 10, "column": 17, "index": 183}, "end": {"row": 10, "column": 20, "index": 186}, "codeIndex": -1}}
+                                                }
+                                            },
+                                            "op": "FlagAnd",
+                                            "second": {
+                                                "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 10, "column": 24, "index": 190}, "end": {"row": 10, "column": 29, "index": 195}, "codeIndex": -1}},
+                                                "arguments": [{
+                                                    "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 10, "column": 28, "index": 194}, "end": {"row": 10, "column": 28, "index": 194}, "codeIndex": -1}},
+                                                    "value": { "value": "2", "codeRange": {"start": {"row": 10, "column": 28, "index": 194}, "end": {"row": 10, "column": 28, "index": 194}, "codeIndex": -1}}
+                                                }],
+                                                "function": {
+                                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 10, "column": 24, "index": 190}, "end": {"row": 10, "column": 26, "index": 192}, "codeIndex": -1}},
+                                                    "name": { "value": "fib", "codeRange": {"start": {"row": 10, "column": 24, "index": 190}, "end": {"row": 10, "column": 26, "index": 192}, "codeIndex": -1}}
+                                                }
+                                            }
+                                        },
+                                        "op": "FlagAnd",
+                                        "second": {
+                                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 10, "column": 33, "index": 199}, "end": {"row": 10, "column": 36, "index": 202}, "codeIndex": -1}},
+                                            "value": { "value": ", ", "codeRange": {"start": {"row": 10, "column": 33, "index": 199}, "end": {"row": 10, "column": 36, "index": 202}, "codeIndex": -1}}
+                                        }
+                                    },
+                                    "op": "FlagAnd",
+                                    "second": {
+                                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 10, "column": 40, "index": 206}, "end": {"row": 10, "column": 45, "index": 211}, "codeIndex": -1}},
+                                        "arguments": [{
+                                            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 10, "column": 44, "index": 210}, "end": {"row": 10, "column": 44, "index": 210}, "codeIndex": -1}},
+                                            "value": { "value": "3", "codeRange": {"start": {"row": 10, "column": 44, "index": 210}, "end": {"row": 10, "column": 44, "index": 210}, "codeIndex": -1}}
+                                        }],
+                                        "function": {
+                                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 10, "column": 40, "index": 206}, "end": {"row": 10, "column": 42, "index": 208}, "codeIndex": -1}},
+                                            "name": { "value": "fib", "codeRange": {"start": {"row": 10, "column": 40, "index": 206}, "end": {"row": 10, "column": 42, "index": 208}, "codeIndex": -1}}
+                                        }
+                                    }
+                                },
+                                "op": "FlagAnd",
+                                "second": {
+                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 10, "column": 49, "index": 215}, "end": {"row": 10, "column": 52, "index": 218}, "codeIndex": -1}},
+                                    "value": { "value": ", ", "codeRange": {"start": {"row": 10, "column": 49, "index": 215}, "end": {"row": 10, "column": 52, "index": 218}, "codeIndex": -1}}
+                                }
+                            },
+                            "op": "FlagAnd",
+                            "second": {
+                                "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 10, "column": 56, "index": 222}, "end": {"row": 10, "column": 61, "index": 227}, "codeIndex": -1}},
+                                "arguments": [{
+                                    "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 10, "column": 60, "index": 226}, "end": {"row": 10, "column": 60, "index": 226}, "codeIndex": -1}},
+                                    "value": { "value": "4", "codeRange": {"start": {"row": 10, "column": 60, "index": 226}, "end": {"row": 10, "column": 60, "index": 226}, "codeIndex": -1}}
+                                }],
+                                "function": {
+                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 10, "column": 56, "index": 222}, "end": {"row": 10, "column": 58, "index": 224}, "codeIndex": -1}},
+                                    "name": { "value": "fib", "codeRange": {"start": {"row": 10, "column": 56, "index": 222}, "end": {"row": 10, "column": 58, "index": 224}, "codeIndex": -1}}
+                                }
+                            }
+                        },
+                        "op": "FlagAnd",
+                        "second": {
+                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 10, "column": 65, "index": 231}, "end": {"row": 10, "column": 68, "index": 234}, "codeIndex": -1}},
+                            "value": { "value": ", ", "codeRange": {"start": {"row": 10, "column": 65, "index": 231}, "end": {"row": 10, "column": 68, "index": 234}, "codeIndex": -1}}
+                        }
+                    },
+                    "op": "FlagAnd",
+                    "second": {
+                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 10, "column": 73, "index": 239}, "end": {"row": 10, "column": 78, "index": 244}, "codeIndex": -1}},
+                        "arguments": [{
+                            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 10, "column": 77, "index": 243}, "end": {"row": 10, "column": 77, "index": 243}, "codeIndex": -1}},
+                            "value": { "value": "5", "codeRange": {"start": {"row": 10, "column": 77, "index": 243}, "end": {"row": 10, "column": 77, "index": 243}, "codeIndex": -1}}
+                        }],
+                        "function": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 10, "column": 73, "index": 239}, "end": {"row": 10, "column": 75, "index": 241}, "codeIndex": -1}},
+                            "name": { "value": "fib", "codeRange": {"start": {"row": 10, "column": 73, "index": 239}, "end": {"row": 10, "column": 75, "index": 241}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

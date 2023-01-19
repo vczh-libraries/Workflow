@@ -1,0 +1,467 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+Sum1 (2 .. 32)
+    Arguments:
+        start
+        end
+    Captured Variables:
+    Local Variables:
+        result
+        <for-begin>x
+        <for-end>x
+        x
+
+Sum2 (33 .. 63)
+    Arguments:
+        start
+        end
+    Captured Variables:
+    Local Variables:
+        result
+        <for-begin>x
+        <for-end>x
+        x
+
+Sum3 (64 .. 90)
+    Arguments:
+        start
+        end
+    Captured Variables:
+    Local Variables:
+        result
+        current
+
+Sum4 (91 .. 122)
+    Arguments:
+        start
+        end
+    Captured Variables:
+    Local Variables:
+        result
+        current
+
+Sum5 (123 .. 163)
+    Arguments:
+        start
+        end
+    Captured Variables:
+    Local Variables:
+        result
+        current
+        needToExit
+        <switch>0
+
+main (164 .. 198)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  0
+2    :     LoadValue     : value = <I4, 0>
+//  var result = 0;
+3    :     StoreLocalVar : var = 2(result)
+//  start
+4    :     LoadLocalVar  : var = 0(start)
+//  var <for-begin>x : ::system::Int32 = start;
+5    :     StoreLocalVar : var = 3(<for-begin>x)
+//  end
+6    :     LoadLocalVar  : var = 1(end)
+//  var <for-end>x : ::system::Int32 = end;
+7    :     StoreLocalVar : var = 4(<for-end>x)
+//  <for-begin>x
+8    :     LoadLocalVar  : var = 3(<for-begin>x)
+//  var x = <for-begin>x;
+9    :     StoreLocalVar : var = 5(x)
+//  x
+10   :     LoadLocalVar  : var = 5(x)
+//  <for-end>x
+11   :     LoadLocalVar  : var = 4(<for-end>x)
+//  (x <= <for-end>x)
+12   :     CompareLiteral: type = I4
+//  (x <= <for-end>x)
+13   :     OpLE          
+//  while ((x <= <for-end>x))
+14   :     OpNot         : type = Bool
+//  while ((x <= <for-end>x))
+15   :     JumpIf        : label = 29
+//  result
+16   :     LoadLocalVar  : var = 2(result)
+//  x
+17   :     LoadLocalVar  : var = 5(x)
+//  (result + x)
+18   :     OpAdd         : type = I4
+//  (result = (result + x))
+19   :     Duplicate     : stackPatternCount = 0
+//  (result = (result + x))
+20   :     StoreLocalVar : var = 2(result)
+//  (result = (result + x));
+21   :     Pop           
+//  x
+22   :     LoadLocalVar  : var = 5(x)
+//  1
+23   :     LoadValue     : value = <I4, 1>
+//  (x + 1)
+24   :     OpAdd         : type = I4
+//  (x = (x + 1))
+25   :     Duplicate     : stackPatternCount = 0
+//  (x = (x + 1))
+26   :     StoreLocalVar : var = 5(x)
+//  (x = (x + 1));
+27   :     Pop           
+//  while ((x <= <for-end>x))
+28   :     Jump          : label = 10
+//  result
+29   :     LoadLocalVar  : var = 2(result)
+//  return result;
+30   :     Return        
+//  func Sum1(start : int, end : int) : (int)
+31   :     LoadValue     : value = <null>
+//  func Sum1(start : int, end : int) : (int)
+32   :     Return        
+//  0
+33   :     LoadValue     : value = <I4, 0>
+//  var result = 0;
+34   :     StoreLocalVar : var = 2(result)
+//  start
+35   :     LoadLocalVar  : var = 0(start)
+//  var <for-begin>x : ::system::Int32 = start;
+36   :     StoreLocalVar : var = 3(<for-begin>x)
+//  end
+37   :     LoadLocalVar  : var = 1(end)
+//  var <for-end>x : ::system::Int32 = end;
+38   :     StoreLocalVar : var = 4(<for-end>x)
+//  <for-end>x
+39   :     LoadLocalVar  : var = 4(<for-end>x)
+//  var x = <for-end>x;
+40   :     StoreLocalVar : var = 5(x)
+//  x
+41   :     LoadLocalVar  : var = 5(x)
+//  <for-begin>x
+42   :     LoadLocalVar  : var = 3(<for-begin>x)
+//  (x >= <for-begin>x)
+43   :     CompareLiteral: type = I4
+//  (x >= <for-begin>x)
+44   :     OpGE          
+//  while ((x >= <for-begin>x))
+45   :     OpNot         : type = Bool
+//  while ((x >= <for-begin>x))
+46   :     JumpIf        : label = 60
+//  result
+47   :     LoadLocalVar  : var = 2(result)
+//  x
+48   :     LoadLocalVar  : var = 5(x)
+//  (result + x)
+49   :     OpAdd         : type = I4
+//  (result = (result + x))
+50   :     Duplicate     : stackPatternCount = 0
+//  (result = (result + x))
+51   :     StoreLocalVar : var = 2(result)
+//  (result = (result + x));
+52   :     Pop           
+//  x
+53   :     LoadLocalVar  : var = 5(x)
+//  1
+54   :     LoadValue     : value = <I4, 1>
+//  (x - 1)
+55   :     OpSub         : type = I4
+//  (x = (x - 1))
+56   :     Duplicate     : stackPatternCount = 0
+//  (x = (x - 1))
+57   :     StoreLocalVar : var = 5(x)
+//  (x = (x - 1));
+58   :     Pop           
+//  while ((x >= <for-begin>x))
+59   :     Jump          : label = 41
+//  result
+60   :     LoadLocalVar  : var = 2(result)
+//  return result;
+61   :     Return        
+//  func Sum2(start : int, end : int) : (int)
+62   :     LoadValue     : value = <null>
+//  func Sum2(start : int, end : int) : (int)
+63   :     Return        
+//  0
+64   :     LoadValue     : value = <I4, 0>
+//  var result = 0;
+65   :     StoreLocalVar : var = 2(result)
+//  start
+66   :     LoadLocalVar  : var = 0(start)
+//  var current = start;
+67   :     StoreLocalVar : var = 3(current)
+//  current
+68   :     LoadLocalVar  : var = 3(current)
+//  end
+69   :     LoadLocalVar  : var = 1(end)
+//  (current <= end)
+70   :     CompareLiteral: type = I4
+//  (current <= end)
+71   :     OpLE          
+//  while ((current <= end))
+72   :     OpNot         : type = Bool
+//  while ((current <= end))
+73   :     JumpIf        : label = 87
+//  result
+74   :     LoadLocalVar  : var = 2(result)
+//  current
+75   :     LoadLocalVar  : var = 3(current)
+//  (result + current)
+76   :     OpAdd         : type = I4
+//  (result = (result + current))
+77   :     Duplicate     : stackPatternCount = 0
+//  (result = (result + current))
+78   :     StoreLocalVar : var = 2(result)
+//  (result = (result + current));
+79   :     Pop           
+//  current
+80   :     LoadLocalVar  : var = 3(current)
+//  1
+81   :     LoadValue     : value = <I4, 1>
+//  (current + 1)
+82   :     OpAdd         : type = I4
+//  (current = (current + 1))
+83   :     Duplicate     : stackPatternCount = 0
+//  (current = (current + 1))
+84   :     StoreLocalVar : var = 3(current)
+//  (current = (current + 1));
+85   :     Pop           
+//  while ((current <= end))
+86   :     Jump          : label = 68
+//  result
+87   :     LoadLocalVar  : var = 2(result)
+//  return result;
+88   :     Return        
+//  func Sum3(start : int, end : int) : (int)
+89   :     LoadValue     : value = <null>
+//  func Sum3(start : int, end : int) : (int)
+90   :     Return        
+//  0
+91   :     LoadValue     : value = <I4, 0>
+//  var result = 0;
+92   :     StoreLocalVar : var = 2(result)
+//  start
+93   :     LoadLocalVar  : var = 0(start)
+//  var current = start;
+94   :     StoreLocalVar : var = 3(current)
+//  true
+95   :     LoadValue     : value = <Bool, true>
+//  while (true)
+96   :     OpNot         : type = Bool
+//  while (true)
+97   :     JumpIf        : label = 119
+//  current
+98   :     LoadLocalVar  : var = 3(current)
+//  end
+99   :     LoadLocalVar  : var = 1(end)
+//  (current > end)
+100  :     CompareLiteral: type = I4
+//  (current > end)
+101  :     OpGT          
+//  if ((current > end))
+102  :     OpNot         : type = Bool
+//  if ((current > end))
+103  :     JumpIf        : label = 106
+//  break;
+104  :     Jump          : label = 119
+//  if ((current > end))
+105  :     Jump          : label = 106
+//  result
+106  :     LoadLocalVar  : var = 2(result)
+//  current
+107  :     LoadLocalVar  : var = 3(current)
+//  (result + current)
+108  :     OpAdd         : type = I4
+//  (result = (result + current))
+109  :     Duplicate     : stackPatternCount = 0
+//  (result = (result + current))
+110  :     StoreLocalVar : var = 2(result)
+//  (result = (result + current));
+111  :     Pop           
+//  current
+112  :     LoadLocalVar  : var = 3(current)
+//  1
+113  :     LoadValue     : value = <I4, 1>
+//  (current + 1)
+114  :     OpAdd         : type = I4
+//  (current = (current + 1))
+115  :     Duplicate     : stackPatternCount = 0
+//  (current = (current + 1))
+116  :     StoreLocalVar : var = 3(current)
+//  (current = (current + 1));
+117  :     Pop           
+//  while (true)
+118  :     Jump          : label = 95
+//  result
+119  :     LoadLocalVar  : var = 2(result)
+//  return result;
+120  :     Return        
+//  func Sum4(start : int, end : int) : (int)
+121  :     LoadValue     : value = <null>
+//  func Sum4(start : int, end : int) : (int)
+122  :     Return        
+//  0
+123  :     LoadValue     : value = <I4, 0>
+//  var result = 0;
+124  :     StoreLocalVar : var = 2(result)
+//  start
+125  :     LoadLocalVar  : var = 0(start)
+//  var current = start;
+126  :     StoreLocalVar : var = 3(current)
+//  false
+127  :     LoadValue     : value = <Bool, false>
+//  var needToExit = false;
+128  :     StoreLocalVar : var = 4(needToExit)
+//  needToExit
+129  :     LoadLocalVar  : var = 4(needToExit)
+//  (!needToExit)
+130  :     OpNot         : type = Bool
+//  while ((!needToExit))
+131  :     OpNot         : type = Bool
+//  while ((!needToExit))
+132  :     JumpIf        : label = 160
+//  current
+133  :     LoadLocalVar  : var = 3(current)
+//  var <switch>0 : ::system::Int32 = current;
+134  :     StoreLocalVar : var = 5(<switch>0)
+//  <switch>0
+135  :     LoadLocalVar  : var = 5(<switch>0)
+//  end
+136  :     LoadLocalVar  : var = 1(end)
+//  1
+137  :     LoadValue     : value = <I4, 1>
+//  (end + 1)
+138  :     OpAdd         : type = I4
+//  (<switch>0 == (end + 1) of (::system::Int32))
+139  :     CompareValue  
+//  if ((<switch>0 == (end + 1) of (::system::Int32)))
+140  :     OpNot         : type = Bool
+//  if ((<switch>0 == (end + 1) of (::system::Int32)))
+141  :     JumpIf        : label = 147
+//  true
+142  :     LoadValue     : value = <Bool, true>
+//  (needToExit = true)
+143  :     Duplicate     : stackPatternCount = 0
+//  (needToExit = true)
+144  :     StoreLocalVar : var = 4(needToExit)
+//  (needToExit = true);
+145  :     Pop           
+//  if ((<switch>0 == (end + 1) of (::system::Int32)))
+146  :     Jump          : label = 153
+//  result
+147  :     LoadLocalVar  : var = 2(result)
+//  current
+148  :     LoadLocalVar  : var = 3(current)
+//  (result + current)
+149  :     OpAdd         : type = I4
+//  (result = (result + current))
+150  :     Duplicate     : stackPatternCount = 0
+//  (result = (result + current))
+151  :     StoreLocalVar : var = 2(result)
+//  (result = (result + current));
+152  :     Pop           
+//  current
+153  :     LoadLocalVar  : var = 3(current)
+//  1
+154  :     LoadValue     : value = <I4, 1>
+//  (current + 1)
+155  :     OpAdd         : type = I4
+//  (current = (current + 1))
+156  :     Duplicate     : stackPatternCount = 0
+//  (current = (current + 1))
+157  :     StoreLocalVar : var = 3(current)
+//  (current = (current + 1));
+158  :     Pop           
+//  while ((!needToExit))
+159  :     Jump          : label = 129
+//  result
+160  :     LoadLocalVar  : var = 2(result)
+//  return result;
+161  :     Return        
+//  func Sum5(start : int, end : int) : (int)
+162  :     LoadValue     : value = <null>
+//  func Sum5(start : int, end : int) : (int)
+163  :     Return        
+//  1
+164  :     LoadValue     : value = <I4, 1>
+//  10
+165  :     LoadValue     : value = <I4, 10>
+//  Sum1(1, 10)
+166  :     Invoke        : func = 0(Sum1), stackPatternCount = 2
+//  Sum1(1, 10)
+167  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+168  :     LoadValue     : value = <Bool, , >
+//  (Sum1(1, 10) & ", ")
+169  :     OpConcat      
+//  1
+170  :     LoadValue     : value = <I4, 1>
+//  10
+171  :     LoadValue     : value = <I4, 10>
+//  Sum2(1, 10)
+172  :     Invoke        : func = 1(Sum2), stackPatternCount = 2
+//  Sum2(1, 10)
+173  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((Sum1(1, 10) & ", ") & Sum2(1, 10))
+174  :     OpConcat      
+//  ", "
+175  :     LoadValue     : value = <Bool, , >
+//  (((Sum1(1, 10) & ", ") & Sum2(1, 10)) & ", ")
+176  :     OpConcat      
+//  1
+177  :     LoadValue     : value = <I4, 1>
+//  10
+178  :     LoadValue     : value = <I4, 10>
+//  Sum3(1, 10)
+179  :     Invoke        : func = 2(Sum3), stackPatternCount = 2
+//  Sum3(1, 10)
+180  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((Sum1(1, 10) & ", ") & Sum2(1, 10)) & ", ") & Sum3(1, 10))
+181  :     OpConcat      
+//  ", "
+182  :     LoadValue     : value = <Bool, , >
+//  (((((Sum1(1, 10) & ", ") & Sum2(1, 10)) & ", ") & Sum3(1, 10)) & ", ")
+183  :     OpConcat      
+//  1
+184  :     LoadValue     : value = <I4, 1>
+//  10
+185  :     LoadValue     : value = <I4, 10>
+//  Sum4(1, 10)
+186  :     Invoke        : func = 3(Sum4), stackPatternCount = 2
+//  Sum4(1, 10)
+187  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((Sum1(1, 10) & ", ") & Sum2(1, 10)) & ", ") & Sum3(1, 10)) & ", ") & Sum4(1, 10))
+188  :     OpConcat      
+//  ", "
+189  :     LoadValue     : value = <Bool, , >
+//  (((((((Sum1(1, 10) & ", ") & Sum2(1, 10)) & ", ") & Sum3(1, 10)) & ", ") & Sum4(1, 10)) & ", ")
+190  :     OpConcat      
+//  1
+191  :     LoadValue     : value = <I4, 1>
+//  10
+192  :     LoadValue     : value = <I4, 10>
+//  Sum5(1, 10)
+193  :     Invoke        : func = 4(Sum5), stackPatternCount = 2
+//  Sum5(1, 10)
+194  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((Sum1(1, 10) & ", ") & Sum2(1, 10)) & ", ") & Sum3(1, 10)) & ", ") & Sum4(1, 10)) & ", ") & Sum5(1, 10))
+195  :     OpConcat      
+//  return ((((((((Sum1(1, 10) & ", ") & Sum2(1, 10)) & ", ") & Sum3(1, 10)) & ", ") & Sum4(1, 10)) & ", ") & Sum5(1, 10));
+196  :     Return        
+//  func main() : (string)
+197  :     LoadValue     : value = <null>
+//  func main() : (string)
+198  :     Return        

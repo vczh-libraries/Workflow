@@ -17,11 +17,16 @@ using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::filesystem;
 
+extern WfCpuArchitecture testCpuArchitecture;
+
 extern workflow::Parser&	GetWorkflowParser();
 extern void					ReleaseWorkflowTable();
 extern WString				GetTestResourcePath();
 extern WString				GetTestOutputBasePath();
 extern WString				GetCppOutputPath();
+extern WString				GetCppOutputPath32();
+extern WString				GetCppOutputPath64();
+extern WString				GetCppMergePath();
 extern WString				GetWorkflowOutputPath();
 extern void					LoadSampleIndex(const WString& sampleName, List<WString>& itemNames);
 extern WString				LoadSample(const WString& sampleName, const WString& itemName);

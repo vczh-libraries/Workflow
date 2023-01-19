@@ -1,0 +1,107 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IMyInterface
+{
+}
+
+func main() : (void)
+{
+    new (IMyInterface^)
+    {
+        var a = 10;
+
+        var b = a;
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IMyInterface
+{
+}
+
+func main() : (void)
+{
+    new (IMyInterface^)
+    {
+        var a = 10;
+
+        var b = a;
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 12, Column: 11, Message: A28: <test>::main::<>::<>::a of type "system::Int64" cannot be used to initialize other fields in the same type or new interface expression.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 13, "column": 0, "index": 129}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 43}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IMyInterface", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 21, "index": 37}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 48}, "end": {"row": 13, "column": 0, "index": 129}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 6, "column": 5, "index": 53}, "end": {"row": 6, "column": 8, "index": 56}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 6, "column": 14, "index": 62}, "end": {"row": 6, "column": 17, "index": 65}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 7, "column": 0, "index": 68}, "end": {"row": 13, "column": 0, "index": 129}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 8, "column": 1, "index": 72}, "end": {"row": 12, "column": 2, "index": 126}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 8, "column": 1, "index": 72}, "end": {"row": 12, "column": 1, "index": 125}, "codeIndex": -1}},
+                    "declarations": [{
+                        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 10, "column": 2, "index": 97}, "end": {"row": 10, "column": 12, "index": 107}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "a", "codeRange": {"start": {"row": 10, "column": 6, "index": 101}, "end": {"row": 10, "column": 6, "index": 101}, "codeIndex": -1}},
+                        "expression": {
+                            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 10, "column": 10, "index": 105}, "end": {"row": 10, "column": 11, "index": 106}, "codeIndex": -1}},
+                            "value": { "value": "10", "codeRange": {"start": {"row": 10, "column": 10, "index": 105}, "end": {"row": 10, "column": 11, "index": 106}, "codeIndex": -1}}
+                        },
+                        "type": null
+                    }, {
+                        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 11, "column": 2, "index": 112}, "end": {"row": 11, "column": 11, "index": 121}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "b", "codeRange": {"start": {"row": 11, "column": 6, "index": 116}, "end": {"row": 11, "column": 6, "index": 116}, "codeIndex": -1}},
+                        "expression": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 11, "column": 10, "index": 120}, "end": {"row": 11, "column": 10, "index": 120}, "codeIndex": -1}},
+                            "name": { "value": "a", "codeRange": {"start": {"row": 11, "column": 10, "index": 120}, "end": {"row": 11, "column": 10, "index": 120}, "codeIndex": -1}}
+                        },
+                        "type": null
+                    }],
+                    "type": {
+                        "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 8, "column": 5, "index": 76}, "end": {"row": 8, "column": 17, "index": 88}, "codeIndex": -1}},
+                        "element": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 5, "index": 76}, "end": {"row": 8, "column": 16, "index": 87}, "codeIndex": -1}},
+                            "name": { "value": "IMyInterface", "codeRange": {"start": {"row": 8, "column": 5, "index": 76}, "end": {"row": 8, "column": 16, "index": 87}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

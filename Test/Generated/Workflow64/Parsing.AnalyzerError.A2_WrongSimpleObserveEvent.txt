@@ -1,0 +1,77 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    bind(a.observe(b on c.d));
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    bind(a.observe(b on c.d));
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 22, Message: A2: Simple observe expression should react to an event under the observed object.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 66}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 66}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 5, "column": 0, "index": 66}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 26, "index": 63}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "BindExpression", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 25, "index": 62}, "codeIndex": -1}},
+                    "expandedExpression": null,
+                    "expression": {
+                        "$ast": { "type": "ObserveExpression", "codeRange": {"start": {"row": 4, "column": 6, "index": 43}, "end": {"row": 4, "column": 24, "index": 61}, "codeIndex": -1}},
+                        "events": [{
+                            "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 4, "column": 21, "index": 58}, "end": {"row": 4, "column": 23, "index": 60}, "codeIndex": -1}},
+                            "name": { "value": "d", "codeRange": {"start": {"row": 4, "column": 23, "index": 60}, "end": {"row": 4, "column": 23, "index": 60}, "codeIndex": -1}},
+                            "parent": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 4, "column": 21, "index": 58}, "end": {"row": 4, "column": 21, "index": 58}, "codeIndex": -1}},
+                                "name": { "value": "c", "codeRange": {"start": {"row": 4, "column": 21, "index": 58}, "end": {"row": 4, "column": 21, "index": 58}, "codeIndex": -1}}
+                            }
+                        }],
+                        "expression": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 4, "column": 16, "index": 53}, "end": {"row": 4, "column": 16, "index": 53}, "codeIndex": -1}},
+                            "name": { "value": "b", "codeRange": {"start": {"row": 4, "column": 16, "index": 53}, "end": {"row": 4, "column": 16, "index": 53}, "codeIndex": -1}}
+                        },
+                        "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                        "observeType": "SimpleObserve",
+                        "parent": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 4, "column": 6, "index": 43}, "end": {"row": 4, "column": 6, "index": 43}, "codeIndex": -1}},
+                            "name": { "value": "a", "codeRange": {"start": {"row": 4, "column": 6, "index": 43}, "end": {"row": 4, "column": 6, "index": 43}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

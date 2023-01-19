@@ -1,0 +1,533 @@
+﻿========================================================
+Global Variables:
+========================================================
+s
+
+========================================================
+Functions:
+========================================================
+Bind (4 .. 31)
+    Arguments:
+        summer
+    Captured Variables:
+    Local Variables:
+        subscription
+
+Execute (149 .. 180)
+    Arguments:
+        adder
+    Captured Variables:
+    Local Variables:
+        subscription
+        <for-begin>x
+        <for-end>x
+        x
+
+main (181 .. 194)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<initialize> (0 .. 3)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<method:<bind-activator><system::Subscription>(4)> in Bind (32 .. 40)
+    Arguments:
+    Captured Variables:
+        <captured><bind-cache>0
+        <captured><bind-handler>0_0
+        <captured><bind-opened>
+        <captured><bind-closed>
+        <captured>summer
+        <captured-this>0
+    Local Variables:
+        <bind-activator-result>
+
+<method:<bind-callback>0_0<system::Subscription>(5)> in Bind (41 .. 44)
+    Arguments:
+    Captured Variables:
+        <captured><bind-cache>0
+        <captured><bind-handler>0_0
+        <captured><bind-opened>
+        <captured><bind-closed>
+        <captured>summer
+        <captured-this>0
+    Local Variables:
+
+<method:Open<system::Subscription>(8)> in Bind (45 .. 79)
+    Arguments:
+    Captured Variables:
+        <captured><bind-cache>0
+        <captured><bind-handler>0_0
+        <captured><bind-opened>
+        <captured><bind-closed>
+        <captured>summer
+        <captured-this>0
+    Local Variables:
+
+<method:Update<system::Subscription>(9)> in Bind (80 .. 94)
+    Arguments:
+    Captured Variables:
+        <captured><bind-cache>0
+        <captured><bind-handler>0_0
+        <captured><bind-opened>
+        <captured><bind-closed>
+        <captured>summer
+        <captured-this>0
+    Local Variables:
+
+<method:Close<system::Subscription>(10)> in Bind (95 .. 132)
+    Arguments:
+    Captured Variables:
+        <captured><bind-cache>0
+        <captured><bind-handler>0_0
+        <captured><bind-opened>
+        <captured><bind-closed>
+        <captured>summer
+        <captured-this>0
+    Local Variables:
+
+<lambda:(9)> in Bind (133 .. 148)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+<method:GetSum<IAdder>(10)> in main (195 .. 198)
+    Arguments:
+    Captured Variables:
+        <captured>sum
+        <captured-this>0
+    Local Variables:
+
+<method:Add<IAdder>(11)> in main (199 .. 209)
+    Arguments:
+        value
+    Captured Variables:
+        <captured>sum
+        <captured-this>0
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  ""
+0    :     LoadValue     : value = <Bool, >
+//  var s = "";
+1    :     StoreGlobalVar: var = 0(s)
+2    :     LoadValue     : value = <null>
+3    :     Return        
+//  null
+4    :     LoadValue     : value = <null>
+//  null
+5    :     LoadValue     : value = <null>
+//  false
+6    :     LoadValue     : value = <Bool, false>
+//  false
+7    :     LoadValue     : value = <Bool, false>
+//  new (::system::Subscription^)
+8    :     LoadLocalVar  : var = 0(summer)
+//  new (::system::Subscription^)
+9    :     LoadValue     : value = <null>
+//  new (::system::Subscription^)
+10   :     CreateClosureContext: stackPatternCount = 6
+//  new (::system::Subscription^)
+11   :     LoadMethodInfo: methodInfo = Open<system::Subscription>
+//  func Open() : (::system::Boolean)
+12   :     LoadFunction  : func = 6(<method:Open<system::Subscription>(8)> in Bind)
+//  new (::system::Subscription^)
+13   :     LoadMethodInfo: methodInfo = Update<system::Subscription>
+//  func Update() : (::system::Boolean)
+14   :     LoadFunction  : func = 7(<method:Update<system::Subscription>(9)> in Bind)
+//  new (::system::Subscription^)
+15   :     LoadMethodInfo: methodInfo = Close<system::Subscription>
+//  func Close() : (::system::Boolean)
+16   :     LoadFunction  : func = 8(<method:Close<system::Subscription>(10)> in Bind)
+//  new (::system::Subscription^)
+17   :     CreateInterface: methodInfo = <system::Subscription>, stackPatternCount = 6
+//  var subscription = new (::system::Subscription^)
+18   :     StoreLocalVar : var = 1(subscription)
+//  subscription
+19   :     LoadLocalVar  : var = 1(subscription)
+//  subscription.Open()
+20   :     InvokeMethod  : methodInfo = Open<system::Subscription>, stackPatternCount = 0
+//  subscription.Open();
+21   :     Pop           
+//  subscription
+22   :     LoadLocalVar  : var = 1(subscription)
+//  func (value : object) : (void)
+23   :     CreateClosureContext: stackPatternCount = 0
+//  func (value : object) : (void)
+24   :     LoadFunction  : func = 9(<lambda:(9)> in Bind)
+//  func (value : object) : (void)
+25   :     CreateClosure 
+//  attach(subscription.ValueChanged, func (value : object) : (void)
+26   :     AttachEvent   : eventInfo = ValueChanged<system::Subscription>
+//  attach(subscription.ValueChanged, func (value : object) : (void)
+27   :     Pop           
+//  subscription
+28   :     LoadLocalVar  : var = 1(subscription)
+//  return subscription;
+29   :     Return        
+//  func Bind(summer : ISummer^) : (Subscription^)
+30   :     LoadValue     : value = <null>
+//  func Bind(summer : ISummer^) : (Subscription^)
+31   :     Return        
+//  <bind-cache>0
+32   :     LoadCapturedVar: var = 0(<captured><bind-cache>0)
+//  <bind-cache>0.Sum
+33   :     InvokeMethod  : methodInfo = GetSum<ISummer>, stackPatternCount = 0
+//  var <bind-activator-result> = <bind-cache>0.Sum;
+34   :     StoreLocalVar : var = 0(<bind-activator-result>)
+//  <bind-activator-result>
+35   :     LoadLocalVar  : var = 0(<bind-activator-result>)
+//  ValueChanged(<bind-activator-result>)
+36   :     LoadCapturedVar: var = 5(<captured-this>0)
+//  ValueChanged(<bind-activator-result>)
+37   :     InvokeEvent   : eventInfo = ValueChanged<system::Subscription>, stackPatternCount = 1
+//  ValueChanged(<bind-activator-result>);
+38   :     Pop           
+//  func <bind-activator>() : (::system::Void)
+39   :     LoadValue     : value = <null>
+//  func <bind-activator>() : (::system::Void)
+40   :     Return        
+//  <bind-activator>()
+41   :     InvokeWithContext: func = 4(<method:<bind-activator><system::Subscription>(4)> in Bind), stackPatternCount = 0
+//  <bind-activator>();
+42   :     Pop           
+//  func <bind-callback>0_0() : (::system::Void)
+43   :     LoadValue     : value = <null>
+//  func <bind-callback>0_0() : (::system::Void)
+44   :     Return        
+//  <bind-opened>
+45   :     LoadCapturedVar: var = 2(<captured><bind-opened>)
+//  (!<bind-opened>)
+46   :     OpNot         : type = Bool
+//  if ((!<bind-opened>))
+47   :     OpNot         : type = Bool
+//  if ((!<bind-opened>))
+48   :     JumpIf        : label = 76
+//  true
+49   :     LoadValue     : value = <Bool, true>
+//  (<bind-opened> = true)
+50   :     Duplicate     : stackPatternCount = 0
+//  (<bind-opened> = true)
+51   :     StoreCapturedVar: var = 2
+//  (<bind-opened> = true);
+52   :     Pop           
+//  (summer ?? null of (::ISummer^))
+53   :     InstallTry    : label = 57
+//  summer
+54   :     LoadCapturedVar: var = 4(<captured>summer)
+//  (summer ?? null of (::ISummer^))
+55   :     UninstallTry  : stackPatternCount = 1
+//  (summer ?? null of (::ISummer^))
+56   :     Jump          : label = 58
+//  null
+57   :     LoadValue     : value = <null>
+//  (<bind-cache>0 = (summer ?? null of (::ISummer^)))
+58   :     Duplicate     : stackPatternCount = 0
+//  (<bind-cache>0 = (summer ?? null of (::ISummer^)))
+59   :     StoreCapturedVar: var = 0
+//  (<bind-cache>0 = (summer ?? null of (::ISummer^)));
+60   :     Pop           
+//  (attach(<bind-cache>0.SumChanged, <bind-callback>0_0) ?? null)
+61   :     InstallTry    : label = 69
+//  <bind-cache>0
+62   :     LoadCapturedVar: var = 0(<captured><bind-cache>0)
+//  <bind-callback>0_0
+63   :     LoadClosureContext
+//  <bind-callback>0_0
+64   :     LoadFunction  : func = 5(<method:<bind-callback>0_0<system::Subscription>(5)> in Bind)
+//  <bind-callback>0_0
+65   :     CreateClosure 
+//  attach(<bind-cache>0.SumChanged, <bind-callback>0_0)
+66   :     AttachEvent   : eventInfo = SumChanged<ISummer>
+//  (attach(<bind-cache>0.SumChanged, <bind-callback>0_0) ?? null)
+67   :     UninstallTry  : stackPatternCount = 1
+//  (attach(<bind-cache>0.SumChanged, <bind-callback>0_0) ?? null)
+68   :     Jump          : label = 70
+//  null
+69   :     LoadValue     : value = <null>
+//  (<bind-handler>0_0 = (attach(<bind-cache>0.SumChanged, <bind-callback>0_0) ?? null))
+70   :     Duplicate     : stackPatternCount = 0
+//  (<bind-handler>0_0 = (attach(<bind-cache>0.SumChanged, <bind-callback>0_0) ?? null))
+71   :     StoreCapturedVar: var = 1
+//  (<bind-handler>0_0 = (attach(<bind-cache>0.SumChanged, <bind-callback>0_0) ?? null));
+72   :     Pop           
+//  true
+73   :     LoadValue     : value = <Bool, true>
+//  return true;
+74   :     Return        
+//  if ((!<bind-opened>))
+75   :     Jump          : label = 76
+//  false
+76   :     LoadValue     : value = <Bool, false>
+//  return false;
+77   :     Return        
+//  func Open() : (::system::Boolean)
+78   :     LoadValue     : value = <null>
+//  func Open() : (::system::Boolean)
+79   :     Return        
+//  <bind-opened>
+80   :     LoadCapturedVar: var = 2(<captured><bind-opened>)
+//  <bind-closed>
+81   :     LoadCapturedVar: var = 3(<captured><bind-closed>)
+//  (!<bind-closed>)
+82   :     OpNot         : type = Bool
+//  (<bind-opened> and (!<bind-closed>))
+83   :     OpAnd         : type = Bool
+//  if ((<bind-opened> and (!<bind-closed>)))
+84   :     OpNot         : type = Bool
+//  if ((<bind-opened> and (!<bind-closed>)))
+85   :     JumpIf        : label = 91
+//  <bind-activator>()
+86   :     InvokeWithContext: func = 4(<method:<bind-activator><system::Subscription>(4)> in Bind), stackPatternCount = 0
+//  <bind-activator>();
+87   :     Pop           
+//  true
+88   :     LoadValue     : value = <Bool, true>
+//  return true;
+89   :     Return        
+//  if ((<bind-opened> and (!<bind-closed>)))
+90   :     Jump          : label = 91
+//  false
+91   :     LoadValue     : value = <Bool, false>
+//  return false;
+92   :     Return        
+//  func Update() : (::system::Boolean)
+93   :     LoadValue     : value = <null>
+//  func Update() : (::system::Boolean)
+94   :     Return        
+//  <bind-closed>
+95   :     LoadCapturedVar: var = 3(<captured><bind-closed>)
+//  (!<bind-closed>)
+96   :     OpNot         : type = Bool
+//  if ((!<bind-closed>))
+97   :     OpNot         : type = Bool
+//  if ((!<bind-closed>))
+98   :     JumpIf        : label = 129
+//  true
+99   :     LoadValue     : value = <Bool, true>
+//  (<bind-closed> = true)
+100  :     Duplicate     : stackPatternCount = 0
+//  (<bind-closed> = true)
+101  :     StoreCapturedVar: var = 3
+//  (<bind-closed> = true);
+102  :     Pop           
+//  <bind-handler>0_0
+103  :     LoadCapturedVar: var = 1(<captured><bind-handler>0_0)
+//  <bind-handler>0_0 is not null
+104  :     LoadValue     : value = <null>
+//  <bind-handler>0_0 is not null
+105  :     CompareReference
+//  <bind-handler>0_0 is not null
+106  :     OpNot         : type = Bool
+//  if (<bind-handler>0_0 is not null)
+107  :     OpNot         : type = Bool
+//  if (<bind-handler>0_0 is not null)
+108  :     JumpIf        : label = 118
+//  <bind-cache>0
+109  :     LoadCapturedVar: var = 0(<captured><bind-cache>0)
+//  <bind-handler>0_0
+110  :     LoadCapturedVar: var = 1(<captured><bind-handler>0_0)
+//  detach(<bind-cache>0.SumChanged, <bind-handler>0_0)
+111  :     DetachEvent   : eventInfo = SumChanged<ISummer>
+//  detach(<bind-cache>0.SumChanged, <bind-handler>0_0);
+112  :     Pop           
+//  null
+113  :     LoadValue     : value = <null>
+//  (<bind-handler>0_0 = null)
+114  :     Duplicate     : stackPatternCount = 0
+//  (<bind-handler>0_0 = null)
+115  :     StoreCapturedVar: var = 1
+//  (<bind-handler>0_0 = null);
+116  :     Pop           
+//  if (<bind-handler>0_0 is not null)
+117  :     Jump          : label = 118
+//  null
+118  :     LoadValue     : value = <null>
+//  (<bind-cache>0 = null of (::ISummer^))
+119  :     Duplicate     : stackPatternCount = 0
+//  (<bind-cache>0 = null of (::ISummer^))
+120  :     StoreCapturedVar: var = 0
+//  (<bind-cache>0 = null of (::ISummer^));
+121  :     Pop           
+//  null
+122  :     LoadValue     : value = <null>
+//  (<bind-handler>0_0 = null of (::system::reflection::EventHandler^))
+123  :     Duplicate     : stackPatternCount = 0
+//  (<bind-handler>0_0 = null of (::system::reflection::EventHandler^))
+124  :     StoreCapturedVar: var = 1
+//  (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+125  :     Pop           
+//  true
+126  :     LoadValue     : value = <Bool, true>
+//  return true;
+127  :     Return        
+//  if ((!<bind-closed>))
+128  :     Jump          : label = 129
+//  false
+129  :     LoadValue     : value = <Bool, false>
+//  return false;
+130  :     Return        
+//  func Close() : (::system::Boolean)
+131  :     LoadValue     : value = <null>
+//  func Close() : (::system::Boolean)
+132  :     Return        
+//  ""
+133  :     LoadValue     : value = <Bool, >
+//  s
+134  :     LoadGlobalVar : var = 0(s)
+//  ("" & s)
+135  :     OpConcat      
+//  "["
+136  :     LoadValue     : value = <Bool, [>
+//  (("" & s) & "[")
+137  :     OpConcat      
+//  value
+138  :     LoadLocalVar  : var = 0(value)
+//  value
+139  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  (cast (int) value)
+140  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((("" & s) & "[") & (cast (int) value))
+141  :     OpConcat      
+//  "]"
+142  :     LoadValue     : value = <Bool, ]>
+//  (((("" & s) & "[") & (cast (int) value)) & "]")
+143  :     OpConcat      
+//  (s = (((("" & s) & "[") & (cast (int) value)) & "]"))
+144  :     Duplicate     : stackPatternCount = 0
+//  (s = (((("" & s) & "[") & (cast (int) value)) & "]"))
+145  :     StoreGlobalVar: var = 0(s)
+//  (s = (((("" & s) & "[") & (cast (int) value)) & "]"));
+146  :     Pop           
+//  func (value : object) : (void)
+147  :     LoadValue     : value = <null>
+//  func (value : object) : (void)
+148  :     Return        
+//  adder
+149  :     LoadLocalVar  : var = 0(adder)
+//  adder
+150  :     ConvertToType : flag = SharedPtr, typeDescriptor = ISummer
+//  Bind(adder)
+151  :     Invoke        : func = 0(Bind), stackPatternCount = 1
+//  var subscription = Bind(adder);
+152  :     StoreLocalVar : var = 1(subscription)
+//  1
+153  :     LoadValue     : value = <I8, 1>
+//  var <for-begin>x : ::system::Int64 = 1;
+154  :     StoreLocalVar : var = 2(<for-begin>x)
+//  5
+155  :     LoadValue     : value = <I8, 5>
+//  var <for-end>x : ::system::Int64 = 5;
+156  :     StoreLocalVar : var = 3(<for-end>x)
+//  <for-begin>x
+157  :     LoadLocalVar  : var = 2(<for-begin>x)
+//  var x = <for-begin>x;
+158  :     StoreLocalVar : var = 4(x)
+//  x
+159  :     LoadLocalVar  : var = 4(x)
+//  <for-end>x
+160  :     LoadLocalVar  : var = 3(<for-end>x)
+//  (x <= <for-end>x)
+161  :     CompareLiteral: type = I8
+//  (x <= <for-end>x)
+162  :     OpLE          
+//  while ((x <= <for-end>x))
+163  :     OpNot         : type = Bool
+//  while ((x <= <for-end>x))
+164  :     JumpIf        : label = 176
+//  x
+165  :     LoadLocalVar  : var = 4(x)
+//  adder
+166  :     LoadLocalVar  : var = 0(adder)
+//  adder.Add(x)
+167  :     InvokeMethod  : methodInfo = Add<IAdder>, stackPatternCount = 1
+//  adder.Add(x);
+168  :     Pop           
+//  x
+169  :     LoadLocalVar  : var = 4(x)
+//  1
+170  :     LoadValue     : value = <I8, 1>
+//  (x + 1)
+171  :     OpAdd         : type = I8
+//  (x = (x + 1))
+172  :     Duplicate     : stackPatternCount = 0
+//  (x = (x + 1))
+173  :     StoreLocalVar : var = 4(x)
+//  (x = (x + 1));
+174  :     Pop           
+//  while ((x <= <for-end>x))
+175  :     Jump          : label = 159
+//  subscription
+176  :     LoadLocalVar  : var = 1(subscription)
+//  subscription.Close()
+177  :     InvokeMethod  : methodInfo = Close<system::Subscription>, stackPatternCount = 0
+//  subscription.Close();
+178  :     Pop           
+//  func Execute(adder : IAdder^) : (void)
+179  :     LoadValue     : value = <null>
+//  func Execute(adder : IAdder^) : (void)
+180  :     Return        
+//  0
+181  :     LoadValue     : value = <I8, 0>
+//  new (IAdder^)
+182  :     LoadValue     : value = <null>
+//  new (IAdder^)
+183  :     CreateClosureContext: stackPatternCount = 2
+//  new (IAdder^)
+184  :     LoadMethodInfo: methodInfo = GetSum<ISummer>
+//  func GetSum() : (int)
+185  :     LoadFunction  : func = 10(<method:GetSum<IAdder>(10)> in main)
+//  new (IAdder^)
+186  :     LoadMethodInfo: methodInfo = Add<IAdder>
+//  func Add(value : int) : (void)
+187  :     LoadFunction  : func = 11(<method:Add<IAdder>(11)> in main)
+//  new (IAdder^)
+188  :     CreateInterface: methodInfo = <IAdder>, stackPatternCount = 4
+//  Execute(new (IAdder^)
+189  :     Invoke        : func = 1(Execute), stackPatternCount = 1
+//  Execute(new (IAdder^)
+190  :     Pop           
+//  s
+191  :     LoadGlobalVar : var = 0(s)
+//  return s;
+192  :     Return        
+//  func main() : (string)
+193  :     LoadValue     : value = <null>
+//  func main() : (string)
+194  :     Return        
+//  sum
+195  :     LoadCapturedVar: var = 0(<captured>sum)
+//  return sum;
+196  :     Return        
+//  func GetSum() : (int)
+197  :     LoadValue     : value = <null>
+//  func GetSum() : (int)
+198  :     Return        
+//  sum
+199  :     LoadCapturedVar: var = 0(<captured>sum)
+//  value
+200  :     LoadLocalVar  : var = 0(value)
+//  (sum + value)
+201  :     OpAdd         : type = I8
+//  (sum = (sum + value))
+202  :     Duplicate     : stackPatternCount = 0
+//  (sum = (sum + value))
+203  :     StoreCapturedVar: var = 0
+//  (sum = (sum + value));
+204  :     Pop           
+//  SumChanged()
+205  :     LoadCapturedVar: var = 1(<captured-this>0)
+//  SumChanged()
+206  :     InvokeEvent   : eventInfo = SumChanged<ISummer>, stackPatternCount = 0
+//  SumChanged();
+207  :     Pop           
+//  func Add(value : int) : (void)
+208  :     LoadValue     : value = <null>
+//  func Add(value : int) : (void)
+209  :     Return        

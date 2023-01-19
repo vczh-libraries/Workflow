@@ -1,0 +1,87 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (::system::not_a_type)
+{
+}
+
+namespace system
+{
+    func not_a_type() : (void)
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (::system::not_a_type)
+{
+}
+
+namespace system
+{
+    func not_a_type() : (void)
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 3, Column: 16, Message: B6: "system::not_a_type" is not a type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 11, "column": 0, "index": 113}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 54}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "ChildType", "codeRange": {"start": {"row": 2, "column": 15, "index": 31}, "end": {"row": 2, "column": 32, "index": 48}, "codeIndex": -1}},
+            "name": { "value": "not_a_type", "codeRange": {"start": {"row": 2, "column": 23, "index": 39}, "end": {"row": 2, "column": 32, "index": 48}, "codeIndex": -1}},
+            "parent": {
+                "$ast": { "type": "TopQualifiedType", "codeRange": {"start": {"row": 2, "column": 13, "index": 29}, "end": {"row": 2, "column": 20, "index": 36}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 2, "column": 15, "index": 31}, "end": {"row": 2, "column": 20, "index": 36}, "codeIndex": -1}}
+            }
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 51}, "end": {"row": 4, "column": 0, "index": 54}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": []
+        }
+    }, {
+        "$ast": { "type": "NamespaceDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 59}, "end": {"row": 11, "column": 0, "index": 113}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "system", "codeRange": {"start": {"row": 6, "column": 10, "index": 69}, "end": {"row": 6, "column": 15, "index": 74}, "codeIndex": -1}},
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 8, "column": 1, "index": 81}, "end": {"row": 10, "column": 1, "index": 110}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "not_a_type", "codeRange": {"start": {"row": 8, "column": 6, "index": 86}, "end": {"row": 8, "column": 15, "index": 95}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 8, "column": 19, "index": 99}, "end": {"row": 8, "column": 22, "index": 102}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 9, "column": 1, "index": 106}, "end": {"row": 10, "column": 1, "index": 110}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }]
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

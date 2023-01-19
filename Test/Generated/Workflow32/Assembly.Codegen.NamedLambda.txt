@@ -1,0 +1,163 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+main (2 .. 40)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        fib
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<lambda:Fib(2)> in main (41 .. 67)
+    Arguments:
+        n
+    Captured Variables:
+    Local Variables:
+        <recursive-lambda>Fib
+        fib2
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  func Fib(n : int) : (int)
+2    :     CreateClosureContext: stackPatternCount = 0
+//  func Fib(n : int) : (int)
+3    :     LoadFunction  : func = 2(<lambda:Fib(2)> in main)
+//  func Fib(n : int) : (int)
+4    :     CreateClosure 
+//  var fib = func Fib(n : int) : (int)
+5    :     StoreLocalVar : var = 0(fib)
+//  1
+6    :     LoadValue     : value = <I4, 1>
+//  fib
+7    :     LoadLocalVar  : var = 0(fib)
+//  fib(1)
+8    :     InvokeProxy   : stackPatternCount = 1
+//  fib(1)
+9    :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+10   :     LoadValue     : value = <Bool, , >
+//  (fib(1) & ", ")
+11   :     OpConcat      
+//  2
+12   :     LoadValue     : value = <I4, 2>
+//  fib
+13   :     LoadLocalVar  : var = 0(fib)
+//  fib(2)
+14   :     InvokeProxy   : stackPatternCount = 1
+//  fib(2)
+15   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((fib(1) & ", ") & fib(2))
+16   :     OpConcat      
+//  ", "
+17   :     LoadValue     : value = <Bool, , >
+//  (((fib(1) & ", ") & fib(2)) & ", ")
+18   :     OpConcat      
+//  3
+19   :     LoadValue     : value = <I4, 3>
+//  fib
+20   :     LoadLocalVar  : var = 0(fib)
+//  fib(3)
+21   :     InvokeProxy   : stackPatternCount = 1
+//  fib(3)
+22   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((fib(1) & ", ") & fib(2)) & ", ") & fib(3))
+23   :     OpConcat      
+//  ", "
+24   :     LoadValue     : value = <Bool, , >
+//  (((((fib(1) & ", ") & fib(2)) & ", ") & fib(3)) & ", ")
+25   :     OpConcat      
+//  4
+26   :     LoadValue     : value = <I4, 4>
+//  fib
+27   :     LoadLocalVar  : var = 0(fib)
+//  fib(4)
+28   :     InvokeProxy   : stackPatternCount = 1
+//  fib(4)
+29   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((fib(1) & ", ") & fib(2)) & ", ") & fib(3)) & ", ") & fib(4))
+30   :     OpConcat      
+//  ", "
+31   :     LoadValue     : value = <Bool, , >
+//  (((((((fib(1) & ", ") & fib(2)) & ", ") & fib(3)) & ", ") & fib(4)) & ", ")
+32   :     OpConcat      
+//  5
+33   :     LoadValue     : value = <I4, 5>
+//  fib
+34   :     LoadLocalVar  : var = 0(fib)
+//  fib(5)
+35   :     InvokeProxy   : stackPatternCount = 1
+//  fib(5)
+36   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((fib(1) & ", ") & fib(2)) & ", ") & fib(3)) & ", ") & fib(4)) & ", ") & fib(5))
+37   :     OpConcat      
+//  return ((((((((fib(1) & ", ") & fib(2)) & ", ") & fib(3)) & ", ") & fib(4)) & ", ") & fib(5));
+38   :     Return        
+//  func main() : (string)
+39   :     LoadValue     : value = <null>
+//  func main() : (string)
+40   :     Return        
+//  func Fib(n : int) : (int)
+41   :     LoadClosureContext
+//  func Fib(n : int) : (int)
+42   :     LoadFunction  : func = 2(<lambda:Fib(2)> in main)
+//  func Fib(n : int) : (int)
+43   :     CreateClosure 
+//  func Fib(n : int) : (int)
+44   :     StoreLocalVar : var = 1(<recursive-lambda>Fib)
+//  Fib
+45   :     LoadLocalVar  : var = 1(<recursive-lambda>Fib)
+//  var fib2 = Fib;
+46   :     StoreLocalVar : var = 2(fib2)
+//  n
+47   :     LoadLocalVar  : var = 0(n)
+//  2
+48   :     LoadValue     : value = <I4, 2>
+//  (n <= 2)
+49   :     CompareLiteral: type = I4
+//  (n <= 2)
+50   :     OpLE          
+//  (n <= 2) ? 1 : (Fib((n - 1)) + fib2((n - 2)))
+51   :     JumpIf        : label = 64
+//  n
+52   :     LoadLocalVar  : var = 0(n)
+//  1
+53   :     LoadValue     : value = <I4, 1>
+//  (n - 1)
+54   :     OpSub         : type = I4
+//  Fib
+55   :     LoadLocalVar  : var = 1(<recursive-lambda>Fib)
+//  Fib((n - 1))
+56   :     InvokeProxy   : stackPatternCount = 1
+//  n
+57   :     LoadLocalVar  : var = 0(n)
+//  2
+58   :     LoadValue     : value = <I4, 2>
+//  (n - 2)
+59   :     OpSub         : type = I4
+//  fib2
+60   :     LoadLocalVar  : var = 2(fib2)
+//  fib2((n - 2))
+61   :     InvokeProxy   : stackPatternCount = 1
+//  (Fib((n - 1)) + fib2((n - 2)))
+62   :     OpAdd         : type = I4
+//  (n <= 2) ? 1 : (Fib((n - 1)) + fib2((n - 2)))
+63   :     Jump          : label = 65
+//  1
+64   :     LoadValue     : value = <I4, 1>
+//  return (n <= 2) ? 1 : (Fib((n - 1)) + fib2((n - 2)));
+65   :     Return        
+//  func Fib(n : int) : (int)
+66   :     LoadValue     : value = <null>
+//  func Fib(n : int) : (int)
+67   :     Return        

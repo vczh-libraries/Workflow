@@ -1,0 +1,44 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+@cpp:NotExists
+var x = 0;
+
+========================================================
+Printed
+========================================================
+module test;
+
+@cpp:NotExists
+var x = 0;
+
+========================================================
+Errors
+========================================================
+Line: 3, Column: 1, Message: D15: Attribute "cpp:NotExists" does not exist.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 9, "index": 41}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 3, "column": 9, "index": 41}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "category": { "value": "cpp", "codeRange": {"start": {"row": 2, "column": 1, "index": 17}, "end": {"row": 2, "column": 3, "index": 19}, "codeIndex": -1}},
+            "name": { "value": "NotExists", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "x", "codeRange": {"start": {"row": 3, "column": 4, "index": 36}, "end": {"row": 3, "column": 4, "index": 36}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 3, "column": 8, "index": 40}, "end": {"row": 3, "column": 8, "index": 40}, "codeIndex": -1}},
+            "value": { "value": "0", "codeRange": {"start": {"row": 3, "column": 8, "index": 40}, "end": {"row": 3, "column": 8, "index": 40}, "codeIndex": -1}}
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

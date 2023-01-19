@@ -1,0 +1,110 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+$interface IStringAsync : Async<string>;
+
+func GetStringAsync(x : int[]) : (IStringAsync^)
+${
+    return x;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+$interface IStringAsync : Async<string>;
+
+func GetStringAsync(x : int[]) : (IStringAsync^)
+${
+    return x;
+}
+
+========================================================
+Errors
+========================================================
+Line: 8, Column: 2, Message: A21: The 1-th argument of function method "StoreResult" in "IStringAsync" of type "system::Function<system::Object, system::String>^" cannot implicitly convert from "system::List<system::Int64>^" to "system::String".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 142}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "CastResultInterfaceDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 39, "index": 73}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IStringAsync", "codeRange": {"start": {"row": 3, "column": 11, "index": 45}, "end": {"row": 3, "column": 22, "index": 56}, "codeIndex": -1}},
+        "expandedDeclarations": [],
+        "baseType": {
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 3, "column": 26, "index": 60}, "end": {"row": 3, "column": 30, "index": 64}, "codeIndex": -1}},
+            "name": { "value": "Async", "codeRange": {"start": {"row": 3, "column": 26, "index": 60}, "end": {"row": 3, "column": 30, "index": 64}, "codeIndex": -1}}
+        },
+        "elementType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 32, "index": 66}, "end": {"row": 3, "column": 37, "index": 71}, "codeIndex": -1}},
+            "name": "String"
+        }
+    }, {
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 0, "index": 78}, "end": {"row": 8, "column": 0, "index": 142}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "GetStringAsync", "codeRange": {"start": {"row": 5, "column": 5, "index": 83}, "end": {"row": 5, "column": 18, "index": 96}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [{
+            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 20, "index": 98}, "end": {"row": 5, "column": 28, "index": 106}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 5, "column": 20, "index": 98}, "end": {"row": 5, "column": 20, "index": 98}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 5, "column": 24, "index": 102}, "end": {"row": 5, "column": 28, "index": 106}, "codeIndex": -1}},
+                "key": null,
+                "value": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 24, "index": 102}, "end": {"row": 5, "column": 26, "index": 104}, "codeIndex": -1}},
+                    "name": "Int"
+                },
+                "writability": "Writable"
+            }
+        }],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 5, "column": 33, "index": 111}, "end": {"row": 5, "column": 45, "index": 123}, "codeIndex": -1}},
+            "element": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 5, "column": 33, "index": 111}, "end": {"row": 5, "column": 44, "index": 122}, "codeIndex": -1}},
+                "name": { "value": "IStringAsync", "codeRange": {"start": {"row": 5, "column": 33, "index": 111}, "end": {"row": 5, "column": 44, "index": 122}, "codeIndex": -1}}
+            }
+        },
+        "statement": {
+            "$ast": { "type": "CoProviderStatement", "codeRange": {"start": {"row": 6, "column": 0, "index": 126}, "end": {"row": 8, "column": 0, "index": 142}, "codeIndex": -1}},
+            "expandedStatement": null,
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 6, "column": 1, "index": 127}, "end": {"row": 8, "column": 0, "index": 142}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 7, "column": 1, "index": 131}, "end": {"row": 7, "column": 9, "index": 139}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 7, "column": 8, "index": 138}, "end": {"row": 7, "column": 8, "index": 138}, "codeIndex": -1}},
+                        "name": { "value": "x", "codeRange": {"start": {"row": 7, "column": 8, "index": 138}, "end": {"row": 7, "column": 8, "index": 138}, "codeIndex": -1}}
+                    }
+                }]
+            }
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

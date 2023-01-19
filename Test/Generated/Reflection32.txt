@@ -1,0 +1,1030 @@
+﻿@FullName:vl::reflection::description::IValueArray
+interface system::Array : system::ReadonlyList {
+    function Resize(size : system::Int32) : system::Void;
+    function Set(index : system::Int32, value : system::Object) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueArray>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueArray>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Array^;
+    @InvokeTemplate:::vl::reflection::description::IValueArray::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueArray::Create)
+    constructor () : system::Array^;
+    @InvokeTemplate:::vl::reflection::description::IValueArray::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueArray::Create)
+    constructor (values : system::ReadonlyList^) : system::Array^;
+}
+
+@FullName:vl::reflection::description::IAsync
+interface system::Async : system::Interface {
+    property Status : system::AsyncStatus { get:GetStatus }
+
+    static function Delay(milliseconds : system::Int32) : system::Async^;
+    function Execute(callback : system::Function<system::Void, system::CoroutineResult^>^, context : system::AsyncContext^) : system::Boolean;
+    function GetStatus() : system::AsyncStatus;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IAsync>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IAsync>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Async^;
+}
+
+@FullName:vl::reflection::description::AsyncContext
+class system::AsyncContext : system::ReferenceType {
+    property Context : system::Object { get:GetContext set:SetContext }
+
+    function Cancel() : system::Boolean;
+    function GetContext() : system::Object;
+    function IsCancelled() : system::Boolean;
+    function SetContext(value : system::Object) : system::Void;
+
+    constructor (context : system::Object) : system::AsyncContext^;
+}
+
+@FullName:vl::reflection::description::AsyncCoroutine
+class system::AsyncCoroutine : system::ReferenceType {
+    static function AwaitAndRead(impl : system::AsyncCoroutine::IImpl*, value : system::Async^) : system::Void;
+    static function Create(creator : system::Function<system::Coroutine^, system::AsyncCoroutine::IImpl*>^) : system::Async^;
+    static function CreateAndRun(creator : system::Function<system::Coroutine^, system::AsyncCoroutine::IImpl*>^) : system::Void;
+    static function QueryContext(impl : system::AsyncCoroutine::IImpl*) : system::AsyncContext^;
+    static function ReturnAndExit(impl : system::AsyncCoroutine::IImpl*, value : system::Object) : system::Void;
+
+}
+
+@FullName:vl::reflection::description::AsyncCoroutine::IImpl
+interface system::AsyncCoroutine::IImpl : system::Async {
+}
+
+@FullName:vl::reflection::description::IAsyncScheduler
+interface system::AsyncScheduler : system::Interface {
+    function DelayExecute(callback : system::Function<system::Void>^, milliseconds : system::Int32) : system::Void;
+    function Execute(callback : system::Function<system::Void>^) : system::Void;
+    function ExecuteInBackground(callback : system::Function<system::Void>^) : system::Void;
+    static function GetSchedulerForCurrentThread() : system::AsyncScheduler^;
+
+}
+
+@FullName:vl::reflection::description::AsyncStatus
+@ValueType
+enum system::AsyncStatus {
+    Executing = 1,
+    Ready = 0,
+    Stopped = 2,
+}
+
+@FullName:bool
+@ValueType
+@Serializable
+primitive system::Boolean;
+
+@FullName:vl::reflection::description::IValueCallStack
+interface system::CallStack : system::Interface {
+    property CapturedVariables : system::ReadonlyDictionary^ { get:GetCapturedVariables }
+    property FunctionName : system::String { get:GetFunctionName }
+    property GlobalVariables : system::ReadonlyDictionary^ { get:GetGlobalVariables }
+    property LocalArguments : system::ReadonlyDictionary^ { get:GetLocalArguments }
+    property LocalVariables : system::ReadonlyDictionary^ { get:GetLocalVariables }
+    property RowAfterCodegen : system::Int32 { get:GetRowAfterCodegen }
+    property RowBeforeCodegen : system::Int32 { get:GetRowBeforeCodegen }
+    property SourceCodeAfterCodegen : system::String { get:GetSourceCodeAfterCodegen }
+    property SourceCodeBeforeCodegen : system::String { get:GetSourceCodeBeforeCodegen }
+
+    function GetCapturedVariables() : system::ReadonlyDictionary^;
+    function GetFunctionName() : system::String;
+    function GetGlobalVariables() : system::ReadonlyDictionary^;
+    function GetLocalArguments() : system::ReadonlyDictionary^;
+    function GetLocalVariables() : system::ReadonlyDictionary^;
+    function GetRowAfterCodegen() : system::Int32;
+    function GetRowBeforeCodegen() : system::Int32;
+    function GetSourceCodeAfterCodegen() : system::String;
+    function GetSourceCodeBeforeCodegen() : system::String;
+
+}
+
+@FullName:wchar_t
+@ValueType
+@Serializable
+primitive system::Char;
+
+@FullName:vl::reflection::description::ICoroutine
+interface system::Coroutine : system::Interface {
+    property Failure : system::Exception^ { get:GetFailure }
+    property Status : system::CoroutineStatus { get:GetStatus }
+
+    function GetFailure() : system::Exception^;
+    function GetStatus() : system::CoroutineStatus;
+    function Resume(raiseException : system::Boolean, output : system::CoroutineResult^) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<ICoroutine>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<ICoroutine>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Coroutine^;
+}
+
+@FullName:vl::reflection::description::CoroutineResult
+class system::CoroutineResult : system::ReferenceType {
+    property Failure : system::Exception^ { get:GetFailure set:SetFailure }
+    property Result : system::Object { get:GetResult set:SetResult }
+
+    function GetFailure() : system::Exception^;
+    function GetResult() : system::Object;
+    function SetFailure(value : system::Exception^) : system::Void;
+    function SetResult(value : system::Object) : system::Void;
+
+    constructor () : system::CoroutineResult^;
+}
+
+@FullName:vl::reflection::description::CoroutineStatus
+@ValueType
+enum system::CoroutineStatus {
+    Executing = 1,
+    Stopped = 2,
+    Waiting = 0,
+}
+
+@FullName:vl::DateTime
+@ValueType
+@Serializable
+struct system::DateTime {
+    property day : system::Int32;
+    property dayOfWeek : system::Int32;
+    property filetime : system::UInt64;
+    property hour : system::Int32;
+    property milliseconds : system::Int32;
+    property minute : system::Int32;
+    property month : system::Int32;
+    property second : system::Int32;
+    property totalMilliseconds : system::UInt64;
+    property year : system::Int32;
+}
+
+@FullName:vl::reflection::description::IValueDictionary
+interface system::Dictionary : system::ReadonlyDictionary {
+    function Clear() : system::Void;
+    function Remove(key : system::Object) : system::Boolean;
+    function Set(key : system::Object, value : system::Object) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueDictionary>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueDictionary>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Dictionary^;
+    @InvokeTemplate:::vl::reflection::description::IValueDictionary::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueDictionary::Create)
+    constructor () : system::Dictionary^;
+    @InvokeTemplate:::vl::reflection::description::IValueDictionary::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueDictionary::Create)
+    constructor (values : system::ReadonlyDictionary^) : system::Dictionary^;
+}
+
+@FullName:double
+@ValueType
+@Serializable
+primitive system::Double;
+
+@FullName:vl::reflection::description::IValueEnumerable
+interface system::Enumerable : system::Interface {
+    function CreateEnumerator() : system::Enumerator^;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueEnumerable>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueEnumerable>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Enumerable^;
+}
+
+@FullName:vl::reflection::description::EnumerableCoroutine
+class system::EnumerableCoroutine : system::ReferenceType {
+    static function Create(creator : system::Function<system::Coroutine^, system::EnumerableCoroutine::IImpl*>^) : system::Enumerable^;
+    static function JoinAndPause(impl : system::EnumerableCoroutine::IImpl*, value : system::Enumerable^) : system::Void;
+    static function ReturnAndExit(impl : system::EnumerableCoroutine::IImpl*) : system::Void;
+    static function YieldAndPause(impl : system::EnumerableCoroutine::IImpl*, value : system::Object) : system::Void;
+
+}
+
+@FullName:vl::reflection::description::EnumerableCoroutine::IImpl
+interface system::EnumerableCoroutine::IImpl : system::Enumerator {
+}
+
+@FullName:vl::reflection::description::IValueEnumerator
+interface system::Enumerator : system::Interface {
+    property Current : system::Object { get:GetCurrent }
+    property Index : system::Int32 { get:GetIndex }
+
+    function GetCurrent() : system::Object;
+    function GetIndex() : system::Int32;
+    function Next() : system::Boolean;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueEnumerator>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueEnumerator>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Enumerator^;
+}
+
+@FullName:vl::reflection::description::IValueException
+interface system::Exception : system::Interface {
+    property CallStack : system::ReadonlyList^ { get:GetCallStack }
+    property Fatal : system::Boolean { get:GetFatal }
+    property Message : system::String { get:GetMessage }
+
+    function GetCallStack() : system::ReadonlyList^;
+    function GetFatal() : system::Boolean;
+    function GetMessage() : system::String;
+
+}
+
+@FullName:vl::reflection::description::IValueFunctionProxy
+interface system::Function : system::Interface {
+    function Invoke(arguments : system::ReadonlyList^) : system::Object;
+
+}
+
+@FullName:vl::reflection::description::IFuture
+interface system::Future : system::Async, system::Promise {
+    property Promise : system::Promise^ { get:GetPromise }
+
+    static function Create() : system::Future^;
+    function GetPromise() : system::Promise^;
+
+}
+
+@FullName:vl::vint16_t
+@ValueType
+@Serializable
+primitive system::Int16;
+
+@FullName:vl::vint32_t
+@ValueType
+@Serializable
+primitive system::Int32;
+
+@FullName:vl::vint64_t
+@ValueType
+@Serializable
+primitive system::Int64;
+
+@FullName:vl::vint8_t
+@ValueType
+@Serializable
+primitive system::Int8;
+
+@FullName:vl::reflection::IDescriptable
+interface system::Interface {
+}
+
+@FullName:vl::reflection::description::IValueInterfaceProxy
+interface system::InterfaceProxy : system::Interface {
+    function Invoke(methodInfo : system::reflection::MethodInfo*, arguments : system::ReadonlyList^) : system::Object;
+
+}
+
+@FullName:vl::glr::json::JsonArray
+class system::JsonArray : system::JsonNode {
+    property items : system::List<system::JsonNode^>^ { get }
+
+    constructor () : system::JsonArray^;
+}
+
+@FullName:vl::glr::json::JsonLiteral
+class system::JsonLiteral : system::JsonNode {
+    property value : system::JsonLiteralValue;
+
+    constructor () : system::JsonLiteral^;
+}
+
+@FullName:vl::glr::json::JsonLiteralValue
+@ValueType
+enum system::JsonLiteralValue {
+    False = 1,
+    Null = 2,
+    True = 0,
+}
+
+@FullName:vl::glr::json::JsonNode
+class system::JsonNode : system::ParsingAstBase {
+}
+
+@FullName:vl::glr::json::JsonNode::IVisitor
+interface system::JsonNode::IVisitor : system::Interface {
+    function Visit(node : system::JsonLiteral*) : system::Void;
+    function Visit(node : system::JsonString*) : system::Void;
+    function Visit(node : system::JsonNumber*) : system::Void;
+    function Visit(node : system::JsonArray*) : system::Void;
+    function Visit(node : system::JsonObject*) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::glr::json::JsonNode::IVisitor>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::glr::json::JsonNode::IVisitor>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::JsonNode::IVisitor^;
+}
+
+@FullName:vl::glr::json::JsonNumber
+class system::JsonNumber : system::JsonNode {
+    property content : system::ParsingToken;
+
+    constructor () : system::JsonNumber^;
+}
+
+@FullName:vl::glr::json::JsonObject
+class system::JsonObject : system::JsonNode {
+    property fields : system::List<system::JsonObjectField^>^ { get }
+
+    constructor () : system::JsonObject^;
+}
+
+@FullName:vl::glr::json::JsonObjectField
+class system::JsonObjectField : system::ParsingAstBase {
+    property name : system::ParsingToken;
+    property value : system::JsonNode^;
+
+    constructor () : system::JsonObjectField^;
+}
+
+@FullName:vl::glr::json::JsonString
+class system::JsonString : system::JsonNode {
+    property content : system::ParsingToken;
+
+    constructor () : system::JsonString^;
+}
+
+@FullName:vl::reflection::description::IValueList
+interface system::List : system::ReadonlyList {
+    function Add(value : system::Object) : system::Int32;
+    function Clear() : system::Void;
+    function Insert(index : system::Int32, value : system::Object) : system::Int32;
+    function Remove(value : system::Object) : system::Boolean;
+    function RemoveAt(index : system::Int32) : system::Boolean;
+    function Set(index : system::Int32, value : system::Object) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueList>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueList>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::List^;
+    @InvokeTemplate:::vl::reflection::description::IValueList::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueList::Create)
+    constructor () : system::List^;
+    @InvokeTemplate:::vl::reflection::description::IValueList::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueList::Create)
+    constructor (values : system::ReadonlyList^) : system::List^;
+}
+
+@FullName:vl::Locale
+@ValueType
+@Serializable
+primitive system::Locale;
+
+@FullName:vl::reflection::description::Localization
+class system::Localization : system::ReferenceType {
+    static function FormatCurrency(locale : system::Locale, number : system::String) : system::String;
+    static function FormatDate(locale : system::Locale, format : system::String, date : system::DateTime) : system::String;
+    static function FormatNumber(locale : system::Locale, number : system::String) : system::String;
+    static function FormatTime(locale : system::Locale, format : system::String, date : system::DateTime) : system::String;
+    static function GetLongDateFormats(locale : system::Locale) : system::Enumerable<system::String>^;
+    static function GetLongDayOfWeekName(locale : system::Locale, dayOfWeek : system::Int32) : system::String;
+    static function GetLongMonthName(locale : system::Locale, month : system::Int32) : system::String;
+    static function GetLongTimeFormats(locale : system::Locale) : system::Enumerable<system::String>^;
+    static function GetShortDateFormats(locale : system::Locale) : system::Enumerable<system::String>^;
+    static function GetShortDayOfWeekName(locale : system::Locale, dayOfWeek : system::Int32) : system::String;
+    static function GetShortMonthName(locale : system::Locale, month : system::Int32) : system::String;
+    static function GetShortTimeFormats(locale : system::Locale) : system::Enumerable<system::String>^;
+    static function GetYearMonthDateFormats(locale : system::Locale) : system::Enumerable<system::String>^;
+    static function Invariant() : system::Locale;
+    static function Locales() : system::Enumerable<system::Locale>^;
+    static function System() : system::Locale;
+    static function User() : system::Locale;
+
+}
+
+@FullName:vl::reflection::description::Math
+class system::Math : system::ReferenceType {
+    static function ACos(value : system::Double) : system::Double;
+    static function ASin(value : system::Double) : system::Double;
+    static function ATan(value : system::Double) : system::Double;
+    static function ATan2(x : system::Double, y : system::Double) : system::Double;
+    static function Abs(value : system::Int8) : system::Int8;
+    static function Abs(value : system::Int16) : system::Int16;
+    static function Abs(value : system::Int32) : system::Int32;
+    static function Abs(value : system::Int64) : system::Int64;
+    static function Abs(value : system::Single) : system::Single;
+    static function Abs(value : system::Double) : system::Double;
+    static function Ceil(value : system::Double) : system::Double;
+    static function Cos(value : system::Double) : system::Double;
+    static function Exp(value : system::Double) : system::Double;
+    static function Floor(value : system::Double) : system::Double;
+    static function Log(value : system::Double, base : system::Double) : system::Double;
+    static function Log10(value : system::Double) : system::Double;
+    static function LogN(value : system::Double) : system::Double;
+    static function Max(a : system::UInt8, b : system::UInt8) : system::UInt8;
+    static function Max(a : system::UInt16, b : system::UInt16) : system::UInt16;
+    static function Max(a : system::UInt32, b : system::UInt32) : system::UInt32;
+    static function Max(a : system::UInt64, b : system::UInt64) : system::UInt64;
+    static function Max(a : system::Int8, b : system::Int8) : system::Int8;
+    static function Max(a : system::Int16, b : system::Int16) : system::Int16;
+    static function Max(a : system::Int32, b : system::Int32) : system::Int32;
+    static function Max(a : system::Int64, b : system::Int64) : system::Int64;
+    static function Max(a : system::Single, b : system::Single) : system::Single;
+    static function Max(a : system::Double, b : system::Double) : system::Double;
+    static function Max(a : system::Boolean, b : system::Boolean) : system::Boolean;
+    static function Max(a : system::Char, b : system::Char) : system::Char;
+    static function Max(a : system::String, b : system::String) : system::String;
+    static function Max(a : system::Locale, b : system::Locale) : system::Locale;
+    static function Max(a : system::DateTime, b : system::DateTime) : system::DateTime;
+    static function Min(a : system::UInt8, b : system::UInt8) : system::UInt8;
+    static function Min(a : system::UInt16, b : system::UInt16) : system::UInt16;
+    static function Min(a : system::UInt32, b : system::UInt32) : system::UInt32;
+    static function Min(a : system::UInt64, b : system::UInt64) : system::UInt64;
+    static function Min(a : system::Int8, b : system::Int8) : system::Int8;
+    static function Min(a : system::Int16, b : system::Int16) : system::Int16;
+    static function Min(a : system::Int32, b : system::Int32) : system::Int32;
+    static function Min(a : system::Int64, b : system::Int64) : system::Int64;
+    static function Min(a : system::Single, b : system::Single) : system::Single;
+    static function Min(a : system::Double, b : system::Double) : system::Double;
+    static function Min(a : system::Boolean, b : system::Boolean) : system::Boolean;
+    static function Min(a : system::Char, b : system::Char) : system::Char;
+    static function Min(a : system::String, b : system::String) : system::String;
+    static function Min(a : system::Locale, b : system::Locale) : system::Locale;
+    static function Min(a : system::DateTime, b : system::DateTime) : system::DateTime;
+    static function Pi() : system::Double;
+    static function Pow(value : system::Double, power : system::Double) : system::Double;
+    static function Round(value : system::Double) : system::Double;
+    static function Sin(value : system::Double) : system::Double;
+    static function Tan(value : system::Double) : system::Double;
+    static function Trunc(value : system::Double) : system::Double;
+
+}
+
+@FullName:vl::reflection::description::Value
+class system::Object {
+}
+
+@FullName:vl::reflection::description::IValueObservableList
+interface system::ObservableList : system::List {
+    event ItemChanged : system::Function<system::Void, system::Int32, system::Int32, system::Int32>^;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueObservableList>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueObservableList>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::ObservableList^;
+    @InvokeTemplate:::vl::reflection::description::IValueObservableList::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueObservableList::Create)
+    constructor () : system::ObservableList^;
+    @InvokeTemplate:::vl::reflection::description::IValueObservableList::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueObservableList::Create)
+    constructor (values : system::ReadonlyList^) : system::ObservableList^;
+}
+
+@FullName:vl::glr::ParsingAstBase
+class system::ParsingAstBase : system::ReferenceType {
+    property codeRange : system::ParsingTextRange;
+
+}
+
+@FullName:vl::glr::ParsingTextPos
+@ValueType
+struct system::ParsingTextPos {
+    property column : system::Int32;
+    property index : system::Int32;
+    property row : system::Int32;
+}
+
+@FullName:vl::glr::ParsingTextRange
+@ValueType
+struct system::ParsingTextRange {
+    property codeIndex : system::Int32;
+    property end : system::ParsingTextPos;
+    property start : system::ParsingTextPos;
+}
+
+@FullName:vl::glr::ParsingToken
+@ValueType
+struct system::ParsingToken {
+    property codeRange : system::ParsingTextRange;
+    property index : system::Int32;
+    property token : system::Int32;
+    property value : system::String;
+}
+
+@FullName:vl::reflection::description::IPromise
+interface system::Promise : system::Interface {
+    function SendFailure(failure : system::Exception^) : system::Boolean;
+    function SendResult(result : system::Object) : system::Boolean;
+
+}
+
+@FullName:vl::reflection::description::IValueReadonlyDictionary
+interface system::ReadonlyDictionary : system::Interface {
+    property Count : system::Int32 { get:GetCount }
+    property Keys : system::ReadonlyList^ { get:GetKeys }
+    property Values : system::ReadonlyList^ { get:GetValues }
+
+    function Get(key : system::Object) : system::Object;
+    function GetCount() : system::Int32;
+    function GetKeys() : system::ReadonlyList^;
+    function GetValues() : system::ReadonlyList^;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueReadonlyDictionary>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueReadonlyDictionary>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::ReadonlyDictionary^;
+}
+
+@FullName:vl::reflection::description::IValueReadonlyList
+interface system::ReadonlyList : system::Enumerable {
+    property Count : system::Int32 { get:GetCount }
+
+    function Contains(value : system::Object) : system::Boolean;
+    function Get(index : system::Int32) : system::Object;
+    function GetCount() : system::Int32;
+    function IndexOf(value : system::Object) : system::Int32;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueReadonlyList>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueReadonlyList>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::ReadonlyList^;
+}
+
+@FullName:vl::reflection::DescriptableObject
+class system::ReferenceType {
+}
+
+@FullName:float
+@ValueType
+@Serializable
+primitive system::Single;
+
+@FullName:vl::reflection::description::StateMachine
+class system::StateMachine : system::ReferenceType {
+    property StateMachineStatus : system::CoroutineStatus { get:GetStateMachineStatus }
+    property stateMachineCoroutine : system::Coroutine^;
+    property stateMachineInitialized : system::Boolean;
+    property stateMachineInput : system::Int32;
+    property stateMachineStopped : system::Boolean;
+
+    function GetStateMachineStatus() : system::CoroutineStatus;
+    function ResumeStateMachine() : system::Void;
+
+    constructor () : system::StateMachine^;
+}
+
+@FullName:vl::WString
+@ValueType
+@Serializable
+primitive system::String;
+
+@FullName:vl::reflection::description::IValueSubscription
+interface system::Subscription : system::ReferenceType {
+    event ValueChanged : system::Function<system::Void, system::Object>^;
+
+    function Close() : system::Boolean;
+    function Open() : system::Boolean;
+    function Update() : system::Boolean;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueSubscription>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueSubscription>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Subscription^;
+}
+
+@FullName:vl::reflection::description::Sys
+class system::Sys : system::ReferenceType {
+    static function Backward(dt : system::DateTime, milliseconds : system::UInt64) : system::DateTime;
+    static function Compare(a : system::UInt8, b : system::UInt8) : system::Int32;
+    static function Compare(a : system::UInt16, b : system::UInt16) : system::Int32;
+    static function Compare(a : system::UInt32, b : system::UInt32) : system::Int32;
+    static function Compare(a : system::UInt64, b : system::UInt64) : system::Int32;
+    static function Compare(a : system::Int8, b : system::Int8) : system::Int32;
+    static function Compare(a : system::Int16, b : system::Int16) : system::Int32;
+    static function Compare(a : system::Int32, b : system::Int32) : system::Int32;
+    static function Compare(a : system::Int64, b : system::Int64) : system::Int32;
+    static function Compare(a : system::Single, b : system::Single) : system::Int32;
+    static function Compare(a : system::Double, b : system::Double) : system::Int32;
+    static function Compare(a : system::Boolean, b : system::Boolean) : system::Int32;
+    static function Compare(a : system::Char, b : system::Char) : system::Int32;
+    static function Compare(a : system::String, b : system::String) : system::Int32;
+    static function Compare(a : system::Locale, b : system::Locale) : system::Int32;
+    static function Compare(a : system::DateTime, b : system::DateTime) : system::Int32;
+    static function CreateDateTime(year : system::Int32, month : system::Int32, day : system::Int32) : system::DateTime;
+    static function CreateDateTime(year : system::Int32, month : system::Int32, day : system::Int32, hour : system::Int32, minute : system::Int32, second : system::Int32, milliseconds : system::Int32) : system::DateTime;
+    static function CreateDateTime(filetime : system::UInt64) : system::DateTime;
+    static function Find(value : system::String, substr : system::String) : system::Int32;
+    static function Forward(dt : system::DateTime, milliseconds : system::UInt64) : system::DateTime;
+    static function GetLocalTime() : system::DateTime;
+    static function GetUtcTime() : system::DateTime;
+    static function Int32ToInt(value : system::Int32) : system::Int32;
+    static function Int64ToInt(value : system::Int64) : system::Int32;
+    static function IntToInt32(value : system::Int32) : system::Int32;
+    static function IntToInt64(value : system::Int32) : system::Int64;
+    static function LCase(value : system::String) : system::String;
+    static function Left(value : system::String, length : system::Int32) : system::String;
+    static function Len(value : system::String) : system::Int32;
+    static function LoremIpsumParagraph(bestLength : system::Int32) : system::String;
+    static function LoremIpsumSentence(bestLength : system::Int32) : system::String;
+    static function LoremIpsumTitle(bestLength : system::Int32) : system::String;
+    static function Mid(value : system::String, start : system::Int32, length : system::Int32) : system::String;
+    static function ReverseEnumerable(value : system::Enumerable^) : system::Enumerable^;
+    static function Right(value : system::String, length : system::Int32) : system::String;
+    static function ToLocalTime(dt : system::DateTime) : system::DateTime;
+    static function ToUtcTime(dt : system::DateTime) : system::DateTime;
+    static function UCase(value : system::String) : system::String;
+    static function UInt32ToUInt(value : system::UInt32) : system::UInt32;
+    static function UInt64ToUInt(value : system::UInt64) : system::UInt32;
+    static function UIntToUInt32(value : system::UInt32) : system::UInt32;
+    static function UIntToUInt64(value : system::UInt32) : system::UInt64;
+
+}
+
+@FullName:vl::vuint16_t
+@ValueType
+@Serializable
+primitive system::UInt16;
+
+@FullName:vl::vuint32_t
+@ValueType
+@Serializable
+primitive system::UInt32;
+
+@FullName:vl::vuint64_t
+@ValueType
+@Serializable
+primitive system::UInt64;
+
+@FullName:vl::vuint8_t
+@ValueType
+@Serializable
+primitive system::UInt8;
+
+@FullName:vl::reflection::description::VoidValue
+@ValueType
+primitive system::Void;
+
+@FullName:vl::glr::xml::XmlAttribute
+class system::XmlAttribute : system::ParsingAstBase {
+    property name : system::ParsingToken;
+    property value : system::ParsingToken;
+
+    constructor () : system::XmlAttribute^;
+}
+
+@FullName:vl::glr::xml::XmlCData
+class system::XmlCData : system::XmlNode {
+    property content : system::ParsingToken;
+
+    constructor () : system::XmlCData^;
+}
+
+@FullName:vl::glr::xml::XmlComment
+class system::XmlComment : system::XmlNode {
+    property content : system::ParsingToken;
+
+    constructor () : system::XmlComment^;
+}
+
+@FullName:vl::glr::xml::XmlDocument
+class system::XmlDocument : system::XmlNode {
+    property prologs : system::List<system::XmlNode^>^ { get }
+    property rootElement : system::XmlElement^;
+
+    constructor () : system::XmlDocument^;
+}
+
+@FullName:vl::glr::xml::XmlElement
+class system::XmlElement : system::XmlNode {
+    property attributes : system::List<system::XmlAttribute^>^ { get }
+    property closingName : system::ParsingToken;
+    property name : system::ParsingToken;
+    property subNodes : system::List<system::XmlNode^>^ { get }
+
+    constructor () : system::XmlElement^;
+}
+
+@FullName:vl::glr::xml::XmlInstruction
+class system::XmlInstruction : system::XmlNode {
+    property attributes : system::List<system::XmlAttribute^>^ { get }
+    property name : system::ParsingToken;
+
+    constructor () : system::XmlInstruction^;
+}
+
+@FullName:vl::glr::xml::XmlNode
+class system::XmlNode : system::ParsingAstBase {
+}
+
+@FullName:vl::glr::xml::XmlNode::IVisitor
+interface system::XmlNode::IVisitor : system::Interface {
+    function Visit(node : system::XmlText*) : system::Void;
+    function Visit(node : system::XmlCData*) : system::Void;
+    function Visit(node : system::XmlComment*) : system::Void;
+    function Visit(node : system::XmlElement*) : system::Void;
+    function Visit(node : system::XmlInstruction*) : system::Void;
+    function Visit(node : system::XmlDocument*) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::glr::xml::XmlNode::IVisitor>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::glr::xml::XmlNode::IVisitor>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::XmlNode::IVisitor^;
+}
+
+@FullName:vl::glr::xml::XmlText
+class system::XmlText : system::XmlNode {
+    property content : system::ParsingToken;
+
+    constructor () : system::XmlText^;
+}
+
+@FullName:vl::reflection::description::IBoxedValue
+interface system::reflection::BoxedValue : system::Interface {
+    function Copy() : system::reflection::BoxedValue^;
+
+}
+
+@FullName:vl::reflection::description::IEnumType
+interface system::reflection::EnumType : system::Interface {
+    function FromEnum(value : system::Object) : system::UInt64;
+    function GetItemCount() : system::Int32;
+    function GetItemName(index : system::Int32) : system::String;
+    function GetItemValue(index : system::Int32) : system::UInt64;
+    function IndexOfItem(name : system::String) : system::Int32;
+    function IsFlagEnum() : system::Boolean;
+    function ToEnum(value : system::UInt64) : system::Object;
+
+}
+
+@FullName:vl::reflection::description::IEventHandler
+interface system::reflection::EventHandler : system::Interface {
+    function IsAttached() : system::Boolean;
+
+}
+
+@FullName:vl::reflection::description::IEventInfo
+interface system::reflection::EventInfo : system::reflection::MemberInfo {
+    property HandlerType : system::reflection::TypeInfo* { get:GetHandlerType }
+    property ObservingPropertyCount : system::Int32 { get:GetObservingPropertyCount }
+
+    function Attach(thisObject : system::Object, handler : system::Function^) : system::reflection::EventHandler^;
+    function GetHandlerType() : system::reflection::TypeInfo*;
+    function GetObservingProperty(index : system::Int32) : system::reflection::PropertyInfo*;
+    function GetObservingPropertyCount() : system::Int32;
+    function Invoke(thisObject : system::Object, arguments : system::ReadonlyList^) : system::Void;
+
+}
+
+@FullName:vl::reflection::description::IMemberInfo
+interface system::reflection::MemberInfo : system::Interface {
+    property Name : system::String { get:GetName }
+    property OwnerTypeDescriptor : system::reflection::TypeDescriptor* { get:GetOwnerTypeDescriptor }
+
+    function GetName() : system::String;
+    function GetOwnerTypeDescriptor() : system::reflection::TypeDescriptor*;
+
+}
+
+@FullName:vl::reflection::description::IMethodGroupInfo
+interface system::reflection::MethodGroupInfo : system::reflection::MemberInfo {
+    property MethodCount : system::Int32 { get:GetMethodCount }
+
+    function GetMethod(index : system::Int32) : system::reflection::MethodInfo*;
+    function GetMethodCount() : system::Int32;
+
+}
+
+@FullName:vl::reflection::description::IMethodInfo
+interface system::reflection::MethodInfo : system::reflection::MemberInfo, system::reflection::MemberInfo {
+    property OwnerMethodGroup : system::reflection::MethodGroupInfo* { get:GetOwnerMethodGroup }
+    property OwnerProperty : system::reflection::PropertyInfo* { get:GetOwnerProperty }
+    property ParameterCount : system::Int32 { get:GetParameterCount }
+    property Return : system::reflection::TypeInfo* { get:GetReturn }
+
+    function CheckArguments(arguments : system::Array<system::Object>^) : system::Void;
+    function GetOwnerMethodGroup() : system::reflection::MethodGroupInfo*;
+    function GetOwnerProperty() : system::reflection::PropertyInfo*;
+    function GetParameter(index : system::Int32) : system::reflection::ParameterInfo*;
+    function GetParameterCount() : system::Int32;
+    function GetReturn() : system::reflection::TypeInfo*;
+    function Invoke(thisObject : system::Object, arguments : system::Array<system::Object>^) : system::Object;
+    function IsStatic() : system::Boolean;
+
+}
+
+@FullName:vl::reflection::description::IParameterInfo
+interface system::reflection::ParameterInfo : system::reflection::MemberInfo {
+    property OwnerMethod : system::reflection::MethodInfo* { get:GetOwnerMethod }
+    property Type : system::reflection::TypeInfo* { get:GetType }
+
+    function GetOwnerMethod() : system::reflection::MethodInfo*;
+    function GetType() : system::reflection::TypeInfo*;
+
+}
+
+@FullName:vl::reflection::description::IPropertyInfo
+interface system::reflection::PropertyInfo : system::reflection::MemberInfo {
+    property Getter : system::reflection::MethodInfo* { get:GetGetter }
+    property Return : system::reflection::TypeInfo* { get:GetReturn }
+    property Setter : system::reflection::MethodInfo* { get:GetSetter }
+    property ValueChangedEvent : system::reflection::EventInfo* { get:GetValueChangedEvent }
+
+    function GetGetter() : system::reflection::MethodInfo*;
+    function GetReturn() : system::reflection::TypeInfo*;
+    function GetSetter() : system::reflection::MethodInfo*;
+    function GetValue(thisObject : system::Object) : system::Object;
+    function GetValueChangedEvent() : system::reflection::EventInfo*;
+    function IsReadable() : system::Boolean;
+    function IsWritable() : system::Boolean;
+    function SetValue(thisObject : system::Object, newValue : system::Object) : system::Void;
+
+}
+
+@FullName:vl::reflection::description::ISerializableType
+interface system::reflection::SerializableType : system::Interface {
+    function Deserialize(input : system::String, output : system::Object) : system::Boolean;
+    function Serialize(input : system::Object, output : system::String) : system::Boolean;
+
+}
+
+@FullName:vl::reflection::description::ITypeDescriptor
+interface system::reflection::TypeDescriptor : system::Interface {
+    property BaseTypeDescriptorCount : system::Int32 { get:GetBaseTypeDescriptorCount }
+    property ConstructorGroup : system::reflection::MethodGroupInfo* { get:GetConstructorGroup }
+    property EnumType : system::reflection::EnumType* { get:GetEnumType }
+    property EventCount : system::Int32 { get:GetEventCount }
+    property MethodGroupCount : system::Int32 { get:GetMethodGroupCount }
+    property PropertyCount : system::Int32 { get:GetPropertyCount }
+    property SerializableType : system::reflection::SerializableType* { get:GetSerializableType }
+    property TypeDescriptorFlags : system::reflection::TypeDescriptorFlags { get:GetTypeDescriptorFlags }
+    property TypeName : system::String { get:GetTypeName }
+    property ValueType : system::reflection::ValueType* { get:GetValueType }
+
+    function CanConvertTo(targetType : system::reflection::TypeDescriptor*) : system::Boolean;
+    function GetBaseTypeDescriptor(index : system::Int32) : system::reflection::TypeDescriptor*;
+    function GetBaseTypeDescriptorCount() : system::Int32;
+    function GetConstructorGroup() : system::reflection::MethodGroupInfo*;
+    function GetEnumType() : system::reflection::EnumType*;
+    function GetEvent(index : system::Int32) : system::reflection::EventInfo*;
+    function GetEventByName(name : system::String, inheritable : system::Boolean) : system::reflection::EventInfo*;
+    function GetEventCount() : system::Int32;
+    function GetMethodGroup(index : system::Int32) : system::reflection::MethodGroupInfo*;
+    function GetMethodGroupByName(name : system::String, inheritable : system::Boolean) : system::reflection::MethodGroupInfo*;
+    function GetMethodGroupCount() : system::Int32;
+    function GetProperty(index : system::Int32) : system::reflection::PropertyInfo*;
+    function GetPropertyByName(name : system::String, inheritable : system::Boolean) : system::reflection::PropertyInfo*;
+    function GetPropertyCount() : system::Int32;
+    function GetSerializableType() : system::reflection::SerializableType*;
+    @InvokeTemplate:::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor)
+    static function GetTypeDescriptor(index : system::Int32) : system::reflection::TypeDescriptor*;
+    @InvokeTemplate:::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor)
+    static function GetTypeDescriptor(name : system::String) : system::reflection::TypeDescriptor*;
+    @InvokeTemplate:::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor)
+    static function GetTypeDescriptor(value : system::Object) : system::reflection::TypeDescriptor*;
+    @InvokeTemplate:::vl::reflection::description::ITypeDescriptor_GetTypeDescriptorCount($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ITypeDescriptor_GetTypeDescriptorCount)
+    static function GetTypeDescriptorCount() : system::Int32;
+    function GetTypeDescriptorFlags() : system::reflection::TypeDescriptorFlags;
+    function GetTypeName() : system::String;
+    function GetValueType() : system::reflection::ValueType*;
+    function IsEventExists(name : system::String, inheritable : system::Boolean) : system::Boolean;
+    function IsMethodGroupExists(name : system::String, inheritable : system::Boolean) : system::Boolean;
+    function IsPropertyExists(name : system::String, inheritable : system::Boolean) : system::Boolean;
+
+}
+
+@FullName:vl::reflection::description::TypeDescriptorFlags
+@ValueType
+@Flags
+enum system::reflection::TypeDescriptorFlags {
+    Class = 4,
+    FlagEnum = 64,
+    IDescriptable = 2,
+    Interface = 8,
+    NormalEnum = 128,
+    Object = 1,
+    Primitive = 16,
+    Struct = 32,
+}
+
+@FullName:vl::reflection::description::ITypeInfo
+interface system::reflection::TypeInfo : system::Interface {
+    property Decorator : system::reflection::TypeInfo::Decorator { get:GetDecorator }
+    property ElementType : system::reflection::TypeInfo* { get:GetElementType }
+    property GenericArgumentCount : system::Int32 { get:GetGenericArgumentCount }
+    property TypeDescriptor : system::reflection::TypeDescriptor* { get:GetTypeDescriptor }
+    property TypeFriendlyName : system::String { get:GetTypeFriendlyName }
+
+    function GetDecorator() : system::reflection::TypeInfo::Decorator;
+    function GetElementType() : system::reflection::TypeInfo*;
+    function GetGenericArgument(index : system::Int32) : system::reflection::TypeInfo*;
+    function GetGenericArgumentCount() : system::Int32;
+    function GetTypeDescriptor() : system::reflection::TypeDescriptor*;
+    function GetTypeFriendlyName() : system::String;
+
+}
+
+@FullName:vl::reflection::description::ITypeInfo::Decorator
+@ValueType
+enum system::reflection::TypeInfo::Decorator {
+    Generic = 4,
+    Nullable = 2,
+    RawPtr = 0,
+    SharedPtr = 1,
+    TypeDescriptor = 3,
+}
+
+@FullName:vl::reflection::description::IValueType
+interface system::reflection::ValueType : system::Interface {
+    function Compare(a : system::Object, b : system::Object) : system::reflection::ValueType::CompareResult;
+    function CreateDefault() : system::Object;
+
+}
+
+@FullName:vl::reflection::description::IBoxedValue::CompareResult
+@ValueType
+enum system::reflection::ValueType::CompareResult {
+    Equal = 2,
+    Greater = 1,
+    NotComparable = 3,
+    Smaller = 0,
+}
+
+@FullName:test::CustomInterfaceProcessor
+class test::CustomInterfaceProcessor : system::ReferenceType {
+    static function Sum(values : system::Enumerable^) : system::Int32;
+
+}
+
+@FullName:test::Hinters
+class test::Hinters : system::ReferenceType {
+    property MyList : system::List<system::Int32>^ { get:GetMyList }
+    property ObservableList : system::ObservableList<system::Int32>^ { get:GetObservableList }
+    property Storage : system::List<system::Int32>^ { get:GetStorage set:SetStorage }
+
+    function CountArray(xs : system::Array<system::Int32>^) : system::Int32;
+    function CountList(xs : system::List<system::Int32>^) : system::Int32;
+    function CountObservableList(xs : system::ObservableList<system::Int32>^) : system::Int32;
+    function CountSortedList(xs : system::ReadonlyList<system::Int32>^) : system::Int32;
+    @InvokeTemplate:::test::CreateHinter($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::test::CreateHinter)
+    static function CreateHinter(x : system::Int32) : test::Hinters*;
+    @InvokeTemplate:::test::GetDictionaryFromHinter($This, $Arguments)
+    @ClosureTemplate:::vl::Func<$Func>($This, &::test::GetDictionaryFromHinter)
+    function GetDictionary(xs : system::Dictionary<system::Int32, system::Int32>^) : system::Dictionary<system::Int32, system::Int32>^;
+    function GetList(xs : system::List<system::Int32>^, y : system::Int32) : system::List<system::Int32>^;
+    function GetMyList() : system::List<system::Int32>^;
+    function GetObservableList() : system::ObservableList<system::Int32>^;
+    function GetReadonlyArray(xs : system::ReadonlyList<system::Int32>^) : system::ReadonlyList<system::Int32>^;
+    @InvokeTemplate:::test::GetReadonlyDictionaryFromHinter($This, $Arguments)
+    @ClosureTemplate:::vl::Func<$Func>($This, &::test::GetReadonlyDictionaryFromHinter)
+    function GetReadonlyDictionary(xs : system::ReadonlyDictionary<system::Int32, system::Int32>^) : system::ReadonlyDictionary<system::Int32, system::Int32>^;
+    function GetReadonlyList(xs : system::ReadonlyList<system::Int32>^) : system::ReadonlyList<system::Int32>^;
+    @InvokeTemplate:$This->GetReadonlySL($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>($This, &$Type::GetReadonlySL)
+    function GetReadonlySortedList(xs : system::ReadonlyList<system::Int32>^) : system::ReadonlyList<system::Int32>^;
+    function GetStorage() : system::List<system::Int32>^;
+    function SetStorage(value : system::List<system::Int32>^) : system::Void;
+
+    @InvokeTemplate:::test::CreateHinter($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::test::CreateHinter)
+    constructor () : test::Hinters^;
+}
+
+@FullName:test::ObservableValue
+class test::ObservableValue : system::ReferenceType {
+    event ValueChanged : system::Function<system::Void, system::Int32, system::Int32>^ observing {        Value,
+}
+    property DisplayName : system::String { get:GetDisplayName }
+    property Name : system::String { get:GetName set:SetName }
+    property Value : system::Int32 { get:GetValue set:SetValue event:ValueChanged }
+
+    static function Create(value : system::Int32, name : system::String) : test::ObservableValue^;
+    static function CreatePtr(value : system::Int32, name : system::String) : test::ObservableValue*;
+    function GetDisplayName() : system::String;
+    function GetName() : system::String;
+    function GetValue() : system::Int32;
+    function SetName(value : system::String) : system::Void;
+    function SetValue(value : system::Int32) : system::Void;
+
+    constructor () : test::ObservableValue^;
+    constructor (value : system::Int32) : test::ObservableValue^;
+    constructor (value : system::Int32, x : system::Double?) : test::ObservableValue*;
+    constructor (value : system::Int32, x : system::Boolean?) : test::ObservableValue*;
+}
+
+@FullName:test::Point
+@ValueType
+struct test::Point {
+    property x : system::Int32;
+    property y : system::Int32;
+}
+
+@FullName:test::PointClass
+class test::PointClass : system::ReferenceType {
+    property x : system::Int32;
+    property y : system::Int32;
+
+    constructor () : test::PointClass^;
+}
+
+@FullName:test::Seasons
+@ValueType
+@Flags
+enum test::Seasons {
+    Autumn = 4,
+    Bad = 10,
+    Good = 5,
+    None = 0,
+    Spring = 1,
+    Summer = 2,
+    Winter = 8,
+}
+
+@FullName:test::SyncScheduler
+class test::SyncScheduler : system::AsyncScheduler {
+    static function Run(callback  : system::Function<system::Void>^) : system::Void;
+
+}
+

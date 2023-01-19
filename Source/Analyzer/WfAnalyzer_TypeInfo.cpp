@@ -605,10 +605,10 @@ CreateTypeInfoFromType
 						typeDescriptor = description::GetTypeDescriptor<IDescriptable>();
 						break;
 					case WfPredefinedTypeName::Int:
-						typeDescriptor = description::GetTypeDescriptor<vint>();
+						typeDescriptor = scope->FindManager()->cputdSInt;
 						break;
 					case WfPredefinedTypeName::UInt:
-						typeDescriptor = description::GetTypeDescriptor<vuint>();
+						typeDescriptor = scope->FindManager()->cputdUInt;
 						break;
 					case WfPredefinedTypeName::Float:
 						typeDescriptor = description::GetTypeDescriptor<float>();

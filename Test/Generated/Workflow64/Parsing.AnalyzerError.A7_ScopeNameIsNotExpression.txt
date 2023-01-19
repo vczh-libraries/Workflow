@@ -1,0 +1,48 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+namespace ns
+{
+    var x = ns;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+namespace ns
+{
+    var x = ns;
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 10, Message: A7: Symbol "ns" cannot be used as an expression.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 47}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "NamespaceDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 47}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "ns", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 11, "index": 27}, "codeIndex": -1}},
+        "declarations": [{
+            "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 34}, "end": {"row": 4, "column": 11, "index": 44}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 4, "column": 5, "index": 38}, "end": {"row": 4, "column": 5, "index": 38}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 4, "column": 9, "index": 42}, "end": {"row": 4, "column": 10, "index": 43}, "codeIndex": -1}},
+                "name": { "value": "ns", "codeRange": {"start": {"row": 4, "column": 9, "index": 42}, "end": {"row": 4, "column": 10, "index": 43}, "codeIndex": -1}}
+            },
+            "type": null
+        }]
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

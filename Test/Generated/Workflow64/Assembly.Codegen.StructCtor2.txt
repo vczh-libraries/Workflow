@@ -1,0 +1,102 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+Do (2 .. 9)
+    Arguments:
+        p
+    Captured Variables:
+    Local Variables:
+
+main (10 .. 37)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        a
+        b
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  p
+2    :     LoadLocalVar  : var = 0(p)
+//  p.x
+3    :     GetProperty   : propertyInfo = x<Point>
+//  p
+4    :     LoadLocalVar  : var = 0(p)
+//  p.y
+5    :     GetProperty   : propertyInfo = y<Point>
+//  (p.x + p.y)
+6    :     OpAdd         : type = I8
+//  return (p.x + p.y);
+7    :     Return        
+//  func Do(p : Point) : (int)
+8    :     LoadValue     : value = <null>
+//  func Do(p : Point) : (int)
+9    :     Return        
+//  {x : 1; y : 2;}
+10   :     CreateStruct  : flag = BoxedValue, typeDescriptor = Point
+//  1
+11   :     LoadValue     : value = <I8, 1>
+//  {x : 1; y : 2;}
+12   :     UpdateProperty: propertyInfo = x<Point>
+//  2
+13   :     LoadValue     : value = <I8, 2>
+//  {x : 1; y : 2;}
+14   :     UpdateProperty: propertyInfo = y<Point>
+//  var a = {x : 1; y : 2;} of (Point);
+15   :     StoreLocalVar : var = 0(a)
+//  {x : 3; y : 4;}
+16   :     CreateStruct  : flag = BoxedValue, typeDescriptor = Point
+//  3
+17   :     LoadValue     : value = <I8, 3>
+//  {x : 3; y : 4;}
+18   :     UpdateProperty: propertyInfo = x<Point>
+//  4
+19   :     LoadValue     : value = <I8, 4>
+//  {x : 3; y : 4;}
+20   :     UpdateProperty: propertyInfo = y<Point>
+//  var b : Point = {x : 3; y : 4;};
+21   :     StoreLocalVar : var = 1(b)
+//  a
+22   :     LoadLocalVar  : var = 0(a)
+//  Do(a)
+23   :     Invoke        : func = 0(Do), stackPatternCount = 1
+//  b
+24   :     LoadLocalVar  : var = 1(b)
+//  Do(b)
+25   :     Invoke        : func = 0(Do), stackPatternCount = 1
+//  (Do(a) + Do(b))
+26   :     OpAdd         : type = I8
+//  {x : 5; y : 6;}
+27   :     CreateStruct  : flag = BoxedValue, typeDescriptor = Point
+//  5
+28   :     LoadValue     : value = <I8, 5>
+//  {x : 5; y : 6;}
+29   :     UpdateProperty: propertyInfo = x<Point>
+//  6
+30   :     LoadValue     : value = <I8, 6>
+//  {x : 5; y : 6;}
+31   :     UpdateProperty: propertyInfo = y<Point>
+//  Do({x : 5; y : 6;})
+32   :     Invoke        : func = 0(Do), stackPatternCount = 1
+//  ((Do(a) + Do(b)) + Do({x : 5; y : 6;}))
+33   :     OpAdd         : type = I8
+//  ((Do(a) + Do(b)) + Do({x : 5; y : 6;}))
+34   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  return ((Do(a) + Do(b)) + Do({x : 5; y : 6;}));
+35   :     Return        
+//  func main() : (string)
+36   :     LoadValue     : value = <null>
+//  func main() : (string)
+37   :     Return        

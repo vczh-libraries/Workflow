@@ -1,0 +1,78 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    static func B() : (void)
+    {
+    }
+
+    class B
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    static func B() : (void)
+    {
+    }
+
+    class B
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 9, Column: 2, Message: D2: Duplicated symbol "B".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 11, "column": 0, "index": 81}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 11, "column": 0, "index": 81}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 29}, "end": {"row": 6, "column": 1, "index": 58}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "B", "codeRange": {"start": {"row": 4, "column": 13, "index": 41}, "end": {"row": 4, "column": 13, "index": 41}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Static",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 19, "index": 47}, "end": {"row": 4, "column": 22, "index": 50}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 54}, "end": {"row": 6, "column": 1, "index": 58}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }, {
+            "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 8, "column": 1, "index": 64}, "end": {"row": 10, "column": 1, "index": 78}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "B", "codeRange": {"start": {"row": 8, "column": 7, "index": 70}, "end": {"row": 8, "column": 7, "index": 70}, "codeIndex": -1}},
+            "baseTypes": [],
+            "constructorType": "Undefined",
+            "declarations": [],
+            "kind": "Class"
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

@@ -1,0 +1,89 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+func main() : (void)
+{
+    var x = true ? 123 : false;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+func main() : (void)
+{
+    var x = true ? 123 : false;
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 10, Message: A14: Failed to merge type "system::Int64" with type "system::Boolean" together to calculate the result type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 85}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 6, "column": 0, "index": 85}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 3, "column": 5, "index": 39}, "end": {"row": 3, "column": 8, "index": 42}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 12, "index": 46}, "end": {"row": 3, "column": 15, "index": 49}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 0, "index": 52}, "end": {"row": 6, "column": 0, "index": 85}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 56}, "end": {"row": 5, "column": 27, "index": 82}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 56}, "end": {"row": 5, "column": 27, "index": 82}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "x", "codeRange": {"start": {"row": 5, "column": 5, "index": 60}, "end": {"row": 5, "column": 5, "index": 60}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "IfExpression", "codeRange": {"start": {"row": 5, "column": 9, "index": 64}, "end": {"row": 5, "column": 26, "index": 81}, "codeIndex": -1}},
+                        "condition": {
+                            "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 5, "column": 9, "index": 64}, "end": {"row": 5, "column": 12, "index": 67}, "codeIndex": -1}},
+                            "value": "True"
+                        },
+                        "falseBranch": {
+                            "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 5, "column": 22, "index": 77}, "end": {"row": 5, "column": 26, "index": 81}, "codeIndex": -1}},
+                            "value": "False"
+                        },
+                        "trueBranch": {
+                            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 5, "column": 16, "index": 71}, "end": {"row": 5, "column": 18, "index": 73}, "codeIndex": -1}},
+                            "value": { "value": "123", "codeRange": {"start": {"row": 5, "column": 16, "index": 71}, "end": {"row": 5, "column": 18, "index": 73}, "codeIndex": -1}}
+                        }
+                    },
+                    "type": null
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

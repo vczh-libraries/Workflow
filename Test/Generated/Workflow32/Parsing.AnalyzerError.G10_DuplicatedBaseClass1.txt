@@ -1,0 +1,62 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A, A
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+}
+
+class B : A, A
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 1, Message: G10: Class "B" inherits from another class "A" for multiple times.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 52}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 4, "column": 0, "index": 28}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 33}, "end": {"row": 8, "column": 0, "index": 52}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "B", "codeRange": {"start": {"row": 6, "column": 6, "index": 39}, "end": {"row": 6, "column": 6, "index": 39}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 6, "column": 10, "index": 43}, "end": {"row": 6, "column": 10, "index": 43}, "codeIndex": -1}}
+        }, {
+            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 13, "index": 46}, "end": {"row": 6, "column": 13, "index": 46}, "codeIndex": -1}},
+            "name": { "value": "A", "codeRange": {"start": {"row": 6, "column": 13, "index": 46}, "end": {"row": 6, "column": 13, "index": 46}, "codeIndex": -1}}
+        }],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

@@ -1,0 +1,55 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+prop A : int{B, C}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+prop A : int{B, C}
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 1, Message: D7: Property "A" cannot be defined outside of classes or interfaces.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 14, "index": 48}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 14, "index": 48}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 3, "column": 5, "index": 39}, "end": {"row": 3, "column": 5, "index": 39}, "codeIndex": -1}},
+        "getter": { "value": "B", "codeRange": {"start": {"row": 3, "column": 11, "index": 45}, "end": {"row": 3, "column": 11, "index": 45}, "codeIndex": -1}},
+        "setter": { "value": "C", "codeRange": {"start": {"row": 3, "column": 13, "index": 47}, "end": {"row": 3, "column": 13, "index": 47}, "codeIndex": -1}},
+        "type": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 7, "index": 41}, "end": {"row": 3, "column": 9, "index": 43}, "codeIndex": -1}},
+            "name": "Int"
+        },
+        "valueChangedEvent": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

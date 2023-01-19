@@ -1,0 +1,116 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    var f = func () : (int)
+    {
+        return 0;
+    };
+    var x : void[void] = null;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    var f = func () : (int)
+    {
+        return 0;
+    };
+    var x : void[void] = null;
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 15, Message: B0: Void is not a type for a value.
+Line: 6, Column: 10, Message: B0: Void is not a type for a value.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 103}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 6, "column": 0, "index": 103}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 6, "column": 0, "index": 103}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 34, "index": 71}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 34, "index": 71}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "f", "codeRange": {"start": {"row": 4, "column": 5, "index": 42}, "end": {"row": 4, "column": 5, "index": 42}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "FunctionExpression", "codeRange": {"start": {"row": 4, "column": 9, "index": 46}, "end": {"row": 4, "column": 33, "index": 70}, "codeIndex": -1}},
+                        "function": {
+                            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 9, "index": 46}, "end": {"row": 4, "column": 33, "index": 70}, "codeIndex": -1}},
+                            "attributes": [],
+                            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                            "anonymity": "Anonymous",
+                            "arguments": [],
+                            "functionKind": "Normal",
+                            "returnType": {
+                                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 17, "index": 54}, "end": {"row": 4, "column": 19, "index": 56}, "codeIndex": -1}},
+                                "name": "Int"
+                            },
+                            "statement": {
+                                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 21, "index": 58}, "end": {"row": 4, "column": 33, "index": 70}, "codeIndex": -1}},
+                                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                                "statements": [{
+                                    "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 4, "column": 23, "index": 60}, "end": {"row": 4, "column": 31, "index": 68}, "codeIndex": -1}},
+                                    "expression": {
+                                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 4, "column": 30, "index": 67}, "end": {"row": 4, "column": 30, "index": 67}, "codeIndex": -1}},
+                                        "value": { "value": "0", "codeRange": {"start": {"row": 4, "column": 30, "index": 67}, "end": {"row": 4, "column": 30, "index": 67}, "codeIndex": -1}}
+                                    }
+                                }]
+                            }
+                        }
+                    },
+                    "type": null
+                }
+            }, {
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 75}, "end": {"row": 5, "column": 26, "index": 100}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 75}, "end": {"row": 5, "column": 26, "index": 100}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "x", "codeRange": {"start": {"row": 5, "column": 5, "index": 79}, "end": {"row": 5, "column": 5, "index": 79}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 5, "column": 22, "index": 96}, "end": {"row": 5, "column": 25, "index": 99}, "codeIndex": -1}},
+                        "value": "Null"
+                    },
+                    "type": {
+                        "$ast": { "type": "MapType", "codeRange": {"start": {"row": 5, "column": 9, "index": 83}, "end": {"row": 5, "column": 18, "index": 92}, "codeIndex": -1}},
+                        "key": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 14, "index": 88}, "end": {"row": 5, "column": 17, "index": 91}, "codeIndex": -1}},
+                            "name": "Void"
+                        },
+                        "value": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 9, "index": 83}, "end": {"row": 5, "column": 12, "index": 86}, "codeIndex": -1}},
+                            "name": "Void"
+                        },
+                        "writability": "Writable"
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

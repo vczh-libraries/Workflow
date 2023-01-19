@@ -1,0 +1,56 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    var a : A* = this;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    var a : A* = this;
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 15, Message: A29: The "this" expression can only be used in class methods or functions in new interface expressions
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 49}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 49}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 29}, "end": {"row": 4, "column": 18, "index": 46}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "a", "codeRange": {"start": {"row": 4, "column": 5, "index": 33}, "end": {"row": 4, "column": 5, "index": 33}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "ThisExpression", "codeRange": {"start": {"row": 4, "column": 14, "index": 42}, "end": {"row": 4, "column": 17, "index": 45}, "codeIndex": -1}}
+            },
+            "type": {
+                "$ast": { "type": "RawPointerType", "codeRange": {"start": {"row": 4, "column": 9, "index": 37}, "end": {"row": 4, "column": 10, "index": 38}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 4, "column": 9, "index": 37}, "end": {"row": 4, "column": 9, "index": 37}, "codeIndex": -1}},
+                    "name": { "value": "A", "codeRange": {"start": {"row": 4, "column": 9, "index": 37}, "end": {"row": 4, "column": 9, "index": 37}, "codeIndex": -1}}
+                }
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

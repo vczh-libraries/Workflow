@@ -1,0 +1,149 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+main (2 .. 63)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        xs
+        s1
+        s2
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  5
+2    :     LoadValue     : value = <I4, 5>
+//  4
+3    :     LoadValue     : value = <I4, 4>
+//  3
+4    :     LoadValue     : value = <I4, 3>
+//  2
+5    :     LoadValue     : value = <I4, 2>
+//  1
+6    :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+7    :     NewList       : stackPatternCount = 5
+//  var xs = {1; 2; 3; 4; 5;};
+8    :     StoreLocalVar : var = 0(xs)
+//  xs
+9    :     LoadLocalVar  : var = 0(xs)
+//  xs.Count
+10   :     InvokeMethod  : methodInfo = GetCount<system::ReadonlyList>, stackPatternCount = 0
+//  xs.Count
+11   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+12   :     LoadValue     : value = <Bool, , >
+//  (xs.Count & ", ")
+13   :     OpConcat      
+//  0
+14   :     LoadValue     : value = <I4, 0>
+//  xs
+15   :     LoadLocalVar  : var = 0(xs)
+//  xs[0]
+16   :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  xs[0]
+17   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((xs.Count & ", ") & xs[0])
+18   :     OpConcat      
+//  ", "
+19   :     LoadValue     : value = <Bool, , >
+//  (((xs.Count & ", ") & xs[0]) & ", ")
+20   :     OpConcat      
+//  4
+21   :     LoadValue     : value = <I4, 4>
+//  xs
+22   :     LoadLocalVar  : var = 0(xs)
+//  xs[4]
+23   :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  xs[4]
+24   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((xs.Count & ", ") & xs[0]) & ", ") & xs[4])
+25   :     OpConcat      
+//  var s1 = ((((xs.Count & ", ") & xs[0]) & ", ") & xs[4]);
+26   :     StoreLocalVar : var = 1(s1)
+//  4
+27   :     LoadValue     : value = <I4, 4>
+//  (xs[4] = 6)
+28   :     Duplicate     : stackPatternCount = 0
+//  6
+29   :     LoadValue     : value = <I4, 6>
+//  xs
+30   :     LoadLocalVar  : var = 0(xs)
+//  (xs[4] = 6)
+31   :     InvokeMethod  : methodInfo = Set<system::List>, stackPatternCount = 2
+//  (xs[4] = 6)
+32   :     Pop           
+//  (xs[4] = 6);
+33   :     Pop           
+//  7
+34   :     LoadValue     : value = <I4, 7>
+//  xs
+35   :     LoadLocalVar  : var = 0(xs)
+//  xs.Add(7)
+36   :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  xs.Add(7);
+37   :     Pop           
+//  xs
+38   :     LoadLocalVar  : var = 0(xs)
+//  xs.Count
+39   :     InvokeMethod  : methodInfo = GetCount<system::ReadonlyList>, stackPatternCount = 0
+//  xs.Count
+40   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+41   :     LoadValue     : value = <Bool, , >
+//  (xs.Count & ", ")
+42   :     OpConcat      
+//  0
+43   :     LoadValue     : value = <I4, 0>
+//  xs
+44   :     LoadLocalVar  : var = 0(xs)
+//  xs[0]
+45   :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  xs[0]
+46   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((xs.Count & ", ") & xs[0])
+47   :     OpConcat      
+//  ", "
+48   :     LoadValue     : value = <Bool, , >
+//  (((xs.Count & ", ") & xs[0]) & ", ")
+49   :     OpConcat      
+//  4
+50   :     LoadValue     : value = <I4, 4>
+//  xs
+51   :     LoadLocalVar  : var = 0(xs)
+//  xs[4]
+52   :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  xs[4]
+53   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((xs.Count & ", ") & xs[0]) & ", ") & xs[4])
+54   :     OpConcat      
+//  var s2 = ((((xs.Count & ", ") & xs[0]) & ", ") & xs[4]);
+55   :     StoreLocalVar : var = 2(s2)
+//  s1
+56   :     LoadLocalVar  : var = 1(s1)
+//  ", "
+57   :     LoadValue     : value = <Bool, , >
+//  (s1 & ", ")
+58   :     OpConcat      
+//  s2
+59   :     LoadLocalVar  : var = 2(s2)
+//  ((s1 & ", ") & s2)
+60   :     OpConcat      
+//  return ((s1 & ", ") & s2);
+61   :     Return        
+//  func main() : (string)
+62   :     LoadValue     : value = <null>
+//  func main() : (string)
+63   :     Return        

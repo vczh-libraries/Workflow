@@ -1,0 +1,70 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    new ()
+        :B*()
+    {
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    new ()
+        :B*()
+    {
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 3, Column: 1, Message: G6: A base type of the type "A" should be another custom type, it cannot be any predefined type, pointer type, shared pointer type, nullable type, collection type, or function type
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 45}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 45}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "ConstructorDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 29}, "end": {"row": 4, "column": 14, "index": 42}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "arguments": [],
+            "baseConstructorCalls": [{
+                "$ast": { "type": "BaseConstructorCall", "codeRange": {"start": {"row": 4, "column": 8, "index": 36}, "end": {"row": 4, "column": 11, "index": 39}, "codeIndex": -1}},
+                "arguments": [],
+                "type": {
+                    "$ast": { "type": "RawPointerType", "codeRange": {"start": {"row": 4, "column": 8, "index": 36}, "end": {"row": 4, "column": 9, "index": 37}, "codeIndex": -1}},
+                    "element": {
+                        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 4, "column": 8, "index": 36}, "end": {"row": 4, "column": 8, "index": 36}, "codeIndex": -1}},
+                        "name": { "value": "B", "codeRange": {"start": {"row": 4, "column": 8, "index": 36}, "end": {"row": 4, "column": 8, "index": 36}, "codeIndex": -1}}
+                    }
+                }
+            }],
+            "constructorType": "SharedPtr",
+            "statement": {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 13, "index": 41}, "end": {"row": 4, "column": 14, "index": 42}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": []
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

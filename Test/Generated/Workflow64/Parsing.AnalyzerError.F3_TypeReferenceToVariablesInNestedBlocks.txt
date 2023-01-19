@@ -1,0 +1,109 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    var x : int = 0;
+    {
+        var x : double = 1.0;
+        var y : x = null;
+    }
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    var x : int = 0;
+    {
+        var x : double = 1.0;
+        var y : x = null;
+    }
+}
+
+========================================================
+Errors
+========================================================
+Line: 8, Column: 11, Message: F3: Symbol "x" references to too many targets: 
+	<test>::main::<>::<>::x of type "system::Double"
+	<test>::main::<>::x of type "system::Int64".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 9, "column": 0, "index": 110}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 9, "column": 0, "index": 110}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 9, "column": 0, "index": 110}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 16, "index": 53}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 4, "column": 16, "index": 53}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "x", "codeRange": {"start": {"row": 4, "column": 5, "index": 42}, "end": {"row": 4, "column": 5, "index": 42}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 4, "column": 15, "index": 52}, "end": {"row": 4, "column": 15, "index": 52}, "codeIndex": -1}},
+                        "value": { "value": "0", "codeRange": {"start": {"row": 4, "column": 15, "index": 52}, "end": {"row": 4, "column": 15, "index": 52}, "codeIndex": -1}}
+                    },
+                    "type": {
+                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 9, "index": 46}, "end": {"row": 4, "column": 11, "index": 48}, "codeIndex": -1}},
+                        "name": "Int"
+                    }
+                }
+            }, {
+                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 57}, "end": {"row": 8, "column": 1, "index": 107}, "codeIndex": -1}},
+                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "statements": [{
+                    "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 6, "column": 2, "index": 62}, "end": {"row": 6, "column": 22, "index": 82}, "codeIndex": -1}},
+                    "variable": {
+                        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 6, "column": 2, "index": 62}, "end": {"row": 6, "column": 22, "index": 82}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "x", "codeRange": {"start": {"row": 6, "column": 6, "index": 66}, "end": {"row": 6, "column": 6, "index": 66}, "codeIndex": -1}},
+                        "expression": {
+                            "$ast": { "type": "FloatingExpression", "codeRange": {"start": {"row": 6, "column": 19, "index": 79}, "end": {"row": 6, "column": 21, "index": 81}, "codeIndex": -1}},
+                            "value": { "value": "1.0", "codeRange": {"start": {"row": 6, "column": 19, "index": 79}, "end": {"row": 6, "column": 21, "index": 81}, "codeIndex": -1}}
+                        },
+                        "type": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 6, "column": 10, "index": 70}, "end": {"row": 6, "column": 15, "index": 75}, "codeIndex": -1}},
+                            "name": "Double"
+                        }
+                    }
+                }, {
+                    "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 7, "column": 2, "index": 87}, "end": {"row": 7, "column": 18, "index": 103}, "codeIndex": -1}},
+                    "variable": {
+                        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 7, "column": 2, "index": 87}, "end": {"row": 7, "column": 18, "index": 103}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "y", "codeRange": {"start": {"row": 7, "column": 6, "index": 91}, "end": {"row": 7, "column": 6, "index": 91}, "codeIndex": -1}},
+                        "expression": {
+                            "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 7, "column": 14, "index": 99}, "end": {"row": 7, "column": 17, "index": 102}, "codeIndex": -1}},
+                            "value": "Null"
+                        },
+                        "type": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 7, "column": 10, "index": 95}, "end": {"row": 7, "column": 10, "index": 95}, "codeIndex": -1}},
+                            "name": { "value": "x", "codeRange": {"start": {"row": 7, "column": 10, "index": 95}, "end": {"row": 7, "column": 10, "index": 95}, "codeIndex": -1}}
+                        }
+                    }
+                }]
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

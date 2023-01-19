@@ -179,7 +179,7 @@ TEST_FILE
 		List<WString> moduleCodes;
 		moduleCodes.Add(LoadSample(L"Debugger", name));
 		List<glr::ParsingError> errors;
-		auto assembly = Compile(GetWorkflowParser(), moduleCodes, errors);
+		auto assembly = Compile(GetWorkflowParser(), WfCpuArchitecture::AsExecutable, moduleCodes, errors);
 		TEST_ASSERT(assembly && errors.Count() == 0);
 		return Ptr(new WfRuntimeGlobalContext(assembly));
 	};

@@ -1368,7 +1368,7 @@ ExpandNewCoroutineExpression
 					auto varDecl = Ptr(new WfVariableDeclaration);
 					newExpr->declarations.Add(varDecl);
 					varDecl->name.value = L"<co-state>";
-					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+					varDecl->type = GetTypeFromTypeInfo(manager->cputiSInt.Obj());
 
 					auto stateExpr = Ptr(new WfIntegerExpression);
 					stateExpr->value.value = L"0";
@@ -1383,7 +1383,7 @@ ExpandNewCoroutineExpression
 					auto varDecl = Ptr(new WfVariableDeclaration);
 					newExpr->declarations.Add(varDecl);
 					varDecl->name.value = L"<co-state-before-pause>";
-					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+					varDecl->type = GetTypeFromTypeInfo(manager->cputiSInt.Obj());
 					varDecl->expression = GenerateCoroutineInvalidId();
 				}
 

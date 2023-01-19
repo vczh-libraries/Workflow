@@ -1,0 +1,123 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+Create2 (2 .. 8)
+    Arguments:
+        value
+        name
+    Captured Variables:
+    Local Variables:
+
+main (9 .. 46)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        create1
+        create2
+        o1
+        o2
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  value
+2    :     LoadLocalVar  : var = 0(value)
+//  name
+3    :     LoadLocalVar  : var = 1(name)
+//  ObservableValue::Create(value, name)
+4    :     LoadValue     : value = <null>
+//  ObservableValue::Create(value, name)
+5    :     InvokeMethod  : methodInfo = Create<test::ObservableValue>, stackPatternCount = 2
+//  return ObservableValue::Create(value, name);
+6    :     Return        
+//  func Create2(value : int, name : string) : (ObservableValue^)
+7    :     LoadValue     : value = <null>
+//  func Create2(value : int, name : string) : (ObservableValue^)
+8    :     Return        
+//  ObservableValue::Create
+9    :     LoadValue     : value = <null>
+//  ObservableValue::Create
+10   :     LoadMethodClosure: methodInfo = Create<test::ObservableValue>
+//  var create1 = ObservableValue::Create;
+11   :     StoreLocalVar : var = 0(create1)
+//  Create2
+12   :     CreateClosureContext: stackPatternCount = 0
+//  Create2
+13   :     LoadFunction  : func = 0(Create2)
+//  Create2
+14   :     CreateClosure 
+//  var create2 = Create2;
+15   :     StoreLocalVar : var = 1(create2)
+//  1
+16   :     LoadValue     : value = <I8, 1>
+//  "one"
+17   :     LoadValue     : value = <Bool, one>
+//  create1
+18   :     LoadLocalVar  : var = 0(create1)
+//  create1(1, "one")
+19   :     InvokeProxy   : stackPatternCount = 2
+//  var o1 = create1(1, "one");
+20   :     StoreLocalVar : var = 2(o1)
+//  2
+21   :     LoadValue     : value = <I8, 2>
+//  "two"
+22   :     LoadValue     : value = <Bool, two>
+//  Create2(2, "two")
+23   :     Invoke        : func = 0(Create2), stackPatternCount = 2
+//  var o2 = Create2(2, "two");
+24   :     StoreLocalVar : var = 3(o2)
+//  o1
+25   :     LoadLocalVar  : var = 2(o1)
+//  o1.Value
+26   :     InvokeMethod  : methodInfo = GetValue<test::ObservableValue>, stackPatternCount = 0
+//  o1.Value
+27   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+28   :     LoadValue     : value = <Bool, , >
+//  (o1.Value & ", ")
+29   :     OpConcat      
+//  o1
+30   :     LoadLocalVar  : var = 2(o1)
+//  o1.DisplayName
+31   :     InvokeMethod  : methodInfo = GetDisplayName<test::ObservableValue>, stackPatternCount = 0
+//  ((o1.Value & ", ") & o1.DisplayName)
+32   :     OpConcat      
+//  ", "
+33   :     LoadValue     : value = <Bool, , >
+//  (((o1.Value & ", ") & o1.DisplayName) & ", ")
+34   :     OpConcat      
+//  o2
+35   :     LoadLocalVar  : var = 3(o2)
+//  o2.Value
+36   :     InvokeMethod  : methodInfo = GetValue<test::ObservableValue>, stackPatternCount = 0
+//  o2.Value
+37   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((o1.Value & ", ") & o1.DisplayName) & ", ") & o2.Value)
+38   :     OpConcat      
+//  ", "
+39   :     LoadValue     : value = <Bool, , >
+//  (((((o1.Value & ", ") & o1.DisplayName) & ", ") & o2.Value) & ", ")
+40   :     OpConcat      
+//  o2
+41   :     LoadLocalVar  : var = 3(o2)
+//  o2.DisplayName
+42   :     InvokeMethod  : methodInfo = GetDisplayName<test::ObservableValue>, stackPatternCount = 0
+//  ((((((o1.Value & ", ") & o1.DisplayName) & ", ") & o2.Value) & ", ") & o2.DisplayName)
+43   :     OpConcat      
+//  return ((((((o1.Value & ", ") & o1.DisplayName) & ", ") & o2.Value) & ", ") & o2.DisplayName);
+44   :     Return        
+//  func main() : (string)
+45   :     LoadValue     : value = <null>
+//  func main() : (string)
+46   :     Return        

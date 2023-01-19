@@ -1,0 +1,93 @@
+﻿========================================================
+Global Variables:
+========================================================
+x
+
+========================================================
+Functions:
+========================================================
+Add (4 .. 15)
+    Arguments:
+        y
+    Captured Variables:
+    Local Variables:
+        z
+
+main (16 .. 32)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        y
+
+<initialize> (0 .. 3)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  0
+0    :     LoadValue     : value = <I4, 0>
+//  var x : int = 0;
+1    :     StoreGlobalVar: var = 0(x)
+2    :     LoadValue     : value = <null>
+3    :     Return        
+//  x
+4    :     LoadGlobalVar : var = 0(x)
+//  var z = x;
+5    :     StoreLocalVar : var = 1(z)
+//  x
+6    :     LoadGlobalVar : var = 0(x)
+//  y
+7    :     LoadLocalVar  : var = 0(y)
+//  (x + y)
+8    :     OpAdd         : type = I4
+//  (x = (x + y))
+9    :     Duplicate     : stackPatternCount = 0
+//  (x = (x + y))
+10   :     StoreGlobalVar: var = 0(x)
+//  (x = (x + y));
+11   :     Pop           
+//  z
+12   :     LoadLocalVar  : var = 1(z)
+//  return z;
+13   :     Return        
+//  func Add(y : int) : (int)
+14   :     LoadValue     : value = <null>
+//  func Add(y : int) : (int)
+15   :     Return        
+//  10
+16   :     LoadValue     : value = <I4, 10>
+//  (x = 10)
+17   :     Duplicate     : stackPatternCount = 0
+//  (x = 10)
+18   :     StoreGlobalVar: var = 0(x)
+//  (x = 10);
+19   :     Pop           
+//  20
+20   :     LoadValue     : value = <I4, 20>
+//  Add(20)
+21   :     Invoke        : func = 0(Add), stackPatternCount = 1
+//  var y = Add(20);
+22   :     StoreLocalVar : var = 0(y)
+//  x
+23   :     LoadGlobalVar : var = 0(x)
+//  x
+24   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+25   :     LoadValue     : value = <Bool, , >
+//  (x & ", ")
+26   :     OpConcat      
+//  y
+27   :     LoadLocalVar  : var = 0(y)
+//  y
+28   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((x & ", ") & y)
+29   :     OpConcat      
+//  return ((x & ", ") & y);
+30   :     Return        
+//  func main() : (string)
+31   :     LoadValue     : value = <null>
+//  func main() : (string)
+32   :     Return        

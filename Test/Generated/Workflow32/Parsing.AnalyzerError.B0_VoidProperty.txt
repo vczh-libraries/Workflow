@@ -1,0 +1,54 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface A
+{
+    prop X : void{GetX}
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface A
+{
+    prop X : void{GetX}
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 11, Message: B0: Void is not a type for a value.
+Line: 5, Column: 2, Message: G3: Cannot find the getter "GetX" of property "X" in type "A". A property getter should be a non-static method in the same type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 55}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 55}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 33}, "end": {"row": 4, "column": 20, "index": 52}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "X", "codeRange": {"start": {"row": 4, "column": 6, "index": 38}, "end": {"row": 4, "column": 6, "index": 38}, "codeIndex": -1}},
+            "getter": { "value": "GetX", "codeRange": {"start": {"row": 4, "column": 16, "index": 48}, "end": {"row": 4, "column": 19, "index": 51}, "codeIndex": -1}},
+            "setter": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 10, "index": 42}, "end": {"row": 4, "column": 13, "index": 45}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "valueChangedEvent": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

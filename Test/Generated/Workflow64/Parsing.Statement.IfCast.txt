@@ -1,0 +1,42 @@
+﻿========================================================
+Original
+========================================================
+if (var a : Button = GetControl()) {return "Yes!";}
+========================================================
+Printed
+========================================================
+if (var a : Button = GetControl())
+{
+    return "Yes!";
+}
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "IfStatement", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 50, "index": 50}, "codeIndex": -1}},
+    "expression": {
+        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 0, "column": 21, "index": 21}, "end": {"row": 0, "column": 32, "index": 32}, "codeIndex": -1}},
+        "arguments": [],
+        "function": {
+            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 21, "index": 21}, "end": {"row": 0, "column": 30, "index": 30}, "codeIndex": -1}},
+            "name": { "value": "GetControl", "codeRange": {"start": {"row": 0, "column": 21, "index": 21}, "end": {"row": 0, "column": 30, "index": 30}, "codeIndex": -1}}
+        }
+    },
+    "falseBranch": null,
+    "name": { "value": "a", "codeRange": {"start": {"row": 0, "column": 8, "index": 8}, "end": {"row": 0, "column": 8, "index": 8}, "codeIndex": -1}},
+    "trueBranch": {
+        "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 0, "column": 35, "index": 35}, "end": {"row": 0, "column": 50, "index": 50}, "codeIndex": -1}},
+        "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+        "statements": [{
+            "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 0, "column": 36, "index": 36}, "end": {"row": 0, "column": 49, "index": 49}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 0, "column": 43, "index": 43}, "end": {"row": 0, "column": 48, "index": 48}, "codeIndex": -1}},
+                "value": { "value": "Yes!", "codeRange": {"start": {"row": 0, "column": 43, "index": 43}, "end": {"row": 0, "column": 48, "index": 48}, "codeIndex": -1}}
+            }
+        }]
+    },
+    "type": {
+        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 0, "column": 12, "index": 12}, "end": {"row": 0, "column": 17, "index": 17}, "codeIndex": -1}},
+        "name": { "value": "Button", "codeRange": {"start": {"row": 0, "column": 12, "index": 12}, "end": {"row": 0, "column": 17, "index": 17}, "codeIndex": -1}}
+    }
+}

@@ -1,0 +1,190 @@
+﻿========================================================
+Global Variables:
+========================================================
+s
+
+========================================================
+Functions:
+========================================================
+Dtor::#ctor (4 .. 11)
+    Arguments:
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+Dtor::#dtor (12 .. 37)
+    Arguments:
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+main (38 .. 77)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        x
+        y
+        z
+
+<initialize> (0 .. 3)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  ""
+0    :     LoadValue     : value = <Bool, >
+//  var s = "";
+1    :     StoreGlobalVar: var = 0(s)
+2    :     LoadValue     : value = <null>
+3    :     Return        
+//  ""
+4    :     LoadValue     : value = <Bool, >
+//  var name : string = "";
+5    :     LoadCapturedVar: var = 0(<captured-this>0)
+//  var name : string = "";
+6    :     SetProperty   : propertyInfo = name<Dtor>
+//  null
+7    :     LoadValue     : value = <null>
+//  var next : Dtor* = null;
+8    :     LoadCapturedVar: var = 0(<captured-this>0)
+//  var next : Dtor* = null;
+9    :     SetProperty   : propertyInfo = next<Dtor>
+//  new* ()
+10   :     LoadValue     : value = <null>
+//  new* ()
+11   :     Return        
+//  ""
+12   :     LoadValue     : value = <Bool, >
+//  s
+13   :     LoadGlobalVar : var = 0(s)
+//  ("" & s)
+14   :     OpConcat      
+//  "["
+15   :     LoadValue     : value = <Bool, [>
+//  (("" & s) & "[")
+16   :     OpConcat      
+//  name
+17   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  name
+18   :     GetProperty   : propertyInfo = name<Dtor>
+//  ((("" & s) & "[") & name)
+19   :     OpConcat      
+//  "]"
+20   :     LoadValue     : value = <Bool, ]>
+//  (((("" & s) & "[") & name) & "]")
+21   :     OpConcat      
+//  (s = (((("" & s) & "[") & name) & "]"))
+22   :     Duplicate     : stackPatternCount = 0
+//  (s = (((("" & s) & "[") & name) & "]"))
+23   :     StoreGlobalVar: var = 0(s)
+//  (s = (((("" & s) & "[") & name) & "]"));
+24   :     Pop           
+//  next
+25   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  next
+26   :     GetProperty   : propertyInfo = next<Dtor>
+//  next is not null
+27   :     LoadValue     : value = <null>
+//  next is not null
+28   :     CompareReference
+//  next is not null
+29   :     OpNot         : type = Bool
+//  if (next is not null)
+30   :     OpNot         : type = Bool
+//  if (next is not null)
+31   :     JumpIf        : label = 36
+//  next
+32   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  next
+33   :     GetProperty   : propertyInfo = next<Dtor>
+//  delete next;
+34   :     DeleteRawPtr  
+//  if (next is not null)
+35   :     Jump          : label = 36
+//  delete
+36   :     LoadValue     : value = <null>
+//  delete
+37   :     Return        
+//  new (Dtor*)()
+38   :     LoadValue     : value = <null>
+//  new (Dtor*)()
+39   :     InvokeMethod  : methodInfo = <Dtor>, stackPatternCount = 0
+//  var x = new (Dtor*)();
+40   :     StoreLocalVar : var = 0(x)
+//  "x"
+41   :     LoadValue     : value = <Bool, x>
+//  (x.name = "x")
+42   :     Duplicate     : stackPatternCount = 0
+//  x
+43   :     LoadLocalVar  : var = 0(x)
+//  (x.name = "x")
+44   :     SetProperty   : propertyInfo = name<Dtor>
+//  (x.name = "x");
+45   :     Pop           
+//  new (Dtor*)()
+46   :     LoadValue     : value = <null>
+//  new (Dtor*)()
+47   :     InvokeMethod  : methodInfo = <Dtor>, stackPatternCount = 0
+//  var y = new (Dtor*)();
+48   :     StoreLocalVar : var = 1(y)
+//  "y"
+49   :     LoadValue     : value = <Bool, y>
+//  (y.name = "y")
+50   :     Duplicate     : stackPatternCount = 0
+//  y
+51   :     LoadLocalVar  : var = 1(y)
+//  (y.name = "y")
+52   :     SetProperty   : propertyInfo = name<Dtor>
+//  (y.name = "y");
+53   :     Pop           
+//  new (Dtor*)()
+54   :     LoadValue     : value = <null>
+//  new (Dtor*)()
+55   :     InvokeMethod  : methodInfo = <Dtor>, stackPatternCount = 0
+//  var z = new (Dtor*)();
+56   :     StoreLocalVar : var = 2(z)
+//  "z"
+57   :     LoadValue     : value = <Bool, z>
+//  (z.name = "z")
+58   :     Duplicate     : stackPatternCount = 0
+//  z
+59   :     LoadLocalVar  : var = 2(z)
+//  (z.name = "z")
+60   :     SetProperty   : propertyInfo = name<Dtor>
+//  (z.name = "z");
+61   :     Pop           
+//  y
+62   :     LoadLocalVar  : var = 1(y)
+//  (x.next = y)
+63   :     Duplicate     : stackPatternCount = 0
+//  x
+64   :     LoadLocalVar  : var = 0(x)
+//  (x.next = y)
+65   :     SetProperty   : propertyInfo = next<Dtor>
+//  (x.next = y);
+66   :     Pop           
+//  z
+67   :     LoadLocalVar  : var = 2(z)
+//  (y.next = z)
+68   :     Duplicate     : stackPatternCount = 0
+//  y
+69   :     LoadLocalVar  : var = 1(y)
+//  (y.next = z)
+70   :     SetProperty   : propertyInfo = next<Dtor>
+//  (y.next = z);
+71   :     Pop           
+//  x
+72   :     LoadLocalVar  : var = 0(x)
+//  delete x;
+73   :     DeleteRawPtr  
+//  s
+74   :     LoadGlobalVar : var = 0(s)
+//  return s;
+75   :     Return        
+//  func main() : (string)
+76   :     LoadValue     : value = <null>
+//  func main() : (string)
+77   :     Return        

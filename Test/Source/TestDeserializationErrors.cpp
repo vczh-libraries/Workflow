@@ -26,7 +26,7 @@ class B
 			List<WString> codes;
 			List<glr::ParsingError> errors;
 			codes.Add(scriptA);
-			auto assembly = Compile(GetWorkflowParser(), codes, errors);
+			auto assembly = Compile(GetWorkflowParser(), WfCpuArchitecture::AsExecutable, codes, errors);
 			TEST_ASSERT(assembly);
 			assembly->Serialize(streamA);
 		}
@@ -45,7 +45,7 @@ class B
 			List<WString> codes;
 			List<glr::ParsingError> errors;
 			codes.Add(scriptB);
-			auto assembly = Compile(GetWorkflowParser(), codes, errors);
+			auto assembly = Compile(GetWorkflowParser(), WfCpuArchitecture::AsExecutable, codes, errors);
 			TEST_ASSERT(assembly);
 			assembly->Serialize(streamB);
 		}
@@ -74,7 +74,7 @@ class A
 			List<WString> codes;
 			List<glr::ParsingError> errors;
 			codes.Add(scriptA);
-			auto assembly = Compile(GetWorkflowParser(), codes, errors);
+			auto assembly = Compile(GetWorkflowParser(), WfCpuArchitecture::AsExecutable, codes, errors);
 			TEST_ASSERT(assembly);
 			assembly->Serialize(streamA);
 		}

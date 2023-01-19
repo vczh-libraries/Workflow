@@ -1,0 +1,83 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    func () : (void)
+    {
+        this;
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    func () : (void)
+    {
+        this;
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 18, Message: A29: The "this" expression can only be used in class methods or functions in new interface expressions
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 66}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 66}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 17, "index": 33}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 36}, "end": {"row": 5, "column": 0, "index": 66}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 40}, "end": {"row": 4, "column": 24, "index": 63}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "FunctionExpression", "codeRange": {"start": {"row": 4, "column": 1, "index": 40}, "end": {"row": 4, "column": 23, "index": 62}, "codeIndex": -1}},
+                    "function": {
+                        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 40}, "end": {"row": 4, "column": 23, "index": 62}, "codeIndex": -1}},
+                        "attributes": [],
+                        "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                        "anonymity": "Anonymous",
+                        "arguments": [],
+                        "functionKind": "Normal",
+                        "returnType": {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 10, "index": 49}, "end": {"row": 4, "column": 13, "index": 52}, "codeIndex": -1}},
+                            "name": "Void"
+                        },
+                        "statement": {
+                            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 15, "index": 54}, "end": {"row": 4, "column": 23, "index": 62}, "codeIndex": -1}},
+                            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                            "statements": [{
+                                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 4, "column": 17, "index": 56}, "end": {"row": 4, "column": 21, "index": 60}, "codeIndex": -1}},
+                                "expression": {
+                                    "$ast": { "type": "ThisExpression", "codeRange": {"start": {"row": 4, "column": 17, "index": 56}, "end": {"row": 4, "column": 20, "index": 59}, "codeIndex": -1}}
+                                }
+                            }]
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

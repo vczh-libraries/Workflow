@@ -1,0 +1,113 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    var f = new (Function)
+    {
+        override func (arguments : Object[]) : (Object)
+        {
+            raise "This function is not implemented";
+        }
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    var f = new (Function)
+    {
+        override func (arguments : Object[]) : (Object)
+        {
+            raise "This function is not implemented";
+        }
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 3, Message: D0: Function should have a name.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 11, "column": 0, "index": 174}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 11, "column": 0, "index": 174}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 11, "column": 0, "index": 174}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 10, "column": 2, "index": 171}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 10, "column": 2, "index": 171}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "f", "codeRange": {"start": {"row": 4, "column": 5, "index": 42}, "end": {"row": 4, "column": 5, "index": 42}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 4, "column": 9, "index": 46}, "end": {"row": 10, "column": 1, "index": 170}, "codeIndex": -1}},
+                        "declarations": [{
+                            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 6, "column": 2, "index": 66}, "end": {"row": 9, "column": 2, "index": 166}, "codeIndex": -1}},
+                            "attributes": [],
+                            "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                            "anonymity": "Anonymous",
+                            "arguments": [{
+                                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 6, "column": 17, "index": 81}, "end": {"row": 6, "column": 36, "index": 100}, "codeIndex": -1}},
+                                "attributes": [],
+                                "name": { "value": "arguments", "codeRange": {"start": {"row": 6, "column": 17, "index": 81}, "end": {"row": 6, "column": 25, "index": 89}, "codeIndex": -1}},
+                                "type": {
+                                    "$ast": { "type": "MapType", "codeRange": {"start": {"row": 6, "column": 29, "index": 93}, "end": {"row": 6, "column": 36, "index": 100}, "codeIndex": -1}},
+                                    "key": null,
+                                    "value": {
+                                        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 29, "index": 93}, "end": {"row": 6, "column": 34, "index": 98}, "codeIndex": -1}},
+                                        "name": { "value": "Object", "codeRange": {"start": {"row": 6, "column": 29, "index": 93}, "end": {"row": 6, "column": 34, "index": 98}, "codeIndex": -1}}
+                                    },
+                                    "writability": "Writable"
+                                }
+                            }],
+                            "functionKind": "Override",
+                            "returnType": {
+                                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 41, "index": 105}, "end": {"row": 6, "column": 46, "index": 110}, "codeIndex": -1}},
+                                "name": { "value": "Object", "codeRange": {"start": {"row": 6, "column": 41, "index": 105}, "end": {"row": 6, "column": 46, "index": 110}, "codeIndex": -1}}
+                            },
+                            "statement": {
+                                "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 7, "column": 2, "index": 115}, "end": {"row": 9, "column": 2, "index": 166}, "codeIndex": -1}},
+                                "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                                "statements": [{
+                                    "$ast": { "type": "RaiseExceptionStatement", "codeRange": {"start": {"row": 8, "column": 3, "index": 121}, "end": {"row": 8, "column": 43, "index": 161}, "codeIndex": -1}},
+                                    "expression": {
+                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 8, "column": 9, "index": 127}, "end": {"row": 8, "column": 42, "index": 160}, "codeIndex": -1}},
+                                        "value": { "value": "This function is not implemented", "codeRange": {"start": {"row": 8, "column": 9, "index": 127}, "end": {"row": 8, "column": 42, "index": 160}, "codeIndex": -1}}
+                                    }
+                                }]
+                            }
+                        }],
+                        "type": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 4, "column": 13, "index": 50}, "end": {"row": 4, "column": 20, "index": 57}, "codeIndex": -1}},
+                            "name": { "value": "Function", "codeRange": {"start": {"row": 4, "column": 13, "index": 50}, "end": {"row": 4, "column": 20, "index": 57}, "codeIndex": -1}}
+                        }
+                    },
+                    "type": null
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

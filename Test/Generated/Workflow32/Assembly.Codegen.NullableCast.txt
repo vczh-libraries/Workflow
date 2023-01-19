@@ -1,0 +1,95 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+ReadValue (2 .. 22)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+        nullable
+
+main (23 .. 34)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  value
+2    :     LoadLocalVar  : var = 0(value)
+//  value
+3    :     Duplicate     : stackPatternCount = 0
+//  value
+4    :     LoadValue     : value = <null>
+//  value
+5    :     CompareReference
+//  value
+6    :     JumpIf        : label = 9
+//  value
+7    :     ConvertToType : flag = BoxedValue, typeDescriptor = BoxedIntValue
+//  value
+8    :     Jump          : label = 10
+//  value
+9    :     LoadValue     : value = <null>
+//  var nullable = (cast (BoxedIntValue?) value);
+10   :     StoreLocalVar : var = 1(nullable)
+//  nullable
+11   :     LoadLocalVar  : var = 1(nullable)
+//  nullable is null
+12   :     LoadValue     : value = <null>
+//  nullable is null
+13   :     CompareReference
+//  nullable is null ? "null" : nullable.value
+14   :     JumpIf        : label = 19
+//  nullable
+15   :     LoadLocalVar  : var = 1(nullable)
+//  nullable.value
+16   :     GetProperty   : propertyInfo = value<BoxedIntValue>
+//  nullable.value
+17   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  nullable is null ? "null" : nullable.value
+18   :     Jump          : label = 20
+//  "null"
+19   :     LoadValue     : value = <Bool, null>
+//  return nullable is null ? "null" : nullable.value;
+20   :     Return        
+//  func ReadValue(value : object) : (string)
+21   :     LoadValue     : value = <null>
+//  func ReadValue(value : object) : (string)
+22   :     Return        
+//  null
+23   :     LoadValue     : value = <null>
+//  ReadValue(null)
+24   :     Invoke        : func = 0(ReadValue), stackPatternCount = 1
+//  ", "
+25   :     LoadValue     : value = <Bool, , >
+//  (ReadValue(null) & ", ")
+26   :     OpConcat      
+//  {value : 0;}
+27   :     CreateStruct  : flag = BoxedValue, typeDescriptor = BoxedIntValue
+//  0
+28   :     LoadValue     : value = <I4, 0>
+//  {value : 0;}
+29   :     UpdateProperty: propertyInfo = value<BoxedIntValue>
+//  ReadValue({value : 0;} of (BoxedIntValue))
+30   :     Invoke        : func = 0(ReadValue), stackPatternCount = 1
+//  ((ReadValue(null) & ", ") & ReadValue({value : 0;} of (BoxedIntValue)))
+31   :     OpConcat      
+//  return ((ReadValue(null) & ", ") & ReadValue({value : 0;} of (BoxedIntValue)));
+32   :     Return        
+//  func main() : (string)
+33   :     LoadValue     : value = <null>
+//  func main() : (string)
+34   :     Return        

@@ -1,0 +1,87 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+main (2 .. 33)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        a
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  5
+2    :     LoadValue     : value = <I4, 5>
+//  4
+3    :     LoadValue     : value = <I4, 4>
+//  3
+4    :     LoadValue     : value = <I4, 3>
+//  2
+5    :     LoadValue     : value = <I4, 2>
+//  1
+6    :     LoadValue     : value = <I4, 1>
+//  {1; 2; 3; 4; 5;}
+7    :     NewList       : stackPatternCount = 5
+//  {1; 2; 3; 4; 5;}
+8    :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var a : int{} = {1; 2; 3; 4; 5;};
+9    :     StoreLocalVar : var = 0(a)
+//  a
+10   :     LoadLocalVar  : var = 0(a)
+//  a is (int[])
+11   :     TestType      : flag = SharedPtr, typeDescriptor = system::List
+//  a is (int[])
+12   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+13   :     LoadValue     : value = <Bool, , >
+//  (a is (int[]) & ", ")
+14   :     OpConcat      
+//  a
+15   :     LoadLocalVar  : var = 0(a)
+//  a is (int[string])
+16   :     TestType      : flag = SharedPtr, typeDescriptor = system::Dictionary
+//  a is (int[string])
+17   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((a is (int[]) & ", ") & a is (int[string]))
+18   :     OpConcat      
+//  ", "
+19   :     LoadValue     : value = <Bool, , >
+//  (((a is (int[]) & ", ") & a is (int[string])) & ", ")
+20   :     OpConcat      
+//  a
+21   :     LoadLocalVar  : var = 0(a)
+//  a is (List^)
+22   :     TestType      : flag = SharedPtr, typeDescriptor = system::List
+//  a is (List^)
+23   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((a is (int[]) & ", ") & a is (int[string])) & ", ") & a is (List^))
+24   :     OpConcat      
+//  ", "
+25   :     LoadValue     : value = <Bool, , >
+//  (((((a is (int[]) & ", ") & a is (int[string])) & ", ") & a is (List^)) & ", ")
+26   :     OpConcat      
+//  a
+27   :     LoadLocalVar  : var = 0(a)
+//  a is (List*)
+28   :     TestType      : flag = RawPtr, typeDescriptor = system::List
+//  a is (List*)
+29   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((a is (int[]) & ", ") & a is (int[string])) & ", ") & a is (List^)) & ", ") & a is (List*))
+30   :     OpConcat      
+//  return ((((((a is (int[]) & ", ") & a is (int[string])) & ", ") & a is (List^)) & ", ") & a is (List*));
+31   :     Return        
+//  func main() : (string)
+32   :     LoadValue     : value = <null>
+//  func main() : (string)
+33   :     Return        

@@ -1,0 +1,83 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main() : (void)
+{
+    $coroutine(output)
+    {
+        (output = null);
+    };
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main() : (void)
+{
+    $coroutine(output)
+    {
+        (output = null);
+    };
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 3, Message: A25: <test>::main::<>::<>::output of type "system::CoroutineResult^" is not assignable.
+Line: 7, Column: 12, Message: A9: Expression "null" failed to resolve its type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 85}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 8, "column": 0, "index": 85}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 15, "index": 31}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 8, "column": 0, "index": 85}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 7, "column": 2, "index": 82}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "NewCoroutineExpression", "codeRange": {"start": {"row": 4, "column": 1, "index": 38}, "end": {"row": 7, "column": 1, "index": 81}, "codeIndex": -1}},
+                    "expandedExpression": null,
+                    "name": { "value": "output", "codeRange": {"start": {"row": 4, "column": 12, "index": 49}, "end": {"row": 4, "column": 17, "index": 54}, "codeIndex": -1}},
+                    "statement": {
+                        "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 59}, "end": {"row": 7, "column": 1, "index": 81}, "codeIndex": -1}},
+                        "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                        "statements": [{
+                            "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 6, "column": 2, "index": 64}, "end": {"row": 6, "column": 15, "index": 77}, "codeIndex": -1}},
+                            "expression": {
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 6, "column": 2, "index": 64}, "end": {"row": 6, "column": 14, "index": 76}, "codeIndex": -1}},
+                                "first": {
+                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 6, "column": 2, "index": 64}, "end": {"row": 6, "column": 7, "index": 69}, "codeIndex": -1}},
+                                    "name": { "value": "output", "codeRange": {"start": {"row": 6, "column": 2, "index": 64}, "end": {"row": 6, "column": 7, "index": 69}, "codeIndex": -1}}
+                                },
+                                "op": "Assign",
+                                "second": {
+                                    "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 6, "column": 11, "index": 73}, "end": {"row": 6, "column": 14, "index": 76}, "codeIndex": -1}},
+                                    "value": "Null"
+                                }
+                            }
+                        }]
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

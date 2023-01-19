@@ -1,0 +1,111 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface A
+{
+    func GetX() : (int);
+
+    func SetX(value : int) : (void);
+
+    event XChanged();
+
+    event XChanged();
+
+    prop X : int{GetX, SetX : XChanged}
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface A
+{
+    func GetX() : (int);
+
+    func SetX(value : int) : (void);
+
+    event XChanged();
+
+    event XChanged();
+
+    prop X : int{GetX, SetX : XChanged}
+}
+
+========================================================
+Errors
+========================================================
+Line: 9, Column: 2, Message: G4: Too many symbols found for the event "XChanged" of property "X" in type "A".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 9, "column": 0, "index": 165}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 9, "column": 0, "index": 165}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 33}, "end": {"row": 4, "column": 18, "index": 50}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "GetX", "codeRange": {"start": {"row": 4, "column": 6, "index": 38}, "end": {"row": 4, "column": 9, "index": 41}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 15, "index": 47}, "end": {"row": 4, "column": 17, "index": 49}, "codeIndex": -1}},
+                "name": "Int"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 54}, "end": {"row": 5, "column": 30, "index": 83}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "SetX", "codeRange": {"start": {"row": 5, "column": 6, "index": 59}, "end": {"row": 5, "column": 9, "index": 62}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 11, "index": 64}, "end": {"row": 5, "column": 21, "index": 74}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "value", "codeRange": {"start": {"row": 5, "column": 11, "index": 64}, "end": {"row": 5, "column": 15, "index": 68}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 19, "index": 72}, "end": {"row": 5, "column": 21, "index": 74}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 26, "index": 79}, "end": {"row": 5, "column": 29, "index": 82}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }, {
+            "$ast": { "type": "EventDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 87}, "end": {"row": 6, "column": 17, "index": 103}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "XChanged", "codeRange": {"start": {"row": 6, "column": 7, "index": 93}, "end": {"row": 6, "column": 14, "index": 100}, "codeIndex": -1}},
+            "arguments": []
+        }, {
+            "$ast": { "type": "EventDeclaration", "codeRange": {"start": {"row": 7, "column": 1, "index": 107}, "end": {"row": 7, "column": 17, "index": 123}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "XChanged", "codeRange": {"start": {"row": 7, "column": 7, "index": 113}, "end": {"row": 7, "column": 14, "index": 120}, "codeIndex": -1}},
+            "arguments": []
+        }, {
+            "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": 8, "column": 1, "index": 127}, "end": {"row": 8, "column": 36, "index": 162}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "X", "codeRange": {"start": {"row": 8, "column": 6, "index": 132}, "end": {"row": 8, "column": 6, "index": 132}, "codeIndex": -1}},
+            "getter": { "value": "GetX", "codeRange": {"start": {"row": 8, "column": 15, "index": 141}, "end": {"row": 8, "column": 18, "index": 144}, "codeIndex": -1}},
+            "setter": { "value": "SetX", "codeRange": {"start": {"row": 8, "column": 21, "index": 147}, "end": {"row": 8, "column": 24, "index": 150}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 8, "column": 10, "index": 136}, "end": {"row": 8, "column": 12, "index": 138}, "codeIndex": -1}},
+                "name": "Int"
+            },
+            "valueChangedEvent": { "value": "XChanged", "codeRange": {"start": {"row": 8, "column": 28, "index": 154}, "end": {"row": 8, "column": 35, "index": 161}, "codeIndex": -1}}
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

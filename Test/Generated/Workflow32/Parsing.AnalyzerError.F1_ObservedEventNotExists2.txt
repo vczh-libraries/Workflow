@@ -1,0 +1,117 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using test::*;
+
+func main() : (void)
+{
+    var x : ObservableValue^ = null;
+    bind(x.observe as _x(_x.Value on _x.NotExists));
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using test::*;
+
+func main() : (void)
+{
+    var x : ObservableValue^ = null;
+    bind(x.observe as _x(_x.Value on _x.NotExists));
+}
+
+========================================================
+Errors
+========================================================
+Line: 8, Column: 35, Message: F1: Member "NotExists" does not exist in "test::ObservableValue".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 8, "column": 0, "index": 143}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 0, "index": 34}, "end": {"row": 8, "column": 0, "index": 143}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 4, "column": 5, "index": 39}, "end": {"row": 4, "column": 8, "index": 42}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 14, "index": 48}, "end": {"row": 4, "column": 17, "index": 51}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 0, "index": 54}, "end": {"row": 8, "column": 0, "index": 143}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 6, "column": 1, "index": 58}, "end": {"row": 6, "column": 32, "index": 89}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 6, "column": 1, "index": 58}, "end": {"row": 6, "column": 32, "index": 89}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "x", "codeRange": {"start": {"row": 6, "column": 5, "index": 62}, "end": {"row": 6, "column": 5, "index": 62}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "LiteralExpression", "codeRange": {"start": {"row": 6, "column": 28, "index": 85}, "end": {"row": 6, "column": 31, "index": 88}, "codeIndex": -1}},
+                        "value": "Null"
+                    },
+                    "type": {
+                        "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 6, "column": 9, "index": 66}, "end": {"row": 6, "column": 24, "index": 81}, "codeIndex": -1}},
+                        "element": {
+                            "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 9, "index": 66}, "end": {"row": 6, "column": 23, "index": 80}, "codeIndex": -1}},
+                            "name": { "value": "ObservableValue", "codeRange": {"start": {"row": 6, "column": 9, "index": 66}, "end": {"row": 6, "column": 23, "index": 80}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }, {
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 7, "column": 1, "index": 93}, "end": {"row": 7, "column": 48, "index": 140}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "BindExpression", "codeRange": {"start": {"row": 7, "column": 1, "index": 93}, "end": {"row": 7, "column": 47, "index": 139}, "codeIndex": -1}},
+                    "expandedExpression": null,
+                    "expression": {
+                        "$ast": { "type": "ObserveExpression", "codeRange": {"start": {"row": 7, "column": 6, "index": 98}, "end": {"row": 7, "column": 46, "index": 138}, "codeIndex": -1}},
+                        "events": [{
+                            "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 7, "column": 34, "index": 126}, "end": {"row": 7, "column": 45, "index": 137}, "codeIndex": -1}},
+                            "name": { "value": "NotExists", "codeRange": {"start": {"row": 7, "column": 37, "index": 129}, "end": {"row": 7, "column": 45, "index": 137}, "codeIndex": -1}},
+                            "parent": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 7, "column": 34, "index": 126}, "end": {"row": 7, "column": 35, "index": 127}, "codeIndex": -1}},
+                                "name": { "value": "_x", "codeRange": {"start": {"row": 7, "column": 34, "index": 126}, "end": {"row": 7, "column": 35, "index": 127}, "codeIndex": -1}}
+                            }
+                        }],
+                        "expression": {
+                            "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 7, "column": 22, "index": 114}, "end": {"row": 7, "column": 29, "index": 121}, "codeIndex": -1}},
+                            "name": { "value": "Value", "codeRange": {"start": {"row": 7, "column": 25, "index": 117}, "end": {"row": 7, "column": 29, "index": 121}, "codeIndex": -1}},
+                            "parent": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 7, "column": 22, "index": 114}, "end": {"row": 7, "column": 23, "index": 115}, "codeIndex": -1}},
+                                "name": { "value": "_x", "codeRange": {"start": {"row": 7, "column": 22, "index": 114}, "end": {"row": 7, "column": 23, "index": 115}, "codeIndex": -1}}
+                            }
+                        },
+                        "name": { "value": "_x", "codeRange": {"start": {"row": 7, "column": 19, "index": 111}, "end": {"row": 7, "column": 20, "index": 112}, "codeIndex": -1}},
+                        "observeType": "ExtendedObserve",
+                        "parent": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 7, "column": 6, "index": 98}, "end": {"row": 7, "column": 6, "index": 98}, "codeIndex": -1}},
+                            "name": { "value": "x", "codeRange": {"start": {"row": 7, "column": 6, "index": 98}, "end": {"row": 7, "column": 6, "index": 98}, "codeIndex": -1}}
+                        }
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 9, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 9, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "test", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 9, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 12, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 2, "column": 12, "index": 28}, "end": {"row": 2, "column": 12, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

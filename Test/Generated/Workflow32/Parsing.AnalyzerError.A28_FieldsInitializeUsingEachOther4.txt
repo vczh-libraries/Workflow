@@ -1,0 +1,77 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class A
+{
+    var a : int = 10;
+
+    var b : (func () : (int)) = [a];
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class A
+{
+    var a : int = 10;
+
+    var b : (func () : (int)) = [a];
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 24, Message: A28: Property "a" in "A" of type "system::Int32" cannot be used to initialize other fields in the same type or new interface expression.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 76}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 6, "column": 0, "index": 76}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "A", "codeRange": {"start": {"row": 2, "column": 6, "index": 22}, "end": {"row": 2, "column": 6, "index": 22}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "Undefined",
+        "declarations": [{
+            "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 4, "column": 1, "index": 29}, "end": {"row": 4, "column": 17, "index": 45}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "a", "codeRange": {"start": {"row": 4, "column": 5, "index": 33}, "end": {"row": 4, "column": 5, "index": 33}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 4, "column": 15, "index": 43}, "end": {"row": 4, "column": 16, "index": 44}, "codeIndex": -1}},
+                "value": { "value": "10", "codeRange": {"start": {"row": 4, "column": 15, "index": 43}, "end": {"row": 4, "column": 16, "index": 44}, "codeIndex": -1}}
+            },
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 9, "index": 37}, "end": {"row": 4, "column": 11, "index": 39}, "codeIndex": -1}},
+                "name": "Int"
+            }
+        }, {
+            "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 5, "column": 1, "index": 49}, "end": {"row": 5, "column": 25, "index": 73}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "b", "codeRange": {"start": {"row": 5, "column": 5, "index": 53}, "end": {"row": 5, "column": 5, "index": 53}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "OrderedLambdaExpression", "codeRange": {"start": {"row": 5, "column": 22, "index": 70}, "end": {"row": 5, "column": 24, "index": 72}, "codeIndex": -1}},
+                "body": {
+                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 5, "column": 23, "index": 71}, "end": {"row": 5, "column": 23, "index": 71}, "codeIndex": -1}},
+                    "name": { "value": "a", "codeRange": {"start": {"row": 5, "column": 23, "index": 71}, "end": {"row": 5, "column": 23, "index": 71}, "codeIndex": -1}}
+                }
+            },
+            "type": {
+                "$ast": { "type": "FunctionType", "codeRange": {"start": {"row": 5, "column": 9, "index": 57}, "end": {"row": 5, "column": 18, "index": 66}, "codeIndex": -1}},
+                "arguments": [],
+                "result": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 16, "index": 64}, "end": {"row": 5, "column": 18, "index": 66}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }
+        }],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

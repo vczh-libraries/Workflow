@@ -1,6 +1,8 @@
 #include "Helper.h"
 #include "CppTypes.h"
 
+extern WfCpuArchitecture testCpuArchitecture;
+
 void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleName)
 {
 	List<WString> itemNames;
@@ -23,7 +25,7 @@ TEST_FILE
 {
 	TEST_CASE(L"Test building global name")
 	{
-		WfLexicalScopeManager manager(GetWorkflowParser());
+		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
 		LoadMultipleSamples(&manager, L"AnalyzerScope");
 		manager.Rebuild(false);
 
@@ -84,11 +86,24 @@ TEST_FILE
 		List<WString> itemNames;
 		LoadSampleIndex(L"AnalyzerError", itemNames);
 
-		WfLexicalScopeManager manager(GetWorkflowParser());
-		manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint>::CreateTypeInfo());
-		manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint>>::CreateTypeInfo());
-		manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint>>::CreateTypeInfo());
-		manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint>>::CreateTypeInfo());
+		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
+		switch (testCpuArchitecture)
+		{
+		case WfCpuArchitecture::x86:
+			manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint32_t>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint32_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint32_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint32_t>>::CreateTypeInfo());
+			break;
+		case WfCpuArchitecture::x64:
+			manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint64_t>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint64_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint64_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint64_t>>::CreateTypeInfo());
+			break;
+		default:
+			CHECK_FAIL(L"The CPU architecture is unspecified");
+		}
 		manager.attributes.Add({ L"test",L"Point" }, TypeInfoRetriver<test::Point>::CreateTypeInfo());
 
 		for (auto itemName : itemNames)

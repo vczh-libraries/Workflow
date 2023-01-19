@@ -1,0 +1,183 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+Apply (2 .. 7)
+    Arguments:
+        f
+        arg
+    Captured Variables:
+    Local Variables:
+
+Adder (8 .. 14)
+    Arguments:
+        x
+    Captured Variables:
+    Local Variables:
+
+main (34 .. 67)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        f
+        g
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<lambda:(4)> in Adder (15 .. 27)
+    Arguments:
+        $1
+    Captured Variables:
+        <captured>x
+    Local Variables:
+
+<lambda:(5)> in <lambda:(4)> in Adder (28 .. 33)
+    Arguments:
+        $2
+    Captured Variables:
+        <captured>$1
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  arg
+2    :     LoadLocalVar  : var = 1(arg)
+//  f
+3    :     LoadLocalVar  : var = 0(f)
+//  f(arg)
+4    :     InvokeProxy   : stackPatternCount = 1
+//  return f(arg);
+5    :     Return        
+//  func Apply(f : (func (int) : (int)), arg : int) : (int)
+6    :     LoadValue     : value = <null>
+//  func Apply(f : (func (int) : (int)), arg : int) : (int)
+7    :     Return        
+//  [(($1 * 0) + Apply([($1 + $2)], x))]
+8    :     LoadLocalVar  : var = 0(x)
+//  [(($1 * 0) + Apply([($1 + $2)], x))]
+9    :     CreateClosureContext: stackPatternCount = 1
+//  [(($1 * 0) + Apply([($1 + $2)], x))]
+10   :     LoadFunction  : func = 4(<lambda:(4)> in Adder)
+//  [(($1 * 0) + Apply([($1 + $2)], x))]
+11   :     CreateClosure 
+//  return [(($1 * 0) + Apply([($1 + $2)], x))];
+12   :     Return        
+//  func Adder(x : int) : ((func (int) : (int)))
+13   :     LoadValue     : value = <null>
+//  func Adder(x : int) : ((func (int) : (int)))
+14   :     Return        
+//  $1
+15   :     LoadLocalVar  : var = 0($1)
+//  0
+16   :     LoadValue     : value = <I4, 0>
+//  ($1 * 0)
+17   :     OpMul         : type = I4
+//  [($1 + $2)]
+18   :     LoadLocalVar  : var = 0($1)
+//  [($1 + $2)]
+19   :     CreateClosureContext: stackPatternCount = 1
+//  [($1 + $2)]
+20   :     LoadFunction  : func = 5(<lambda:(5)> in <lambda:(4)> in Adder)
+//  [($1 + $2)]
+21   :     CreateClosure 
+//  x
+22   :     LoadCapturedVar: var = 0(<captured>x)
+//  Apply([($1 + $2)], x)
+23   :     Invoke        : func = 0(Apply), stackPatternCount = 2
+//  (($1 * 0) + Apply([($1 + $2)], x))
+24   :     OpAdd         : type = I4
+//  [(($1 * 0) + Apply([($1 + $2)], x))]
+25   :     Return        
+//  [(($1 * 0) + Apply([($1 + $2)], x))]
+26   :     LoadValue     : value = <null>
+//  [(($1 * 0) + Apply([($1 + $2)], x))]
+27   :     Return        
+//  $1
+28   :     LoadCapturedVar: var = 0(<captured>$1)
+//  $2
+29   :     LoadLocalVar  : var = 0($2)
+//  ($1 + $2)
+30   :     OpAdd         : type = I4
+//  [($1 + $2)]
+31   :     Return        
+//  [($1 + $2)]
+32   :     LoadValue     : value = <null>
+//  [($1 + $2)]
+33   :     Return        
+//  1
+34   :     LoadValue     : value = <I4, 1>
+//  Adder(1)
+35   :     Invoke        : func = 1(Adder), stackPatternCount = 1
+//  var f = Adder(1);
+36   :     StoreLocalVar : var = 0(f)
+//  2
+37   :     LoadValue     : value = <I4, 2>
+//  Adder(2)
+38   :     Invoke        : func = 1(Adder), stackPatternCount = 1
+//  var g = Adder(2);
+39   :     StoreLocalVar : var = 1(g)
+//  1
+40   :     LoadValue     : value = <I4, 1>
+//  f
+41   :     LoadLocalVar  : var = 0(f)
+//  f(1)
+42   :     InvokeProxy   : stackPatternCount = 1
+//  f(1)
+43   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+44   :     LoadValue     : value = <Bool, , >
+//  (f(1) & ", ")
+45   :     OpConcat      
+//  2
+46   :     LoadValue     : value = <I4, 2>
+//  f
+47   :     LoadLocalVar  : var = 0(f)
+//  f(2)
+48   :     InvokeProxy   : stackPatternCount = 1
+//  f(2)
+49   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((f(1) & ", ") & f(2))
+50   :     OpConcat      
+//  ", "
+51   :     LoadValue     : value = <Bool, , >
+//  (((f(1) & ", ") & f(2)) & ", ")
+52   :     OpConcat      
+//  1
+53   :     LoadValue     : value = <I4, 1>
+//  g
+54   :     LoadLocalVar  : var = 1(g)
+//  g(1)
+55   :     InvokeProxy   : stackPatternCount = 1
+//  g(1)
+56   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((f(1) & ", ") & f(2)) & ", ") & g(1))
+57   :     OpConcat      
+//  ", "
+58   :     LoadValue     : value = <Bool, , >
+//  (((((f(1) & ", ") & f(2)) & ", ") & g(1)) & ", ")
+59   :     OpConcat      
+//  2
+60   :     LoadValue     : value = <I4, 2>
+//  g
+61   :     LoadLocalVar  : var = 1(g)
+//  g(2)
+62   :     InvokeProxy   : stackPatternCount = 1
+//  g(2)
+63   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((f(1) & ", ") & f(2)) & ", ") & g(1)) & ", ") & g(2))
+64   :     OpConcat      
+//  return ((((((f(1) & ", ") & f(2)) & ", ") & g(1)) & ", ") & g(2));
+65   :     Return        
+//  func main() : (string)
+66   :     LoadValue     : value = <null>
+//  func main() : (string)
+67   :     Return        

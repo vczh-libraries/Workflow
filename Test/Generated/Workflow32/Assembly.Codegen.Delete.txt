@@ -1,0 +1,177 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+DoDelete (2 .. 15)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+        <catch>ex
+
+main (16 .. 71)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        raw1
+        raw2
+        shared
+        a
+        b
+        c
+        d
+        e
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  try
+2    :     InstallTry    : label = 10
+//  value
+3    :     LoadLocalVar  : var = 0(value)
+//  delete value;
+4    :     DeleteRawPtr  
+//  try
+5    :     UninstallTry  : stackPatternCount = 0
+//  true
+6    :     LoadValue     : value = <Bool, true>
+//  return true;
+7    :     Return        
+//  try
+8    :     UninstallTry  : stackPatternCount = 0
+//  try
+9    :     Jump          : label = 14
+//  try
+10   :     LoadException 
+//  try
+11   :     StoreLocalVar : var = 1(<catch>ex)
+//  false
+12   :     LoadValue     : value = <Bool, false>
+//  return false;
+13   :     Return        
+//  func DoDelete(value : ObservableValue*) : (bool)
+14   :     LoadValue     : value = <null>
+//  func DoDelete(value : ObservableValue*) : (bool)
+15   :     Return        
+//  0
+16   :     LoadValue     : value = <I4, 0>
+//  ""
+17   :     LoadValue     : value = <Bool, >
+//  ObservableValue::CreatePtr(0, "")
+18   :     LoadValue     : value = <null>
+//  ObservableValue::CreatePtr(0, "")
+19   :     InvokeMethod  : methodInfo = CreatePtr<test::ObservableValue>, stackPatternCount = 2
+//  var raw1 = ObservableValue::CreatePtr(0, "");
+20   :     StoreLocalVar : var = 0(raw1)
+//  0
+21   :     LoadValue     : value = <I4, 0>
+//  ""
+22   :     LoadValue     : value = <Bool, >
+//  ObservableValue::CreatePtr(0, "")
+23   :     LoadValue     : value = <null>
+//  ObservableValue::CreatePtr(0, "")
+24   :     InvokeMethod  : methodInfo = CreatePtr<test::ObservableValue>, stackPatternCount = 2
+//  var raw2 = ObservableValue::CreatePtr(0, "");
+25   :     StoreLocalVar : var = 1(raw2)
+//  raw1
+26   :     LoadLocalVar  : var = 0(raw1)
+//  raw1
+27   :     ConvertToType : flag = SharedPtr, typeDescriptor = test::ObservableValue
+//  var shared = (cast (ObservableValue^) raw1);
+28   :     StoreLocalVar : var = 2(shared)
+//  raw1
+29   :     LoadLocalVar  : var = 0(raw1)
+//  raw1 is null
+30   :     LoadValue     : value = <null>
+//  raw1 is null
+31   :     CompareReference
+//  var a = raw1 is null;
+32   :     StoreLocalVar : var = 3(a)
+//  raw2
+33   :     LoadLocalVar  : var = 1(raw2)
+//  raw2 is null
+34   :     LoadValue     : value = <null>
+//  raw2 is null
+35   :     CompareReference
+//  var b = raw2 is null;
+36   :     StoreLocalVar : var = 4(b)
+//  shared
+37   :     LoadLocalVar  : var = 2(shared)
+//  shared is null
+38   :     LoadValue     : value = <null>
+//  shared is null
+39   :     CompareReference
+//  var c = shared is null;
+40   :     StoreLocalVar : var = 5(c)
+//  raw1
+41   :     LoadLocalVar  : var = 0(raw1)
+//  DoDelete(raw1)
+42   :     Invoke        : func = 0(DoDelete), stackPatternCount = 1
+//  var d = DoDelete(raw1);
+43   :     StoreLocalVar : var = 6(d)
+//  raw2
+44   :     LoadLocalVar  : var = 1(raw2)
+//  DoDelete(raw2)
+45   :     Invoke        : func = 0(DoDelete), stackPatternCount = 1
+//  var e = DoDelete(raw2);
+46   :     StoreLocalVar : var = 7(e)
+//  a
+47   :     LoadLocalVar  : var = 3(a)
+//  a
+48   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+49   :     LoadValue     : value = <Bool, , >
+//  (a & ", ")
+50   :     OpConcat      
+//  b
+51   :     LoadLocalVar  : var = 4(b)
+//  b
+52   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((a & ", ") & b)
+53   :     OpConcat      
+//  ", "
+54   :     LoadValue     : value = <Bool, , >
+//  (((a & ", ") & b) & ", ")
+55   :     OpConcat      
+//  c
+56   :     LoadLocalVar  : var = 5(c)
+//  c
+57   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((a & ", ") & b) & ", ") & c)
+58   :     OpConcat      
+//  ", "
+59   :     LoadValue     : value = <Bool, , >
+//  (((((a & ", ") & b) & ", ") & c) & ", ")
+60   :     OpConcat      
+//  d
+61   :     LoadLocalVar  : var = 6(d)
+//  d
+62   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((a & ", ") & b) & ", ") & c) & ", ") & d)
+63   :     OpConcat      
+//  ", "
+64   :     LoadValue     : value = <Bool, , >
+//  (((((((a & ", ") & b) & ", ") & c) & ", ") & d) & ", ")
+65   :     OpConcat      
+//  e
+66   :     LoadLocalVar  : var = 7(e)
+//  e
+67   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((a & ", ") & b) & ", ") & c) & ", ") & d) & ", ") & e)
+68   :     OpConcat      
+//  return ((((((((a & ", ") & b) & ", ") & c) & ", ") & d) & ", ") & e);
+69   :     Return        
+//  func main() : (string)
+70   :     LoadValue     : value = <null>
+//  func main() : (string)
+71   :     Return        

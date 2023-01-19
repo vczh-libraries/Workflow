@@ -1,0 +1,41 @@
+﻿========================================================
+Original
+========================================================
+let a1=100, b=200 in (a + b)
+========================================================
+Printed
+========================================================
+let a1 = 100, b = 200 in ((a + b))
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "LetExpression", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 27, "index": 27}, "codeIndex": -1}},
+    "expression": {
+        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 0, "column": 22, "index": 22}, "end": {"row": 0, "column": 26, "index": 26}, "codeIndex": -1}},
+        "first": {
+            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 22, "index": 22}, "end": {"row": 0, "column": 22, "index": 22}, "codeIndex": -1}},
+            "name": { "value": "a", "codeRange": {"start": {"row": 0, "column": 22, "index": 22}, "end": {"row": 0, "column": 22, "index": 22}, "codeIndex": -1}}
+        },
+        "op": "Add",
+        "second": {
+            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 26, "index": 26}, "end": {"row": 0, "column": 26, "index": 26}, "codeIndex": -1}},
+            "name": { "value": "b", "codeRange": {"start": {"row": 0, "column": 26, "index": 26}, "end": {"row": 0, "column": 26, "index": 26}, "codeIndex": -1}}
+        }
+    },
+    "variables": [{
+        "$ast": { "type": "LetVariable", "codeRange": {"start": {"row": 0, "column": 4, "index": 4}, "end": {"row": 0, "column": 9, "index": 9}, "codeIndex": -1}},
+        "name": { "value": "a1", "codeRange": {"start": {"row": 0, "column": 4, "index": 4}, "end": {"row": 0, "column": 5, "index": 5}, "codeIndex": -1}},
+        "value": {
+            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 9, "index": 9}, "codeIndex": -1}},
+            "value": { "value": "100", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 9, "index": 9}, "codeIndex": -1}}
+        }
+    }, {
+        "$ast": { "type": "LetVariable", "codeRange": {"start": {"row": 0, "column": 12, "index": 12}, "end": {"row": 0, "column": 16, "index": 16}, "codeIndex": -1}},
+        "name": { "value": "b", "codeRange": {"start": {"row": 0, "column": 12, "index": 12}, "end": {"row": 0, "column": 12, "index": 12}, "codeIndex": -1}},
+        "value": {
+            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 0, "column": 14, "index": 14}, "end": {"row": 0, "column": 16, "index": 16}, "codeIndex": -1}},
+            "value": { "value": "200", "codeRange": {"start": {"row": 0, "column": 14, "index": 14}, "end": {"row": 0, "column": 16, "index": 16}, "codeIndex": -1}}
+        }
+    }]
+}

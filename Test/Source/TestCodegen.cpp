@@ -1,5 +1,7 @@
 #include "Helper.h"
 
+extern WfCpuArchitecture testCpuArchitecture;
+
 bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& itemResult, bool& cppCodegen)
 {
 	const wchar_t* reading = codegenName.Buffer();
@@ -13,18 +15,16 @@ bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& i
 		cppCodegen = false;
 		itemName = itemName.Sub(1, itemName.Length() - 1);
 	}
+
+	CHECK_ERROR(testCpuArchitecture != WfCpuArchitecture::AsExecutable, L"The CPU architecture is unspecified");
 	if (itemName.Length() > 3 && itemName.Sub(itemName.Length() - 3, 3) == L"@32")
 	{
-#ifdef VCZH_64
-		return false;
-#endif
+		if (testCpuArchitecture != WfCpuArchitecture::x86) return false;
 		itemName = itemName.Sub(0, itemName.Length() - 3);
 	}
 	else if (itemName.Length() > 3 && itemName.Sub(itemName.Length() - 3, 3) == L"@64")
 	{
-#ifndef VCZH_64
-		return false;
-#endif
+		if (testCpuArchitecture != WfCpuArchitecture::x64) return false;
 		itemName = itemName.Sub(0, itemName.Length() - 3);
 	}
 	return true;
@@ -46,7 +46,7 @@ TEST_FILE
 		Dictionary<WString, WString> assemblyEntries;
 		LoadSampleIndex(L"Codegen", codegenNames);
 
-		WfLexicalScopeManager manager(GetWorkflowParser());
+		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
 		for (auto codegenName : codegenNames)
 		{
 			TEST_CASE(codegenName)

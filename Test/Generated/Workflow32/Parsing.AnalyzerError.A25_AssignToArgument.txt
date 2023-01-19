@@ -1,0 +1,72 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func main(a : int) : (void)
+{
+    (a = 2);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func main(a : int) : (void)
+{
+    (a = 2);
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 2, Message: A25: <test>::main::a of type "system::Int32" is not assignable.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 51}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 5, "column": 0, "index": 51}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "main", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 8, "index": 24}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [{
+            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 16, "index": 32}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "a", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 10, "index": 26}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 14, "index": 30}, "end": {"row": 2, "column": 16, "index": 32}, "codeIndex": -1}},
+                "name": "Int"
+            }
+        }],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 2, "column": 19, "index": 35}, "end": {"row": 2, "column": 22, "index": 38}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 0, "index": 41}, "end": {"row": 5, "column": 0, "index": 51}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 4, "column": 1, "index": 45}, "end": {"row": 4, "column": 4, "index": 48}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 4, "column": 1, "index": 45}, "end": {"row": 4, "column": 3, "index": 47}, "codeIndex": -1}},
+                    "first": {
+                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 4, "column": 1, "index": 45}, "end": {"row": 4, "column": 1, "index": 45}, "codeIndex": -1}},
+                        "name": { "value": "a", "codeRange": {"start": {"row": 4, "column": 1, "index": 45}, "end": {"row": 4, "column": 1, "index": 45}, "codeIndex": -1}}
+                    },
+                    "op": "Assign",
+                    "second": {
+                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 4, "column": 3, "index": 47}, "end": {"row": 4, "column": 3, "index": 47}, "codeIndex": -1}},
+                        "value": { "value": "2", "codeRange": {"start": {"row": 4, "column": 3, "index": 47}, "end": {"row": 4, "column": 3, "index": 47}, "codeIndex": -1}}
+                    }
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

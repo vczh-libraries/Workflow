@@ -282,9 +282,9 @@ Compile
 				return GenerateAssembly(manager);
 			}
 
-			Ptr<runtime::WfAssembly> Compile(workflow::Parser& workflowParser, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors)
+			Ptr<runtime::WfAssembly> Compile(workflow::Parser& workflowParser, analyzer::WfCpuArchitecture cpuArchitecture, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors)
 			{
-				WfLexicalScopeManager manager(workflowParser);
+				WfLexicalScopeManager manager(workflowParser, cpuArchitecture);
 				return Compile(&manager, moduleCodes, errors);
 			}
 		}
