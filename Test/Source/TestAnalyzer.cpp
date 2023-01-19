@@ -87,10 +87,23 @@ TEST_FILE
 		LoadSampleIndex(L"AnalyzerError", itemNames);
 
 		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
-		manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint32_t>::CreateTypeInfo());
-		manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint32_t>>::CreateTypeInfo());
-		manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint32_t>>::CreateTypeInfo());
-		manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint32_t>>::CreateTypeInfo());
+		switch (testCpuArchitecture)
+		{
+		case WfCpuArchitecture::x86:
+			manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint32_t>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint32_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint32_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint32_t>>::CreateTypeInfo());
+			break;
+		case WfCpuArchitecture::x64:
+			manager.attributes.Add({ L"test",L"Int" }, TypeInfoRetriver<vint64_t>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"List" }, TypeInfoRetriver<List<vint64_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Map" }, TypeInfoRetriver<Dictionary<WString, vint64_t>>::CreateTypeInfo());
+			manager.attributes.Add({ L"test",L"Range" }, TypeInfoRetriver<LazyList<vint64_t>>::CreateTypeInfo());
+			break;
+		default:
+			CHECK_FAIL(L"The CPU architecture is unspecified");
+		}
 		manager.attributes.Add({ L"test",L"Point" }, TypeInfoRetriver<test::Point>::CreateTypeInfo());
 
 		for (auto itemName : itemNames)
