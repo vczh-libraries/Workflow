@@ -251,16 +251,26 @@ CheckScopes_CycleDependency
 									})
 								);
 
-							switch (tds[0]->GetTypeDescriptorFlags())
+							auto selectedTd = tds[0];
+							for (auto candidateTd : From(tds).Skip(1))
+							{
+								auto selectedRange = visitor.depItems[selectedTd]->codeRange;
+								auto candidateRange = visitor.depItems[candidateTd]->codeRange;
+
+								if (candidateRange.codeIndex > selectedRange.codeIndex) { selectedTd = candidateTd; continue; }
+								if (candidateRange.start > selectedRange.start) { selectedTd = candidateTd; continue; }
+							}
+
+							switch (selectedTd->GetTypeDescriptorFlags())
 							{
 							case TypeDescriptorFlags::Struct:
-								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(dynamic_cast<WfStructDeclaration*>(visitor.depItems[tds[0]]), tds));
+								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(dynamic_cast<WfStructDeclaration*>(visitor.depItems[selectedTd]), tds));
 								break;
 							case TypeDescriptorFlags::Class:
-								manager->errors.Add(WfErrors::ClassRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								manager->errors.Add(WfErrors::ClassRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[selectedTd]), tds));
 								break;
 							case TypeDescriptorFlags::Interface:
-								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[selectedTd]), tds));
 								break;
 							default:;
 							}
