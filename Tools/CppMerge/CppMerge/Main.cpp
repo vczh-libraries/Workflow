@@ -1,4 +1,4 @@
-#include "../../../Source/Cpp/WfMergeCpp.h"
+#include "WfMergeCpp.h"
 
 using namespace vl;
 using namespace vl::console;
