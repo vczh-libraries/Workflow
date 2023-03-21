@@ -31,7 +31,7 @@ class ObservableValue2 : public ::vl::Object, public ::vl::reflection::Descripti
 #endif
 public:
 	::vl::vint value;
-	::vl::Event<void()> ValueChanged;
+	::vl::Event<void(::vl::vint, ::vl::vint)> ValueChanged;
 	ObservableValue2(::vl::vint _value);
 	::vl::vint GetValue();
 	void SetValue(::vl::vint newValue);

@@ -31,7 +31,7 @@ class ObservableValue2 : public ::vl::Object, public ::vl::reflection::Descripti
 #endif
 public:
 	::vl::vint64_t value;
-	::vl::Event<void()> ValueChanged;
+	::vl::Event<void(::vl::vint64_t, ::vl::vint64_t)> ValueChanged;
 	ObservableValue2(::vl::vint64_t _value);
 	::vl::vint64_t GetValue();
 	void SetValue(::vl::vint64_t newValue);
