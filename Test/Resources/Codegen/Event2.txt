@@ -1,0 +1,51 @@
+module test;
+using system::*;
+
+class ObservableValue2
+{
+	var value : int = 0;
+	event ValueChanged(int, int);
+
+	new(_value : int)
+	{
+		value = _value;
+	}
+	
+	func GetValue(): int
+	{
+		return value;
+	}
+	
+	func SetValue(newValue : int): void
+	{
+		var oldValue = value;
+		value = newValue;
+		ValueChanged(oldValue, newValue);
+	}
+	
+	prop Value : int {GetValue, SetValue : ValueChanged}
+}
+
+var olds : int[] = {};
+var news : int[] = {};
+
+func EventHandler(oldValue : int, newValue : int) : void
+{
+	olds.Add(oldValue);
+	news.Add(newValue);
+}
+
+func main():string
+{
+	var o = new ObservableValue2^(10);
+	var handler = attach(o.ValueChanged, EventHandler);
+	o.Value = 20;
+	o.Value = 30;
+	var b1 = detach(o.ValueChanged, handler);
+	o.Value = 40;
+	var b2 = detach(o.ValueChanged, handler);
+	return
+		olds.Count & ", " & olds[0] & ", " & olds[1] & ", " &
+		news.Count & ", " & news[0] & ", " & news[1] & ", " &
+		b1 & ", " & b2;
+}
