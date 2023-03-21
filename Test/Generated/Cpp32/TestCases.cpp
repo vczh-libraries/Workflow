@@ -25,6 +25,7 @@
 #include "MethodClosure.h"
 #include "StaticMethod.h"
 #include "Event.h"
+#include "Event2Reflection.h"
 #include "ControlFlow.h"
 #include "IfNotNull.h"
 #include "ForEach.h"
@@ -98,6 +99,7 @@ using namespace vl::reflection::description;
 void LoadTestCaseTypes()
 {
 	 LoadOpCompareTypes();
+	 LoadEvent2Types();
 	 LoadNullableCastTypes();
 	 LoadNewEmptyInterfaceTypes();
 	 LoadNewCustomInterfaceTypes();
@@ -380,6 +382,15 @@ TEST_CASE(L"Event")
 {
 	WString expected = L"2, 10, 20, 2, 20, 30, true, false";
 	WString actual = ::vl_workflow_global::Event::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"Event2")
+{
+	WString expected = L"2, 10, 20, 2, 20, 30, true, false";
+	WString actual = ::vl_workflow_global::Event2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

@@ -1,0 +1,316 @@
+﻿========================================================
+Global Variables:
+========================================================
+olds
+news
+
+========================================================
+Functions:
+========================================================
+ObservableValue2::#ctor (6 .. 15)
+    Arguments:
+        _value
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+ObservableValue2::GetValue (16 .. 20)
+    Arguments:
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+ObservableValue2::SetValue (21 .. 35)
+    Arguments:
+        newValue
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+        oldValue
+
+EventHandler (36 .. 45)
+    Arguments:
+        oldValue
+        newValue
+    Captured Variables:
+    Local Variables:
+
+main (46 .. 131)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        o
+        handler
+        b1
+        b2
+
+<initialize> (0 .. 5)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  {}
+0    :     NewList       : stackPatternCount = 0
+//  var olds : int[] = {};
+1    :     StoreGlobalVar: var = 0(olds)
+//  {}
+2    :     NewList       : stackPatternCount = 0
+//  var news : int[] = {};
+3    :     StoreGlobalVar: var = 1(news)
+4    :     LoadValue     : value = <null>
+5    :     Return        
+//  0
+6    :     LoadValue     : value = <I8, 0>
+//  var value : int = 0;
+7    :     LoadCapturedVar: var = 0(<captured-this>0)
+//  var value : int = 0;
+8    :     SetProperty   : propertyInfo = value<ObservableValue2>
+//  _value
+9    :     LoadLocalVar  : var = 0(_value)
+//  (value = _value)
+10   :     Duplicate     : stackPatternCount = 0
+//  (value = _value)
+11   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  (value = _value)
+12   :     SetProperty   : propertyInfo = value<ObservableValue2>
+//  (value = _value);
+13   :     Pop           
+//  new (_value : int)
+14   :     LoadValue     : value = <null>
+//  new (_value : int)
+15   :     Return        
+//  value
+16   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  value
+17   :     GetProperty   : propertyInfo = value<ObservableValue2>
+//  return value;
+18   :     Return        
+//  func GetValue() : (int)
+19   :     LoadValue     : value = <null>
+//  func GetValue() : (int)
+20   :     Return        
+//  value
+21   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  value
+22   :     GetProperty   : propertyInfo = value<ObservableValue2>
+//  var oldValue = value;
+23   :     StoreLocalVar : var = 1(oldValue)
+//  newValue
+24   :     LoadLocalVar  : var = 0(newValue)
+//  (value = newValue)
+25   :     Duplicate     : stackPatternCount = 0
+//  (value = newValue)
+26   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  (value = newValue)
+27   :     SetProperty   : propertyInfo = value<ObservableValue2>
+//  (value = newValue);
+28   :     Pop           
+//  oldValue
+29   :     LoadLocalVar  : var = 1(oldValue)
+//  newValue
+30   :     LoadLocalVar  : var = 0(newValue)
+//  ValueChanged(oldValue, newValue)
+31   :     LoadCapturedVar: var = 0(<captured-this>0)
+//  ValueChanged(oldValue, newValue)
+32   :     InvokeEvent   : eventInfo = ValueChanged<ObservableValue2>, stackPatternCount = 2
+//  ValueChanged(oldValue, newValue);
+33   :     Pop           
+//  func SetValue(newValue : int) : (void)
+34   :     LoadValue     : value = <null>
+//  func SetValue(newValue : int) : (void)
+35   :     Return        
+//  oldValue
+36   :     LoadLocalVar  : var = 0(oldValue)
+//  olds
+37   :     LoadGlobalVar : var = 0(olds)
+//  olds.Add(oldValue)
+38   :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  olds.Add(oldValue);
+39   :     Pop           
+//  newValue
+40   :     LoadLocalVar  : var = 1(newValue)
+//  news
+41   :     LoadGlobalVar : var = 1(news)
+//  news.Add(newValue)
+42   :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  news.Add(newValue);
+43   :     Pop           
+//  func EventHandler(oldValue : int, newValue : int) : (void)
+44   :     LoadValue     : value = <null>
+//  func EventHandler(oldValue : int, newValue : int) : (void)
+45   :     Return        
+//  10
+46   :     LoadValue     : value = <I8, 10>
+//  new (ObservableValue2^)(10)
+47   :     LoadValue     : value = <null>
+//  new (ObservableValue2^)(10)
+48   :     InvokeMethod  : methodInfo = <ObservableValue2>, stackPatternCount = 1
+//  var o = new (ObservableValue2^)(10);
+49   :     StoreLocalVar : var = 0(o)
+//  o
+50   :     LoadLocalVar  : var = 0(o)
+//  EventHandler
+51   :     CreateClosureContext: stackPatternCount = 0
+//  EventHandler
+52   :     LoadFunction  : func = 3(EventHandler)
+//  EventHandler
+53   :     CreateClosure 
+//  attach(o.ValueChanged, EventHandler)
+54   :     AttachEvent   : eventInfo = ValueChanged<ObservableValue2>
+//  var handler = attach(o.ValueChanged, EventHandler);
+55   :     StoreLocalVar : var = 1(handler)
+//  20
+56   :     LoadValue     : value = <I8, 20>
+//  (o.Value = 20)
+57   :     Duplicate     : stackPatternCount = 0
+//  o
+58   :     LoadLocalVar  : var = 0(o)
+//  (o.Value = 20)
+59   :     InvokeMethod  : methodInfo = SetValue<ObservableValue2>, stackPatternCount = 1
+//  (o.Value = 20)
+60   :     Pop           
+//  (o.Value = 20);
+61   :     Pop           
+//  30
+62   :     LoadValue     : value = <I8, 30>
+//  (o.Value = 30)
+63   :     Duplicate     : stackPatternCount = 0
+//  o
+64   :     LoadLocalVar  : var = 0(o)
+//  (o.Value = 30)
+65   :     InvokeMethod  : methodInfo = SetValue<ObservableValue2>, stackPatternCount = 1
+//  (o.Value = 30)
+66   :     Pop           
+//  (o.Value = 30);
+67   :     Pop           
+//  o
+68   :     LoadLocalVar  : var = 0(o)
+//  handler
+69   :     LoadLocalVar  : var = 1(handler)
+//  detach(o.ValueChanged, handler)
+70   :     DetachEvent   : eventInfo = ValueChanged<ObservableValue2>
+//  var b1 = detach(o.ValueChanged, handler);
+71   :     StoreLocalVar : var = 2(b1)
+//  40
+72   :     LoadValue     : value = <I8, 40>
+//  (o.Value = 40)
+73   :     Duplicate     : stackPatternCount = 0
+//  o
+74   :     LoadLocalVar  : var = 0(o)
+//  (o.Value = 40)
+75   :     InvokeMethod  : methodInfo = SetValue<ObservableValue2>, stackPatternCount = 1
+//  (o.Value = 40)
+76   :     Pop           
+//  (o.Value = 40);
+77   :     Pop           
+//  o
+78   :     LoadLocalVar  : var = 0(o)
+//  handler
+79   :     LoadLocalVar  : var = 1(handler)
+//  detach(o.ValueChanged, handler)
+80   :     DetachEvent   : eventInfo = ValueChanged<ObservableValue2>
+//  var b2 = detach(o.ValueChanged, handler);
+81   :     StoreLocalVar : var = 3(b2)
+//  olds
+82   :     LoadGlobalVar : var = 0(olds)
+//  olds.Count
+83   :     InvokeMethod  : methodInfo = GetCount<system::ReadonlyList>, stackPatternCount = 0
+//  olds.Count
+84   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+85   :     LoadValue     : value = <Bool, , >
+//  (olds.Count & ", ")
+86   :     OpConcat      
+//  0
+87   :     LoadValue     : value = <I8, 0>
+//  olds
+88   :     LoadGlobalVar : var = 0(olds)
+//  olds[0]
+89   :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  olds[0]
+90   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((olds.Count & ", ") & olds[0])
+91   :     OpConcat      
+//  ", "
+92   :     LoadValue     : value = <Bool, , >
+//  (((olds.Count & ", ") & olds[0]) & ", ")
+93   :     OpConcat      
+//  1
+94   :     LoadValue     : value = <I8, 1>
+//  olds
+95   :     LoadGlobalVar : var = 0(olds)
+//  olds[1]
+96   :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  olds[1]
+97   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((olds.Count & ", ") & olds[0]) & ", ") & olds[1])
+98   :     OpConcat      
+//  ", "
+99   :     LoadValue     : value = <Bool, , >
+//  (((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ")
+100  :     OpConcat      
+//  news
+101  :     LoadGlobalVar : var = 1(news)
+//  news.Count
+102  :     InvokeMethod  : methodInfo = GetCount<system::ReadonlyList>, stackPatternCount = 0
+//  news.Count
+103  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count)
+104  :     OpConcat      
+//  ", "
+105  :     LoadValue     : value = <Bool, , >
+//  (((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ")
+106  :     OpConcat      
+//  0
+107  :     LoadValue     : value = <I8, 0>
+//  news
+108  :     LoadGlobalVar : var = 1(news)
+//  news[0]
+109  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  news[0]
+110  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0])
+111  :     OpConcat      
+//  ", "
+112  :     LoadValue     : value = <Bool, , >
+//  (((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0]) & ", ")
+113  :     OpConcat      
+//  1
+114  :     LoadValue     : value = <I8, 1>
+//  news
+115  :     LoadGlobalVar : var = 1(news)
+//  news[1]
+116  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  news[1]
+117  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0]) & ", ") & news[1])
+118  :     OpConcat      
+//  ", "
+119  :     LoadValue     : value = <Bool, , >
+//  (((((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0]) & ", ") & news[1]) & ", ")
+120  :     OpConcat      
+//  b1
+121  :     LoadLocalVar  : var = 2(b1)
+//  b1
+122  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0]) & ", ") & news[1]) & ", ") & b1)
+123  :     OpConcat      
+//  ", "
+124  :     LoadValue     : value = <Bool, , >
+//  (((((((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0]) & ", ") & news[1]) & ", ") & b1) & ", ")
+125  :     OpConcat      
+//  b2
+126  :     LoadLocalVar  : var = 3(b2)
+//  b2
+127  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((((((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0]) & ", ") & news[1]) & ", ") & b1) & ", ") & b2)
+128  :     OpConcat      
+//  return ((((((((((((((olds.Count & ", ") & olds[0]) & ", ") & olds[1]) & ", ") & news.Count) & ", ") & news[0]) & ", ") & news[1]) & ", ") & b1) & ", ") & b2);
+129  :     Return        
+//  func main() : (string)
+130  :     LoadValue     : value = <null>
+//  func main() : (string)
+131  :     Return        
