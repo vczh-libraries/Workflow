@@ -6,2257 +6,2251 @@ Licensed under https://github.com/vczh-libraries/License
 
 #include "WorkflowAst_Copy.h"
 
-namespace vl
+namespace vl::workflow::copy_visitor
 {
-	namespace workflow
+	void AstVisitor::CopyFields(WfAttachEventExpression* from, WfAttachEventExpression* to)
 	{
-		namespace copy_visitor
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->event = CopyNode(from->event.Obj());
+		to->function = CopyNode(from->function.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfAttribute* from, WfAttribute* to)
+	{
+		to->category = from->category;
+		to->name = from->name;
+		to->value = CopyNode(from->value.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfAutoPropertyDeclaration* from, WfAutoPropertyDeclaration* to)
+	{
+		CopyFields(static_cast<WfVirtualCfeDeclaration*>(from), static_cast<WfVirtualCfeDeclaration*>(to));
+		to->configConst = from->configConst;
+		to->configObserve = from->configObserve;
+		to->expression = CopyNode(from->expression.Obj());
+		to->functionKind = from->functionKind;
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfBaseConstructorCall* from, WfBaseConstructorCall* to)
+	{
+		for (auto&& listItem : from->arguments)
 		{
-			void AstVisitor::CopyFields(WfAttachEventExpression* from, WfAttachEventExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->event = CopyNode(from->event.Obj());
-				to->function = CopyNode(from->function.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfAttribute* from, WfAttribute* to)
-			{
-				to->category = from->category;
-				to->name = from->name;
-				to->value = CopyNode(from->value.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfAutoPropertyDeclaration* from, WfAutoPropertyDeclaration* to)
-			{
-				CopyFields(static_cast<WfVirtualCfeDeclaration*>(from), static_cast<WfVirtualCfeDeclaration*>(to));
-				to->configConst = from->configConst;
-				to->configObserve = from->configObserve;
-				to->expression = CopyNode(from->expression.Obj());
-				to->functionKind = from->functionKind;
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfBaseConstructorCall* from, WfBaseConstructorCall* to)
-			{
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfBinaryExpression* from, WfBinaryExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->first = CopyNode(from->first.Obj());
-				to->op = from->op;
-				to->second = CopyNode(from->second.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfBindExpression* from, WfBindExpression* to)
-			{
-				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfBlockStatement* from, WfBlockStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->endLabel = from->endLabel;
-				for (auto&& listItem : from->statements)
-				{
-					to->statements.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfBreakStatement* from, WfBreakStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-			}
-
-			void AstVisitor::CopyFields(WfCallExpression* from, WfCallExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->function = CopyNode(from->function.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to)
-			{
-				CopyFields(static_cast<WfVirtualCfeDeclaration*>(from), static_cast<WfVirtualCfeDeclaration*>(to));
-				to->baseType = CopyNode(from->baseType.Obj());
-				to->elementType = CopyNode(from->elementType.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfChildExpression* from, WfChildExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->name = from->name;
-				to->parent = CopyNode(from->parent.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfChildType* from, WfChildType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->name = from->name;
-				to->parent = CopyNode(from->parent.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfClassDeclaration* from, WfClassDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->baseTypes)
-				{
-					to->baseTypes.Add(CopyNode(listItem.Obj()));
-				}
-				to->constructorType = from->constructorType;
-				for (auto&& listItem : from->declarations)
-				{
-					to->declarations.Add(CopyNode(listItem.Obj()));
-				}
-				to->kind = from->kind;
-			}
-
-			void AstVisitor::CopyFields(WfCoOperatorExpression* from, WfCoOperatorExpression* to)
-			{
-				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfCoOperatorStatement* from, WfCoOperatorStatement* to)
-			{
-				CopyFields(static_cast<WfCoroutineStatement*>(from), static_cast<WfCoroutineStatement*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->opName = from->opName;
-				to->varName = from->varName;
-			}
-
-			void AstVisitor::CopyFields(WfCoPauseStatement* from, WfCoPauseStatement* to)
-			{
-				CopyFields(static_cast<WfCoroutineStatement*>(from), static_cast<WfCoroutineStatement*>(to));
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfCoProviderStatement* from, WfCoProviderStatement* to)
-			{
-				CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
-				to->name = from->name;
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfConstructorArgument* from, WfConstructorArgument* to)
-			{
-				to->key = CopyNode(from->key.Obj());
-				to->value = CopyNode(from->value.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfConstructorDeclaration* from, WfConstructorDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				for (auto&& listItem : from->baseConstructorCalls)
-				{
-					to->baseConstructorCalls.Add(CopyNode(listItem.Obj()));
-				}
-				to->constructorType = from->constructorType;
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfConstructorExpression* from, WfConstructorExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfContinueStatement* from, WfContinueStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-			}
-
-			void AstVisitor::CopyFields(WfCoroutineStatement* from, WfCoroutineStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-			}
-
-			void AstVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
-			{
-				for (auto&& listItem : from->attributes)
-				{
-					to->attributes.Add(CopyNode(listItem.Obj()));
-				}
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfDeleteStatement* from, WfDeleteStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfDestructorDeclaration* from, WfDestructorDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfDetachEventExpression* from, WfDetachEventExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->event = CopyNode(from->event.Obj());
-				to->handler = CopyNode(from->handler.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->items)
-				{
-					to->items.Add(CopyNode(listItem.Obj()));
-				}
-				to->kind = from->kind;
-			}
-
-			void AstVisitor::CopyFields(WfEnumItem* from, WfEnumItem* to)
-			{
-				for (auto&& listItem : from->attributes)
-				{
-					to->attributes.Add(CopyNode(listItem.Obj()));
-				}
-				for (auto&& listItem : from->intersections)
-				{
-					to->intersections.Add(CopyNode(listItem.Obj()));
-				}
-				to->kind = from->kind;
-				to->name = from->name;
-				to->number = from->number;
-			}
-
-			void AstVisitor::CopyFields(WfEnumItemIntersection* from, WfEnumItemIntersection* to)
-			{
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfEnumerableType* from, WfEnumerableType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->element = CopyNode(from->element.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfEventDeclaration* from, WfEventDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfExpectedTypeCastExpression* from, WfExpectedTypeCastExpression* to)
-			{
-				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				to->strategy = from->strategy;
-			}
-
-			void AstVisitor::CopyFields(WfExpression* from, WfExpression* to)
-			{
-			}
-
-			void AstVisitor::CopyFields(WfExpressionStatement* from, WfExpressionStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfFloatingExpression* from, WfFloatingExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->value = from->value;
-			}
-
-			void AstVisitor::CopyFields(WfForEachStatement* from, WfForEachStatement* to)
-			{
-				CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
-				to->collection = CopyNode(from->collection.Obj());
-				to->direction = from->direction;
-				to->name = from->name;
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfFormatExpression* from, WfFormatExpression* to)
-			{
-				CopyFields(static_cast<WfVirtualCfeExpression*>(from), static_cast<WfVirtualCfeExpression*>(to));
-				to->value = from->value;
-			}
-
-			void AstVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
-			{
-				for (auto&& listItem : from->attributes)
-				{
-					to->attributes.Add(CopyNode(listItem.Obj()));
-				}
-				to->name = from->name;
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				to->anonymity = from->anonymity;
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->functionKind = from->functionKind;
-				to->returnType = CopyNode(from->returnType.Obj());
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfFunctionExpression* from, WfFunctionExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->function = CopyNode(from->function.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfFunctionType* from, WfFunctionType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->result = CopyNode(from->result.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfGotoStatement* from, WfGotoStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->label = from->label;
-			}
-
-			void AstVisitor::CopyFields(WfIfExpression* from, WfIfExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->condition = CopyNode(from->condition.Obj());
-				to->falseBranch = CopyNode(from->falseBranch.Obj());
-				to->trueBranch = CopyNode(from->trueBranch.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfIfStatement* from, WfIfStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				to->falseBranch = CopyNode(from->falseBranch.Obj());
-				to->name = from->name;
-				to->trueBranch = CopyNode(from->trueBranch.Obj());
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfInferExpression* from, WfInferExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfIntegerExpression* from, WfIntegerExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->value = from->value;
-			}
-
-			void AstVisitor::CopyFields(WfLetExpression* from, WfLetExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				for (auto&& listItem : from->variables)
-				{
-					to->variables.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfLetVariable* from, WfLetVariable* to)
-			{
-				to->name = from->name;
-				to->value = CopyNode(from->value.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfLiteralExpression* from, WfLiteralExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->value = from->value;
-			}
-
-			void AstVisitor::CopyFields(WfMapType* from, WfMapType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->key = CopyNode(from->key.Obj());
-				to->value = CopyNode(from->value.Obj());
-				to->writability = from->writability;
-			}
-
-			void AstVisitor::CopyFields(WfMemberExpression* from, WfMemberExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->name = from->name;
-				to->parent = CopyNode(from->parent.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfMixinCastExpression* from, WfMixinCastExpression* to)
-			{
-				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfModule* from, WfModule* to)
-			{
-				for (auto&& listItem : from->declarations)
-				{
-					to->declarations.Add(CopyNode(listItem.Obj()));
-				}
-				to->moduleType = from->moduleType;
-				to->name = from->name;
-				for (auto&& listItem : from->paths)
-				{
-					to->paths.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfModuleUsingFragment* from, WfModuleUsingFragment* to)
-			{
-			}
-
-			void AstVisitor::CopyFields(WfModuleUsingItem* from, WfModuleUsingItem* to)
-			{
-				for (auto&& listItem : from->fragments)
-				{
-					to->fragments.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfModuleUsingNameFragment* from, WfModuleUsingNameFragment* to)
-			{
-				CopyFields(static_cast<WfModuleUsingFragment*>(from), static_cast<WfModuleUsingFragment*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfModuleUsingPath* from, WfModuleUsingPath* to)
-			{
-				for (auto&& listItem : from->items)
-				{
-					to->items.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfModuleUsingWildCardFragment* from, WfModuleUsingWildCardFragment* to)
-			{
-				CopyFields(static_cast<WfModuleUsingFragment*>(from), static_cast<WfModuleUsingFragment*>(to));
-			}
-
-			void AstVisitor::CopyFields(WfNamespaceDeclaration* from, WfNamespaceDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->declarations)
-				{
-					to->declarations.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfNewClassExpression* from, WfNewClassExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to)
-			{
-				CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
-				to->name = from->name;
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				for (auto&& listItem : from->declarations)
-				{
-					to->declarations.Add(CopyNode(listItem.Obj()));
-				}
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfNullableType* from, WfNullableType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->element = CopyNode(from->element.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfObservableListType* from, WfObservableListType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->element = CopyNode(from->element.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfObserveExpression* from, WfObserveExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				for (auto&& listItem : from->events)
-				{
-					to->events.Add(CopyNode(listItem.Obj()));
-				}
-				to->expression = CopyNode(from->expression.Obj());
-				to->name = from->name;
-				to->observeType = from->observeType;
-				to->parent = CopyNode(from->parent.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfOrderedLambdaExpression* from, WfOrderedLambdaExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->body = CopyNode(from->body.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfOrderedNameExpression* from, WfOrderedNameExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfPredefinedType* from, WfPredefinedType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfPropertyDeclaration* from, WfPropertyDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				to->getter = from->getter;
-				to->setter = from->setter;
-				to->type = CopyNode(from->type.Obj());
-				to->valueChangedEvent = from->valueChangedEvent;
-			}
-
-			void AstVisitor::CopyFields(WfRaiseExceptionStatement* from, WfRaiseExceptionStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfRangeExpression* from, WfRangeExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->begin = CopyNode(from->begin.Obj());
-				to->beginBoundary = from->beginBoundary;
-				to->end = CopyNode(from->end.Obj());
-				to->endBoundary = from->endBoundary;
-			}
-
-			void AstVisitor::CopyFields(WfRawPointerType* from, WfRawPointerType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->element = CopyNode(from->element.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfReferenceExpression* from, WfReferenceExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfReferenceType* from, WfReferenceType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfReturnStatement* from, WfReturnStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfSetTestingExpression* from, WfSetTestingExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->collection = CopyNode(from->collection.Obj());
-				to->element = CopyNode(from->element.Obj());
-				to->test = from->test;
-			}
-
-			void AstVisitor::CopyFields(WfSharedPointerType* from, WfSharedPointerType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->element = CopyNode(from->element.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfStateDeclaration* from, WfStateDeclaration* to)
-			{
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->name = from->name;
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfStateInput* from, WfStateInput* to)
-			{
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfStateInvokeStatement* from, WfStateInvokeStatement* to)
-			{
-				CopyFields(static_cast<WfStateMachineStatement*>(from), static_cast<WfStateMachineStatement*>(to));
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->name = from->name;
-				to->type = from->type;
-			}
-
-			void AstVisitor::CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to)
-			{
-				CopyFields(static_cast<WfVirtualCseDeclaration*>(from), static_cast<WfVirtualCseDeclaration*>(to));
-				for (auto&& listItem : from->inputs)
-				{
-					to->inputs.Add(CopyNode(listItem.Obj()));
-				}
-				for (auto&& listItem : from->states)
-				{
-					to->states.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfStateMachineStatement* from, WfStateMachineStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-			}
-
-			void AstVisitor::CopyFields(WfStateSwitchArgument* from, WfStateSwitchArgument* to)
-			{
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfStateSwitchCase* from, WfStateSwitchCase* to)
-			{
-				for (auto&& listItem : from->arguments)
-				{
-					to->arguments.Add(CopyNode(listItem.Obj()));
-				}
-				to->name = from->name;
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to)
-			{
-				CopyFields(static_cast<WfStateMachineStatement*>(from), static_cast<WfStateMachineStatement*>(to));
-				for (auto&& listItem : from->caseBranches)
-				{
-					to->caseBranches.Add(CopyNode(listItem.Obj()));
-				}
-				to->type = from->type;
-			}
-
-			void AstVisitor::CopyFields(WfStatement* from, WfStatement* to)
-			{
-			}
-
-			void AstVisitor::CopyFields(WfStringExpression* from, WfStringExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->value = from->value;
-			}
-
-			void AstVisitor::CopyFields(WfStructDeclaration* from, WfStructDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->members)
-				{
-					to->members.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfStructMember* from, WfStructMember* to)
-			{
-				for (auto&& listItem : from->attributes)
-				{
-					to->attributes.Add(CopyNode(listItem.Obj()));
-				}
-				to->name = from->name;
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfSwitchCase* from, WfSwitchCase* to)
-			{
-				to->expression = CopyNode(from->expression.Obj());
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
-			{
-				CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
-				for (auto&& listItem : from->caseBranches)
-				{
-					to->caseBranches.Add(CopyNode(listItem.Obj()));
-				}
-				to->defaultBranch = CopyNode(from->defaultBranch.Obj());
-				to->expression = CopyNode(from->expression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfThisExpression* from, WfThisExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-			}
-
-			void AstVisitor::CopyFields(WfTopQualifiedExpression* from, WfTopQualifiedExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfTopQualifiedType* from, WfTopQualifiedType* to)
-			{
-				CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
-				to->name = from->name;
-			}
-
-			void AstVisitor::CopyFields(WfTryStatement* from, WfTryStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->catchStatement = CopyNode(from->catchStatement.Obj());
-				to->finallyStatement = CopyNode(from->finallyStatement.Obj());
-				to->name = from->name;
-				to->protectedStatement = CopyNode(from->protectedStatement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfType* from, WfType* to)
-			{
-			}
-
-			void AstVisitor::CopyFields(WfTypeCastingExpression* from, WfTypeCastingExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				to->strategy = from->strategy;
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfTypeOfExpressionExpression* from, WfTypeOfExpressionExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfTypeOfTypeExpression* from, WfTypeOfTypeExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfTypeTestingExpression* from, WfTypeTestingExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				to->test = from->test;
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfUnaryExpression* from, WfUnaryExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->op = from->op;
-				to->operand = CopyNode(from->operand.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				to->expression = CopyNode(from->expression.Obj());
-				to->type = CopyNode(from->type.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfVariableStatement* from, WfVariableStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->variable = CopyNode(from->variable.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->expandedDeclarations)
-				{
-					to->expandedDeclarations.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfVirtualCfeExpression* from, WfVirtualCfeExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->expandedExpression = CopyNode(from->expandedExpression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to)
-			{
-				CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
-				for (auto&& listItem : from->expandedDeclarations)
-				{
-					to->expandedDeclarations.Add(CopyNode(listItem.Obj()));
-				}
-			}
-
-			void AstVisitor::CopyFields(WfVirtualCseExpression* from, WfVirtualCseExpression* to)
-			{
-				CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
-				to->expandedExpression = CopyNode(from->expandedExpression.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfVirtualCseStatement* from, WfVirtualCseStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->expandedStatement = CopyNode(from->expandedStatement.Obj());
-			}
-
-			void AstVisitor::CopyFields(WfWhileStatement* from, WfWhileStatement* to)
-			{
-				CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
-				to->condition = CopyNode(from->condition.Obj());
-				to->statement = CopyNode(from->statement.Obj());
-			}
-
-			void AstVisitor::Visit(WfAttribute* node)
-			{
-				auto newNode = vl::Ptr(new WfAttribute);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfFunctionArgument* node)
-			{
-				auto newNode = vl::Ptr(new WfFunctionArgument);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfBaseConstructorCall* node)
-			{
-				auto newNode = vl::Ptr(new WfBaseConstructorCall);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfEnumItemIntersection* node)
-			{
-				auto newNode = vl::Ptr(new WfEnumItemIntersection);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfEnumItem* node)
-			{
-				auto newNode = vl::Ptr(new WfEnumItem);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStructMember* node)
-			{
-				auto newNode = vl::Ptr(new WfStructMember);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStateInput* node)
-			{
-				auto newNode = vl::Ptr(new WfStateInput);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStateDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfStateDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfSwitchCase* node)
-			{
-				auto newNode = vl::Ptr(new WfSwitchCase);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStateSwitchArgument* node)
-			{
-				auto newNode = vl::Ptr(new WfStateSwitchArgument);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStateSwitchCase* node)
-			{
-				auto newNode = vl::Ptr(new WfStateSwitchCase);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfLetVariable* node)
-			{
-				auto newNode = vl::Ptr(new WfLetVariable);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfConstructorArgument* node)
-			{
-				auto newNode = vl::Ptr(new WfConstructorArgument);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfModuleUsingItem* node)
-			{
-				auto newNode = vl::Ptr(new WfModuleUsingItem);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfModuleUsingPath* node)
-			{
-				auto newNode = vl::Ptr(new WfModuleUsingPath);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfModule* node)
-			{
-				auto newNode = vl::Ptr(new WfModule);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfPredefinedType* node)
-			{
-				auto newNode = vl::Ptr(new WfPredefinedType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfTopQualifiedType* node)
-			{
-				auto newNode = vl::Ptr(new WfTopQualifiedType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfReferenceType* node)
-			{
-				auto newNode = vl::Ptr(new WfReferenceType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfRawPointerType* node)
-			{
-				auto newNode = vl::Ptr(new WfRawPointerType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfSharedPointerType* node)
-			{
-				auto newNode = vl::Ptr(new WfSharedPointerType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfNullableType* node)
-			{
-				auto newNode = vl::Ptr(new WfNullableType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfEnumerableType* node)
-			{
-				auto newNode = vl::Ptr(new WfEnumerableType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfMapType* node)
-			{
-				auto newNode = vl::Ptr(new WfMapType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfObservableListType* node)
-			{
-				auto newNode = vl::Ptr(new WfObservableListType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfFunctionType* node)
-			{
-				auto newNode = vl::Ptr(new WfFunctionType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfChildType* node)
-			{
-				auto newNode = vl::Ptr(new WfChildType);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfThisExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfThisExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfTopQualifiedExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfTopQualifiedExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfReferenceExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfReferenceExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfOrderedNameExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfOrderedNameExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfOrderedLambdaExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfOrderedLambdaExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfMemberExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfMemberExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfChildExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfChildExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfLiteralExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfLiteralExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfFloatingExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfFloatingExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfIntegerExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfIntegerExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStringExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfStringExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfUnaryExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfUnaryExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfBinaryExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfBinaryExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfLetExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfLetExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfIfExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfIfExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfRangeExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfRangeExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfSetTestingExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfSetTestingExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfConstructorExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfConstructorExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfInferExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfInferExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfTypeCastingExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfTypeCastingExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfTypeTestingExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfTypeTestingExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfTypeOfTypeExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfTypeOfTypeExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfTypeOfExpressionExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfTypeOfExpressionExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfAttachEventExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfAttachEventExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfDetachEventExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfDetachEventExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfObserveExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfObserveExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfCallExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfCallExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfFunctionExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfFunctionExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfNewClassExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfNewClassExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfNewInterfaceExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfNewInterfaceExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfVirtualCfeExpression* node)
-			{
-				node->Accept(static_cast<WfVirtualCfeExpression::IVisitor*>(this));
-			}
-
-			void AstVisitor::Visit(WfVirtualCseExpression* node)
-			{
-				node->Accept(static_cast<WfVirtualCseExpression::IVisitor*>(this));
-			}
-
-			void AstVisitor::Visit(WfBreakStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfBreakStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfContinueStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfContinueStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfReturnStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfReturnStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfDeleteStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfDeleteStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfRaiseExceptionStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfRaiseExceptionStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfIfStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfIfStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfWhileStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfWhileStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfTryStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfTryStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfBlockStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfBlockStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfGotoStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfGotoStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfVariableStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfVariableStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfExpressionStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfExpressionStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfVirtualCseStatement* node)
-			{
-				node->Accept(static_cast<WfVirtualCseStatement::IVisitor*>(this));
-			}
-
-			void AstVisitor::Visit(WfCoroutineStatement* node)
-			{
-				node->Accept(static_cast<WfCoroutineStatement::IVisitor*>(this));
-			}
-
-			void AstVisitor::Visit(WfStateMachineStatement* node)
-			{
-				node->Accept(static_cast<WfStateMachineStatement::IVisitor*>(this));
-			}
-
-			void AstVisitor::Visit(WfNamespaceDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfNamespaceDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfFunctionDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfFunctionDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfVariableDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfVariableDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfEventDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfEventDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfPropertyDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfPropertyDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfConstructorDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfConstructorDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfDestructorDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfDestructorDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfClassDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfClassDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfEnumDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfEnumDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStructDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfStructDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfVirtualCfeDeclaration* node)
-			{
-				node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
-			}
-
-			void AstVisitor::Visit(WfVirtualCseDeclaration* node)
-			{
-				node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
-			}
-
-			void AstVisitor::Visit(WfAutoPropertyDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfAutoPropertyDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfCastResultInterfaceDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfCastResultInterfaceDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStateMachineDeclaration* node)
-			{
-				auto newNode = vl::Ptr(new WfStateMachineDeclaration);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfForEachStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfForEachStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfSwitchStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfSwitchStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfCoProviderStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfCoProviderStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfCoPauseStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfCoPauseStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfCoOperatorStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfCoOperatorStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStateSwitchStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfStateSwitchStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfStateInvokeStatement* node)
-			{
-				auto newNode = vl::Ptr(new WfStateInvokeStatement);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfFormatExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfFormatExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfBindExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfBindExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfNewCoroutineExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfNewCoroutineExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfMixinCastExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfMixinCastExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfExpectedTypeCastExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfExpectedTypeCastExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfCoOperatorExpression* node)
-			{
-				auto newNode = vl::Ptr(new WfCoOperatorExpression);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfModuleUsingNameFragment* node)
-			{
-				auto newNode = vl::Ptr(new WfModuleUsingNameFragment);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			void AstVisitor::Visit(WfModuleUsingWildCardFragment* node)
-			{
-				auto newNode = vl::Ptr(new WfModuleUsingWildCardFragment);
-				CopyFields(node, newNode.Obj());
-				this->result = newNode;
-			}
-
-			vl::Ptr<WfType> AstVisitor::CopyNode(WfType* node)
-			{
-				if (!node) return nullptr;
-				node->Accept(static_cast<WfType::IVisitor*>(this));
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfType>();
-			}
-
-			vl::Ptr<WfExpression> AstVisitor::CopyNode(WfExpression* node)
-			{
-				if (!node) return nullptr;
-				node->Accept(static_cast<WfExpression::IVisitor*>(this));
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfExpression>();
-			}
-
-			vl::Ptr<WfStatement> AstVisitor::CopyNode(WfStatement* node)
-			{
-				if (!node) return nullptr;
-				node->Accept(static_cast<WfStatement::IVisitor*>(this));
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfStatement>();
-			}
-
-			vl::Ptr<WfDeclaration> AstVisitor::CopyNode(WfDeclaration* node)
-			{
-				if (!node) return nullptr;
-				node->Accept(static_cast<WfDeclaration::IVisitor*>(this));
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfDeclaration>();
-			}
-
-			vl::Ptr<WfModuleUsingFragment> AstVisitor::CopyNode(WfModuleUsingFragment* node)
-			{
-				if (!node) return nullptr;
-				node->Accept(static_cast<WfModuleUsingFragment::IVisitor*>(this));
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfModuleUsingFragment>();
-			}
-
-			vl::Ptr<WfAttribute> AstVisitor::CopyNode(WfAttribute* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfAttribute>();
-			}
-
-			vl::Ptr<WfFunctionArgument> AstVisitor::CopyNode(WfFunctionArgument* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfFunctionArgument>();
-			}
-
-			vl::Ptr<WfBaseConstructorCall> AstVisitor::CopyNode(WfBaseConstructorCall* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfBaseConstructorCall>();
-			}
-
-			vl::Ptr<WfEnumItemIntersection> AstVisitor::CopyNode(WfEnumItemIntersection* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfEnumItemIntersection>();
-			}
-
-			vl::Ptr<WfEnumItem> AstVisitor::CopyNode(WfEnumItem* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfEnumItem>();
-			}
-
-			vl::Ptr<WfStructMember> AstVisitor::CopyNode(WfStructMember* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfStructMember>();
-			}
-
-			vl::Ptr<WfStateInput> AstVisitor::CopyNode(WfStateInput* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfStateInput>();
-			}
-
-			vl::Ptr<WfStateDeclaration> AstVisitor::CopyNode(WfStateDeclaration* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfStateDeclaration>();
-			}
-
-			vl::Ptr<WfSwitchCase> AstVisitor::CopyNode(WfSwitchCase* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfSwitchCase>();
-			}
-
-			vl::Ptr<WfStateSwitchArgument> AstVisitor::CopyNode(WfStateSwitchArgument* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfStateSwitchArgument>();
-			}
-
-			vl::Ptr<WfStateSwitchCase> AstVisitor::CopyNode(WfStateSwitchCase* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfStateSwitchCase>();
-			}
-
-			vl::Ptr<WfLetVariable> AstVisitor::CopyNode(WfLetVariable* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfLetVariable>();
-			}
-
-			vl::Ptr<WfConstructorArgument> AstVisitor::CopyNode(WfConstructorArgument* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfConstructorArgument>();
-			}
-
-			vl::Ptr<WfModuleUsingItem> AstVisitor::CopyNode(WfModuleUsingItem* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfModuleUsingItem>();
-			}
-
-			vl::Ptr<WfModuleUsingPath> AstVisitor::CopyNode(WfModuleUsingPath* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfModuleUsingPath>();
-			}
-
-			vl::Ptr<WfModule> AstVisitor::CopyNode(WfModule* node)
-			{
-				if (!node) return nullptr;
-				Visit(node);
-				this->result->codeRange = node->codeRange;
-				return this->result.Cast<WfModule>();
-			}
-
-			vl::Ptr<WfAttachEventExpression> AstVisitor::CopyNode(WfAttachEventExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfAttachEventExpression>();
-			}
-
-			vl::Ptr<WfAutoPropertyDeclaration> AstVisitor::CopyNode(WfAutoPropertyDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfAutoPropertyDeclaration>();
-			}
-
-			vl::Ptr<WfBinaryExpression> AstVisitor::CopyNode(WfBinaryExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfBinaryExpression>();
-			}
-
-			vl::Ptr<WfBindExpression> AstVisitor::CopyNode(WfBindExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfBindExpression>();
-			}
-
-			vl::Ptr<WfBlockStatement> AstVisitor::CopyNode(WfBlockStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfBlockStatement>();
-			}
-
-			vl::Ptr<WfBreakStatement> AstVisitor::CopyNode(WfBreakStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfBreakStatement>();
-			}
-
-			vl::Ptr<WfCallExpression> AstVisitor::CopyNode(WfCallExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfCallExpression>();
-			}
-
-			vl::Ptr<WfCastResultInterfaceDeclaration> AstVisitor::CopyNode(WfCastResultInterfaceDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfCastResultInterfaceDeclaration>();
-			}
-
-			vl::Ptr<WfChildExpression> AstVisitor::CopyNode(WfChildExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfChildExpression>();
-			}
-
-			vl::Ptr<WfChildType> AstVisitor::CopyNode(WfChildType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfChildType>();
-			}
-
-			vl::Ptr<WfClassDeclaration> AstVisitor::CopyNode(WfClassDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfClassDeclaration>();
-			}
-
-			vl::Ptr<WfCoOperatorExpression> AstVisitor::CopyNode(WfCoOperatorExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfCoOperatorExpression>();
-			}
-
-			vl::Ptr<WfCoOperatorStatement> AstVisitor::CopyNode(WfCoOperatorStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoOperatorStatement>();
-			}
-
-			vl::Ptr<WfCoPauseStatement> AstVisitor::CopyNode(WfCoPauseStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoPauseStatement>();
-			}
-
-			vl::Ptr<WfCoProviderStatement> AstVisitor::CopyNode(WfCoProviderStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoProviderStatement>();
-			}
-
-			vl::Ptr<WfConstructorDeclaration> AstVisitor::CopyNode(WfConstructorDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfConstructorDeclaration>();
-			}
-
-			vl::Ptr<WfConstructorExpression> AstVisitor::CopyNode(WfConstructorExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfConstructorExpression>();
-			}
-
-			vl::Ptr<WfContinueStatement> AstVisitor::CopyNode(WfContinueStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfContinueStatement>();
-			}
-
-			vl::Ptr<WfCoroutineStatement> AstVisitor::CopyNode(WfCoroutineStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoroutineStatement>();
-			}
-
-			vl::Ptr<WfDeleteStatement> AstVisitor::CopyNode(WfDeleteStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfDeleteStatement>();
-			}
-
-			vl::Ptr<WfDestructorDeclaration> AstVisitor::CopyNode(WfDestructorDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfDestructorDeclaration>();
-			}
-
-			vl::Ptr<WfDetachEventExpression> AstVisitor::CopyNode(WfDetachEventExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfDetachEventExpression>();
-			}
-
-			vl::Ptr<WfEnumDeclaration> AstVisitor::CopyNode(WfEnumDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfEnumDeclaration>();
-			}
-
-			vl::Ptr<WfEnumerableType> AstVisitor::CopyNode(WfEnumerableType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfEnumerableType>();
-			}
-
-			vl::Ptr<WfEventDeclaration> AstVisitor::CopyNode(WfEventDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfEventDeclaration>();
-			}
-
-			vl::Ptr<WfExpectedTypeCastExpression> AstVisitor::CopyNode(WfExpectedTypeCastExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfExpectedTypeCastExpression>();
-			}
-
-			vl::Ptr<WfExpressionStatement> AstVisitor::CopyNode(WfExpressionStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfExpressionStatement>();
-			}
-
-			vl::Ptr<WfFloatingExpression> AstVisitor::CopyNode(WfFloatingExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfFloatingExpression>();
-			}
-
-			vl::Ptr<WfForEachStatement> AstVisitor::CopyNode(WfForEachStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfForEachStatement>();
-			}
-
-			vl::Ptr<WfFormatExpression> AstVisitor::CopyNode(WfFormatExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfFormatExpression>();
-			}
-
-			vl::Ptr<WfFunctionDeclaration> AstVisitor::CopyNode(WfFunctionDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfFunctionDeclaration>();
-			}
-
-			vl::Ptr<WfFunctionExpression> AstVisitor::CopyNode(WfFunctionExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfFunctionExpression>();
-			}
-
-			vl::Ptr<WfFunctionType> AstVisitor::CopyNode(WfFunctionType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfFunctionType>();
-			}
-
-			vl::Ptr<WfGotoStatement> AstVisitor::CopyNode(WfGotoStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfGotoStatement>();
-			}
-
-			vl::Ptr<WfIfExpression> AstVisitor::CopyNode(WfIfExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfIfExpression>();
-			}
-
-			vl::Ptr<WfIfStatement> AstVisitor::CopyNode(WfIfStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfIfStatement>();
-			}
-
-			vl::Ptr<WfInferExpression> AstVisitor::CopyNode(WfInferExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfInferExpression>();
-			}
-
-			vl::Ptr<WfIntegerExpression> AstVisitor::CopyNode(WfIntegerExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfIntegerExpression>();
-			}
-
-			vl::Ptr<WfLetExpression> AstVisitor::CopyNode(WfLetExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfLetExpression>();
-			}
-
-			vl::Ptr<WfLiteralExpression> AstVisitor::CopyNode(WfLiteralExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfLiteralExpression>();
-			}
-
-			vl::Ptr<WfMapType> AstVisitor::CopyNode(WfMapType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfMapType>();
-			}
-
-			vl::Ptr<WfMemberExpression> AstVisitor::CopyNode(WfMemberExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfMemberExpression>();
-			}
-
-			vl::Ptr<WfMixinCastExpression> AstVisitor::CopyNode(WfMixinCastExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfMixinCastExpression>();
-			}
-
-			vl::Ptr<WfModuleUsingNameFragment> AstVisitor::CopyNode(WfModuleUsingNameFragment* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfModuleUsingFragment*>(node)).Cast<WfModuleUsingNameFragment>();
-			}
-
-			vl::Ptr<WfModuleUsingWildCardFragment> AstVisitor::CopyNode(WfModuleUsingWildCardFragment* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfModuleUsingFragment*>(node)).Cast<WfModuleUsingWildCardFragment>();
-			}
-
-			vl::Ptr<WfNamespaceDeclaration> AstVisitor::CopyNode(WfNamespaceDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfNamespaceDeclaration>();
-			}
-
-			vl::Ptr<WfNewClassExpression> AstVisitor::CopyNode(WfNewClassExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfNewClassExpression>();
-			}
-
-			vl::Ptr<WfNewCoroutineExpression> AstVisitor::CopyNode(WfNewCoroutineExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfNewCoroutineExpression>();
-			}
-
-			vl::Ptr<WfNewInterfaceExpression> AstVisitor::CopyNode(WfNewInterfaceExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfNewInterfaceExpression>();
-			}
-
-			vl::Ptr<WfNullableType> AstVisitor::CopyNode(WfNullableType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfNullableType>();
-			}
-
-			vl::Ptr<WfObservableListType> AstVisitor::CopyNode(WfObservableListType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfObservableListType>();
-			}
-
-			vl::Ptr<WfObserveExpression> AstVisitor::CopyNode(WfObserveExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfObserveExpression>();
-			}
-
-			vl::Ptr<WfOrderedLambdaExpression> AstVisitor::CopyNode(WfOrderedLambdaExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfOrderedLambdaExpression>();
-			}
-
-			vl::Ptr<WfOrderedNameExpression> AstVisitor::CopyNode(WfOrderedNameExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfOrderedNameExpression>();
-			}
-
-			vl::Ptr<WfPredefinedType> AstVisitor::CopyNode(WfPredefinedType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfPredefinedType>();
-			}
-
-			vl::Ptr<WfPropertyDeclaration> AstVisitor::CopyNode(WfPropertyDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfPropertyDeclaration>();
-			}
-
-			vl::Ptr<WfRaiseExceptionStatement> AstVisitor::CopyNode(WfRaiseExceptionStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfRaiseExceptionStatement>();
-			}
-
-			vl::Ptr<WfRangeExpression> AstVisitor::CopyNode(WfRangeExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfRangeExpression>();
-			}
-
-			vl::Ptr<WfRawPointerType> AstVisitor::CopyNode(WfRawPointerType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfRawPointerType>();
-			}
-
-			vl::Ptr<WfReferenceExpression> AstVisitor::CopyNode(WfReferenceExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfReferenceExpression>();
-			}
-
-			vl::Ptr<WfReferenceType> AstVisitor::CopyNode(WfReferenceType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfReferenceType>();
-			}
-
-			vl::Ptr<WfReturnStatement> AstVisitor::CopyNode(WfReturnStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfReturnStatement>();
-			}
-
-			vl::Ptr<WfSetTestingExpression> AstVisitor::CopyNode(WfSetTestingExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfSetTestingExpression>();
-			}
-
-			vl::Ptr<WfSharedPointerType> AstVisitor::CopyNode(WfSharedPointerType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfSharedPointerType>();
-			}
-
-			vl::Ptr<WfStateInvokeStatement> AstVisitor::CopyNode(WfStateInvokeStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfStateInvokeStatement>();
-			}
-
-			vl::Ptr<WfStateMachineDeclaration> AstVisitor::CopyNode(WfStateMachineDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfStateMachineDeclaration>();
-			}
-
-			vl::Ptr<WfStateMachineStatement> AstVisitor::CopyNode(WfStateMachineStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfStateMachineStatement>();
-			}
-
-			vl::Ptr<WfStateSwitchStatement> AstVisitor::CopyNode(WfStateSwitchStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfStateSwitchStatement>();
-			}
-
-			vl::Ptr<WfStringExpression> AstVisitor::CopyNode(WfStringExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfStringExpression>();
-			}
-
-			vl::Ptr<WfStructDeclaration> AstVisitor::CopyNode(WfStructDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfStructDeclaration>();
-			}
-
-			vl::Ptr<WfSwitchStatement> AstVisitor::CopyNode(WfSwitchStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfSwitchStatement>();
-			}
-
-			vl::Ptr<WfThisExpression> AstVisitor::CopyNode(WfThisExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfThisExpression>();
-			}
-
-			vl::Ptr<WfTopQualifiedExpression> AstVisitor::CopyNode(WfTopQualifiedExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTopQualifiedExpression>();
-			}
-
-			vl::Ptr<WfTopQualifiedType> AstVisitor::CopyNode(WfTopQualifiedType* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfType*>(node)).Cast<WfTopQualifiedType>();
-			}
-
-			vl::Ptr<WfTryStatement> AstVisitor::CopyNode(WfTryStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfTryStatement>();
-			}
-
-			vl::Ptr<WfTypeCastingExpression> AstVisitor::CopyNode(WfTypeCastingExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeCastingExpression>();
-			}
-
-			vl::Ptr<WfTypeOfExpressionExpression> AstVisitor::CopyNode(WfTypeOfExpressionExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeOfExpressionExpression>();
-			}
-
-			vl::Ptr<WfTypeOfTypeExpression> AstVisitor::CopyNode(WfTypeOfTypeExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeOfTypeExpression>();
-			}
-
-			vl::Ptr<WfTypeTestingExpression> AstVisitor::CopyNode(WfTypeTestingExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeTestingExpression>();
-			}
-
-			vl::Ptr<WfUnaryExpression> AstVisitor::CopyNode(WfUnaryExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfUnaryExpression>();
-			}
-
-			vl::Ptr<WfVariableDeclaration> AstVisitor::CopyNode(WfVariableDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfVariableDeclaration>();
-			}
-
-			vl::Ptr<WfVariableStatement> AstVisitor::CopyNode(WfVariableStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfVariableStatement>();
-			}
-
-			vl::Ptr<WfVirtualCfeDeclaration> AstVisitor::CopyNode(WfVirtualCfeDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfVirtualCfeDeclaration>();
-			}
-
-			vl::Ptr<WfVirtualCfeExpression> AstVisitor::CopyNode(WfVirtualCfeExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfVirtualCfeExpression>();
-			}
-
-			vl::Ptr<WfVirtualCseDeclaration> AstVisitor::CopyNode(WfVirtualCseDeclaration* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfVirtualCseDeclaration>();
-			}
-
-			vl::Ptr<WfVirtualCseExpression> AstVisitor::CopyNode(WfVirtualCseExpression* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfExpression*>(node)).Cast<WfVirtualCseExpression>();
-			}
-
-			vl::Ptr<WfVirtualCseStatement> AstVisitor::CopyNode(WfVirtualCseStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfVirtualCseStatement>();
-			}
-
-			vl::Ptr<WfWhileStatement> AstVisitor::CopyNode(WfWhileStatement* node)
-			{
-				if (!node) return nullptr;
-				return CopyNode(static_cast<WfStatement*>(node)).Cast<WfWhileStatement>();
-			}
-
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfBinaryExpression* from, WfBinaryExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->first = CopyNode(from->first.Obj());
+		to->op = from->op;
+		to->second = CopyNode(from->second.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfBindExpression* from, WfBindExpression* to)
+	{
+		CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfBlockStatement* from, WfBlockStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->endLabel = from->endLabel;
+		for (auto&& listItem : from->statements)
+		{
+			to->statements.Add(CopyNode(listItem.Obj()));
 		}
 	}
+
+	void AstVisitor::CopyFields(WfBreakStatement* from, WfBreakStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+	}
+
+	void AstVisitor::CopyFields(WfCallExpression* from, WfCallExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->function = CopyNode(from->function.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to)
+	{
+		CopyFields(static_cast<WfVirtualCfeDeclaration*>(from), static_cast<WfVirtualCfeDeclaration*>(to));
+		to->baseType = CopyNode(from->baseType.Obj());
+		to->elementType = CopyNode(from->elementType.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfChildExpression* from, WfChildExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->name = from->name;
+		to->parent = CopyNode(from->parent.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfChildType* from, WfChildType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->name = from->name;
+		to->parent = CopyNode(from->parent.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfClassDeclaration* from, WfClassDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->baseTypes)
+		{
+			to->baseTypes.Add(CopyNode(listItem.Obj()));
+		}
+		to->constructorType = from->constructorType;
+		for (auto&& listItem : from->declarations)
+		{
+			to->declarations.Add(CopyNode(listItem.Obj()));
+		}
+		to->kind = from->kind;
+	}
+
+	void AstVisitor::CopyFields(WfCoOperatorExpression* from, WfCoOperatorExpression* to)
+	{
+		CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfCoOperatorStatement* from, WfCoOperatorStatement* to)
+	{
+		CopyFields(static_cast<WfCoroutineStatement*>(from), static_cast<WfCoroutineStatement*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->opName = from->opName;
+		to->varName = from->varName;
+	}
+
+	void AstVisitor::CopyFields(WfCoPauseStatement* from, WfCoPauseStatement* to)
+	{
+		CopyFields(static_cast<WfCoroutineStatement*>(from), static_cast<WfCoroutineStatement*>(to));
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfCoProviderStatement* from, WfCoProviderStatement* to)
+	{
+		CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
+		to->name = from->name;
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfConstructorArgument* from, WfConstructorArgument* to)
+	{
+		to->key = CopyNode(from->key.Obj());
+		to->value = CopyNode(from->value.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfConstructorDeclaration* from, WfConstructorDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		for (auto&& listItem : from->baseConstructorCalls)
+		{
+			to->baseConstructorCalls.Add(CopyNode(listItem.Obj()));
+		}
+		to->constructorType = from->constructorType;
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfConstructorExpression* from, WfConstructorExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfContinueStatement* from, WfContinueStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+	}
+
+	void AstVisitor::CopyFields(WfCoroutineStatement* from, WfCoroutineStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+	}
+
+	void AstVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
+	{
+		for (auto&& listItem : from->attributes)
+		{
+			to->attributes.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfDeleteStatement* from, WfDeleteStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfDestructorDeclaration* from, WfDestructorDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfDetachEventExpression* from, WfDetachEventExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->event = CopyNode(from->event.Obj());
+		to->handler = CopyNode(from->handler.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->items)
+		{
+			to->items.Add(CopyNode(listItem.Obj()));
+		}
+		to->kind = from->kind;
+	}
+
+	void AstVisitor::CopyFields(WfEnumItem* from, WfEnumItem* to)
+	{
+		for (auto&& listItem : from->attributes)
+		{
+			to->attributes.Add(CopyNode(listItem.Obj()));
+		}
+		for (auto&& listItem : from->intersections)
+		{
+			to->intersections.Add(CopyNode(listItem.Obj()));
+		}
+		to->kind = from->kind;
+		to->name = from->name;
+		to->number = from->number;
+	}
+
+	void AstVisitor::CopyFields(WfEnumItemIntersection* from, WfEnumItemIntersection* to)
+	{
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfEnumerableType* from, WfEnumerableType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->element = CopyNode(from->element.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfEventDeclaration* from, WfEventDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfExpectedTypeCastExpression* from, WfExpectedTypeCastExpression* to)
+	{
+		CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		to->strategy = from->strategy;
+	}
+
+	void AstVisitor::CopyFields(WfExpression* from, WfExpression* to)
+	{
+	}
+
+	void AstVisitor::CopyFields(WfExpressionStatement* from, WfExpressionStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfFloatingExpression* from, WfFloatingExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->value = from->value;
+	}
+
+	void AstVisitor::CopyFields(WfForEachStatement* from, WfForEachStatement* to)
+	{
+		CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
+		to->collection = CopyNode(from->collection.Obj());
+		to->direction = from->direction;
+		to->name = from->name;
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfFormatExpression* from, WfFormatExpression* to)
+	{
+		CopyFields(static_cast<WfVirtualCfeExpression*>(from), static_cast<WfVirtualCfeExpression*>(to));
+		to->value = from->value;
+	}
+
+	void AstVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
+	{
+		for (auto&& listItem : from->attributes)
+		{
+			to->attributes.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		to->anonymity = from->anonymity;
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->functionKind = from->functionKind;
+		to->returnType = CopyNode(from->returnType.Obj());
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfFunctionExpression* from, WfFunctionExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->function = CopyNode(from->function.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfFunctionType* from, WfFunctionType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->result = CopyNode(from->result.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfGotoStatement* from, WfGotoStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->label = from->label;
+	}
+
+	void AstVisitor::CopyFields(WfIfExpression* from, WfIfExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->condition = CopyNode(from->condition.Obj());
+		to->falseBranch = CopyNode(from->falseBranch.Obj());
+		to->trueBranch = CopyNode(from->trueBranch.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfIfStatement* from, WfIfStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		to->falseBranch = CopyNode(from->falseBranch.Obj());
+		to->name = from->name;
+		to->trueBranch = CopyNode(from->trueBranch.Obj());
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfInferExpression* from, WfInferExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfIntegerExpression* from, WfIntegerExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->value = from->value;
+	}
+
+	void AstVisitor::CopyFields(WfLetExpression* from, WfLetExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		for (auto&& listItem : from->variables)
+		{
+			to->variables.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfLetVariable* from, WfLetVariable* to)
+	{
+		to->name = from->name;
+		to->value = CopyNode(from->value.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfLiteralExpression* from, WfLiteralExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->value = from->value;
+	}
+
+	void AstVisitor::CopyFields(WfMapType* from, WfMapType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->key = CopyNode(from->key.Obj());
+		to->value = CopyNode(from->value.Obj());
+		to->writability = from->writability;
+	}
+
+	void AstVisitor::CopyFields(WfMemberExpression* from, WfMemberExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->name = from->name;
+		to->parent = CopyNode(from->parent.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfMixinCastExpression* from, WfMixinCastExpression* to)
+	{
+		CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfModule* from, WfModule* to)
+	{
+		for (auto&& listItem : from->declarations)
+		{
+			to->declarations.Add(CopyNode(listItem.Obj()));
+		}
+		to->moduleType = from->moduleType;
+		to->name = from->name;
+		for (auto&& listItem : from->paths)
+		{
+			to->paths.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfModuleUsingFragment* from, WfModuleUsingFragment* to)
+	{
+	}
+
+	void AstVisitor::CopyFields(WfModuleUsingItem* from, WfModuleUsingItem* to)
+	{
+		for (auto&& listItem : from->fragments)
+		{
+			to->fragments.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfModuleUsingNameFragment* from, WfModuleUsingNameFragment* to)
+	{
+		CopyFields(static_cast<WfModuleUsingFragment*>(from), static_cast<WfModuleUsingFragment*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfModuleUsingPath* from, WfModuleUsingPath* to)
+	{
+		for (auto&& listItem : from->items)
+		{
+			to->items.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfModuleUsingWildCardFragment* from, WfModuleUsingWildCardFragment* to)
+	{
+		CopyFields(static_cast<WfModuleUsingFragment*>(from), static_cast<WfModuleUsingFragment*>(to));
+	}
+
+	void AstVisitor::CopyFields(WfNamespaceDeclaration* from, WfNamespaceDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->declarations)
+		{
+			to->declarations.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfNewClassExpression* from, WfNewClassExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to)
+	{
+		CopyFields(static_cast<WfVirtualCseExpression*>(from), static_cast<WfVirtualCseExpression*>(to));
+		to->name = from->name;
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		for (auto&& listItem : from->declarations)
+		{
+			to->declarations.Add(CopyNode(listItem.Obj()));
+		}
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfNullableType* from, WfNullableType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->element = CopyNode(from->element.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfObservableListType* from, WfObservableListType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->element = CopyNode(from->element.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfObserveExpression* from, WfObserveExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		for (auto&& listItem : from->events)
+		{
+			to->events.Add(CopyNode(listItem.Obj()));
+		}
+		to->expression = CopyNode(from->expression.Obj());
+		to->name = from->name;
+		to->observeType = from->observeType;
+		to->parent = CopyNode(from->parent.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfOrderedLambdaExpression* from, WfOrderedLambdaExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->body = CopyNode(from->body.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfOrderedNameExpression* from, WfOrderedNameExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfPredefinedType* from, WfPredefinedType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfPropertyDeclaration* from, WfPropertyDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		to->getter = from->getter;
+		to->setter = from->setter;
+		to->type = CopyNode(from->type.Obj());
+		to->valueChangedEvent = from->valueChangedEvent;
+	}
+
+	void AstVisitor::CopyFields(WfRaiseExceptionStatement* from, WfRaiseExceptionStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfRangeExpression* from, WfRangeExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->begin = CopyNode(from->begin.Obj());
+		to->beginBoundary = from->beginBoundary;
+		to->end = CopyNode(from->end.Obj());
+		to->endBoundary = from->endBoundary;
+	}
+
+	void AstVisitor::CopyFields(WfRawPointerType* from, WfRawPointerType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->element = CopyNode(from->element.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfReferenceExpression* from, WfReferenceExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfReferenceType* from, WfReferenceType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfReturnStatement* from, WfReturnStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfSetTestingExpression* from, WfSetTestingExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->collection = CopyNode(from->collection.Obj());
+		to->element = CopyNode(from->element.Obj());
+		to->test = from->test;
+	}
+
+	void AstVisitor::CopyFields(WfSharedPointerType* from, WfSharedPointerType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->element = CopyNode(from->element.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfStateDeclaration* from, WfStateDeclaration* to)
+	{
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfStateInput* from, WfStateInput* to)
+	{
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfStateInvokeStatement* from, WfStateInvokeStatement* to)
+	{
+		CopyFields(static_cast<WfStateMachineStatement*>(from), static_cast<WfStateMachineStatement*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+		to->type = from->type;
+	}
+
+	void AstVisitor::CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to)
+	{
+		CopyFields(static_cast<WfVirtualCseDeclaration*>(from), static_cast<WfVirtualCseDeclaration*>(to));
+		for (auto&& listItem : from->inputs)
+		{
+			to->inputs.Add(CopyNode(listItem.Obj()));
+		}
+		for (auto&& listItem : from->states)
+		{
+			to->states.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfStateMachineStatement* from, WfStateMachineStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+	}
+
+	void AstVisitor::CopyFields(WfStateSwitchArgument* from, WfStateSwitchArgument* to)
+	{
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfStateSwitchCase* from, WfStateSwitchCase* to)
+	{
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to)
+	{
+		CopyFields(static_cast<WfStateMachineStatement*>(from), static_cast<WfStateMachineStatement*>(to));
+		for (auto&& listItem : from->caseBranches)
+		{
+			to->caseBranches.Add(CopyNode(listItem.Obj()));
+		}
+		to->type = from->type;
+	}
+
+	void AstVisitor::CopyFields(WfStatement* from, WfStatement* to)
+	{
+	}
+
+	void AstVisitor::CopyFields(WfStringExpression* from, WfStringExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->value = from->value;
+	}
+
+	void AstVisitor::CopyFields(WfStructDeclaration* from, WfStructDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->members)
+		{
+			to->members.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfStructMember* from, WfStructMember* to)
+	{
+		for (auto&& listItem : from->attributes)
+		{
+			to->attributes.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfSwitchCase* from, WfSwitchCase* to)
+	{
+		to->expression = CopyNode(from->expression.Obj());
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
+	{
+		CopyFields(static_cast<WfVirtualCseStatement*>(from), static_cast<WfVirtualCseStatement*>(to));
+		for (auto&& listItem : from->caseBranches)
+		{
+			to->caseBranches.Add(CopyNode(listItem.Obj()));
+		}
+		to->defaultBranch = CopyNode(from->defaultBranch.Obj());
+		to->expression = CopyNode(from->expression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfThisExpression* from, WfThisExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+	}
+
+	void AstVisitor::CopyFields(WfTopQualifiedExpression* from, WfTopQualifiedExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfTopQualifiedType* from, WfTopQualifiedType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(WfTryStatement* from, WfTryStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->catchStatement = CopyNode(from->catchStatement.Obj());
+		to->finallyStatement = CopyNode(from->finallyStatement.Obj());
+		to->name = from->name;
+		to->protectedStatement = CopyNode(from->protectedStatement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfType* from, WfType* to)
+	{
+	}
+
+	void AstVisitor::CopyFields(WfTypeCastingExpression* from, WfTypeCastingExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		to->strategy = from->strategy;
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfTypeOfExpressionExpression* from, WfTypeOfExpressionExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfTypeOfTypeExpression* from, WfTypeOfTypeExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfTypeTestingExpression* from, WfTypeTestingExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		to->test = from->test;
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfUnaryExpression* from, WfUnaryExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->op = from->op;
+		to->operand = CopyNode(from->operand.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		to->expression = CopyNode(from->expression.Obj());
+		to->type = CopyNode(from->type.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfVariableStatement* from, WfVariableStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->variable = CopyNode(from->variable.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->expandedDeclarations)
+		{
+			to->expandedDeclarations.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfVirtualCfeExpression* from, WfVirtualCfeExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->expandedExpression = CopyNode(from->expandedExpression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		for (auto&& listItem : from->expandedDeclarations)
+		{
+			to->expandedDeclarations.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(WfVirtualCseExpression* from, WfVirtualCseExpression* to)
+	{
+		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
+		to->expandedExpression = CopyNode(from->expandedExpression.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfVirtualCseStatement* from, WfVirtualCseStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->expandedStatement = CopyNode(from->expandedStatement.Obj());
+	}
+
+	void AstVisitor::CopyFields(WfWhileStatement* from, WfWhileStatement* to)
+	{
+		CopyFields(static_cast<WfStatement*>(from), static_cast<WfStatement*>(to));
+		to->condition = CopyNode(from->condition.Obj());
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
+	void AstVisitor::Visit(WfAttribute* node)
+	{
+		auto newNode = vl::Ptr(new WfAttribute);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfFunctionArgument* node)
+	{
+		auto newNode = vl::Ptr(new WfFunctionArgument);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfBaseConstructorCall* node)
+	{
+		auto newNode = vl::Ptr(new WfBaseConstructorCall);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfEnumItemIntersection* node)
+	{
+		auto newNode = vl::Ptr(new WfEnumItemIntersection);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfEnumItem* node)
+	{
+		auto newNode = vl::Ptr(new WfEnumItem);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStructMember* node)
+	{
+		auto newNode = vl::Ptr(new WfStructMember);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStateInput* node)
+	{
+		auto newNode = vl::Ptr(new WfStateInput);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStateDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfStateDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfSwitchCase* node)
+	{
+		auto newNode = vl::Ptr(new WfSwitchCase);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStateSwitchArgument* node)
+	{
+		auto newNode = vl::Ptr(new WfStateSwitchArgument);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStateSwitchCase* node)
+	{
+		auto newNode = vl::Ptr(new WfStateSwitchCase);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfLetVariable* node)
+	{
+		auto newNode = vl::Ptr(new WfLetVariable);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfConstructorArgument* node)
+	{
+		auto newNode = vl::Ptr(new WfConstructorArgument);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfModuleUsingItem* node)
+	{
+		auto newNode = vl::Ptr(new WfModuleUsingItem);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfModuleUsingPath* node)
+	{
+		auto newNode = vl::Ptr(new WfModuleUsingPath);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfModule* node)
+	{
+		auto newNode = vl::Ptr(new WfModule);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfPredefinedType* node)
+	{
+		auto newNode = vl::Ptr(new WfPredefinedType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfTopQualifiedType* node)
+	{
+		auto newNode = vl::Ptr(new WfTopQualifiedType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfReferenceType* node)
+	{
+		auto newNode = vl::Ptr(new WfReferenceType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfRawPointerType* node)
+	{
+		auto newNode = vl::Ptr(new WfRawPointerType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfSharedPointerType* node)
+	{
+		auto newNode = vl::Ptr(new WfSharedPointerType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfNullableType* node)
+	{
+		auto newNode = vl::Ptr(new WfNullableType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfEnumerableType* node)
+	{
+		auto newNode = vl::Ptr(new WfEnumerableType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfMapType* node)
+	{
+		auto newNode = vl::Ptr(new WfMapType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfObservableListType* node)
+	{
+		auto newNode = vl::Ptr(new WfObservableListType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfFunctionType* node)
+	{
+		auto newNode = vl::Ptr(new WfFunctionType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfChildType* node)
+	{
+		auto newNode = vl::Ptr(new WfChildType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfThisExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfThisExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfTopQualifiedExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfTopQualifiedExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfReferenceExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfReferenceExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfOrderedNameExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfOrderedNameExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfOrderedLambdaExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfOrderedLambdaExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfMemberExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfMemberExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfChildExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfChildExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfLiteralExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfLiteralExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfFloatingExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfFloatingExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfIntegerExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfIntegerExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStringExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfStringExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfUnaryExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfUnaryExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfBinaryExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfBinaryExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfLetExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfLetExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfIfExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfIfExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfRangeExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfRangeExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfSetTestingExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfSetTestingExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfConstructorExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfConstructorExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfInferExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfInferExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfTypeCastingExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfTypeCastingExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfTypeTestingExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfTypeTestingExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfTypeOfTypeExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfTypeOfTypeExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfTypeOfExpressionExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfTypeOfExpressionExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfAttachEventExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfAttachEventExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfDetachEventExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfDetachEventExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfObserveExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfObserveExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfCallExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfCallExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfFunctionExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfFunctionExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfNewClassExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfNewClassExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfNewInterfaceExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfNewInterfaceExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfVirtualCfeExpression* node)
+	{
+		node->Accept(static_cast<WfVirtualCfeExpression::IVisitor*>(this));
+	}
+
+	void AstVisitor::Visit(WfVirtualCseExpression* node)
+	{
+		node->Accept(static_cast<WfVirtualCseExpression::IVisitor*>(this));
+	}
+
+	void AstVisitor::Visit(WfBreakStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfBreakStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfContinueStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfContinueStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfReturnStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfReturnStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfDeleteStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfDeleteStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfRaiseExceptionStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfRaiseExceptionStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfIfStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfIfStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfWhileStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfWhileStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfTryStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfTryStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfBlockStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfBlockStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfGotoStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfGotoStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfVariableStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfVariableStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfExpressionStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfExpressionStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfVirtualCseStatement* node)
+	{
+		node->Accept(static_cast<WfVirtualCseStatement::IVisitor*>(this));
+	}
+
+	void AstVisitor::Visit(WfCoroutineStatement* node)
+	{
+		node->Accept(static_cast<WfCoroutineStatement::IVisitor*>(this));
+	}
+
+	void AstVisitor::Visit(WfStateMachineStatement* node)
+	{
+		node->Accept(static_cast<WfStateMachineStatement::IVisitor*>(this));
+	}
+
+	void AstVisitor::Visit(WfNamespaceDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfNamespaceDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfFunctionDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfFunctionDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfVariableDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfVariableDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfEventDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfEventDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfPropertyDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfPropertyDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfConstructorDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfConstructorDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfDestructorDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfDestructorDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfClassDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfClassDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfEnumDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfEnumDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStructDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfStructDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfVirtualCfeDeclaration* node)
+	{
+		node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
+	}
+
+	void AstVisitor::Visit(WfVirtualCseDeclaration* node)
+	{
+		node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
+	}
+
+	void AstVisitor::Visit(WfAutoPropertyDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfAutoPropertyDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfCastResultInterfaceDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStateMachineDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfStateMachineDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfForEachStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfForEachStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfSwitchStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfSwitchStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfCoProviderStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfCoProviderStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfCoPauseStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfCoPauseStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfCoOperatorStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfCoOperatorStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStateSwitchStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfStateSwitchStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStateInvokeStatement* node)
+	{
+		auto newNode = vl::Ptr(new WfStateInvokeStatement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfFormatExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfFormatExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfBindExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfBindExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfNewCoroutineExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfNewCoroutineExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfMixinCastExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfMixinCastExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfExpectedTypeCastExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfExpectedTypeCastExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfCoOperatorExpression* node)
+	{
+		auto newNode = vl::Ptr(new WfCoOperatorExpression);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfModuleUsingNameFragment* node)
+	{
+		auto newNode = vl::Ptr(new WfModuleUsingNameFragment);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfModuleUsingWildCardFragment* node)
+	{
+		auto newNode = vl::Ptr(new WfModuleUsingWildCardFragment);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	vl::Ptr<WfType> AstVisitor::CopyNode(WfType* node)
+	{
+		if (!node) return nullptr;
+		node->Accept(static_cast<WfType::IVisitor*>(this));
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfType>();
+	}
+
+	vl::Ptr<WfExpression> AstVisitor::CopyNode(WfExpression* node)
+	{
+		if (!node) return nullptr;
+		node->Accept(static_cast<WfExpression::IVisitor*>(this));
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfExpression>();
+	}
+
+	vl::Ptr<WfStatement> AstVisitor::CopyNode(WfStatement* node)
+	{
+		if (!node) return nullptr;
+		node->Accept(static_cast<WfStatement::IVisitor*>(this));
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfStatement>();
+	}
+
+	vl::Ptr<WfDeclaration> AstVisitor::CopyNode(WfDeclaration* node)
+	{
+		if (!node) return nullptr;
+		node->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfDeclaration>();
+	}
+
+	vl::Ptr<WfModuleUsingFragment> AstVisitor::CopyNode(WfModuleUsingFragment* node)
+	{
+		if (!node) return nullptr;
+		node->Accept(static_cast<WfModuleUsingFragment::IVisitor*>(this));
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfModuleUsingFragment>();
+	}
+
+	vl::Ptr<WfAttribute> AstVisitor::CopyNode(WfAttribute* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfAttribute>();
+	}
+
+	vl::Ptr<WfFunctionArgument> AstVisitor::CopyNode(WfFunctionArgument* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfFunctionArgument>();
+	}
+
+	vl::Ptr<WfBaseConstructorCall> AstVisitor::CopyNode(WfBaseConstructorCall* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfBaseConstructorCall>();
+	}
+
+	vl::Ptr<WfEnumItemIntersection> AstVisitor::CopyNode(WfEnumItemIntersection* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfEnumItemIntersection>();
+	}
+
+	vl::Ptr<WfEnumItem> AstVisitor::CopyNode(WfEnumItem* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfEnumItem>();
+	}
+
+	vl::Ptr<WfStructMember> AstVisitor::CopyNode(WfStructMember* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfStructMember>();
+	}
+
+	vl::Ptr<WfStateInput> AstVisitor::CopyNode(WfStateInput* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfStateInput>();
+	}
+
+	vl::Ptr<WfStateDeclaration> AstVisitor::CopyNode(WfStateDeclaration* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfStateDeclaration>();
+	}
+
+	vl::Ptr<WfSwitchCase> AstVisitor::CopyNode(WfSwitchCase* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfSwitchCase>();
+	}
+
+	vl::Ptr<WfStateSwitchArgument> AstVisitor::CopyNode(WfStateSwitchArgument* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfStateSwitchArgument>();
+	}
+
+	vl::Ptr<WfStateSwitchCase> AstVisitor::CopyNode(WfStateSwitchCase* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfStateSwitchCase>();
+	}
+
+	vl::Ptr<WfLetVariable> AstVisitor::CopyNode(WfLetVariable* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfLetVariable>();
+	}
+
+	vl::Ptr<WfConstructorArgument> AstVisitor::CopyNode(WfConstructorArgument* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfConstructorArgument>();
+	}
+
+	vl::Ptr<WfModuleUsingItem> AstVisitor::CopyNode(WfModuleUsingItem* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfModuleUsingItem>();
+	}
+
+	vl::Ptr<WfModuleUsingPath> AstVisitor::CopyNode(WfModuleUsingPath* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfModuleUsingPath>();
+	}
+
+	vl::Ptr<WfModule> AstVisitor::CopyNode(WfModule* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<WfModule>();
+	}
+
+	vl::Ptr<WfAttachEventExpression> AstVisitor::CopyNode(WfAttachEventExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfAttachEventExpression>();
+	}
+
+	vl::Ptr<WfAutoPropertyDeclaration> AstVisitor::CopyNode(WfAutoPropertyDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfAutoPropertyDeclaration>();
+	}
+
+	vl::Ptr<WfBinaryExpression> AstVisitor::CopyNode(WfBinaryExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfBinaryExpression>();
+	}
+
+	vl::Ptr<WfBindExpression> AstVisitor::CopyNode(WfBindExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfBindExpression>();
+	}
+
+	vl::Ptr<WfBlockStatement> AstVisitor::CopyNode(WfBlockStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfBlockStatement>();
+	}
+
+	vl::Ptr<WfBreakStatement> AstVisitor::CopyNode(WfBreakStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfBreakStatement>();
+	}
+
+	vl::Ptr<WfCallExpression> AstVisitor::CopyNode(WfCallExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfCallExpression>();
+	}
+
+	vl::Ptr<WfCastResultInterfaceDeclaration> AstVisitor::CopyNode(WfCastResultInterfaceDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfCastResultInterfaceDeclaration>();
+	}
+
+	vl::Ptr<WfChildExpression> AstVisitor::CopyNode(WfChildExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfChildExpression>();
+	}
+
+	vl::Ptr<WfChildType> AstVisitor::CopyNode(WfChildType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfChildType>();
+	}
+
+	vl::Ptr<WfClassDeclaration> AstVisitor::CopyNode(WfClassDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfClassDeclaration>();
+	}
+
+	vl::Ptr<WfCoOperatorExpression> AstVisitor::CopyNode(WfCoOperatorExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfCoOperatorExpression>();
+	}
+
+	vl::Ptr<WfCoOperatorStatement> AstVisitor::CopyNode(WfCoOperatorStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoOperatorStatement>();
+	}
+
+	vl::Ptr<WfCoPauseStatement> AstVisitor::CopyNode(WfCoPauseStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoPauseStatement>();
+	}
+
+	vl::Ptr<WfCoProviderStatement> AstVisitor::CopyNode(WfCoProviderStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoProviderStatement>();
+	}
+
+	vl::Ptr<WfConstructorDeclaration> AstVisitor::CopyNode(WfConstructorDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfConstructorDeclaration>();
+	}
+
+	vl::Ptr<WfConstructorExpression> AstVisitor::CopyNode(WfConstructorExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfConstructorExpression>();
+	}
+
+	vl::Ptr<WfContinueStatement> AstVisitor::CopyNode(WfContinueStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfContinueStatement>();
+	}
+
+	vl::Ptr<WfCoroutineStatement> AstVisitor::CopyNode(WfCoroutineStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfCoroutineStatement>();
+	}
+
+	vl::Ptr<WfDeleteStatement> AstVisitor::CopyNode(WfDeleteStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfDeleteStatement>();
+	}
+
+	vl::Ptr<WfDestructorDeclaration> AstVisitor::CopyNode(WfDestructorDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfDestructorDeclaration>();
+	}
+
+	vl::Ptr<WfDetachEventExpression> AstVisitor::CopyNode(WfDetachEventExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfDetachEventExpression>();
+	}
+
+	vl::Ptr<WfEnumDeclaration> AstVisitor::CopyNode(WfEnumDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfEnumDeclaration>();
+	}
+
+	vl::Ptr<WfEnumerableType> AstVisitor::CopyNode(WfEnumerableType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfEnumerableType>();
+	}
+
+	vl::Ptr<WfEventDeclaration> AstVisitor::CopyNode(WfEventDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfEventDeclaration>();
+	}
+
+	vl::Ptr<WfExpectedTypeCastExpression> AstVisitor::CopyNode(WfExpectedTypeCastExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfExpectedTypeCastExpression>();
+	}
+
+	vl::Ptr<WfExpressionStatement> AstVisitor::CopyNode(WfExpressionStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfExpressionStatement>();
+	}
+
+	vl::Ptr<WfFloatingExpression> AstVisitor::CopyNode(WfFloatingExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfFloatingExpression>();
+	}
+
+	vl::Ptr<WfForEachStatement> AstVisitor::CopyNode(WfForEachStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfForEachStatement>();
+	}
+
+	vl::Ptr<WfFormatExpression> AstVisitor::CopyNode(WfFormatExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfFormatExpression>();
+	}
+
+	vl::Ptr<WfFunctionDeclaration> AstVisitor::CopyNode(WfFunctionDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfFunctionDeclaration>();
+	}
+
+	vl::Ptr<WfFunctionExpression> AstVisitor::CopyNode(WfFunctionExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfFunctionExpression>();
+	}
+
+	vl::Ptr<WfFunctionType> AstVisitor::CopyNode(WfFunctionType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfFunctionType>();
+	}
+
+	vl::Ptr<WfGotoStatement> AstVisitor::CopyNode(WfGotoStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfGotoStatement>();
+	}
+
+	vl::Ptr<WfIfExpression> AstVisitor::CopyNode(WfIfExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfIfExpression>();
+	}
+
+	vl::Ptr<WfIfStatement> AstVisitor::CopyNode(WfIfStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfIfStatement>();
+	}
+
+	vl::Ptr<WfInferExpression> AstVisitor::CopyNode(WfInferExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfInferExpression>();
+	}
+
+	vl::Ptr<WfIntegerExpression> AstVisitor::CopyNode(WfIntegerExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfIntegerExpression>();
+	}
+
+	vl::Ptr<WfLetExpression> AstVisitor::CopyNode(WfLetExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfLetExpression>();
+	}
+
+	vl::Ptr<WfLiteralExpression> AstVisitor::CopyNode(WfLiteralExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfLiteralExpression>();
+	}
+
+	vl::Ptr<WfMapType> AstVisitor::CopyNode(WfMapType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfMapType>();
+	}
+
+	vl::Ptr<WfMemberExpression> AstVisitor::CopyNode(WfMemberExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfMemberExpression>();
+	}
+
+	vl::Ptr<WfMixinCastExpression> AstVisitor::CopyNode(WfMixinCastExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfMixinCastExpression>();
+	}
+
+	vl::Ptr<WfModuleUsingNameFragment> AstVisitor::CopyNode(WfModuleUsingNameFragment* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfModuleUsingFragment*>(node)).Cast<WfModuleUsingNameFragment>();
+	}
+
+	vl::Ptr<WfModuleUsingWildCardFragment> AstVisitor::CopyNode(WfModuleUsingWildCardFragment* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfModuleUsingFragment*>(node)).Cast<WfModuleUsingWildCardFragment>();
+	}
+
+	vl::Ptr<WfNamespaceDeclaration> AstVisitor::CopyNode(WfNamespaceDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfNamespaceDeclaration>();
+	}
+
+	vl::Ptr<WfNewClassExpression> AstVisitor::CopyNode(WfNewClassExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfNewClassExpression>();
+	}
+
+	vl::Ptr<WfNewCoroutineExpression> AstVisitor::CopyNode(WfNewCoroutineExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfNewCoroutineExpression>();
+	}
+
+	vl::Ptr<WfNewInterfaceExpression> AstVisitor::CopyNode(WfNewInterfaceExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfNewInterfaceExpression>();
+	}
+
+	vl::Ptr<WfNullableType> AstVisitor::CopyNode(WfNullableType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfNullableType>();
+	}
+
+	vl::Ptr<WfObservableListType> AstVisitor::CopyNode(WfObservableListType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfObservableListType>();
+	}
+
+	vl::Ptr<WfObserveExpression> AstVisitor::CopyNode(WfObserveExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfObserveExpression>();
+	}
+
+	vl::Ptr<WfOrderedLambdaExpression> AstVisitor::CopyNode(WfOrderedLambdaExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfOrderedLambdaExpression>();
+	}
+
+	vl::Ptr<WfOrderedNameExpression> AstVisitor::CopyNode(WfOrderedNameExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfOrderedNameExpression>();
+	}
+
+	vl::Ptr<WfPredefinedType> AstVisitor::CopyNode(WfPredefinedType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfPredefinedType>();
+	}
+
+	vl::Ptr<WfPropertyDeclaration> AstVisitor::CopyNode(WfPropertyDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfPropertyDeclaration>();
+	}
+
+	vl::Ptr<WfRaiseExceptionStatement> AstVisitor::CopyNode(WfRaiseExceptionStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfRaiseExceptionStatement>();
+	}
+
+	vl::Ptr<WfRangeExpression> AstVisitor::CopyNode(WfRangeExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfRangeExpression>();
+	}
+
+	vl::Ptr<WfRawPointerType> AstVisitor::CopyNode(WfRawPointerType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfRawPointerType>();
+	}
+
+	vl::Ptr<WfReferenceExpression> AstVisitor::CopyNode(WfReferenceExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfReferenceExpression>();
+	}
+
+	vl::Ptr<WfReferenceType> AstVisitor::CopyNode(WfReferenceType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfReferenceType>();
+	}
+
+	vl::Ptr<WfReturnStatement> AstVisitor::CopyNode(WfReturnStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfReturnStatement>();
+	}
+
+	vl::Ptr<WfSetTestingExpression> AstVisitor::CopyNode(WfSetTestingExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfSetTestingExpression>();
+	}
+
+	vl::Ptr<WfSharedPointerType> AstVisitor::CopyNode(WfSharedPointerType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfSharedPointerType>();
+	}
+
+	vl::Ptr<WfStateInvokeStatement> AstVisitor::CopyNode(WfStateInvokeStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfStateInvokeStatement>();
+	}
+
+	vl::Ptr<WfStateMachineDeclaration> AstVisitor::CopyNode(WfStateMachineDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfStateMachineDeclaration>();
+	}
+
+	vl::Ptr<WfStateMachineStatement> AstVisitor::CopyNode(WfStateMachineStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfStateMachineStatement>();
+	}
+
+	vl::Ptr<WfStateSwitchStatement> AstVisitor::CopyNode(WfStateSwitchStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfStateSwitchStatement>();
+	}
+
+	vl::Ptr<WfStringExpression> AstVisitor::CopyNode(WfStringExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfStringExpression>();
+	}
+
+	vl::Ptr<WfStructDeclaration> AstVisitor::CopyNode(WfStructDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfStructDeclaration>();
+	}
+
+	vl::Ptr<WfSwitchStatement> AstVisitor::CopyNode(WfSwitchStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfSwitchStatement>();
+	}
+
+	vl::Ptr<WfThisExpression> AstVisitor::CopyNode(WfThisExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfThisExpression>();
+	}
+
+	vl::Ptr<WfTopQualifiedExpression> AstVisitor::CopyNode(WfTopQualifiedExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTopQualifiedExpression>();
+	}
+
+	vl::Ptr<WfTopQualifiedType> AstVisitor::CopyNode(WfTopQualifiedType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfTopQualifiedType>();
+	}
+
+	vl::Ptr<WfTryStatement> AstVisitor::CopyNode(WfTryStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfTryStatement>();
+	}
+
+	vl::Ptr<WfTypeCastingExpression> AstVisitor::CopyNode(WfTypeCastingExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeCastingExpression>();
+	}
+
+	vl::Ptr<WfTypeOfExpressionExpression> AstVisitor::CopyNode(WfTypeOfExpressionExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeOfExpressionExpression>();
+	}
+
+	vl::Ptr<WfTypeOfTypeExpression> AstVisitor::CopyNode(WfTypeOfTypeExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeOfTypeExpression>();
+	}
+
+	vl::Ptr<WfTypeTestingExpression> AstVisitor::CopyNode(WfTypeTestingExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfTypeTestingExpression>();
+	}
+
+	vl::Ptr<WfUnaryExpression> AstVisitor::CopyNode(WfUnaryExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfUnaryExpression>();
+	}
+
+	vl::Ptr<WfVariableDeclaration> AstVisitor::CopyNode(WfVariableDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfVariableDeclaration>();
+	}
+
+	vl::Ptr<WfVariableStatement> AstVisitor::CopyNode(WfVariableStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfVariableStatement>();
+	}
+
+	vl::Ptr<WfVirtualCfeDeclaration> AstVisitor::CopyNode(WfVirtualCfeDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfVirtualCfeDeclaration>();
+	}
+
+	vl::Ptr<WfVirtualCfeExpression> AstVisitor::CopyNode(WfVirtualCfeExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfVirtualCfeExpression>();
+	}
+
+	vl::Ptr<WfVirtualCseDeclaration> AstVisitor::CopyNode(WfVirtualCseDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfVirtualCseDeclaration>();
+	}
+
+	vl::Ptr<WfVirtualCseExpression> AstVisitor::CopyNode(WfVirtualCseExpression* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfExpression*>(node)).Cast<WfVirtualCseExpression>();
+	}
+
+	vl::Ptr<WfVirtualCseStatement> AstVisitor::CopyNode(WfVirtualCseStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfVirtualCseStatement>();
+	}
+
+	vl::Ptr<WfWhileStatement> AstVisitor::CopyNode(WfWhileStatement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfWhileStatement>();
+	}
+
 }

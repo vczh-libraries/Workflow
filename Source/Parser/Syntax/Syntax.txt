@@ -2,7 +2,7 @@
 // Rule (Type)
 //////////////////////////////////////////////////////////////////
 
-_Type
+@parser _Type
     ::= "void" as PredefinedType {name = Void}
     ::= "object" as PredefinedType {name = Object}
     ::= "interface" as PredefinedType {name = Interface}
@@ -170,7 +170,7 @@ _Exp11
     ::= _Exp10 : first "=" _Exp11 : second as BinaryExpression {op = Assign}
     ;
 
-_Expression
+@parser _Expression
     ::= !_Exp11
     ;
 
@@ -210,7 +210,7 @@ _CoStatement
     ::= ["var" NAME : varName "="] COROUTINE_OPERATOR : opName {_Expression : arguments ;"," } ";" as CoOperatorStatement
     ;
 
-_CoProvider
+@parser _CoProvider
     ::= ("$" | COROUTINE_OPERATOR : name) _Block : statement as CoProviderStatement
     ;
 
@@ -236,7 +236,7 @@ _StateStatement
     ::= "$push_state" NAME : name "(" {_Expression : arguments ; ","} ")" ";" as StateInvokeStatement {type = Push}
     ;
 
-_Statement
+@parser _Statement
     ::= !_Block
     ::= "goto" NAME : label ";" as GotoStatement
     ::= _Variable : variable as VariableStatement
@@ -427,7 +427,7 @@ _DeclarationCandidates
     ::= !_AutoProperty
     ;
 
-_Declaration
+@parser _Declaration
     ::= {_Attribute : attributes} !_DeclarationCandidates
     ;
 
@@ -452,7 +452,7 @@ _ModuleBody
     ::= NAME : name ";" {_UsingPath : paths} {_Declaration : declarations} as partial Module
     ;
 
-_Module
+@parser _Module
     ::= "module" _ModuleBody as Module {moduleType = Module}
     ::= "unit" _ModuleBody as Module {moduleType = Unit}
     ;

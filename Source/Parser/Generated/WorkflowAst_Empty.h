@@ -9,228 +9,222 @@ Licensed under https://github.com/vczh-libraries/License
 
 #include "WorkflowAst.h"
 
-namespace vl
+namespace vl::workflow::empty_visitor
 {
-	namespace workflow
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class TypeVisitor : public vl::Object, public WfType::IVisitor
 	{
-		namespace empty_visitor
-		{
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class TypeVisitor : public vl::Object, public WfType::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfPredefinedType* node) override;
-				void Visit(WfTopQualifiedType* node) override;
-				void Visit(WfReferenceType* node) override;
-				void Visit(WfRawPointerType* node) override;
-				void Visit(WfSharedPointerType* node) override;
-				void Visit(WfNullableType* node) override;
-				void Visit(WfEnumerableType* node) override;
-				void Visit(WfMapType* node) override;
-				void Visit(WfObservableListType* node) override;
-				void Visit(WfFunctionType* node) override;
-				void Visit(WfChildType* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfPredefinedType* node) override;
+		void Visit(WfTopQualifiedType* node) override;
+		void Visit(WfReferenceType* node) override;
+		void Visit(WfRawPointerType* node) override;
+		void Visit(WfSharedPointerType* node) override;
+		void Visit(WfNullableType* node) override;
+		void Visit(WfEnumerableType* node) override;
+		void Visit(WfMapType* node) override;
+		void Visit(WfObservableListType* node) override;
+		void Visit(WfFunctionType* node) override;
+		void Visit(WfChildType* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class ExpressionVisitor : public vl::Object, public WfExpression::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
-				virtual void Dispatch(WfVirtualCfeExpression* node) = 0;
-				virtual void Dispatch(WfVirtualCseExpression* node) = 0;
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class ExpressionVisitor : public vl::Object, public WfExpression::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
+		virtual void Dispatch(WfVirtualCfeExpression* node) = 0;
+		virtual void Dispatch(WfVirtualCseExpression* node) = 0;
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfThisExpression* node) override;
-				void Visit(WfTopQualifiedExpression* node) override;
-				void Visit(WfReferenceExpression* node) override;
-				void Visit(WfOrderedNameExpression* node) override;
-				void Visit(WfOrderedLambdaExpression* node) override;
-				void Visit(WfMemberExpression* node) override;
-				void Visit(WfChildExpression* node) override;
-				void Visit(WfLiteralExpression* node) override;
-				void Visit(WfFloatingExpression* node) override;
-				void Visit(WfIntegerExpression* node) override;
-				void Visit(WfStringExpression* node) override;
-				void Visit(WfUnaryExpression* node) override;
-				void Visit(WfBinaryExpression* node) override;
-				void Visit(WfLetExpression* node) override;
-				void Visit(WfIfExpression* node) override;
-				void Visit(WfRangeExpression* node) override;
-				void Visit(WfSetTestingExpression* node) override;
-				void Visit(WfConstructorExpression* node) override;
-				void Visit(WfInferExpression* node) override;
-				void Visit(WfTypeCastingExpression* node) override;
-				void Visit(WfTypeTestingExpression* node) override;
-				void Visit(WfTypeOfTypeExpression* node) override;
-				void Visit(WfTypeOfExpressionExpression* node) override;
-				void Visit(WfAttachEventExpression* node) override;
-				void Visit(WfDetachEventExpression* node) override;
-				void Visit(WfObserveExpression* node) override;
-				void Visit(WfCallExpression* node) override;
-				void Visit(WfFunctionExpression* node) override;
-				void Visit(WfNewClassExpression* node) override;
-				void Visit(WfNewInterfaceExpression* node) override;
-				void Visit(WfVirtualCfeExpression* node) override;
-				void Visit(WfVirtualCseExpression* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfThisExpression* node) override;
+		void Visit(WfTopQualifiedExpression* node) override;
+		void Visit(WfReferenceExpression* node) override;
+		void Visit(WfOrderedNameExpression* node) override;
+		void Visit(WfOrderedLambdaExpression* node) override;
+		void Visit(WfMemberExpression* node) override;
+		void Visit(WfChildExpression* node) override;
+		void Visit(WfLiteralExpression* node) override;
+		void Visit(WfFloatingExpression* node) override;
+		void Visit(WfIntegerExpression* node) override;
+		void Visit(WfStringExpression* node) override;
+		void Visit(WfUnaryExpression* node) override;
+		void Visit(WfBinaryExpression* node) override;
+		void Visit(WfLetExpression* node) override;
+		void Visit(WfIfExpression* node) override;
+		void Visit(WfRangeExpression* node) override;
+		void Visit(WfSetTestingExpression* node) override;
+		void Visit(WfConstructorExpression* node) override;
+		void Visit(WfInferExpression* node) override;
+		void Visit(WfTypeCastingExpression* node) override;
+		void Visit(WfTypeTestingExpression* node) override;
+		void Visit(WfTypeOfTypeExpression* node) override;
+		void Visit(WfTypeOfExpressionExpression* node) override;
+		void Visit(WfAttachEventExpression* node) override;
+		void Visit(WfDetachEventExpression* node) override;
+		void Visit(WfObserveExpression* node) override;
+		void Visit(WfCallExpression* node) override;
+		void Visit(WfFunctionExpression* node) override;
+		void Visit(WfNewClassExpression* node) override;
+		void Visit(WfNewInterfaceExpression* node) override;
+		void Visit(WfVirtualCfeExpression* node) override;
+		void Visit(WfVirtualCseExpression* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class StatementVisitor : public vl::Object, public WfStatement::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
-				virtual void Dispatch(WfVirtualCseStatement* node) = 0;
-				virtual void Dispatch(WfCoroutineStatement* node) = 0;
-				virtual void Dispatch(WfStateMachineStatement* node) = 0;
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class StatementVisitor : public vl::Object, public WfStatement::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
+		virtual void Dispatch(WfVirtualCseStatement* node) = 0;
+		virtual void Dispatch(WfCoroutineStatement* node) = 0;
+		virtual void Dispatch(WfStateMachineStatement* node) = 0;
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfBreakStatement* node) override;
-				void Visit(WfContinueStatement* node) override;
-				void Visit(WfReturnStatement* node) override;
-				void Visit(WfDeleteStatement* node) override;
-				void Visit(WfRaiseExceptionStatement* node) override;
-				void Visit(WfIfStatement* node) override;
-				void Visit(WfWhileStatement* node) override;
-				void Visit(WfTryStatement* node) override;
-				void Visit(WfBlockStatement* node) override;
-				void Visit(WfGotoStatement* node) override;
-				void Visit(WfVariableStatement* node) override;
-				void Visit(WfExpressionStatement* node) override;
-				void Visit(WfVirtualCseStatement* node) override;
-				void Visit(WfCoroutineStatement* node) override;
-				void Visit(WfStateMachineStatement* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfBreakStatement* node) override;
+		void Visit(WfContinueStatement* node) override;
+		void Visit(WfReturnStatement* node) override;
+		void Visit(WfDeleteStatement* node) override;
+		void Visit(WfRaiseExceptionStatement* node) override;
+		void Visit(WfIfStatement* node) override;
+		void Visit(WfWhileStatement* node) override;
+		void Visit(WfTryStatement* node) override;
+		void Visit(WfBlockStatement* node) override;
+		void Visit(WfGotoStatement* node) override;
+		void Visit(WfVariableStatement* node) override;
+		void Visit(WfExpressionStatement* node) override;
+		void Visit(WfVirtualCseStatement* node) override;
+		void Visit(WfCoroutineStatement* node) override;
+		void Visit(WfStateMachineStatement* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class DeclarationVisitor : public vl::Object, public WfDeclaration::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
-				virtual void Dispatch(WfVirtualCfeDeclaration* node) = 0;
-				virtual void Dispatch(WfVirtualCseDeclaration* node) = 0;
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class DeclarationVisitor : public vl::Object, public WfDeclaration::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
+		virtual void Dispatch(WfVirtualCfeDeclaration* node) = 0;
+		virtual void Dispatch(WfVirtualCseDeclaration* node) = 0;
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfNamespaceDeclaration* node) override;
-				void Visit(WfFunctionDeclaration* node) override;
-				void Visit(WfVariableDeclaration* node) override;
-				void Visit(WfEventDeclaration* node) override;
-				void Visit(WfPropertyDeclaration* node) override;
-				void Visit(WfConstructorDeclaration* node) override;
-				void Visit(WfDestructorDeclaration* node) override;
-				void Visit(WfClassDeclaration* node) override;
-				void Visit(WfEnumDeclaration* node) override;
-				void Visit(WfStructDeclaration* node) override;
-				void Visit(WfVirtualCfeDeclaration* node) override;
-				void Visit(WfVirtualCseDeclaration* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfNamespaceDeclaration* node) override;
+		void Visit(WfFunctionDeclaration* node) override;
+		void Visit(WfVariableDeclaration* node) override;
+		void Visit(WfEventDeclaration* node) override;
+		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfConstructorDeclaration* node) override;
+		void Visit(WfDestructorDeclaration* node) override;
+		void Visit(WfClassDeclaration* node) override;
+		void Visit(WfEnumDeclaration* node) override;
+		void Visit(WfStructDeclaration* node) override;
+		void Visit(WfVirtualCfeDeclaration* node) override;
+		void Visit(WfVirtualCseDeclaration* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class VirtualCfeDeclarationVisitor : public vl::Object, public WfVirtualCfeDeclaration::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class VirtualCfeDeclarationVisitor : public vl::Object, public WfVirtualCfeDeclaration::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfAutoPropertyDeclaration* node) override;
-				void Visit(WfCastResultInterfaceDeclaration* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfAutoPropertyDeclaration* node) override;
+		void Visit(WfCastResultInterfaceDeclaration* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class VirtualCseDeclarationVisitor : public vl::Object, public WfVirtualCseDeclaration::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class VirtualCseDeclarationVisitor : public vl::Object, public WfVirtualCseDeclaration::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfStateMachineDeclaration* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfStateMachineDeclaration* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class VirtualCseStatementVisitor : public vl::Object, public WfVirtualCseStatement::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class VirtualCseStatementVisitor : public vl::Object, public WfVirtualCseStatement::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfForEachStatement* node) override;
-				void Visit(WfSwitchStatement* node) override;
-				void Visit(WfCoProviderStatement* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfForEachStatement* node) override;
+		void Visit(WfSwitchStatement* node) override;
+		void Visit(WfCoProviderStatement* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class CoroutineStatementVisitor : public vl::Object, public WfCoroutineStatement::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class CoroutineStatementVisitor : public vl::Object, public WfCoroutineStatement::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfCoPauseStatement* node) override;
-				void Visit(WfCoOperatorStatement* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfCoPauseStatement* node) override;
+		void Visit(WfCoOperatorStatement* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class StateMachineStatementVisitor : public vl::Object, public WfStateMachineStatement::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class StateMachineStatementVisitor : public vl::Object, public WfStateMachineStatement::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfStateSwitchStatement* node) override;
-				void Visit(WfStateInvokeStatement* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfStateSwitchStatement* node) override;
+		void Visit(WfStateInvokeStatement* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class VirtualCfeExpressionVisitor : public vl::Object, public WfVirtualCfeExpression::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class VirtualCfeExpressionVisitor : public vl::Object, public WfVirtualCfeExpression::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfFormatExpression* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfFormatExpression* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class VirtualCseExpressionVisitor : public vl::Object, public WfVirtualCseExpression::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class VirtualCseExpressionVisitor : public vl::Object, public WfVirtualCseExpression::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfBindExpression* node) override;
-				void Visit(WfNewCoroutineExpression* node) override;
-				void Visit(WfMixinCastExpression* node) override;
-				void Visit(WfExpectedTypeCastExpression* node) override;
-				void Visit(WfCoOperatorExpression* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfBindExpression* node) override;
+		void Visit(WfNewCoroutineExpression* node) override;
+		void Visit(WfMixinCastExpression* node) override;
+		void Visit(WfExpectedTypeCastExpression* node) override;
+		void Visit(WfCoOperatorExpression* node) override;
+	};
 
-			/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-			class ModuleUsingFragmentVisitor : public vl::Object, public WfModuleUsingFragment::IVisitor
-			{
-			protected:
-				// Dispatch (virtual) --------------------------------
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class ModuleUsingFragmentVisitor : public vl::Object, public WfModuleUsingFragment::IVisitor
+	{
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-			public:
-				// Visitor Members -----------------------------------
-				void Visit(WfModuleUsingNameFragment* node) override;
-				void Visit(WfModuleUsingWildCardFragment* node) override;
-			};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(WfModuleUsingNameFragment* node) override;
+		void Visit(WfModuleUsingWildCardFragment* node) override;
+	};
 
-		}
-	}
 }
 #endif
