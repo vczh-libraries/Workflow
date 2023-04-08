@@ -102,7 +102,7 @@ namespace vl
 					{
 						auto tdA = manager->declarationTypes[a.Obj()].Obj();
 						auto tdB = manager->declarationTypes[b.Obj()].Obj();
-						return WString::Compare(tdA->GetTypeName(), tdB->GetTypeName());
+						return tdA->GetTypeName() <=> tdB->GetTypeName();
 					});
 				}
 

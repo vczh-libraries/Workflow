@@ -50,7 +50,7 @@ namespace vl
 				{
 					writer.WriteString(prefix);
 					writer.WriteString(L"inline bool operator");
-					writer.WriteString(op.f0);
+					writer.WriteString(op.get<0>());
 					writer.WriteString(L" (const ");
 					writer.WriteString(name);
 					writer.WriteString(L"& a, const ");
@@ -68,12 +68,12 @@ namespace vl
 						writer.WriteString(L" != b.");
 						writer.WriteString(ConvertName(member->name.value));
 						writer.WriteString(L") return ");
-						writer.WriteString(op.f1);
+						writer.WriteString(op.get<1>());
 						writer.WriteLine(L";");
 					}
 					writer.WriteString(prefix);
 					writer.WriteString(L"\treturn ");
-					writer.WriteString(op.f2);
+					writer.WriteString(op.get<2>());
 					writer.WriteLine(L";");
 
 					writer.WriteString(prefix);

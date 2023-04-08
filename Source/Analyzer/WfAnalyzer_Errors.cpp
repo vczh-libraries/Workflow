@@ -22,7 +22,7 @@ namespace vl
 				WString description;
 				for (auto friendlyName : From(items)
 					.Select(f)
-					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					.OrderBySelf()
 					)
 				{
 					description += L"\r\n\t";

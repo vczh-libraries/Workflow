@@ -15,9 +15,9 @@ namespace vl
 				CopyFrom(
 					tds,
 					From(config->manager->declarationTypes.Values())
-						.OrderBy([](Ptr<ITypeDescriptor> a, Ptr<ITypeDescriptor> b)
+						.OrderByKey([](auto&& a)
 						{
-							return WString::Compare(a->GetTypeName(), b->GetTypeName());
+							return a->GetTypeName();
 						})
 						.Select([](Ptr<ITypeDescriptor> td)
 						{

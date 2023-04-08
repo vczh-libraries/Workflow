@@ -1348,9 +1348,9 @@ ExpandNewCoroutineExpression
 				/////////////////////////////////////////////////////////////////////////////
 
 				for (auto symbol : From(referenceRenaming.Keys())
-					.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
+					.OrderByKey([&](WfLexicalSymbol* a)
 					{
-						return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
+						return referenceRenaming[a];
 					}))
 				{
 					auto varDecl = Ptr(new WfVariableDeclaration);
@@ -1582,9 +1582,9 @@ ExpandNewCoroutineExpression
 										{
 											return node->exceptionDestination;
 										})
-										.OrderBy([&](const GroupPair& p1, const GroupPair& p2)
+										.OrderByKey([&](const GroupPair& p)
 										{
-											return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
+											return nodeOrders.IndexOf(p.key);
 										});
 
 									for (auto group : nodeByCatches)
@@ -1602,9 +1602,9 @@ ExpandNewCoroutineExpression
 												{
 													conditionRanges.Add({ state,state });
 												}
-												else if (conditionRanges[conditionRanges.Count() - 1].f1 == state - 1)
+												else if (conditionRanges[conditionRanges.Count() - 1].get<1>() == state - 1)
 												{
-													conditionRanges[conditionRanges.Count() - 1].f1 = state;
+													conditionRanges[conditionRanges.Count() - 1].get<1>() = state;
 												}
 												else
 												{
@@ -1617,13 +1617,13 @@ ExpandNewCoroutineExpression
 												auto range = conditionRanges[i];
 
 												Ptr<WfExpression> singleCondition;
-												if (range.f0 == range.f1)
+												if (range.get<0>() == range.get<1>())
 												{
 													auto refState = Ptr(new WfReferenceExpression);
 													refState->name.value = L"<co-state-before-pause>";
 
 													auto intState = Ptr(new WfIntegerExpression);
-													intState->value.value = itow(range.f0);
+													intState->value.value = itow(range.get<0>());
 
 													auto compExpr = Ptr(new WfBinaryExpression);
 													compExpr->op = WfBinaryOperator::EQ;
@@ -1638,10 +1638,10 @@ ExpandNewCoroutineExpression
 													refState->name.value = L"<co-state-before-pause>";
 
 													auto intState1 = Ptr(new WfIntegerExpression);
-													intState1->value.value = itow(range.f0);
+													intState1->value.value = itow(range.get<0>());
 
 													auto intState2 = Ptr(new WfIntegerExpression);
-													intState2->value.value = itow(range.f1);
+													intState2->value.value = itow(range.get<1>());
 
 													auto rangeExpr = Ptr(new WfRangeExpression);
 													rangeExpr->begin = intState1;
@@ -1749,9 +1749,9 @@ ExpandNewCoroutineExpression
 								{
 									return node->exceptionDestination;
 								})
-								.OrderBy([&](const GroupPair& p1, const GroupPair& p2)
+								.OrderByKey([&](const GroupPair& p)
 								{
-									return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
+									return nodeOrders.IndexOf(p.key);
 								});
 
 							for (auto group : nodeByCatches)

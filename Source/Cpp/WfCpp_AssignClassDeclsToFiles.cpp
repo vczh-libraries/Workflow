@@ -197,7 +197,7 @@ WfCppConfig::Collect
 
 								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
-									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+									return a->GetTypeName() <=> b->GetTypeName();
 								});
 								manager->errors.Add(WfErrors::CppUnableToDecideClassOrder(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
 							}
@@ -289,7 +289,7 @@ WfCppConfig::Collect
 
 								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
-									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+									return a->GetTypeName() <=> b->GetTypeName();
 								});
 								manager->errors.Add(WfErrors::CppUnableToSeparateCustomFile(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
 							}
@@ -335,7 +335,7 @@ WfCppConfig::Collect
 										vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount)
 											.Select([&](vint index) {return globalDep.topLevelClasses[index]; })
 											.Min();
-										return indexA - indexB;
+										return indexA <=> indexB;
 									});
 								}
 							};
@@ -548,7 +548,7 @@ WfCppConfig::Collect
 						{
 							vint aIndex = ordered.IndexOf(a.Obj());
 							vint bIndex = ordered.IndexOf(b.Obj());
-							return aIndex - bIndex;
+							return aIndex <=> bIndex;
 						});
 					}
 
@@ -559,7 +559,7 @@ WfCppConfig::Collect
 						{
 							vint aIndex = ordered.IndexOf(a.Obj());
 							vint bIndex = ordered.IndexOf(b.Obj());
-							return aIndex - bIndex;
+							return aIndex <=> bIndex;
 						});
 					}
 				}

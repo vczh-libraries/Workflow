@@ -20,14 +20,11 @@ CheckScopes_SymbolType
 					{
 						auto rangeA = a.key->codeRange;
 						auto rangeB = b.key->codeRange;
-						if (rangeA.codeIndex != rangeB.codeIndex)
-						{
-							return rangeA.codeIndex - rangeB.codeIndex;
-						}
-						else
-						{
-							return glr::ParsingTextPos::Compare(rangeA.start, rangeB.start);
-						}
+
+						std::strong_ordering
+						result = rangeA.codeIndex <=> rangeB.codeIndex; if (result != 0) return result;
+						result = rangeA.start <=> rangeB.start; if (result != 0) return result;
+						return result;
 					})
 					.Select([](auto&& pair) { return pair.value; })
 					)
