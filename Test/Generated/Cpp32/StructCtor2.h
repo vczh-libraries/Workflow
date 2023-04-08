@@ -28,7 +28,7 @@ namespace __vwsn_structs
 	{
 		::vl::vint32_t x = 0;
 		::vl::vint32_t y = 0;
-		::vl::Nullable<::__vwsn_structs::_Point> z;
+		::vl::Nullable<::vl::vint32_t> z;
 	};
 	inline bool operator== (const _Point& a, const _Point& b)
 	{

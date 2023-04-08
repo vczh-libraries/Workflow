@@ -16,6 +16,7 @@ CheckScopes_SymbolType
 			{
 				vint errorCount = manager->errors.Count();
 				for (auto scope : From(manager->nodeScopes)
+					.Select([](auto&& pair) -> Pair<glr::ParsingAstBase*, Ptr<WfLexicalScope>> { return pair; })
 					.OrderBy([](auto&& a, auto&& b)
 					{
 						auto rangeA = a.key->codeRange;
