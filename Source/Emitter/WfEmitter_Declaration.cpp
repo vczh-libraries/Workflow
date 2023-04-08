@@ -486,7 +486,7 @@ GenerateInstructions(Closure)
 						{
 							vint aId = wtoi(a->name.Sub(1, a->name.Length() - 1));
 							vint bId = wtoi(b->name.Sub(1, a->name.Length() - 1));
-							return aId - bId;
+							return aId <=> bId;
 						})
 					);
 
