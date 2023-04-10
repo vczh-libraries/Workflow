@@ -1,7 +1,7 @@
 .PHONY: all clean pre-build
 .DEFAULT_GOAL := all
 
-CPP_COMPILE_OPTIONS=-I ../../Import -I ../../Release
+CPP_COMPILE_OPTIONS=-I ../../Import -I ../../Release -I ../../Source/Cpp
 include $(VCPROOT)/vl/makefile-cpp
 
 pre-build:
@@ -37,5 +37,5 @@ all:pre-build ./Bin/CppMerge
 ./Obj/WfMergeCpp.o: ../../Source/Cpp/WfMergeCpp.cpp ../../Source/Cpp/WfMergeCpp.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h
 	$(CPP_COMPILE)
 
-./Obj/Main.o: CppMerge/Main.cpp CppMerge/../../../Source/Cpp/WfMergeCpp.h ../../Import/VlppOS.h ../../Import/Vlpp.h
+./Obj/Main.o: CppMerge/Main.cpp ../../Source/Cpp/WfMergeCpp.h ../../Import/VlppOS.h ../../Import/Vlpp.h
 	$(CPP_COMPILE)
