@@ -134,7 +134,14 @@ namespace vl
 				}
 				if (staticInitDecls.Count() > 0)
 				{
-					CHECK_FAIL(L"Not Implemented!");
+					auto voidType = description::TypeInfoRetriver<void>::CreateTypeInfo();
+					for (auto staticInitDecl : staticInitDecls)
+					{
+						writer.WriteLine(L"");
+						writer.WriteLine(L"\t\t([]()");
+						GenerateStatement(this, Ptr(new FunctionRecord), writer, staticInitDecl->statement, L"\t\t", WString::Unmanaged(L"\t"), voidType.Obj());
+						writer.WriteLine(L"\t\t)();");
+					}
 				}
 				writer.WriteLine(L"\tFINALIZE_GLOBAL_STORAGE_CLASS");
 				if (varDecls.Count() > 0)

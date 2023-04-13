@@ -32,6 +32,36 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_StaticInit)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.result = ::vl::WString::Unmanaged(L"");
+
+		([]()
+		{
+			GLOBAL_NAME Log(::vl::WString::Unmanaged(L"A::B"));
+		}
+		)();
+
+		([]()
+		{
+			GLOBAL_NAME Log(::vl::WString::Unmanaged(L"A(0)"));
+		}
+		)();
+
+		([]()
+		{
+			GLOBAL_NAME Log(::vl::WString::Unmanaged(L"A::C"));
+		}
+		)();
+
+		([]()
+		{
+			GLOBAL_NAME Log(::vl::WString::Unmanaged(L"A(1)"));
+		}
+		)();
+
+		([]()
+		{
+			GLOBAL_NAME Log(::vl::WString::Unmanaged(L"::"));
+		}
+		)();
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.result = ::vl::WString::Empty;
