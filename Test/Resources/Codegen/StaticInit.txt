@@ -10,39 +10,44 @@ namespace A
 	{
 		static
 		{
-			map.Add("A::B", 0);
+			map.Set("A::B", 0);
 		}
 	}
 
 	static
 	{
-		map.Add("A", 0);
+		map.Set("A(0)", 0);
 	}
 
 	namespace C
 	{
 		static
 		{
-			map.Add("A::C", 0);
+			map.Set("A::C", 0);
 		}
+	}
+
+	static
+	{
+		map.Set("A(1)", 0);
 	}
 }
 
 func main():string
 {
 	var result = "";
-	for (var key in map.Keys)
+	for (key in map.Keys)
 	{
 		if (result != "")
 		{
 			result = result & ", ";
 		}
-		result = result & key;
+		result = result & (cast string key);
 	}
 	return result;
 }
 
 static
 {
-	map.Add("::", 0);
+	map.Set("::", 0);
 }

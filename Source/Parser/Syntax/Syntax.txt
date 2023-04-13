@@ -324,6 +324,10 @@ _Property
     ::= "prop" NAME : name ":" _Type : type "{" NAME : getter ["," NAME : setter] [":" NAME : valueChangedEvent] "}" as PropertyDeclaration
     ;
 
+_StaticInit
+    ::= "static" _Block : statement as StaticInitDeclaration
+    ;
+
 _BaseConstructorCall
     ::= _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as BaseConstructorCall
     ;
@@ -417,6 +421,7 @@ _DeclarationCandidates
     ::= !_Variable
     ::= !_Event
     ::= !_Property
+    ::= !_StaticInit
     ::= !_Constructor
     ::= !_Destructor
     ::= !_Class
