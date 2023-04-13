@@ -2,7 +2,6 @@
 
 ## Progressing
 
-- Disallow struct `X` contains `X?` field.
 - Refine comparison operators in generated C++ struct.
 
 ## 2.0
