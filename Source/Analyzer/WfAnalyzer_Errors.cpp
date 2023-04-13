@@ -616,6 +616,11 @@ WfErrors
 				return MakeParsingError(node, L"D7: State machine cannot be defined outside of classes.");
 			}
 
+			glr::ParsingError WfErrors::WrongDeclaration(WfStaticInitDeclaration* node)
+			{
+				return MakeParsingError(node, L"D7: Static initialization declaration cannot be defined inside classes or interfaces.");
+			}
+
 			glr::ParsingError WfErrors::WrongDeclarationInInterfaceConstructor(WfDeclaration* node)
 			{
 				return MakeParsingError(node, L"D8: \"" + node->name.value + L"\" cannot be defined in an new interface expression, only functions, variables and auto-properties are allowed.");

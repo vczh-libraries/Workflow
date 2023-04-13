@@ -619,6 +619,7 @@ Error Messages
 				static glr::ParsingError					WrongDeclaration(WfDestructorDeclaration* node);
 				static glr::ParsingError					WrongDeclaration(WfAutoPropertyDeclaration* node);
 				static glr::ParsingError					WrongDeclaration(WfStateMachineDeclaration* node);
+				static glr::ParsingError					WrongDeclaration(WfStaticInitDeclaration* node);
 				static glr::ParsingError					WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 				static glr::ParsingError					EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
 				static glr::ParsingError					FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
