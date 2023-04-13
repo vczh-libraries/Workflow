@@ -1,0 +1,65 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+static
+{
+    return 0;
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+static
+{
+    return 0;
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 2, Message: C6: Return statement cannot have a value inside void functions, constructors, destructors or $coroutine expressions.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 57}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "StaticInitDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 6, "column": 0, "index": 57}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 4, "column": 0, "index": 42}, "end": {"row": 6, "column": 0, "index": 57}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 5, "column": 1, "index": 46}, "end": {"row": 5, "column": 9, "index": 54}, "codeIndex": -1}},
+                "expression": {
+                    "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 5, "column": 8, "index": 53}, "end": {"row": 5, "column": 8, "index": 53}, "codeIndex": -1}},
+                    "value": { "value": "0", "codeRange": {"start": {"row": 5, "column": 8, "index": 53}, "end": {"row": 5, "column": 8, "index": 53}, "codeIndex": -1}}
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}
