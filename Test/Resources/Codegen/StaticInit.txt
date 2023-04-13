@@ -1,0 +1,48 @@
+module test;
+using system::*;
+using test::*;
+
+var map : int[string] = {};
+
+namespace A
+{
+	namespace B
+	{
+		static
+		{
+			map.Add("A::B", 0);
+		}
+	}
+
+	static
+	{
+		map.Add("A", 0);
+	}
+
+	namespace C
+	{
+		static
+		{
+			map.Add("A::C", 0);
+		}
+	}
+}
+
+func main():string
+{
+	var result = "";
+	for (var key in map.Keys)
+	{
+		if (result != "")
+		{
+			result = result & ", ";
+		}
+		result = result & key;
+	}
+	return result;
+}
+
+static
+{
+	map.Add("::", 0);
+}
