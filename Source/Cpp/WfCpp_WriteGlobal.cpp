@@ -132,6 +132,10 @@ namespace vl
 						}
 					}
 				}
+				if (staticInitDecls.Count() > 0)
+				{
+					CHECK_FAIL(L"Not Implemented!");
+				}
 				writer.WriteLine(L"\tFINALIZE_GLOBAL_STORAGE_CLASS");
 				if (varDecls.Count() > 0)
 				{

@@ -90,6 +90,14 @@ CollectModule
 					}
 				}
 
+				void Traverse(WfStaticInitDeclaration* node)override
+				{
+					if (skipCounter == 1)
+					{
+						config->staticInitDecls.Add(Ptr(node));
+					}
+				}
+
 				void Visit(WfClassDeclaration* node)override
 				{
 					config->classDecls.Add(surroundingClassDecl, Ptr(node));

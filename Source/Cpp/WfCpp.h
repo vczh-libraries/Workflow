@@ -118,6 +118,7 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;			// class (nullable) to direct internal classes
 				collections::List<Ptr<WfVariableDeclaration>>								varDecls;			// global variables
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;			// global functions
+				collections::List<Ptr<WfStaticInitDeclaration>>								staticInitDecls;		// global static initialization declarations
 
 				collections::Group<WString, Ptr<WfClassDeclaration>>						customFilesClasses;	// @cpp:File to top level classes, empty key means the default cpp
 				collections::Group<vint, Ptr<WfClassDeclaration>>							headerFilesClasses;	// non-@cpp:File header file to top level classes, 0 means the default header
