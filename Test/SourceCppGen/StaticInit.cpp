@@ -80,6 +80,8 @@ Global Functions
 			(GLOBAL_NAME result = (GLOBAL_NAME result + ::vl::WString::Unmanaged(L", ")));
 		}
 		(GLOBAL_NAME result = (GLOBAL_NAME result + note));
+		return;
+		(GLOBAL_NAME result = ::vl::WString::Unmanaged(L""));
 	}
 
 	::vl::WString StaticInit::main()
