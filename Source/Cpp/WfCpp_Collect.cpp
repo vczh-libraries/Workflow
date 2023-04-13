@@ -92,10 +92,7 @@ CollectModule
 
 				void Traverse(WfStaticInitDeclaration* node)override
 				{
-					if (skipCounter == 1)
-					{
-						config->staticInitDecls.Add(Ptr(node));
-					}
+					config->staticInitDecls.Add(Ptr(node));
 				}
 
 				void Visit(WfClassDeclaration* node)override
