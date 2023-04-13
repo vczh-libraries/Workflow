@@ -92,6 +92,11 @@ Visitor Pattern Implementation
 		visitor->Visit(this);
 	}
 
+	void WfStaticInitDeclaration::Accept(WfDeclaration::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
+
 	void WfConstructorDeclaration::Accept(WfDeclaration::IVisitor* visitor)
 	{
 		visitor->Visit(this);
@@ -486,6 +491,7 @@ namespace vl::reflection::description
 	IMPL_TYPE_INFO_RENAME(vl::workflow::WfVariableDeclaration, system::workflow::WfVariableDeclaration)
 	IMPL_TYPE_INFO_RENAME(vl::workflow::WfEventDeclaration, system::workflow::WfEventDeclaration)
 	IMPL_TYPE_INFO_RENAME(vl::workflow::WfPropertyDeclaration, system::workflow::WfPropertyDeclaration)
+	IMPL_TYPE_INFO_RENAME(vl::workflow::WfStaticInitDeclaration, system::workflow::WfStaticInitDeclaration)
 	IMPL_TYPE_INFO_RENAME(vl::workflow::WfClassKind, system::workflow::WfClassKind)
 	IMPL_TYPE_INFO_RENAME(vl::workflow::WfConstructorType, system::workflow::WfConstructorType)
 	IMPL_TYPE_INFO_RENAME(vl::workflow::WfBaseConstructorCall, system::workflow::WfBaseConstructorCall)
@@ -816,6 +822,14 @@ namespace vl::reflection::description
 		CLASS_MEMBER_FIELD(setter)
 		CLASS_MEMBER_FIELD(valueChangedEvent)
 	END_CLASS_MEMBER(vl::workflow::WfPropertyDeclaration)
+
+	BEGIN_CLASS_MEMBER(vl::workflow::WfStaticInitDeclaration)
+		CLASS_MEMBER_BASE(vl::workflow::WfDeclaration)
+
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::workflow::WfStaticInitDeclaration>(), NO_PARAMETER)
+
+		CLASS_MEMBER_FIELD(statement)
+	END_CLASS_MEMBER(vl::workflow::WfStaticInitDeclaration)
 
 	BEGIN_ENUM_ITEM(vl::workflow::WfClassKind)
 		ENUM_ITEM_NAMESPACE(vl::workflow::WfClassKind)
@@ -1780,6 +1794,7 @@ namespace vl::reflection::description
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::workflow::WfDeclaration::IVisitor::*)(vl::workflow::WfVariableDeclaration* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::workflow::WfDeclaration::IVisitor::*)(vl::workflow::WfEventDeclaration* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::workflow::WfDeclaration::IVisitor::*)(vl::workflow::WfPropertyDeclaration* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::workflow::WfDeclaration::IVisitor::*)(vl::workflow::WfStaticInitDeclaration* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::workflow::WfDeclaration::IVisitor::*)(vl::workflow::WfConstructorDeclaration* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::workflow::WfDeclaration::IVisitor::*)(vl::workflow::WfDestructorDeclaration* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::workflow::WfDeclaration::IVisitor::*)(vl::workflow::WfClassDeclaration* node))
@@ -1869,6 +1884,7 @@ namespace vl::reflection::description
 			ADD_TYPE_INFO(vl::workflow::WfVariableDeclaration)
 			ADD_TYPE_INFO(vl::workflow::WfEventDeclaration)
 			ADD_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
+			ADD_TYPE_INFO(vl::workflow::WfStaticInitDeclaration)
 			ADD_TYPE_INFO(vl::workflow::WfClassKind)
 			ADD_TYPE_INFO(vl::workflow::WfConstructorType)
 			ADD_TYPE_INFO(vl::workflow::WfBaseConstructorCall)

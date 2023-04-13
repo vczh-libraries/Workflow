@@ -119,6 +119,7 @@ namespace vl::workflow::empty_visitor
 		void Visit(WfVariableDeclaration* node) override;
 		void Visit(WfEventDeclaration* node) override;
 		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfStaticInitDeclaration* node) override;
 		void Visit(WfConstructorDeclaration* node) override;
 		void Visit(WfDestructorDeclaration* node) override;
 		void Visit(WfClassDeclaration* node) override;

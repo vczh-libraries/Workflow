@@ -1486,6 +1486,28 @@ MakeStateSwitchStatement
 	}
 
 /***********************************************************************
+MakeStaticInitDeclaration
+***********************************************************************/
+
+	MakeStaticInitDeclaration& MakeStaticInitDeclaration::statement(const vl::Ptr<WfStatement>& value)
+	{
+		node->statement = value;
+		return *this;
+	}
+
+	MakeStaticInitDeclaration& MakeStaticInitDeclaration::attributes(const vl::Ptr<WfAttribute>& value)
+	{
+		node->attributes.Add(value);
+		return *this;
+	}
+
+	MakeStaticInitDeclaration& MakeStaticInitDeclaration::name(const vl::WString& value)
+	{
+		node->name.value = value;
+		return *this;
+	}
+
+/***********************************************************************
 MakeStringExpression
 ***********************************************************************/
 

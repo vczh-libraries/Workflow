@@ -290,6 +290,10 @@ DeclarationVisitor
 	{
 	}
 
+	void DeclarationVisitor::Visit(WfStaticInitDeclaration* node)
+	{
+	}
+
 	void DeclarationVisitor::Visit(WfConstructorDeclaration* node)
 	{
 	}

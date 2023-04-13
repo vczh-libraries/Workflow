@@ -114,6 +114,7 @@ namespace vl::workflow::json_visitor
 		virtual void PrintFields(WfStateSwitchCase* node);
 		virtual void PrintFields(WfStateSwitchStatement* node);
 		virtual void PrintFields(WfStatement* node);
+		virtual void PrintFields(WfStaticInitDeclaration* node);
 		virtual void PrintFields(WfStringExpression* node);
 		virtual void PrintFields(WfStructDeclaration* node);
 		virtual void PrintFields(WfStructMember* node);
@@ -205,6 +206,7 @@ namespace vl::workflow::json_visitor
 		void Visit(WfVariableDeclaration* node) override;
 		void Visit(WfEventDeclaration* node) override;
 		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfStaticInitDeclaration* node) override;
 		void Visit(WfConstructorDeclaration* node) override;
 		void Visit(WfDestructorDeclaration* node) override;
 		void Visit(WfClassDeclaration* node) override;

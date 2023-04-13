@@ -96,6 +96,7 @@ namespace vl::workflow::traverse_visitor
 	void AstVisitor::Traverse(WfStateSwitchCase* node) {}
 	void AstVisitor::Traverse(WfStateSwitchStatement* node) {}
 	void AstVisitor::Traverse(WfStatement* node) {}
+	void AstVisitor::Traverse(WfStaticInitDeclaration* node) {}
 	void AstVisitor::Traverse(WfStringExpression* node) {}
 	void AstVisitor::Traverse(WfStructDeclaration* node) {}
 	void AstVisitor::Traverse(WfStructMember* node) {}
@@ -207,6 +208,7 @@ namespace vl::workflow::traverse_visitor
 	void AstVisitor::Finishing(WfStateSwitchCase* node) {}
 	void AstVisitor::Finishing(WfStateSwitchStatement* node) {}
 	void AstVisitor::Finishing(WfStatement* node) {}
+	void AstVisitor::Finishing(WfStaticInitDeclaration* node) {}
 	void AstVisitor::Finishing(WfStringExpression* node) {}
 	void AstVisitor::Finishing(WfStructDeclaration* node) {}
 	void AstVisitor::Finishing(WfStructMember* node) {}
@@ -1038,6 +1040,23 @@ namespace vl::workflow::traverse_visitor
 		}
 		Traverse(node->name);
 		Finishing(static_cast<WfPropertyDeclaration*>(node));
+		Finishing(static_cast<WfDeclaration*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(WfStaticInitDeclaration* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<WfDeclaration*>(node));
+		Traverse(static_cast<WfStaticInitDeclaration*>(node));
+		InspectInto(node->statement.Obj());
+		for (auto&& listItem : node->attributes)
+		{
+			InspectInto(listItem.Obj());
+		}
+		Traverse(node->name);
+		Finishing(static_cast<WfStaticInitDeclaration*>(node));
 		Finishing(static_cast<WfDeclaration*>(node));
 		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 	}

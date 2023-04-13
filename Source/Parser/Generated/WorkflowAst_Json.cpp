@@ -1318,6 +1318,12 @@ namespace vl::workflow::json_visitor
 	void AstVisitor::PrintFields(WfStatement* node)
 	{
 	}
+	void AstVisitor::PrintFields(WfStaticInitDeclaration* node)
+	{
+		BeginField(L"statement");
+		Print(node->statement.Obj());
+		EndField();
+	}
 	void AstVisitor::PrintFields(WfStringExpression* node)
 	{
 		BeginField(L"value");
@@ -2404,6 +2410,20 @@ namespace vl::workflow::json_visitor
 		WriteType(L"PropertyDeclaration", node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfPropertyDeclaration*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(WfStaticInitDeclaration* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"StaticInitDeclaration", node);
+		PrintFields(static_cast<WfDeclaration*>(node));
+		PrintFields(static_cast<WfStaticInitDeclaration*>(node));
 		EndObject();
 	}
 

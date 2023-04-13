@@ -178,6 +178,8 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::Ptr(new vl::workflow::WfStateSwitchCase);
 		case WorkflowClasses::StateSwitchStatement:
 			return vl::Ptr(new vl::workflow::WfStateSwitchStatement);
+		case WorkflowClasses::StaticInitDeclaration:
+			return vl::Ptr(new vl::workflow::WfStaticInitDeclaration);
 		case WorkflowClasses::StringExpression:
 			return vl::Ptr(new vl::workflow::WfStringExpression);
 		case WorkflowClasses::StructDeclaration:
@@ -424,6 +426,8 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfStateSwitchCase::statement, object, field, value, cppFieldName);
 		case WorkflowFields::StateSwitchStatement_caseBranches:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfStateSwitchStatement::caseBranches, object, field, value, cppFieldName);
+		case WorkflowFields::StaticInitDeclaration_statement:
+			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfStaticInitDeclaration::statement, object, field, value, cppFieldName);
 		case WorkflowFields::StructDeclaration_members:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfStructDeclaration::members, object, field, value, cppFieldName);
 		case WorkflowFields::StructMember_attributes:
@@ -730,6 +734,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"StateSwitchCase",
 			L"StateSwitchStatement",
 			L"Statement",
+			L"StaticInitDeclaration",
 			L"StringExpression",
 			L"StructDeclaration",
 			L"StructMember",
@@ -755,7 +760,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"WhileStatement",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 109 ? results[index] : nullptr;
+		return 0 <= index && index < 110 ? results[index] : nullptr;
 	}
 
 	const wchar_t* WorkflowCppTypeName(WorkflowClasses type)
@@ -847,6 +852,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfStateSwitchCase",
 			L"vl::workflow::WfStateSwitchStatement",
 			L"vl::workflow::WfStatement",
+			L"vl::workflow::WfStaticInitDeclaration",
 			L"vl::workflow::WfStringExpression",
 			L"vl::workflow::WfStructDeclaration",
 			L"vl::workflow::WfStructMember",
@@ -872,7 +878,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfWhileStatement",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 109 ? results[index] : nullptr;
+		return 0 <= index && index < 110 ? results[index] : nullptr;
 	}
 
 	const wchar_t* WorkflowFieldName(WorkflowFields field)
@@ -1039,6 +1045,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"StateSwitchCase::statement",
 			L"StateSwitchStatement::caseBranches",
 			L"StateSwitchStatement::type",
+			L"StaticInitDeclaration::statement",
 			L"StringExpression::value",
 			L"StructDeclaration::members",
 			L"StructMember::attributes",
@@ -1077,7 +1084,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"WhileStatement::statement",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 197 ? results[index] : nullptr;
+		return 0 <= index && index < 198 ? results[index] : nullptr;
 	}
 
 	const wchar_t* WorkflowCppFieldName(WorkflowFields field)
@@ -1244,6 +1251,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfStateSwitchCase::statement",
 			L"vl::workflow::WfStateSwitchStatement::caseBranches",
 			L"vl::workflow::WfStateSwitchStatement::type",
+			L"vl::workflow::WfStaticInitDeclaration::statement",
 			L"vl::workflow::WfStringExpression::value",
 			L"vl::workflow::WfStructDeclaration::members",
 			L"vl::workflow::WfStructMember::attributes",
@@ -1282,7 +1290,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfWhileStatement::statement",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 197 ? results[index] : nullptr;
+		return 0 <= index && index < 198 ? results[index] : nullptr;
 	}
 
 	vl::Ptr<vl::glr::ParsingAstBase> WorkflowAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)

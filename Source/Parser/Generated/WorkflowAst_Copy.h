@@ -114,6 +114,7 @@ namespace vl::workflow::copy_visitor
 		void CopyFields(WfStateSwitchCase* from, WfStateSwitchCase* to);
 		void CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to);
 		void CopyFields(WfStatement* from, WfStatement* to);
+		void CopyFields(WfStaticInitDeclaration* from, WfStaticInitDeclaration* to);
 		void CopyFields(WfStringExpression* from, WfStringExpression* to);
 		void CopyFields(WfStructDeclaration* from, WfStructDeclaration* to);
 		void CopyFields(WfStructMember* from, WfStructMember* to);
@@ -222,6 +223,7 @@ namespace vl::workflow::copy_visitor
 		void Visit(WfVariableDeclaration* node) override;
 		void Visit(WfEventDeclaration* node) override;
 		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfStaticInitDeclaration* node) override;
 		void Visit(WfConstructorDeclaration* node) override;
 		void Visit(WfDestructorDeclaration* node) override;
 		void Visit(WfClassDeclaration* node) override;
@@ -347,6 +349,7 @@ namespace vl::workflow::copy_visitor
 		vl::Ptr<WfStateMachineDeclaration> CopyNode(WfStateMachineDeclaration* node);
 		vl::Ptr<WfStateMachineStatement> CopyNode(WfStateMachineStatement* node);
 		vl::Ptr<WfStateSwitchStatement> CopyNode(WfStateSwitchStatement* node);
+		vl::Ptr<WfStaticInitDeclaration> CopyNode(WfStaticInitDeclaration* node);
 		vl::Ptr<WfStringExpression> CopyNode(WfStringExpression* node);
 		vl::Ptr<WfStructDeclaration> CopyNode(WfStructDeclaration* node);
 		vl::Ptr<WfSwitchStatement> CopyNode(WfSwitchStatement* node);

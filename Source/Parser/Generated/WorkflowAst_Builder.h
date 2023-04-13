@@ -595,6 +595,14 @@ namespace vl::workflow::builder
 		MakeStateSwitchStatement& type(WfStateSwitchType value);
 	};
 
+	class MakeStaticInitDeclaration : public vl::glr::ParsingAstBuilder<WfStaticInitDeclaration>
+	{
+	public:
+		MakeStaticInitDeclaration& statement(const vl::Ptr<WfStatement>& value);
+		MakeStaticInitDeclaration& attributes(const vl::Ptr<WfAttribute>& value);
+		MakeStaticInitDeclaration& name(const vl::WString& value);
+	};
+
 	class MakeStringExpression : public vl::glr::ParsingAstBuilder<WfStringExpression>
 	{
 	public:

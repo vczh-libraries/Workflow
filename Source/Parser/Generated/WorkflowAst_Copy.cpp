@@ -680,6 +680,12 @@ namespace vl::workflow::copy_visitor
 	{
 	}
 
+	void AstVisitor::CopyFields(WfStaticInitDeclaration* from, WfStaticInitDeclaration* to)
+	{
+		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
+		to->statement = CopyNode(from->statement.Obj());
+	}
+
 	void AstVisitor::CopyFields(WfStringExpression* from, WfStringExpression* to)
 	{
 		CopyFields(static_cast<WfExpression*>(from), static_cast<WfExpression*>(to));
@@ -1382,6 +1388,13 @@ namespace vl::workflow::copy_visitor
 	void AstVisitor::Visit(WfPropertyDeclaration* node)
 	{
 		auto newNode = vl::Ptr(new WfPropertyDeclaration);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfStaticInitDeclaration* node)
+	{
+		auto newNode = vl::Ptr(new WfStaticInitDeclaration);
 		CopyFields(node, newNode.Obj());
 		this->result = newNode;
 	}
@@ -2131,6 +2144,12 @@ namespace vl::workflow::copy_visitor
 	{
 		if (!node) return nullptr;
 		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfStateSwitchStatement>();
+	}
+
+	vl::Ptr<WfStaticInitDeclaration> AstVisitor::CopyNode(WfStaticInitDeclaration* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfDeclaration*>(node)).Cast<WfStaticInitDeclaration>();
 	}
 
 	vl::Ptr<WfStringExpression> AstVisitor::CopyNode(WfStringExpression* node)
