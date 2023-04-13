@@ -68,6 +68,10 @@ CheckBaseClass
 						for (vint i = 0; i < count; i++)
 						{
 							auto propType = td->GetProperty(i)->GetReturn();
+							if (propType->GetDecorator() == ITypeInfo::Nullable)
+							{
+								propType = propType->GetElementType();
+							}
 							if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
 							{
 								auto propTd = propType->GetTypeDescriptor();
