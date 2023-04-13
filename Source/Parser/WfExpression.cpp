@@ -1556,6 +1556,15 @@ Print (Declaration)
 				writer.AfterPrint(node);
 			}
 
+			void Visit(WfStaticInitDeclaration* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteLine(L"static");
+				writer.WriteString(indent);
+				WfPrint(node->statement, indent, writer);
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfConstructorDeclaration* node)override
 			{
 				writer.BeforePrint(node);

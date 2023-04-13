@@ -59,6 +59,11 @@ GenerateInstructions(Initialize)
 				{
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+					CHECK_FAIL(L"Not Implemented!");
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 				}
@@ -225,6 +230,10 @@ GenerateInstructions(Declaration)
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStaticInitDeclaration* node)override
 				{
 				}
 
@@ -406,6 +415,10 @@ GenerateInstructions(Declaration)
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStaticInitDeclaration* node)override
 				{
 				}
 

@@ -94,6 +94,10 @@ GenerateGlobalDeclarationMetadata
 				{
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					auto meta = Ptr(new WfAssemblyFunction);
@@ -204,6 +208,10 @@ GenerateGlobalDeclarationMetadata
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStaticInitDeclaration* node)override
 				{
 				}
 

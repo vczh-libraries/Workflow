@@ -116,6 +116,10 @@ WfGenerateClassMemberDeclVisitor
 				{
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
@@ -308,6 +312,10 @@ WfGenerateClassMemberImplVisitor
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStaticInitDeclaration* node)override
 				{
 				}
 
