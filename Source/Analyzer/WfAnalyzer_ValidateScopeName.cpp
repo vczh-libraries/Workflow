@@ -106,6 +106,10 @@ ValidateScopeName
 					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfPropertyDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					CHECK_FAIL(L"ValidateScopeNameDeclarationVisitor::Visit(WfConstructorDeclaration*)#Internal error, ValidateDeclarationStructure function should check correctly.");

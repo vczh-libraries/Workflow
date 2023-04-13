@@ -154,6 +154,12 @@ BuildScopeForDeclaration
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+					resultScope = Ptr(new WfLexicalScope(parentScope));
+					BuildScopeForStatement(manager, resultScope, node->statement);
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					resultScope = Ptr(new WfLexicalScope(parentScope));

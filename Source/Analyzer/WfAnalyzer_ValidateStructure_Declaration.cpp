@@ -310,6 +310,14 @@ ValidateStructure(Declaration)
 					}
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+					if (classDecl)
+					{
+						manager->errors.Add(WfErrors::WrongDeclaration(node));
+					}
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					if (classDecl)

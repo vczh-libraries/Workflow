@@ -77,6 +77,10 @@ ValidateSemantic(ClassMember)
 					}
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+				}
+
 				static void SelectConstructor(WfLexicalScopeManager* manager, WfConstructorDeclaration* ctorDecl, glr::ParsingAstBase* node, ITypeDescriptor* td, List<Ptr<WfExpression>>& arguments)
 				{
 					List<ResolveExpressionResult> functions;
@@ -298,6 +302,11 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfPropertyDeclaration* node)override
 				{
+				}
+
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfConstructorDeclaration* node)override

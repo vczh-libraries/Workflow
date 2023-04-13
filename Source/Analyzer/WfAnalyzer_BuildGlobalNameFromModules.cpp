@@ -136,6 +136,10 @@ BuildGlobalNameFromModules
 					manager->declarationMemberInfos.Add(Ptr(node), info);
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					Ptr<ITypeInfo> typeInfo;

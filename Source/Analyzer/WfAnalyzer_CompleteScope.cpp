@@ -106,6 +106,10 @@ CompleteScopeForClassMember
 					}
 				}
 
+				void Visit(WfStaticInitDeclaration* node)override
+				{
+				}
+
 				void Visit(WfConstructorDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
@@ -235,6 +239,10 @@ CompleteScopeForDeclaration
 				}
 
 				void Visit(WfPropertyDeclaration* node)override
+				{
+				}
+
+				void Visit(WfStaticInitDeclaration* node)override
 				{
 				}
 
