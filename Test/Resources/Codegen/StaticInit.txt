@@ -2,7 +2,16 @@ module test;
 using system::*;
 using test::*;
 
-var map : int[string] = {};
+var result : string = "";
+
+func Log(note : string):void
+{
+	if (result != "")
+	{
+		result = result & ", ";
+	}
+	result = result & note;
+}
 
 namespace A
 {
@@ -10,44 +19,35 @@ namespace A
 	{
 		static
 		{
-			map.Set("A::B", 0);
+			Log("A::B");
 		}
 	}
 
 	static
 	{
-		map.Set("A(0)", 0);
+		Log("A(0)");
 	}
 
 	namespace C
 	{
 		static
 		{
-			map.Set("A::C", 0);
+			Log("A::C");
 		}
 	}
 
 	static
 	{
-		map.Set("A(1)", 0);
+		Log("A(1)");
 	}
 }
 
 func main():string
 {
-	var result = "";
-	for (key in map.Keys)
-	{
-		if (result != "")
-		{
-			result = result & ", ";
-		}
-		result = result & (cast string key);
-	}
 	return result;
 }
 
 static
 {
-	map.Set("::", 0);
+	Log("::");
 }

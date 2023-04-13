@@ -31,10 +31,10 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_StaticInit)
 	vl_workflow_global::StaticInit instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.map = ::vl::reflection::description::IValueDictionary::Create();
+		instance.result = ::vl::WString::Unmanaged(L"");
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.map = nullptr;
+		instance.result = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_StaticInit)
 
 namespace vl_workflow_global
@@ -43,25 +43,18 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
+	void StaticInit::Log(const ::vl::WString& note)
+	{
+		if ((GLOBAL_NAME result != ::vl::WString::Unmanaged(L"")))
+		{
+			(GLOBAL_NAME result = (GLOBAL_NAME result + ::vl::WString::Unmanaged(L", ")));
+		}
+		(GLOBAL_NAME result = (GLOBAL_NAME result + note));
+	}
+
 	::vl::WString StaticInit::main()
 	{
-		auto result = ::vl::WString::Unmanaged(L"");
-		{
-			auto __vwsn_for_enumerable_key = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(GLOBAL_NAME map.Obj())->GetKeys());
-			auto __vwsn_for_enumerator_key = ::vl::__vwsn::This(__vwsn_for_enumerable_key.Obj())->CreateEnumerator();
-			while (::vl::__vwsn::This(__vwsn_for_enumerator_key.Obj())->Next())
-			{
-				auto key = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_key.Obj())->GetCurrent());
-				{
-					if ((result != ::vl::WString::Unmanaged(L"")))
-					{
-						(result = (result + ::vl::WString::Unmanaged(L", ")));
-					}
-					(result = (result + ::vl::__vwsn::Unbox<::vl::WString>(key)));
-				}
-			}
-		}
-		return result;
+		return GLOBAL_NAME result;
 	}
 
 	StaticInit& StaticInit::Instance()

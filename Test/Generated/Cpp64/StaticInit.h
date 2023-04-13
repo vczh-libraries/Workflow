@@ -32,8 +32,9 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> map;
+		::vl::WString result;
 
+		void Log(const ::vl::WString& note);
 		::vl::WString main();
 
 		static StaticInit& Instance();

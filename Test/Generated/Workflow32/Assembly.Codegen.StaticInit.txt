@@ -1,21 +1,23 @@
 ﻿========================================================
 Global Variables:
 ========================================================
-map
+result
 
 ========================================================
 Functions:
 ========================================================
-main (29 .. 69)
+Log (19 .. 39)
+    Arguments:
+        note
+    Captured Variables:
+    Local Variables:
+
+main (40 .. 43)
     Arguments:
     Captured Variables:
     Local Variables:
-        result
-        <for-enumerable>key
-        <for-enumerator>key
-        key
 
-<initialize> (0 .. 28)
+<initialize> (0 .. 18)
     Arguments:
     Captured Variables:
     Local Variables:
@@ -23,141 +25,89 @@ main (29 .. 69)
 ========================================================
 Instructions:
 ========================================================
-//  {}
-0    :     NewDictionary : stackPatternCount = 0
-//  var map : int[string] = {};
-1    :     StoreGlobalVar: var = 0(map)
+//  ""
+0    :     LoadValue     : value = <Bool, >
+//  var result : string = "";
+1    :     StoreGlobalVar: var = 0(result)
 //  "A::B"
 2    :     LoadValue     : value = <Bool, A::B>
-//  0
-3    :     LoadValue     : value = <I4, 0>
-//  map
-4    :     LoadGlobalVar : var = 0(map)
-//  map.Set("A::B", 0)
-5    :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  map.Set("A::B", 0);
-6    :     Pop           
+//  Log("A::B")
+3    :     Invoke        : func = 0(Log), stackPatternCount = 1
+//  Log("A::B");
+4    :     Pop           
 //  "A(0)"
-7    :     LoadValue     : value = <Bool, A(0)>
-//  0
-8    :     LoadValue     : value = <I4, 0>
-//  map
-9    :     LoadGlobalVar : var = 0(map)
-//  map.Set("A(0)", 0)
-10   :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  map.Set("A(0)", 0);
-11   :     Pop           
+5    :     LoadValue     : value = <Bool, A(0)>
+//  Log("A(0)")
+6    :     Invoke        : func = 0(Log), stackPatternCount = 1
+//  Log("A(0)");
+7    :     Pop           
 //  "A::C"
-12   :     LoadValue     : value = <Bool, A::C>
-//  0
-13   :     LoadValue     : value = <I4, 0>
-//  map
-14   :     LoadGlobalVar : var = 0(map)
-//  map.Set("A::C", 0)
-15   :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  map.Set("A::C", 0);
-16   :     Pop           
+8    :     LoadValue     : value = <Bool, A::C>
+//  Log("A::C")
+9    :     Invoke        : func = 0(Log), stackPatternCount = 1
+//  Log("A::C");
+10   :     Pop           
 //  "A(1)"
-17   :     LoadValue     : value = <Bool, A(1)>
-//  0
-18   :     LoadValue     : value = <I4, 0>
-//  map
-19   :     LoadGlobalVar : var = 0(map)
-//  map.Set("A(1)", 0)
-20   :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  map.Set("A(1)", 0);
-21   :     Pop           
+11   :     LoadValue     : value = <Bool, A(1)>
+//  Log("A(1)")
+12   :     Invoke        : func = 0(Log), stackPatternCount = 1
+//  Log("A(1)");
+13   :     Pop           
 //  "::"
-22   :     LoadValue     : value = <Bool, ::>
-//  0
-23   :     LoadValue     : value = <I4, 0>
-//  map
-24   :     LoadGlobalVar : var = 0(map)
-//  map.Set("::", 0)
-25   :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  map.Set("::", 0);
-26   :     Pop           
-27   :     LoadValue     : value = <null>
-28   :     Return        
-//  ""
-29   :     LoadValue     : value = <Bool, >
-//  var result = "";
-30   :     StoreLocalVar : var = 0(result)
-//  map
-31   :     LoadGlobalVar : var = 0(map)
-//  map.Keys
-32   :     InvokeMethod  : methodInfo = GetKeys<system::ReadonlyDictionary>, stackPatternCount = 0
-//  map.Keys
-33   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
-//  var <for-enumerable>key = map.Keys of (::system::Enumerable^);
-34   :     StoreLocalVar : var = 1(<for-enumerable>key)
-//  <for-enumerable>key
-35   :     LoadLocalVar  : var = 1(<for-enumerable>key)
-//  <for-enumerable>key.CreateEnumerator()
-36   :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
-//  var <for-enumerator>key = <for-enumerable>key.CreateEnumerator();
-37   :     StoreLocalVar : var = 2(<for-enumerator>key)
-//  <for-enumerator>key
-38   :     LoadLocalVar  : var = 2(<for-enumerator>key)
-//  <for-enumerator>key.Next()
-39   :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
-//  while (<for-enumerator>key.Next())
-40   :     OpNot         : type = Bool
-//  while (<for-enumerator>key.Next())
-41   :     JumpIf        : label = 66
-//  <for-enumerator>key
-42   :     LoadLocalVar  : var = 2(<for-enumerator>key)
-//  <for-enumerator>key.GetCurrent()
-43   :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
-//  var key = (cast (::system::Object) <for-enumerator>key.GetCurrent());
-44   :     StoreLocalVar : var = 3(key)
+14   :     LoadValue     : value = <Bool, ::>
+//  Log("::")
+15   :     Invoke        : func = 0(Log), stackPatternCount = 1
+//  Log("::");
+16   :     Pop           
+17   :     LoadValue     : value = <null>
+18   :     Return        
 //  result
-45   :     LoadLocalVar  : var = 0(result)
+19   :     LoadGlobalVar : var = 0(result)
 //  ""
-46   :     LoadValue     : value = <Bool, >
+20   :     LoadValue     : value = <Bool, >
 //  (result != "")
-47   :     CompareValue  
+21   :     CompareValue  
 //  (result != "")
-48   :     OpNot         : type = Bool
+22   :     OpNot         : type = Bool
 //  if ((result != ""))
-49   :     OpNot         : type = Bool
+23   :     OpNot         : type = Bool
 //  if ((result != ""))
-50   :     JumpIf        : label = 58
+24   :     JumpIf        : label = 32
 //  result
-51   :     LoadLocalVar  : var = 0(result)
+25   :     LoadGlobalVar : var = 0(result)
 //  ", "
-52   :     LoadValue     : value = <Bool, , >
+26   :     LoadValue     : value = <Bool, , >
 //  (result & ", ")
-53   :     OpConcat      
+27   :     OpConcat      
 //  (result = (result & ", "))
-54   :     Duplicate     : stackPatternCount = 0
+28   :     Duplicate     : stackPatternCount = 0
 //  (result = (result & ", "))
-55   :     StoreLocalVar : var = 0(result)
+29   :     StoreGlobalVar: var = 0(result)
 //  (result = (result & ", "));
-56   :     Pop           
+30   :     Pop           
 //  if ((result != ""))
-57   :     Jump          : label = 58
+31   :     Jump          : label = 32
 //  result
-58   :     LoadLocalVar  : var = 0(result)
-//  key
-59   :     LoadLocalVar  : var = 3(key)
-//  key
-60   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (result & (cast (string) key))
-61   :     OpConcat      
-//  (result = (result & (cast (string) key)))
-62   :     Duplicate     : stackPatternCount = 0
-//  (result = (result & (cast (string) key)))
-63   :     StoreLocalVar : var = 0(result)
-//  (result = (result & (cast (string) key)));
-64   :     Pop           
-//  while (<for-enumerator>key.Next())
-65   :     Jump          : label = 38
+32   :     LoadGlobalVar : var = 0(result)
+//  note
+33   :     LoadLocalVar  : var = 0(note)
+//  (result & note)
+34   :     OpConcat      
+//  (result = (result & note))
+35   :     Duplicate     : stackPatternCount = 0
+//  (result = (result & note))
+36   :     StoreGlobalVar: var = 0(result)
+//  (result = (result & note));
+37   :     Pop           
+//  func Log(note : string) : (void)
+38   :     LoadValue     : value = <null>
+//  func Log(note : string) : (void)
+39   :     Return        
 //  result
-66   :     LoadLocalVar  : var = 0(result)
+40   :     LoadGlobalVar : var = 0(result)
 //  return result;
-67   :     Return        
+41   :     Return        
 //  func main() : (string)
-68   :     LoadValue     : value = <null>
+42   :     LoadValue     : value = <null>
 //  func main() : (string)
-69   :     Return        
+43   :     Return        
