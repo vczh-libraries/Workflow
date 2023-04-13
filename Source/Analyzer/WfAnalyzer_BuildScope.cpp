@@ -157,6 +157,8 @@ BuildScopeForDeclaration
 				void Visit(WfStaticInitDeclaration* node)override
 				{
 					resultScope = Ptr(new WfLexicalScope(parentScope));
+					auto config = Ptr(new WfLexicalFunctionConfig);
+					resultScope->functionConfig = config;
 					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
 
