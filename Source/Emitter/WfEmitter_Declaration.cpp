@@ -61,7 +61,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfStaticInitDeclaration* node)override
 				{
-					CHECK_FAIL(L"Not Implemented!");
+					GenerateStatementInstructions(context, node->statement);
 				}
 
 				void Visit(WfConstructorDeclaration* node)override

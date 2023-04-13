@@ -23,6 +23,7 @@
 #include "LetIn.h"
 #include "Property.h"
 #include "MethodClosure.h"
+#include "StaticInit.h"
 #include "StaticMethod.h"
 #include "Event.h"
 #include "Event2Reflection.h"
@@ -364,6 +365,15 @@ TEST_CASE(L"MethodClosure")
 {
 	WString expected = L"10, 20";
 	WString actual = ::vl_workflow_global::MethodClosure::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"StaticInit")
+{
+	WString expected = L"A::B, A(0), A::C, A(1), ::";
+	WString actual = ::vl_workflow_global::StaticInit::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
