@@ -27,62 +27,34 @@ namespace __vwsn_structs
 	struct _depended_structs_B
 	{
 		::test::Point data;
+
+		std::strong_ordering operator<=>(const _depended_structs_B&) const = default;
+		bool operator==(const _depended_structs_B&) const = default;
 	};
-	inline bool operator== (const _depended_structs_B& a, const _depended_structs_B& b)
-	{
-		if (a.data != b.data) return false;
-		return true;
-	}
-	inline bool operator!= (const _depended_structs_B& a, const _depended_structs_B& b)
-	{
-		if (a.data != b.data) return true;
-		return false;
-	}
 
 	struct _depended_structs_A
 	{
 		::__vwsn_structs::_depended_structs_B data;
+
+		std::strong_ordering operator<=>(const _depended_structs_A&) const = default;
+		bool operator==(const _depended_structs_A&) const = default;
 	};
-	inline bool operator== (const _depended_structs_A& a, const _depended_structs_A& b)
-	{
-		if (a.data != b.data) return false;
-		return true;
-	}
-	inline bool operator!= (const _depended_structs_A& a, const _depended_structs_A& b)
-	{
-		if (a.data != b.data) return true;
-		return false;
-	}
 
 	struct _depended_structs_C
 	{
 		::__vwsn_structs::_depended_structs_A data;
+
+		std::strong_ordering operator<=>(const _depended_structs_C&) const = default;
+		bool operator==(const _depended_structs_C&) const = default;
 	};
-	inline bool operator== (const _depended_structs_C& a, const _depended_structs_C& b)
-	{
-		if (a.data != b.data) return false;
-		return true;
-	}
-	inline bool operator!= (const _depended_structs_C& a, const _depended_structs_C& b)
-	{
-		if (a.data != b.data) return true;
-		return false;
-	}
 
 	struct _depended_structs_D
 	{
 		::__vwsn_structs::_depended_structs_B data;
+
+		std::strong_ordering operator<=>(const _depended_structs_D&) const = default;
+		bool operator==(const _depended_structs_D&) const = default;
 	};
-	inline bool operator== (const _depended_structs_D& a, const _depended_structs_D& b)
-	{
-		if (a.data != b.data) return false;
-		return true;
-	}
-	inline bool operator!= (const _depended_structs_D& a, const _depended_structs_D& b)
-	{
-		if (a.data != b.data) return true;
-		return false;
-	}
 
 }
 namespace depended_structs

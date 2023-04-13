@@ -25,6 +25,13 @@ namespace vl
 						}
 						writer.WriteLine(prefix + L"\t" + ConvertType(prop->GetReturn(), true) + L" " + ConvertName(member->name.value) + defaultValue + L";");
 					}
+
+					if (decl->members.Count() > 0)
+					{
+						writer.WriteLine(L"");
+					}
+					writer.WriteLine(prefix + L"\tstd::strong_ordering operator<=>(const " + name + L"&) const = default;");
+					writer.WriteLine(prefix + L"\tbool operator==(const " + name + L"&) const = default;");
 					writer.WriteLine(prefix + L"};");
 				}
 				else
@@ -39,48 +46,6 @@ namespace vl
 				}
 			}
 
-			void WfCppConfig::WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix)
-			{
-				using opt = Tuple<const wchar_t*, const wchar_t*, const wchar_t*>;
-				opt ops[] = {
-					opt(L"==", L"false", L"true"),
-					opt(L"!=", L"true", L"false")
-				};
-				for (auto op : ops)
-				{
-					writer.WriteString(prefix);
-					writer.WriteString(L"inline bool operator");
-					writer.WriteString(op.get<0>());
-					writer.WriteString(L" (const ");
-					writer.WriteString(name);
-					writer.WriteString(L"& a, const ");
-					writer.WriteString(name);
-					writer.WriteLine(L"& b)");
-
-					writer.WriteString(prefix);
-					writer.WriteLine(L"{");
-
-					for (auto member : decl->members)
-					{
-						writer.WriteString(prefix);
-						writer.WriteString(L"\tif (a.");
-						writer.WriteString(ConvertName(member->name.value));
-						writer.WriteString(L" != b.");
-						writer.WriteString(ConvertName(member->name.value));
-						writer.WriteString(L") return ");
-						writer.WriteString(op.get<1>());
-						writer.WriteLine(L";");
-					}
-					writer.WriteString(prefix);
-					writer.WriteString(L"\treturn ");
-					writer.WriteString(op.get<2>());
-					writer.WriteLine(L";");
-
-					writer.WriteString(prefix);
-					writer.WriteLine(L"}");
-				}
-			}
-
 			void WfCppConfig::WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition)
 			{
 				auto td = manager->declarationTypes[decl.Obj()].Obj();
@@ -89,7 +54,6 @@ namespace vl
 					WString name;
 					auto prefix = WriteNamespace(writer, CppNameToHeaderEnumStructName(CppGetFullName(td), L"struct"), nss, name);
 					WriteHeader_Struct(writer, decl, name, prefix, true);
-					WriteHeader_StructOp(writer, decl, name, prefix);
 				}
 				else
 				{

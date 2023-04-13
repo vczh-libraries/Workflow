@@ -29,21 +29,10 @@ namespace __vwsn_structs
 		::vl::vint x = 0;
 		::vl::vint y = 0;
 		::vl::Nullable<::vl::vint> z;
+
+		std::strong_ordering operator<=>(const _Point&) const = default;
+		bool operator==(const _Point&) const = default;
 	};
-	inline bool operator== (const _Point& a, const _Point& b)
-	{
-		if (a.x != b.x) return false;
-		if (a.y != b.y) return false;
-		if (a.z != b.z) return false;
-		return true;
-	}
-	inline bool operator!= (const _Point& a, const _Point& b)
-	{
-		if (a.x != b.x) return true;
-		if (a.y != b.y) return true;
-		if (a.z != b.z) return true;
-		return false;
-	}
 
 }
 using Point = ::__vwsn_structs::_Point;

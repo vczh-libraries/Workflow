@@ -168,7 +168,6 @@ namespace vl
 				void					WriteHeader_MainHeaderEnums(stream::StreamWriter& writer, collections::List<WString>& nss);
 
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition);
-				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
 				void					WriteHeader_MainHeaderStructs(stream::StreamWriter& writer, collections::List<WString>& nss);
 

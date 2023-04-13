@@ -27,17 +27,10 @@ namespace __vwsn_structs
 	struct _BoxedIntValue
 	{
 		::vl::vint value = 0;
+
+		std::strong_ordering operator<=>(const _BoxedIntValue&) const = default;
+		bool operator==(const _BoxedIntValue&) const = default;
 	};
-	inline bool operator== (const _BoxedIntValue& a, const _BoxedIntValue& b)
-	{
-		if (a.value != b.value) return false;
-		return true;
-	}
-	inline bool operator!= (const _BoxedIntValue& a, const _BoxedIntValue& b)
-	{
-		if (a.value != b.value) return true;
-		return false;
-	}
 
 }
 using BoxedIntValue = ::__vwsn_structs::_BoxedIntValue;
