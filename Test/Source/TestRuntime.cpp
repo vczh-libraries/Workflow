@@ -107,6 +107,10 @@ TEST_FILE
 		moduleCodes.Add(LR"workflow(
 module test;
 
+/* caused memory leaks! */
+interface A{}
+var a = new A^{};
+
 func main():string
 {
 	return "Hello, world!";
