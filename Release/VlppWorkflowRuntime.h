@@ -1061,7 +1061,7 @@ Lambda
 				typedef reflection::description::Value										Value;
 			public:
 				// use raw pointer because
-				// if a lambda is stored in an variable
+				// if a lambda is stored in a global variable
 				// it is stored in globalContext->globalVariables->variables[i]
 				// so that globalContext has a cyclic reference to itself
 				WfRuntimeGlobalContext*				globalContext = nullptr;
@@ -1087,7 +1087,7 @@ InterfaceInstance
 				typedef collections::Dictionary<IMethodInfo*, vint>							FunctionMap;
 			public:
 				// use raw pointer because
-				// if a lambda is stored in an variable
+				// if a lambda is stored in a global variable
 				// it is stored in globalContext->globalVariables->variables[i]
 				// so that globalContext has a cyclic reference to itself
 				WfRuntimeGlobalContext*				globalContext = nullptr;
