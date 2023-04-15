@@ -40,6 +40,43 @@ bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& i
 
 TEST_FILE
 {
+	TEST_CASE(L"Hello, world!")
+	{
+		List<glr::ParsingError> errors;
+		List<WString> moduleCodes;
+		moduleCodes.Add(LR"workflow(
+module test;
+
+/* types conflicted with BindNull */
+interface A{}
+class B{}
+
+var a = new A^{};
+var b = new B^();
+
+func main():string
+{
+	return "Hello, world!";
+}
+)workflow");
+
+		auto&& parser = GetWorkflowParser();
+		auto assembly = Compile(parser, WfCpuArchitecture::AsExecutable, moduleCodes, errors);
+		TEST_ASSERT(errors.Count() == 0);
+
+		WfRuntimeThreadContext context(assembly);
+		context.PushStackFrame(assembly->functionByName[L"<initialize>"][0], 0);
+		context.ExecuteToEnd();
+		context.PushStackFrame(assembly->functionByName[L"main"][0], 0);
+		context.ExecuteToEnd();
+
+		Value result;
+		WString actual;
+		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
+		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
+		TEST_ASSERT(actual == L"Hello, world!");
+	});
+
 	TEST_CATEGORY(L"Runtime with Binary Assembly")
 	{
 		auto&& parser = GetWorkflowParser();
@@ -98,39 +135,5 @@ TEST_FILE
 				TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::EmptyStack);
 			});
 		}
-	});
-
-	TEST_CASE(L"Hello, world!")
-	{
-		List<glr::ParsingError> errors;
-		List<WString> moduleCodes;
-		moduleCodes.Add(LR"workflow(
-module test;
-
-/* caused memory leaks! */
-interface A{}
-var a = new A^{};
-
-func main():string
-{
-	return "Hello, world!";
-}
-)workflow");
-
-		auto&& parser = GetWorkflowParser();
-		auto assembly = Compile(parser, WfCpuArchitecture::AsExecutable, moduleCodes, errors);
-		TEST_ASSERT(errors.Count() == 0);
-
-		WfRuntimeThreadContext context(assembly);
-		context.PushStackFrame(assembly->functionByName[L"<initialize>"][0], 0);
-		context.ExecuteToEnd();
-		context.PushStackFrame(assembly->functionByName[L"main"][0], 0);
-		context.ExecuteToEnd();
-
-		Value result;
-		WString actual;
-		TEST_ASSERT(context.PopValue(result) == WfRuntimeThreadContextError::Success);
-		result.GetTypeDescriptor()->GetSerializableType()->Serialize(result, actual);
-		TEST_ASSERT(actual == L"Hello, world!");
 	});
 }
