@@ -15,7 +15,7 @@ WfRuntimeLambda
 ***********************************************************************/
 
 			WfRuntimeLambda::WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex)
-				:globalContext(_globalContext)
+				:globalContext(_globalContext.Obj())
 				, capturedVariables(_capturedVariables)
 				, functionIndex(_functionIndex)
 			{
@@ -23,7 +23,7 @@ WfRuntimeLambda
 
 			Value WfRuntimeLambda::Invoke(Ptr<reflection::description::IValueReadonlyList> arguments)
 			{
-				return Invoke(globalContext, capturedVariables, functionIndex, arguments);
+				return Invoke(Ptr(globalContext), capturedVariables, functionIndex, arguments);
 			}
 
 			Value WfRuntimeLambda::Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueReadonlyList> arguments)
@@ -75,7 +75,7 @@ WfRuntimeInterfaceInstance
 				else
 				{
 					vint functionIndex = functions.Values()[index];
-					return WfRuntimeLambda::Invoke(globalContext, capturedVariables, functionIndex, arguments);
+					return WfRuntimeLambda::Invoke(Ptr(globalContext), capturedVariables, functionIndex, arguments);
 				}
 			}
 		}

@@ -53,6 +53,7 @@ class B{}
 
 var a = new A^{};
 var b = new B^();
+var c : func():int = [0];
 
 func main():string
 {

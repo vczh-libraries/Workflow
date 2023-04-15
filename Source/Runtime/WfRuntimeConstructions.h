@@ -82,7 +82,11 @@ Lambda
 			{
 				typedef reflection::description::Value										Value;
 			public:
-				Ptr<WfRuntimeGlobalContext>			globalContext;
+				// use raw pointer because
+				// if a lambda is stored in an variable
+				// it is stored in globalContext->globalVariables->variables[i]
+				// so that globalContext has a cyclic reference to itself
+				WfRuntimeGlobalContext*				globalContext = nullptr;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				vint								functionIndex;
 
@@ -104,7 +108,11 @@ InterfaceInstance
 				typedef reflection::description::IValueReadonlyList							IValueReadonlyList;
 				typedef collections::Dictionary<IMethodInfo*, vint>							FunctionMap;
 			public:
-				Ptr<WfRuntimeGlobalContext>			globalContext;
+				// use raw pointer because
+				// if a lambda is stored in an variable
+				// it is stored in globalContext->globalVariables->variables[i]
+				// so that globalContext has a cyclic reference to itself
+				WfRuntimeGlobalContext*				globalContext = nullptr;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				FunctionMap							functions;
 

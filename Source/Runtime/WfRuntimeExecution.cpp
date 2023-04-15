@@ -533,7 +533,7 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						auto capturedVariables = operand.GetSharedPtr().Cast<WfRuntimeVariableContext>();
 						proxy->capturedVariables = capturedVariables;
-						proxy->globalContext = globalContext;
+						proxy->globalContext = globalContext.Obj();
 
 						Array<Value> arguments(1);
 						arguments[0] = Value::From(proxy);
