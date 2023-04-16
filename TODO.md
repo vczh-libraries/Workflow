@@ -2,7 +2,7 @@
 
 ## Progressing
 
-- Fix `CompareValue` instruction.
+- Fix `CompareValue` instruction. Two values are not equal if they are in different type.
 
 ## 2.0
 
