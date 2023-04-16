@@ -2,7 +2,7 @@
 
 ## Progressing
 
-- Test comparisong between primitive types, enums, structs and pointers.
+- Fix `CompareValue` instruction.
 
 ## 2.0
 
