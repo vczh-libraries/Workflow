@@ -2,6 +2,8 @@
 
 ## Progressing
 
+- Test comparisong between primitive types, enums, structs and pointers.
+
 ## 2.0
 
 - Generated C++ code try not to create IValueList if apply `{1 2 3}` on `List<int>` argument.

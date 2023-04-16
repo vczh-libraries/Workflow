@@ -697,11 +697,6 @@ WfStruct
 #endif
 			}
 
-			IBoxedValue::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
-			{
-				return IBoxedValue::NotComparable;
-			}
-
 			WfStruct::WfStruct(const WString& typeName)
 				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>(TypeDescriptorFlags::Struct, typeName)
 			{
@@ -827,29 +822,6 @@ WfEnum
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				return Value::From(Ptr(new IValueType::TypedBox<WfEnumInstance>), owner);
-#else
-				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
-#endif
-			}
-
-			IBoxedValue::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
-			{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
-				if (!ea)
-				{
-					throw ArgumentTypeMismtatchException(L"ea", owner, Value::BoxedValue, a);
-				}
-
-				auto eb = b.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
-				if (!eb)
-				{
-					throw ArgumentTypeMismtatchException(L"eb", owner, Value::BoxedValue, b);
-				}
-
-				if (ea->value.value < eb->value.value) return IBoxedValue::Smaller;
-				if (ea->value.value > eb->value.value)return IBoxedValue::Greater;
-				return IBoxedValue::Equal;
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
