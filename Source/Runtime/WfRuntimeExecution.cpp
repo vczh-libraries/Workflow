@@ -157,14 +157,45 @@ WfRuntimeThreadContext (Operators)
 
 			bool OPERATOR_OpCompareValue(const WfStructInstance& as, const WfStructInstance& bs)
 			{
-				if (as.fieldValues.Count() != bs.fieldValues.Count()) return false;
+				if (as.fieldValues.Count() == 0 && bs.fieldValues.Count() == 0) return true;
+				auto td = as.fieldValues.Count() > 0 ? as.fieldValues.Keys()[0]->GetOwnerTypeDescriptor() : bs.fieldValues.Keys()[0]->GetOwnerTypeDescriptor();
 
-				for (vint i = 0; i < as.fieldValues.Count(); i++)
+				vint ai = 0;
+				vint bi = 0;
+				while (ai < as.fieldValues.Count() && bi < bs.fieldValues.Count())
 				{
-					auto af = as.fieldValues.Values()[i];
-					auto bf = bs.fieldValues.Values()[i];
+					Value af, bf;
+					auto ap = ai < as.fieldValues.Count() ? as.fieldValues.Keys()[ai] : nullptr;
+					auto bp = ai < bs.fieldValues.Count() ? bs.fieldValues.Keys()[bi] : nullptr;
+					auto p =
+						ap == nullptr ? bp :
+						bp == nullptr ? ap :
+						ap < bp ? ap : bp;
+
+					if (p == ap)
+					{
+						af = as.fieldValues.Values()[ai];
+					}
+					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					{
+						af = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+					}
+
+					if (p == bp)
+					{
+						bf = bs.fieldValues.Values()[bi];
+					}
+					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					{
+						af = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+					}
+
 					if (!OPERATOR_OpCompareValue(af, bf)) return false;
+
+					if (p == ap) ai++;
+					if (p == bp) bi++;
 				}
+
 				return true;
 			}
 
@@ -194,6 +225,7 @@ WfRuntimeThreadContext (Operators)
 					{
 						auto bs = b.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
 						if (!bs) return false;
+						if (a.GetTypeDescriptor() != b.GetTypeDescriptor()) return false;
 						return OPERATOR_OpCompareValue(as->value, bs->value);
 					}
 					if (auto ae = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>())
