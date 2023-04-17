@@ -4,11 +4,11 @@ DEVELOPER: Zihan Chen(vczh)
 ***********************************************************************/
 #include "VlppWorkflowCompiler.h"
 
-#include "..\..\Source\Analyzer\CheckScopes_CycleDependency.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_BuildGlobalNameFromModules.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_BuildGlobalNameFromTypeDescriptors.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_BuildScope.cpp"
+#include "..\..\Source\Analyzer\WfAnalyzer_CheckScopes_CycleDependency.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_CheckScope_DuplicatedSymbol.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_CheckScope_SymbolType.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_CompleteScope.cpp"

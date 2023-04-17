@@ -704,7 +704,6 @@ Custom Type
 					WfValueType(WfStruct* _owner);
 
 					Value								CreateDefault()override;
-					IBoxedValue::CompareResult			Compare(const Value& a, const Value& b)override;
 				};
 
 			protected:
@@ -740,7 +739,6 @@ Custom Type
 					WfValueType(WfEnum* _owner);
 
 					Value								CreateDefault()override;
-					IBoxedValue::CompareResult			Compare(const Value& a, const Value& b)override;
 				};
 
 				class WfEnumType : public Object, public virtual IEnumType
