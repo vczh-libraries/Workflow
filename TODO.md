@@ -2,8 +2,6 @@
 
 ## Progressing
 
-- Fix `CompareValue` instruction. Two values are not equal if they are in different type.
-
 ## 2.0
 
 - Generated C++ code try not to create IValueList if apply `{1 2 3}` on `List<int>` argument.
