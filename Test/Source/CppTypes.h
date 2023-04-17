@@ -30,9 +30,10 @@ namespace test
 	{
 		vint								x = 0;
 		vint								y = 0;
+
+		std::strong_ordering operator<=>(const Point&) const = default;
+		bool operator==(const Point&) const = default;
 	};
-	inline bool operator==(Point a, Point b) { return a.x == b.x && a.y == b.y; }
-	inline bool operator!=(Point a, Point b) { return a.x != b.x || a.y != b.y; }
 
 	class PointClass : public Object, public Description<PointClass>
 	{
