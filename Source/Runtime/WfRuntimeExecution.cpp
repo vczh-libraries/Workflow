@@ -89,6 +89,8 @@ WfRuntimeThreadContext (Operators)
 				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
+
+			//-------------------------------------------------------------------------------
 			
 			template<typename T>
 			WfRuntimeExecutionAction OPERATOR_OpCompare(WfRuntimeThreadContext& context)
@@ -134,6 +136,30 @@ WfRuntimeThreadContext (Operators)
 						}
 					}
 				}
+				return WfRuntimeExecutionAction::ExecuteInstruction;
+			}
+
+			//-------------------------------------------------------------------------------
+
+			WfRuntimeExecutionAction OPERATOR_OpCompareReference(WfRuntimeThreadContext& context)
+			{
+				Value first, second;
+				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+				bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
+				CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
+				return WfRuntimeExecutionAction::ExecuteInstruction;
+			}
+
+			//-------------------------------------------------------------------------------
+
+			WfRuntimeExecutionAction OPERATOR_OpCompareValue(WfRuntimeThreadContext& context)
+			{
+				Value first, second;
+				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+				bool result = first == second;
+				CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
 			
@@ -923,21 +949,11 @@ WfRuntimeThreadContext
 					END_TYPE
 				case WfInsCode::CompareReference:
 					{
-						Value first, second;
-						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
-						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
+						return OPERATOR_OpCompareReference(*this);
 					}
 				case WfInsCode::CompareValue:
 					{
-						Value first, second;
-						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						bool result = first == second;
-						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
+						return OPERATOR_OpCompareValue(*this);
 					}
 				case WfInsCode::OpNot:
 					BEGIN_TYPE
