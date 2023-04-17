@@ -24,17 +24,17 @@ https://github.com/vczh-libraries
 
 namespace __vwsn_structs
 {
-	struct _Point
+	struct _TestPoint
 	{
 		::vl::vint64_t x = 0;
 		::vl::vint64_t y = 0;
 
-		std::strong_ordering operator<=>(const _Point&) const = default;
-		bool operator==(const _Point&) const = default;
+		std::strong_ordering operator<=>(const _TestPoint&) const = default;
+		bool operator==(const _TestPoint&) const = default;
 	};
 
 }
-using Point = ::__vwsn_structs::_Point;
+using TestPoint = ::__vwsn_structs::_TestPoint;
 
 /***********************************************************************
 Global Variables and Functions

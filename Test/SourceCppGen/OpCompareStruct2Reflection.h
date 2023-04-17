@@ -33,7 +33,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::Point)
+			DECL_TYPE_INFO(::TestPoint)
 #endif
 
 			extern bool LoadOpCompareStruct2Types();

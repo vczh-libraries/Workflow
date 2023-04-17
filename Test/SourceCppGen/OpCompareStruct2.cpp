@@ -47,15 +47,15 @@ Global Functions
 
 	::vl::WString OpCompareStruct2::main()
 	{
-		auto p0 = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
-		auto p1 = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
-		auto p2 = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint>(0); __vwsn_temp__.x = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
-		auto p3 = ::Point{};
-		auto p4 = [&](){ ::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(1); __vwsn_temp__.y = static_cast<::vl::vint>(1); return __vwsn_temp__; }();
-		auto q1 = ::vl::Nullable<::Point>(p2);
-		auto q2 = ::vl::Nullable<::Point>(p4);
-		auto q3 = ::vl::Nullable<::Point>();
-		return ((((((((((((::vl::__vwsn::ToString((p0 == p1)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((p1 == p2))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((p2 == p3))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((p3 == p4))) + ::vl::WString::Unmanaged(L", ")) + ((((::vl::__vwsn::ToString((q1 == q3)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q2 == q3))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q3 == q3)))) + ::vl::WString::Unmanaged(L", ")) + ((((::vl::__vwsn::ToString((q1 == ::vl::Nullable<::Point>(p2))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q2 == ::vl::Nullable<::Point>(p2)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q3 == ::vl::Nullable<::Point>(p2))))) + ::vl::WString::Unmanaged(L", ")) + ((((::vl::__vwsn::ToString((q1 == ::vl::Nullable<::Point>(p4))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q2 == ::vl::Nullable<::Point>(p4)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q3 == ::vl::Nullable<::Point>(p4)))));
+		auto p0 = [&](){ ::TestPoint __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
+		auto p1 = [&](){ ::TestPoint __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
+		auto p2 = [&](){ ::TestPoint __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint>(0); __vwsn_temp__.x = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
+		auto p3 = ::TestPoint{};
+		auto p4 = [&](){ ::TestPoint __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(1); __vwsn_temp__.y = static_cast<::vl::vint>(1); return __vwsn_temp__; }();
+		auto q1 = ::vl::Nullable<::TestPoint>(p2);
+		auto q2 = ::vl::Nullable<::TestPoint>(p4);
+		auto q3 = ::vl::Nullable<::TestPoint>();
+		return ((((((((((((::vl::__vwsn::ToString((p0 == p1)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((p1 == p2))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((p2 == p3))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((p3 == p4))) + ::vl::WString::Unmanaged(L", ")) + ((((::vl::__vwsn::ToString((q1 == q3)) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q2 == q3))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q3 == q3)))) + ::vl::WString::Unmanaged(L", ")) + ((((::vl::__vwsn::ToString((q1 == ::vl::Nullable<::TestPoint>(p2))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q2 == ::vl::Nullable<::TestPoint>(p2)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q3 == ::vl::Nullable<::TestPoint>(p2))))) + ::vl::WString::Unmanaged(L", ")) + ((((::vl::__vwsn::ToString((q1 == ::vl::Nullable<::TestPoint>(p4))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q2 == ::vl::Nullable<::TestPoint>(p4)))) + ::vl::WString::Unmanaged(L", ")) + ::vl::__vwsn::ToString((q3 == ::vl::Nullable<::TestPoint>(p4)))));
 	}
 
 	OpCompareStruct2& OpCompareStruct2::Instance()

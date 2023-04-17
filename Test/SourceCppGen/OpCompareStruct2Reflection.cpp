@@ -30,14 +30,14 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(Point)
+			IMPL_CPP_TYPE_INFO(TestPoint)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
-			BEGIN_STRUCT_MEMBER(::Point)
+			BEGIN_STRUCT_MEMBER(::TestPoint)
 				STRUCT_MEMBER(x)
 				STRUCT_MEMBER(y)
-			END_STRUCT_MEMBER(::Point)
+			END_STRUCT_MEMBER(::TestPoint)
 
 #undef _
 			class OpCompareStruct2TypeLoader : public Object, public ITypeLoader
@@ -45,7 +45,7 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(::Point)
+					ADD_TYPE_INFO(::TestPoint)
 				}
 
 				void Unload(ITypeManager* manager)
