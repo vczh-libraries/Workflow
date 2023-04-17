@@ -153,6 +153,21 @@ WfRuntimeThreadContext (Operators)
 
 			//-------------------------------------------------------------------------------
 
+			bool OPERATOR_OpCompareValue(const Value& a, const Value& b);
+
+			bool OPERATOR_OpCompareValue(const WfStructInstance& as, const WfStructInstance& bs)
+			{
+				if (as.fieldValues.Count() != bs.fieldValues.Count()) return false;
+
+				for (vint i = 0; i < as.fieldValues.Count(); i++)
+				{
+					auto af = as.fieldValues.Values()[i];
+					auto bf = bs.fieldValues.Values()[i];
+					if (!OPERATOR_OpCompareValue(af, bf)) return false;
+				}
+				return true;
+			}
+
 			bool OPERATOR_OpCompareValue(const Value& a, const Value& b)
 			{
 				auto avt = a.GetValueType();
@@ -179,15 +194,7 @@ WfRuntimeThreadContext (Operators)
 					{
 						auto bs = b.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
 						if (!bs) return false;
-						if (as->value.fieldValues.Count() != bs->value.fieldValues.Count()) return false;
-
-						for (vint i = 0; i < as->value.fieldValues.Count(); i++)
-						{
-							auto af = as->value.fieldValues.Values()[i];
-							auto bf = bs->value.fieldValues.Values()[i];
-							if (!OPERATOR_OpCompareValue(af, bf)) return false;
-						}
-						return true;
+						return OPERATOR_OpCompareValue(as->value, bs->value);
 					}
 					if (auto ae = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>())
 					{
