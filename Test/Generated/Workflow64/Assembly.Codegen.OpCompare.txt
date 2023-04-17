@@ -5,7 +5,7 @@ Global Variables:
 ========================================================
 Functions:
 ========================================================
-main (2 .. 282)
+main (2 .. 167)
     Arguments:
     Captured Variables:
     Local Variables:
@@ -21,16 +21,10 @@ main (2 .. 282)
         f32
         f64
         s
-        p0
-        p1
-        p2
-        p3
-        p4
-        q1
-        q2
-        q3
         e1
         e2
+        e3
+        e4
 
 <initialize> (0 .. 1)
     Arguments:
@@ -90,517 +84,287 @@ Instructions:
 24   :     LoadValue     : value = <Bool, text>
 //  var s = "text" of (string);
 25   :     StoreLocalVar : var = 11(s)
-//  {x : 0;}
-26   :     CreateStruct  : flag = BoxedValue, typeDescriptor = test::Point
-//  0
-27   :     LoadValue     : value = <I8, 0>
-//  {x : 0;}
-28   :     UpdateProperty: propertyInfo = x<test::Point>
-//  var p0 = {x : 0;} of (Point);
-29   :     StoreLocalVar : var = 12(p0)
-//  {y : 0;}
-30   :     CreateStruct  : flag = BoxedValue, typeDescriptor = test::Point
-//  0
-31   :     LoadValue     : value = <I8, 0>
-//  {y : 0;}
-32   :     UpdateProperty: propertyInfo = y<test::Point>
-//  var p1 = {y : 0;} of (Point);
-33   :     StoreLocalVar : var = 13(p1)
-//  {y : 0; x : 0;}
-34   :     CreateStruct  : flag = BoxedValue, typeDescriptor = test::Point
-//  0
-35   :     LoadValue     : value = <I8, 0>
-//  {y : 0; x : 0;}
-36   :     UpdateProperty: propertyInfo = y<test::Point>
-//  0
-37   :     LoadValue     : value = <I8, 0>
-//  {y : 0; x : 0;}
-38   :     UpdateProperty: propertyInfo = x<test::Point>
-//  var p2 = {y : 0; x : 0;} of (Point);
-39   :     StoreLocalVar : var = 14(p2)
-//  {}
-40   :     CreateStruct  : flag = BoxedValue, typeDescriptor = test::Point
-//  var p3 = {} of (Point);
-41   :     StoreLocalVar : var = 15(p3)
-//  {x : 1; y : 1;}
-42   :     CreateStruct  : flag = BoxedValue, typeDescriptor = test::Point
-//  1
-43   :     LoadValue     : value = <I8, 1>
-//  {x : 1; y : 1;}
-44   :     UpdateProperty: propertyInfo = x<test::Point>
-//  1
-45   :     LoadValue     : value = <I8, 1>
-//  {x : 1; y : 1;}
-46   :     UpdateProperty: propertyInfo = y<test::Point>
-//  var p4 = {x : 1; y : 1;} of (Point);
-47   :     StoreLocalVar : var = 16(p4)
-//  p2
-48   :     LoadLocalVar  : var = 14(p2)
-//  p2
-49   :     Duplicate     : stackPatternCount = 0
-//  p2
-50   :     LoadValue     : value = <null>
-//  p2
-51   :     CompareReference
-//  p2
-52   :     JumpIf        : label = 55
-//  p2
-53   :     ConvertToType : flag = BoxedValue, typeDescriptor = test::Point
-//  p2
-54   :     Jump          : label = 56
-//  p2
-55   :     LoadValue     : value = <null>
-//  var q1 : Point? = p2;
-56   :     StoreLocalVar : var = 17(q1)
-//  p4
-57   :     LoadLocalVar  : var = 16(p4)
-//  p4
-58   :     Duplicate     : stackPatternCount = 0
-//  p4
-59   :     LoadValue     : value = <null>
-//  p4
-60   :     CompareReference
-//  p4
-61   :     JumpIf        : label = 64
-//  p4
-62   :     ConvertToType : flag = BoxedValue, typeDescriptor = test::Point
-//  p4
-63   :     Jump          : label = 65
-//  p4
-64   :     LoadValue     : value = <null>
-//  var q2 : Point? = p4;
-65   :     StoreLocalVar : var = 18(q2)
 //  null
-66   :     LoadValue     : value = <null>
-//  var q3 : Point? = null;
-67   :     StoreLocalVar : var = 19(q3)
-//  null
-68   :     LoadValue     : value = <null>
+26   :     LoadValue     : value = <null>
 //  var e1 : MyEnum? = null;
-69   :     StoreLocalVar : var = 20(e1)
+27   :     StoreLocalVar : var = 12(e1)
 //  Item
-70   :     LoadValue     : value = <enum: 0>
+28   :     LoadValue     : value = <enum: 0>
 //  var e2 : MyEnum? = Item;
-71   :     StoreLocalVar : var = 21(e2)
+29   :     StoreLocalVar : var = 13(e2)
+//  null
+30   :     LoadValue     : value = <null>
+//  var e3 : Seasons? = null;
+31   :     StoreLocalVar : var = 14(e3)
+//  None
+32   :     LoadValue     : value = <enum: 0>
+//  var e4 : Seasons? = None;
+33   :     StoreLocalVar : var = 15(e4)
 //  i8
-72   :     LoadLocalVar  : var = 1(i8)
+34   :     LoadLocalVar  : var = 1(i8)
 //  i8
-73   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int16
+35   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int16
 //  i16
-74   :     LoadLocalVar  : var = 2(i16)
+36   :     LoadLocalVar  : var = 2(i16)
 //  (i8 < i16)
-75   :     CompareLiteral: type = I2
+37   :     CompareLiteral: type = I2
 //  (i8 < i16)
-76   :     OpLT          
+38   :     OpLT          
 //  (i8 < i16)
-77   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+39   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-78   :     LoadValue     : value = <Bool, , >
+40   :     LoadValue     : value = <Bool, , >
 //  ((i8 < i16) & ", ")
-79   :     OpConcat      
+41   :     OpConcat      
 //  i16
-80   :     LoadLocalVar  : var = 2(i16)
+42   :     LoadLocalVar  : var = 2(i16)
 //  i16
-81   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+43   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
 //  i32
-82   :     LoadLocalVar  : var = 3(i32)
+44   :     LoadLocalVar  : var = 3(i32)
 //  (i16 > i32)
-83   :     CompareLiteral: type = I4
+45   :     CompareLiteral: type = I4
 //  (i16 > i32)
-84   :     OpGT          
+46   :     OpGT          
 //  (i16 > i32)
-85   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+47   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  (((i8 < i16) & ", ") & (i16 > i32))
-86   :     OpConcat      
+48   :     OpConcat      
 //  ", "
-87   :     LoadValue     : value = <Bool, , >
+49   :     LoadValue     : value = <Bool, , >
 //  ((((i8 < i16) & ", ") & (i16 > i32)) & ", ")
-88   :     OpConcat      
+50   :     OpConcat      
 //  i32
-89   :     LoadLocalVar  : var = 3(i32)
+51   :     LoadLocalVar  : var = 3(i32)
 //  i64
-90   :     LoadLocalVar  : var = 4(i64)
+52   :     LoadLocalVar  : var = 4(i64)
 //  (i32 == i64)
-91   :     CompareValue  
+53   :     CompareValue  
 //  (i32 == i64)
-92   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+54   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  (((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64))
-93   :     OpConcat      
+55   :     OpConcat      
 //  ", "
-94   :     LoadValue     : value = <Bool, , >
+56   :     LoadValue     : value = <Bool, , >
 //  ((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ")
-95   :     OpConcat      
+57   :     OpConcat      
 //  u8
-96   :     LoadLocalVar  : var = 5(u8)
+58   :     LoadLocalVar  : var = 5(u8)
 //  u8
-97   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt16
+59   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt16
 //  u16
-98   :     LoadLocalVar  : var = 6(u16)
+60   :     LoadLocalVar  : var = 6(u16)
 //  (u8 <= u16)
-99   :     CompareLiteral: type = U2
+61   :     CompareLiteral: type = U2
 //  (u8 <= u16)
-100  :     OpLE          
+62   :     OpLE          
 //  (u8 <= u16)
-101  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+63   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-102  :     LoadValue     : value = <Bool, , >
+64   :     LoadValue     : value = <Bool, , >
 //  ((u8 <= u16) & ", ")
-103  :     OpConcat      
+65   :     OpConcat      
 //  u16
-104  :     LoadLocalVar  : var = 6(u16)
+66   :     LoadLocalVar  : var = 6(u16)
 //  u16
-105  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt32
+67   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt32
 //  u32
-106  :     LoadLocalVar  : var = 7(u32)
+68   :     LoadLocalVar  : var = 7(u32)
 //  (u16 >= u32)
-107  :     CompareLiteral: type = U4
+69   :     CompareLiteral: type = U4
 //  (u16 >= u32)
-108  :     OpGE          
+70   :     OpGE          
 //  (u16 >= u32)
-109  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+71   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  (((u8 <= u16) & ", ") & (u16 >= u32))
-110  :     OpConcat      
+72   :     OpConcat      
 //  ", "
-111  :     LoadValue     : value = <Bool, , >
+73   :     LoadValue     : value = <Bool, , >
 //  ((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ")
-112  :     OpConcat      
+74   :     OpConcat      
 //  u32
-113  :     LoadLocalVar  : var = 7(u32)
+75   :     LoadLocalVar  : var = 7(u32)
 //  u64
-114  :     LoadLocalVar  : var = 8(u64)
+76   :     LoadLocalVar  : var = 8(u64)
 //  (u32 != u64)
-115  :     CompareValue  
+77   :     CompareValue  
 //  (u32 != u64)
-116  :     OpNot         : type = Bool
+78   :     OpNot         : type = Bool
 //  (u32 != u64)
-117  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+79   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))
-118  :     OpConcat      
+80   :     OpConcat      
 //  (((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64)))
-119  :     OpConcat      
+81   :     OpConcat      
 //  ", "
-120  :     LoadValue     : value = <Bool, , >
+82   :     LoadValue     : value = <Bool, , >
 //  ((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ")
-121  :     OpConcat      
+83   :     OpConcat      
 //  f32
-122  :     LoadLocalVar  : var = 9(f32)
+84   :     LoadLocalVar  : var = 9(f32)
 //  f32
-123  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Double
+85   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Double
 //  f64
-124  :     LoadLocalVar  : var = 10(f64)
+86   :     LoadLocalVar  : var = 10(f64)
 //  (f32 < f64)
-125  :     CompareLiteral: type = F8
+87   :     CompareLiteral: type = F8
 //  (f32 < f64)
-126  :     OpLT          
+88   :     OpLT          
 //  (f32 < f64)
+89   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+90   :     LoadValue     : value = <Bool, , >
+//  ((f32 < f64) & ", ")
+91   :     OpConcat      
+//  f32
+92   :     LoadLocalVar  : var = 9(f32)
+//  f32
+93   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Double
+//  f64
+94   :     LoadLocalVar  : var = 10(f64)
+//  (f32 > f64)
+95   :     CompareLiteral: type = F8
+//  (f32 > f64)
+96   :     OpGT          
+//  (f32 > f64)
+97   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((f32 < f64) & ", ") & (f32 > f64))
+98   :     OpConcat      
+//  ", "
+99   :     LoadValue     : value = <Bool, , >
+//  ((((f32 < f64) & ", ") & (f32 > f64)) & ", ")
+100  :     OpConcat      
+//  f32
+101  :     LoadLocalVar  : var = 9(f32)
+//  f64
+102  :     LoadLocalVar  : var = 10(f64)
+//  (f32 == f64)
+103  :     CompareValue  
+//  (f32 == f64)
+104  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))
+105  :     OpConcat      
+//  (((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64)))
+106  :     OpConcat      
+//  ", "
+107  :     LoadValue     : value = <Bool, , >
+//  ((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ")
+108  :     OpConcat      
+//  b
+109  :     LoadLocalVar  : var = 0(b)
+//  true
+110  :     LoadValue     : value = <Bool, true>
+//  (b == true)
+111  :     CompareValue  
+//  (b == true)
+112  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+113  :     LoadValue     : value = <Bool, , >
+//  ((b == true) & ", ")
+114  :     OpConcat      
+//  b
+115  :     LoadLocalVar  : var = 0(b)
+//  false
+116  :     LoadValue     : value = <Bool, false>
+//  (b != false)
+117  :     CompareValue  
+//  (b != false)
+118  :     OpNot         : type = Bool
+//  (b != false)
+119  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((b == true) & ", ") & (b != false))
+120  :     OpConcat      
+//  (((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false)))
+121  :     OpConcat      
+//  ", "
+122  :     LoadValue     : value = <Bool, , >
+//  ((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ")
+123  :     OpConcat      
+//  s
+124  :     LoadLocalVar  : var = 11(s)
+//  "string"
+125  :     LoadValue     : value = <Bool, string>
+//  (s == "string")
+126  :     CompareValue  
+//  (s == "string")
 127  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
 128  :     LoadValue     : value = <Bool, , >
-//  ((f32 < f64) & ", ")
+//  ((s == "string") & ", ")
 129  :     OpConcat      
-//  f32
-130  :     LoadLocalVar  : var = 9(f32)
-//  f32
-131  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Double
-//  f64
-132  :     LoadLocalVar  : var = 10(f64)
-//  (f32 > f64)
-133  :     CompareLiteral: type = F8
-//  (f32 > f64)
-134  :     OpGT          
-//  (f32 > f64)
-135  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((f32 < f64) & ", ") & (f32 > f64))
+//  s
+130  :     LoadLocalVar  : var = 11(s)
+//  "string"
+131  :     LoadValue     : value = <Bool, string>
+//  (s != "string")
+132  :     CompareValue  
+//  (s != "string")
+133  :     OpNot         : type = Bool
+//  (s != "string")
+134  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((s == "string") & ", ") & (s != "string"))
+135  :     OpConcat      
+//  (((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string")))
 136  :     OpConcat      
 //  ", "
 137  :     LoadValue     : value = <Bool, , >
-//  ((((f32 < f64) & ", ") & (f32 > f64)) & ", ")
+//  ((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ")
 138  :     OpConcat      
-//  f32
-139  :     LoadLocalVar  : var = 9(f32)
-//  f64
-140  :     LoadLocalVar  : var = 10(f64)
-//  (f32 == f64)
+//  e1
+139  :     LoadLocalVar  : var = 12(e1)
+//  MyEnum::Item
+140  :     LoadValue     : value = <enum: 0>
+//  (e1 == MyEnum::Item)
 141  :     CompareValue  
-//  (f32 == f64)
+//  (e1 == MyEnum::Item)
 142  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))
-143  :     OpConcat      
-//  (((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64)))
-144  :     OpConcat      
 //  ", "
-145  :     LoadValue     : value = <Bool, , >
-//  ((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ")
-146  :     OpConcat      
-//  b
-147  :     LoadLocalVar  : var = 0(b)
-//  true
-148  :     LoadValue     : value = <Bool, true>
-//  (b == true)
-149  :     CompareValue  
-//  (b == true)
-150  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+143  :     LoadValue     : value = <Bool, , >
+//  ((e1 == MyEnum::Item) & ", ")
+144  :     OpConcat      
+//  e2
+145  :     LoadLocalVar  : var = 13(e2)
+//  MyEnum::Item
+146  :     LoadValue     : value = <enum: 0>
+//  (e2 == MyEnum::Item)
+147  :     CompareValue  
+//  (e2 == MyEnum::Item)
+148  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item))
+149  :     OpConcat      
+//  (((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item)))
+150  :     OpConcat      
 //  ", "
 151  :     LoadValue     : value = <Bool, , >
-//  ((b == true) & ", ")
+//  ((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item))) & ", ")
 152  :     OpConcat      
-//  b
-153  :     LoadLocalVar  : var = 0(b)
-//  false
-154  :     LoadValue     : value = <Bool, false>
-//  (b != false)
+//  e3
+153  :     LoadLocalVar  : var = 14(e3)
+//  Seasons::None
+154  :     LoadValue     : value = <enum: 0>
+//  (e3 == Seasons::None)
 155  :     CompareValue  
-//  (b != false)
-156  :     OpNot         : type = Bool
-//  (b != false)
-157  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((b == true) & ", ") & (b != false))
+//  (e3 == Seasons::None)
+156  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ", "
+157  :     LoadValue     : value = <Bool, , >
+//  ((e3 == Seasons::None) & ", ")
 158  :     OpConcat      
-//  (((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false)))
-159  :     OpConcat      
-//  ", "
-160  :     LoadValue     : value = <Bool, , >
-//  ((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ")
-161  :     OpConcat      
-//  s
-162  :     LoadLocalVar  : var = 11(s)
-//  "string"
-163  :     LoadValue     : value = <Bool, string>
-//  (s == "string")
-164  :     CompareValue  
-//  (s == "string")
-165  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ", "
-166  :     LoadValue     : value = <Bool, , >
-//  ((s == "string") & ", ")
-167  :     OpConcat      
-//  s
-168  :     LoadLocalVar  : var = 11(s)
-//  "string"
-169  :     LoadValue     : value = <Bool, string>
-//  (s != "string")
-170  :     CompareValue  
-//  (s != "string")
-171  :     OpNot         : type = Bool
-//  (s != "string")
-172  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((s == "string") & ", ") & (s != "string"))
-173  :     OpConcat      
-//  (((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string")))
-174  :     OpConcat      
-//  ", "
-175  :     LoadValue     : value = <Bool, , >
-//  ((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ")
-176  :     OpConcat      
-//  p0
-177  :     LoadLocalVar  : var = 12(p0)
-//  p1
-178  :     LoadLocalVar  : var = 13(p1)
-//  (p0 == p1)
-179  :     CompareValue  
-//  (p0 == p1)
-180  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ", "
-181  :     LoadValue     : value = <Bool, , >
-//  ((p0 == p1) & ", ")
-182  :     OpConcat      
-//  p1
-183  :     LoadLocalVar  : var = 13(p1)
-//  p2
-184  :     LoadLocalVar  : var = 14(p2)
-//  (p1 == p2)
-185  :     CompareValue  
-//  (p1 == p2)
-186  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((p0 == p1) & ", ") & (p1 == p2))
-187  :     OpConcat      
-//  ", "
-188  :     LoadValue     : value = <Bool, , >
-//  ((((p0 == p1) & ", ") & (p1 == p2)) & ", ")
-189  :     OpConcat      
-//  p2
-190  :     LoadLocalVar  : var = 14(p2)
-//  p3
-191  :     LoadLocalVar  : var = 15(p3)
-//  (p2 == p3)
-192  :     CompareValue  
-//  (p2 == p3)
-193  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3))
-194  :     OpConcat      
-//  ", "
-195  :     LoadValue     : value = <Bool, , >
-//  ((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ")
-196  :     OpConcat      
-//  p3
-197  :     LoadLocalVar  : var = 15(p3)
-//  p4
-198  :     LoadLocalVar  : var = 16(p4)
-//  (p3 == p4)
-199  :     CompareValue  
-//  (p3 == p4)
-200  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))
-201  :     OpConcat      
-//  (((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4)))
-202  :     OpConcat      
-//  ", "
-203  :     LoadValue     : value = <Bool, , >
-//  ((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ")
-204  :     OpConcat      
-//  q1
-205  :     LoadLocalVar  : var = 17(q1)
-//  q3
-206  :     LoadLocalVar  : var = 19(q3)
-//  (q1 == q3)
-207  :     CompareValue  
-//  (q1 == q3)
-208  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ", "
-209  :     LoadValue     : value = <Bool, , >
-//  ((q1 == q3) & ", ")
-210  :     OpConcat      
-//  q2
-211  :     LoadLocalVar  : var = 18(q2)
-//  q3
-212  :     LoadLocalVar  : var = 19(q3)
-//  (q2 == q3)
-213  :     CompareValue  
-//  (q2 == q3)
-214  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((q1 == q3) & ", ") & (q2 == q3))
-215  :     OpConcat      
-//  ", "
-216  :     LoadValue     : value = <Bool, , >
-//  ((((q1 == q3) & ", ") & (q2 == q3)) & ", ")
-217  :     OpConcat      
-//  q3
-218  :     LoadLocalVar  : var = 19(q3)
-//  q3
-219  :     LoadLocalVar  : var = 19(q3)
-//  (q3 == q3)
-220  :     CompareValue  
-//  (q3 == q3)
-221  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))
-222  :     OpConcat      
-//  (((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3)))
-223  :     OpConcat      
-//  ", "
-224  :     LoadValue     : value = <Bool, , >
-//  ((((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))) & ", ")
-225  :     OpConcat      
-//  q1
-226  :     LoadLocalVar  : var = 17(q1)
-//  p2
-227  :     LoadLocalVar  : var = 14(p2)
-//  (q1 == p2)
-228  :     CompareValue  
-//  (q1 == p2)
-229  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ", "
-230  :     LoadValue     : value = <Bool, , >
-//  ((q1 == p2) & ", ")
-231  :     OpConcat      
-//  q2
-232  :     LoadLocalVar  : var = 18(q2)
-//  p2
-233  :     LoadLocalVar  : var = 14(p2)
-//  (q2 == p2)
-234  :     CompareValue  
-//  (q2 == p2)
-235  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((q1 == p2) & ", ") & (q2 == p2))
-236  :     OpConcat      
-//  ", "
-237  :     LoadValue     : value = <Bool, , >
-//  ((((q1 == p2) & ", ") & (q2 == p2)) & ", ")
-238  :     OpConcat      
-//  q3
-239  :     LoadLocalVar  : var = 19(q3)
-//  p2
-240  :     LoadLocalVar  : var = 14(p2)
-//  (q3 == p2)
-241  :     CompareValue  
-//  (q3 == p2)
-242  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((((q1 == p2) & ", ") & (q2 == p2)) & ", ") & (q3 == p2))
-243  :     OpConcat      
-//  (((((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))) & ", ") & (((((q1 == p2) & ", ") & (q2 == p2)) & ", ") & (q3 == p2)))
-244  :     OpConcat      
-//  ", "
-245  :     LoadValue     : value = <Bool, , >
-//  ((((((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))) & ", ") & (((((q1 == p2) & ", ") & (q2 == p2)) & ", ") & (q3 == p2))) & ", ")
-246  :     OpConcat      
-//  q1
-247  :     LoadLocalVar  : var = 17(q1)
-//  p4
-248  :     LoadLocalVar  : var = 16(p4)
-//  (q1 == p4)
-249  :     CompareValue  
-//  (q1 == p4)
-250  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ", "
-251  :     LoadValue     : value = <Bool, , >
-//  ((q1 == p4) & ", ")
-252  :     OpConcat      
-//  q2
-253  :     LoadLocalVar  : var = 18(q2)
-//  p4
-254  :     LoadLocalVar  : var = 16(p4)
-//  (q2 == p4)
-255  :     CompareValue  
-//  (q2 == p4)
-256  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((q1 == p4) & ", ") & (q2 == p4))
-257  :     OpConcat      
-//  ", "
-258  :     LoadValue     : value = <Bool, , >
-//  ((((q1 == p4) & ", ") & (q2 == p4)) & ", ")
-259  :     OpConcat      
-//  q3
-260  :     LoadLocalVar  : var = 19(q3)
-//  p4
-261  :     LoadLocalVar  : var = 16(p4)
-//  (q3 == p4)
-262  :     CompareValue  
-//  (q3 == p4)
-263  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((((q1 == p4) & ", ") & (q2 == p4)) & ", ") & (q3 == p4))
-264  :     OpConcat      
-//  (((((((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))) & ", ") & (((((q1 == p2) & ", ") & (q2 == p2)) & ", ") & (q3 == p2))) & ", ") & (((((q1 == p4) & ", ") & (q2 == p4)) & ", ") & (q3 == p4)))
-265  :     OpConcat      
-//  ", "
-266  :     LoadValue     : value = <Bool, , >
-//  ((((((((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))) & ", ") & (((((q1 == p2) & ", ") & (q2 == p2)) & ", ") & (q3 == p2))) & ", ") & (((((q1 == p4) & ", ") & (q2 == p4)) & ", ") & (q3 == p4))) & ", ")
-267  :     OpConcat      
-//  e1
-268  :     LoadLocalVar  : var = 20(e1)
-//  MyEnum::Item
-269  :     LoadValue     : value = <enum: 0>
-//  (e1 == MyEnum::Item)
-270  :     CompareValue  
-//  (e1 == MyEnum::Item)
-271  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ", "
-272  :     LoadValue     : value = <Bool, , >
-//  ((e1 == MyEnum::Item) & ", ")
-273  :     OpConcat      
-//  e2
-274  :     LoadLocalVar  : var = 21(e2)
-//  MyEnum::Item
-275  :     LoadValue     : value = <enum: 0>
-//  (e2 == MyEnum::Item)
-276  :     CompareValue  
-//  (e2 == MyEnum::Item)
-277  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item))
-278  :     OpConcat      
-//  (((((((((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))) & ", ") & (((((q1 == p2) & ", ") & (q2 == p2)) & ", ") & (q3 == p2))) & ", ") & (((((q1 == p4) & ", ") & (q2 == p4)) & ", ") & (q3 == p4))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item)))
-279  :     OpConcat      
-//  return (((((((((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((((((p0 == p1) & ", ") & (p1 == p2)) & ", ") & (p2 == p3)) & ", ") & (p3 == p4))) & ", ") & (((((q1 == q3) & ", ") & (q2 == q3)) & ", ") & (q3 == q3))) & ", ") & (((((q1 == p2) & ", ") & (q2 == p2)) & ", ") & (q3 == p2))) & ", ") & (((((q1 == p4) & ", ") & (q2 == p4)) & ", ") & (q3 == p4))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item)));
-280  :     Return        
+//  e4
+159  :     LoadLocalVar  : var = 15(e4)
+//  Seasons::None
+160  :     LoadValue     : value = <enum: 0>
+//  (e4 == Seasons::None)
+161  :     CompareValue  
+//  (e4 == Seasons::None)
+162  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  (((e3 == Seasons::None) & ", ") & (e4 == Seasons::None))
+163  :     OpConcat      
+//  (((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item))) & ", ") & (((e3 == Seasons::None) & ", ") & (e4 == Seasons::None)))
+164  :     OpConcat      
+//  return (((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item))) & ", ") & (((e3 == Seasons::None) & ", ") & (e4 == Seasons::None)));
+165  :     Return        
 //  func main() : (string)
-281  :     LoadValue     : value = <null>
+166  :     LoadValue     : value = <null>
 //  func main() : (string)
-282  :     Return        
+167  :     Return        

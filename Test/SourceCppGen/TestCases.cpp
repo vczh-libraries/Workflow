@@ -14,6 +14,8 @@
 #include "OpXor.h"
 #include "OpCompareReflection.h"
 #include "OpCompareReference.h"
+#include "OpCompareStruct1.h"
+#include "OpCompareStruct2Reflection.h"
 #include "ListProcessing.h"
 #include "MapProcessing.h"
 #include "ObservableList.h"
@@ -100,6 +102,7 @@ using namespace vl::reflection::description;
 void LoadTestCaseTypes()
 {
 	 LoadOpCompareTypes();
+	 LoadOpCompareStruct2Types();
 	 LoadEvent2Types();
 	 LoadNullableCastTypes();
 	 LoadNewEmptyInterfaceTypes();
@@ -273,7 +276,7 @@ TEST_CASE(L"OpXor")
 
 TEST_CASE(L"OpCompare")
 {
-	WString expected = L"true, false, false, true, false, true, true, false, false, false, false, false, true, true, true, true, false, false, false, true, true, false, false, false, true, false, false, true";
+	WString expected = L"true, false, false, true, false, true, true, false, false, false, false, false, true, false, true, false, true";
 	WString actual = ::vl_workflow_global::OpCompare::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
@@ -284,6 +287,24 @@ TEST_CASE(L"OpCompareReference")
 {
 	WString expected = L"false, true, false, false, true, true, false, false, true, true, true";
 	WString actual = ::vl_workflow_global::OpCompareReference::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"OpCompareStruct1")
+{
+	WString expected = L"true, true, true, false, false, false, true, true, false, false, false, true, false";
+	WString actual = ::vl_workflow_global::OpCompareStruct1::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"OpCompareStruct2")
+{
+	WString expected = L"true, true, true, false, false, false, true, true, false, false, false, true, false";
+	WString actual = ::vl_workflow_global::OpCompareStruct2::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
