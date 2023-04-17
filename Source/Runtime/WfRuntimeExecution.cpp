@@ -162,11 +162,11 @@ WfRuntimeThreadContext (Operators)
 
 				vint ai = 0;
 				vint bi = 0;
-				while (ai < as.fieldValues.Count() && bi < bs.fieldValues.Count())
+				while (ai < as.fieldValues.Count() || bi < bs.fieldValues.Count())
 				{
 					Value af, bf;
 					auto ap = ai < as.fieldValues.Count() ? as.fieldValues.Keys()[ai] : nullptr;
-					auto bp = ai < bs.fieldValues.Count() ? bs.fieldValues.Keys()[bi] : nullptr;
+					auto bp = bi < bs.fieldValues.Count() ? bs.fieldValues.Keys()[bi] : nullptr;
 					auto p =
 						ap == nullptr ? bp :
 						bp == nullptr ? ap :
@@ -187,7 +187,7 @@ WfRuntimeThreadContext (Operators)
 					}
 					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
 					{
-						af = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+						bf = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
 					}
 
 					if (!OPERATOR_OpCompareValue(af, bf)) return false;
