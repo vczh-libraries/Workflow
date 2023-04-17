@@ -153,12 +153,62 @@ WfRuntimeThreadContext (Operators)
 
 			//-------------------------------------------------------------------------------
 
+			bool OPERATOR_OpCompareValue(const Value& a, const Value& b)
+			{
+				auto avt = a.GetValueType();
+				auto bvt = b.GetValueType();
+
+				if (avt == Value::RawPtr || avt == Value::SharedPtr)
+				{
+					if (bvt == Value::RawPtr || bvt == Value::SharedPtr)
+					{
+						auto pa = a.GetRawPtr();
+						auto pb = b.GetRawPtr();
+						return pa == pb;
+					}
+				}
+
+				if (avt != bvt)
+				{
+					return avt == bvt;
+				}
+
+				if (avt == Value::BoxedValue)
+				{
+					if (auto as = a.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>())
+					{
+						auto bs = b.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+						if (!bs) return false;
+						if (as->value.fieldValues.Count() != bs->value.fieldValues.Count()) return false;
+
+						for (vint i = 0; i < as->value.fieldValues.Count(); i++)
+						{
+							auto af = as->value.fieldValues.Values()[i];
+							auto bf = bs->value.fieldValues.Values()[i];
+							if (!OPERATOR_OpCompareValue(af, bf)) return false;
+						}
+						return true;
+					}
+					if (auto ae = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>())
+					{
+						auto be = b.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+						if (!be) return false;
+						return ae->value.value == be->value.value;
+					}
+					return a == b;
+				}
+
+				return true;
+			}
+
 			WfRuntimeExecutionAction OPERATOR_OpCompareValue(WfRuntimeThreadContext& context)
 			{
 				Value first, second;
 				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-				bool result = first == second;
+
+				bool result = OPERATOR_OpCompareValue(first, second);
+
 				CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
