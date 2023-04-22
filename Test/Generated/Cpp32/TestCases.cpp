@@ -16,6 +16,7 @@
 #include "OpCompareReference.h"
 #include "OpCompareStruct1.h"
 #include "OpCompareStruct2Reflection.h"
+#include "OpCompareWithString.h"
 #include "OpCompareIndexOfReflection.h"
 #include "ListProcessing.h"
 #include "MapProcessing.h"
@@ -307,6 +308,15 @@ TEST_CASE(L"OpCompareStruct2")
 {
 	WString expected = L"true, true, true, false, false, false, true, true, false, false, false, true, false";
 	WString actual = ::vl_workflow_global::OpCompareStruct2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"OpCompareWithString")
+{
+	WString expected = L"true, false, true, false";
+	WString actual = ::vl_workflow_global::OpCompareWithString::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
