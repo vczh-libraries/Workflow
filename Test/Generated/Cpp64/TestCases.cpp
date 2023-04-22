@@ -16,6 +16,7 @@
 #include "OpCompareReference.h"
 #include "OpCompareStruct1.h"
 #include "OpCompareStruct2Reflection.h"
+#include "OpCompareIndexOfReflection.h"
 #include "ListProcessing.h"
 #include "MapProcessing.h"
 #include "ObservableList.h"
@@ -103,6 +104,7 @@ void LoadTestCaseTypes()
 {
 	 LoadOpCompareTypes();
 	 LoadOpCompareStruct2Types();
+	 LoadOpCompareIndexOfTypes();
 	 LoadEvent2Types();
 	 LoadNullableCastTypes();
 	 LoadNewEmptyInterfaceTypes();
@@ -305,6 +307,15 @@ TEST_CASE(L"OpCompareStruct2")
 {
 	WString expected = L"true, true, true, false, false, false, true, true, false, false, false, true, false";
 	WString actual = ::vl_workflow_global::OpCompareStruct2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"OpCompareIndexOf")
+{
+	WString expected = L"-1, -1, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3";
+	WString actual = ::vl_workflow_global::OpCompareIndexOf::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

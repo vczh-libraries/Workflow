@@ -1,5 +1,6 @@
 module test;
 using system::*;
+using test::*;
 
 struct IndexPoint
 {
@@ -30,14 +31,14 @@ func main():string
 		({x:1 y:1}	of Point):3;
 	};
 
-	var m1 : int[IndexPoint] = {
+	var m2 : int[IndexPoint] = {
 		({}			of IndexPoint):0;
 		({x:1}		of IndexPoint):1;
 		({y:1}		of IndexPoint):2;
 		({x:1 y:1}	of IndexPoint):3;
 	};
 
-	var result = l1.IndexOf({x:2 y:2} of Point) & ", " & l2.IndexOf({x:2 y:2} of IndexPoint)
+	var result = l1.IndexOf({x:2 y:2} of Point) & ", " & l2.IndexOf({x:2 y:2} of IndexPoint);
 
 	result = result & ", " & l1.IndexOf({x:0 y:0} of Point);
 	result = result & ", " & l1.IndexOf({x:1 y:0} of Point);
@@ -53,9 +54,11 @@ func main():string
 	result = result & ", " & l2.IndexOf({x:1 y:0} of IndexPoint);
 	result = result & ", " & l2.IndexOf({x:0 y:1} of IndexPoint);
 	result = result & ", " & l2.IndexOf({x:1 y:1} of IndexPoint);
-	
+
 	result = result & ", " & m2[{x:0 y:0} of IndexPoint];
 	result = result & ", " & m2[{x:1 y:0} of IndexPoint];
 	result = result & ", " & m2[{x:0 y:1} of IndexPoint];
 	result = result & ", " & m2[{x:1 y:1} of IndexPoint];
+
+	return result;
 }
