@@ -371,7 +371,7 @@ Instructions:
 //  if (var be : BinaryExpression^ = expr)
 122  :     JumpIf        : label = 189
 //  ""
-123  :     LoadValue     : value = <Bool, >
+123  :     LoadValue     : value = <String, >
 //  var op = "";
 124  :     StoreLocalVar : var = 3(op)
 //  be
@@ -391,7 +391,7 @@ Instructions:
 //  if ((<switch>0 == Add of (::calculator::BinaryExpression::BinaryOperator)))
 132  :     JumpIf        : label = 138
 //  "+"
-133  :     LoadValue     : value = <Bool, +>
+133  :     LoadValue     : value = <String, +>
 //  (op = "+")
 134  :     Duplicate     : stackPatternCount = 0
 //  (op = "+")
@@ -411,7 +411,7 @@ Instructions:
 //  if ((<switch>0 == Sub of (::calculator::BinaryExpression::BinaryOperator)))
 142  :     JumpIf        : label = 148
 //  "-"
-143  :     LoadValue     : value = <Bool, ->
+143  :     LoadValue     : value = <String, ->
 //  (op = "-")
 144  :     Duplicate     : stackPatternCount = 0
 //  (op = "-")
@@ -431,7 +431,7 @@ Instructions:
 //  if ((<switch>0 == Mul of (::calculator::BinaryExpression::BinaryOperator)))
 152  :     JumpIf        : label = 158
 //  "*"
-153  :     LoadValue     : value = <Bool, *>
+153  :     LoadValue     : value = <String, *>
 //  (op = "*")
 154  :     Duplicate     : stackPatternCount = 0
 //  (op = "*")
@@ -451,7 +451,7 @@ Instructions:
 //  if ((<switch>0 == Div of (::calculator::BinaryExpression::BinaryOperator)))
 162  :     JumpIf        : label = 168
 //  "/"
-163  :     LoadValue     : value = <Bool, />
+163  :     LoadValue     : value = <String, />
 //  (op = "/")
 164  :     Duplicate     : stackPatternCount = 0
 //  (op = "/")
@@ -461,7 +461,7 @@ Instructions:
 //  if ((<switch>0 == Div of (::calculator::BinaryExpression::BinaryOperator)))
 167  :     Jump          : label = 168
 //  "("
-168  :     LoadValue     : value = <Bool, (>
+168  :     LoadValue     : value = <String, (>
 //  be
 169  :     LoadLocalVar  : var = 2(<if>be)
 //  be.Left
@@ -471,7 +471,7 @@ Instructions:
 //  ("(" & Print(be.Left))
 172  :     OpConcat      
 //  " "
-173  :     LoadValue     : value = <Bool,  >
+173  :     LoadValue     : value = <String,  >
 //  (("(" & Print(be.Left)) & " ")
 174  :     OpConcat      
 //  op
@@ -479,7 +479,7 @@ Instructions:
 //  ((("(" & Print(be.Left)) & " ") & op)
 176  :     OpConcat      
 //  " "
-177  :     LoadValue     : value = <Bool,  >
+177  :     LoadValue     : value = <String,  >
 //  (((("(" & Print(be.Left)) & " ") & op) & " ")
 178  :     OpConcat      
 //  be
@@ -491,7 +491,7 @@ Instructions:
 //  ((((("(" & Print(be.Left)) & " ") & op) & " ") & Print(be.Right))
 182  :     OpConcat      
 //  ")"
-183  :     LoadValue     : value = <Bool, )>
+183  :     LoadValue     : value = <String, )>
 //  (((((("(" & Print(be.Left)) & " ") & op) & " ") & Print(be.Right)) & ")")
 184  :     OpConcat      
 //  return (((((("(" & Print(be.Left)) & " ") & op) & " ") & Print(be.Right)) & ")");
@@ -503,7 +503,7 @@ Instructions:
 //  if (var be : BinaryExpression^ = expr)
 188  :     Jump          : label = 191
 //  "Unrecognized expression type."
-189  :     LoadValue     : value = <Bool, Unrecognized expression type.>
+189  :     LoadValue     : value = <String, Unrecognized expression type.>
 //  raise "Unrecognized expression type.";
 190  :     RaiseException
 //  func Print(expr : Expression^) : (string)
@@ -653,7 +653,7 @@ Instructions:
 //  if ((<switch>1 == Div of (::calculator::BinaryExpression::BinaryOperator)))
 263  :     Jump          : label = 264
 //  "Unrecognized binary operator."
-264  :     LoadValue     : value = <Bool, Unrecognized binary operator.>
+264  :     LoadValue     : value = <String, Unrecognized binary operator.>
 //  raise "Unrecognized binary operator.";
 265  :     RaiseException
 //  if (var be : BinaryExpression^ = expr)
@@ -663,7 +663,7 @@ Instructions:
 //  if (var be : BinaryExpression^ = expr)
 268  :     Jump          : label = 271
 //  "Unrecognized expression type."
-269  :     LoadValue     : value = <Bool, Unrecognized expression type.>
+269  :     LoadValue     : value = <String, Unrecognized expression type.>
 //  raise "Unrecognized expression type.";
 270  :     RaiseException
 //  func Evaluate(expr : Expression^) : (int)
@@ -727,7 +727,7 @@ Instructions:
 //  var expr = new (BinaryExpression^)(new (BinaryExpression^)(new (NumberExpression^)(1), Add, new (NumberExpression^)(2)), Mul, new (BinaryExpression^)(new (NumberExpression^)(3), Add, new (NumberExpression^)(4)));
 300  :     StoreLocalVar : var = 0(expr)
 //  ""
-301  :     LoadValue     : value = <Bool, >
+301  :     LoadValue     : value = <String, >
 //  expr
 302  :     LoadLocalVar  : var = 0(expr)
 //  expr.Print()
@@ -735,7 +735,7 @@ Instructions:
 //  ("" & expr.Print())
 304  :     OpConcat      
 //  " = "
-305  :     LoadValue     : value = <Bool,  = >
+305  :     LoadValue     : value = <String,  = >
 //  (("" & expr.Print()) & " = ")
 306  :     OpConcat      
 //  expr

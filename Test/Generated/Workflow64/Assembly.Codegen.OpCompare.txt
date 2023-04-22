@@ -81,7 +81,7 @@ Instructions:
 //  var f64 = 3 of (double);
 23   :     StoreLocalVar : var = 10(f64)
 //  "text"
-24   :     LoadValue     : value = <Bool, text>
+24   :     LoadValue     : value = <String, text>
 //  var s = "text" of (string);
 25   :     StoreLocalVar : var = 11(s)
 //  null
@@ -113,7 +113,7 @@ Instructions:
 //  (i8 < i16)
 39   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-40   :     LoadValue     : value = <Bool, , >
+40   :     LoadValue     : value = <String, , >
 //  ((i8 < i16) & ", ")
 41   :     OpConcat      
 //  i16
@@ -131,7 +131,7 @@ Instructions:
 //  (((i8 < i16) & ", ") & (i16 > i32))
 48   :     OpConcat      
 //  ", "
-49   :     LoadValue     : value = <Bool, , >
+49   :     LoadValue     : value = <String, , >
 //  ((((i8 < i16) & ", ") & (i16 > i32)) & ", ")
 50   :     OpConcat      
 //  i32
@@ -145,7 +145,7 @@ Instructions:
 //  (((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64))
 55   :     OpConcat      
 //  ", "
-56   :     LoadValue     : value = <Bool, , >
+56   :     LoadValue     : value = <String, , >
 //  ((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ")
 57   :     OpConcat      
 //  u8
@@ -161,7 +161,7 @@ Instructions:
 //  (u8 <= u16)
 63   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-64   :     LoadValue     : value = <Bool, , >
+64   :     LoadValue     : value = <String, , >
 //  ((u8 <= u16) & ", ")
 65   :     OpConcat      
 //  u16
@@ -179,7 +179,7 @@ Instructions:
 //  (((u8 <= u16) & ", ") & (u16 >= u32))
 72   :     OpConcat      
 //  ", "
-73   :     LoadValue     : value = <Bool, , >
+73   :     LoadValue     : value = <String, , >
 //  ((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ")
 74   :     OpConcat      
 //  u32
@@ -197,7 +197,7 @@ Instructions:
 //  (((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64)))
 81   :     OpConcat      
 //  ", "
-82   :     LoadValue     : value = <Bool, , >
+82   :     LoadValue     : value = <String, , >
 //  ((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ")
 83   :     OpConcat      
 //  f32
@@ -213,7 +213,7 @@ Instructions:
 //  (f32 < f64)
 89   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-90   :     LoadValue     : value = <Bool, , >
+90   :     LoadValue     : value = <String, , >
 //  ((f32 < f64) & ", ")
 91   :     OpConcat      
 //  f32
@@ -231,7 +231,7 @@ Instructions:
 //  (((f32 < f64) & ", ") & (f32 > f64))
 98   :     OpConcat      
 //  ", "
-99   :     LoadValue     : value = <Bool, , >
+99   :     LoadValue     : value = <String, , >
 //  ((((f32 < f64) & ", ") & (f32 > f64)) & ", ")
 100  :     OpConcat      
 //  f32
@@ -247,7 +247,7 @@ Instructions:
 //  (((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64)))
 106  :     OpConcat      
 //  ", "
-107  :     LoadValue     : value = <Bool, , >
+107  :     LoadValue     : value = <String, , >
 //  ((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ")
 108  :     OpConcat      
 //  b
@@ -259,7 +259,7 @@ Instructions:
 //  (b == true)
 112  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-113  :     LoadValue     : value = <Bool, , >
+113  :     LoadValue     : value = <String, , >
 //  ((b == true) & ", ")
 114  :     OpConcat      
 //  b
@@ -277,25 +277,25 @@ Instructions:
 //  (((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false)))
 121  :     OpConcat      
 //  ", "
-122  :     LoadValue     : value = <Bool, , >
+122  :     LoadValue     : value = <String, , >
 //  ((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ")
 123  :     OpConcat      
 //  s
 124  :     LoadLocalVar  : var = 11(s)
 //  "string"
-125  :     LoadValue     : value = <Bool, string>
+125  :     LoadValue     : value = <String, string>
 //  (s == "string")
 126  :     CompareValue  
 //  (s == "string")
 127  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-128  :     LoadValue     : value = <Bool, , >
+128  :     LoadValue     : value = <String, , >
 //  ((s == "string") & ", ")
 129  :     OpConcat      
 //  s
 130  :     LoadLocalVar  : var = 11(s)
 //  "string"
-131  :     LoadValue     : value = <Bool, string>
+131  :     LoadValue     : value = <String, string>
 //  (s != "string")
 132  :     CompareValue  
 //  (s != "string")
@@ -307,7 +307,7 @@ Instructions:
 //  (((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string")))
 136  :     OpConcat      
 //  ", "
-137  :     LoadValue     : value = <Bool, , >
+137  :     LoadValue     : value = <String, , >
 //  ((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ")
 138  :     OpConcat      
 //  e1
@@ -319,7 +319,7 @@ Instructions:
 //  (e1 == MyEnum::Item)
 142  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-143  :     LoadValue     : value = <Bool, , >
+143  :     LoadValue     : value = <String, , >
 //  ((e1 == MyEnum::Item) & ", ")
 144  :     OpConcat      
 //  e2
@@ -335,7 +335,7 @@ Instructions:
 //  (((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item)))
 150  :     OpConcat      
 //  ", "
-151  :     LoadValue     : value = <Bool, , >
+151  :     LoadValue     : value = <String, , >
 //  ((((((((((((((((i8 < i16) & ", ") & (i16 > i32)) & ", ") & (i32 == i64)) & ", ") & (((((u8 <= u16) & ", ") & (u16 >= u32)) & ", ") & (u32 != u64))) & ", ") & (((((f32 < f64) & ", ") & (f32 > f64)) & ", ") & (f32 == f64))) & ", ") & (((b == true) & ", ") & (b != false))) & ", ") & (((s == "string") & ", ") & (s != "string"))) & ", ") & (((e1 == MyEnum::Item) & ", ") & (e2 == MyEnum::Item))) & ", ")
 152  :     OpConcat      
 //  e3
@@ -347,7 +347,7 @@ Instructions:
 //  (e3 == Seasons::None)
 156  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-157  :     LoadValue     : value = <Bool, , >
+157  :     LoadValue     : value = <String, , >
 //  ((e3 == Seasons::None) & ", ")
 158  :     OpConcat      
 //  e4

@@ -350,7 +350,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 		case WfInsType::F8:
 			return L"F8";
 		case WfInsType::String:
-			return L"Bool";
+			return L"String";
 		default:
 			return L"Unknown";
 		}

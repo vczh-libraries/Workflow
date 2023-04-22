@@ -121,7 +121,7 @@ Instructions:
 //  if ((!condition))
 5    :     JumpIf        : label = 9
 //  "Wrong!"
-6    :     LoadValue     : value = <Bool, Wrong!>
+6    :     LoadValue     : value = <String, Wrong!>
 //  raise "Wrong!";
 7    :     RaiseException
 //  if ((!condition))
@@ -191,7 +191,7 @@ Instructions:
 //  123
 40   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  "123"
-41   :     LoadValue     : value = <Bool, 123>
+41   :     LoadValue     : value = <String, 123>
 //  ((cast (string) 123) == "123")
 42   :     CompareValue  
 //  Ensure(((cast (string) 123) == "123"))
@@ -199,7 +199,7 @@ Instructions:
 //  Ensure(((cast (string) 123) == "123"));
 44   :     Pop           
 //  "123"
-45   :     LoadValue     : value = <Bool, 123>
+45   :     LoadValue     : value = <String, 123>
 //  "123"
 46   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
 //  123
@@ -211,7 +211,7 @@ Instructions:
 //  Ensure(((cast (int) "123") == 123));
 50   :     Pop           
 //  "true"
-51   :     LoadValue     : value = <Bool, true>
+51   :     LoadValue     : value = <String, true>
 //  "true"
 52   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Boolean
 //  true
@@ -221,7 +221,7 @@ Instructions:
 //  Ensure((cast (::system::Boolean) "true"), true);
 55   :     Pop           
 //  "123"
-56   :     LoadValue     : value = <Bool, 123>
+56   :     LoadValue     : value = <String, 123>
 //  "123"
 57   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
 //  123
@@ -239,7 +239,7 @@ Instructions:
 //  v
 64   :     LoadLocalVar  : var = 0(v)
 //  "123"
-65   :     LoadValue     : value = <Bool, 123>
+65   :     LoadValue     : value = <String, 123>
 //  (v == "123")
 66   :     CompareValue  
 //  Ensure((v == "123"))
@@ -247,7 +247,7 @@ Instructions:
 //  Ensure((v == "123"));
 68   :     Pop           
 //  "123"
-69   :     LoadValue     : value = <Bool, 123>
+69   :     LoadValue     : value = <String, 123>
 //  "123"
 70   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
 //  var v : int = (cast (::system::Int32) "123");
@@ -589,7 +589,7 @@ Instructions:
 //  var sNull : string? = null;
 239  :     StoreLocalVar : var = 10(sNull)
 //  "2"
-240  :     LoadValue     : value = <Bool, 2>
+240  :     LoadValue     : value = <String, 2>
 //  "2"
 241  :     Duplicate     : stackPatternCount = 0
 //  "2"
@@ -691,7 +691,7 @@ Instructions:
 //  (iValue as (string?))
 290  :     LoadValue     : value = <null>
 //  "1"
-291  :     LoadValue     : value = <Bool, 1>
+291  :     LoadValue     : value = <String, 1>
 //  ((iValue as (string?)) == "1")
 292  :     CompareValue  
 //  Ensure(((iValue as (string?)) == "1"))
@@ -703,7 +703,7 @@ Instructions:
 //  iValue
 296  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  "1"
-297  :     LoadValue     : value = <Bool, 1>
+297  :     LoadValue     : value = <String, 1>
 //  ((cast (string) iValue) == "1")
 298  :     CompareValue  
 //  Ensure(((cast (string) iValue) == "1"))
@@ -1353,7 +1353,7 @@ Instructions:
 //  var merge8 = Sys::UIntToUInt64((cast (::system::UInt32) 0));
 621  :     StoreLocalVar : var = 25(merge8)
 //  "["
-622  :     LoadValue     : value = <Bool, [>
+622  :     LoadValue     : value = <String, [>
 //  a
 623  :     LoadLocalVar  : var = 2(a)
 //  a
@@ -1361,7 +1361,7 @@ Instructions:
 //  ("[" & a)
 625  :     OpConcat      
 //  "]["
-626  :     LoadValue     : value = <Bool, ][>
+626  :     LoadValue     : value = <String, ][>
 //  (("[" & a) & "][")
 627  :     OpConcat      
 //  b
@@ -1371,7 +1371,7 @@ Instructions:
 //  ((("[" & a) & "][") & b)
 630  :     OpConcat      
 //  "]["
-631  :     LoadValue     : value = <Bool, ][>
+631  :     LoadValue     : value = <String, ][>
 //  (((("[" & a) & "][") & b) & "][")
 632  :     OpConcat      
 //  c
@@ -1381,7 +1381,7 @@ Instructions:
 //  ((((("[" & a) & "][") & b) & "][") & c)
 635  :     OpConcat      
 //  "]["
-636  :     LoadValue     : value = <Bool, ][>
+636  :     LoadValue     : value = <String, ][>
 //  (((((("[" & a) & "][") & b) & "][") & c) & "][")
 637  :     OpConcat      
 //  d
@@ -1391,7 +1391,7 @@ Instructions:
 //  ((((((("[" & a) & "][") & b) & "][") & c) & "][") & d)
 640  :     OpConcat      
 //  "]["
-641  :     LoadValue     : value = <Bool, ][>
+641  :     LoadValue     : value = <String, ][>
 //  (((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][")
 642  :     OpConcat      
 //  e
@@ -1401,7 +1401,7 @@ Instructions:
 //  ((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e)
 645  :     OpConcat      
 //  "]["
-646  :     LoadValue     : value = <Bool, ][>
+646  :     LoadValue     : value = <String, ][>
 //  (((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][")
 647  :     OpConcat      
 //  f
@@ -1411,7 +1411,7 @@ Instructions:
 //  ((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f)
 650  :     OpConcat      
 //  "]["
-651  :     LoadValue     : value = <Bool, ][>
+651  :     LoadValue     : value = <String, ][>
 //  (((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][")
 652  :     OpConcat      
 //  g1
@@ -1421,7 +1421,7 @@ Instructions:
 //  ((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1)
 655  :     OpConcat      
 //  "]["
-656  :     LoadValue     : value = <Bool, ][>
+656  :     LoadValue     : value = <String, ][>
 //  (((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][")
 657  :     OpConcat      
 //  g2
@@ -1431,7 +1431,7 @@ Instructions:
 //  ((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2)
 660  :     OpConcat      
 //  "]["
-661  :     LoadValue     : value = <Bool, ][>
+661  :     LoadValue     : value = <String, ][>
 //  (((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][")
 662  :     OpConcat      
 //  2
@@ -1447,7 +1447,7 @@ Instructions:
 //  ((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2])
 668  :     OpConcat      
 //  "]["
-669  :     LoadValue     : value = <Bool, ][>
+669  :     LoadValue     : value = <String, ][>
 //  (((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][")
 670  :     OpConcat      
 //  3
@@ -1463,7 +1463,7 @@ Instructions:
 //  ((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3])
 676  :     OpConcat      
 //  "]["
-677  :     LoadValue     : value = <Bool, ][>
+677  :     LoadValue     : value = <String, ][>
 //  (((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][")
 678  :     OpConcat      
 //  ct1
@@ -1473,7 +1473,7 @@ Instructions:
 //  ((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1)
 681  :     OpConcat      
 //  "]["
-682  :     LoadValue     : value = <Bool, ][>
+682  :     LoadValue     : value = <String, ][>
 //  (((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][")
 683  :     OpConcat      
 //  ct2
@@ -1483,7 +1483,7 @@ Instructions:
 //  ((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2)
 686  :     OpConcat      
 //  "]["
-687  :     LoadValue     : value = <Bool, ][>
+687  :     LoadValue     : value = <String, ][>
 //  (((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][")
 688  :     OpConcat      
 //  ct3
@@ -1493,7 +1493,7 @@ Instructions:
 //  ((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3)
 691  :     OpConcat      
 //  "]["
-692  :     LoadValue     : value = <Bool, ][>
+692  :     LoadValue     : value = <String, ][>
 //  (((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][")
 693  :     OpConcat      
 //  ct4
@@ -1503,7 +1503,7 @@ Instructions:
 //  ((((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][") & ct4)
 696  :     OpConcat      
 //  "]"
-697  :     LoadValue     : value = <Bool, ]>
+697  :     LoadValue     : value = <String, ]>
 //  (((((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][") & ct4) & "]")
 698  :     OpConcat      
 //  return (((((((((((((((((((((((((((("[" & a) & "][") & b) & "][") & c) & "][") & d) & "][") & e) & "][") & f) & "][") & g1) & "][") & g2) & "][") & hinters.MyList[2]) & "][") & hinters.ObservableList[3]) & "][") & ct1) & "][") & ct2) & "][") & ct3) & "][") & ct4) & "]");
