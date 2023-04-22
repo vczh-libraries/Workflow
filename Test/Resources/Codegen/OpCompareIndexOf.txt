@@ -1,0 +1,61 @@
+module test;
+using system::*;
+
+struct IndexPoint
+{
+	x : int;
+	y : int;
+}
+
+func main():string
+{
+	var l1 : Point[] = {
+		{}			of Point;
+		{x:1}		of Point;
+		{y:1}		of Point;
+		{x:1 y:1}	of Point;
+	};
+
+	var l2 : IndexPoint[] = {
+		{}			of IndexPoint;
+		{x:1}		of IndexPoint;
+		{y:1}		of IndexPoint;
+		{x:1 y:1}	of IndexPoint;
+	};
+
+	var m1 : int[Point] = {
+		({}			of Point):0;
+		({x:1}		of Point):1;
+		({y:1}		of Point):2;
+		({x:1 y:1}	of Point):3;
+	};
+
+	var m1 : int[IndexPoint] = {
+		({}			of IndexPoint):0;
+		({x:1}		of IndexPoint):1;
+		({y:1}		of IndexPoint):2;
+		({x:1 y:1}	of IndexPoint):3;
+	};
+
+	var result = l1.IndexOf({x:2 y:2} of Point) & ", " & l2.IndexOf({x:2 y:2} of IndexPoint)
+
+	result = result & ", " & l1.IndexOf({x:0 y:0} of Point);
+	result = result & ", " & l1.IndexOf({x:1 y:0} of Point);
+	result = result & ", " & l1.IndexOf({x:0 y:1} of Point);
+	result = result & ", " & l1.IndexOf({x:1 y:1} of Point);
+
+	result = result & ", " & m1[{x:0 y:0} of Point];
+	result = result & ", " & m1[{x:1 y:0} of Point];
+	result = result & ", " & m1[{x:0 y:1} of Point];
+	result = result & ", " & m1[{x:1 y:1} of Point];
+
+	result = result & ", " & l2.IndexOf({x:0 y:0} of IndexPoint);
+	result = result & ", " & l2.IndexOf({x:1 y:0} of IndexPoint);
+	result = result & ", " & l2.IndexOf({x:0 y:1} of IndexPoint);
+	result = result & ", " & l2.IndexOf({x:1 y:1} of IndexPoint);
+	
+	result = result & ", " & m2[{x:0 y:0} of IndexPoint];
+	result = result & ", " & m2[{x:1 y:0} of IndexPoint];
+	result = result & ", " & m2[{x:0 y:1} of IndexPoint];
+	result = result & ", " & m2[{x:1 y:1} of IndexPoint];
+}
