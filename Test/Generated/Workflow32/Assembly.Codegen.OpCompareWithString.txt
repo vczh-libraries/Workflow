@@ -5,7 +5,7 @@ Global Variables:
 ========================================================
 Functions:
 ========================================================
-main (2 .. 31)
+main (2 .. 35)
     Arguments:
     Captured Variables:
     Local Variables:
@@ -24,59 +24,67 @@ Instructions:
 2    :     LoadValue     : value = <String, 1>
 //  1
 3    :     LoadValue     : value = <I4, 1>
+//  1
+4    :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ("1" == 1)
-4    :     CompareValue  
+5    :     CompareValue  
 //  ("1" == 1)
-5    :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+6    :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ", "
-6    :     LoadValue     : value = <String, , >
+7    :     LoadValue     : value = <String, , >
 //  (("1" == 1) & ", ")
-7    :     OpConcat      
+8    :     OpConcat      
 //  "1"
-8    :     LoadValue     : value = <String, 1>
+9    :     LoadValue     : value = <String, 1>
 //  2
-9    :     LoadValue     : value = <I4, 2>
-//  ("1" == 2)
-10   :     CompareValue  
-//  ("1" == 2)
+10   :     LoadValue     : value = <I4, 2>
+//  2
 11   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ("1" == 2)
+12   :     CompareValue  
+//  ("1" == 2)
+13   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ((("1" == 1) & ", ") & ("1" == 2))
-12   :     OpConcat      
-//  ", "
-13   :     LoadValue     : value = <String, , >
-//  (((("1" == 1) & ", ") & ("1" == 2)) & ", ")
 14   :     OpConcat      
-//  "1"
-15   :     LoadValue     : value = <String, 1>
-//  "1"
-16   :     LoadValue     : value = <String, 1>
-//  "1"
-17   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Locale
-//  ("1" == (cast (Locale) "1"))
-18   :     CompareValue  
-//  ("1" == (cast (Locale) "1"))
-19   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ((((("1" == 1) & ", ") & ("1" == 2)) & ", ") & ("1" == (cast (Locale) "1")))
-20   :     OpConcat      
 //  ", "
-21   :     LoadValue     : value = <String, , >
-//  (((((("1" == 1) & ", ") & ("1" == 2)) & ", ") & ("1" == (cast (Locale) "1"))) & ", ")
-22   :     OpConcat      
+15   :     LoadValue     : value = <String, , >
+//  (((("1" == 1) & ", ") & ("1" == 2)) & ", ")
+16   :     OpConcat      
 //  "1"
-23   :     LoadValue     : value = <String, 1>
+17   :     LoadValue     : value = <String, 1>
+//  "1"
+18   :     LoadValue     : value = <String, 1>
+//  "1"
+19   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Locale
+//  (cast (Locale) "1")
+20   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ("1" == (cast (Locale) "1"))
+21   :     CompareValue  
+//  ("1" == (cast (Locale) "1"))
+22   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((("1" == 1) & ", ") & ("1" == 2)) & ", ") & ("1" == (cast (Locale) "1")))
+23   :     OpConcat      
+//  ", "
+24   :     LoadValue     : value = <String, , >
+//  (((((("1" == 1) & ", ") & ("1" == 2)) & ", ") & ("1" == (cast (Locale) "1"))) & ", ")
+25   :     OpConcat      
+//  "1"
+26   :     LoadValue     : value = <String, 1>
 //  "2"
-24   :     LoadValue     : value = <String, 2>
+27   :     LoadValue     : value = <String, 2>
 //  "2"
-25   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Locale
+28   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Locale
+//  (cast (Locale) "2")
+29   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ("1" == (cast (Locale) "2"))
-26   :     CompareValue  
+30   :     CompareValue  
 //  ("1" == (cast (Locale) "2"))
-27   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+31   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ((((((("1" == 1) & ", ") & ("1" == 2)) & ", ") & ("1" == (cast (Locale) "1"))) & ", ") & ("1" == (cast (Locale) "2")))
-28   :     OpConcat      
+32   :     OpConcat      
 //  return ((((((("1" == 1) & ", ") & ("1" == 2)) & ", ") & ("1" == (cast (Locale) "1"))) & ", ") & ("1" == (cast (Locale) "2")));
-29   :     Return        
+33   :     Return        
 //  func main() : (string)
-30   :     LoadValue     : value = <null>
+34   :     LoadValue     : value = <null>
 //  func main() : (string)
-31   :     Return        
+35   :     Return        

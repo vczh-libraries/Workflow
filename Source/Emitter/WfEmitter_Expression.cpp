@@ -555,8 +555,14 @@ GenerateInstructions(Expression)
 									}
 									else
 									{
-										GenerateExpressionInstructions(context, node->first);
-										GenerateExpressionInstructions(context, node->second);
+										Ptr<ITypeInfo> mergedToStringType;
+										if (mergedType->GetDecorator() == ITypeInfo::TypeDescriptor && mergedType->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
+										{
+											mergedToStringType = mergedType;
+										}
+
+										GenerateExpressionInstructions(context, node->first, mergedToStringType);
+										GenerateExpressionInstructions(context, node->second, mergedToStringType);
 										INSTRUCTION(Ins::CompareValue());
 										if (node->op == WfBinaryOperator::NE)
 										{
