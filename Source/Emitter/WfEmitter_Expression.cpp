@@ -539,9 +539,11 @@ GenerateInstructions(Expression)
 								auto secondResult = context.manager->expressionResolvings[node->second.Obj()];
 								auto firstType = firstResult.expectedType ? firstResult.expectedType : firstResult.type;
 								auto secondType = secondResult.expectedType ? secondResult.expectedType : secondResult.type;
+								mergedType = GetMergedType(firstType, secondType);
+
 								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
 								{
-									if (firstType->GetDecorator() == ITypeInfo::RawPtr || firstType->GetDecorator() == ITypeInfo::SharedPtr)
+									if (mergedType->GetDecorator() == ITypeInfo::RawPtr || mergedType->GetDecorator() == ITypeInfo::SharedPtr)
 									{
 										GenerateExpressionInstructions(context, node->first);
 										GenerateExpressionInstructions(context, node->second);
@@ -550,19 +552,16 @@ GenerateInstructions(Expression)
 										{
 											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 										}
-										return;
 									}
-								}
-
-								mergedType = GetMergedType(firstType, secondType);
-								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
-								{
-									GenerateExpressionInstructions(context, node->first);
-									GenerateExpressionInstructions(context, node->second);
-									INSTRUCTION(Ins::CompareValue());
-									if (node->op == WfBinaryOperator::NE)
+									else
 									{
-										INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+										GenerateExpressionInstructions(context, node->first);
+										GenerateExpressionInstructions(context, node->second);
+										INSTRUCTION(Ins::CompareValue());
+										if (node->op == WfBinaryOperator::NE)
+										{
+											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+										}
 									}
 									return;
 								}
