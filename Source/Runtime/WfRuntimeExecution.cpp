@@ -146,11 +146,20 @@ WfRuntimeThreadContext (Operators)
 				Value first, second;
 				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-				if (first.GetValueType() == Value::BoxedValue || second.GetValueType() == Value::BoxedValue)
+
+				bool result = false;
+				if (first.GetValueType() == Value::Null || second.GetValueType() == Value::Null)
+				{
+					result = first.GetValueType() == Value::Null && second.GetValueType() == Value::Null;
+				}
+				else if (first.GetValueType() == Value::BoxedValue || second.GetValueType() == Value::BoxedValue)
 				{
 					INTERNAL_ERROR(L"CompareReference instruction can only apply on null or pointers.");
 				}
-				bool result = first.GetRawPtr() == second.GetRawPtr();
+				else
+				{
+					result = first.GetRawPtr() == second.GetRawPtr();
+				}
 				CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
