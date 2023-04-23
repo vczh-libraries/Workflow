@@ -1113,6 +1113,7 @@ WfGenerateExpressionVisitor
 						auto c = node->value.value[i];
 						switch (c)
 						{
+						case L'\\': writer.WriteString(L"\\\\"); break;
 						case L'\'': writer.WriteString(L"\\\'"); break;
 						case L'\"': writer.WriteString(L"\\\""); break;
 						case L'\r': writer.WriteString(L"\\r"); break;
