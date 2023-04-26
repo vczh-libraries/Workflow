@@ -130,7 +130,7 @@ WString GetCppMergePath()
 	return GetExePath() + L"..\\..\\SourceCppGen\\";
 #endif
 #elif defined VCZH_GCC
-	return L"../SourceCppGen/";
+	return L"../../SourceCppGen/";
 #endif
 }
 
