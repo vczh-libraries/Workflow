@@ -16,6 +16,8 @@
 
 - `let X = Y in (F(X.a.b.c))` reports `X does not exist in the current scope` in binding property value
   - while `F((let X = Y.a.b).c)` works
+- Windows and Linux test output inconsistecy on
+  - Token index different (but row and column are consistent) due to `\r\n` and `\n`.
 
 ## Optional
 
