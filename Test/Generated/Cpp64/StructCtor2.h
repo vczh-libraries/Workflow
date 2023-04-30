@@ -30,8 +30,7 @@ namespace __vwsn_structs
 		::vl::vint64_t y = 0;
 		::vl::Nullable<::vl::vint64_t> z;
 
-		std::strong_ordering operator<=>(const _Point&) const = default;
-		bool operator==(const _Point&) const = default;
+		auto operator<=>(const _Point&) const = default;
 	};
 
 }

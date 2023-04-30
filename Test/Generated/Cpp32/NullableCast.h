@@ -28,8 +28,7 @@ namespace __vwsn_structs
 	{
 		::vl::vint32_t value = 0;
 
-		std::strong_ordering operator<=>(const _BoxedIntValue&) const = default;
-		bool operator==(const _BoxedIntValue&) const = default;
+		auto operator<=>(const _BoxedIntValue&) const = default;
 	};
 
 }

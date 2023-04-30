@@ -28,32 +28,28 @@ namespace __vwsn_structs
 	{
 		::test::Point data;
 
-		std::strong_ordering operator<=>(const _depended_structs_B&) const = default;
-		bool operator==(const _depended_structs_B&) const = default;
+		auto operator<=>(const _depended_structs_B&) const = default;
 	};
 
 	struct _depended_structs_A
 	{
 		::__vwsn_structs::_depended_structs_B data;
 
-		std::strong_ordering operator<=>(const _depended_structs_A&) const = default;
-		bool operator==(const _depended_structs_A&) const = default;
+		auto operator<=>(const _depended_structs_A&) const = default;
 	};
 
 	struct _depended_structs_C
 	{
 		::__vwsn_structs::_depended_structs_A data;
 
-		std::strong_ordering operator<=>(const _depended_structs_C&) const = default;
-		bool operator==(const _depended_structs_C&) const = default;
+		auto operator<=>(const _depended_structs_C&) const = default;
 	};
 
 	struct _depended_structs_D
 	{
 		::__vwsn_structs::_depended_structs_B data;
 
-		std::strong_ordering operator<=>(const _depended_structs_D&) const = default;
-		bool operator==(const _depended_structs_D&) const = default;
+		auto operator<=>(const _depended_structs_D&) const = default;
 	};
 
 }

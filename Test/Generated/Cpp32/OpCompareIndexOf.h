@@ -29,8 +29,7 @@ namespace __vwsn_structs
 		::vl::vint32_t x = 0;
 		::vl::vint32_t y = 0;
 
-		std::strong_ordering operator<=>(const _IndexPoint&) const = default;
-		bool operator==(const _IndexPoint&) const = default;
+		auto operator<=>(const _IndexPoint&) const = default;
 	};
 
 }

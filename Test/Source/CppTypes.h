@@ -31,8 +31,7 @@ namespace test
 		vint								x = 0;
 		vint								y = 0;
 
-		std::strong_ordering operator<=>(const Point&) const = default;
-		bool operator==(const Point&) const = default;
+		auto operator<=>(const Point&) const = default;
 	};
 
 	class PointClass : public Object, public Description<PointClass>
