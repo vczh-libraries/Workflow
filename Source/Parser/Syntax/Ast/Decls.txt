@@ -1,0 +1,54 @@
+//////////////////////////////////////////////////////////////////
+// AST (Declarations)
+//////////////////////////////////////////////////////////////////
+
+class NamespaceDeclaration : Declaration
+{
+    var declarations : Declaration[];
+}
+
+@public class FunctionArgument
+{
+    var attributes : Attribute[];
+    var name : token;
+    var type : Type;
+}
+
+enum FunctionAnonymity
+{
+	Named,
+	Anonymous,
+}
+
+@public class FunctionDeclaration : Declaration
+{
+    var functionKind : FunctionKind;
+    var anonymity : FunctionAnonymity;
+    var arguments : FunctionArgument[];
+    var returnType : Type;
+    var statement : Statement;
+}
+
+@public class VariableDeclaration : Declaration
+{
+    var type : Type;
+    var expression : Expression;
+}
+
+class EventDeclaration : Declaration
+{
+    var arguments : Type[];
+}
+
+class PropertyDeclaration : Declaration
+{
+    var type : Type;
+    var getter : token;
+    var setter : token;
+    var valueChangedEvent : token;
+}
+
+class StaticInitDeclaration : Declaration
+{
+    var statement : Statement;
+}

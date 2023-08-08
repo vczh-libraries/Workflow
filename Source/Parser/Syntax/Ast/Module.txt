@@ -1,0 +1,40 @@
+//////////////////////////////////////////////////////////////////
+// AST (Module)
+//////////////////////////////////////////////////////////////////
+
+class ModuleUsingFragment
+{
+}
+
+class ModuleUsingNameFragment : ModuleUsingFragment
+{
+    var name : token;
+}
+
+class ModuleUsingWildCardFragment : ModuleUsingFragment
+{
+}
+
+class ModuleUsingItem
+{
+    var fragments : ModuleUsingFragment[];
+}
+
+class ModuleUsingPath
+{
+    var items : ModuleUsingItem[];
+}
+
+enum ModuleType
+{
+	Module,
+	Unit,
+}
+
+class Module
+{
+    var moduleType : ModuleType;
+    var name : token;
+    var paths : ModuleUsingPath[];
+    var declarations : Declaration[];
+}

@@ -1,0 +1,82 @@
+//////////////////////////////////////////////////////////////////
+// AST (Types)
+//////////////////////////////////////////////////////////////////
+
+enum PredefinedTypeName
+{
+	Void,
+	Object,
+	Interface,
+	Int,
+	UInt,
+	Float,
+	Double,
+	String,
+	Char,
+	Bool,
+}
+
+class PredefinedType : Type
+{
+    var name : PredefinedTypeName;
+}
+
+class TopQualifiedType : Type
+{
+    var name : token;
+}
+
+class ReferenceType : Type
+{
+    var name : token;
+}
+
+class RawPointerType : Type
+{
+    var element : Type;
+}
+
+class SharedPointerType : Type
+{
+    var element : Type;
+}
+
+class NullableType : Type
+{
+    var element : Type;
+}
+
+class EnumerableType : Type
+{
+    var element : Type;
+}
+
+enum MapWritability
+{
+	Readonly,
+	Writable,
+}
+
+class MapType : Type
+{
+    var writability : MapWritability;
+    var key : Type;
+    var value : Type;
+}
+
+class ObservableListType : Type
+{
+    var element : Type;
+}
+
+class FunctionType : Type
+{
+    var result : Type;
+    var arguments : Type[];
+}
+
+class ChildType : Type
+{
+    var parent : Type;
+    var name : token;
+}

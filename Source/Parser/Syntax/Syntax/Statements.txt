@@ -1,0 +1,79 @@
+//////////////////////////////////////////////////////////////////
+// Rule (Statement)
+//////////////////////////////////////////////////////////////////
+
+_SwitchCase
+    ::= "case" _Expression : expression ":" _Block : statement as SwitchCase
+    ;
+
+@public _Block
+    ::= "{" {_Statement : statements} [NAME : endLabel ":" ";"] "}" as BlockStatement
+    ;
+
+_ElseStat
+    ::= !_Block
+    ::= !_If
+    ;
+
+_If
+    ::= "if" "(" ["var" NAME : name ":" _Type : type "="] _Expression : expression ")" _Block : trueBranch +["else" _ElseStat : falseBranch] as IfStatement
+    ;
+
+_ForOperator
+    ::= "in" as partial ForEachStatement {direction = Normal}
+    ::= "in" "reversed" as partial ForEachStatement {direction = Reversed}
+    ;
+
+_VirtualStatement
+    ::= "switch" "(" _Expression : expression ")" "{" {_SwitchCase : caseBranches} ["default" ":" _Block : defaultBranch] "}" as SwitchStatement
+    ::= "for" "(" NAME : name _ForOperator _Expression : collection ")" _Block : statement as ForEachStatement
+    ;
+
+_CoStatement
+    ::= "$pause" (";" | _Block : statement) as CoPauseStatement
+    ::= ["var" NAME : varName "="] COROUTINE_OPERATOR : opName {_Expression : arguments ;"," } ";" as CoOperatorStatement
+    ;
+
+@public _CoProvider
+    ::= ("$" | COROUTINE_OPERATOR : name) _Block : statement as CoProviderStatement
+    ;
+
+_StateSwitchHead
+    ::= "$switch" "(" "raise" ")" as StateSwitchStatement {type = Default}
+    ::= "$switch" "(" "continue" ")" as StateSwitchStatement {type = Pass}
+    ::= "$switch" "(" "continue" "," "return" ")" as StateSwitchStatement {type = PassAndReturn}
+    ::= "$switch" "(" ")" as StateSwitchStatement {type = Ignore}
+    ::= "$switch" "(" "return" ")" as StateSwitchStatement {type = IgnoreAndReturn}
+    ;
+
+_StateSwitchArgument
+    ::= NAME : name as StateSwitchArgument
+    ;
+
+_StateSwitchCase
+    ::= "case" NAME : name "(" [_StateSwitchArgument : arguments {"," _StateSwitchArgument : arguments}] ")" ":" _Block : statement as StateSwitchCase
+    ;
+
+_StateStatement
+    ::= !_StateSwitchHead "{" {_StateSwitchCase : caseBranches} "}"
+    ::= "$goto_state" NAME : name "(" {_Expression : arguments ; ","} ")" ";" as StateInvokeStatement {type = Goto}
+    ::= "$push_state" NAME : name "(" {_Expression : arguments ; ","} ")" ";" as StateInvokeStatement {type = Push}
+    ;
+
+@public @parser _Statement
+    ::= !_Block
+    ::= "goto" NAME : label ";" as GotoStatement
+    ::= _Variable : variable as VariableStatement
+    ::= "break" ";" as BreakStatement
+    ::= "continue" ";" as ContinueStatement
+    ::= "return" [_Expression : expression] ";" as ReturnStatement
+    ::= "delete" _Expression : expression ";" as DeleteStatement
+    ::= "raise" [_Expression : expression] ";" as RaiseExceptionStatement
+    ::= !_If
+    ::= "while" "(" _Expression : condition ")" _Block : statement as WhileStatement
+    ::= "try" _Block : protectedStatement ["catch" "(" NAME : name ")" _Block : catchStatement] ["finally" _Block : finallyStatement] as TryStatement
+    ::= _Expression : expression ";" as ExpressionStatement
+    ::= !_VirtualStatement
+    ::= !_CoStatement
+    ::= !_StateStatement
+    ;

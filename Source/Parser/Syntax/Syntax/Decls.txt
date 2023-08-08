@@ -1,0 +1,181 @@
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- State Machine)
+//////////////////////////////////////////////////////////////////
+
+_StateInput
+    ::= "$state_input" NAME : name "(" {_FunctionArgument : arguments ; ","} ")" ";" as StateInput
+    ;
+
+_StateDecl
+    ::= "$state" ("default" | NAME : name) "(" {_FunctionArgument : arguments ; ","} ")" _Block : statement as StateDeclaration
+    ;
+
+_StateMachine
+    ::= "$state_machine" "{" { _StateInput : inputs | _StateDecl : states} "}" as StateMachineDeclaration
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- Basic)
+//////////////////////////////////////////////////////////////////
+
+_Attribute
+    ::= "@" NAME : category ":" NAME : name ["(" _Expression : value ")"] as Attribute
+    ;
+
+_Namespace
+    ::= "namespace" NAME : name "{" {_Declaration : declarations} "}" as NamespaceDeclaration
+    ;
+
+_FunctionArgument
+    ::= {_Attribute : attributes} NAME : name ":" _Type : type as FunctionArgument
+    ;
+
+_FunctionArgumentList
+    ::= "(" {_FunctionArgument : arguments ; ","} ")" as partial FunctionDeclaration
+    ;
+
+_FunctionStat
+    ::= !_Block
+    ::= !_CoProvider
+    ;
+
+_FunctionBody
+    ::= "(" {_FunctionArgument : arguments ; ","} ")"
+        ":" _Type : returnType
+        (_FunctionStat : statement | ";") as partial FunctionDeclaration
+    ;
+
+_FunctionKind
+    ::= "static" "func" as partial FunctionDeclaration {functionKind = Static}
+    ::= "override" "func" as partial FunctionDeclaration {functionKind = Override}
+    ::= "func" as partial FunctionDeclaration {functionKind = Normal}
+    ;
+
+@public _Function
+    ::= _FunctionKind NAME : name _FunctionBody as FunctionDeclaration {anonymity = Named}
+    ::= _FunctionKind _FunctionBody as FunctionDeclaration {anonymity = Anonymous}
+    ;
+
+@public _Variable
+    ::= "var" NAME : name [":" _Type : type] "=" _Expression : expression ";" as VariableDeclaration
+    ;
+
+_Event
+    ::= "event" NAME : name "(" {_Type : arguments ; ","} ")" ";" as EventDeclaration
+    ;
+
+_Property
+    ::= "prop" NAME : name ":" _Type : type "{" NAME : getter ["," NAME : setter] [":" NAME : valueChangedEvent] "}" as PropertyDeclaration
+    ;
+
+_StaticInit
+    ::= "static" _Block : statement as StaticInitDeclaration
+    ;
+
+_BaseConstructorCall
+    ::= _Type : type "(" [_Expression : arguments {"," _Expression : arguments}] ")" as BaseConstructorCall
+    ;
+
+_ConstructorType
+    ::= "new" as partial ConstructorDeclaration {constructorType = SharedPtr}
+    ::= "new" "*" as partial ConstructorDeclaration {constructorType = RawPtr}
+    ;
+
+_Constructor
+    ::= _ConstructorType
+        "(" {_FunctionArgument : arguments ; ","} ")"
+        [":" {_BaseConstructorCall : baseConstructorCalls ; ","}]
+        _Block : statement as ConstructorDeclaration
+    ;
+
+_Destructor
+    ::= "delete" _Block : statement as DestructorDeclaration
+    ;
+
+_ClassBody
+    ::= [":" {_Type : baseTypes ; ","}] "{" {_Declaration : declarations} [_StateMachine : declarations] "}" as partial ClassDeclaration
+    ;
+
+_Class
+    ::= "class" NAME : name _ClassBody as ClassDeclaration {kind = Class, constructorType = Undefined}
+    ::= "interface" NAME : name _ClassBody as ClassDeclaration {kind = Interface, constructorType = SharedPtr}
+    ::= "interface" NAME : name "*" _ClassBody as ClassDeclaration {kind = Interface, constructorType = RawPtr}
+    ;
+
+_EnumItemInt
+    ::= NAME : name as EnumItemIntersection
+    ;
+
+_EnumItemA
+    ::= {_Attribute : attributes} NAME : name "=" INTEGER : number "," as EnumItem {kind = Constant}
+    ;
+
+_EnumItemB
+    ::= {_Attribute : attributes} NAME : name "=" _EnumItemInt : intersections {"|" _EnumItemInt : intersections} "," as EnumItem {kind = Intersection}
+    ;
+
+_Enum
+    ::= "enum" NAME : name "{" _EnumItemA : items {_EnumItemA : items} "}" as EnumDeclaration {kind = Normal}
+    ::= "flagenum" NAME : name "{" _EnumItemA : items {_EnumItemA : items} {_EnumItemB : items} "}" as EnumDeclaration {kind = Flag}
+    ;
+
+_StructMember
+    ::= {_Attribute : attributes} NAME : name ":" _Type : type ";" as StructMember
+    ;
+
+_Struct
+    ::= "struct" NAME : name "{" {_StructMember : members} "}" as StructDeclaration
+    ;
+
+_APConfig
+    ::= "{" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Writable, configObserve = Observable}
+    ::= "{" "const" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Readonly, configObserve = Observable}
+    ::= "{" "not" "observe" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Writable, configObserve = NotObservable}
+    ::= "{" "const" "," "not" "observe" "}"
+            as partial AutoPropertyDeclaration
+            {configConst = Readonly, configObserve = NotObservable}
+    ;
+
+_AutoPropertyKind
+    ::= "static" "prop" as partial AutoPropertyDeclaration {functionKind = Static}
+    ::= "override" "prop" as partial AutoPropertyDeclaration {functionKind = Override}
+    ::= "prop" as partial AutoPropertyDeclaration {functionKind = Normal}
+    ;
+
+_AutoProperty
+    ::= _AutoPropertyKind NAME : name ":" _Type : type ["=" _Expression : expression] _APConfig as AutoPropertyDeclaration
+    ;
+
+_CastResultInterface
+    ::= "$interface" NAME : name ":" _Type : baseType "<" _Type : elementType ">" ";" as CastResultInterfaceDeclaration
+    ;
+
+//////////////////////////////////////////////////////////////////
+// Rule (Declaration -- Branches)
+//////////////////////////////////////////////////////////////////
+
+_DeclarationCandidates
+    ::= !_Namespace
+    ::= !_Variable
+    ::= !_Event
+    ::= !_Property
+    ::= !_StaticInit
+    ::= !_Constructor
+    ::= !_Destructor
+    ::= !_Class
+    ::= !_Enum
+    ::= !_Struct
+    ::= !_CastResultInterface
+    ::= !_Function
+    ::= !_AutoProperty
+    ;
+
+@public @parser _Declaration
+    ::= {_Attribute : attributes} !_DeclarationCandidates
+    ;

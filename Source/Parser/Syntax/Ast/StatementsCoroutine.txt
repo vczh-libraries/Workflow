@@ -1,0 +1,67 @@
+//////////////////////////////////////////////////////////////////
+// AST (Coroutine Statements)
+//////////////////////////////////////////////////////////////////
+
+class CoroutineStatement : Statement
+{
+}
+
+class CoPauseStatement : CoroutineStatement
+{
+    var statement : Statement;
+}
+
+class CoOperatorStatement : CoroutineStatement
+{
+    var varName : token;
+    var opName : token;
+    var arguments : Expression[];
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (State Machine Statements)
+//////////////////////////////////////////////////////////////////
+
+enum StateSwitchType
+{
+	Default,
+	Pass,
+	PassAndReturn,
+	Ignore,
+	IgnoreAndReturn,
+}
+
+enum StateInvokeType
+{
+	Goto,
+	Push,
+}
+
+class StateMachineStatement : Statement
+{
+}
+
+class StateSwitchArgument
+{
+    var name : token;
+}
+
+class StateSwitchCase
+{
+    var name : token;
+    var arguments : StateSwitchArgument[];
+    var statement : Statement;
+}
+
+class StateSwitchStatement : StateMachineStatement
+{
+    var type : StateSwitchType;
+    var caseBranches : StateSwitchCase[];
+}
+
+class StateInvokeStatement : StateMachineStatement
+{
+    var type : StateInvokeType;
+    var name : token;
+    var arguments : Expression[];
+}

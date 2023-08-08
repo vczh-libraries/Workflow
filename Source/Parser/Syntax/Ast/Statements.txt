@@ -1,0 +1,70 @@
+//////////////////////////////////////////////////////////////////
+// AST (Statements)
+//////////////////////////////////////////////////////////////////
+
+class BreakStatement : Statement
+{
+}
+
+class ContinueStatement : Statement
+{
+}
+
+class ReturnStatement : Statement
+{
+    var expression : Expression;
+}
+
+class DeleteStatement : Statement
+{
+    var expression : Expression;
+}
+
+class RaiseExceptionStatement : Statement
+{
+    var expression : Expression;
+}
+
+class IfStatement : Statement
+{
+    var type : Type;
+    var name : token;
+    var expression : Expression;
+    var trueBranch : Statement;
+    var falseBranch : Statement;
+}
+
+class WhileStatement : Statement
+{
+    var condition : Expression;
+    var statement : Statement;
+}
+
+class TryStatement : Statement
+{
+    var protectedStatement : Statement;
+    var name : token;
+    var catchStatement : Statement;
+    var finallyStatement : Statement;
+}
+
+class BlockStatement : Statement
+{
+    var statements : Statement[];
+    var endLabel : token;
+}
+
+class GotoStatement : Statement
+{
+    var label : token;
+}
+
+class VariableStatement : Statement
+{
+    var variable : VariableDeclaration;
+}
+
+class ExpressionStatement : Statement
+{
+    var expression : Expression;
+}

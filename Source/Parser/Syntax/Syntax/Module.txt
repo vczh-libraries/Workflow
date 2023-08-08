@@ -1,0 +1,25 @@
+//////////////////////////////////////////////////////////////////
+// Rule (Module)
+//////////////////////////////////////////////////////////////////
+
+_UsingFragment
+    ::= NAME : name as ModuleUsingNameFragment
+    ::= "*" as ModuleUsingWildCardFragment
+    ;
+
+_UsingItem
+    ::= _UsingFragment : fragments {_UsingFragment : fragments} as ModuleUsingItem
+    ;
+
+_UsingPath
+    ::= "using" _UsingItem : items {"::" _UsingItem : items} ";" as ModuleUsingPath
+    ;
+
+_ModuleBody
+    ::= NAME : name ";" {_UsingPath : paths} {_Declaration : declarations} as partial Module
+    ;
+
+@parser _Module
+    ::= "module" _ModuleBody as Module {moduleType = Module}
+    ::= "unit" _ModuleBody as Module {moduleType = Unit}
+    ;

@@ -1,0 +1,28 @@
+//////////////////////////////////////////////////////////////////
+// Rule (Type)
+//////////////////////////////////////////////////////////////////
+
+@public @parser _Type
+    ::= "void" as PredefinedType {name = Void}
+    ::= "object" as PredefinedType {name = Object}
+    ::= "interface" as PredefinedType {name = Interface}
+    ::= "int" as PredefinedType {name = Int}
+    ::= "uint" as PredefinedType {name = UInt}
+    ::= "float" as PredefinedType {name = Float}
+    ::= "double" as PredefinedType {name = Double}
+    ::= "string" as PredefinedType {name = String}
+    ::= "char" as PredefinedType {name = Char}
+    ::= "bool" as PredefinedType {name = Bool}
+    ::= NAME : name as ReferenceType
+    ::= "func" "(" {_Type : arguments ; ","} ")" ":" _Type : result as FunctionType
+    ::= _Type : element "*" as RawPointerType
+    ::= _Type : element "^" as SharedPointerType
+    ::= _Type : element "?" as NullableType
+    ::= _Type : element "{" "}" as EnumerableType
+    ::= _Type : value "[" [_Type : key] "]" as MapType {writability = Writable}
+    ::= "observe" _Type : element "[" "]" as ObservableListType
+    ::= "const" _Type : value "[" [_Type : key] "]" as MapType {writability = Readonly}
+    ::= _Type : parent "::" NAME : name as ChildType
+    ::= "::" NAME : name as TopQualifiedType
+    ::= "(" !_Type ")"
+    ;

@@ -1,0 +1,41 @@
+//////////////////////////////////////////////////////////////////
+// AST (Virtual Context Sensitive Expandable Statements)
+//////////////////////////////////////////////////////////////////
+
+class VirtualCseStatement : Statement
+{
+    var expandedStatement : Statement;
+}
+
+enum ForEachDirection
+{
+	Normal,
+	Reversed,
+}
+
+class ForEachStatement : VirtualCseStatement
+{
+    var name : token;
+    var direction : ForEachDirection;
+    var collection : Expression;
+    var statement : Statement;
+}
+
+class SwitchCase
+{
+    var expression : Expression;
+    var statement : Statement;
+}
+
+class SwitchStatement : VirtualCseStatement
+{
+    var expression : Expression;
+    var caseBranches : SwitchCase[];
+    var defaultBranch : Statement;
+}
+
+class CoProviderStatement : VirtualCseStatement
+{
+    var name : token;
+    var statement : Statement;
+}

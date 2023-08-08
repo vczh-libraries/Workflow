@@ -1,0 +1,35 @@
+//////////////////////////////////////////////////////////////////
+// AST (Enum)
+//////////////////////////////////////////////////////////////////
+
+enum EnumKind
+{
+	Normal,
+	Flag,
+}
+
+enum EnumItemKind
+{
+	Constant,
+	Intersection,
+}
+
+class EnumItemIntersection
+{
+    var name : token;
+}
+
+class EnumItem
+{
+    var attributes : Attribute[];
+    var name : token;
+    var kind : EnumItemKind;
+    var number : token;
+    var intersections : EnumItemIntersection[];
+}
+
+class EnumDeclaration : Declaration
+{
+    var kind : EnumKind;
+    var items : EnumItem[];
+}

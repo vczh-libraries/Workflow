@@ -1,0 +1,63 @@
+//////////////////////////////////////////////////////////////////
+// AST (Virtual Context Free Expandable Declarations)
+//////////////////////////////////////////////////////////////////
+
+class VirtualCfeDeclaration : Declaration
+{
+    var expandedDeclarations : Declaration[];
+}
+
+enum APConst
+{
+	Readonly,
+	Writable,
+}
+
+enum APObserve
+{
+	Observable,
+	NotObservable,
+}
+
+class AutoPropertyDeclaration : VirtualCfeDeclaration
+{
+    var functionKind : FunctionKind;
+    var type : Type;
+    var configConst : APConst;
+    var configObserve : APObserve;
+    var expression : Expression;
+}
+
+class CastResultInterfaceDeclaration : VirtualCfeDeclaration
+{
+    var baseType : Type;
+    var elementType : Type;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Virtual Context Sensitive Expandable Declarations)
+//////////////////////////////////////////////////////////////////
+
+class VirtualCseDeclaration : Declaration
+{
+    var expandedDeclarations : Declaration[];
+}
+
+class StateInput
+{
+    var name : token;
+    var arguments : FunctionArgument[];
+}
+
+class StateDeclaration
+{
+    var name : token;
+    var arguments : FunctionArgument[];
+    var statement : Statement;
+}
+
+class StateMachineDeclaration : VirtualCseDeclaration
+{
+    var inputs : StateInput[];
+    var states : StateDeclaration[];
+}

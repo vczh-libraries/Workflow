@@ -1,0 +1,146 @@
+//////////////////////////////////////////////////////////////////
+// Rule (Expression)
+//////////////////////////////////////////////////////////////////
+
+_CtorFragment
+    ::= _Expression : key [ ":" _Expression : value] as ConstructorArgument
+    ;
+
+_LetVariable
+    ::= NAME : name "=" _Expression : value as LetVariable
+    ;
+
+_VirtualExpression
+    ::= FORMATSTRING : value as FormatExpression
+    ::= "bind" "(" _Expression : expression ")" as BindExpression
+    ::= "$coroutine" ["(" NAME : name ")"] _Block : statement as NewCoroutineExpression
+    ::= "new" _Type : type "(" "using" _Expression : expression ")" as MixinCastExpression
+    ::= "$" "." NAME : name as CoOperatorExpression
+    ;
+
+_BeginBoundary
+    ::= "(" as partial RangeExpression {beginBoundary = Exclusive}
+    ::= "[" as partial RangeExpression {beginBoundary = Inclusive}
+    ;
+
+_EndBoundary
+    ::= ")" as partial RangeExpression {endBoundary = Exclusive}
+    ::= "]" as partial RangeExpression {endBoundary = Inclusive}
+    ;
+
+_SetTestingOperator
+    ::= "in" as partial SetTestingExpression {test = In}
+    ::= "not" "in" as partial SetTestingExpression {test = NotIn}
+    ;
+
+_ExpPrimitive
+    ::= "null" as LiteralExpression {value = Null}
+    ::= "true" as LiteralExpression {value = True}
+    ::= "false" as LiteralExpression {value = False}
+    ::= INTEGER : value as IntegerExpression
+    ::= FLOAT : value as FloatingExpression
+    ::= STRING : value as StringExpression
+    ::= "this" as ThisExpression
+    ::= NAME : name as ReferenceExpression
+    ::= ORDERED_NAME : name as OrderedNameExpression
+    ::= "(" !_Expression ")"
+    ::= "[" _Expression : body "]" as OrderedLambdaExpression
+    ::= _Function : function as FunctionExpression
+    ::= "let" _LetVariable : variables {"," _LetVariable : variables} "in" "(" _Expression : expression ")" as LetExpression
+    ::= "range" _BeginBoundary _Expression : begin "," _Expression : end _EndBoundary as RangeExpression
+    ::= "{" [
+            _CtorFragment : arguments
+            ({_CtorFragment : arguments} |{";" _CtorFragment : arguments} ";")
+        ] "}" as ConstructorExpression
+    ::= "new" _Type : type "(" {_Expression : arguments ; ","} ")" as NewClassExpression
+    ::= "new" _Type : type "{" {_Declaration : declarations} "}" as NewInterfaceExpression
+    ::= _ExpPrimitive : parent "." "observe" "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression {observeType = SimpleObserve}
+    ::= _ExpPrimitive : parent "." "observe" "as" NAME : name "(" _Expression : expression ["on" _Expression : events {"," _Expression : events}]")" as ObserveExpression {observeType = ExtendedObserve}
+    ::= _ExpPrimitive : function "(" [_Expression : arguments {"," _Expression : arguments}] ")" as CallExpression
+    ::= _ExpPrimitive : parent "." NAME : name as MemberExpression
+    ::= _ExpPrimitive : parent "::" NAME : name as ChildExpression
+    ::= _ExpPrimitive : first "[" _Expression : second "]" as BinaryExpression {op = Index}
+    ::= _ExpPrimitive : element _SetTestingOperator _Expression : collection as SetTestingExpression
+    ::= _ExpPrimitive : expression "of" _Type : type as InferExpression
+    ::= _ExpPrimitive : expression "is" _Type : type as TypeTestingExpression {test = IsType}
+    ::= _ExpPrimitive : expression "is" "not" _Type : type as TypeTestingExpression {test = IsNotType}
+    ::= _ExpPrimitive : expression "is" "null" as TypeTestingExpression {test = IsNull}
+    ::= _ExpPrimitive : expression "is" "not" "null" as TypeTestingExpression {test = IsNotNull}
+    ::= _ExpPrimitive : expression "as" _Type : type as TypeCastingExpression {strategy = Weak}
+    ::= _ExpPrimitive : expression "as" "*" as ExpectedTypeCastExpression {strategy = Weak}
+    ::= "typeof" "(" _Type : type ")" as TypeOfTypeExpression
+    ::= "type" "(" _Expression : expression ")" as TypeOfExpressionExpression
+    ::= "attach" "(" _Expression : event "," _Expression : function ")" as AttachEventExpression
+    ::= "detach" "(" _Expression : event "," _Expression : handler ")" as DetachEventExpression
+    ::= "::" NAME : name as TopQualifiedExpression
+    ::= !_VirtualExpression
+    ;
+
+_Exp0
+    ::= !_ExpPrimitive
+    ::= "+" _Exp0 : operand as UnaryExpression {op = Positive}
+    ::= "-" _Exp0 : operand as UnaryExpression {op = Negative}
+    ::= "not" _Exp0 : operand as UnaryExpression {op = Not}
+    ::= "cast" _Type : type _Exp0 : expression as TypeCastingExpression {strategy = Strong}
+    ::= "cast" "*" _Exp0 : expression as ExpectedTypeCastExpression {strategy = Strong}
+    ;
+
+_Exp1
+    ::= !_Exp0
+    ::= _Exp1 : first "^" _Exp0 : second as BinaryExpression {op = Exp}
+    ;
+_Exp2
+    ::= !_Exp1
+    ::= _Exp2 : first "*" _Exp1 : second as BinaryExpression {op = Mul}
+    ::= _Exp2 : first "/" _Exp1 : second as BinaryExpression {op = Div}
+    ::= _Exp2 : first "%" _Exp1 : second as BinaryExpression {op = Mod}
+    ;
+_Exp3
+    ::= !_Exp2
+    ::= _Exp3 : first "+" _Exp2 : second as BinaryExpression {op = Add}
+    ::= _Exp3 : first "-" _Exp2 : second as BinaryExpression {op = Sub}
+    ::= _Exp3 : first "&" _Exp2 : second as BinaryExpression {op = FlagAnd}
+    ::= _Exp3 : first "|" _Exp2 : second as BinaryExpression {op = FlagOr}
+    ;
+_Exp4
+    ::= !_Exp3
+    ::= _Exp4 : first "shl" _Exp3 : second as BinaryExpression {op = Shl}
+    ::= _Exp4 : first "shr" _Exp3 : second as BinaryExpression {op = Shr}
+    ;
+_Exp5
+    ::= !_Exp4
+    ::= _Exp5 : first "<" _Exp4 : second as BinaryExpression {op = LT}
+    ::= _Exp5 : first ">" _Exp4 : second as BinaryExpression {op = GT}
+    ::= _Exp5 : first "<=" _Exp4 : second as BinaryExpression {op = LE}
+    ::= _Exp5 : first ">=" _Exp4 : second as BinaryExpression {op = GE}
+    ::= _Exp5 : first "==" _Exp4 : second as BinaryExpression {op = EQ}
+    ::= _Exp5 : first "!=" _Exp4 : second as BinaryExpression {op = NE}
+    ;
+_Exp6
+    ::= !_Exp5
+    ::= _Exp6 : first "xor" _Exp5 : second as BinaryExpression {op = Xor}
+    ;
+_Exp7
+    ::= !_Exp6
+    ::= _Exp7 : first "and" _Exp6 : second as BinaryExpression {op = And}
+    ;
+_Exp8
+    ::= !_Exp7
+    ::= _Exp8 : first "or" _Exp7 : second as BinaryExpression {op = Or}
+    ;
+_Exp9
+    ::= !_Exp8
+    ::= _Exp9 : first "??" _Exp8 : second as BinaryExpression {op = FailedThen}
+    ;
+_Exp10
+    ::= !_Exp9
+    ::= _Exp9 : condition "?" _Exp10 : trueBranch ":" _Exp10 : falseBranch as IfExpression
+    ;
+_Exp11
+    ::= !_Exp10
+    ::= _Exp10 : first "=" _Exp11 : second as BinaryExpression {op = Assign}
+    ;
+
+@public @parser _Expression
+    ::= !_Exp11
+    ;

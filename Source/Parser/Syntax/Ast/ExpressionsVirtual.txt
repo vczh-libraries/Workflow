@@ -1,0 +1,50 @@
+//////////////////////////////////////////////////////////////////
+// AST (Virtual Context Free Expandable Expressions)
+//////////////////////////////////////////////////////////////////
+
+class VirtualCfeExpression : Expression
+{
+    var expandedExpression : Expression;
+}
+
+class FormatExpression : VirtualCfeExpression
+{
+	var value : token;
+}
+
+//////////////////////////////////////////////////////////////////
+// AST (Virtual Context Sensitive Expandable Expressions)
+//////////////////////////////////////////////////////////////////
+
+class VirtualCseExpression : Expression
+{
+    var expandedExpression : Expression;
+}
+
+class BindExpression : VirtualCseExpression
+{
+    var expression : Expression;
+}
+
+class NewCoroutineExpression : VirtualCseExpression
+{
+    var name : token;
+    var statement : Statement;
+}
+
+class MixinCastExpression : VirtualCseExpression
+{
+    var type : Type;
+    var expression : Expression;
+}
+
+class ExpectedTypeCastExpression : VirtualCseExpression
+{
+    var strategy : TypeCastingStrategy;
+    var expression : Expression;
+}
+
+class CoOperatorExpression : VirtualCseExpression
+{
+    var name : token;
+}

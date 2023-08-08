@@ -1,0 +1,43 @@
+//////////////////////////////////////////////////////////////////
+// AST (Class)
+//////////////////////////////////////////////////////////////////
+
+enum ClassKind
+{
+	Class,
+	Interface,
+}
+
+enum ConstructorType
+{
+	Undefined,
+	SharedPtr,
+	RawPtr,
+}
+
+class BaseConstructorCall
+{
+    var type : Type;
+    var arguments : Expression[];
+}
+
+class ConstructorDeclaration : Declaration
+{
+    var constructorType : ConstructorType;
+    var baseConstructorCalls : BaseConstructorCall[];
+    var arguments : FunctionArgument[];
+    var statement : Statement;
+}
+
+class DestructorDeclaration : Declaration
+{
+    var statement : Statement;
+}
+
+class ClassDeclaration : Declaration
+{
+    var kind : ClassKind;
+    var constructorType : ConstructorType;
+    var baseTypes : Type[];
+	var declarations : Declaration[];
+}

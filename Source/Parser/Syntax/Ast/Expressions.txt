@@ -1,0 +1,263 @@
+//////////////////////////////////////////////////////////////////
+// AST (Expressions)
+//////////////////////////////////////////////////////////////////
+
+class ThisExpression : Expression
+{
+}
+
+class TopQualifiedExpression : Expression
+{
+    var name : token;
+}
+
+class ReferenceExpression : Expression
+{
+    var name : token;
+}
+
+class OrderedNameExpression : Expression
+{
+    var name : token;
+}
+
+class OrderedLambdaExpression : Expression
+{
+    var body : Expression;
+}
+
+class MemberExpression : Expression
+{
+    var parent : Expression;
+    var name : token;
+}
+
+class ChildExpression : Expression
+{
+    var parent : Expression;
+    var name : token;
+}
+
+enum LiteralValue
+{
+	Null,
+	True,
+	False,
+}
+
+class LiteralExpression : Expression
+{
+    var value : LiteralValue;
+}
+
+class FloatingExpression : Expression
+{
+    var value : token;
+}
+
+class IntegerExpression : Expression
+{
+    var value : token;
+}
+
+class StringExpression : Expression
+{
+	var value : token;
+}
+
+enum UnaryOperator
+{
+	Positive,
+	Negative,
+	Not,
+}
+
+class UnaryExpression : Expression
+{
+    var op : UnaryOperator;
+    var operand : Expression;
+}
+
+enum BinaryOperator
+{
+	Assign,
+	Index,
+	FlagAnd,
+	FlagOr,
+	FailedThen,
+	Exp,
+	Add,
+	Sub,
+	Mul,
+	Div,
+	Mod,
+	Shl,
+	Shr,
+	LT,
+	GT,
+	LE,
+	GE,
+	EQ,
+	NE,
+	Xor,
+	And,
+	Or,
+}
+
+class BinaryExpression : Expression
+{
+    var op : BinaryOperator;
+    var first : Expression;
+    var second : Expression;
+}
+
+class LetVariable
+{
+    var name : token;
+    var value : Expression;
+}
+
+class LetExpression : Expression
+{
+    var variables : LetVariable[];
+    var expression : Expression;
+}
+
+class IfExpression : Expression
+{
+    var condition : Expression;
+    var trueBranch : Expression;
+    var falseBranch : Expression;
+}
+
+enum RangeBoundary
+{
+	Inclusive,
+	Exclusive,
+}
+
+class RangeExpression : Expression
+{
+    var begin : Expression;
+    var beginBoundary : RangeBoundary;
+    var end : Expression;
+    var endBoundary : RangeBoundary;
+}
+
+enum SetTesting
+{
+	In,
+	NotIn,
+}
+
+class SetTestingExpression : Expression
+{
+    var test : SetTesting;
+    var element : Expression;
+    var collection : Expression;
+}
+
+class ConstructorArgument
+{
+    var key : Expression;
+    var value : Expression;
+}
+
+class ConstructorExpression : Expression
+{
+    var arguments : ConstructorArgument[];
+}
+
+class InferExpression : Expression
+{
+    var expression : Expression;
+    var type : Type;
+}
+
+@public enum TypeCastingStrategy
+{
+	Strong,
+	Weak,
+}
+
+class TypeCastingExpression : Expression
+{
+    var strategy : TypeCastingStrategy;
+    var expression : Expression;
+    var type : Type;
+}
+
+enum TypeTesting
+{
+	IsType,
+	IsNotType,
+	IsNull,
+	IsNotNull,
+}
+
+class TypeTestingExpression : Expression
+{
+    var test : TypeTesting;
+    var expression : Expression;
+    var type : Type;
+}
+
+class TypeOfTypeExpression : Expression
+{
+    var type : Type;
+}
+
+class TypeOfExpressionExpression : Expression
+{
+    var expression : Expression;
+}
+
+class AttachEventExpression : Expression
+{
+    var event : Expression;
+    var function : Expression;
+}
+
+class DetachEventExpression : Expression
+{
+    var event : Expression;
+    var handler : Expression;
+}
+
+enum ObserveType
+{
+	SimpleObserve,
+	ExtendedObserve,
+}
+
+class ObserveExpression : Expression
+{
+    var parent : Expression;
+    var observeType : ObserveType;
+    var name : token;
+    var expression : Expression;
+    var events : Expression[];
+}
+
+class CallExpression : Expression
+{
+    var function : Expression;
+    var arguments : Expression[];
+}
+
+class FunctionExpression : Expression
+{
+    var function : FunctionDeclaration;
+}
+
+class NewClassExpression : Expression
+{
+    var type : Type;
+    var arguments : Expression[];
+}
+
+class NewInterfaceExpression : Expression
+{
+    var type : Type;
+	var declarations : Declaration[];
+}
