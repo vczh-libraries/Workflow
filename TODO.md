@@ -18,6 +18,7 @@
   - while `F((let X = Y.a.b).c)` works
 - Windows and Linux test output inconsistecy on
   - Token index different (but row and column are consistent) due to `\r\n` and `\n`.
+- Compiler complexity could be O(n2) which makes big single GacXML compilation slow.
 
 ## Optional
 
