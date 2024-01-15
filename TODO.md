@@ -50,7 +50,7 @@
 - Deal with methods returning `IAsync`.
 - Deal with auto properties returning `IAsync`.
   - Think about how auto properties generate getters and setters with proper attributes.
-  - If a getter returns `IAsync<T>`, the setter should still accept `T`, for async auto properties.
+  - If a getter returns `IAsync<T>`, the setter could still accept `T` and returns `IAsync`, for async auto properties.
     - Need a new syntax for async auto properties, could apply to methods as well.
   - When a new value of an auto property or an async auto property get pushed from the remote side:
     - Using different attributes to control caching logic (or avoid caching).
