@@ -55,6 +55,15 @@
   - When a new value of an auto property or an async auto property get pushed from the remote side:
     - Using different attributes to control caching logic (or avoid caching).
     - Such attributes could also apply to methods without parameter.
+- Runtime:
+  - Requires all pointers are shared.
+  - Attribute for interfaces that have default remote constructors.
+  - The native side need to provide functions for controlling lifetime:
+    - AllocateObjectId():int, this is called when the object is sent to the native side for the first time. The default reference counter is 0.
+    - IncreaseReference(int):void
+    - DecreaseReference(int):void
+    - When reference counter is not 0, the object must be kept alive and querable by id.
+  - Default C++ code generated implementation on a set of interfaces.
 
 ## Optional
 
