@@ -23,6 +23,7 @@
 - Compile-time generic type annotation.
   - C++ Reflection macros for generic type annotation.
     - Apply to collections, tasks, etc.
+    - Remove the current generic interface syntax invented for `IAsync`, and change how `await` determines return type.
   - Only applies to interfaces and its members.
     - Add base class `IInvokableMemberInfo` for `IEventInfo`, `IPropertyInfo` and `IMethodInfo`.
     - Move `GetCpp` to `IInvokableMemberInfo`.
@@ -40,7 +41,7 @@
 
 ## Async ViewModel Binding
 
-- In `bind(...)` expression, add an annotation to convert `IAsync<T>` to `T`.
+- In `bind(...)` expression, add an annotation to convert `IAsync<T>` to `T`, could be `await` expression.
 - If multiple `IAsync` don't depend on each other, they could be awaited parallelly.
 - When a bind expression need to be re-evaluate, if there are still unfinished `IAsync<T>`, cancel and ignore all of them.
 
