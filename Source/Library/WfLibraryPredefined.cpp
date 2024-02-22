@@ -750,11 +750,6 @@ Sys
 				return DateTime::FromDateTime(year, month, day, hour, minute, second, milliseconds);
 			}
 
-			DateTime Sys::CreateDateTime(vuint64_t filetime)
-			{
-				return DateTime::FromFileTime(filetime);
-			}
-
 			Ptr<IValueEnumerable> Sys::ReverseEnumerable(Ptr<IValueEnumerable> value)
 			{
 				auto list = value.Cast<IValueReadonlyList>();

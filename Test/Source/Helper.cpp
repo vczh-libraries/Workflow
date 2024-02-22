@@ -14,7 +14,7 @@ Ptr<workflow::Parser> workflowParser;
 
 #define PRINT_TIMER\
 		endTime = DateTime::LocalTime();\
-		TEST_PRINT(L"Time elapsed: " + ftow((endTime.totalMilliseconds - beginTime.totalMilliseconds) / 1000.0) + L" seconds");\
+		TEST_PRINT(L"Time elapsed: " + ftow((endTime.osMilliseconds - beginTime.osMilliseconds) / 1000.0) + L" seconds");\
 		beginTime = endTime\
 
 workflow::Parser& GetWorkflowParser()
