@@ -48,23 +48,46 @@
 ## ViewModel Remoting C++ Codegen
 
 - Attributes.
-- Deal with methods returning `IAsync`.
-- Deal with auto properties returning `IAsync`.
-  - Think about how auto properties generate getters and setters with proper attributes.
-  - If a getter returns `IAsync<T>`, the setter could still accept `T` and returns `IAsync`, for async auto properties.
-    - Need a new syntax for async auto properties, could apply to methods as well.
-  - When a new value of an auto property or an async auto property get pushed from the remote side:
-    - Using different attributes to control caching logic (or avoid caching).
-    - Such attributes could also apply to methods without parameter.
-- Runtime:
+  - Add attributes to `VlppReflection` metadata.
+  - Some "RPC" atttributes.
+- Dealing with predefined interfaces:
+  - `IAsync`, implemented into the protocol.
+  - Collections interfaces, RPC could choose a return value of an argument to be
+    - Lazy, methods implemented into the protocol.
+    - Serializable, the whole collection is sent as data.
+- Server and clients
+  - The whole RPC is hosted by a server.
+  - Multiple clients could connect to the server.
+  - A client only talks to the server, a server talks to all clients.
+  - When one client accesses an object that implements by another client, the server redirect requests between these clients.
+- Implementation of interfaces:
+  - Service interface:
+    - There can be only one instance that implements such interface and it is implemented in the known client.
+    - The instance of such interface could be passed around.
+      - When an instance of such interface is processed in the RPC server, it will check if this is the only instance.
+  - Object interface:
+    - There is no limitation of implementation of such interface.
+    - Object id and client id defines an instance.
+- RPC details:
   - Requires all pointers are shared.
-  - Attribute for interfaces that have default remote constructors.
-  - The native side need to provide functions for controlling lifetime:
-    - AllocateObjectId():int, this is called when the object is sent to the native side for the first time. The default reference counter is 0.
-    - IncreaseReference(int):void
-    - DecreaseReference(int):void
-    - When reference counter is not 0, the object must be kept alive and querable by id.
-  - Default C++ code generated implementation on a set of interfaces.
+  - When sending a shared pointer from one side to another:
+    - Before a method is answered, all passing objects are alive.
+    - Necessary lifetime notification must be sent before answering a method including:
+      - A client need to keep an object alive.
+      - A client doesn't need an object to be alive.
+- Boilerplate codes to be generated:
+  - Implementation of interfaces, when calling it, it talks to the server or client.
+  - Implementation of requests, when being called, it talks to local objects.
+  - Connection processing is not included.
+- Tool chain:
+  - Metadata could be also serialized to JSON, but cannot be deserialized from JSON.
+  - A stand alone tool that compiles interfaces with RPC attributes, read from metadata.
+    - Source code will be integrated into GacGen.
+    - It generates files about RPC:
+      - Extra metadata for the RPC.
+      - Server and client boilerplate code for Workflow.
+      - Server and client boilerplate code for C++.
+        - Reflectable.
 
 ## Optional
 
