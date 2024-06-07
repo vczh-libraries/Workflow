@@ -10,79 +10,79 @@ namespace vl::workflow::json_visitor
 {
 	void AstVisitor::PrintFields(WfAttachEventExpression* node)
 	{
-		BeginField(L"event");
+		BeginField(vl::WString::Unmanaged(L"event"));
 		Print(node->event.Obj());
 		EndField();
-		BeginField(L"function");
+		BeginField(vl::WString::Unmanaged(L"function"));
 		Print(node->function.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfAttribute* node)
 	{
-		BeginField(L"category");
+		BeginField(vl::WString::Unmanaged(L"category"));
 		WriteToken(node->category);
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		Print(node->value.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfAutoPropertyDeclaration* node)
 	{
-		BeginField(L"configConst");
+		BeginField(vl::WString::Unmanaged(L"configConst"));
 		switch (node->configConst)
 		{
 		case vl::workflow::WfAPConst::Readonly:
-			WriteString(L"Readonly");
+			WriteString(vl::WString::Unmanaged(L"Readonly"));
 			break;
 		case vl::workflow::WfAPConst::Writable:
-			WriteString(L"Writable");
+			WriteString(vl::WString::Unmanaged(L"Writable"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"configObserve");
+		BeginField(vl::WString::Unmanaged(L"configObserve"));
 		switch (node->configObserve)
 		{
 		case vl::workflow::WfAPObserve::NotObservable:
-			WriteString(L"NotObservable");
+			WriteString(vl::WString::Unmanaged(L"NotObservable"));
 			break;
 		case vl::workflow::WfAPObserve::Observable:
-			WriteString(L"Observable");
+			WriteString(vl::WString::Unmanaged(L"Observable"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"functionKind");
+		BeginField(vl::WString::Unmanaged(L"functionKind"));
 		switch (node->functionKind)
 		{
 		case vl::workflow::WfFunctionKind::Normal:
-			WriteString(L"Normal");
+			WriteString(vl::WString::Unmanaged(L"Normal"));
 			break;
 		case vl::workflow::WfFunctionKind::Override:
-			WriteString(L"Override");
+			WriteString(vl::WString::Unmanaged(L"Override"));
 			break;
 		case vl::workflow::WfFunctionKind::Static:
-			WriteString(L"Static");
+			WriteString(vl::WString::Unmanaged(L"Static"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfBaseConstructorCall* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -92,104 +92,104 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfBinaryExpression* node)
 	{
-		BeginField(L"first");
+		BeginField(vl::WString::Unmanaged(L"first"));
 		Print(node->first.Obj());
 		EndField();
-		BeginField(L"op");
+		BeginField(vl::WString::Unmanaged(L"op"));
 		switch (node->op)
 		{
 		case vl::workflow::WfBinaryOperator::Add:
-			WriteString(L"Add");
+			WriteString(vl::WString::Unmanaged(L"Add"));
 			break;
 		case vl::workflow::WfBinaryOperator::And:
-			WriteString(L"And");
+			WriteString(vl::WString::Unmanaged(L"And"));
 			break;
 		case vl::workflow::WfBinaryOperator::Assign:
-			WriteString(L"Assign");
+			WriteString(vl::WString::Unmanaged(L"Assign"));
 			break;
 		case vl::workflow::WfBinaryOperator::Div:
-			WriteString(L"Div");
+			WriteString(vl::WString::Unmanaged(L"Div"));
 			break;
 		case vl::workflow::WfBinaryOperator::EQ:
-			WriteString(L"EQ");
+			WriteString(vl::WString::Unmanaged(L"EQ"));
 			break;
 		case vl::workflow::WfBinaryOperator::Exp:
-			WriteString(L"Exp");
+			WriteString(vl::WString::Unmanaged(L"Exp"));
 			break;
 		case vl::workflow::WfBinaryOperator::FailedThen:
-			WriteString(L"FailedThen");
+			WriteString(vl::WString::Unmanaged(L"FailedThen"));
 			break;
 		case vl::workflow::WfBinaryOperator::FlagAnd:
-			WriteString(L"FlagAnd");
+			WriteString(vl::WString::Unmanaged(L"FlagAnd"));
 			break;
 		case vl::workflow::WfBinaryOperator::FlagOr:
-			WriteString(L"FlagOr");
+			WriteString(vl::WString::Unmanaged(L"FlagOr"));
 			break;
 		case vl::workflow::WfBinaryOperator::GE:
-			WriteString(L"GE");
+			WriteString(vl::WString::Unmanaged(L"GE"));
 			break;
 		case vl::workflow::WfBinaryOperator::GT:
-			WriteString(L"GT");
+			WriteString(vl::WString::Unmanaged(L"GT"));
 			break;
 		case vl::workflow::WfBinaryOperator::Index:
-			WriteString(L"Index");
+			WriteString(vl::WString::Unmanaged(L"Index"));
 			break;
 		case vl::workflow::WfBinaryOperator::LE:
-			WriteString(L"LE");
+			WriteString(vl::WString::Unmanaged(L"LE"));
 			break;
 		case vl::workflow::WfBinaryOperator::LT:
-			WriteString(L"LT");
+			WriteString(vl::WString::Unmanaged(L"LT"));
 			break;
 		case vl::workflow::WfBinaryOperator::Mod:
-			WriteString(L"Mod");
+			WriteString(vl::WString::Unmanaged(L"Mod"));
 			break;
 		case vl::workflow::WfBinaryOperator::Mul:
-			WriteString(L"Mul");
+			WriteString(vl::WString::Unmanaged(L"Mul"));
 			break;
 		case vl::workflow::WfBinaryOperator::NE:
-			WriteString(L"NE");
+			WriteString(vl::WString::Unmanaged(L"NE"));
 			break;
 		case vl::workflow::WfBinaryOperator::Or:
-			WriteString(L"Or");
+			WriteString(vl::WString::Unmanaged(L"Or"));
 			break;
 		case vl::workflow::WfBinaryOperator::Shl:
-			WriteString(L"Shl");
+			WriteString(vl::WString::Unmanaged(L"Shl"));
 			break;
 		case vl::workflow::WfBinaryOperator::Shr:
-			WriteString(L"Shr");
+			WriteString(vl::WString::Unmanaged(L"Shr"));
 			break;
 		case vl::workflow::WfBinaryOperator::Sub:
-			WriteString(L"Sub");
+			WriteString(vl::WString::Unmanaged(L"Sub"));
 			break;
 		case vl::workflow::WfBinaryOperator::Xor:
-			WriteString(L"Xor");
+			WriteString(vl::WString::Unmanaged(L"Xor"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"second");
+		BeginField(vl::WString::Unmanaged(L"second"));
 		Print(node->second.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfBindExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfBlockStatement* node)
 	{
-		BeginField(L"endLabel");
+		BeginField(vl::WString::Unmanaged(L"endLabel"));
 		WriteToken(node->endLabel);
 		EndField();
-		BeginField(L"statements");
+		BeginField(vl::WString::Unmanaged(L"statements"));
 		BeginArray();
 		for (auto&& listItem : node->statements)
 		{
@@ -205,7 +205,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfCallExpression* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -215,40 +215,40 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"function");
+		BeginField(vl::WString::Unmanaged(L"function"));
 		Print(node->function.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfCastResultInterfaceDeclaration* node)
 	{
-		BeginField(L"baseType");
+		BeginField(vl::WString::Unmanaged(L"baseType"));
 		Print(node->baseType.Obj());
 		EndField();
-		BeginField(L"elementType");
+		BeginField(vl::WString::Unmanaged(L"elementType"));
 		Print(node->elementType.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfChildExpression* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"parent");
+		BeginField(vl::WString::Unmanaged(L"parent"));
 		Print(node->parent.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfChildType* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"parent");
+		BeginField(vl::WString::Unmanaged(L"parent"));
 		Print(node->parent.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfClassDeclaration* node)
 	{
-		BeginField(L"baseTypes");
+		BeginField(vl::WString::Unmanaged(L"baseTypes"));
 		BeginArray();
 		for (auto&& listItem : node->baseTypes)
 		{
@@ -258,23 +258,23 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"constructorType");
+		BeginField(vl::WString::Unmanaged(L"constructorType"));
 		switch (node->constructorType)
 		{
 		case vl::workflow::WfConstructorType::RawPtr:
-			WriteString(L"RawPtr");
+			WriteString(vl::WString::Unmanaged(L"RawPtr"));
 			break;
 		case vl::workflow::WfConstructorType::SharedPtr:
-			WriteString(L"SharedPtr");
+			WriteString(vl::WString::Unmanaged(L"SharedPtr"));
 			break;
 		case vl::workflow::WfConstructorType::Undefined:
-			WriteString(L"Undefined");
+			WriteString(vl::WString::Unmanaged(L"Undefined"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"declarations");
+		BeginField(vl::WString::Unmanaged(L"declarations"));
 		BeginArray();
 		for (auto&& listItem : node->declarations)
 		{
@@ -284,14 +284,14 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"kind");
+		BeginField(vl::WString::Unmanaged(L"kind"));
 		switch (node->kind)
 		{
 		case vl::workflow::WfClassKind::Class:
-			WriteString(L"Class");
+			WriteString(vl::WString::Unmanaged(L"Class"));
 			break;
 		case vl::workflow::WfClassKind::Interface:
-			WriteString(L"Interface");
+			WriteString(vl::WString::Unmanaged(L"Interface"));
 			break;
 		default:
 			WriteNull();
@@ -300,13 +300,13 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfCoOperatorExpression* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfCoOperatorStatement* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -316,40 +316,40 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"opName");
+		BeginField(vl::WString::Unmanaged(L"opName"));
 		WriteToken(node->opName);
 		EndField();
-		BeginField(L"varName");
+		BeginField(vl::WString::Unmanaged(L"varName"));
 		WriteToken(node->varName);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfCoPauseStatement* node)
 	{
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfCoProviderStatement* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfConstructorArgument* node)
 	{
-		BeginField(L"key");
+		BeginField(vl::WString::Unmanaged(L"key"));
 		Print(node->key.Obj());
 		EndField();
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		Print(node->value.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfConstructorDeclaration* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -359,7 +359,7 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"baseConstructorCalls");
+		BeginField(vl::WString::Unmanaged(L"baseConstructorCalls"));
 		BeginArray();
 		for (auto&& listItem : node->baseConstructorCalls)
 		{
@@ -369,29 +369,29 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"constructorType");
+		BeginField(vl::WString::Unmanaged(L"constructorType"));
 		switch (node->constructorType)
 		{
 		case vl::workflow::WfConstructorType::RawPtr:
-			WriteString(L"RawPtr");
+			WriteString(vl::WString::Unmanaged(L"RawPtr"));
 			break;
 		case vl::workflow::WfConstructorType::SharedPtr:
-			WriteString(L"SharedPtr");
+			WriteString(vl::WString::Unmanaged(L"SharedPtr"));
 			break;
 		case vl::workflow::WfConstructorType::Undefined:
-			WriteString(L"Undefined");
+			WriteString(vl::WString::Unmanaged(L"Undefined"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfConstructorExpression* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -410,7 +410,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfDeclaration* node)
 	{
-		BeginField(L"attributes");
+		BeginField(vl::WString::Unmanaged(L"attributes"));
 		BeginArray();
 		for (auto&& listItem : node->attributes)
 		{
@@ -420,34 +420,34 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfDeleteStatement* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfDestructorDeclaration* node)
 	{
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfDetachEventExpression* node)
 	{
-		BeginField(L"event");
+		BeginField(vl::WString::Unmanaged(L"event"));
 		Print(node->event.Obj());
 		EndField();
-		BeginField(L"handler");
+		BeginField(vl::WString::Unmanaged(L"handler"));
 		Print(node->handler.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfEnumDeclaration* node)
 	{
-		BeginField(L"items");
+		BeginField(vl::WString::Unmanaged(L"items"));
 		BeginArray();
 		for (auto&& listItem : node->items)
 		{
@@ -457,14 +457,14 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"kind");
+		BeginField(vl::WString::Unmanaged(L"kind"));
 		switch (node->kind)
 		{
 		case vl::workflow::WfEnumKind::Flag:
-			WriteString(L"Flag");
+			WriteString(vl::WString::Unmanaged(L"Flag"));
 			break;
 		case vl::workflow::WfEnumKind::Normal:
-			WriteString(L"Normal");
+			WriteString(vl::WString::Unmanaged(L"Normal"));
 			break;
 		default:
 			WriteNull();
@@ -473,7 +473,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfEnumItem* node)
 	{
-		BeginField(L"attributes");
+		BeginField(vl::WString::Unmanaged(L"attributes"));
 		BeginArray();
 		for (auto&& listItem : node->attributes)
 		{
@@ -483,7 +483,7 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"intersections");
+		BeginField(vl::WString::Unmanaged(L"intersections"));
 		BeginArray();
 		for (auto&& listItem : node->intersections)
 		{
@@ -493,41 +493,41 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"kind");
+		BeginField(vl::WString::Unmanaged(L"kind"));
 		switch (node->kind)
 		{
 		case vl::workflow::WfEnumItemKind::Constant:
-			WriteString(L"Constant");
+			WriteString(vl::WString::Unmanaged(L"Constant"));
 			break;
 		case vl::workflow::WfEnumItemKind::Intersection:
-			WriteString(L"Intersection");
+			WriteString(vl::WString::Unmanaged(L"Intersection"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"number");
+		BeginField(vl::WString::Unmanaged(L"number"));
 		WriteToken(node->number);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfEnumItemIntersection* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfEnumerableType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfEventDeclaration* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -540,17 +540,17 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfExpectedTypeCastExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"strategy");
+		BeginField(vl::WString::Unmanaged(L"strategy"));
 		switch (node->strategy)
 		{
 		case vl::workflow::WfTypeCastingStrategy::Strong:
-			WriteString(L"Strong");
+			WriteString(vl::WString::Unmanaged(L"Strong"));
 			break;
 		case vl::workflow::WfTypeCastingStrategy::Weak:
-			WriteString(L"Weak");
+			WriteString(vl::WString::Unmanaged(L"Weak"));
 			break;
 		default:
 			WriteNull();
@@ -562,50 +562,50 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfExpressionStatement* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfFloatingExpression* node)
 	{
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		WriteToken(node->value);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfForEachStatement* node)
 	{
-		BeginField(L"collection");
+		BeginField(vl::WString::Unmanaged(L"collection"));
 		Print(node->collection.Obj());
 		EndField();
-		BeginField(L"direction");
+		BeginField(vl::WString::Unmanaged(L"direction"));
 		switch (node->direction)
 		{
 		case vl::workflow::WfForEachDirection::Normal:
-			WriteString(L"Normal");
+			WriteString(vl::WString::Unmanaged(L"Normal"));
 			break;
 		case vl::workflow::WfForEachDirection::Reversed:
-			WriteString(L"Reversed");
+			WriteString(vl::WString::Unmanaged(L"Reversed"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfFormatExpression* node)
 	{
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		WriteToken(node->value);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfFunctionArgument* node)
 	{
-		BeginField(L"attributes");
+		BeginField(vl::WString::Unmanaged(L"attributes"));
 		BeginArray();
 		for (auto&& listItem : node->attributes)
 		{
@@ -615,29 +615,29 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfFunctionDeclaration* node)
 	{
-		BeginField(L"anonymity");
+		BeginField(vl::WString::Unmanaged(L"anonymity"));
 		switch (node->anonymity)
 		{
 		case vl::workflow::WfFunctionAnonymity::Anonymous:
-			WriteString(L"Anonymous");
+			WriteString(vl::WString::Unmanaged(L"Anonymous"));
 			break;
 		case vl::workflow::WfFunctionAnonymity::Named:
-			WriteString(L"Named");
+			WriteString(vl::WString::Unmanaged(L"Named"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -647,38 +647,38 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"functionKind");
+		BeginField(vl::WString::Unmanaged(L"functionKind"));
 		switch (node->functionKind)
 		{
 		case vl::workflow::WfFunctionKind::Normal:
-			WriteString(L"Normal");
+			WriteString(vl::WString::Unmanaged(L"Normal"));
 			break;
 		case vl::workflow::WfFunctionKind::Override:
-			WriteString(L"Override");
+			WriteString(vl::WString::Unmanaged(L"Override"));
 			break;
 		case vl::workflow::WfFunctionKind::Static:
-			WriteString(L"Static");
+			WriteString(vl::WString::Unmanaged(L"Static"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"returnType");
+		BeginField(vl::WString::Unmanaged(L"returnType"));
 		Print(node->returnType.Obj());
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfFunctionExpression* node)
 	{
-		BeginField(L"function");
+		BeginField(vl::WString::Unmanaged(L"function"));
 		Print(node->function.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfFunctionType* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -688,67 +688,67 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"result");
+		BeginField(vl::WString::Unmanaged(L"result"));
 		Print(node->result.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfGotoStatement* node)
 	{
-		BeginField(L"label");
+		BeginField(vl::WString::Unmanaged(L"label"));
 		WriteToken(node->label);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfIfExpression* node)
 	{
-		BeginField(L"condition");
+		BeginField(vl::WString::Unmanaged(L"condition"));
 		Print(node->condition.Obj());
 		EndField();
-		BeginField(L"falseBranch");
+		BeginField(vl::WString::Unmanaged(L"falseBranch"));
 		Print(node->falseBranch.Obj());
 		EndField();
-		BeginField(L"trueBranch");
+		BeginField(vl::WString::Unmanaged(L"trueBranch"));
 		Print(node->trueBranch.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfIfStatement* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"falseBranch");
+		BeginField(vl::WString::Unmanaged(L"falseBranch"));
 		Print(node->falseBranch.Obj());
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"trueBranch");
+		BeginField(vl::WString::Unmanaged(L"trueBranch"));
 		Print(node->trueBranch.Obj());
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfInferExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfIntegerExpression* node)
 	{
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		WriteToken(node->value);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfLetExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"variables");
+		BeginField(vl::WString::Unmanaged(L"variables"));
 		BeginArray();
 		for (auto&& listItem : node->variables)
 		{
@@ -761,26 +761,26 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfLetVariable* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		Print(node->value.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfLiteralExpression* node)
 	{
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		switch (node->value)
 		{
 		case vl::workflow::WfLiteralValue::False:
-			WriteString(L"False");
+			WriteString(vl::WString::Unmanaged(L"False"));
 			break;
 		case vl::workflow::WfLiteralValue::Null:
-			WriteString(L"Null");
+			WriteString(vl::WString::Unmanaged(L"Null"));
 			break;
 		case vl::workflow::WfLiteralValue::True:
-			WriteString(L"True");
+			WriteString(vl::WString::Unmanaged(L"True"));
 			break;
 		default:
 			WriteNull();
@@ -789,20 +789,20 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfMapType* node)
 	{
-		BeginField(L"key");
+		BeginField(vl::WString::Unmanaged(L"key"));
 		Print(node->key.Obj());
 		EndField();
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		Print(node->value.Obj());
 		EndField();
-		BeginField(L"writability");
+		BeginField(vl::WString::Unmanaged(L"writability"));
 		switch (node->writability)
 		{
 		case vl::workflow::WfMapWritability::Readonly:
-			WriteString(L"Readonly");
+			WriteString(vl::WString::Unmanaged(L"Readonly"));
 			break;
 		case vl::workflow::WfMapWritability::Writable:
-			WriteString(L"Writable");
+			WriteString(vl::WString::Unmanaged(L"Writable"));
 			break;
 		default:
 			WriteNull();
@@ -811,25 +811,25 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfMemberExpression* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"parent");
+		BeginField(vl::WString::Unmanaged(L"parent"));
 		Print(node->parent.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfMixinCastExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfModule* node)
 	{
-		BeginField(L"declarations");
+		BeginField(vl::WString::Unmanaged(L"declarations"));
 		BeginArray();
 		for (auto&& listItem : node->declarations)
 		{
@@ -839,23 +839,23 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"moduleType");
+		BeginField(vl::WString::Unmanaged(L"moduleType"));
 		switch (node->moduleType)
 		{
 		case vl::workflow::WfModuleType::Module:
-			WriteString(L"Module");
+			WriteString(vl::WString::Unmanaged(L"Module"));
 			break;
 		case vl::workflow::WfModuleType::Unit:
-			WriteString(L"Unit");
+			WriteString(vl::WString::Unmanaged(L"Unit"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"paths");
+		BeginField(vl::WString::Unmanaged(L"paths"));
 		BeginArray();
 		for (auto&& listItem : node->paths)
 		{
@@ -871,7 +871,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfModuleUsingItem* node)
 	{
-		BeginField(L"fragments");
+		BeginField(vl::WString::Unmanaged(L"fragments"));
 		BeginArray();
 		for (auto&& listItem : node->fragments)
 		{
@@ -884,13 +884,13 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfModuleUsingNameFragment* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfModuleUsingPath* node)
 	{
-		BeginField(L"items");
+		BeginField(vl::WString::Unmanaged(L"items"));
 		BeginArray();
 		for (auto&& listItem : node->items)
 		{
@@ -906,7 +906,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfNamespaceDeclaration* node)
 	{
-		BeginField(L"declarations");
+		BeginField(vl::WString::Unmanaged(L"declarations"));
 		BeginArray();
 		for (auto&& listItem : node->declarations)
 		{
@@ -919,7 +919,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfNewClassExpression* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -929,22 +929,22 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfNewCoroutineExpression* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfNewInterfaceExpression* node)
 	{
-		BeginField(L"declarations");
+		BeginField(vl::WString::Unmanaged(L"declarations"));
 		BeginArray();
 		for (auto&& listItem : node->declarations)
 		{
@@ -954,25 +954,25 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfNullableType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfObservableListType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfObserveExpression* node)
 	{
-		BeginField(L"events");
+		BeginField(vl::WString::Unmanaged(L"events"));
 		BeginArray();
 		for (auto&& listItem : node->events)
 		{
@@ -982,75 +982,75 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"observeType");
+		BeginField(vl::WString::Unmanaged(L"observeType"));
 		switch (node->observeType)
 		{
 		case vl::workflow::WfObserveType::ExtendedObserve:
-			WriteString(L"ExtendedObserve");
+			WriteString(vl::WString::Unmanaged(L"ExtendedObserve"));
 			break;
 		case vl::workflow::WfObserveType::SimpleObserve:
-			WriteString(L"SimpleObserve");
+			WriteString(vl::WString::Unmanaged(L"SimpleObserve"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"parent");
+		BeginField(vl::WString::Unmanaged(L"parent"));
 		Print(node->parent.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfOrderedLambdaExpression* node)
 	{
-		BeginField(L"body");
+		BeginField(vl::WString::Unmanaged(L"body"));
 		Print(node->body.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfOrderedNameExpression* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfPredefinedType* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		switch (node->name)
 		{
 		case vl::workflow::WfPredefinedTypeName::Bool:
-			WriteString(L"Bool");
+			WriteString(vl::WString::Unmanaged(L"Bool"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::Char:
-			WriteString(L"Char");
+			WriteString(vl::WString::Unmanaged(L"Char"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::Double:
-			WriteString(L"Double");
+			WriteString(vl::WString::Unmanaged(L"Double"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::Float:
-			WriteString(L"Float");
+			WriteString(vl::WString::Unmanaged(L"Float"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::Int:
-			WriteString(L"Int");
+			WriteString(vl::WString::Unmanaged(L"Int"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::Interface:
-			WriteString(L"Interface");
+			WriteString(vl::WString::Unmanaged(L"Interface"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::Object:
-			WriteString(L"Object");
+			WriteString(vl::WString::Unmanaged(L"Object"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::String:
-			WriteString(L"String");
+			WriteString(vl::WString::Unmanaged(L"String"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::UInt:
-			WriteString(L"UInt");
+			WriteString(vl::WString::Unmanaged(L"UInt"));
 			break;
 		case vl::workflow::WfPredefinedTypeName::Void:
-			WriteString(L"Void");
+			WriteString(vl::WString::Unmanaged(L"Void"));
 			break;
 		default:
 			WriteNull();
@@ -1059,54 +1059,54 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfPropertyDeclaration* node)
 	{
-		BeginField(L"getter");
+		BeginField(vl::WString::Unmanaged(L"getter"));
 		WriteToken(node->getter);
 		EndField();
-		BeginField(L"setter");
+		BeginField(vl::WString::Unmanaged(L"setter"));
 		WriteToken(node->setter);
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
-		BeginField(L"valueChangedEvent");
+		BeginField(vl::WString::Unmanaged(L"valueChangedEvent"));
 		WriteToken(node->valueChangedEvent);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfRaiseExceptionStatement* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfRangeExpression* node)
 	{
-		BeginField(L"begin");
+		BeginField(vl::WString::Unmanaged(L"begin"));
 		Print(node->begin.Obj());
 		EndField();
-		BeginField(L"beginBoundary");
+		BeginField(vl::WString::Unmanaged(L"beginBoundary"));
 		switch (node->beginBoundary)
 		{
 		case vl::workflow::WfRangeBoundary::Exclusive:
-			WriteString(L"Exclusive");
+			WriteString(vl::WString::Unmanaged(L"Exclusive"));
 			break;
 		case vl::workflow::WfRangeBoundary::Inclusive:
-			WriteString(L"Inclusive");
+			WriteString(vl::WString::Unmanaged(L"Inclusive"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"end");
+		BeginField(vl::WString::Unmanaged(L"end"));
 		Print(node->end.Obj());
 		EndField();
-		BeginField(L"endBoundary");
+		BeginField(vl::WString::Unmanaged(L"endBoundary"));
 		switch (node->endBoundary)
 		{
 		case vl::workflow::WfRangeBoundary::Exclusive:
-			WriteString(L"Exclusive");
+			WriteString(vl::WString::Unmanaged(L"Exclusive"));
 			break;
 		case vl::workflow::WfRangeBoundary::Inclusive:
-			WriteString(L"Inclusive");
+			WriteString(vl::WString::Unmanaged(L"Inclusive"));
 			break;
 		default:
 			WriteNull();
@@ -1115,44 +1115,44 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfRawPointerType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfReferenceExpression* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfReferenceType* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfReturnStatement* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfSetTestingExpression* node)
 	{
-		BeginField(L"collection");
+		BeginField(vl::WString::Unmanaged(L"collection"));
 		Print(node->collection.Obj());
 		EndField();
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
-		BeginField(L"test");
+		BeginField(vl::WString::Unmanaged(L"test"));
 		switch (node->test)
 		{
 		case vl::workflow::WfSetTesting::In:
-			WriteString(L"In");
+			WriteString(vl::WString::Unmanaged(L"In"));
 			break;
 		case vl::workflow::WfSetTesting::NotIn:
-			WriteString(L"NotIn");
+			WriteString(vl::WString::Unmanaged(L"NotIn"));
 			break;
 		default:
 			WriteNull();
@@ -1161,13 +1161,13 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfSharedPointerType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfStateDeclaration* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -1177,16 +1177,16 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfStateInput* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -1196,13 +1196,13 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfStateInvokeStatement* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -1212,17 +1212,17 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		switch (node->type)
 		{
 		case vl::workflow::WfStateInvokeType::Goto:
-			WriteString(L"Goto");
+			WriteString(vl::WString::Unmanaged(L"Goto"));
 			break;
 		case vl::workflow::WfStateInvokeType::Push:
-			WriteString(L"Push");
+			WriteString(vl::WString::Unmanaged(L"Push"));
 			break;
 		default:
 			WriteNull();
@@ -1231,7 +1231,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfStateMachineDeclaration* node)
 	{
-		BeginField(L"inputs");
+		BeginField(vl::WString::Unmanaged(L"inputs"));
 		BeginArray();
 		for (auto&& listItem : node->inputs)
 		{
@@ -1241,7 +1241,7 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"states");
+		BeginField(vl::WString::Unmanaged(L"states"));
 		BeginArray();
 		for (auto&& listItem : node->states)
 		{
@@ -1257,13 +1257,13 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfStateSwitchArgument* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfStateSwitchCase* node)
 	{
-		BeginField(L"arguments");
+		BeginField(vl::WString::Unmanaged(L"arguments"));
 		BeginArray();
 		for (auto&& listItem : node->arguments)
 		{
@@ -1273,16 +1273,16 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfStateSwitchStatement* node)
 	{
-		BeginField(L"caseBranches");
+		BeginField(vl::WString::Unmanaged(L"caseBranches"));
 		BeginArray();
 		for (auto&& listItem : node->caseBranches)
 		{
@@ -1292,23 +1292,23 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		switch (node->type)
 		{
 		case vl::workflow::WfStateSwitchType::Default:
-			WriteString(L"Default");
+			WriteString(vl::WString::Unmanaged(L"Default"));
 			break;
 		case vl::workflow::WfStateSwitchType::Ignore:
-			WriteString(L"Ignore");
+			WriteString(vl::WString::Unmanaged(L"Ignore"));
 			break;
 		case vl::workflow::WfStateSwitchType::IgnoreAndReturn:
-			WriteString(L"IgnoreAndReturn");
+			WriteString(vl::WString::Unmanaged(L"IgnoreAndReturn"));
 			break;
 		case vl::workflow::WfStateSwitchType::Pass:
-			WriteString(L"Pass");
+			WriteString(vl::WString::Unmanaged(L"Pass"));
 			break;
 		case vl::workflow::WfStateSwitchType::PassAndReturn:
-			WriteString(L"PassAndReturn");
+			WriteString(vl::WString::Unmanaged(L"PassAndReturn"));
 			break;
 		default:
 			WriteNull();
@@ -1320,19 +1320,19 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfStaticInitDeclaration* node)
 	{
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfStringExpression* node)
 	{
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		WriteToken(node->value);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfStructDeclaration* node)
 	{
-		BeginField(L"members");
+		BeginField(vl::WString::Unmanaged(L"members"));
 		BeginArray();
 		for (auto&& listItem : node->members)
 		{
@@ -1345,7 +1345,7 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfStructMember* node)
 	{
-		BeginField(L"attributes");
+		BeginField(vl::WString::Unmanaged(L"attributes"));
 		BeginArray();
 		for (auto&& listItem : node->attributes)
 		{
@@ -1355,25 +1355,25 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfSwitchCase* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfSwitchStatement* node)
 	{
-		BeginField(L"caseBranches");
+		BeginField(vl::WString::Unmanaged(L"caseBranches"));
 		BeginArray();
 		for (auto&& listItem : node->caseBranches)
 		{
@@ -1383,10 +1383,10 @@ namespace vl::workflow::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"defaultBranch");
+		BeginField(vl::WString::Unmanaged(L"defaultBranch"));
 		Print(node->defaultBranch.Obj());
 		EndField();
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
 	}
@@ -1395,28 +1395,28 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfTopQualifiedExpression* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfTopQualifiedType* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfTryStatement* node)
 	{
-		BeginField(L"catchStatement");
+		BeginField(vl::WString::Unmanaged(L"catchStatement"));
 		Print(node->catchStatement.Obj());
 		EndField();
-		BeginField(L"finallyStatement");
+		BeginField(vl::WString::Unmanaged(L"finallyStatement"));
 		Print(node->finallyStatement.Obj());
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"protectedStatement");
+		BeginField(vl::WString::Unmanaged(L"protectedStatement"));
 		Print(node->protectedStatement.Obj());
 		EndField();
 	}
@@ -1425,106 +1425,106 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfTypeCastingExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"strategy");
+		BeginField(vl::WString::Unmanaged(L"strategy"));
 		switch (node->strategy)
 		{
 		case vl::workflow::WfTypeCastingStrategy::Strong:
-			WriteString(L"Strong");
+			WriteString(vl::WString::Unmanaged(L"Strong"));
 			break;
 		case vl::workflow::WfTypeCastingStrategy::Weak:
-			WriteString(L"Weak");
+			WriteString(vl::WString::Unmanaged(L"Weak"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfTypeOfExpressionExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfTypeOfTypeExpression* node)
 	{
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfTypeTestingExpression* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"test");
+		BeginField(vl::WString::Unmanaged(L"test"));
 		switch (node->test)
 		{
 		case vl::workflow::WfTypeTesting::IsNotNull:
-			WriteString(L"IsNotNull");
+			WriteString(vl::WString::Unmanaged(L"IsNotNull"));
 			break;
 		case vl::workflow::WfTypeTesting::IsNotType:
-			WriteString(L"IsNotType");
+			WriteString(vl::WString::Unmanaged(L"IsNotType"));
 			break;
 		case vl::workflow::WfTypeTesting::IsNull:
-			WriteString(L"IsNull");
+			WriteString(vl::WString::Unmanaged(L"IsNull"));
 			break;
 		case vl::workflow::WfTypeTesting::IsType:
-			WriteString(L"IsType");
+			WriteString(vl::WString::Unmanaged(L"IsType"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfUnaryExpression* node)
 	{
-		BeginField(L"op");
+		BeginField(vl::WString::Unmanaged(L"op"));
 		switch (node->op)
 		{
 		case vl::workflow::WfUnaryOperator::Negative:
-			WriteString(L"Negative");
+			WriteString(vl::WString::Unmanaged(L"Negative"));
 			break;
 		case vl::workflow::WfUnaryOperator::Not:
-			WriteString(L"Not");
+			WriteString(vl::WString::Unmanaged(L"Not"));
 			break;
 		case vl::workflow::WfUnaryOperator::Positive:
-			WriteString(L"Positive");
+			WriteString(vl::WString::Unmanaged(L"Positive"));
 			break;
 		default:
 			WriteNull();
 		}
 		EndField();
-		BeginField(L"operand");
+		BeginField(vl::WString::Unmanaged(L"operand"));
 		Print(node->operand.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfVariableDeclaration* node)
 	{
-		BeginField(L"expression");
+		BeginField(vl::WString::Unmanaged(L"expression"));
 		Print(node->expression.Obj());
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfVariableStatement* node)
 	{
-		BeginField(L"variable");
+		BeginField(vl::WString::Unmanaged(L"variable"));
 		Print(node->variable.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfVirtualCfeDeclaration* node)
 	{
-		BeginField(L"expandedDeclarations");
+		BeginField(vl::WString::Unmanaged(L"expandedDeclarations"));
 		BeginArray();
 		for (auto&& listItem : node->expandedDeclarations)
 		{
@@ -1537,13 +1537,13 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfVirtualCfeExpression* node)
 	{
-		BeginField(L"expandedExpression");
+		BeginField(vl::WString::Unmanaged(L"expandedExpression"));
 		Print(node->expandedExpression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfVirtualCseDeclaration* node)
 	{
-		BeginField(L"expandedDeclarations");
+		BeginField(vl::WString::Unmanaged(L"expandedDeclarations"));
 		BeginArray();
 		for (auto&& listItem : node->expandedDeclarations)
 		{
@@ -1556,22 +1556,22 @@ namespace vl::workflow::json_visitor
 	}
 	void AstVisitor::PrintFields(WfVirtualCseExpression* node)
 	{
-		BeginField(L"expandedExpression");
+		BeginField(vl::WString::Unmanaged(L"expandedExpression"));
 		Print(node->expandedExpression.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfVirtualCseStatement* node)
 	{
-		BeginField(L"expandedStatement");
+		BeginField(vl::WString::Unmanaged(L"expandedStatement"));
 		Print(node->expandedStatement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(WfWhileStatement* node)
 	{
-		BeginField(L"condition");
+		BeginField(vl::WString::Unmanaged(L"condition"));
 		Print(node->condition.Obj());
 		EndField();
-		BeginField(L"statement");
+		BeginField(vl::WString::Unmanaged(L"statement"));
 		Print(node->statement.Obj());
 		EndField();
 	}
@@ -1584,7 +1584,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"PredefinedType", node);
+		WriteType(vl::WString::Unmanaged(L"PredefinedType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfPredefinedType*>(node));
 		EndObject();
@@ -1598,7 +1598,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"TopQualifiedType", node);
+		WriteType(vl::WString::Unmanaged(L"TopQualifiedType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfTopQualifiedType*>(node));
 		EndObject();
@@ -1612,7 +1612,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ReferenceType", node);
+		WriteType(vl::WString::Unmanaged(L"ReferenceType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfReferenceType*>(node));
 		EndObject();
@@ -1626,7 +1626,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"RawPointerType", node);
+		WriteType(vl::WString::Unmanaged(L"RawPointerType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfRawPointerType*>(node));
 		EndObject();
@@ -1640,7 +1640,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"SharedPointerType", node);
+		WriteType(vl::WString::Unmanaged(L"SharedPointerType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfSharedPointerType*>(node));
 		EndObject();
@@ -1654,7 +1654,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"NullableType", node);
+		WriteType(vl::WString::Unmanaged(L"NullableType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfNullableType*>(node));
 		EndObject();
@@ -1668,7 +1668,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EnumerableType", node);
+		WriteType(vl::WString::Unmanaged(L"EnumerableType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfEnumerableType*>(node));
 		EndObject();
@@ -1682,7 +1682,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"MapType", node);
+		WriteType(vl::WString::Unmanaged(L"MapType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfMapType*>(node));
 		EndObject();
@@ -1696,7 +1696,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ObservableListType", node);
+		WriteType(vl::WString::Unmanaged(L"ObservableListType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfObservableListType*>(node));
 		EndObject();
@@ -1710,7 +1710,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"FunctionType", node);
+		WriteType(vl::WString::Unmanaged(L"FunctionType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfFunctionType*>(node));
 		EndObject();
@@ -1724,7 +1724,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ChildType", node);
+		WriteType(vl::WString::Unmanaged(L"ChildType"), node);
 		PrintFields(static_cast<WfType*>(node));
 		PrintFields(static_cast<WfChildType*>(node));
 		EndObject();
@@ -1738,7 +1738,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ThisExpression", node);
+		WriteType(vl::WString::Unmanaged(L"ThisExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfThisExpression*>(node));
 		EndObject();
@@ -1752,7 +1752,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"TopQualifiedExpression", node);
+		WriteType(vl::WString::Unmanaged(L"TopQualifiedExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfTopQualifiedExpression*>(node));
 		EndObject();
@@ -1766,7 +1766,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ReferenceExpression", node);
+		WriteType(vl::WString::Unmanaged(L"ReferenceExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfReferenceExpression*>(node));
 		EndObject();
@@ -1780,7 +1780,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"OrderedNameExpression", node);
+		WriteType(vl::WString::Unmanaged(L"OrderedNameExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfOrderedNameExpression*>(node));
 		EndObject();
@@ -1794,7 +1794,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"OrderedLambdaExpression", node);
+		WriteType(vl::WString::Unmanaged(L"OrderedLambdaExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfOrderedLambdaExpression*>(node));
 		EndObject();
@@ -1808,7 +1808,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"MemberExpression", node);
+		WriteType(vl::WString::Unmanaged(L"MemberExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfMemberExpression*>(node));
 		EndObject();
@@ -1822,7 +1822,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ChildExpression", node);
+		WriteType(vl::WString::Unmanaged(L"ChildExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfChildExpression*>(node));
 		EndObject();
@@ -1836,7 +1836,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"LiteralExpression", node);
+		WriteType(vl::WString::Unmanaged(L"LiteralExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfLiteralExpression*>(node));
 		EndObject();
@@ -1850,7 +1850,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"FloatingExpression", node);
+		WriteType(vl::WString::Unmanaged(L"FloatingExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfFloatingExpression*>(node));
 		EndObject();
@@ -1864,7 +1864,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"IntegerExpression", node);
+		WriteType(vl::WString::Unmanaged(L"IntegerExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfIntegerExpression*>(node));
 		EndObject();
@@ -1878,7 +1878,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StringExpression", node);
+		WriteType(vl::WString::Unmanaged(L"StringExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfStringExpression*>(node));
 		EndObject();
@@ -1892,7 +1892,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"UnaryExpression", node);
+		WriteType(vl::WString::Unmanaged(L"UnaryExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfUnaryExpression*>(node));
 		EndObject();
@@ -1906,7 +1906,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"BinaryExpression", node);
+		WriteType(vl::WString::Unmanaged(L"BinaryExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfBinaryExpression*>(node));
 		EndObject();
@@ -1920,7 +1920,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"LetExpression", node);
+		WriteType(vl::WString::Unmanaged(L"LetExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfLetExpression*>(node));
 		EndObject();
@@ -1934,7 +1934,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"IfExpression", node);
+		WriteType(vl::WString::Unmanaged(L"IfExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfIfExpression*>(node));
 		EndObject();
@@ -1948,7 +1948,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"RangeExpression", node);
+		WriteType(vl::WString::Unmanaged(L"RangeExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfRangeExpression*>(node));
 		EndObject();
@@ -1962,7 +1962,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"SetTestingExpression", node);
+		WriteType(vl::WString::Unmanaged(L"SetTestingExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfSetTestingExpression*>(node));
 		EndObject();
@@ -1976,7 +1976,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ConstructorExpression", node);
+		WriteType(vl::WString::Unmanaged(L"ConstructorExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfConstructorExpression*>(node));
 		EndObject();
@@ -1990,7 +1990,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"InferExpression", node);
+		WriteType(vl::WString::Unmanaged(L"InferExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfInferExpression*>(node));
 		EndObject();
@@ -2004,7 +2004,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"TypeCastingExpression", node);
+		WriteType(vl::WString::Unmanaged(L"TypeCastingExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfTypeCastingExpression*>(node));
 		EndObject();
@@ -2018,7 +2018,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"TypeTestingExpression", node);
+		WriteType(vl::WString::Unmanaged(L"TypeTestingExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfTypeTestingExpression*>(node));
 		EndObject();
@@ -2032,7 +2032,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"TypeOfTypeExpression", node);
+		WriteType(vl::WString::Unmanaged(L"TypeOfTypeExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfTypeOfTypeExpression*>(node));
 		EndObject();
@@ -2046,7 +2046,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"TypeOfExpressionExpression", node);
+		WriteType(vl::WString::Unmanaged(L"TypeOfExpressionExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfTypeOfExpressionExpression*>(node));
 		EndObject();
@@ -2060,7 +2060,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"AttachEventExpression", node);
+		WriteType(vl::WString::Unmanaged(L"AttachEventExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfAttachEventExpression*>(node));
 		EndObject();
@@ -2074,7 +2074,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"DetachEventExpression", node);
+		WriteType(vl::WString::Unmanaged(L"DetachEventExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfDetachEventExpression*>(node));
 		EndObject();
@@ -2088,7 +2088,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ObserveExpression", node);
+		WriteType(vl::WString::Unmanaged(L"ObserveExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfObserveExpression*>(node));
 		EndObject();
@@ -2102,7 +2102,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"CallExpression", node);
+		WriteType(vl::WString::Unmanaged(L"CallExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfCallExpression*>(node));
 		EndObject();
@@ -2116,7 +2116,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"FunctionExpression", node);
+		WriteType(vl::WString::Unmanaged(L"FunctionExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfFunctionExpression*>(node));
 		EndObject();
@@ -2130,7 +2130,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"NewClassExpression", node);
+		WriteType(vl::WString::Unmanaged(L"NewClassExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfNewClassExpression*>(node));
 		EndObject();
@@ -2144,7 +2144,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"NewInterfaceExpression", node);
+		WriteType(vl::WString::Unmanaged(L"NewInterfaceExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfNewInterfaceExpression*>(node));
 		EndObject();
@@ -2168,7 +2168,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"BreakStatement", node);
+		WriteType(vl::WString::Unmanaged(L"BreakStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfBreakStatement*>(node));
 		EndObject();
@@ -2182,7 +2182,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ContinueStatement", node);
+		WriteType(vl::WString::Unmanaged(L"ContinueStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfContinueStatement*>(node));
 		EndObject();
@@ -2196,7 +2196,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ReturnStatement", node);
+		WriteType(vl::WString::Unmanaged(L"ReturnStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfReturnStatement*>(node));
 		EndObject();
@@ -2210,7 +2210,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"DeleteStatement", node);
+		WriteType(vl::WString::Unmanaged(L"DeleteStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfDeleteStatement*>(node));
 		EndObject();
@@ -2224,7 +2224,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"RaiseExceptionStatement", node);
+		WriteType(vl::WString::Unmanaged(L"RaiseExceptionStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfRaiseExceptionStatement*>(node));
 		EndObject();
@@ -2238,7 +2238,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"IfStatement", node);
+		WriteType(vl::WString::Unmanaged(L"IfStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfIfStatement*>(node));
 		EndObject();
@@ -2252,7 +2252,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"WhileStatement", node);
+		WriteType(vl::WString::Unmanaged(L"WhileStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfWhileStatement*>(node));
 		EndObject();
@@ -2266,7 +2266,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"TryStatement", node);
+		WriteType(vl::WString::Unmanaged(L"TryStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfTryStatement*>(node));
 		EndObject();
@@ -2280,7 +2280,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"BlockStatement", node);
+		WriteType(vl::WString::Unmanaged(L"BlockStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfBlockStatement*>(node));
 		EndObject();
@@ -2294,7 +2294,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"GotoStatement", node);
+		WriteType(vl::WString::Unmanaged(L"GotoStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfGotoStatement*>(node));
 		EndObject();
@@ -2308,7 +2308,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"VariableStatement", node);
+		WriteType(vl::WString::Unmanaged(L"VariableStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfVariableStatement*>(node));
 		EndObject();
@@ -2322,7 +2322,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ExpressionStatement", node);
+		WriteType(vl::WString::Unmanaged(L"ExpressionStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfExpressionStatement*>(node));
 		EndObject();
@@ -2351,7 +2351,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"NamespaceDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"NamespaceDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfNamespaceDeclaration*>(node));
 		EndObject();
@@ -2365,7 +2365,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"FunctionDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"FunctionDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfFunctionDeclaration*>(node));
 		EndObject();
@@ -2379,7 +2379,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"VariableDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"VariableDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfVariableDeclaration*>(node));
 		EndObject();
@@ -2393,7 +2393,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EventDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"EventDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfEventDeclaration*>(node));
 		EndObject();
@@ -2407,7 +2407,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"PropertyDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"PropertyDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfPropertyDeclaration*>(node));
 		EndObject();
@@ -2421,7 +2421,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StaticInitDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"StaticInitDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfStaticInitDeclaration*>(node));
 		EndObject();
@@ -2435,7 +2435,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ConstructorDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"ConstructorDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfConstructorDeclaration*>(node));
 		EndObject();
@@ -2449,7 +2449,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"DestructorDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"DestructorDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfDestructorDeclaration*>(node));
 		EndObject();
@@ -2463,7 +2463,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ClassDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"ClassDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfClassDeclaration*>(node));
 		EndObject();
@@ -2477,7 +2477,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EnumDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"EnumDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfEnumDeclaration*>(node));
 		EndObject();
@@ -2491,7 +2491,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StructDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"StructDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfStructDeclaration*>(node));
 		EndObject();
@@ -2515,7 +2515,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"AutoPropertyDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"AutoPropertyDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfVirtualCfeDeclaration*>(node));
 		PrintFields(static_cast<WfAutoPropertyDeclaration*>(node));
@@ -2530,7 +2530,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"CastResultInterfaceDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"CastResultInterfaceDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfVirtualCfeDeclaration*>(node));
 		PrintFields(static_cast<WfCastResultInterfaceDeclaration*>(node));
@@ -2545,7 +2545,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StateMachineDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"StateMachineDeclaration"), node);
 		PrintFields(static_cast<WfDeclaration*>(node));
 		PrintFields(static_cast<WfVirtualCseDeclaration*>(node));
 		PrintFields(static_cast<WfStateMachineDeclaration*>(node));
@@ -2560,7 +2560,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ForEachStatement", node);
+		WriteType(vl::WString::Unmanaged(L"ForEachStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfVirtualCseStatement*>(node));
 		PrintFields(static_cast<WfForEachStatement*>(node));
@@ -2575,7 +2575,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"SwitchStatement", node);
+		WriteType(vl::WString::Unmanaged(L"SwitchStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfVirtualCseStatement*>(node));
 		PrintFields(static_cast<WfSwitchStatement*>(node));
@@ -2590,7 +2590,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"CoProviderStatement", node);
+		WriteType(vl::WString::Unmanaged(L"CoProviderStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfVirtualCseStatement*>(node));
 		PrintFields(static_cast<WfCoProviderStatement*>(node));
@@ -2605,7 +2605,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"CoPauseStatement", node);
+		WriteType(vl::WString::Unmanaged(L"CoPauseStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfCoroutineStatement*>(node));
 		PrintFields(static_cast<WfCoPauseStatement*>(node));
@@ -2620,7 +2620,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"CoOperatorStatement", node);
+		WriteType(vl::WString::Unmanaged(L"CoOperatorStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfCoroutineStatement*>(node));
 		PrintFields(static_cast<WfCoOperatorStatement*>(node));
@@ -2635,7 +2635,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StateSwitchStatement", node);
+		WriteType(vl::WString::Unmanaged(L"StateSwitchStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfStateMachineStatement*>(node));
 		PrintFields(static_cast<WfStateSwitchStatement*>(node));
@@ -2650,7 +2650,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StateInvokeStatement", node);
+		WriteType(vl::WString::Unmanaged(L"StateInvokeStatement"), node);
 		PrintFields(static_cast<WfStatement*>(node));
 		PrintFields(static_cast<WfStateMachineStatement*>(node));
 		PrintFields(static_cast<WfStateInvokeStatement*>(node));
@@ -2665,7 +2665,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"FormatExpression", node);
+		WriteType(vl::WString::Unmanaged(L"FormatExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfVirtualCfeExpression*>(node));
 		PrintFields(static_cast<WfFormatExpression*>(node));
@@ -2680,7 +2680,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"BindExpression", node);
+		WriteType(vl::WString::Unmanaged(L"BindExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfVirtualCseExpression*>(node));
 		PrintFields(static_cast<WfBindExpression*>(node));
@@ -2695,7 +2695,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"NewCoroutineExpression", node);
+		WriteType(vl::WString::Unmanaged(L"NewCoroutineExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfVirtualCseExpression*>(node));
 		PrintFields(static_cast<WfNewCoroutineExpression*>(node));
@@ -2710,7 +2710,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"MixinCastExpression", node);
+		WriteType(vl::WString::Unmanaged(L"MixinCastExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfVirtualCseExpression*>(node));
 		PrintFields(static_cast<WfMixinCastExpression*>(node));
@@ -2725,7 +2725,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ExpectedTypeCastExpression", node);
+		WriteType(vl::WString::Unmanaged(L"ExpectedTypeCastExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfVirtualCseExpression*>(node));
 		PrintFields(static_cast<WfExpectedTypeCastExpression*>(node));
@@ -2740,7 +2740,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"CoOperatorExpression", node);
+		WriteType(vl::WString::Unmanaged(L"CoOperatorExpression"), node);
 		PrintFields(static_cast<WfExpression*>(node));
 		PrintFields(static_cast<WfVirtualCseExpression*>(node));
 		PrintFields(static_cast<WfCoOperatorExpression*>(node));
@@ -2755,7 +2755,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ModuleUsingNameFragment", node);
+		WriteType(vl::WString::Unmanaged(L"ModuleUsingNameFragment"), node);
 		PrintFields(static_cast<WfModuleUsingFragment*>(node));
 		PrintFields(static_cast<WfModuleUsingNameFragment*>(node));
 		EndObject();
@@ -2769,7 +2769,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ModuleUsingWildCardFragment", node);
+		WriteType(vl::WString::Unmanaged(L"ModuleUsingWildCardFragment"), node);
 		PrintFields(static_cast<WfModuleUsingFragment*>(node));
 		PrintFields(static_cast<WfModuleUsingWildCardFragment*>(node));
 		EndObject();
@@ -2838,7 +2838,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Attribute", node);
+		WriteType(vl::WString::Unmanaged(L"Attribute"), node);
 		PrintFields(static_cast<WfAttribute*>(node));
 		EndObject();
 	}
@@ -2851,7 +2851,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"FunctionArgument", node);
+		WriteType(vl::WString::Unmanaged(L"FunctionArgument"), node);
 		PrintFields(static_cast<WfFunctionArgument*>(node));
 		EndObject();
 	}
@@ -2864,7 +2864,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"BaseConstructorCall", node);
+		WriteType(vl::WString::Unmanaged(L"BaseConstructorCall"), node);
 		PrintFields(static_cast<WfBaseConstructorCall*>(node));
 		EndObject();
 	}
@@ -2877,7 +2877,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EnumItemIntersection", node);
+		WriteType(vl::WString::Unmanaged(L"EnumItemIntersection"), node);
 		PrintFields(static_cast<WfEnumItemIntersection*>(node));
 		EndObject();
 	}
@@ -2890,7 +2890,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EnumItem", node);
+		WriteType(vl::WString::Unmanaged(L"EnumItem"), node);
 		PrintFields(static_cast<WfEnumItem*>(node));
 		EndObject();
 	}
@@ -2903,7 +2903,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StructMember", node);
+		WriteType(vl::WString::Unmanaged(L"StructMember"), node);
 		PrintFields(static_cast<WfStructMember*>(node));
 		EndObject();
 	}
@@ -2916,7 +2916,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StateInput", node);
+		WriteType(vl::WString::Unmanaged(L"StateInput"), node);
 		PrintFields(static_cast<WfStateInput*>(node));
 		EndObject();
 	}
@@ -2929,7 +2929,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StateDeclaration", node);
+		WriteType(vl::WString::Unmanaged(L"StateDeclaration"), node);
 		PrintFields(static_cast<WfStateDeclaration*>(node));
 		EndObject();
 	}
@@ -2942,7 +2942,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"SwitchCase", node);
+		WriteType(vl::WString::Unmanaged(L"SwitchCase"), node);
 		PrintFields(static_cast<WfSwitchCase*>(node));
 		EndObject();
 	}
@@ -2955,7 +2955,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StateSwitchArgument", node);
+		WriteType(vl::WString::Unmanaged(L"StateSwitchArgument"), node);
 		PrintFields(static_cast<WfStateSwitchArgument*>(node));
 		EndObject();
 	}
@@ -2968,7 +2968,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StateSwitchCase", node);
+		WriteType(vl::WString::Unmanaged(L"StateSwitchCase"), node);
 		PrintFields(static_cast<WfStateSwitchCase*>(node));
 		EndObject();
 	}
@@ -2981,7 +2981,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"LetVariable", node);
+		WriteType(vl::WString::Unmanaged(L"LetVariable"), node);
 		PrintFields(static_cast<WfLetVariable*>(node));
 		EndObject();
 	}
@@ -2994,7 +2994,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ConstructorArgument", node);
+		WriteType(vl::WString::Unmanaged(L"ConstructorArgument"), node);
 		PrintFields(static_cast<WfConstructorArgument*>(node));
 		EndObject();
 	}
@@ -3007,7 +3007,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ModuleUsingItem", node);
+		WriteType(vl::WString::Unmanaged(L"ModuleUsingItem"), node);
 		PrintFields(static_cast<WfModuleUsingItem*>(node));
 		EndObject();
 	}
@@ -3020,7 +3020,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ModuleUsingPath", node);
+		WriteType(vl::WString::Unmanaged(L"ModuleUsingPath"), node);
 		PrintFields(static_cast<WfModuleUsingPath*>(node));
 		EndObject();
 	}
@@ -3033,7 +3033,7 @@ namespace vl::workflow::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Module", node);
+		WriteType(vl::WString::Unmanaged(L"Module"), node);
 		PrintFields(static_cast<WfModule*>(node));
 		EndObject();
 	}
