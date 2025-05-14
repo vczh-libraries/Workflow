@@ -1781,14 +1781,14 @@ ValidateSemantic(Expression)
 									}
 								}
 
-								auto discardFirst = [=](const WString& key, const List<IMethodInfo*>& methods)
+								auto discardFirst = [=, this](const WString& key, const List<IMethodInfo*>& methods)
 									{
 										for (auto method : methods)
 										{
 											manager->errors.Add(WfErrors::InterfaceMethodNotImplemented(node, method));
 										}
 									};
-								auto discardSecond = [=](const WString& key, const List<Ptr<WfFunctionDeclaration>>& methods)
+								auto discardSecond = [=, this](const WString& key, const List<Ptr<WfFunctionDeclaration>>& methods)
 									{
 										for (auto decl : methods)
 										{
@@ -1802,7 +1802,7 @@ ValidateSemantic(Expression)
 									implementMethods,
 									discardFirst,
 									discardSecond,
-									[=](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
+									[=, this](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
 									{
 										Group<WString, IMethodInfo*> typedInterfaceMethods;
 										Group<WString, Ptr<WfFunctionDeclaration>> typedImplementMethods;
@@ -1824,7 +1824,7 @@ ValidateSemantic(Expression)
 											typedImplementMethods,
 											discardFirst,
 											discardSecond,
-											[=](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
+											[=, this](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
 											{
 												if (interfaces.Count() > 1)
 												{

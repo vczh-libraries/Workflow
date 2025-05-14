@@ -248,7 +248,7 @@ namespace vl
 				writer.WriteLine(L"");
 
 				if (From(customFilesClasses.Get(fileName))
-					.Any([=](Ptr<WfClassDeclaration> decl)
+					.Any([=, this](Ptr<WfClassDeclaration> decl)
 					{
 						return IsClassHasUserImplMethods(decl, true);
 					}))

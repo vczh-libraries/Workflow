@@ -227,7 +227,7 @@ TEST_FILE
 			blockOperatorEvent.CreateAutoUnsignal(false);
 			blockDebuggerEvent.CreateAutoUnsignal(false);
 			debuggerOperatorThread = Ptr(Thread::CreateAndStart(
-				[=]()
+				[=, this]()
 				{
 					debuggerOperator(this);
 				}, false));

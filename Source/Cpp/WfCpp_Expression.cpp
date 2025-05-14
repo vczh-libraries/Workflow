@@ -914,7 +914,7 @@ WfGenerateExpressionVisitor
 								if (index != -1)
 								{
 									ITypeInfo* types[] = { enumValueType.Obj(),result.type.Obj() };
-									ConvertMultipleTypes(types, (sizeof(types) / sizeof(*types)), [=]()
+									ConvertMultipleTypes(types, (sizeof(types) / sizeof(*types)), [=, this]()
 									{
 										writer.WriteString(config->ConvertType(result.type->GetTypeDescriptor()));
 										writer.WriteString(L"::");

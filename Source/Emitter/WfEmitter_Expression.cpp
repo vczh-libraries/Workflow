@@ -271,7 +271,7 @@ GenerateInstructions(Expression)
 
 					WfCodegenLambdaContext lc;
 					lc.orderedLambdaExpression = node;
-					auto functionIndex = AddClosure(context, lc, [=](vint index)
+					auto functionIndex = AddClosure(context, lc, [=, this](vint index)
 					{
 						return L"<lambda:(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
@@ -1053,7 +1053,7 @@ GenerateInstructions(Expression)
 				{
 					WfCodegenLambdaContext lc;
 					lc.functionExpression = node;
-					VisitFunction(context, node->function.Obj(), lc, [=](vint index)
+					VisitFunction(context, node->function.Obj(), lc, [=, this](vint index)
 					{
 						return L"<lambda:" + node->function->name.value + L"(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
@@ -1163,7 +1163,7 @@ GenerateInstructions(Expression)
 						{
 							WfCodegenLambdaContext lc;
 							lc.functionDeclaration = func.Obj();
-							auto functionIndex = AddClosure(context, lc, [=](vint index)
+							auto functionIndex = AddClosure(context, lc, [=, this](vint index)
 							{
 								return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
 							});
@@ -1179,7 +1179,7 @@ GenerateInstructions(Expression)
 							INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
 							WfCodegenLambdaContext lc;
 							lc.functionDeclaration = func.Obj();
-							VisitFunction(context, func.Obj(), lc, [=, &declVisitor](vint index)
+							VisitFunction(context, func.Obj(), lc, [=, this, &declVisitor](vint index)
 							{
 								return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index + declVisitor.closureFunctions.Count()) + L")> in " + context.functionContext->function->name;
 							});
