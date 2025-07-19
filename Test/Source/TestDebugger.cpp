@@ -191,7 +191,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<WString()>(context, L"Main")();
 		TEST_ASSERT(result == L"Hello, world!");
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	class MultithreadDebugger : public WfDebugger
@@ -290,7 +290,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<WString()>(context, L"Main")();
 		TEST_ASSERT(result == L"three");
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: stop")
@@ -323,7 +323,7 @@ TEST_FILE
 		{
 			TEST_ASSERT(ex.Message() == L"Internal error: Debugger stopped the program.");
 		}
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: stop while running")
@@ -369,7 +369,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<WString()>(context, L"Main")();
 		TEST_ASSERT(result == L"three");
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: step over 2")
@@ -405,7 +405,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<WString()>(context, L"Main")();
 		TEST_ASSERT(result == L"three");
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: step over 3")
@@ -441,7 +441,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<vint()>(context, L"Main")();
 		TEST_ASSERT(result == 3);
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: step into 1")
@@ -477,7 +477,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<WString()>(context, L"Main")();
 		TEST_ASSERT(result == L"three");
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: step into 2")
@@ -513,7 +513,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<WString()>(context, L"Main")();
 		TEST_ASSERT(result == L"three");
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: step into 3")
@@ -549,7 +549,7 @@ TEST_FILE
 		LoadFunction<void()>(context, L"<initialize>")();
 		auto result = LoadFunction<vint()>(context, L"Main")();
 		TEST_ASSERT(result == 3);
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: integration 1")
@@ -598,7 +598,7 @@ TEST_FILE
 
 		LoadFunction<void()>(context, L"<initialize>")();
 		LoadFunction<void()>(context, L"Main")();
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: integration 2")
@@ -664,7 +664,7 @@ TEST_FILE
 
 		LoadFunction<void()>(context, L"<initialize>")();
 		LoadFunction<void()>(context, L"Main")();
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	auto AssertException = [](Ptr<WfRuntimeExceptionInfo> info, bool uncatch)
@@ -732,7 +732,7 @@ TEST_FILE
 			TEST_ASSERT(ex.IsFatal() == false);
 			AssertException(ex.GetInfo(), true);
 		}
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: exception 2")
@@ -768,7 +768,7 @@ TEST_FILE
 			TEST_ASSERT(ex.IsFatal() == false);
 			AssertException(ex.GetInfo(), true);
 		}
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: exception 3")
@@ -804,7 +804,7 @@ TEST_FILE
 			TEST_ASSERT(ex.IsFatal() == false);
 			AssertException(ex.GetInfo(), true);
 		}
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 
 	TEST_CASE(L"Test debugger: exception 4")
@@ -838,6 +838,6 @@ TEST_FILE
 		{
 			TEST_ASSERT(ex.Message() == L"Internal error: Debugger stopped the program.");
 		}
-		SetDebuggerForCurrentThread(nullptr);
+		ResetDebuggerForCurrentThread();
 	});
 }
