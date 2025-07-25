@@ -51,6 +51,14 @@
 
 - Attributes.
   - Add attributes to `VlppReflection` metadata.
+  - Make attributes `X` be `reflection_metadata::XAttribute` instead of hardcoding in the compiler constructor.
+    - Define and reflect all `Cpp*` attributes.
+    - `@Attribute` must be applied to the struct to make it recognizable (needs VlppReflection metadata support).
+    - In metadata only the short type name is kept as a string.
+    - It becomes a struct, arguments initialize all fields in order, no default value.
+    - Only allow limited primitive types as field types.
+      - C++ registered attributes will also be checked when applied.
+    - (optional) User defined attributes in Workflow.
   - Some "RPC" atttributes.
 - Dealing with predefined interfaces:
   - `IAsync`, implemented into the protocol.
