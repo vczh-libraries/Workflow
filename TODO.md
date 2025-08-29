@@ -6,6 +6,7 @@
   - while `F((let X = Y.a.b).c)` works
 - Windows and Linux test output inconsistecy on
   - Token index different (but row and column are consistent) due to `\r\n` and `\n`.
+  - We can force `\r\n` in unit test, normalizing all inputs.
 - Compiler complexity could be O(n2) which makes big single GacXML compilation slow.
 - Figure it out: https://github.com/vczh-libraries/Workflow/commit/01663cd6b75f018d7405151a66820743c2115898
   - Only crash in Release x64
