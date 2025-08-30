@@ -50,6 +50,38 @@
 
 ## ViewModel Remoting C++ Codegen
 
+### Dedicated repo for RPC
+
+- RPC compiler for remote protocols and object models
+  - GacUI will call it to generate the remote protocol for GacUI Core so a file renaming might be necessary.
+- RPC routers for communicating multiple protocol clients with one server on multiple protocols at the same time.
+  - Channels will be moved here from GacUI.
+  - There are some helpers defined in GacUI remote protocol but they requires generated C++ code to work. Consider offering a general solution, e.g., generate them together.
+- RPC library defines a remote protocol for object models.
+  - There will be a centralized object model servers.
+  - Interface implementations could be offered in the server itself, or in different clients.
+  - Clients only talk to the server directly, server will redirect requests if clients need to talk to each other.
+  - When an interface is defined as a service, only one live instances will be allowed, clients could request its instance by its full name.
+- RPC compiler for object models, generating C++ code for serialization, interfaces and implementation of interfaces that would interact with the remote protocol for object models.
+  - remote protocols and object models will share the same "value type" definition.
+  - all interface instances must be shared pointer.
+- when full reflection is on, the serialization built on top of reflection will be offered, it can starts without any extra C++ code.
+  - value type serialization.
+  - interface implementation for invoker, the real implementaiton is in remote.
+  - local interface implementation can be handled by a class that implements it.
+  - it requires metadata of them are ready, cannot just boost from a object model definition.
+- Runtime life cycle management.
+  - When sending a shared pointer from one side to another:
+    - Before a method is answered (responded with a return value), all passing objects are alive.
+    - Necessary lifetime notification must be sent before answering a method including:
+      - A client keeps an object alive.
+      - A client doesn't keep an object alive.
+- Support `IAsync` as function return values.
+- Support collections in both lazy and serializable ways.
+  - It is decided in function signatures.
+
+### Improvements to Workflow
+
 - Attributes.
   - Add attributes to `VlppReflection` metadata.
   - Make attributes `X` be `reflection_metadata::XAttribute` instead of hardcoding in the compiler constructor.
@@ -61,44 +93,18 @@
       - C++ registered attributes will also be checked when applied.
     - (optional) User defined attributes in Workflow.
   - Some "RPC" atttributes.
-- Dealing with predefined interfaces:
-  - `IAsync`, implemented into the protocol.
-  - Collections interfaces, RPC could choose a return value of an argument to be
-    - Lazy, methods implemented into the protocol.
-    - Serializable, the whole collection is sent as data.
-- Server and clients
-  - The whole RPC is hosted by a server.
-  - Multiple clients could connect to the server.
-  - A client only talks to the server, a server talks to all clients.
-  - When one client accesses an object that implements by another client, the server redirect requests between these clients.
-- Implementation of interfaces:
-  - Service interface:
-    - There can be only one instance that implements such interface and it is implemented in the known client.
-    - The instance of such interface could be passed around.
-      - When an instance of such interface is processed in the RPC server, it will check if this is the only instance.
-  - Object interface:
-    - There is no limitation of implementation of such interface.
-    - Object id and client id defines an instance.
-- RPC details:
-  - Requires all pointers are shared.
-  - When sending a shared pointer from one side to another:
-    - Before a method is answered, all passing objects are alive.
-    - Necessary lifetime notification must be sent before answering a method including:
-      - A client need to keep an object alive.
-      - A client doesn't need an object to be alive.
-- Boilerplate codes to be generated:
-  - Implementation of interfaces, when calling it, it talks to the server or client.
-  - Implementation of requests, when being called, it talks to local objects.
-  - Connection processing is not included.
-- Tool chain:
-  - Metadata could be also serialized to JSON, but cannot be deserialized from JSON.
-  - A stand alone tool that compiles interfaces with RPC attributes, read from metadata.
-    - Source code will be integrated into GacGen.
-    - It generates files about RPC:
-      - Extra metadata for the RPC.
-      - Server and client boilerplate code for Workflow.
-      - Server and client boilerplate code for C++.
-        - Reflectable.
+
+### Details
+
+- Prepare attributes for object model.
+  - Wnen a struct is RPC serializable:
+    - Workflow will generates it normally in assembly.
+    - Workflow will not generate it in C++.
+  - When an interface is RPC serializable:
+    - Workflow will generates it normally in assembly.
+    - Workflow will not generate it in C++.
+  - Consider how to offer a class as a RPC service implementation in Workflow.
+  - Workflow will generate an object model definition, the RPC compiler will take it and generate C++ code.
 
 ## Optional
 
