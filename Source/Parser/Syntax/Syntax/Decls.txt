@@ -102,21 +102,29 @@ _Class
     ::= "interface" NAME : name "*" _ClassBody as ClassDeclaration {kind = Interface, constructorType = RawPtr}
     ;
 
+_EnumItemNumber
+    ::= INTEGER : number as partial EnumItem {kind = Constant}
+    ;
+
 _EnumItemInt
     ::= NAME : name as EnumItemIntersection
     ;
 
-_EnumItemA
-    ::= {_Attribute : attributes} NAME : name "=" INTEGER : number "," as EnumItem {kind = Constant}
+_EnumItemFlags
+    ::= _EnumItemInt : intersections {"|" _EnumItemInt : intersections} as partial EnumItem {kind = Intersection}
     ;
 
-_EnumItemB
-    ::= {_Attribute : attributes} NAME : name "=" _EnumItemInt : intersections {"|" _EnumItemInt : intersections} "," as EnumItem {kind = Intersection}
+_EnumItem
+    ::= {_Attribute : attributes} NAME : name "=" _EnumItemNumber"," as EnumItem
+    ;
+
+_EnumItemWithFlags
+    ::= {_Attribute : attributes} NAME : name "=" (_EnumItemNumber | _EnumItemFlags) "," as EnumItem
     ;
 
 _Enum
-    ::= "enum" NAME : name "{" _EnumItemA : items {_EnumItemA : items} "}" as EnumDeclaration {kind = Normal}
-    ::= "flagenum" NAME : name "{" _EnumItemA : items {_EnumItemA : items} {_EnumItemB : items} "}" as EnumDeclaration {kind = Flag}
+    ::= "enum" NAME : name "{" _EnumItem : items {_EnumItem : items} "}" as EnumDeclaration {kind = Normal}
+    ::= "flagenum" NAME : name "{" _EnumItemWithFlags : items {_EnumItemWithFlags : items} "}" as EnumDeclaration {kind = Flag}
     ;
 
 _StructMember
