@@ -166,7 +166,25 @@ WString LoadSample(const WString& sampleName, const WString& itemName)
 	BomDecoder decoder;
 	DecoderStream decoderStream(fileStream, decoder);
 	StreamReader reader(decoderStream);
-	return reader.ReadToEnd();
+
+	return GenerateToStream([&](TextWriter& writer)
+	{
+		List<WString> lines;
+		while (!reader.IsEnd())
+		{
+			lines.Add(reader.ReadLine());
+		}
+
+		while (lines.Count() > 0 && lines[lines.Count() - 1] == WString::Empty)
+		{
+			lines.RemoveAt(lines.Count() - 1);
+		}
+
+		for (auto&& line : lines)
+		{
+			writer.WriteLine(line);
+		}
+	});
 }
 
 void LoadSampleAssemblyBinary(const WString& sampleName, const WString& itemName, Ptr<WfAssembly>& assembly)
