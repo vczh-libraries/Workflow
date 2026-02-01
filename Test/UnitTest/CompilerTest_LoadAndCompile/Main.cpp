@@ -80,6 +80,33 @@ void UnloadTypes()
 	testTypeLoader = nullptr;
 }
 
+void AssertLines(const WString& expectedString, const WString& actualString)
+{
+	List<WString> expected, actual;
+	{
+		StringReader reader(expectedString);
+		while (!reader.IsEnd())
+		{
+			expected.Add(reader.ReadLine());
+		}
+	}
+	{
+		StringReader reader(actualString);
+		while (!reader.IsEnd())
+		{
+			actual.Add(reader.ReadLine());
+		}
+	}
+
+	TEST_ASSERT(expected.Count() == actual.Count());
+	for (vint i = 0; i < expected.Count(); i++)
+	{
+		auto se = expected[i];
+		auto sa = actual[i];
+		TEST_ASSERT(se == sa);
+	}
+}
+
 TEST_FILE
 {
 	TEST_CASE(L"Run LoadMetaonlyTypes()")
@@ -92,9 +119,9 @@ TEST_FILE
 			LogTypeManager(writer);
 		}
 		{
-			auto first = File(GetTestOutputBasePath() + REFLECTION_BASELINE()).ReadAllTextByBom();
-			auto second = File(GetTestOutputBasePath() + REFLECTION_OUTPUT()).ReadAllTextByBom();
-			TEST_ASSERT(first == second);
+			auto expectedString = File(GetTestOutputBasePath() + REFLECTION_BASELINE()).ReadAllTextByBom();
+			auto actualString = File(GetTestOutputBasePath() + REFLECTION_OUTPUT()).ReadAllTextByBom();
+			AssertLines(expectedString, actualString);
 		}
 	});
 }
