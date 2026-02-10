@@ -9,58 +9,65 @@
   - Only crash in Release x64
   - `ResetDebuggerForCurrentThread` is created as a workaround
 
-## Progressing
+## Workflow Interface Based RPC
 
-## 2.0
-
-- Generated C++ code try not to create IValueList if apply `{1 2 3}` on `List<int>` argument.
-- Dump binary type metadata including only new types created in Workflow.
-- In generated C++ code, when a collection instance is required from an interface:
-  - Try to cast to the collection instance directly using the pointer inside the implementation of the interface.
-  - Create the collection instance and copy all the data if the above step failed.
-
-## Dedicated repo for RPC
-
-- RPC compiler for remote protocols and object models
-  - GacUI will call it to generate the remote protocol for GacUI Core so a file renaming might be necessary.
-- RPC routers for communicating multiple protocol clients with one server on multiple protocols at the same time.
-  - Channels will be moved here from GacUI.
-  - There are some helpers defined in GacUI remote protocol but they requires generated C++ code to work. Consider offering a general solution, e.g., generate them together.
-- RPC library defines a remote protocol for object models.
-  - There will be a centralized object model servers.
-  - Interface implementations could be offered in the server itself, or in different clients.
-  - Clients only talk to the server directly, server will redirect requests if clients need to talk to each other.
-  - When an interface is defined as a service, only one live instances will be allowed, clients could request its instance by its full name.
-- RPC compiler for object models.
-- RPC C++ code generation.
-  - Remote protocols and object models will share the same "value type" definition.
-  - All interface instances must be shared pointer.
-  - Generated code includes:
-    - value types and interface types.
-    - interface implementation for invoker, the real implementaiton is in remote.
-    - interface interaction with incoming calls from the remote protocol, such interfaces can be implemented locally.
-- RPC Workflow code generation.
-  - When full reflection is on, the generated Workflow code responsible to run the object model.
-  - Generated code includes: everything like C++ code generation.
-- Runtime life cycle management.
-  - When sending a shared pointer from one side to another:
-    - Before a method is answered (responded with a return value), all passing objects are alive.
-    - Necessary lifetime notification must be sent before answering a method including:
-      - A client keeps an object alive.
-      - A client doesn't keep an object alive.
-- Support `IAsync` as function return values.
-- Support collections in both lazy and serializable ways.
-  - It is decided in function signatures.
+- Allowed Types:
+  - Interfaces (`@rpc:*`)
+  - Enums
+  - Serializable Primitive Types with string (by `VlppReflection`)
+  - Structs, all members must be serializable primitive types or qualified structs
+  - Predefined Container Types
+- Attributes:
+  - `@rpc:Interface` on interface, all members should be serializable.
+    - `@rpc:ctor` on interface, all members should be serializable, and an constructor will be offered by a client.
+    - They are required and exclusive on any serializable interface.
+  - `@rpc:byval` or `@rpc:byref` on property, on method (for return value), on parameter, representing that such container is:
+    - **by value**: the whole collection is sent to a client, and it doesn't keep track on changes from the other side.
+      - It only works when the element types are not interfaces.
+      - If its element types are collection type, they are passed **by value** as well.
+    - **by reference**: the collection is treated as remote object.
+      - If its element types are collection type, they are passed **by reference** as well.
+    - They are exclusive. The default option is `@rpc:byref`.
+  - `@rpc:cached` or `@rpc:dynamic` on property, for any cached property:
+    - The property value will not change.
+    - The cache will refresh if the associated changed event occurs.
+    - If there is no associated changed event, the cache will never refresh.
+    - Values of cached properties will be sent along with the remote object to any client.
+    - They are required and exclusive on any qualified property. When it is on an inteface, it becomes the default option on any qualified property.
+- Dedicated interfaces for delegate actual sending/receiving implementation.
+  - Interface for executing tasks in a dedicated thread. When an interface is running as GacUI view model, the interface will be implemented by GacUI so that everything runs in main thread.
+  - Registration and a central server implementation, will signal all clients when all interface constructors are ready.
+  - The client could run in the same thread with the server.
+  - Generic is introduced to decouple the actual serialization result.
+    - Default JSON implementation.
+    - Implementation for invoker interface (acts like reflection) and protocol sending/receiving interfaces will be offered by client.
+    - A set of messages are defined, but they do not depends on actual RPC interfaces. Types (int for id), methods (int for id) and arguments are all dynamic.
+- Life cycle management
+  - All arguments will be alive until the method being invoked is responded.
+  - Any client could require an object to be alive and release later.
+- C++ code generation:
+  - Interfaces are forced to use `Ptr<T>`.
+  - Type serialization with JSON.
+  - Invoker interface implementation to bridge the actual remote implementation, any remote objects will create such implementation so that local code can call.
+- All C++ code generated thing will have a runtime implementation therefore RPC can run immediately with a Workflow compiler.
+  - Type implementation.
+  - Invoker interface implementation.
 
 ## Improvements
+
+### GacGen Awareness
+
+- Dump binary type metadata including only new types created in Workflow. Need `VlppReflection` supporting.
 
 ### Attributes
 
 - Attributes.
   - Add attributes to `VlppReflection` metadata.
-  - Make attributes `X` be `reflection_metadata::XAttribute` instead of hardcoding in the compiler constructor.
-    - Define and reflect all `Cpp*` attributes.
-    - `@Attribute` must be applied to the struct to make it recognizable (needs VlppReflection metadata support).
+    - Parameters must be enum of serializable primitive types.
+    - Attribute name will be referenced by its `ITypeDescriptor`.
+  - An attribute `X` becomes a `vl::reflection_metadata::XAttribute` struct instead of hardcoding in the compiler constructor.
+    - Define and reflect all `@cpp:*` and `@rpc:*` attributes.
+    - `@cpp:Attribute` must be applied to the struct to make it recognizable (needs VlppReflection metadata support).
     - In metadata only the short type name is kept as a string.
     - It becomes a struct, arguments initialize all fields in order, no default value.
     - Only allow limited primitive types as field types.
@@ -93,6 +100,13 @@
 - In `bind(...)` expression, add an annotation to convert `IAsync<T>` to `T`, could be `await` expression.
 - If multiple `IAsync` don't depend on each other, they could be awaited parallelly.
 - When a bind expression need to be re-evaluate, if there are still unfinished `IAsync<T>`, cancel and ignore all of them.
+
+## C++ Code Generation
+
+- Generated C++ code try not to create IValueList if apply `{1 2 3}` on `List<int>` argument.
+- In generated C++ code, when a collection instance is required from an interface:
+  - Try to cast to the collection instance directly using the pointer inside the implementation of the interface.
+  - Create the collection instance and copy all the data if the above step failed.
 
 ## Optional
 
