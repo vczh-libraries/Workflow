@@ -5,6 +5,7 @@
 - `let X = Y in (F(X.a.b.c))` reports `X does not exist in the current scope` in binding property value
   - while `F((let X = Y.a.b).c)` works
 - Compiler complexity could be O(n2) which makes big single GacXML compilation slow.
+  - or not complexity problem but just AST pooling?
 - Figure it out: https://github.com/vczh-libraries/Workflow/commit/01663cd6b75f018d7405151a66820743c2115898
   - Only crash in Release x64
   - `ResetDebuggerForCurrentThread` is created as a workaround
