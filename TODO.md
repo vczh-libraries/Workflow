@@ -11,6 +11,28 @@
 
 ## Workflow Interface Based RPC
 
+### Preparation
+
+- Move the type serialization part from remote protocol to here and become part of the workflow supporting library
+  - Parser
+  - JSON serialization
+  - Binary serialization
+  - Metadata saving
+- Refactor GacUI and ensure GacJS bot affected
+  - Might have namespace changing but we should allow to specify namespace for generated C++ data type
+
+### Thoughts
+
+- Serialization data types and interfaces for view model will generate serialization protocol data types
+- Ensure generated C++ code works
+- Ensure metadata of view model (need a workflow term not GacUI term) and protocol data types
+  - Messages for interfaces should be easily inferred or hard coded
+- Reflection enabled implementation when serialization view models are launched purely by interpretation
+  - both caller side and callee side
+  - ensured by unit test, it will be executed directly and generate C++ unit test just like normal workflow script testing
+
+### Definitions
+
 - Allowed Types:
   - Interfaces (`@rpc:*`)
   - Enums
