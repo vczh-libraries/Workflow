@@ -122,6 +122,156 @@ Without a debugger, `NtGlobalFlag = 0` and the normal (non-debug) heap is used. 
 
 In Debug builds, optimizations are disabled, so the compiler does not attempt to cache `xmm0 = 0` across the try-catch boundary. In Win32 builds, the different calling convention and register allocation strategy may avoid the issue. The bug is specific to the x64 Release optimizer's register allocation decisions.
 
+### Full Annotated Disassembly
+
+#### Caller: Lambda in "Test debugger: exception 4" (TestDebugger.cpp)
+
+This is the full disassembly of the caller function surrounding the try-catch and the subsequent `SetDebuggerForCurrentThread(nullptr)` call. All offsets are relative to the function base.
+
+**Prologue and setup:**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7000` | `sub rsp,0C8h` | Allocate 200 bytes of stack space for locals and call arguments |
+| `7007` | `mov [rsp+0B8h],r14` | Save callee-saved register `r14` (will be restored in epilogue) |
+| `700f` | `mov r14,rcx` | Save first argument (`WfAssemblyLoadContext* context`) into `r14` |
+
+**Call `LoadFunction<void()>(context, L"<initialize>")()`:**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7012` | `lea rdx,[...L"<initialize>"]` | Load pointer to the wide string literal |
+| `7019` | `lea rcx,[rsp+70h]` | Output slot for the returned function object |
+| `701e` | `mov r8,r14` | Third arg = context |
+| `7021` | `call LoadFunction<void()>` | Call helper to look up the `<initialize>` function |
+| `7026` | `lea rcx,[rsp+70h]` | `this` pointer to the returned function object |
+| `702b` | `call [function_object::operator()]` | Invoke `<initialize>()` |
+| `702e` | `lea rcx,[rsp+70h]` | Destroy the temporary function object |
+| `7033` | `call [function_object::~dtor]` | Destructor call |
+
+**Begin try block — call `LoadFunction<vint()>(context, L"Main2")()`:**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7038` | `lea rdx,[...L"Main2"]` | Load pointer to the `"Main2"` string literal |
+| `703f` | `lea rcx,[rsp+70h]` | Output slot for the returned function object |
+| `7044` | `mov r8,r14` | Third arg = context |
+| `7047` | `call LoadFunction<vint()>` | Look up the `Main2` function |
+| `704c` | `lea rcx,[rsp+70h]` | `this` pointer |
+| `7051` | `call [function_object::operator()]` | Invoke `Main2()` — this **throws** `WfRuntimeException` |
+
+**Normal flow (never reached because Main2 throws):**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7054` | `lea rcx,[rsp+70h]` | Destroy the `Main2` function object |
+| `7059` | `call [function_object::~dtor]` | Destructor call |
+| `705c` | `xor ecx,ecx` | Prepare `false` argument |
+| `705e` | `call TEST_ASSERT` | `TEST_ASSERT(false)` — would fail if reached |
+
+**After try-block normal exit (no exception):**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7063` | `xorps xmm0,xmm0` | Zero `xmm0` for constructing null `Ptr` |
+| `7066` | `movdqu [rsp+98h],xmm0` | Write first 16 bytes (counter + reference) = 0 |
+| `706f` | `xor edi,edi` | Zero `edi` |
+| `7071` | `mov [rsp+0A8h],rdi` | Write 3rd field (originalReference) = 0 |
+| `7079` | `mov [rsp+0B0h],rdi` | Write 4th field (originalDestructor) = 0 |
+| `7081` | `lea rcx,[rsp+98h]` | Address of the null `Ptr` |
+| `7089` | `call SetDebuggerForCurrentThread` | Call with null `Ptr` |
+| `708e` | `lea rcx,[rsp+98h]` | Address of the `Ptr` for destruction |
+| `7096` | `call Ptr::~Ptr` | Destroy the temporary `Ptr` |
+| `709b` | `mov r14,[rsp+0B8h]` | Restore callee-saved `r14` |
+| `70a3` | `add rsp,0C8h` | Deallocate stack |
+| `70aa` | `ret` | Return (normal-exit path) |
+
+**Catch handler funclet** (`catch (const WfRuntimeException& ex)`):
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7500` | `mov [rsp+8],rcx` | Save `rcx` (funclet receives exception frame pointer) |
+| `7505` | `push rbp` | Save frame pointer |
+| `7506` | `sub rsp,30h` | Allocate local space |
+| `750a` | `mov rbp,[rcx+...]` | Restore parent's frame pointer from the exception frame |
+
+**Inside catch: `TEST_ASSERT(ex.Message() == L"...")`:**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7511` | `lea rcx,[rsp+20h]` | Output slot for `WString` returned by `Message()` |
+| `7516` | `mov rdx,[rbp-...]` | `this` pointer of the caught exception object |
+| `751a` | `call WfRuntimeException::Message` | Get the exception's message string |
+| `751f` | `lea rdx,[...L"Internal error:..."]` | Load expected message string |
+| `7526` | `lea rcx,[rsp+20h]` | `this` pointer of the returned `WString` |
+| `752b` | `call WString::operator==` | Compare the message |
+| `7530` | `mov ecx,eax` | Result (bool) into `ecx` for `TEST_ASSERT` |
+| `7532` | `call TEST_ASSERT` | Assert the comparison is true |
+| `7537` | `lea rcx,[rsp+20h]` | Destroy the temporary `WString` |
+| `753c` | `call WString::~WString` | Destructor for temporary |
+
+**Post-assert code still inside catch funclet:**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `753d` | `xorps xmm0,xmm0` | **Zero `xmm0`** — optimizer pre-caches zero for post-catch `Ptr` construction |
+| ... | | *(The catch funclet returns here. EH runtime resumes at recovery point.)* |
+
+**Catch handler epilogue and return:**
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `7594` | `add rsp,30h` | Deallocate catch funclet locals |
+| `7598` | `pop rbp` | Restore frame pointer |
+| `7599` | `ret` | Return to `_CxxCallCatchBlock` in the EH runtime |
+
+**Exception recovery point** (reached via EH runtime after catch handler returns):
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `759e` | `movdqu [rsp+98h],xmm0` | **BUG**: Writes first 16 bytes of `Ptr` using **stale** `xmm0` (clobbered by EH runtime) |
+| `75a7` | `xor edi,edi` | **Correctly** re-zeros `edi` (compiler recognizes it's volatile across EH boundary) |
+| `75a9` | `mov [rsp+0A8h],rdi` | Writes 3rd field (originalReference) = 0 ✓ |
+| `75b1` | `mov [rsp+0B0h],rdi` | Writes 4th field (originalDestructor) = 0 ✓ |
+| `75b9` | `lea rcx,[rsp+98h]` | Address of the (corrupted) `Ptr` parameter |
+| `75c1` | `call SetDebuggerForCurrentThread` | **CRASH** — passes `Ptr` with garbage counter/reference |
+
+> **The single bug**: At `759e`, the compiler should have emitted `xorps xmm0,xmm0` (as it does at `75a7` for `edi`) before using `xmm0` to write the null `Ptr`. It correctly handles `edi` as volatile across the EH boundary, but omits the same treatment for `xmm0`.
+
+#### Callee: `SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger)`
+
+This function receives a `Ptr<WfDebugger>` by value (passed via hidden pointer in `rcx`). It copies the parameter into the thread-local variable via `threadDebugger.Set(debugger)`.
+
+| Offset | Instruction | Explanation |
+|--------|-------------|-------------|
+| `d530` | `sub rsp,48h` | Allocate 72 bytes of stack space |
+| `d534` | `mov rax,[rcx]` | Load `debugger.counter` — this is `0x50000163` (garbage) when corrupted |
+| `d537` | `mov [rsp+28h],rax` | Store counter into local copy (for the `new Ptr(debugger)` inside `Set`) |
+| `d53c` | `mov rax,[rcx+8]` | Load `debugger.reference` |
+| `d540` | `mov [rsp+30h],rax` | Store reference into local copy |
+| `d545` | `mov rax,[rcx+10h]` | Load `debugger.originalReference` |
+| `d549` | `mov [rsp+38h],rax` | Store originalReference into local copy |
+| `d54e` | `mov rax,[rcx+18h]` | Load `debugger.originalDestructor` |
+| `d552` | `mov [rsp+40h],rax` | Store originalDestructor into local copy |
+| `d557` | `mov r8,[rsp+28h]` | Load counter pointer into `r8` for `Inc()` |
+| `d55c` | `test r8,r8` | Check if counter is null (null means no ref counting needed) |
+| `d55f` | `je d566` | Skip `Inc()` if counter is null |
+| `d561` | `lock inc qword ptr [r8]` | **CRASH HERE**: Atomically increment `*counter` — but `r8 = 0x50000163` (unmapped) → **Access Violation** |
+| `d566` | `lea rdx,[rsp+28h]` | Address of local `Ptr` copy (the `new Ptr` argument for `Set`) |
+| `d56b` | `lea rcx,[threadDebugger]` | Address of the `ThreadVariable<Ptr<WfDebugger>>` static |
+| `d572` | `call ThreadVariable::Set` | Store the debugger into thread-local storage |
+| `d577` | `mov r8,[rsp+28h]` | Load counter from local copy for `Dec()` (cleanup) |
+| `d57c` | `test r8,r8` | Check if counter is null |
+| `d57f` | `je d5de` | Skip `Dec()` if null — jump to epilogue |
+| `d581` | `lock dec qword ptr [r8]` | Atomically decrement `*counter` |
+| `d585` | `jne d5de` | If refcount > 0 after dec, skip destruction — jump to epilogue |
+| `d587` | `mov rcx,[rsp+28h]` | (refcount hit zero) Load counter for deletion |
+| ... | *(destructor chain)* | Delete the reference-counted object |
+| `d5de` | `add rsp,48h` | Deallocate stack |
+| `d5e2` | `ret` | Return |
+
+> The callee is correct. It faithfully reads whatever the caller placed on the stack. The corruption is entirely in the caller's construction of the `Ptr` parameter.
+
 ## Workaround
 
 The workaround (in commit `01663cd6b75f018d7405151a66820743c2115898`, which the latest commit reverts) avoids the bug by:
