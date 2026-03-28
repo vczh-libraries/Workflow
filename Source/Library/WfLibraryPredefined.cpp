@@ -891,6 +891,28 @@ Localization
 			{
 				return locale.FormatCurrency(number);
 			}
+
+/***********************************************************************
+Versioning
+***********************************************************************/
+
+			Versioning::Versioning()
+			{
+			}
+
+			Versioning::~Versioning()
+			{
+			}
+
+			vint Versioning::AllocateVersion()
+			{
+				return ++version;
+			}
+
+			vint Versioning::GetVersion()
+			{
+				return version;
+			}
 		}
 	}
 }

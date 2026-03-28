@@ -414,6 +414,23 @@ Libraries
 				static WString							FormatNumber(Locale locale, const WString& number);
 				static WString							FormatCurrency(Locale locale, const WString& number);
 			};
+
+/***********************************************************************
+MISC
+***********************************************************************/
+
+			class Versioning : public Object, public Description<Versioning>
+			{
+			protected:
+				vint					version = 0;
+
+			public:
+				Versioning();
+				~Versioning();
+
+				vint					AllocateVersion();
+				vint					GetVersion();
+			};
 		}
 	}
 }

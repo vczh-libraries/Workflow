@@ -42,6 +42,7 @@ Predefined Types
 			F(AsyncCoroutine::IImpl)		\
 			F(AsyncCoroutine)				\
 			F(StateMachine)					\
+			F(Versioning)					\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)
 

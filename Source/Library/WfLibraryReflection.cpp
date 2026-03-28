@@ -35,6 +35,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine::IImpl, system::AsyncCoroutine::IImpl)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine, system::AsyncCoroutine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
 
 #endif
 
@@ -239,6 +240,12 @@ WfLoadLibraryTypes
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(StateMachineStatus)
 			END_CLASS_MEMBER(StateMachine)
+
+			BEGIN_CLASS_MEMBER(Versioning)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<Versioning>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(AllocateVersion, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Version)
+			END_CLASS_MEMBER(Versioning)
 #undef _
 
 			class WfLibraryTypeLoader : public Object, public ITypeLoader
