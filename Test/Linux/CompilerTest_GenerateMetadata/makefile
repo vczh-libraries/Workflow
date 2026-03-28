@@ -42,7 +42,7 @@ all:pre-build ./Bin/UnitTest
 ./Obj/VlppRegex.o: ../../../Import/VlppRegex.cpp ../../../Import/VlppRegex.h ../../../Import/Vlpp.h ../../../Import/VlppOS.h
 	$(CPP_COMPILE)
 
-./Obj/WfLibraryCppHelper.o: ../../../Source/Library/WfLibraryCppHelper.cpp ../../../Source/Library/WfLibraryCppHelper.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+./Obj/WfLibraryCppHelper.o: ../../../Source/Library/WfLibraryCppHelper.cpp ../../../Source/Library/WfLibraryCppHelper.h ../../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
 	$(CPP_COMPILE)
 
 ./Obj/WfLibraryPredefined.o: ../../../Source/Library/WfLibraryPredefined.cpp ../../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
@@ -51,8 +51,8 @@ all:pre-build ./Bin/UnitTest
 ./Obj/WfLibraryReflection.o: ../../../Source/Library/WfLibraryReflection.cpp ../../../Source/Library/WfLibraryReflection.h ../../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
 	$(CPP_COMPILE)
 
-./Obj/CppTypes.o: ../../Source/CppTypes.cpp ../../Source/CppTypes.h ../../../Import/Vlpp.h ../../Source/../../Source/Library/WfLibraryCppHelper.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/VlppRegex.h ../../Source/../../Source/Library/WfLibraryReflection.h ../../Source/../../Source/Library/WfLibraryPredefined.h
+./Obj/CppTypes.o: ../../Source/CppTypes.cpp ../../Source/CppTypes.h ../../../Import/Vlpp.h ../../Source/../../Source/Library/WfLibraryCppHelper.h ../../Source/../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/VlppRegex.h ../../Source/../../Source/Library/WfLibraryReflection.h
 	$(CPP_COMPILE)
 
-./Obj/Main.o: ../../UnitTest/CompilerTest_GenerateMetadata/Main.cpp ../../../Import/VlppGlrParser.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../UnitTest/CompilerTest_GenerateMetadata/../../../Source/Library/WfLibraryReflection.h ../../UnitTest/CompilerTest_GenerateMetadata/../../../Source/Library/WfLibraryPredefined.h ../../UnitTest/CompilerTest_GenerateMetadata/../../Source/CppTypes.h ../../UnitTest/CompilerTest_GenerateMetadata/../../Source/../../Source/Library/WfLibraryCppHelper.h ../../UnitTest/CompilerTest_GenerateMetadata/../../Source/../../Source/Library/WfLibraryReflection.h
+./Obj/Main.o: ../../UnitTest/CompilerTest_GenerateMetadata/Main.cpp ../../../Import/VlppGlrParser.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../UnitTest/CompilerTest_GenerateMetadata/../../../Source/Library/WfLibraryReflection.h ../../UnitTest/CompilerTest_GenerateMetadata/../../../Source/Library/WfLibraryPredefined.h ../../UnitTest/CompilerTest_GenerateMetadata/../../Source/CppTypes.h ../../UnitTest/CompilerTest_GenerateMetadata/../../Source/../../Source/Library/WfLibraryCppHelper.h ../../UnitTest/CompilerTest_GenerateMetadata/../../Source/../../Source/Library/WfLibraryPredefined.h ../../UnitTest/CompilerTest_GenerateMetadata/../../Source/../../Source/Library/WfLibraryReflection.h
 	$(CPP_COMPILE)
