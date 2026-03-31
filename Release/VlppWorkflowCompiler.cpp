@@ -24358,7 +24358,7 @@ GenerateAssembly
 					{
 						if (list.Count() > 1)
 						{
-							Sort(&list[0], list.Count(), [](const auto& a, const auto& b)
+							collections::Sort(&list[0], list.Count(), [](const auto& a, const auto& b)
 							{
 								return a->GetTypeName() <=> b->GetTypeName();
 							});
