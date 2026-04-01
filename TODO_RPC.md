@@ -21,6 +21,8 @@
 - Serializable Primitive Types with string (by `VlppReflection`)
 - Structs, all members must be serializable primitive types or qualified structs
 - Predefined Container Types
+- `IAsync` or it derived interfaces are only allowed in method return types.
+- Non `IAsync` including `void` return types means this method blocks.
 
 ## Attributes
 
@@ -70,3 +72,11 @@
   - Type implementation.
   - Invoker interface implementation.
 - Only remote interface proxy implementation is included in this section.
+
+## Casting to Child Interface
+
+- A remote object is known to implement exactly one leaf interface.
+- If an object is expected to implement multiple interface, an interface inheriting from all these interfaces are required to exist.
+- When running with interpretor, casing with reflection should work.
+- When running with generated C++ code, `dynamic_cast` should work.
+- Although interface implementing is dynamic, a process is expected to only know a fixed set of interfaces that could be implemented remotely.
