@@ -21,11 +21,15 @@ These files are prepared for foreign dependencies.
 
 Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.vcxproj` folder, you are required to run all of them in order:
 - `LibraryTest`: Unit test for libraries implemented in C++ that offers to Workflow script language
-- `CompilerTest_GenerateMetadata`: Generate binary metadata that is used by `CompilerTest_LoadAndCompiler`
+- `CompilerTest_GenerateMetadata`: Generate binary metadata that is used by `CompilerTest_LoadAndCompile`
   - This project is special, it is required to run only when files in these folders are changed:
     - `REPO-ROOT/Source/Library`
     - `REPO-ROOT/Source/Parser`
     - `REPO-ROOT/Test/Source`
+  - It generates `Test/UnitTest/Generated/Reflection{32,64}.bin` and `Test/UnitTest/Generated/Reflection{32,64}.txt`,
+    then compares the generated `.txt` against the baseline in `Test/Resources/Baseline/Reflection{32,64}.txt`.
+  - If the schema of reflected types has changed, this comparison will fail. This is expected.
+    To update the baseline, copy the generated `.txt` files from `Test/UnitTest/Generated/` to `Test/Resources/Baseline/`, then re-run.
 - `CompilerTest_LoadAndCompile`: Workflow compiler test
   - Test cases are in `REPO-ROOT/Test/Resources/Index*.txt`. Each index file lists files in the corresponding sub folder in `REPO-ROOT/Test/Resources`.
   - The compiler would generate binary files for both x86 and x64.
