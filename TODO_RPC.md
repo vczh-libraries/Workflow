@@ -18,8 +18,6 @@
 
 - Some rpc types might not have source code.
 - VlppReflection supports to add attributes in metadata is required.
-  - Reflection macros do not add attributes, attributes come from Workflow compiler.
-  - Rpc types without source code are assumed to be correct.
 - Workflow compiler will create rpc metadata along with script, as long as C++ codegen, but initiating is a separate and optional process.
 
 ## Allowed Types
@@ -31,6 +29,15 @@
 - Predefined Container Types
 - `IAsync` or it derived interfaces are only allowed in method return types.
 - Non `IAsync` including `void` return types means this method blocks.
+
+## Attributes Metadata
+
+- Reflection macros do not add attributes, attributes come from Workflow compiler.
+- Rpc types without source code are assumed to be correct.
+- Attribute becomes a struct and attribute names are `ITypeDescriptable` instances.
+- The value is stored as a `Value`, attribute arguments are in its fields in order.
+- Define and reflect all `@cpp:*` and `@rpc:*` attributes.
+  - `@ns:Type` expands to `vl::reflection::description::att_ns_Type` and `system::att_ns_Type`.
 
 ## Attributes
 

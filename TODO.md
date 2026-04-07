@@ -17,21 +17,6 @@
 
 - Dump binary type metadata including only new types created in Workflow. Need `VlppReflection` supporting.
 
-### Attributes
-
-- Attributes.
-  - Add attributes to `VlppReflection` metadata.
-    - Parameters must be enum of serializable primitive types.
-    - Attribute name will be referenced by its `ITypeDescriptor`.
-  - An attribute `X` becomes a `vl::reflection_metadata::XAttribute` struct instead of hardcoding in the compiler constructor.
-    - Define and reflect all `@cpp:*` and `@rpc:*` attributes.
-    - `@cpp:Attribute` must be applied to the struct to make it recognizable (needs VlppReflection metadata support).
-    - In metadata only the short type name is kept as a string.
-    - It becomes a struct, arguments initialize all fields in order, no default value.
-    - Only allow limited primitive types as field types.
-      - C++ registered attributes will also be checked when applied.
-    - (optional) User defined attributes in Workflow.
-
 ### Generic
 
 - Compile-time generic type annotation.
