@@ -14,6 +14,14 @@
   - both caller side and callee side
   - ensured by unit test, it will be executed directly and generate C++ unit test just like normal workflow script testing
 
+## Cross Resource Compiling
+
+- Some rpc types might not have source code.
+- VlppReflection supports to add attributes in metadata is required.
+  - Reflection macros do not add attributes, attributes come from Workflow compiler.
+  - Rpc types without source code are assumed to be correct.
+- Workflow compiler will create rpc metadata along with script, as long as C++ codegen, but initiating is a separate and optional process.
+
 ## Allowed Types
 
 - Interfaces (`@rpc:*`)
