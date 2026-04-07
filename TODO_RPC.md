@@ -4,6 +4,18 @@
 
 - When running with an interpretor or running generated code, all features should be available.
 
+## Steps
+
+- Fix VlppReflection to offer reflection in metadata.
+- Add strong-typed attribute.
+- Add rpc attributes type checker and failure test cases for compile errors.
+- Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
+  - All signed integers will share the same type in metadata, also for unsigned integers.
+  - C++ codegen still respect the original integer types.
+- Add communication layer with unit test implementation.
+- Create dynamic serialization implementation based on reflection for all touched rpc types.
+- Add C++ codegen.
+
 ## Thoughts
 
 - Serialization data types and interfaces for view model will generate serialization protocol data types
