@@ -8,6 +8,8 @@
 
 - Fix VlppReflection to offer reflection in metadata.
 - Add strong-typed attribute.
+  - Define and reflect all `@cpp:*` and `@rpc:*` attributes.
+  - `@ns:Type` expands to `vl::reflection::description::att_ns_Type` and `system::att_ns_Type`.
 - Add rpc attributes type checker and failure test cases for compile errors.
 - Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
   - All signed integers will share the same type in metadata, also for unsigned integers.
@@ -41,15 +43,6 @@
 - Predefined Container Types
 - `IAsync` or it derived interfaces are only allowed in method return types.
 - Non `IAsync` including `void` return types means this method blocks.
-
-## Attributes Metadata
-
-- Reflection macros do not add attributes, attributes come from Workflow compiler.
-- Rpc types without source code are assumed to be correct.
-- Attribute becomes a struct and attribute names are `ITypeDescriptable` instances.
-- The value is stored as a `Value`, attribute arguments are in its fields in order.
-- Define and reflect all `@cpp:*` and `@rpc:*` attributes.
-  - `@ns:Type` expands to `vl::reflection::description::att_ns_Type` and `system::att_ns_Type`.
 
 ## Attributes
 
