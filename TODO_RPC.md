@@ -6,7 +6,6 @@
 
 ## Steps
 
-- Fix VlppReflection to offer reflection in metadata.
 - Add strong-typed attribute.
   - Define and reflect all `@cpp:*` and `@rpc:*` attributes.
   - `@ns:Type` expands to `vl::reflection::description::att_ns_Type` and `system::att_ns_Type`.
