@@ -50,14 +50,35 @@ WfAttributeEvaluator
 
 				auto attributeAssembly = Ptr(new WfAssembly);
 				WfCodegenContext context(attributeAssembly, manager);
-				auto typeInfo = manager->attributes[{att->category.value, att->name.value}];
-				GenerateExpressionInstructions(context, att->value, typeInfo);
+				auto info = manager->ResolveWorkflowAttribute(att->category.value, att->name.value);
+				CHECK_ERROR(info.exists, L"WfAttributeEvaluator::GetAttributeValue(...)#Attribute not resolved.");
+
+				if (att->category.value == L"cpp" && att->name.value == L"Friend"
+					&& info.hasArgument
+					&& info.argumentType
+					&& info.argumentType->GetTypeDescriptor() == GetTypeDescriptor<WString>())
+				{
+					GenerateExpressionInstructions(context, att->value, nullptr);
+				}
+				else
+				{
+					GenerateExpressionInstructions(context, att->value, info.argumentType);
+				}
 
 				CHECK_ERROR(attributeAssembly->instructions.Count() == 1, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
 				auto& ins = attributeAssembly->instructions[0];
 				CHECK_ERROR(ins.code == WfInsCode::LoadValue, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
-				attributeValues.Add(att, ins.valueParameter);
-				return ins.valueParameter;
+				auto value = ins.valueParameter;
+				if (att->category.value == L"cpp" && att->name.value == L"Friend")
+				{
+					if (value.type == runtime::WfInsType::Unknown && value.typeDescriptor != nullptr)
+					{
+						value = runtime::WfRuntimeValue(value.typeDescriptor->GetTypeName());
+					}
+					CHECK_ERROR(value.type == runtime::WfInsType::String, L"WfAttributeEvaluator::GetAttributeValue(...)#Unexpected value in attribute: @cpp:Friend.");
+				}
+				attributeValues.Add(att, value);
+				return value;
 			}
 
 /***********************************************************************

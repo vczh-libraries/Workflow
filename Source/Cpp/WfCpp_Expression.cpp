@@ -17,6 +17,26 @@ namespace vl
 Expression Helpers
 ***********************************************************************/
 
+			void WriteWStringLiteralUnmanaged(stream::StreamWriter& writer, const WString& value)
+			{
+				writer.WriteString(L"::vl::WString::Unmanaged(L\"");
+				for (vint i = 0; i < value.Length(); i++)
+				{
+					auto c = value[i];
+					switch (c)
+					{
+					case L'\\': writer.WriteString(L"\\\\"); break;
+					case L'\'': writer.WriteString(L"\\\'"); break;
+					case L'\"': writer.WriteString(L"\\\""); break;
+					case L'\r': writer.WriteString(L"\\r"); break;
+					case L'\n': writer.WriteString(L"\\n"); break;
+					case L'\t': writer.WriteString(L"\\t"); break;
+					default: writer.WriteChar(c);
+					}
+				}
+				writer.WriteString(L"\")");
+			}
+
 			template<typename T>
 			void WriteBoxValue(WfCppConfig* config, stream::StreamWriter& writer, ITypeInfo* type, const T& writeExpression)
 			{
@@ -1107,22 +1127,7 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfStringExpression* node)override
 				{
-					writer.WriteString(L"::vl::WString::Unmanaged(L\"");
-					for (vint i = 0; i < node->value.value.Length(); i++)
-					{
-						auto c = node->value.value[i];
-						switch (c)
-						{
-						case L'\\': writer.WriteString(L"\\\\"); break;
-						case L'\'': writer.WriteString(L"\\\'"); break;
-						case L'\"': writer.WriteString(L"\\\""); break;
-						case L'\r': writer.WriteString(L"\\r"); break;
-						case L'\n': writer.WriteString(L"\\n"); break;
-						case L'\t': writer.WriteString(L"\\t"); break;
-						default: writer.WriteChar(c);
-						}
-					}
-					writer.WriteString(L"\")");
+					WriteWStringLiteralUnmanaged(writer, node->value.value);
 				}
 
 				void Visit(WfUnaryExpression* node)override

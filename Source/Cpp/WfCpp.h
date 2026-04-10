@@ -230,6 +230,7 @@ WfCppConfig::Write
 			};
 
 			extern void					GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);
+			extern void					WriteWStringLiteralUnmanaged(stream::StreamWriter& writer, const WString& value);
 			extern void					GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
 			extern void					GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> memberDecl, const WString& prefix, bool forClassExpr);
 			extern bool					GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, WfClassDeclaration* classDef, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> memberDecl, const WString& prefix);

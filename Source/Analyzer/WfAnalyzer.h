@@ -196,6 +196,14 @@ Scope Manager
 				typedef collections::Pair<WString, WString>													AttributeKey;
 				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
 
+				struct ResolvedWorkflowAttribute
+				{
+					bool							exists = false;
+					bool							hasArgument = false;
+					Ptr<ITypeInfo>					argumentType;
+					ITypeDescriptor*				attributeType = nullptr;
+				};
+
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 
 				typedef collections::List<glr::ParsingError>												ParsingErrorList;
@@ -233,8 +241,12 @@ Scope Manager
 
 				workflow::Parser&							workflowParser;
 				Ptr<EventHandler>							workflowParserHandler;
-				AttributeTypeMap							attributes;
 
+			protected:
+				collections::Dictionary<AttributeKey, ResolvedWorkflowAttribute>	resolvedAttributes;
+
+			public:
+				AttributeTypeMap								customAttributes;
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
 
@@ -267,6 +279,8 @@ Scope Manager
 				/// <param name="_cpuArchitecture">The target CPU architecture.</param>
 				WfLexicalScopeManager(workflow::Parser& _workflowParser, WfCpuArchitecture _cpuArchitecture);
 				~WfLexicalScopeManager();
+				ResolvedWorkflowAttribute					ResolveWorkflowAttribute(const WString& category, const WString& name);
+				WString										GetWorkflowAttributeTypeName(const WString& category, const WString& name);
 				
 				/// <summary>Add a Workflow module. Syntax errors can be found at <see cref="errors"/>.</summary>
 				/// <param name="moduleCode">The source code of a workflow module.</param>

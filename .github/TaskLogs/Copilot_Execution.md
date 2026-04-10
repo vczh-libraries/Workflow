@@ -22,7 +22,7 @@
 
 # EXECUTION PLAN
 
-## STEP 1: Add reflected attribute structs (Task 1)
+## STEP 1: Add reflected attribute structs (Task 1) [DONE]
 
 ### Edit: `REPO-ROOT\Source\Library\WfLibraryPredefined.h`
 Insert the following block right before the final `#endif` (i.e. after the existing closing braces of `namespace vl { namespace reflection { namespace description { ... }}}`).
@@ -65,7 +65,7 @@ namespace vl
 }
 ```
 
-## STEP 2: Register and rename attribute types in Workflow library reflection (Task 1)
+## STEP 2: Register and rename attribute types in Workflow library reflection (Task 1) [DONE]
 
 ### Edit: `REPO-ROOT\Source\Library\WfLibraryReflection.h`
 1) Add `WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)` right before `#define WORKFLOW_LIBRARY_TYPES(F)\`.
@@ -138,7 +138,7 @@ BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_Friend)
 END_STRUCT_MEMBER(vl::__vwsn::att_cpp_Friend)
 ```
 
-## STEP 3: Introduce a reflection-driven attribute resolver (Task 2)
+## STEP 3: Introduce a reflection-driven attribute resolver (Task 2) [DONE]
 
 ### Edit: `REPO-ROOT\Source\Analyzer\WfAnalyzer.h`
 
@@ -262,7 +262,7 @@ WfLexicalScopeManager::ResolvedWorkflowAttribute WfLexicalScopeManager::ResolveW
 }
 ```
 
-## STEP 4: Update semantic validation to use the resolver (Task 2)
+## STEP 4: Update semantic validation to use the resolver (Task 2) [DONE]
 
 ### Edit: `REPO-ROOT\Source\Analyzer\WfAnalyzer_ValidateSemantic_Declaration.cpp`
 In `ValidateSemanticDeclarationVisitor::Visit(List<Ptr<WfAttribute>>& attributes)`, replace the body of the `for (auto attribute : attributes)` loop with:
@@ -311,7 +311,7 @@ else
 }
 ```
 
-## STEP 5: Update attribute constant evaluation (Emitter) (Task 2)
+## STEP 5: Update attribute constant evaluation (Emitter) (Task 2) [DONE]
 
 ### Edit: `REPO-ROOT\Source\Emitter\WfEmitter.cpp`
 In `WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute> att)`, replace:
@@ -369,7 +369,7 @@ attributeValues.Add(att, value);
 return value;
 ```
 
-## STEP 6: Update C++ codegen for @cpp:Friend to match the new string representation
+## STEP 6: Update C++ codegen for @cpp:Friend to match the new string representation [DONE]
 
 ### Edit: `REPO-ROOT\Source\Cpp\WfCpp_WriteClass.cpp`
 In `WfCppConfig::WriteHeader_Class(...)`, inside the loop:
@@ -398,7 +398,7 @@ auto td = description::GetTypeDescriptor(attValue.stringValue);
 CHECK_ERROR(td != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
 ```
 
-## STEP 7: Emit ATTRIBUTE_* macros in generated C++ reflection code (Task 3)
+## STEP 7: Emit ATTRIBUTE_* macros in generated C++ reflection code (Task 3) [DONE]
 
 ### Edit: `REPO-ROOT\Source\Cpp\WfCpp.h`
 Add a shared helper declaration in `namespace vl::workflow::cppcodegen` (near other `extern` declarations, e.g. next to `GenerateExpression(...)`):
@@ -536,4 +536,96 @@ Follow `# AFFECTED PROJECTS` in order.
 
 # FIXING ATTEMPTS
 
+## Fixing attempt No.1
+
+The previous change still called `description::GetTypeDescriptor<ITypeDescriptor*>()` in semantic validation for `@cpp:Friend(typeof(T))`.
+`ITypeDescriptor*` does not have a reflection `TypeInfo<T>::content` entry, so the build failed while compiling the special-case compatibility check.
+
+I changed the compatibility check in `Source\Analyzer\WfAnalyzer_ValidateSemantic_Declaration.cpp` to compare `actualType` against `TypeInfoRetriver<WString>::CreateTypeInfo()` and `TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo()` using `IsSameType(...)`, instead of calling `GetTypeDescriptor<ITypeDescriptor*>()`.
+
+This should fix the issue because it preserves the intended acceptance of both string literals and `typeof(T)` expressions without instantiating unsupported `GetTypeDescriptor<T>()` metadata for `ITypeDescriptor*`.
+
+## Fixing attempt No.2
+
+The previous change removed `WfLexicalScopeManager::attributes`, but `Test\Source\TestAnalyzer.cpp` still configured synthetic `@test:*` attributes through that deleted field.
+That left the build broken, and even after fixing compilation those analyzer tests would no longer have any reflected attribute types to resolve.
+
+I changed the tests to use the new reflection-driven attribute model by adding reflected struct types `test::att_test_{Int,List,Map,Range,Point}` in `Test\Source\CppTypes.h/.cpp`, renaming them to `system::workflow_attributes::att_test_*`, and removing the old `manager.attributes.Add(...)` setup from `Test\Source\TestAnalyzer.cpp`.
+
+This should fix the issue because the analyzer now resolves test attributes the same way as production attributes: through registered reflected structs whose argument types naturally follow the active platform via `vint`, instead of through a deleted hardcoded map.
+
+## Fixing attempt No.3
+
+The previous test-type change incorrectly put the new attribute structs into `UNITTEST_TYPELIST`, then also emitted `IMPL_TYPE_INFO_RENAME(...)` for the same types.
+That generated two `TypeInfo<T>::content` definitions per attribute type, causing `content` redefinition errors across test projects.
+
+I separated the synthetic attribute structs into a new `UNITTEST_ATTRIBUTE_TYPELIST` in `Test\Source\CppTypes.h`, kept `UNITTEST_TYPELIST` for ordinary test types, and updated `Test\Source\CppTypes.cpp` so the attribute types are only declared once and loaded explicitly through `UNITTEST_ATTRIBUTE_TYPELIST(ADD_TYPE_INFO)`.
+
+This should fix the issue because renamed attribute types now have a single `TypeInfo<T>::content` definition while still being registered with the test type loader for reflection-based attribute resolution.
+
+## Fixing attempt No.4
+
+The previous attribute test structs used defaulted `operator<=>`, but `List<vint>`, `Dictionary<WString, vint>`, and `LazyList<vint>` do not provide a default three-way comparison compatible with that generated operator.
+Reflection boxing for registered structs instantiates comparison support, so compilation failed in `VlppReflection.h`.
+
+I replaced the defaulted three-way operators for `test::att_test_List`, `test::att_test_Map`, and `test::att_test_Range` in `Test\Source\CppTypes.h` with explicit `CompareEnumerable(...)`-based comparisons.
+
+This should fix the issue because the registered attribute structs now provide valid comparison operators for their collection payloads, satisfying the reflection framework without changing the intended attribute argument types.
+
+## Fixing attempt No.5
+
+The previous approach still tried to model the analyzer test-only `@test:*` attributes as reflected structs.
+That does not work for collection payloads like `List<vint>` because reflected struct fields need copy/unbox support that these move-only collection types do not provide, so the build failed inside `VlppReflection.h`.
+
+I removed the synthetic reflected attribute structs from `Test\Source\CppTypes.h/.cpp`, added a `customAttributes` fallback map to `vl::workflow::analyzer::WfLexicalScopeManager` in `Source\Analyzer\WfAnalyzer.h/.cpp`, and updated `Test\Source\TestAnalyzer.cpp` to populate `manager.customAttributes` with the old test-only attribute argument types.
+
+This should fix the issue because production attributes still resolve from reflection as intended, while the analyzer test harness regains a supported way to inject non-reflected attribute argument types such as `List<vint>` and `LazyList<vint>` without forcing them through struct reflection metadata.
+
+## Fixing attempt No.6
+
+The previous resolver change introduced a cache in `WfLexicalScopeManager::resolvedAttributes`, but `WfLexicalScopeManager::Clear(...)` did not reset that cache.
+The compiler test executable reuses scope managers across rebuilds and test cases, so stale cached attribute resolutions could survive between runs and lead to incorrect behavior or aborts at runtime.
+
+I updated `Source\Analyzer\WfAnalyzer.cpp` so `WfLexicalScopeManager::Clear(...)` now calls `resolvedAttributes.Clear()` together with the other per-rebuild analysis state.
+
+This should fix the issue because every rebuild now re-resolves attributes from the current reflection environment or test-injected custom attribute map instead of reusing stale cached results from earlier compilations.
+
+## Fixing attempt No.7
+ 
+The reverse lookup maps added in `Source\Cpp\WfCpp_WriteReflection.cpp` assumed every `ITypeDescriptor*` and `IMemberInfo*` only appears once in `declarationTypes` / `declarationMemberInfos`.
+That assumption breaks for generated declarations such as bind-expansion artifacts, where multiple declarations can point at the same reflected member, so building the reverse maps aborted with `Dictionary<...>::Add(...)#Key already exists.` during `GenerateCppFiles(...)`.
+ 
+I changed those reverse maps to keep the first declaration for each reflected type/member and ignore later duplicates instead of inserting the same key twice.
+ 
+This should fix the issue because attribute emission only needs a stable declaration when one exists, and duplicate reflected targets from expanded declarations should no longer crash C++ reflection generation.
+
+## Fixing attempt No.8
+
+The deduplication follow-up in `Source\Cpp\WfCpp_WriteReflection.cpp` used `typeDecls.Contains(td)` and `memberDecls.Contains(memberInfo)`.
+`vl::collections::Dictionary` does not expose a `Contains(key)` member, so the `Debug|x64` build failed with `C2039` in both `CompilerTest_LoadAndCompile` and `RuntimeTest`.
+
+I changed those membership checks to the supported key lookup form: `typeDecls.Keys().Contains(td)` and `memberDecls.Keys().Contains(memberInfo)`.
+
+This should fix the issue because it preserves the intended "first declaration wins" deduplication while using the collection API pattern that the rest of the repository already relies on.
+
+## Fixing attempt No.9
+
+The `@cpp:Friend(typeof(T))` compatibility path in `Source\Analyzer\WfAnalyzer_ValidateSemantic_Declaration.cpp` called `ValidateConstantExpression(...)` and then immediately called `GetExpressionType(...)` again on the same attribute value.
+`ValidateConstantExpression(...)` already resolves and caches that expression, so the second call tried to insert the same `WfExpression*` into `WfLexicalScopeManager::expressionResolvings` again and crashed `CompilerTest_LoadAndCompile` during the `BindSimple` codegen test with `Dictionary<...>::Add(...)#Key already exists.`.
+
+I changed the compatibility path to reuse the cached resolve result from `manager->expressionResolvings` after `ValidateConstantExpression(...)` instead of resolving the same expression twice.
+
+This should fix the issue because the special `@cpp:Friend(typeof(T))` validation still accepts either `string` or `typeof(T)`, but it no longer re-adds an already-cached expression resolving entry during semantic validation.
+
+
+## Fixing attempt No.10
+
+WfCpp_WriteClass.cpp line 122 used description::GetTypeDescriptor(attValue.stringValue) to look up the ITypeDescriptor* for the type named in @cpp:Friend(typeof(T)). This uses the global C++ reflection registry, which contains only native/imported C++ types, not Workflow-defined classes. A Workflow class like OuterClass defined inline in a module is registered in manager->typeNames (populated during Rebuild) but NOT in the global description::GetTypeDescriptor registry. So the lookup returned null and the CHECK_ERROR(td != nullptr, ...) at line 123 fired.
+
+I changed WfCpp_WriteClass.cpp to search through manager->typeNames by comparing each scope name's GetFriendlyName() against ttValue.stringValue, which correctly covers both Workflow-defined types and any imported native types that the old description::GetTypeDescriptor would have found. The old code returned the type descriptor directly from the Unknown-typed value; the new code stores it as a string name (needed by the reflection writer) and recovers the descriptor via manager->typeNames lookup.
+
+This should fix the issue because manager->typeNames is populated during Rebuild for every type accessible in the Workflow scope, regardless of whether it is a Workflow-defined class or a native C++ type.
+
 # !!!FINISHED!!!
+
+# !!!VERIFIED!!!

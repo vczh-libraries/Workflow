@@ -24,6 +24,13 @@ Predefined Types
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
+#define WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)\
+			F(vl::__vwsn::att_cpp_File)\
+			F(vl::__vwsn::att_cpp_UserImpl)\
+			F(vl::__vwsn::att_cpp_Private)\
+			F(vl::__vwsn::att_cpp_Protected)\
+			F(vl::__vwsn::att_cpp_Friend)\
+
 #define WORKFLOW_LIBRARY_TYPES(F)\
 			F(Sys)							\
 			F(Math)							\
@@ -43,6 +50,7 @@ Predefined Types
 			F(AsyncCoroutine)				\
 			F(StateMachine)					\
 			F(Versioning)					\
+			WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)
 

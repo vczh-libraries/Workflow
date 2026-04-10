@@ -374,11 +374,6 @@ WfLexicalScopeManager
 				, cpuArchitecture(_cpuArchitecture)
 			{
 				workflowParserHandler = glr::InstallDefaultErrorMessageGenerator(workflowParser, errors);
-				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<void>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"Protected" }, TypeInfoRetriver<void>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"Friend" }, TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo());
 
 				switch (cpuArchitecture)
 				{
@@ -406,6 +401,86 @@ WfLexicalScopeManager
 			WfLexicalScopeManager::~WfLexicalScopeManager()
 			{
 				workflowParser.OnError.Remove(workflowParserHandler);
+			}
+
+			WString WfLexicalScopeManager::GetWorkflowAttributeTypeName(const WString& category, const WString& name)
+			{
+				auto IsId = [](const WString& s)
+				{
+					for (vint i = 0; i < s.Length(); i++)
+					{
+						auto c = s[i];
+						if (!((c >= L'0' && c <= L'9') || (c >= L'a' && c <= L'z') || (c >= L'A' && c <= L'Z') || c == L'_'))
+						{
+							return false;
+						}
+					}
+					return s.Length() > 0;
+				};
+
+				if (!IsId(category) || !IsId(name)) return L"";
+				return L"system::workflow_attributes::att_" + category + L"_" + name;
+			}
+
+			WfLexicalScopeManager::ResolvedWorkflowAttribute WfLexicalScopeManager::ResolveWorkflowAttribute(const WString& category, const WString& name)
+			{
+				ResolvedWorkflowAttribute info;
+				auto key = AttributeKey(category, name);
+				if (auto index = resolvedAttributes.Keys().IndexOf(key); index != -1)
+				{
+					return resolvedAttributes.Values()[index];
+				}
+
+				if (auto index = customAttributes.Keys().IndexOf(key); index != -1)
+				{
+					auto&& typeInfo = customAttributes.Values()[index];
+					auto voidType = TypeInfoRetriver<void>::CreateTypeInfo();
+					info.exists = true;
+					info.hasArgument = !IsSameType(typeInfo.Obj(), voidType.Obj());
+					info.argumentType = info.hasArgument ? CopyTypeInfo(typeInfo.Obj()) : nullptr;
+					resolvedAttributes.Add(key, info);
+					return info;
+				}
+
+				auto typeName = GetWorkflowAttributeTypeName(category, name);
+				if (typeName == L"")
+				{
+					resolvedAttributes.Add(key, info);
+					return info;
+				}
+
+				auto td = reflection::description::GetTypeDescriptor(typeName);
+				if (!td || td->GetTypeDescriptorFlags() != TypeDescriptorFlags::Struct)
+				{
+					resolvedAttributes.Add(key, info);
+					return info;
+				}
+
+				auto propCount = td->GetPropertyCount();
+				if (propCount == 0)
+				{
+					info.exists = true;
+					info.attributeType = td;
+					info.hasArgument = false;
+					info.argumentType = nullptr;
+				}
+				else if (propCount == 1)
+				{
+					info.exists = true;
+					info.attributeType = td;
+					info.hasArgument = true;
+					info.argumentType = CopyTypeInfo(td->GetProperty(0)->GetReturn());
+				}
+				else
+				{
+					info.exists = false;
+					info.attributeType = nullptr;
+					info.hasArgument = false;
+					info.argumentType = nullptr;
+				}
+
+				resolvedAttributes.Add(key, info);
+				return info;
 			}
 
 			vint WfLexicalScopeManager::AddModule(const WString& moduleCode)
@@ -460,6 +535,7 @@ WfLexicalScopeManager
 
 				usedTempVars = 0;
 				errors.Clear();
+				resolvedAttributes.Clear();
 				namespaceNames.Clear();
 				nodeScopes.Clear();
 				checkedScopes_DuplicatedSymbol.Clear();
