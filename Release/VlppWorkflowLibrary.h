@@ -446,6 +446,42 @@ MISC
 	}
 }
 
+namespace vl
+{
+	namespace __vwsn
+	{
+		struct att_cpp_File
+		{
+			WString						argument;
+			auto operator<=>(const att_cpp_File&) const = default;
+		};
+
+		struct att_cpp_UserImpl
+		{
+			auto operator<=>(const att_cpp_UserImpl&) const = default;
+		};
+
+		struct att_cpp_Private
+		{
+			auto operator<=>(const att_cpp_Private&) const = default;
+		};
+
+		struct att_cpp_Protected
+		{
+			auto operator<=>(const att_cpp_Protected&) const = default;
+		};
+
+		// NOTE:
+		// - Must be serializable for ATTRIBUTE_* (cannot be ITypeDescriptor*).
+		// - Store the reflected type name (ITypeDescriptor::GetTypeName()) for round-tripping.
+		struct att_cpp_Friend
+		{
+			WString						argument;
+			auto operator<=>(const att_cpp_Friend&) const = default;
+		};
+	}
+}
+
 #endif
 
 
@@ -850,6 +886,13 @@ Predefined Types
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
+#define WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)\
+			F(vl::__vwsn::att_cpp_File)\
+			F(vl::__vwsn::att_cpp_UserImpl)\
+			F(vl::__vwsn::att_cpp_Private)\
+			F(vl::__vwsn::att_cpp_Protected)\
+			F(vl::__vwsn::att_cpp_Friend)\
+
 #define WORKFLOW_LIBRARY_TYPES(F)\
 			F(Sys)							\
 			F(Math)							\
@@ -869,6 +912,7 @@ Predefined Types
 			F(AsyncCoroutine)				\
 			F(StateMachine)					\
 			F(Versioning)					\
+			WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)
 

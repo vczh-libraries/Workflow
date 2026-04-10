@@ -7470,10 +7470,19 @@ namespace vl
 						operator FieldType()
 						{
 							FieldType field(std::forward<TArg>(value));
-							auto boxed = BoxValue<std::remove_cvref_t<FieldType>>(field);
-							auto valueType = boxed.GetTypeDescriptor();
-							CHECK_ERROR(valueType && valueType->GetSerializableType(), L"ATTRIBUTE_*#Attribute argument must be a serializable reflected value.");
-							info->AddValue(boxed.GetTypeDescriptor(), boxed);
+							if constexpr (std::is_pointer_v<std::remove_cvref_t<FieldType>>)
+							{
+								using PointedType = std::remove_pointer_t<std::remove_cvref_t<FieldType>>;
+								auto valueType = description::GetTypeDescriptor<PointedType>();
+								auto boxed = BoxValue<std::remove_cvref_t<FieldType>>(field);
+								info->AddValue(valueType, boxed);
+							}
+							else
+							{
+								auto boxed = BoxValue<std::remove_cvref_t<FieldType>>(field);
+								auto valueType = boxed.GetTypeDescriptor();
+								info->AddValue(valueType, boxed);
+							}
 							return field;
 						}
 					};

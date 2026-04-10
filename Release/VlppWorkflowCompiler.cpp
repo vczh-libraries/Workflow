@@ -382,11 +382,6 @@ WfLexicalScopeManager
 				, cpuArchitecture(_cpuArchitecture)
 			{
 				workflowParserHandler = glr::InstallDefaultErrorMessageGenerator(workflowParser, errors);
-				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"UserImpl" }, TypeInfoRetriver<void>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"Protected" }, TypeInfoRetriver<void>::CreateTypeInfo());
-				attributes.Add({ L"cpp", L"Friend" }, TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo());
 
 				switch (cpuArchitecture)
 				{
@@ -414,6 +409,75 @@ WfLexicalScopeManager
 			WfLexicalScopeManager::~WfLexicalScopeManager()
 			{
 				workflowParser.OnError.Remove(workflowParserHandler);
+			}
+
+			WString WfLexicalScopeManager::GetWorkflowAttributeTypeName(const WString& category, const WString& name)
+			{
+				auto IsId = [](const WString& s)
+				{
+					for (vint i = 0; i < s.Length(); i++)
+					{
+						auto c = s[i];
+						if (!((c >= L'0' && c <= L'9') || (c >= L'a' && c <= L'z') || (c >= L'A' && c <= L'Z') || c == L'_'))
+						{
+							return false;
+						}
+					}
+					return s.Length() > 0;
+				};
+
+				if (!IsId(category) || !IsId(name)) return L"";
+				return L"system::workflow_attributes::att_" + category + L"_" + name;
+			}
+
+			WfLexicalScopeManager::ResolvedWorkflowAttribute WfLexicalScopeManager::ResolveWorkflowAttribute(const WString& category, const WString& name)
+			{
+				ResolvedWorkflowAttribute info;
+				auto key = AttributeKey(category, name);
+				if (auto index = resolvedAttributes.Keys().IndexOf(key); index != -1)
+				{
+					return resolvedAttributes.Values()[index];
+				}
+
+				auto typeName = GetWorkflowAttributeTypeName(category, name);
+				if (typeName == L"")
+				{
+					resolvedAttributes.Add(key, info);
+					return info;
+				}
+
+				auto td = reflection::description::GetTypeDescriptor(typeName);
+				if (!td || td->GetTypeDescriptorFlags() != TypeDescriptorFlags::Struct)
+				{
+					resolvedAttributes.Add(key, info);
+					return info;
+				}
+
+				auto propCount = td->GetPropertyCount();
+				if (propCount == 0)
+				{
+					info.exists = true;
+					info.attributeType = td;
+					info.hasArgument = false;
+					info.argumentType = nullptr;
+				}
+				else if (propCount == 1)
+				{
+					info.exists = true;
+					info.attributeType = td;
+					info.hasArgument = true;
+					info.argumentType = CopyTypeInfo(td->GetProperty(0)->GetReturn());
+				}
+				else
+				{
+					info.exists = false;
+					info.attributeType = nullptr;
+					info.hasArgument = false;
+					info.argumentType = nullptr;
+				}
+
+				resolvedAttributes.Add(key, info);
+				return info;
 			}
 
 			vint WfLexicalScopeManager::AddModule(const WString& moduleCode)
@@ -468,6 +532,7 @@ WfLexicalScopeManager
 
 				usedTempVars = 0;
 				errors.Clear();
+				resolvedAttributes.Clear();
 				namespaceNames.Clear();
 				nodeScopes.Clear();
 				checkedScopes_DuplicatedSymbol.Clear();
@@ -834,6 +899,7 @@ WfLexicalScopeManager
 		}
 	}
 }
+
 
 /***********************************************************************
 .\ANALYZER\WFANALYZER_BUILDGLOBALNAMEFROMMODULES.CPP
@@ -11715,23 +11781,45 @@ ValidateSemantic(Declaration)
 				{
 					for (auto attribute : attributes)
 					{
-						auto key = Pair<WString, WString>(attribute->category.value, attribute->name.value);
-						vint index = manager->attributes.Keys().IndexOf(key);
-						if (index == -1)
+						auto info = manager->ResolveWorkflowAttribute(attribute->category.value, attribute->name.value);
+						if (!info.exists)
 						{
 							manager->errors.Add(WfErrors::AttributeNotExists(attribute.Obj()));
+							continue;
 						}
-						else
+
+						if (attribute->value)
 						{
-							auto expectedType = manager->attributes.Values()[index];
-							if (attribute->value)
+							if (attribute->category.value == L"cpp" && attribute->name.value == L"Friend"
+								&& info.hasArgument
+								&& info.argumentType
+								&& info.argumentType->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
 							{
-								ValidateConstantExpression(manager, attribute->value, expectedType);
+								ValidateConstantExpression(manager, attribute->value, nullptr);
+								Ptr<ITypeInfo> actualType;
+								if (auto index = manager->expressionResolvings.Keys().IndexOf(attribute->value.Obj()); index != -1)
+								{
+									actualType = manager->expressionResolvings.Values()[index].type;
+								}
+								if (actualType)
+								{
+									auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+									auto typeDescriptorType = TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo();
+									if (!IsSameType(actualType.Obj(), stringType.Obj())
+										&& !IsSameType(actualType.Obj(), typeDescriptorType.Obj()))
+									{
+										manager->errors.Add(WfErrors::ExpressionCannotImplicitlyConvertToType(attribute->value.Obj(), actualType.Obj(), info.argumentType.Obj()));
+									}
+								}
 							}
-							else if (expectedType->GetTypeDescriptor() != description::GetTypeDescriptor<void>())
+							else
 							{
-								manager->errors.Add(WfErrors::AttributeMissValue(attribute.Obj()));
+								ValidateConstantExpression(manager, attribute->value, info.argumentType);
 							}
+						}
+						else if (info.hasArgument)
+						{
+							manager->errors.Add(WfErrors::AttributeMissValue(attribute.Obj()));
 						}
 					}
 				}
@@ -18515,6 +18603,26 @@ namespace vl
 Expression Helpers
 ***********************************************************************/
 
+			void WriteWStringLiteralUnmanaged(stream::StreamWriter& writer, const WString& value)
+			{
+				writer.WriteString(L"::vl::WString::Unmanaged(L\"");
+				for (vint i = 0; i < value.Length(); i++)
+				{
+					auto c = value[i];
+					switch (c)
+					{
+					case L'\\': writer.WriteString(L"\\\\"); break;
+					case L'\'': writer.WriteString(L"\\\'"); break;
+					case L'\"': writer.WriteString(L"\\\""); break;
+					case L'\r': writer.WriteString(L"\\r"); break;
+					case L'\n': writer.WriteString(L"\\n"); break;
+					case L'\t': writer.WriteString(L"\\t"); break;
+					default: writer.WriteChar(c);
+					}
+				}
+				writer.WriteString(L"\")");
+			}
+
 			template<typename T>
 			void WriteBoxValue(WfCppConfig* config, stream::StreamWriter& writer, ITypeInfo* type, const T& writeExpression)
 			{
@@ -19605,22 +19713,7 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfStringExpression* node)override
 				{
-					writer.WriteString(L"::vl::WString::Unmanaged(L\"");
-					for (vint i = 0; i < node->value.value.Length(); i++)
-					{
-						auto c = node->value.value[i];
-						switch (c)
-						{
-						case L'\\': writer.WriteString(L"\\\\"); break;
-						case L'\'': writer.WriteString(L"\\\'"); break;
-						case L'\"': writer.WriteString(L"\\\""); break;
-						case L'\r': writer.WriteString(L"\\r"); break;
-						case L'\n': writer.WriteString(L"\\n"); break;
-						case L'\t': writer.WriteString(L"\\t"); break;
-						default: writer.WriteChar(c);
-						}
-					}
-					writer.WriteString(L"\")");
+					WriteWStringLiteralUnmanaged(writer, node->value.value);
 				}
 
 				void Visit(WfUnaryExpression* node)override
@@ -21811,8 +21904,17 @@ namespace vl
 					for (auto attribute : attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 					{
 						auto attValue = attributeEvaluator->GetAttributeValue(attribute);
-						CHECK_ERROR(attValue.type == runtime::WfInsType::Unknown && attValue.typeDescriptor != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
-						auto td = attValue.typeDescriptor;
+						CHECK_ERROR(attValue.type == runtime::WfInsType::String, L"Unexpected value in attribute: @cpp.Friend.");
+						ITypeDescriptor* td = nullptr;
+						for (vint i = 0; i < manager->typeNames.Count(); i++)
+						{
+							if (manager->typeNames.Values()[i]->GetFriendlyName() == attValue.stringValue)
+							{
+								td = manager->typeNames.Keys()[i];
+								break;
+							}
+						}
+						CHECK_ERROR(td != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
 
 						auto scopeName = manager->typeNames[td];
 						if (scopeName->declarations.Count() == 0)
@@ -23061,6 +23163,26 @@ namespace vl
 				List<ITypeDescriptor*> tds;
 				LoadTypes(this, tds);
 
+				Dictionary<ITypeDescriptor*, Ptr<WfDeclaration>> typeDecls;
+				for (auto [decl, index] : indexed(manager->declarationTypes.Keys()))
+				{
+					auto td = manager->declarationTypes.Values()[index].Obj();
+					if (!typeDecls.Keys().Contains(td))
+					{
+						typeDecls.Add(td, decl);
+					}
+				}
+
+				Dictionary<IMemberInfo*, Ptr<WfDeclaration>> memberDecls;
+				for (auto [decl, index] : indexed(manager->declarationMemberInfos.Keys()))
+				{
+					auto memberInfo = manager->declarationMemberInfos.Values()[index].Obj();
+					if (!memberDecls.Keys().Contains(memberInfo))
+					{
+						memberDecls.Add(memberInfo, decl);
+					}
+				}
+
 				writer.WriteLine(L"namespace vl");
 				writer.WriteLine(L"{");
 				writer.WriteLine(L"\tnamespace reflection");
@@ -23084,6 +23206,96 @@ namespace vl
 
 				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"#define _ ,");
+
+				auto FindTypeDecl = [&](ITypeDescriptor* td) -> Ptr<WfDeclaration>
+				{
+					if (auto index = typeDecls.Keys().IndexOf(td); index != -1)
+					{
+						return typeDecls.Values()[index];
+					}
+					return nullptr;
+				};
+
+				auto FindMemberDecl = [&](IMemberInfo* memberInfo) -> Ptr<WfDeclaration>
+				{
+					if (auto index = memberDecls.Keys().IndexOf(memberInfo); index != -1)
+					{
+						return memberDecls.Values()[index];
+					}
+					return nullptr;
+				};
+
+				auto ResolveAttributeTd = [&](Ptr<WfAttribute> att)
+				{
+					return manager->ResolveWorkflowAttribute(att->category.value, att->name.value);
+				};
+
+				auto WriteAttributeMacro = [&](const wchar_t* indent, const wchar_t* macroName, Ptr<WfAttribute> att, const wchar_t* paramName)
+				{
+					auto info = ResolveAttributeTd(att);
+					if (!info.exists || info.attributeType == nullptr) return;
+
+					writer.WriteString(indent);
+					writer.WriteString(macroName);
+					writer.WriteString(L"(");
+
+					if (paramName)
+					{
+						writer.WriteString(L"L\"");
+						writer.WriteString(ConvertName(paramName));
+						writer.WriteString(L"\", ");
+					}
+
+					writer.WriteString(ConvertType(info.attributeType));
+					if (info.hasArgument)
+					{
+						auto value = attributeEvaluator->GetAttributeValue(att);
+						CHECK_ERROR(value.type == runtime::WfInsType::String, L"Attribute argument must be serialized as WString here.");
+						writer.WriteString(L", ");
+						WriteWStringLiteralUnmanaged(writer, value.stringValue);
+					}
+
+					writer.WriteLine(L")");
+				};
+
+				auto WriteDeclarationAttributes = [&](const wchar_t* indent, const wchar_t* macroName, Ptr<WfDeclaration> decl)
+				{
+					if (!decl) return;
+					for (auto att : decl->attributes)
+					{
+						WriteAttributeMacro(indent, macroName, att, nullptr);
+					}
+				};
+
+				auto WriteArgumentAttributes = [&](const wchar_t* indent, Ptr<WfFunctionArgument> arg)
+				{
+					if (!arg) return;
+					for (auto att : arg->attributes)
+					{
+						WriteAttributeMacro(indent, L"ATTRIBUTE_PARAMETER", att, arg->name.value.Buffer());
+					}
+				};
+
+				auto FindFunctionArg = [&](WfFunctionDeclaration* functionDecl, const WString& name) -> Ptr<WfFunctionArgument>
+				{
+					return From(functionDecl->arguments)
+						.Where([&](Ptr<WfFunctionArgument> arg)
+						{
+							return arg->name.value == name;
+						})
+						.First(Ptr<WfFunctionArgument>());
+				};
+
+				auto FindCtorArg = [&](WfConstructorDeclaration* ctorDecl, const WString& name) -> Ptr<WfFunctionArgument>
+				{
+					return From(ctorDecl->arguments)
+						.Where([&](Ptr<WfFunctionArgument> arg)
+						{
+							return arg->name.value == name;
+						})
+						.First(Ptr<WfFunctionArgument>());
+				};
+
 				for (auto td : tds)
 				{
 					switch (td->GetTypeDescriptorFlags())
@@ -23119,13 +23331,16 @@ namespace vl
 							writer.WriteString(L"\t\t\tBEGIN_STRUCT_MEMBER(");
 							writer.WriteString(ConvertType(td));
 							writer.WriteLine(L")");
+							WriteDeclarationAttributes(L"\t\t\t\t", L"ATTRIBUTE_TYPE", FindTypeDecl(td));
 
 							vint count = td->GetPropertyCount();
 							for (vint i = 0; i < count; i++)
 							{
+								auto propertyInfo = td->GetProperty(i);
 								writer.WriteString(L"\t\t\t\tSTRUCT_MEMBER(");
-								writer.WriteString(ConvertName(td->GetProperty(i)->GetName()));
+								writer.WriteString(ConvertName(propertyInfo->GetName()));
 								writer.WriteLine(L")");
+								WriteDeclarationAttributes(L"\t\t\t\t", L"ATTRIBUTE_MEMBER", FindMemberDecl(propertyInfo));
 							}
 
 							writer.WriteString(L"\t\t\tEND_STRUCT_MEMBER(");
@@ -23146,6 +23361,7 @@ namespace vl
 							}
 							writer.WriteString(ConvertType(td));
 							writer.WriteLine(L")");
+							WriteDeclarationAttributes(L"\t\t\t\t", L"ATTRIBUTE_TYPE", FindTypeDecl(td));
 
 							vint baseCount = td->GetBaseTypeDescriptorCount();
 							for (vint i = 0; i < baseCount; i++)
@@ -23157,11 +23373,12 @@ namespace vl
 
 							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
 							{
-								auto methodGroup = td->GetConstructorGroup();
-								vint methodCount = methodGroup->GetMethodCount();
+								auto ctorGroup = td->GetConstructorGroup();
+								vint methodCount = ctorGroup->GetMethodCount();
 								for (vint j = 0; j < methodCount; j++)
 								{
-									auto methodInfo = methodGroup->GetMethod(j);
+									auto methodInfo = ctorGroup->GetMethod(j);
+									auto memberDecl = FindMemberDecl(methodInfo);
 									vint parameterCount = methodInfo->GetParameterCount();
 
 									writer.WriteString(L"\t\t\t\tCLASS_MEMBER_CONSTRUCTOR(");
@@ -23196,6 +23413,15 @@ namespace vl
 									{
 										writer.WriteLine(L", NO_PARAMETER)");
 									}
+
+									WriteDeclarationAttributes(L"\t\t\t\t", L"ATTRIBUTE_MEMBER", memberDecl);
+									if (auto ctorDecl = memberDecl.Cast<WfConstructorDeclaration>())
+									{
+										for (vint k = 0; k < parameterCount; k++)
+										{
+											WriteArgumentAttributes(L"\t\t\t\t", FindCtorArg(ctorDecl.Obj(), methodInfo->GetParameter(k)->GetName()));
+										}
+									}
 								}
 							}
 
@@ -23207,6 +23433,7 @@ namespace vl
 								for (vint j = 0; j < methodCount; j++)
 								{
 									auto methodInfo = methodGroup->GetMethod(j);
+									auto memberDecl = FindMemberDecl(methodInfo);
 									if (methodInfo->IsStatic())
 									{
 										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_STATIC_METHOD");
@@ -23249,6 +23476,15 @@ namespace vl
 										writer.WriteString(ConvertFunctionType(methodInfo, typeDecorator));
 									}
 									writer.WriteLine(L")");
+
+									WriteDeclarationAttributes(L"\t\t\t\t", L"ATTRIBUTE_MEMBER", memberDecl);
+									if (auto functionDecl = memberDecl.Cast<WfFunctionDeclaration>())
+									{
+										for (vint k = 0; k < parameterCount; k++)
+										{
+											WriteArgumentAttributes(L"\t\t\t\t", FindFunctionArg(functionDecl.Obj(), methodInfo->GetParameter(k)->GetName()));
+										}
+									}
 								}
 							}
 
@@ -23259,6 +23495,7 @@ namespace vl
 								writer.WriteString(L"\t\t\t\tCLASS_MEMBER_EVENT(");
 								writer.WriteString(ConvertName(eventInfo->GetName()));
 								writer.WriteLine(L")");
+								WriteDeclarationAttributes(L"\t\t\t\t", L"ATTRIBUTE_MEMBER", FindMemberDecl(eventInfo));
 							}
 
 							vint propertyCount = td->GetPropertyCount();
@@ -23292,26 +23529,23 @@ namespace vl
 											writer.WriteLine(L")");
 										}
 									}
+									else if (auto setter = propertyInfo->GetSetter())
+									{
+										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY(");
+										writer.WriteString(ConvertName(propertyInfo->GetName()));
+										writer.WriteString(L", ");
+										writer.WriteString(ConvertName(getter->GetName()));
+										writer.WriteString(L", ");
+										writer.WriteString(ConvertName(setter->GetName()));
+										writer.WriteLine(L")");
+									}
 									else
 									{
-										if (auto setter = propertyInfo->GetSetter())
-										{
-											writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY(");
-											writer.WriteString(ConvertName(propertyInfo->GetName()));
-											writer.WriteString(L", ");
-											writer.WriteString(ConvertName(getter->GetName()));
-											writer.WriteString(L", ");
-											writer.WriteString(ConvertName(setter->GetName()));
-											writer.WriteLine(L")");
-										}
-										else
-										{
-											writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY_READONLY(");
-											writer.WriteString(ConvertName(propertyInfo->GetName()));
-											writer.WriteString(L", ");
-											writer.WriteString(ConvertName(getter->GetName()));
-											writer.WriteLine(L")");
-										}
+										writer.WriteString(L"\t\t\t\tCLASS_MEMBER_PROPERTY_READONLY(");
+										writer.WriteString(ConvertName(propertyInfo->GetName()));
+										writer.WriteString(L", ");
+										writer.WriteString(ConvertName(getter->GetName()));
+										writer.WriteLine(L")");
 									}
 								}
 								else
@@ -23320,6 +23554,8 @@ namespace vl
 									writer.WriteString(ConvertName(propertyInfo->GetName()));
 									writer.WriteLine(L")");
 								}
+
+								WriteDeclarationAttributes(L"\t\t\t\t", L"ATTRIBUTE_MEMBER", FindMemberDecl(propertyInfo));
 							}
 
 							if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Interface)
@@ -23387,6 +23623,7 @@ namespace vl
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CPP\WFCPP_WRITESTRUCT.CPP
@@ -24000,14 +24237,35 @@ WfAttributeEvaluator
 
 				auto attributeAssembly = Ptr(new WfAssembly);
 				WfCodegenContext context(attributeAssembly, manager);
-				auto typeInfo = manager->attributes[{att->category.value, att->name.value}];
-				GenerateExpressionInstructions(context, att->value, typeInfo);
+				auto info = manager->ResolveWorkflowAttribute(att->category.value, att->name.value);
+				CHECK_ERROR(info.exists, L"WfAttributeEvaluator::GetAttributeValue(...)#Attribute not resolved.");
+
+				if (att->category.value == L"cpp" && att->name.value == L"Friend"
+					&& info.hasArgument
+					&& info.argumentType
+					&& info.argumentType->GetTypeDescriptor() == GetTypeDescriptor<WString>())
+				{
+					GenerateExpressionInstructions(context, att->value, nullptr);
+				}
+				else
+				{
+					GenerateExpressionInstructions(context, att->value, info.argumentType);
+				}
 
 				CHECK_ERROR(attributeAssembly->instructions.Count() == 1, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
 				auto& ins = attributeAssembly->instructions[0];
 				CHECK_ERROR(ins.code == WfInsCode::LoadValue, L"WfAttributeEvaluator::GetAttributeValue(Ptr<WfAttribute>)#Internal error, attribute argument generates unexpected instructions.");
-				attributeValues.Add(att, ins.valueParameter);
-				return ins.valueParameter;
+				auto value = ins.valueParameter;
+				if (att->category.value == L"cpp" && att->name.value == L"Friend")
+				{
+					if (value.type == runtime::WfInsType::Unknown && value.typeDescriptor != nullptr)
+					{
+						value = runtime::WfRuntimeValue(value.typeDescriptor->GetTypeName());
+					}
+					CHECK_ERROR(value.type == runtime::WfInsType::String, L"WfAttributeEvaluator::GetAttributeValue(...)#Unexpected value in attribute: @cpp:Friend.");
+				}
+				attributeValues.Add(att, value);
+				return value;
 			}
 
 /***********************************************************************
@@ -24152,6 +24410,7 @@ WfCodegenContext
 		}
 	}
 }
+
 
 /***********************************************************************
 .\EMITTER\WFEMITTER_ASSEMBLY.CPP

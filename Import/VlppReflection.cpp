@@ -436,12 +436,30 @@ LogTypeManager (attributes)
 					auto value = info->GetAttributeValue(i);
 					auto valueType = info->GetAttributeValueType(i);
 					CHECK_ERROR(valueType != nullptr, L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Failed to resolve the reflected type of an attribute argument.");
-					auto serializableType = valueType->GetSerializableType();
-					CHECK_ERROR(serializableType != nullptr, L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Attribute argument must use a serializable reflected type.");
 
-					WString data;
-					CHECK_ERROR(serializableType->Serialize(value, data), L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Failed to serialize an attribute argument.");
-					result += valueType->GetTypeName() + L":" + data;
+					if (valueType == GetTypeDescriptor<ITypeDescriptor>())
+					{
+						if (value.GetValueType() == Value::Null)
+						{
+							result += valueType->GetTypeName() + L":null";
+						}
+						else
+						{
+							auto rawPtr = value.GetRawPtr();
+							auto td = dynamic_cast<ITypeDescriptor*>(rawPtr);
+							CHECK_ERROR(td != nullptr, L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#ITypeDescriptor* attribute value must point to a valid ITypeDescriptor.");
+							result += valueType->GetTypeName() + L":" + td->GetTypeName();
+						}
+					}
+					else
+					{
+						auto serializableType = valueType->GetSerializableType();
+						CHECK_ERROR(serializableType != nullptr, L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Attribute argument must use a serializable reflected type.");
+
+						WString data;
+						CHECK_ERROR(serializableType->Serialize(value, data), L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Failed to serialize an attribute argument.");
+						result += valueType->GetTypeName() + L":" + data;
+					}
 				}
 				result += L")";
 				return result;
@@ -826,6 +844,7 @@ Context
 				List<Ptr<IMethodInfo>>					mis;
 				List<Ptr<IPropertyInfo>>				pis;
 				List<Ptr<IEventInfo>>					eis;
+				ITypeDescriptor*						itdTd = nullptr;
 			};
 
 /***********************************************************************
@@ -949,6 +968,7 @@ Metadata
 			struct AttributeValueMetadata
 			{
 				vint								typeDescriptor = -1;
+				vint								typeDescriptorValue = -1;
 				WString								data;
 			};
 
@@ -1043,6 +1063,7 @@ Serialization
 
 			BEGIN_SERIALIZATION(reflection::description::AttributeValueMetadata)
 				SERIALIZE(typeDescriptor)
+				SERIALIZE(typeDescriptorValue)
 				SERIALIZE(data)
 			END_SERIALIZATION
 
@@ -1820,6 +1841,7 @@ Attribute Metadata Helpers
 			void GenerateMetaonlyAttributes(MetaonlyWriterContext& context, List<Ptr<AttributeInfoMetadata>>& metadataList, IAttributeBag* attributeBag)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::reflection::description::GenerateMetaonlyAttributes(MetaonlyWriterContext&, collections::List<AttributeInfoMetadata>&, IAttributeBag*)#"
+				auto itdTd = GetTypeDescriptor<ITypeDescriptor>();
 				for (vint i = 0; i < attributeBag->GetAttributeCount(); i++)
 				{
 					auto info = attributeBag->GetAttribute(i);
@@ -1831,15 +1853,35 @@ Attribute Metadata Helpers
 						auto value = info->GetAttributeValue(j);
 						auto valueType = info->GetAttributeValueType(j);
 						CHECK_ERROR(valueType != nullptr, ERROR_MESSAGE_PREFIX L"Failed to resolve the reflected type of an attribute argument.");
-						auto serializableType = valueType->GetSerializableType();
-						CHECK_ERROR(serializableType != nullptr, ERROR_MESSAGE_PREFIX L"Attribute argument must use a serializable reflected type.");
 
-						WString data;
-						CHECK_ERROR(serializableType->Serialize(value, data), ERROR_MESSAGE_PREFIX L"Failed to serialize an attribute argument.");
-						attributeMetadata->values.Add(Ptr(new AttributeValueMetadata{
-							.typeDescriptor = context.tdIndex[valueType],
-							.data = data,
-						}));
+						if (valueType == itdTd)
+						{
+							vint tdValueIndex = -1;
+							if (value.GetValueType() != Value::Null)
+							{
+								auto rawPtr = value.GetRawPtr();
+								auto td = dynamic_cast<ITypeDescriptor*>(rawPtr);
+								CHECK_ERROR(td != nullptr, ERROR_MESSAGE_PREFIX L"ITypeDescriptor* attribute value must point to a valid ITypeDescriptor.");
+								CHECK_ERROR(context.tdIndex.Keys().Contains(td), ERROR_MESSAGE_PREFIX L"ITypeDescriptor* attribute value must point to a registered ITypeDescriptor.");
+								tdValueIndex = context.tdIndex[td];
+							}
+							attributeMetadata->values.Add(Ptr(new AttributeValueMetadata{
+								.typeDescriptor = context.tdIndex[valueType],
+								.typeDescriptorValue = tdValueIndex,
+							}));
+						}
+						else
+						{
+							auto serializableType = valueType->GetSerializableType();
+							CHECK_ERROR(serializableType != nullptr, ERROR_MESSAGE_PREFIX L"Attribute argument must use a serializable reflected type.");
+
+							WString data;
+							CHECK_ERROR(serializableType->Serialize(value, data), ERROR_MESSAGE_PREFIX L"Failed to serialize an attribute argument.");
+							attributeMetadata->values.Add(Ptr(new AttributeValueMetadata{
+								.typeDescriptor = context.tdIndex[valueType],
+								.data = data,
+							}));
+						}
 					}
 					metadataList.Add(attributeMetadata);
 				}
@@ -1850,10 +1892,11 @@ Attribute Metadata Helpers
 				MetaonlyReaderContext* context,
 				AttributeBagSource* source,
 				IMemberInfo* memberInfo,
-				const List<Ptr<AttributeInfoMetadata>>& attributeMetadataList
+				const List<Ptr<AttributeInfoMetadata>>& attributeMetadataList,
+				ITypeDescriptor* itdTd
 			)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::LoadMetaonlyAttributes(MetaonlyReaderContext*, AttributeBagSource*, IMemberInfo*, const collections::List<AttributeInfoMetadata>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::LoadMetaonlyAttributes(MetaonlyReaderContext*, AttributeBagSource*, IMemberInfo*, const collections::List<AttributeInfoMetadata>&, ITypeDescriptor*)#"
 				for (vint i = 0; i < attributeMetadataList.Count(); i++)
 				{
 					auto&& attributeMetadata = attributeMetadataList[i];
@@ -1866,13 +1909,31 @@ Attribute Metadata Helpers
 						auto&& valueMetadata = attributeMetadata->values[j];
 						CHECK_ERROR(0 <= valueMetadata->typeDescriptor && valueMetadata->typeDescriptor < context->tds.Count(), ERROR_MESSAGE_PREFIX L"Failed to resolve the reflected value type of an attribute argument.");
 						auto reflectedValueType = context->tds[valueMetadata->typeDescriptor].Obj();
-						auto serializableType = reflectedValueType->GetSerializableType();
-						CHECK_ERROR(serializableType != nullptr, ERROR_MESSAGE_PREFIX L"Failed to resolve the serializable type of an attribute argument.");
 
-						Value value;
-						CHECK_ERROR(serializableType->Deserialize(valueMetadata->data, value), ERROR_MESSAGE_PREFIX L"Failed to deserialize an attribute argument.");
-						value = Value::From(value.GetBoxedValue(), reflectedValueType);
-						info->AddValue(reflectedValueType, value);
+						if (itdTd != nullptr && reflectedValueType == itdTd)
+						{
+							if (valueMetadata->typeDescriptorValue >= 0)
+							{
+								CHECK_ERROR(valueMetadata->typeDescriptorValue < context->tds.Count(), ERROR_MESSAGE_PREFIX L"Failed to resolve the ITypeDescriptor* attribute value.");
+								auto referencedTd = context->tds[valueMetadata->typeDescriptorValue].Obj();
+								auto value = Value::From(dynamic_cast<DescriptableObject*>(referencedTd));
+								info->AddValue(reflectedValueType, value);
+							}
+							else
+							{
+								info->AddValue(reflectedValueType, Value());
+							}
+						}
+						else
+						{
+							auto serializableType = reflectedValueType->GetSerializableType();
+							CHECK_ERROR(serializableType != nullptr, ERROR_MESSAGE_PREFIX L"Failed to resolve the serializable type of an attribute argument.");
+
+							Value value;
+							CHECK_ERROR(serializableType->Deserialize(valueMetadata->data, value), ERROR_MESSAGE_PREFIX L"Failed to deserialize an attribute argument.");
+							value = Value::From(value.GetBoxedValue(), reflectedValueType);
+							info->AddValue(reflectedValueType, value);
+						}
 					}
 
 					source->RegisterAttribute(memberInfo, info);
@@ -2160,11 +2221,19 @@ LoadMetaonlyTypes
 					vint eiCount = 0;
 					reader << tdCount << miCount << piCount << eiCount;
 
-					for (vint i = 0; i < tdCount; i++)
 					{
-						Ptr<TypeDescriptorMetadata> metadata;
-						reader << metadata;
-						context->tds.Add(Ptr(new MetaonlyTypeDescriptor(context.Obj(), metadata)));
+						auto itdTypeName = WString::Unmanaged(TypeInfo<ITypeDescriptor>::content.typeName);
+						for (vint i = 0; i < tdCount; i++)
+						{
+							Ptr<TypeDescriptorMetadata> metadata;
+							reader << metadata;
+							auto td = Ptr(new MetaonlyTypeDescriptor(context.Obj(), metadata));
+							if (td->GetTypeName() == itdTypeName)
+							{
+								context->itdTd = td.Obj();
+							}
+							context->tds.Add(td);
+						}
 					}
 					for (vint i = 0; i < miCount; i++)
 					{
@@ -2193,7 +2262,7 @@ LoadMetaonlyTypes
 					auto source = dynamic_cast<AttributeBagSource*>(td);
 					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Metaonly type descriptors must provide attribute storage.");
 					auto metadata = dynamic_cast<MetaonlyTypeDescriptor*>(td)->GetMetadata();
-					LoadMetaonlyAttributes(context.Obj(), source, nullptr, metadata->attributes);
+					LoadMetaonlyAttributes(context.Obj(), source, nullptr, metadata->attributes, context->itdTd);
 				}
 
 				for (vint i = 0; i < context->mis.Count(); i++)
@@ -2202,10 +2271,10 @@ LoadMetaonlyTypes
 					auto source = dynamic_cast<AttributeBagSource*>(method->GetOwnerTypeDescriptor());
 					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Method owner type descriptors must provide attribute storage.");
 					auto metadata = dynamic_cast<MetaonlyMethodInfo*>(method)->GetMetadata();
-					LoadMetaonlyAttributes(context.Obj(), source, method, metadata->attributes);
+					LoadMetaonlyAttributes(context.Obj(), source, method, metadata->attributes, context->itdTd);
 					for (vint j = 0; j < method->GetParameterCount(); j++)
 					{
-						LoadMetaonlyAttributes(context.Obj(), source, method->GetParameter(j), metadata->parameters[j]->attributes);
+						LoadMetaonlyAttributes(context.Obj(), source, method->GetParameter(j), metadata->parameters[j]->attributes, context->itdTd);
 					}
 				}
 
@@ -2215,7 +2284,7 @@ LoadMetaonlyTypes
 					auto source = dynamic_cast<AttributeBagSource*>(property->GetOwnerTypeDescriptor());
 					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Property owner type descriptors must provide attribute storage.");
 					auto metadata = dynamic_cast<MetaonlyPropertyInfo*>(property)->GetMetadata();
-					LoadMetaonlyAttributes(context.Obj(), source, property, metadata->attributes);
+					LoadMetaonlyAttributes(context.Obj(), source, property, metadata->attributes, context->itdTd);
 				}
 
 				for (vint i = 0; i < context->eis.Count(); i++)
@@ -2224,7 +2293,7 @@ LoadMetaonlyTypes
 					auto source = dynamic_cast<AttributeBagSource*>(eventInfo->GetOwnerTypeDescriptor());
 					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Event owner type descriptors must provide attribute storage.");
 					auto metadata = dynamic_cast<MetaonlyEventInfo*>(eventInfo)->GetMetadata();
-					LoadMetaonlyAttributes(context.Obj(), source, eventInfo, metadata->attributes);
+					LoadMetaonlyAttributes(context.Obj(), source, eventInfo, metadata->attributes, context->itdTd);
 				}
 #undef ERROR_MESSAGE_PREFIX
 
@@ -3360,6 +3429,20 @@ AttributeInfoImpl
 
 			void AttributeInfoImpl::AddValue(ITypeDescriptor* valueType, const Value& value)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::AttributeInfoImpl::AddValue(ITypeDescriptor*, const Value&)#"
+				CHECK_ERROR(valueType != nullptr, ERROR_MESSAGE_PREFIX L"valueType should not be null.");
+				if (valueType->GetSerializableType())
+				{
+					// serializable type, no additional validation needed
+				}
+				else
+				{
+					CHECK_ERROR(
+						value.GetValueType() == Value::RawPtr || value.GetValueType() == Value::Null,
+						ERROR_MESSAGE_PREFIX L"ITypeDescriptor* attribute value must be a raw pointer or null."
+					);
+				}
+#undef ERROR_MESSAGE_PREFIX
 				values.Add({ valueType,value });
 			}
 

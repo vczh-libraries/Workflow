@@ -5059,7 +5059,14 @@ Scope Manager
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
 				typedef collections::Pair<WString, WString>													AttributeKey;
-				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
+
+				struct ResolvedWorkflowAttribute
+				{
+					bool							exists = false;
+					bool							hasArgument = false;
+					Ptr<ITypeInfo>					argumentType;
+					ITypeDescriptor*				attributeType = nullptr;
+				};
 
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 
@@ -5098,8 +5105,11 @@ Scope Manager
 
 				workflow::Parser&							workflowParser;
 				Ptr<EventHandler>							workflowParserHandler;
-				AttributeTypeMap							attributes;
 
+			protected:
+				collections::Dictionary<AttributeKey, ResolvedWorkflowAttribute>	resolvedAttributes;
+
+			public:
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
 
@@ -5132,6 +5142,8 @@ Scope Manager
 				/// <param name="_cpuArchitecture">The target CPU architecture.</param>
 				WfLexicalScopeManager(workflow::Parser& _workflowParser, WfCpuArchitecture _cpuArchitecture);
 				~WfLexicalScopeManager();
+				ResolvedWorkflowAttribute					ResolveWorkflowAttribute(const WString& category, const WString& name);
+				WString										GetWorkflowAttributeTypeName(const WString& category, const WString& name);
 				
 				/// <summary>Add a Workflow module. Syntax errors can be found at <see cref="errors"/>.</summary>
 				/// <param name="moduleCode">The source code of a workflow module.</param>
@@ -5550,6 +5562,7 @@ Error Messages
 
 #endif
 
+
 /***********************************************************************
 .\EMITTER\WFEMITTER.H
 ***********************************************************************/
@@ -5948,6 +5961,7 @@ WfCppConfig::Write
 			};
 
 			extern void					GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);
+			extern void					WriteWStringLiteralUnmanaged(stream::StreamWriter& writer, const WString& value);
 			extern void					GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
 			extern void					GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> memberDecl, const WString& prefix, bool forClassExpr);
 			extern bool					GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, WfClassDeclaration* classDef, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> memberDecl, const WString& prefix);
@@ -5999,3 +6013,4 @@ GenerateCppFiles
 }
 
 #endif
+
