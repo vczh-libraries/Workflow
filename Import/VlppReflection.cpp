@@ -424,6 +424,50 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
+LogTypeManager (attributes)
+***********************************************************************/
+
+			WString LogTypeManager_FormatAttribute(IAttributeInfo* info)
+			{
+				WString result = info->GetAttributeType()->GetTypeName() + L"(";
+				for (vint i = 0; i < info->GetAttributeValueCount(); i++)
+				{
+					if (i > 0) result += L", ";
+					auto value = info->GetAttributeValue(i);
+					auto valueType = info->GetAttributeValueType(i);
+					CHECK_ERROR(valueType != nullptr, L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Failed to resolve the reflected type of an attribute argument.");
+					auto serializableType = valueType->GetSerializableType();
+					CHECK_ERROR(serializableType != nullptr, L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Attribute argument must use a serializable reflected type.");
+
+					WString data;
+					CHECK_ERROR(serializableType->Serialize(value, data), L"vl::reflection::description::LogTypeManager_FormatAttribute(IAttributeInfo*)#Failed to serialize an attribute argument.");
+					result += valueType->GetTypeName() + L":" + data;
+				}
+				result += L")";
+				return result;
+			}
+
+			void LogTypeManager_PrintAttributes(stream::TextWriter& writer, IAttributeBag* bag, const WString& prefix)
+			{
+				for (vint i = 0; i < bag->GetAttributeCount(); i++)
+				{
+					writer.WriteLine(prefix + L"@" + LogTypeManager_FormatAttribute(bag->GetAttribute(i)));
+				}
+			}
+
+			void LogTypeManager_PrintParameterAttributes(stream::TextWriter& writer, IMethodInfo* info)
+			{
+				for (vint i = 0; i < info->GetParameterCount(); i++)
+				{
+					auto parameter = info->GetParameter(i);
+					for (vint j = 0; j < parameter->GetAttributeCount(); j++)
+					{
+						writer.WriteLine(L"    @(" + parameter->GetName() + L")" + LogTypeManager_FormatAttribute(parameter->GetAttribute(j)));
+					}
+				}
+			}
+
+/***********************************************************************
 LogTypeManager (enum)
 ***********************************************************************/
 
@@ -450,6 +494,7 @@ LogTypeManager (struct)
 
 			void LogTypeManager_Property(stream::TextWriter& writer, IPropertyInfo* info)
 			{
+				LogTypeManager_PrintAttributes(writer, info, L"    ");
 				if (auto cpp = info->GetCpp())
 				{
 					writer.WriteLine(L"    @ReferenceTemplate:" + cpp->GetReferenceTemplate());
@@ -519,6 +564,7 @@ LogTypeManager (class)
 				{
 					printed = true;
 					IEventInfo* info = type->GetEvent(j);
+					LogTypeManager_PrintAttributes(writer, info, L"    ");
 					if (auto cpp = info->GetCpp())
 					{
 						writer.WriteLine(L"    @AttachTemplate:" + cpp->GetAttachTemplate());
@@ -566,11 +612,13 @@ LogTypeManager (class)
 
 			void LogTypeManager_Method(stream::TextWriter& writer, IMethodInfo* info, const wchar_t* title)
 			{
+				LogTypeManager_PrintAttributes(writer, info, L"    ");
 				if (auto cpp = info->GetCpp())
 				{
 					writer.WriteLine(L"    @InvokeTemplate:" + cpp->GetInvokeTemplate());
 					writer.WriteLine(L"    @ClosureTemplate:" + cpp->GetClosureTemplate());
 				}
+				LogTypeManager_PrintParameterAttributes(writer, info);
 
 				writer.WriteString(L"    ");
 				writer.WriteString(title);
@@ -709,6 +757,7 @@ LogTypeManager
 					{
 						writer.WriteLine(L"@Serializable");
 					}
+					LogTypeManager_PrintAttributes(writer, type, L"");
 
 					switch (type->GetTypeDescriptorFlags())
 					{
@@ -897,10 +946,23 @@ Metadata
 				vint								count = 0;
 			};
 
+			struct AttributeValueMetadata
+			{
+				vint								typeDescriptor = -1;
+				WString								data;
+			};
+
+			struct AttributeInfoMetadata
+			{
+				vint								attributeType = -1;
+				List<Ptr<AttributeValueMetadata>>	values;
+			};
+
 			struct ParameterInfoMetadata
 			{
 				WString								name;
 				Ptr<MetaonlyTypeInfo>				type;
+				List<Ptr<AttributeInfoMetadata>>	attributes;
 			};
 
 			struct MethodInfoMetadata
@@ -913,6 +975,7 @@ Metadata
 				List<Ptr<ParameterInfoMetadata>>	parameters;
 				Ptr<MetaonlyTypeInfo>				returnType;
 				bool								isStatic = false;
+				List<Ptr<AttributeInfoMetadata>>	attributes;
 			};
 
 			struct PropertyInfoMetadata
@@ -926,6 +989,7 @@ Metadata
 				vint								getter = -1;
 				vint								setter = -1;
 				vint								valueChangedEvent = -1;
+				List<Ptr<AttributeInfoMetadata>>	attributes;
 			};
 
 			struct EventInfoMetadata
@@ -937,6 +1001,7 @@ Metadata
 				vint								ownerTypeDescriptor = -1;
 				Ptr<MetaonlyTypeInfo>				handlerType;
 				List<vint>							observingProperties;
+				List<Ptr<AttributeInfoMetadata>>	attributes;
 			};
 
 			struct TypeDescriptorMetadata
@@ -957,6 +1022,7 @@ Metadata
 				List<vint>							methods;
 				List<IdRange>						methodGroups;
 				IdRange								constructorGroup;
+				List<Ptr<AttributeInfoMetadata>>	attributes;
 			};
 		}
 	}
@@ -975,6 +1041,16 @@ Serialization
 				SERIALIZE(count)
 			END_SERIALIZATION
 
+			BEGIN_SERIALIZATION(reflection::description::AttributeValueMetadata)
+				SERIALIZE(typeDescriptor)
+				SERIALIZE(data)
+			END_SERIALIZATION
+
+			BEGIN_SERIALIZATION(reflection::description::AttributeInfoMetadata)
+				SERIALIZE(attributeType)
+				SERIALIZE(values)
+			END_SERIALIZATION
+
 			BEGIN_SERIALIZATION(reflection::description::MetaonlyTypeInfo)
 				SERIALIZE(decorator)
 				SERIALIZE(hint)
@@ -986,6 +1062,7 @@ Serialization
 			BEGIN_SERIALIZATION(reflection::description::ParameterInfoMetadata)
 				SERIALIZE(name)
 				SERIALIZE(type)
+				SERIALIZE(attributes)
 			END_SERIALIZATION
 
 			BEGIN_SERIALIZATION(reflection::description::MethodInfoMetadata)
@@ -997,6 +1074,7 @@ Serialization
 				SERIALIZE(parameters)
 				SERIALIZE(returnType)
 				SERIALIZE(isStatic)
+				SERIALIZE(attributes)
 			END_SERIALIZATION
 
 			BEGIN_SERIALIZATION(reflection::description::PropertyInfoMetadata)
@@ -1009,6 +1087,7 @@ Serialization
 				SERIALIZE(getter)
 				SERIALIZE(setter)
 				SERIALIZE(valueChangedEvent)
+				SERIALIZE(attributes)
 			END_SERIALIZATION
 
 			BEGIN_SERIALIZATION(reflection::description::EventInfoMetadata)
@@ -1019,6 +1098,7 @@ Serialization
 				SERIALIZE(ownerTypeDescriptor)
 				SERIALIZE(handlerType)
 				SERIALIZE(observingProperties)
+				SERIALIZE(attributes)
 			END_SERIALIZATION
 
 			BEGIN_SERIALIZATION(reflection::description::TypeDescriptorMetadata)
@@ -1038,6 +1118,7 @@ Serialization
 				SERIALIZE(methods)
 				SERIALIZE(methodGroups)
 				SERIALIZE(constructorGroup)
+				SERIALIZE(attributes)
 			END_SERIALIZATION
 		}
 	}
@@ -1054,7 +1135,7 @@ Serialization
 IMethodInfo
 ***********************************************************************/
 
-			class MetaonlyParameterInfo : public Object, public IParameterInfo
+			class MetaonlyParameterInfo : public MemberInfoBase<IParameterInfo>
 			{
 			protected:
 				MetaonlyReaderContext*			context = nullptr;
@@ -1092,7 +1173,7 @@ IMethodInfo
 				}
 			};
 
-			class MetaonlyMethodInfo : public Object, public IMethodInfo, protected IMethodInfo::ICpp
+			class MetaonlyMethodInfo : public MemberInfoBase<IMethodInfo>, protected IMethodInfo::ICpp
 			{
 				friend class MetaonlyMethodGroupInfo;
 			protected:
@@ -1111,6 +1192,11 @@ IMethodInfo
 					{
 						parameters.Add(Ptr(new MetaonlyParameterInfo(context, metadata->parameters[i], metadata->ownerTypeDescriptor, this)));
 					}
+				}
+
+				Ptr<MethodInfoMetadata> GetMetadata()
+				{
+					return metadata;
 				}
 
 				// ICpp
@@ -1208,6 +1294,18 @@ IMethodInfo
 				{
 				}
 
+				// IAttributeBag
+
+				vint GetAttributeCount() override
+				{
+					return 0;
+				}
+
+				IAttributeInfo* GetAttribute(vint index)
+				{
+					return nullptr;
+				}
+
 				// IMemberInfo
 
 				ITypeDescriptor* GetOwnerTypeDescriptor() override
@@ -1243,7 +1341,7 @@ IMethodInfo
 IPropertyInfo
 ***********************************************************************/
 
-			class MetaonlyPropertyInfo : public Object, public IPropertyInfo, protected IPropertyInfo::ICpp
+			class MetaonlyPropertyInfo : public MemberInfoBase<IPropertyInfo>, protected IPropertyInfo::ICpp
 			{
 			protected:
 				MetaonlyReaderContext*			context = nullptr;
@@ -1254,6 +1352,11 @@ IPropertyInfo
 					: context(_context)
 					, metadata(_metadata)
 				{
+				}
+
+				Ptr<PropertyInfoMetadata> GetMetadata()
+				{
+					return metadata;
 				}
 
 				// ICpp
@@ -1331,7 +1434,7 @@ IPropertyInfo
 IEventInfo
 ***********************************************************************/
 
-			class MetaonlyEventInfo : public Object, public IEventInfo, protected IEventInfo::ICpp
+			class MetaonlyEventInfo : public MemberInfoBase<IEventInfo>, protected IEventInfo::ICpp
 			{
 			protected:
 				MetaonlyReaderContext*			context = nullptr;
@@ -1342,6 +1445,11 @@ IEventInfo
 					: context(_context)
 					, metadata(_metadata)
 				{
+				}
+
+				Ptr<EventInfoMetadata> GetMetadata()
+				{
+					return metadata;
 				}
 
 				// ICpp
@@ -1420,7 +1528,7 @@ ITypeDescriptor
 ***********************************************************************/
 
 			class MetaonlyTypeDescriptor
-				: public Object
+				: public AttributeBagSource
 				, public ITypeDescriptor
 				, protected ITypeDescriptor::ICpp
 				, protected IValueType
@@ -1452,6 +1560,23 @@ ITypeDescriptor
 					{
 						constructorGroup = Ptr(new MetaonlyMethodGroupInfo(context, metadata, metadata->constructorGroup));
 					}
+				}
+
+				Ptr<TypeDescriptorMetadata> GetMetadata()
+				{
+					return metadata;
+				}
+
+				// IAttributeBag
+
+				vint GetAttributeCount() override
+				{
+					return GetAttributeCountInternal(nullptr);
+				}
+
+				IAttributeInfo* GetAttribute(vint index) override
+				{
+					return GetAttributeInternal(nullptr, index);
 				}
 
 				// ICpp
@@ -1689,6 +1814,73 @@ ITypeDescriptor
 			};
 
 /***********************************************************************
+Attribute Metadata Helpers
+***********************************************************************/
+
+			void GenerateMetaonlyAttributes(MetaonlyWriterContext& context, List<Ptr<AttributeInfoMetadata>>& metadataList, IAttributeBag* attributeBag)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::GenerateMetaonlyAttributes(MetaonlyWriterContext&, collections::List<AttributeInfoMetadata>&, IAttributeBag*)#"
+				for (vint i = 0; i < attributeBag->GetAttributeCount(); i++)
+				{
+					auto info = attributeBag->GetAttribute(i);
+					auto attributeMetadata = Ptr(new AttributeInfoMetadata{
+						.attributeType = context.tdIndex[info->GetAttributeType()],
+					});
+					for (vint j = 0; j < info->GetAttributeValueCount(); j++)
+					{
+						auto value = info->GetAttributeValue(j);
+						auto valueType = info->GetAttributeValueType(j);
+						CHECK_ERROR(valueType != nullptr, ERROR_MESSAGE_PREFIX L"Failed to resolve the reflected type of an attribute argument.");
+						auto serializableType = valueType->GetSerializableType();
+						CHECK_ERROR(serializableType != nullptr, ERROR_MESSAGE_PREFIX L"Attribute argument must use a serializable reflected type.");
+
+						WString data;
+						CHECK_ERROR(serializableType->Serialize(value, data), ERROR_MESSAGE_PREFIX L"Failed to serialize an attribute argument.");
+						attributeMetadata->values.Add(Ptr(new AttributeValueMetadata{
+							.typeDescriptor = context.tdIndex[valueType],
+							.data = data,
+						}));
+					}
+					metadataList.Add(attributeMetadata);
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void LoadMetaonlyAttributes(
+				MetaonlyReaderContext* context,
+				AttributeBagSource* source,
+				IMemberInfo* memberInfo,
+				const List<Ptr<AttributeInfoMetadata>>& attributeMetadataList
+			)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::LoadMetaonlyAttributes(MetaonlyReaderContext*, AttributeBagSource*, IMemberInfo*, const collections::List<AttributeInfoMetadata>&)#"
+				for (vint i = 0; i < attributeMetadataList.Count(); i++)
+				{
+					auto&& attributeMetadata = attributeMetadataList[i];
+					CHECK_ERROR(0 <= attributeMetadata->attributeType && attributeMetadata->attributeType < context->tds.Count(), ERROR_MESSAGE_PREFIX L"Failed to resolve the reflected attribute type.");
+					auto attributeType = context->tds[attributeMetadata->attributeType].Obj();
+					auto info = Ptr(new AttributeInfoImpl(attributeType));
+
+					for (vint j = 0; j < attributeMetadata->values.Count(); j++)
+					{
+						auto&& valueMetadata = attributeMetadata->values[j];
+						CHECK_ERROR(0 <= valueMetadata->typeDescriptor && valueMetadata->typeDescriptor < context->tds.Count(), ERROR_MESSAGE_PREFIX L"Failed to resolve the reflected value type of an attribute argument.");
+						auto reflectedValueType = context->tds[valueMetadata->typeDescriptor].Obj();
+						auto serializableType = reflectedValueType->GetSerializableType();
+						CHECK_ERROR(serializableType != nullptr, ERROR_MESSAGE_PREFIX L"Failed to resolve the serializable type of an attribute argument.");
+
+						Value value;
+						CHECK_ERROR(serializableType->Deserialize(valueMetadata->data, value), ERROR_MESSAGE_PREFIX L"Failed to deserialize an attribute argument.");
+						value = Value::From(value.GetBoxedValue(), reflectedValueType);
+						info->AddValue(reflectedValueType, value);
+					}
+
+					source->RegisterAttribute(memberInfo, info);
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
 GenerateMetaonlyTypes
 ***********************************************************************/
 
@@ -1753,6 +1945,7 @@ GenerateMetaonlyTypes
 					metadata->constructorGroup.count = metadata->methods.Count() - metadata->constructorGroup.start;
 				}
 
+				GenerateMetaonlyAttributes(*writer.context.Obj(), metadata->attributes, td);
 				writer << metadata;
 			}
 
@@ -1776,10 +1969,12 @@ GenerateMetaonlyTypes
 					auto piMetadata = Ptr(new ParameterInfoMetadata);
 					piMetadata->name = pi->GetName();
 					piMetadata->type = Ptr(new MetaonlyTypeInfo(*writer.context.Obj(), pi->GetType()));
+					GenerateMetaonlyAttributes(*writer.context.Obj(), piMetadata->attributes, pi);
 					metadata->parameters.Add(piMetadata);
 				}
 				metadata->returnType = Ptr(new MetaonlyTypeInfo(*writer.context.Obj(), mi->GetReturn()));
 				metadata->isStatic = mi->IsStatic();
+				GenerateMetaonlyAttributes(*writer.context.Obj(), metadata->attributes, mi);
 				writer << metadata;
 			}
 
@@ -1807,6 +2002,7 @@ GenerateMetaonlyTypes
 				{
 					metadata->valueChangedEvent = writer.context->eiIndex[ei];
 				}
+				GenerateMetaonlyAttributes(*writer.context.Obj(), metadata->attributes, pi);
 				writer << metadata;
 			}
 
@@ -1826,6 +2022,7 @@ GenerateMetaonlyTypes
 				{
 					metadata->observingProperties.Add(writer.context->piIndex[ei->GetObservingProperty(i)]);
 				}
+				GenerateMetaonlyAttributes(*writer.context.Obj(), metadata->attributes, ei);
 				writer << metadata;
 			}
 
@@ -1989,6 +2186,48 @@ LoadMetaonlyTypes
 					}
 				}
 
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::LoadMetaonlyTypes(stream::IStream&, const collections::Dictionary<WString, Ptr<ISerializableType>>&)#"
+				for (vint i = 0; i < context->tds.Count(); i++)
+				{
+					auto td = context->tds[i].Obj();
+					auto source = dynamic_cast<AttributeBagSource*>(td);
+					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Metaonly type descriptors must provide attribute storage.");
+					auto metadata = dynamic_cast<MetaonlyTypeDescriptor*>(td)->GetMetadata();
+					LoadMetaonlyAttributes(context.Obj(), source, nullptr, metadata->attributes);
+				}
+
+				for (vint i = 0; i < context->mis.Count(); i++)
+				{
+					auto method = context->mis[i].Obj();
+					auto source = dynamic_cast<AttributeBagSource*>(method->GetOwnerTypeDescriptor());
+					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Method owner type descriptors must provide attribute storage.");
+					auto metadata = dynamic_cast<MetaonlyMethodInfo*>(method)->GetMetadata();
+					LoadMetaonlyAttributes(context.Obj(), source, method, metadata->attributes);
+					for (vint j = 0; j < method->GetParameterCount(); j++)
+					{
+						LoadMetaonlyAttributes(context.Obj(), source, method->GetParameter(j), metadata->parameters[j]->attributes);
+					}
+				}
+
+				for (vint i = 0; i < context->pis.Count(); i++)
+				{
+					auto property = context->pis[i].Obj();
+					auto source = dynamic_cast<AttributeBagSource*>(property->GetOwnerTypeDescriptor());
+					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Property owner type descriptors must provide attribute storage.");
+					auto metadata = dynamic_cast<MetaonlyPropertyInfo*>(property)->GetMetadata();
+					LoadMetaonlyAttributes(context.Obj(), source, property, metadata->attributes);
+				}
+
+				for (vint i = 0; i < context->eis.Count(); i++)
+				{
+					auto eventInfo = context->eis[i].Obj();
+					auto source = dynamic_cast<AttributeBagSource*>(eventInfo->GetOwnerTypeDescriptor());
+					CHECK_ERROR(source != nullptr, ERROR_MESSAGE_PREFIX L"Event owner type descriptors must provide attribute storage.");
+					auto metadata = dynamic_cast<MetaonlyEventInfo*>(eventInfo)->GetMetadata();
+					LoadMetaonlyAttributes(context.Obj(), source, eventInfo, metadata->attributes);
+				}
+#undef ERROR_MESSAGE_PREFIX
+
 				return loader;
 			}
 		}
@@ -1996,6 +2235,7 @@ LoadMetaonlyTypes
 }
 
 #endif
+
 
 /***********************************************************************
 .\DESCRIPTABLEOBJECT.CPP
@@ -3089,9 +3329,62 @@ GenericTypeInfo
 				genericArguments.Add(value);
 			}
 
+/***********************************************************************
+AttributeInfoImpl
+***********************************************************************/
+
+			AttributeInfoImpl::AttributeInfoImpl(ITypeDescriptor* _attributeType)
+				:attributeType(_attributeType)
+			{
+			}
+
+			ITypeDescriptor* AttributeInfoImpl::GetAttributeType()
+			{
+				return attributeType;
+			}
+
+			vint AttributeInfoImpl::GetAttributeValueCount()
+			{
+				return values.Count();
+			}
+
+			ITypeDescriptor* AttributeInfoImpl::GetAttributeValueType(vint index)
+			{
+				return values[index].key;
+			}
+
+			Value AttributeInfoImpl::GetAttributeValue(vint index)
+			{
+				return values[index].value;
+			}
+
+			void AttributeInfoImpl::AddValue(ITypeDescriptor* valueType, const Value& value)
+			{
+				values.Add({ valueType,value });
+			}
+
 #endif
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
+
+/***********************************************************************
+AttributeBagSource
+***********************************************************************/
+
+			void AttributeBagSource::RegisterAttribute(IMemberInfo* memberInfo, Ptr<IAttributeInfo> info)
+			{
+				attributes.Add(memberInfo, info);
+			}
+
+			IMemberInfo* AttributeBagSource::GetLastRegisteredMember()const
+			{
+				return lastRegisteredMember;
+			}
+
+			void AttributeBagSource::SetLastRegisteredMember(IMemberInfo* member)
+			{
+				lastRegisteredMember = member;
+			}
 
 /***********************************************************************
 TypeDescriptorImplBase
@@ -3105,6 +3398,10 @@ TypeDescriptorImplBase
 			const TypeInfoContent* TypeDescriptorImplBase::GetTypeInfoContentInternal()
 			{
 				return typeInfoContent;
+			}
+
+			void TypeDescriptorImplBase::LoadForAttributeAccess()
+			{
 			}
 
 			TypeDescriptorImplBase::TypeDescriptorImplBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent)
@@ -3127,6 +3424,18 @@ TypeDescriptorImplBase
 
 			TypeDescriptorImplBase::~TypeDescriptorImplBase()
 			{
+			}
+
+			vint TypeDescriptorImplBase::GetAttributeCount()
+			{
+				LoadForAttributeAccess();
+				return GetAttributeCountInternal(nullptr);
+			}
+
+			IAttributeInfo* TypeDescriptorImplBase::GetAttribute(vint index)
+			{
+				LoadForAttributeAccess();
+				return GetAttributeInternal(nullptr, index);
 			}
 
 			ITypeDescriptor::ICpp* TypeDescriptorImplBase::GetCpp()
@@ -3159,6 +3468,11 @@ ValueTypeDescriptorBase
 					loaded = true;
 					LoadInternal();
 				}
+			}
+
+			void ValueTypeDescriptorBase::LoadForAttributeAccess()
+			{
+				Load();
 			}
 
 			ValueTypeDescriptorBase::ValueTypeDescriptorBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent)
@@ -3466,6 +3780,16 @@ MethodGroupInfoImpl
 
 			MethodGroupInfoImpl::~MethodGroupInfoImpl()
 			{
+			}
+
+			vint MethodGroupInfoImpl::GetAttributeCount()
+			{
+				return 0;
+			}
+
+			IAttributeInfo* MethodGroupInfoImpl::GetAttribute(vint index)
+			{
+				return nullptr;
 			}
 
 			ITypeDescriptor* MethodGroupInfoImpl::GetOwnerTypeDescriptor()
@@ -3883,12 +4207,14 @@ TypeDescriptorImpl
 			IPropertyInfo* TypeDescriptorImpl::AddProperty(Ptr<IPropertyInfo> value)
 			{
 				properties.Add(value->GetName(), value);
+				SetLastRegisteredMember(value.Obj());
 				return value.Obj();
 			}
 
 			IEventInfo* TypeDescriptorImpl::AddEvent(Ptr<IEventInfo> value)
 			{
 				events.Add(value->GetName(), value);
+				SetLastRegisteredMember(value.Obj());
 				return value.Obj();
 			}
 
@@ -3897,6 +4223,7 @@ TypeDescriptorImpl
 				MethodGroupInfoImpl* methodGroup=PrepareMethodGroup(name);
 				value->SetOwnerMethodgroup(methodGroup);
 				methodGroup->AddMethod(value);
+				SetLastRegisteredMember(value.Obj());
 				return value.Obj();
 			}
 
@@ -3905,6 +4232,7 @@ TypeDescriptorImpl
 				MethodGroupInfoImpl* methodGroup=PrepareConstructorGroup();
 				value->SetOwnerMethodgroup(methodGroup);
 				methodGroup->AddMethod(value);
+				SetLastRegisteredMember(value.Obj());
 				return value.Obj();
 			}
 
@@ -3920,6 +4248,11 @@ TypeDescriptorImpl
 					loaded=true;
 					LoadInternal();
 				}
+			}
+
+			void TypeDescriptorImpl::LoadForAttributeAccess()
+			{
+				Load();
 			}
 
 			TypeDescriptorImpl::TypeDescriptorImpl(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent)
@@ -4181,6 +4514,7 @@ TypeDescriptorImpl
 		}
 	}
 }
+
 
 /***********************************************************************
 .\PREDEFINED\PREDEFINEDTYPES.CPP
@@ -4609,6 +4943,8 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ISerializableType, system::reflection::SerializableType)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeInfo, system::reflection::TypeInfo)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeInfo::Decorator, system::reflection::TypeInfo::Decorator)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IAttributeInfo, system::reflection::AttributeInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IAttributeBag, system::reflection::AttributeBag)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMemberInfo, system::reflection::MemberInfo)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEventHandler, system::reflection::EventHandler)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEventInfo, system::reflection::EventInfo)
@@ -4880,9 +5216,22 @@ LoadPredefinedTypes
 				ENUM_NAMESPACE_ITEM(Nullable)
 				ENUM_NAMESPACE_ITEM(TypeDescriptor)
 				ENUM_NAMESPACE_ITEM(Generic)
-				END_ENUM_ITEM(ITypeInfo::Decorator)
+			END_ENUM_ITEM(ITypeInfo::Decorator)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IAttributeInfo)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AttributeType)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AttributeValueCount)
+				CLASS_MEMBER_METHOD(GetAttributeValueType, { L"index" })
+				CLASS_MEMBER_METHOD(GetAttributeValue, { L"index" })
+			END_INTERFACE_MEMBER(IAttributeInfo)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IAttributeBag)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AttributeCount)
+				CLASS_MEMBER_METHOD(GetAttribute, { L"index" })
+			END_INTERFACE_MEMBER(IAttributeBag)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IMemberInfo)
+				CLASS_MEMBER_BASE(IAttributeBag)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerTypeDescriptor)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
 			END_INTERFACE_MEMBER(IMemberInfo)
@@ -4959,6 +5308,8 @@ LoadPredefinedTypes
 			END_ENUM_ITEM(TypeDescriptorFlags)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITypeDescriptor)
+				CLASS_MEMBER_BASE(IAttributeBag)
+
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TypeDescriptorFlags)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TypeName)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ValueType)
