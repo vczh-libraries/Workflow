@@ -38,6 +38,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::description::StateMachine)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::SMGoto>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_state_CreateCoroutine, { L"__vwsn_state_startState" })
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Private)
 				CLASS_MEMBER_METHOD(A, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(B, NO_PARAMETER)
 			END_CLASS_MEMBER(::SMGoto)

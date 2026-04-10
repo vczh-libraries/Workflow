@@ -37,12 +37,16 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Derived2)
+				ATTRIBUTE_TYPE(::vl::__vwsn::att_cpp_Friend, ::vl::WString::Unmanaged(L"OuterClass2"))
 				CLASS_MEMBER_BASE(::OuterClass2::Base2)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Derived2>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Execute, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(x)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 				CLASS_MEMBER_FIELD(y)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 				CLASS_MEMBER_FIELD(z)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 			END_CLASS_MEMBER(::Derived2)
 
 			BEGIN_CLASS_MEMBER(::OuterClass2)

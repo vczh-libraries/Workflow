@@ -43,6 +43,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(Setb, { L"__vwsn_value_" })
 				CLASS_MEMBER_EVENT(bChanged)
 				CLASS_MEMBER_FIELD(__vwsn_prop_b)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Private)
 				CLASS_MEMBER_PROPERTY_EVENT(b, Getb, Setb, bChanged)
 			END_CLASS_MEMBER(::A)
 
@@ -53,6 +54,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(Setc, { L"__vwsn_value_" })
 				CLASS_MEMBER_EVENT(cChanged)
 				CLASS_MEMBER_FIELD(__vwsn_prop_c)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Private)
 				CLASS_MEMBER_PROPERTY_EVENT(c, Getc, Setc, cChanged)
 			END_CLASS_MEMBER(::B)
 
@@ -63,6 +65,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(Setx, { L"__vwsn_value_" })
 				CLASS_MEMBER_EVENT(xChanged)
 				CLASS_MEMBER_FIELD(__vwsn_prop_x)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Private)
 				CLASS_MEMBER_PROPERTY_EVENT(x, Getx, Setx, xChanged)
 			END_CLASS_MEMBER(::C)
 

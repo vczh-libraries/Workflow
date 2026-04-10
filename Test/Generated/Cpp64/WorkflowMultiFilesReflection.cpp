@@ -50,6 +50,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::multifiles::Animal)
+				ATTRIBUTE_TYPE(::vl::__vwsn::att_cpp_File, ::vl::WString::Unmanaged(L"WorkflowMultiFiles_Animal"))
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::multifiles::Animal>(), NO_PARAMETER)
 			END_CLASS_MEMBER(::multifiles::Animal)
@@ -60,6 +61,7 @@ namespace vl
 			END_CLASS_MEMBER(::multifiles::BadDog)
 
 			BEGIN_CLASS_MEMBER(::multifiles::Bird)
+				ATTRIBUTE_TYPE(::vl::__vwsn::att_cpp_File, ::vl::WString::Unmanaged(L"WorkflowMultiFiles_Bird"))
 				CLASS_MEMBER_BASE(::multifiles::Animal)
 				CLASS_MEMBER_BASE(::multifiles::FlyingObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::multifiles::Bird>(), NO_PARAMETER)
@@ -123,6 +125,7 @@ namespace vl
 			END_CLASS_MEMBER(::multifiles::Leopard)
 
 			BEGIN_CLASS_MEMBER(::multifiles::Lion)
+				ATTRIBUTE_TYPE(::vl::__vwsn::att_cpp_File, ::vl::WString::Unmanaged(L"WorkflowMultiFiles_Lion"))
 				CLASS_MEMBER_BASE(::multifiles::Cat)
 				CLASS_MEMBER_BASE(::multifiles::HuntingObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::multifiles::Lion>(), NO_PARAMETER)
