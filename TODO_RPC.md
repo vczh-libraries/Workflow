@@ -6,9 +6,8 @@
 
 ## Steps
 
-- Add strong-typed attribute.
-  - Define and reflect all `@cpp:*` and `@rpc:*` attributes.
-  - `@ns:Type` expands to `vl::__vwsn::att_ns_Type` and `system::workflow_attributes::att_ns_Type`.
+- Allow `ITypeDescriptor*` argument in attributes in VlppReflection.
+  - Remove special treatment for `@cpp:Friend`.
 - Add rpc attributes type checker and failure test cases for compile errors.
 - Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
   - All signed integers will share the same type in metadata, also for unsigned integers.
