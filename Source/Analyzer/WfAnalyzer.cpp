@@ -431,17 +431,6 @@ WfLexicalScopeManager
 					return resolvedAttributes.Values()[index];
 				}
 
-				if (auto index = customAttributes.Keys().IndexOf(key); index != -1)
-				{
-					auto&& typeInfo = customAttributes.Values()[index];
-					auto voidType = TypeInfoRetriver<void>::CreateTypeInfo();
-					info.exists = true;
-					info.hasArgument = !IsSameType(typeInfo.Obj(), voidType.Obj());
-					info.argumentType = info.hasArgument ? CopyTypeInfo(typeInfo.Obj()) : nullptr;
-					resolvedAttributes.Add(key, info);
-					return info;
-				}
-
 				auto typeName = GetWorkflowAttributeTypeName(category, name);
 				if (typeName == L"")
 				{

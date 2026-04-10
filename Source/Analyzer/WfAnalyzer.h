@@ -194,7 +194,6 @@ Scope Manager
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
 				typedef collections::Pair<WString, WString>													AttributeKey;
-				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
 
 				struct ResolvedWorkflowAttribute
 				{
@@ -246,7 +245,6 @@ Scope Manager
 				collections::Dictionary<AttributeKey, ResolvedWorkflowAttribute>	resolvedAttributes;
 
 			public:
-				AttributeTypeMap								customAttributes;
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
 

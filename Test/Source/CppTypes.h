@@ -116,6 +116,35 @@ namespace test
 		void ExecuteInBackground(const Func<void()>& callback)override;
 		void DelayExecute(const Func<void()>& callback, vint milliseconds)override;
 	};
+
+	struct att_test_Int
+	{
+		vint								argument = 0;
+
+		auto operator<=>(const att_test_Int&) const = default;
+	};
+
+	struct att_test_List
+	{
+		auto operator<=>(const att_test_List&) const = default;
+	};
+
+	struct att_test_Map
+	{
+		auto operator<=>(const att_test_Map&) const = default;
+	};
+
+	struct att_test_Range
+	{
+		auto operator<=>(const att_test_Range&) const = default;
+	};
+
+	struct att_test_Point
+	{
+		Point								argument;
+
+		auto operator<=>(const att_test_Point&) const = default;
+	};
 }
 
 namespace vl
@@ -125,6 +154,13 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+#define UNITTEST_ATTRIBUTE_TYPELIST(F)\
+			F(test::att_test_Int)\
+			F(test::att_test_List)\
+			F(test::att_test_Map)\
+			F(test::att_test_Range)\
+			F(test::att_test_Point)\
+
 #define UNITTEST_TYPELIST(F)\
 			F(test::Seasons)\
 			F(test::Point)\
@@ -135,6 +171,7 @@ namespace vl
 			F(test::SyncScheduler)\
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
+			UNITTEST_ATTRIBUTE_TYPELIST(DECL_TYPE_INFO)
 
 #endif
 			extern bool						LoadCppTypes();

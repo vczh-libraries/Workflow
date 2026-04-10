@@ -230,10 +230,38 @@ namespace vl
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			UNITTEST_TYPELIST(IMPL_CPP_TYPE_INFO)
+			IMPL_TYPE_INFO_RENAME(test::att_test_Int, system::workflow_attributes::att_test_Int)
+			IMPL_TYPE_INFO_RENAME(test::att_test_List, system::workflow_attributes::att_test_List)
+			IMPL_TYPE_INFO_RENAME(test::att_test_Map, system::workflow_attributes::att_test_Map)
+			IMPL_TYPE_INFO_RENAME(test::att_test_Range, system::workflow_attributes::att_test_Range)
+			IMPL_TYPE_INFO_RENAME(test::att_test_Point, system::workflow_attributes::att_test_Point)
 #endif
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
+
+			class PlaceholderFieldInfo : public FieldInfoImpl
+			{
+			protected:
+				Value GetValueInternal(const Value&) override
+				{
+					CHECK_FAIL(L"PlaceholderFieldInfo::GetValueInternal()#Not supported.");
+				}
+				void SetValueInternal(Value&, const Value&) override
+				{
+					CHECK_FAIL(L"PlaceholderFieldInfo::SetValueInternal()#Not supported.");
+				}
+			public:
+				PlaceholderFieldInfo(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, Ptr<ITypeInfo> _returnInfo)
+					: FieldInfoImpl(_ownerTypeDescriptor, _name, _returnInfo)
+				{
+				}
+
+				IPropertyInfo::ICpp* GetCpp() override
+				{
+					return nullptr;
+				}
+			};
 
 			BEGIN_ENUM_ITEM_MERGABLE(Seasons)
 				ENUM_CLASS_ITEM(None)
@@ -301,12 +329,33 @@ namespace vl
 				CLASS_MEMBER_STATIC_METHOD(Run, { L"callback "})
 			END_CLASS_MEMBER(SyncScheduler)
 
+			BEGIN_STRUCT_MEMBER(att_test_Int)
+				STRUCT_MEMBER(argument)
+			END_STRUCT_MEMBER(att_test_Int)
+
+			BEGIN_STRUCT_MEMBER(att_test_List)
+				AddField(Ptr(new PlaceholderFieldInfo(this, L"argument", TypeInfoRetriver<List<vint>>::CreateTypeInfo())));
+			END_STRUCT_MEMBER(att_test_List)
+
+			BEGIN_STRUCT_MEMBER(att_test_Map)
+				AddField(Ptr(new PlaceholderFieldInfo(this, L"argument", TypeInfoRetriver<Dictionary<WString, vint>>::CreateTypeInfo())));
+			END_STRUCT_MEMBER(att_test_Map)
+
+			BEGIN_STRUCT_MEMBER(att_test_Range)
+				AddField(Ptr(new PlaceholderFieldInfo(this, L"argument", TypeInfoRetriver<LazyList<vint>>::CreateTypeInfo())));
+			END_STRUCT_MEMBER(att_test_Range)
+
+			BEGIN_STRUCT_MEMBER(att_test_Point)
+				STRUCT_MEMBER(argument)
+			END_STRUCT_MEMBER(att_test_Point)
+
 			class UnitTestTypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
 				{
 					UNITTEST_TYPELIST(ADD_TYPE_INFO)
+					UNITTEST_ATTRIBUTE_TYPELIST(ADD_TYPE_INFO)
 				}
 
 				void Unload(ITypeManager* manager)
