@@ -240,29 +240,6 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 
-			class PlaceholderFieldInfo : public FieldInfoImpl
-			{
-			protected:
-				Value GetValueInternal(const Value&) override
-				{
-					CHECK_FAIL(L"PlaceholderFieldInfo::GetValueInternal()#Not supported.");
-				}
-				void SetValueInternal(Value&, const Value&) override
-				{
-					CHECK_FAIL(L"PlaceholderFieldInfo::SetValueInternal()#Not supported.");
-				}
-			public:
-				PlaceholderFieldInfo(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, Ptr<ITypeInfo> _returnInfo)
-					: FieldInfoImpl(_ownerTypeDescriptor, _name, _returnInfo)
-				{
-				}
-
-				IPropertyInfo::ICpp* GetCpp() override
-				{
-					return nullptr;
-				}
-			};
-
 			BEGIN_ENUM_ITEM_MERGABLE(Seasons)
 				ENUM_CLASS_ITEM(None)
 				ENUM_CLASS_ITEM(Spring)
@@ -334,15 +311,15 @@ namespace vl
 			END_STRUCT_MEMBER(att_test_Int)
 
 			BEGIN_STRUCT_MEMBER(att_test_List)
-				AddField(Ptr(new PlaceholderFieldInfo(this, L"argument", TypeInfoRetriver<List<vint>>::CreateTypeInfo())));
+				STRUCT_MEMBER(argument)
 			END_STRUCT_MEMBER(att_test_List)
 
 			BEGIN_STRUCT_MEMBER(att_test_Map)
-				AddField(Ptr(new PlaceholderFieldInfo(this, L"argument", TypeInfoRetriver<Dictionary<WString, vint>>::CreateTypeInfo())));
+				STRUCT_MEMBER(argument)
 			END_STRUCT_MEMBER(att_test_Map)
 
 			BEGIN_STRUCT_MEMBER(att_test_Range)
-				AddField(Ptr(new PlaceholderFieldInfo(this, L"argument", TypeInfoRetriver<LazyList<vint>>::CreateTypeInfo())));
+				STRUCT_MEMBER(argument)
 			END_STRUCT_MEMBER(att_test_Range)
 
 			BEGIN_STRUCT_MEMBER(att_test_Point)

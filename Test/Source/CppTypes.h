@@ -126,16 +126,22 @@ namespace test
 
 	struct att_test_List
 	{
+		WString								argument;
+
 		auto operator<=>(const att_test_List&) const = default;
 	};
 
 	struct att_test_Map
 	{
+		double								argument = 0;
+
 		auto operator<=>(const att_test_Map&) const = default;
 	};
 
 	struct att_test_Range
 	{
+		WString								argument;
+
 		auto operator<=>(const att_test_Range&) const = default;
 	};
 
