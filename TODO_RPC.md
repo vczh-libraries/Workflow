@@ -6,8 +6,9 @@
 
 ## Steps
 
-- Workflow types with attribute should also exist in runtime (VM constructed ITypeDescriptor instances)
-- Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
+- One last phase to verify rpc attributes.
+  - Prepare a formal definition of rpc attributes.
+  - Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
   - All signed integers will share the same type in metadata, also for unsigned integers.
   - C++ codegen still respect the original integer types.
 - Add communication layer with unit test implementation.
