@@ -9,7 +9,12 @@
 - Generate rpc metadata in strong typed and JSON.
   - Only include interfaces that defined in the current assembly.
   - Include all used structs and enums.
+  - Testing
+    - Prepare a workflow input, require enums followed by structs followed by interfaces, types in each group ordered by their name.
+    - Dump to metadata and generate back to workflow.
+    - Compare JSON from both AST.
 - Add communication layer with unit test implementation.
+  - Note: no metadata involved here, this is the architecture of commands.
 - Create dynamic serialization implementation based on reflection for all touched rpc types.
   - Server and client will contains copy of same interface types, but loading two assemblies into a process conflicts in reflection.
   - Should allow the same schema mapping to equivalent interfaces in different namespaces.
