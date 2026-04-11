@@ -866,6 +866,56 @@ WfErrors
 				return MakeParsingError(node, L"G13: Auto property \"" + node->name.value + L"\" cannot be initialized in interface \"" + classDecl->name.value + L"\".");
 			}
 
+			glr::ParsingError WfErrors::RpcInterfaceCanOnlyApplyToInterface(WfAttribute* node, const WString& fullName)
+			{
+				return MakeParsingError(node, L"H0: @rpc:Interface can only apply to an interface definition, but not \"" + fullName + L"\".");
+			}
+
+			glr::ParsingError WfErrors::RpcInterfaceBaseNotSerializable(WfType* node, const WString& interfaceFullName, const WString& baseFullName)
+			{
+				return MakeParsingError(node, L"H1: @rpc:Interface cannot be applied to interface \"" + interfaceFullName + L"\" because its base type \"" + baseFullName + L"\" is not serializable.");
+			}
+
+			glr::ParsingError WfErrors::RpcInterfaceMemberNotSerializable(WfDeclaration* node, const WString& interfaceFullName, const WString& memberName)
+			{
+				return MakeParsingError(node, L"H2: @rpc:Interface cannot be applied to interface \"" + interfaceFullName + L"\" because its member \"" + memberName + L"\" is not serializable.");
+			}
+
+			glr::ParsingError WfErrors::RpcInterfaceMemberNotSerializable(WfFunctionArgument* node, const WString& interfaceFullName, const WString& memberName)
+			{
+				return MakeParsingError(node, L"H2: @rpc:Interface cannot be applied to interface \"" + interfaceFullName + L"\" because its member \"" + memberName + L"\" is not serializable.");
+			}
+
+			glr::ParsingError WfErrors::RpcCtorCanOnlyApplyToRpcInterface(WfAttribute* node)
+			{
+				return MakeParsingError(node, L"H3: @rpc:Ctor can only apply to an interface definition with @rpc:Interface.");
+			}
+
+			glr::ParsingError WfErrors::RpcAttributeCanOnlyApplyToPropertyMethodOrParameter(WfAttribute* node, const WString& attributeName)
+			{
+				return MakeParsingError(node, L"H4: @rpc:" + attributeName + L" can only apply to a property, a method or a parameter.");
+			}
+
+			glr::ParsingError WfErrors::RpcAttributeCanOnlyBeUsedInsideRpcInterface(WfAttribute* node, const WString& attributeName)
+			{
+				return MakeParsingError(node, L"H5: @rpc:" + attributeName + L" can only be used inside an interface type with @rpc:Interface.");
+			}
+
+			glr::ParsingError WfErrors::RpcAttributeRequiresStrongTypedCollection(WfAttribute* node, const WString& attributeName, const WString& memberName)
+			{
+				return MakeParsingError(node, L"H6: @rpc:" + attributeName + L" cannot be used on member \"" + memberName + L"\" because it does not have a strong typed collection types.");
+			}
+
+			glr::ParsingError WfErrors::RpcAttributeCanOnlyApplyToProperty(WfAttribute* node, const WString& attributeName)
+			{
+				return MakeParsingError(node, L"H7: @rpc:" + attributeName + L" can only apply to a property.");
+			}
+
+			glr::ParsingError WfErrors::RpcAttributeCannotCoexistWithOther(WfAttribute* node, const WString& attributeName, const WString& otherAttributeName, const WString& memberName)
+			{
+				return MakeParsingError(node, L"H8: @rpc:" + attributeName + L" cannot be used on member \"" + memberName + L"\" because it already has @rpc:" + otherAttributeName + L".");
+			}
+
 			glr::ParsingError WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });

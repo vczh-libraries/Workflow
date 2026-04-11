@@ -465,6 +465,36 @@ namespace vl
 			reflection::description::ITypeDescriptor*	argument = nullptr;
 			auto operator<=>(const att_cpp_Friend&) const = default;
 		};
+
+		struct att_rpc_Interface
+		{
+			auto operator<=>(const att_rpc_Interface&) const = default;
+		};
+
+		struct att_rpc_Ctor
+		{
+			auto operator<=>(const att_rpc_Ctor&) const = default;
+		};
+
+		struct att_rpc_Byval
+		{
+			auto operator<=>(const att_rpc_Byval&) const = default;
+		};
+
+		struct att_rpc_Byref
+		{
+			auto operator<=>(const att_rpc_Byref&) const = default;
+		};
+
+		struct att_rpc_Cached
+		{
+			auto operator<=>(const att_rpc_Cached&) const = default;
+		};
+
+		struct att_rpc_Dynamic
+		{
+			auto operator<=>(const att_rpc_Dynamic&) const = default;
+		};
 	}
 }
 

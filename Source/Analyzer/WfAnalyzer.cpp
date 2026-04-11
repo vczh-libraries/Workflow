@@ -600,6 +600,12 @@ WfLexicalScopeManager
 					ValidateModuleSemantic(this, module);
 				}
 
+				EXIT_IF_ERRORS_EXIST;
+				for (auto module : modules)
+				{
+					ValidateModuleRPC(this, module);
+				}
+
 #undef EXIT_IF_ERRORS_EXIST
 			}
 

@@ -30,6 +30,12 @@ Predefined Types
 			F(vl::__vwsn::att_cpp_Private)\
 			F(vl::__vwsn::att_cpp_Protected)\
 			F(vl::__vwsn::att_cpp_Friend)\
+			F(vl::__vwsn::att_rpc_Interface)\
+			F(vl::__vwsn::att_rpc_Ctor)\
+			F(vl::__vwsn::att_rpc_Byval)\
+			F(vl::__vwsn::att_rpc_Byref)\
+			F(vl::__vwsn::att_rpc_Cached)\
+			F(vl::__vwsn::att_rpc_Dynamic)\
 
 #define WORKFLOW_LIBRARY_TYPES(F)\
 			F(Sys)							\
