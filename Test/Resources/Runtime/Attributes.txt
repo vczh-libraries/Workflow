@@ -1,0 +1,64 @@
+module test;
+using test::*;
+
+@test:Int(1)
+class MyClass
+{
+	@test:List("field-x")
+	var x : int = 0;
+
+	@test:Map(1.5)
+	var y : string = "";
+
+	@test:Int(10)
+	new()
+	{
+	}
+
+	@test:Int(20)
+	new(a : int)
+	{
+		x = a;
+	}
+
+	@test:Range("hello")
+	func GetX() : int
+	{
+		return x;
+	}
+
+	@test:List("setter")
+	func SetX(value : int) : void
+	{
+		x = value;
+	}
+
+	@test:Map(2.5)
+	prop X : int {GetX, SetX}
+
+	@test:Int(100)
+	event XChanged();
+}
+
+@test:List("my-interface")
+interface MyInterface
+{
+	@test:Int(42)
+	func DoSomething() : string;
+
+	@test:Range("prop-value")
+	prop Value : int {not observe}
+
+	@test:Map(3.14)
+	event ValueChanged();
+}
+
+@test:Range("my-struct")
+struct MyStruct
+{
+	@test:Int(7)
+	a : int;
+
+	@test:List("field-b")
+	b : string;
+}

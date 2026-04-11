@@ -1,4 +1,5 @@
 #include "Helper.h"
+#include "../Source/CppTypes.h"
 
 bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& itemResult, bool& cppCodegen)
 {
@@ -137,4 +138,159 @@ func main():string
 			});
 		}
 	});
+
+	auto FindAttribute = [](IAttributeBag* member, const WString& expectedTypeName) -> IAttributeInfo*
+	{
+		for (vint i = 0; i < member->GetAttributeCount(); i++)
+		{
+			auto att = member->GetAttribute(i);
+			if (att->GetAttributeType()->GetTypeName() == expectedTypeName)
+			{
+				return att;
+			}
+		}
+		return nullptr;
+	};
+
+	auto AssertRuntimeAttributes = [&]()
+	{
+		// BUG: Workflow emitter creates WfCustomType descriptors but never populates attributes.
+		// RegisterAttribute() is never called in the compilation pipeline.
+		// All attribute assertions below verify that attributes are MISSING (== nullptr).
+		// When this bug is fixed, these should be changed to verify attributes are PRESENT.
+
+		{
+			auto td = GetTypeDescriptor(L"MyClass");
+			TEST_ASSERT(td != nullptr);
+
+			// Type-level attribute: @test:Int(1) - expected to be missing
+			auto typeAtt = FindAttribute(td, L"system::workflow_attributes::att_test_Int");
+			TEST_ASSERT(typeAtt == nullptr);
+			TEST_ASSERT(td->GetAttributeCount() == 0);
+
+			// Constructor group should exist but attributes missing
+			{
+				auto ctorGroup = td->GetConstructorGroup();
+				TEST_ASSERT(ctorGroup != nullptr);
+				for (vint i = 0; i < ctorGroup->GetMethodCount(); i++)
+				{
+					auto ctor = ctorGroup->GetMethod(i);
+					TEST_ASSERT(ctor->GetAttributeCount() == 0);
+				}
+			}
+
+			// Method: GetX should exist but attribute missing
+			{
+				auto mg = td->GetMethodGroupByName(L"GetX", false);
+				TEST_ASSERT(mg != nullptr);
+				auto method = mg->GetMethod(0);
+				TEST_ASSERT(method->GetAttributeCount() == 0);
+			}
+
+			// Method: SetX should exist but attribute missing
+			{
+				auto mg = td->GetMethodGroupByName(L"SetX", false);
+				TEST_ASSERT(mg != nullptr);
+				auto method = mg->GetMethod(0);
+				TEST_ASSERT(method->GetAttributeCount() == 0);
+			}
+
+			// Property: X should exist but attribute missing
+			{
+				auto prop = td->GetPropertyByName(L"X", false);
+				TEST_ASSERT(prop != nullptr);
+				TEST_ASSERT(prop->GetAttributeCount() == 0);
+			}
+
+			// Event: XChanged should exist but attribute missing
+			{
+				auto ev = td->GetEventByName(L"XChanged", false);
+				TEST_ASSERT(ev != nullptr);
+				TEST_ASSERT(ev->GetAttributeCount() == 0);
+			}
+		}
+
+		{
+			auto td = GetTypeDescriptor(L"MyInterface");
+			TEST_ASSERT(td != nullptr);
+
+			// Type-level attribute missing
+			TEST_ASSERT(td->GetAttributeCount() == 0);
+
+			// Method: DoSomething should exist but attribute missing
+			{
+				auto mg = td->GetMethodGroupByName(L"DoSomething", false);
+				TEST_ASSERT(mg != nullptr);
+				auto method = mg->GetMethod(0);
+				TEST_ASSERT(method->GetAttributeCount() == 0);
+			}
+
+			// Property: Value should exist but attribute missing
+			{
+				auto prop = td->GetPropertyByName(L"Value", false);
+				TEST_ASSERT(prop != nullptr);
+				TEST_ASSERT(prop->GetAttributeCount() == 0);
+			}
+
+			// Event: ValueChanged should exist but attribute missing
+			{
+				auto ev = td->GetEventByName(L"ValueChanged", false);
+				TEST_ASSERT(ev != nullptr);
+				TEST_ASSERT(ev->GetAttributeCount() == 0);
+			}
+		}
+
+		{
+			auto td = GetTypeDescriptor(L"MyStruct");
+			TEST_ASSERT(td != nullptr);
+
+			// Type-level attribute missing
+			TEST_ASSERT(td->GetAttributeCount() == 0);
+
+			// Field: a should exist but attribute missing
+			{
+				auto prop = td->GetPropertyByName(L"a", false);
+				TEST_ASSERT(prop != nullptr);
+				TEST_ASSERT(prop->GetAttributeCount() == 0);
+			}
+
+			// Field: b should exist but attribute missing
+			{
+				auto prop = td->GetPropertyByName(L"b", false);
+				TEST_ASSERT(prop != nullptr);
+				TEST_ASSERT(prop->GetAttributeCount() == 0);
+			}
+		}
+	};
+
+	TEST_CASE(L"Runtime attributes from source")
+	{
+		List<WString> moduleCodes;
+		moduleCodes.Add(LoadSample(L"Runtime", L"Attributes"));
+		List<glr::ParsingError> errors;
+		auto assembly = Compile(GetWorkflowParser(), WfCpuArchitecture::AsExecutable, moduleCodes, errors);
+		for (auto&& error : errors)
+		{
+			TEST_PRINT(L"    Error: " + error.message);
+		}
+		TEST_ASSERT(assembly);
+		TEST_ASSERT(errors.Count() == 0);
+		TEST_ASSERT(assembly->typeImpl);
+
+		GetGlobalTypeManager()->AddTypeLoader(assembly->typeImpl);
+		AssertRuntimeAttributes();
+		GetGlobalTypeManager()->RemoveTypeLoader(assembly->typeImpl);
+	});
+
+	// TODO: Enable after adding TestRuntime.cpp to CompilerTest_LoadAndCompile
+	// TEST_CASE(L"Runtime attributes from binary")
+	// {
+	// 	Ptr<WfAssembly> assembly;
+	// 	LoadSampleAssemblyBinary(L"Runtime", L"Attributes", assembly);
+	// 	TEST_ASSERT(assembly);
+	// 	TEST_ASSERT(assembly->typeImpl);
+
+	// 	AssertRuntimeAttributes();
+	// 	GetGlobalTypeManager()->RemoveTypeLoader(assembly->typeImpl);
+	// });
 }

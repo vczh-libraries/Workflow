@@ -1,108 +1,76 @@
 ﻿# !!!INVESTIGATE!!!
 
 # PROBLEM DESCRIPTION
-In Copilot_Task.md/Copilot_Planning.md/Copilot_Execution.md, the refactoring of workflow attribute verification was implemented but is incomplete. In TestAnalyzer.cpp, `customAttributes` was added to make the code work. This is incorrect. The `customAttributes` field must be completely removed with no equivalent construction. Instead, custom test attributes must be declared in CppTypes.h and CppTypes.cpp as reflected struct types, following the same pattern as WfLibraryPredefined.h/WfLibraryReflection.h/cpp but for test-only attributes.
 
-The test project is currently working. The refactoring should keep it working. Only compiler source, CppTypes (extra C++ types for unit test), and possibly dumped metadata baselines should change. Workflow script test cases must not change.
+Create a new test category `Runtime` with sample `Runtime/Attributes.txt`, following the pattern of `IndexDebugger.txt` and the `Debugger` folder.
+
+In `Attributes.txt`, create a Workflow script with class/interface/struct types, marking the types and every possible kind of members and parameters with `@test:*` attributes.
+
+Write unit tests in the `RuntimeTest` project to:
+1. Load `Runtime/Attributes.txt`, compile it, load types into memory, then walk through `ITypeDescriptor` from workflow types to verify all attributes are accessible via the standard reflection API.
+2. Load pre-compiled binary of the same sample and do the same attribute verification.
+
+The user suspects that when workflow virtual machine loads these types, the `WfCustomType`/`WfTypeImpl` mock type descriptors do NOT load attributes into the mock objects, so attributes cannot be read from the standard reflection API.
+
+Also add `TestRuntime.cpp` to `CompilerTest_LoadAndCompile` project to compile `Runtime` category samples (without C++ codegen), and a corresponding test in `RuntimeTest` to load the compiled binary and verify attributes.
 
 # UPDATES
 
-## UPDATE
-In CppTypes.cpp calling `AddField` in BEGIN_CLASS_MEMBER is not right. Since the current reflectable attribute system only allow serializable struct (primitive types) as value types, so I believe a little change to workflow test cases using these @test:* becomes necessary.
+## Confirmed: Attributes NOT Populated on WfCustomType Runtime Descriptors
 
-You can change attribute values to other primitive types, the purpose of those test cases are making sure that expected workflow compiler errors trigger by a certain piece of code. Just make sure those error types doesn't change (maybe the error text will change that's fine).
+### Root Cause Analysis
 
-# TEST [CONFIRMED]
-The existing test suite serves as the test. All unit test projects must pass in both `Debug|x64` and `Debug|Win32` configurations:
-- `LibraryTest`
-- `CompilerTest_GenerateMetadata`
-- `CompilerTest_LoadAndCompile` (x64 only)
-- `CppTest`
-- `CppTest_Metaonly`
-- `CppTest_Reflection`
+The Workflow compiler (`WfEmitter_Assembly.cpp:GenerateAssembly()`) creates `WfTypeImpl` with `WfClass`, `WfInterface`, `WfStruct` objects but **never calls `RegisterAttribute()`** on any of these type descriptors or their members.
 
-Success criteria: all tests pass with no regressions after removing `customAttributes` and declaring test attributes as reflected struct types.
+The `RegisterAttribute()` method exists on `AttributeBagSource` (base of `TypeDescriptorImpl`), and `WfCustomType` inherits from `TypeDescriptorImpl`. But the emitter pipeline simply never transfers attribute information from the AST (`WfAttribute` nodes) to the runtime type descriptors.
+
+### Evidence
+
+1. `Source/Emitter/WfEmitter_Assembly.cpp` (line ~180-210): `GenerateAssembly()` transfers classes/interfaces/structs/enums to `assembly->typeImpl` but never processes attributes.
+2. `Source/Runtime/WfRuntimeTypeDescriptor.cpp`: `WfCustomType` and its subclasses (`WfClass`, `WfInterface`, etc.) never call `RegisterAttribute()`.
+3. Grep for `RegisterAttribute` in `Source/` returns zero hits.
+4. Test `TestRuntime.cpp` "Runtime attributes from source": Compiles a Workflow script with @test:* attributes on all member types, verifies types ARE registered in the global type manager, but confirms `GetAttributeCount() == 0` on all type descriptors and members.
+
+### Test Results
+
+- `RuntimeTest` x64: 131/131 passed
+- `RuntimeTest` Win32: 131/131 passed
+
+### Key Finding: Module vs Namespace
+
+- `module test;` does NOT create a type name prefix. Types are registered as `MyClass`, not `test::MyClass`.
+- Only `namespace foo { ... }` blocks create type name prefixes.
+
+## Pending Work
+
+1. Add `TestRuntime.cpp` to `CompilerTest_LoadAndCompile` project to compile Runtime samples.
+2. Enable the "from binary" test case in RuntimeTest.
+3. When the bug is fixed, update `AssertRuntimeAttributes` to verify attributes ARE present instead of asserting they are missing.
+
+# TEST
+
+Create a Workflow script `Runtime/Attributes.txt` that defines classes, interfaces, and structs with `@test:*` attributes on types and members.
+
+Write C++ test cases in `Test/Source/TestRuntime.cpp` (a new file, distinct from the existing `TestRuntime.cpp` which is about Codegen):
+- Actually wait - the existing `TestRuntime.cpp` is already about Codegen. We need to either add to it or create a separate file. Per the user's instructions, we add test cases to `TestRuntime.cpp` in the RuntimeTest project, and create a new `TestRuntime.cpp` in the CompilerTest_LoadAndCompile project.
+
+Test 1 (in RuntimeTest): Compile `Runtime/Attributes.txt` directly, load types into memory, walk `ITypeDescriptor` and verify attributes on types and members.
+Test 2 (in RuntimeTest): Load pre-compiled binary of `Runtime/Attributes.txt` (compiled by CompilerTest_LoadAndCompile), load types, walk `ITypeDescriptor` and verify the same attributes.
+
+Success criteria:
+- Both test cases pass in `Debug|Win32` and `Debug|x64`.
+- Attributes on types, methods, properties, events, constructors, and parameters are all accessible from the reflection API.
 
 # PROPOSALS
 
-- No.1 Declare test attribute structs in CppTypes.h/cpp and remove customAttributes from compiler [DENIED]
-- No.2 Use only primitive-type fields in test attribute structs and update test scripts [CONFIRMED]
+## Proposal: Populate Attributes During Assembly Generation
 
-## No.1 Declare test attribute structs in CppTypes.h/cpp and remove customAttributes from compiler
+The fix should be in `Source/Emitter/WfEmitter_Assembly.cpp:GenerateAssembly()`. After building each `WfClass`/`WfInterface`/`WfStruct`, iterate over the AST `WfAttribute` nodes for each declaration and its members, evaluate attribute constructor arguments, create `IAttributeInfo` instances, and call `RegisterAttribute()` on the corresponding type descriptor or member info.
 
-**Approach:**
-1. Define 5 attribute structs in CppTypes.h under `namespace test`: `att_test_Int`, `att_test_List`, `att_test_Map`, `att_test_Range`, `att_test_Point`
-2. For `att_test_Int` and `att_test_Point`: use actual fields (`vint argument` and `Point argument`) with `STRUCT_MEMBER`
-3. For `att_test_List`, `att_test_Map`, `att_test_Range`: empty structs with manually registered placeholder fields that provide the correct `ITypeInfo` (since `List<vint>`, `Dictionary<WString, vint>`, `LazyList<vint>` cannot be struct member fields due to `NotCopyable` inheritance)
-4. Register all with `IMPL_TYPE_INFO_RENAME` to `system::workflow_attributes::att_test_*` names
-5. Remove `AttributeTypeMap` typedef and `customAttributes` field from `WfAnalyzer.h`
-6. Remove customAttributes fallback code from `ResolveWorkflowAttribute` in `WfAnalyzer.cpp`
-7. Remove customAttributes population from `TestAnalyzer.cpp`
+Key steps:
+1. For each class/interface declaration and its members, find the corresponding `WfAttribute` AST nodes.
+2. Resolve each attribute type via `GetTypeDescriptor()` for the attribute struct.
+3. Evaluate constant constructor arguments.
+4. Call `RegisterAttribute()` on the target `AttributeBagSource`.
 
-**Cross-compilation concern:**
-When running `CompilerTest_LoadAndCompile` on x64 with `testCpuArchitecture = x86`, the reflection-registered types use host's `vint` (`vint64_t`) while the compiler interprets Workflow `int` as `vint32_t`. For primitive types, implicit integer widening (Int32→Int64) is supported. For collection types, the expected type from the attribute guides constructor expression inference, so element type conversions happen at the element level. The `CanConvertToType` function allows implicit integer widening (conversion table value=1 for I4→I8).
-
-**Key dependency discovered during testing:**
-`CompilerTest_LoadAndCompile` runs in both x86 and x64 modes. The x86 mode loads `Reflection32.bin` which is generated by `CompilerTest_GenerateMetadata` built for Win32. Therefore, both Win32 and x64 metadata generation must be completed (with updated baselines) BEFORE `CompilerTest_LoadAndCompile` can pass fully.
-
-### CODE CHANGE
-- CppTypes.h: Added 5 attribute structs. `att_test_Int` and `att_test_Point` have real fields. `att_test_List`, `att_test_Map`, `att_test_Range` are empty structs.
-- CppTypes.cpp: Added `PlaceholderFieldInfo` class inheriting `FieldInfoImpl` to fake struct fields with collection types (`List<vint>`, `Dictionary<WString, vint>`, `LazyList<vint>`). Used `AddField(Ptr(new PlaceholderFieldInfo(...)))` inside `BEGIN_STRUCT_MEMBER` blocks.
-- CppTypes.h/.cpp: Added `UNITTEST_ATTRIBUTE_TYPELIST`, `IMPL_TYPE_INFO_RENAME`, updated `UnitTestTypeLoader`.
-- WfAnalyzer.h: Removed `AttributeTypeMap` typedef and `customAttributes` field.
-- WfAnalyzer.cpp: Removed `customAttributes` fallback in `ResolveWorkflowAttribute`.
-- TestAnalyzer.cpp: Removed all `manager.customAttributes.Add(...)` calls.
-- Updated Reflection32.txt and Reflection64.txt baselines.
-
-### DENIED BY USER
-The `PlaceholderFieldInfo` approach (calling `AddField` with a fake field inside `BEGIN_STRUCT_MEMBER`) is not the right way to register struct fields. The reflectable attribute system only allows serializable struct types (primitive types) as value types. Since `List<vint>`, `Dictionary<WString, vint>`, and `LazyList<vint>` are not serializable primitives and cannot be real struct member fields, the workaround of faking them via `PlaceholderFieldInfo` violates the design intent of the reflection system.
-
-## No.2 Use only primitive-type fields in test attribute structs and update test scripts
-
-**Approach:**
-Instead of faking collection-type fields, change the three problematic attribute structs to use primitive-type fields, and update the corresponding Workflow test scripts to use expressions of matching types that still trigger the A31 (ExpressionIsNotConstant) error.
-
-Attribute type changes:
-- `att_test_Int`: `vint argument` (unchanged)
-- `att_test_List`: add `WString argument` field (was empty struct with placeholder)
-- `att_test_Map`: add `double argument` field (was empty struct with placeholder)
-- `att_test_Range`: add `WString argument` field (was empty struct with placeholder)
-- `att_test_Point`: `Point argument` (unchanged)
-
-Test script changes (all still trigger A31):
-- `A31_ExpressionNotConstant.txt`: `@test:Int(i)` (unchanged)
-- `A31_ExpressionNotConstant2.txt`: `@test:List(s)` (was `@test:List({i})`, now uses string variable)
-- `A31_ExpressionNotConstant3.txt`: `@test:Map(i)` (was `@test:Map({s:i})`, now uses int variable; int implicitly converts to double)
-- `A31_ExpressionNotConstant4.txt`: `@test:Range(s)` (was `@test:Range(range [i, i])`, now uses string variable)
-- `A31_ExpressionNotConstant5.txt`: `@test:Point({x:i y:i})` (unchanged)
-
-Also remove the `PlaceholderFieldInfo` class entirely from CppTypes.cpp.
-
-### CODE CHANGE
-
-All changes from Proposal No.1 that removed `customAttributes` from the compiler are retained. The following changes are specific to Proposal No.2:
-
-**CppTypes.h**: Changed attribute struct definitions from empty/placeholder to use primitive fields:
-- `att_test_List { WString argument; }` (was empty struct with placeholder)
-- `att_test_Map { double argument = 0; }` (was empty struct with placeholder)
-- `att_test_Range { WString argument; }` (was empty struct with placeholder)
-- `att_test_Int` and `att_test_Point` unchanged.
-
-**CppTypes.cpp**: Removed `PlaceholderFieldInfo` class entirely. All 5 attribute structs now use standard `STRUCT_MEMBER(argument)` registration.
-
-**Test scripts**: Updated 3 of 5 A31 test scripts to use matching primitive-type expressions:
-- `A31_ExpressionNotConstant2.txt`: `@test:List(s)` — `s` is a string variable, matches WString argument type
-- `A31_ExpressionNotConstant3.txt`: `@test:Map(i)` — `i` is an int variable, implicitly converts to double
-- `A31_ExpressionNotConstant4.txt`: `@test:Range(s)` — `s` is a string variable, matches WString argument type
-
-**Baselines**: Updated `Reflection32.txt` and `Reflection64.txt` to reflect new primitive field types.
-
-### CONFIRMED
-
-All tests pass for both Debug|x64 and Debug|Win32:
-- LibraryTest: 9/9 (x64), 9/9 (Win32)
-- CompilerTest_GenerateMetadata: 2/2 (x64), 2/2 (Win32)
-- CompilerTest_LoadAndCompile: 545/545 x86 + 545/545 x64 (x64 binary only)
-- CppTest: 98/98 (x64), 98/98 (Win32)
-- CppTest_Metaonly: 98/98 (x64), 98/98 (Win32)
-- CppTest_Reflection: 98/98 (x64), 98/98 (Win32)
+Also need to ensure binary serialization/deserialization of `WfAssembly` includes attribute data, so the "from binary" path also works.
