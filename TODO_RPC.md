@@ -6,11 +6,13 @@
 
 ## Steps
 
-- Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
-  - All signed integers will share the same type in metadata, also for unsigned integers.
-  - C++ codegen still respect the original integer types.
+- Generate rpc metadata in strong typed and JSON.
+  - Only include interfaces that defined in the current assembly.
+  - Include all used structs and enums.
 - Add communication layer with unit test implementation.
 - Create dynamic serialization implementation based on reflection for all touched rpc types.
+  - Server and client will contains copy of same interface types, but loading two assemblies into a process conflicts in reflection.
+  - Should allow the same schema mapping to equivalent interfaces in different namespaces.
 - Add C++ codegen.
 
 ## Thoughts
