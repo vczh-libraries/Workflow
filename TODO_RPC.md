@@ -7,8 +7,7 @@
 ## Steps
 
 - One last phase to verify rpc attributes.
-  - Prepare a formal definition of rpc attributes.
-  - Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
+- Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
   - All signed integers will share the same type in metadata, also for unsigned integers.
   - C++ codegen still respect the original integer types.
 - Add communication layer with unit test implementation.
@@ -43,22 +42,7 @@
 
 ## Attributes
 
-- `@rpc:Interface` on interface, all members should be serializable.
-  - `@rpc:ctor` on interface, all members should be serializable, and an constructor will be offered by a client.
-  - They are required and exclusive on any serializable interface.
-- `@rpc:byval` or `@rpc:byref` on property, on method (for return value), on parameter, representing that such container is:
-  - **by value**: the whole collection is sent to a client, and it doesn't keep track on changes from the other side.
-    - It only works when the element types are not interfaces.
-    - If its element types are collection type, they are passed **by value** as well.
-  - **by reference**: the collection is treated as remote object.
-    - If its element types are collection type, they are passed **by reference** as well.
-  - They are exclusive. The default option is `@rpc:byref`.
-- `@rpc:cached` or `@rpc:dynamic` on property, for any cached property:
-  - The property value will not change.
-  - The cache will refresh if the associated changed event occurs.
-  - If there is no associated changed event, the cache will never refresh.
-  - Values of cached properties will be sent along with the remote object to any client.
-  - They are required and exclusive on any qualified property. When it is on an inteface, it becomes the default option on any qualified property.
+- See [TODO_RPC_Definition.md](./TODO_RPC_Definition.md)
 
 ## Implementation
 
