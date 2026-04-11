@@ -135,6 +135,141 @@ GetInstructionTypeArgument
 			}
 
 /***********************************************************************
+PopulateAttributes
+***********************************************************************/
+
+			static Value EvaluateAttributeLiteralExpression(analyzer::WfLexicalScopeManager* manager, Ptr<WfExpression> expr, ITypeDescriptor* argumentTd)
+			{
+				if (auto literalExpr = expr.Cast<WfLiteralExpression>())
+				{
+					switch (literalExpr->value)
+					{
+					case WfLiteralValue::True:	return BoxValue(true);
+					case WfLiteralValue::False:	return BoxValue(false);
+					default:					return Value();
+					}
+				}
+				else if (auto stringExpr = expr.Cast<WfStringExpression>())
+				{
+					Value output;
+					argumentTd->GetSerializableType()->Deserialize(stringExpr->value.value, output);
+					return output;
+				}
+				else if (auto intExpr = expr.Cast<WfIntegerExpression>())
+				{
+					Value output;
+					argumentTd->GetSerializableType()->Deserialize(intExpr->value.value, output);
+					return output;
+				}
+				else if (auto floatExpr = expr.Cast<WfFloatingExpression>())
+				{
+					Value output;
+					argumentTd->GetSerializableType()->Deserialize(floatExpr->value.value, output);
+					return output;
+				}
+				else if (auto typeOfExpr = expr.Cast<WfTypeOfTypeExpression>())
+				{
+					auto scope = manager->nodeScopes[typeOfExpr.Obj()].Obj();
+					auto type = analyzer::CreateTypeInfoFromType(scope, typeOfExpr->type, false);
+					auto td = type->GetTypeDescriptor();
+					if (argumentTd->GetSerializableType())
+					{
+						Value output;
+						argumentTd->GetSerializableType()->Deserialize(td->GetTypeName(), output);
+						return output;
+					}
+					return BoxValue<ITypeDescriptor*>(td);
+				}
+				else
+				{
+					auto&& result = manager->expressionResolvings[expr.Obj()];
+					if (auto enumType = result.type->GetTypeDescriptor()->GetEnumType())
+					{
+						auto refExpr = expr.Cast<WfReferenceExpression>();
+						auto childExpr = expr.Cast<WfChildExpression>();
+						WString name = refExpr ? refExpr->name.value : (childExpr ? childExpr->name.value : WString::Empty);
+						vint index = enumType->IndexOfItem(name);
+						if (index != -1)
+						{
+							return enumType->ToEnum(enumType->GetItemValue(index));
+						}
+					}
+					return Value();
+				}
+			}
+
+			static void PopulateAttributesOnBag(
+				analyzer::WfLexicalScopeManager* manager,
+				TypeDescriptorImplBase* td,
+				IMemberInfo* memberInfo,
+				collections::List<Ptr<WfAttribute>>& atts
+			)
+			{
+				for (auto att : atts)
+				{
+					auto info = manager->ResolveWorkflowAttribute(att->category.value, att->name.value);
+					if (!info.exists || !info.attributeType) continue;
+
+					auto attInfo = Ptr(new AttributeInfoImpl(info.attributeType));
+					if (info.hasArgument && att->value)
+					{
+						auto valueTypeTd = info.argumentType->GetTypeDescriptor();
+						auto boxedValue = EvaluateAttributeLiteralExpression(manager, att->value, valueTypeTd);
+						attInfo->AddValue(valueTypeTd, boxedValue);
+					}
+					td->RegisterAttribute(memberInfo, attInfo);
+				}
+			}
+
+			static void PopulateAttributesForDeclarations(analyzer::WfLexicalScopeManager* manager)
+			{
+				for (auto [decl, index] : indexed(manager->declarationTypes.Keys()))
+				{
+					auto td = manager->declarationTypes.Values()[index];
+					auto tdImpl = dynamic_cast<TypeDescriptorImplBase*>(td.Obj());
+					if (!tdImpl) continue;
+
+					// Type-level attributes
+					PopulateAttributesOnBag(manager, tdImpl, nullptr, decl->attributes);
+
+					// Member attributes for class/interface
+					if (auto classDecl = decl.Cast<WfClassDeclaration>())
+					{
+						for (auto memberDecl : classDecl->declarations)
+						{
+							if (memberDecl->attributes.Count() == 0) continue;
+							vint memberIndex = manager->declarationMemberInfos.Keys().IndexOf(memberDecl.Obj());
+							if (memberIndex != -1)
+							{
+								auto memberInfoPtr = manager->declarationMemberInfos.Values()[memberIndex];
+								PopulateAttributesOnBag(manager, tdImpl, memberInfoPtr.Obj(), memberDecl->attributes);
+							}
+							else if (auto autoPropDecl = memberDecl.Cast<WfAutoPropertyDeclaration>())
+							{
+								auto propInfo = td->GetPropertyByName(autoPropDecl->name.value, false);
+								if (propInfo)
+								{
+									PopulateAttributesOnBag(manager, tdImpl, propInfo, memberDecl->attributes);
+								}
+							}
+						}
+					}
+
+					// Member attributes for struct
+					if (auto structDecl = decl.Cast<WfStructDeclaration>())
+					{
+						for (auto member : structDecl->members)
+						{
+							if (member->attributes.Count() == 0) continue;
+							auto propInfo = td->GetPropertyByName(member->name.value, false);
+							if (!propInfo) continue;
+							PopulateAttributesOnBag(manager, tdImpl, propInfo, member->attributes);
+						}
+					}
+				}
+			}
+
+/***********************************************************************
 GenerateAssembly
 ***********************************************************************/
 
@@ -211,6 +346,9 @@ GenerateAssembly
 					sortByTypeName(assembly->typeImpl->interfaces);
 					sortByTypeName(assembly->typeImpl->structs);
 					sortByTypeName(assembly->typeImpl->enums);
+
+					// Populate attributes on type descriptors and their members
+					PopulateAttributesForDeclarations(manager);
 				}
 
 				for (auto module : manager->GetModules())
