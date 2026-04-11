@@ -16,7 +16,7 @@
 
 # EXECUTION PLAN
 
-## STEP 1: Add @rpc attribute types to the Workflow library
+## STEP 1: [DONE] Add @rpc attribute types to the Workflow library
 Edit `REPO-ROOT\Source\Library\WfLibraryPredefined.h`.
 
 In `namespace vl::__vwsn` (next to the existing `att_cpp_*` structs), append the following 6 no-argument attribute structs (placement is flexible as long as it is still inside `namespace vl::__vwsn`).
@@ -53,7 +53,7 @@ Insert (proposed to append after `att_cpp_Friend`):
     	auto operator<=>(const att_rpc_Dynamic&) const = default;
     };
 
-## STEP 2: Register @rpc attributes in library reflection
+## STEP 2: [DONE] Register @rpc attributes in library reflection
 Modify:
 - `REPO-ROOT\Source\Library\WfLibraryReflection.h`
 - `REPO-ROOT\Source\Library\WfLibraryReflection.cpp`
@@ -106,7 +106,7 @@ The resulting macro should look like (add the new `att_rpc_*` lines; do not remo
     BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Dynamic)
     END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Dynamic)
 
-## STEP 3: Add a new analyzer pass source file and include it in the compiler shared-items project
+## STEP 3: [DONE] Add a new analyzer pass source file and include it in the compiler shared-items project
 Create:
 - `REPO-ROOT\Source\Analyzer\WfAnalyzer_ValidateRPC.cpp`
 
@@ -117,7 +117,7 @@ Add it to:
   - Add a new filter folder `Analyzer\Pass 06`.
   - Put `WfAnalyzer_ValidateRPC.cpp` under that filter.
 
-## STEP 4: Declare the public entry point and the new pass section in WfAnalyzer.h
+## STEP 4: [DONE] Declare the public entry point and the new pass section in WfAnalyzer.h
 Modify `REPO-ROOT\Source\Analyzer\WfAnalyzer.h`.
 
 Immediately before the existing `Expanding Virtual Nodes` title comment, insert:
@@ -128,7 +128,7 @@ Immediately before the existing `Expanding Virtual Nodes` title comment, insert:
 
     extern void ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
-## STEP 5: Add RPC-related error declarations (H*) to WfErrors
+## STEP 5: [DONE] Add RPC-related error declarations (H*) to WfErrors
 Modify:
 - `REPO-ROOT\Source\Analyzer\WfAnalyzer.h`
 - `REPO-ROOT\Source\Analyzer\WfAnalyzer_Errors.cpp`
@@ -169,7 +169,7 @@ Anchoring:
 - H1: anchor to the base-type AST node (`WfType*`).
 - H2: anchor to the failing member declaration (`WfDeclaration*`) or failing parameter node (`WfFunctionArgument*`).
 
-## STEP 6: Implement ValidateModuleRPC in a two-phase design (AST phase + reflection phase)
+## STEP 6: [DONE] Implement ValidateModuleRPC in a two-phase design (AST phase + reflection phase)
 Implement in `REPO-ROOT\Source\Analyzer\WfAnalyzer_ValidateRPC.cpp`.
 
 Start file with (skeleton):
@@ -389,7 +389,7 @@ Phase 2 (reflection: `ITypeDescriptor` / `ITypeInfo`):
 
 Pre-existing interfaces are assumed correct; do not validate their members.
 
-## STEP 7: Wire ValidateModuleRPC into the analyzer pipeline
+## STEP 7: [DONE] Wire ValidateModuleRPC into the analyzer pipeline
 Modify `REPO-ROOT\Source\Analyzer\WfAnalyzer.cpp`, in `WfLexicalScopeManager::Rebuild`.
 
 After the existing semantic-validation loop, insert (before `#undef EXIT_IF_ERRORS_EXIST`):
@@ -400,7 +400,7 @@ After the existing semantic-validation loop, insert (before `#undef EXIT_IF_ERRO
     	ValidateModuleRPC(this, module);
     }
 
-## STEP 8: Add analyzer-error tests for RPC checker (compile errors)
+## STEP 8: [DONE] Add analyzer-error tests for RPC checker (compile errors)
 Update:
 - `REPO-ROOT\Test\Resources\IndexAnalyzerError.txt` (append new basenames, no extension)
 - Add new files under `REPO-ROOT\Test\Resources\AnalyzerError\`.
@@ -664,7 +664,7 @@ H8_RpcDynamic_WithCached.txt
     	func GetP() : int;
     }
 
-## STEP 9: Positive / non-error sanity checks (recommended)
+## STEP 9: [DONE] Positive / non-error sanity checks (recommended)
 Add 4 new Codegen samples under `REPO-ROOT\Test\Resources\Codegen\` and append to `REPO-ROOT\Test\Resources\IndexCodegen.txt` with expected output `OK`:
 
   RpcByval_Positive=OK
@@ -733,18 +733,65 @@ Add 4 new Codegen samples under `REPO-ROOT\Test\Resources\Codegen\` and append t
       	return "OK";
       }
 
-## STEP 10: Verification
-Run (initial verification per task note):
-- `CompilerTest_GenerateMetadata` (`Debug|Win32` and `Debug|x64`).
-  - If reflection metadata baselines change, update `REPO-ROOT\Test\Resources\Baseline\Reflection{32,64}.txt` from `REPO-ROOT\Test\UnitTest\Generated\Reflection{32,64}.txt`.
-- `CompilerTest_LoadAndCompile` (`Debug|x64`).
+## STEP 10: [DONE] Verification
+Completed verification:
+- Built `Debug|x64` and `Debug|Win32`.
+- `CompilerTest_GenerateMetadata` passed in `Debug|x64` and `Debug|Win32`.
+- `CompilerTest_LoadAndCompile` passed in `Debug|x64`.
+- `LibraryTest` passed in `Debug|x64` and `Debug|Win32`.
+- `CppTest` passed in `Debug|x64` and `Debug|Win32`.
+- `CppTest_Metaonly` passed in `Debug|x64` and `Debug|Win32`.
+- `CppTest_Reflection` passed in `Debug|x64` and `Debug|Win32`.
 
-Sanity check while running tests:
-- Ensure `H0_RpcInterface_OnGenericInterface.txt` reliably reports H0 first (i.e., no earlier parse/type-resolution error from `$interface` or `Async<string>`).
+Sanity check result:
+- `H0_RpcInterface_OnGenericInterface.txt` reliably reports H0 first; no earlier parse/type-resolution error was observed from `$interface` or `Async<string>`.
 
-After the above pass and the RPC checker is stable, run the remaining unit test projects per `REPO-ROOT\Project.md`.
+No additional fixes were required after Fixing attempt No.5.
 
 # FIXING ATTEMPTS
+
+## Fixing attempt No.1
+- The original RPC checker only recognized `WfPropertyDeclaration` as a property target. That breaks the task note that multiple property definitions should count as properties, because attributes on `WfAutoPropertyDeclaration` would incorrectly report H4/H7 instead of being checked against the lowered property member.
+- I added a helper in `Source\Analyzer\WfAnalyzer_ValidateRPC.cpp` to resolve a property target from either a direct `WfPropertyDeclaration` or the lowered `WfPropertyDeclaration` generated from a `WfAutoPropertyDeclaration`, then reused that helper in both the `@rpc:Byval/@rpc:Byref` and `@rpc:Cached/@rpc:Dynamic` AST checks.
+- This should solve the issue because the checker now accepts every property form that desugars to an actual Workflow property and still feeds the correct reflected property member into phase 2.
+
+## Fixing attempt No.2
+- The original `IsStrongTypedCollection` implementation only accepted reflected collection types when `ITypeInfo::GetHint()` was `Array`, `List` or `Dictionary`. That does not match Workflow source-defined collection syntax, because `CreateTypeInfoFromType` lowers `T[]`, `T{}` and `T{K:V}` to generic `IValueEnumerable` / list / dictionary interfaces with `TypeInfoHint::Normal`.
+- I changed `IsStrongTypedCollection` in `Source\Analyzer\WfAnalyzer_ValidateRPC.cpp` to recognize strong typed collections by their reflected generic collection descriptors (`IValueEnumerable`, readonly/writable list, observable list, readonly/writable dictionary`) and keep the hint-based path only as a fallback for pre-existing reflected types that may still use `Array` / `List` / `Dictionary`.
+- This should solve the break because valid Workflow collection syntax now passes both the RPC serializability checks and the `@rpc:Byval/@rpc:Byref` strong-typed-collection rule, while pre-existing reflected collection metadata remains supported.
+
+## Fixing attempt No.3
+- `CompilerTest_LoadAndCompile` progressed through the new analyzer cases and then failed after `H8_RpcDynamic_WithCached` with `FileStream::Read(pos_t)#Stream is closed`. The generated per-case output for `H8_RpcDynamic_WithCached` was already correct, so the crash was happening when the test harness advanced past the last real item in the edited index files.
+- I checked the test loader in `Test\Source\Helper.cpp` and confirmed `LoadSampleIndex` blindly appends every line until EOF. Unlike the untouched `IndexAnalyzerScope.txt`, both edited files (`Test\Resources\IndexAnalyzerError.txt` and `Test\Resources\IndexCodegen.txt`) ended with a trailing CRLF, which can create a phantom final empty sample entry for this loader pattern.
+- I normalized those two index files to match the existing no-trailing-newline pattern so the harness only sees the intended sample names and stops cleanly after the last real RPC test case.
+
+## Fixing attempt No.4
+- A subsequent Win32 verification pass reported duplicate generated C++ symbols from the new positive codegen samples, because all four files defined the same interface name `IRpc`. Even if another run happened to pass, reusing the same top-level type name across generated samples is fragile because the combined generated C++ projects compile those outputs together.
+- I renamed the positive sample interfaces in `Test\Resources\Codegen\RpcByref_Positive.txt`, `RpcByval_Positive.txt`, `RpcVoidReturn_Positive.txt`, and `RpcAsyncReturn_Positive.txt` to distinct names.
+- This should solve the collision risk because each generated header / reflection unit now declares a unique Workflow type, so the C++ test projects cannot hit accidental redefinitions when they compile all generated positive samples in one build.
+
+## Fixing attempt No.5
+
+**Why the original state failed:**
+
+1. `Test\SourceCppGen\TestCases.cpp` was left in a truncated/broken state (99 lines, ending with an incomplete `#include "`) from a previous interrupted `CompilerTest_GenerateMetadata` run that had started processing the new Rpc codegen samples before the analyzer was fully built. This caused compile errors in multiple `CppTest_*` projects (`error C2001: newline in constant`).
+
+2. The first `CompilerTest_GenerateMetadata Debug|x64` run failed because `Test\Resources\Baseline\Reflection64.txt` was outdated — it predated the new `att_rpc_*` types added to `WfLoadLibraryTypes()`.
+
+3. `CompilerTest_LoadAndCompile Debug|x64` (which runs BOTH x86 and x64 internal passes) uses `Test\Generated\Reflection32.bin` for the `<x86>` pass. That binary was from before the `att_rpc_*` changes, so `@rpc:Interface` couldn't be resolved and `D15_AttributeNotExists` fired before `H0`, breaking the first-error assertion on every H0–H8 test file.
+
+**What was changed:**
+
+- Restored `Test\SourceCppGen\TestCases.cpp` to the last committed version (`git show HEAD:...`) removing the broken truncated line.
+- Built `Debug|x64`, ran `CompilerTest_GenerateMetadata Debug|x64` (which regenerated `Reflection64.bin` and `Reflection64.txt`), then copied `Test\Generated\Reflection64.txt` to `Test\Resources\Baseline\Reflection64.txt`.
+- Built `Debug|Win32`, ran `CompilerTest_GenerateMetadata Debug|Win32` (which regenerated `Reflection32.bin` and `Reflection32.txt`), then copied `Test\Generated\Reflection32.txt` to `Test\Resources\Baseline\Reflection32.txt`.
+- Re-ran `CompilerTest_GenerateMetadata` for each platform after the baseline update to confirm passing. Then ran `CompilerTest_LoadAndCompile Debug|x64`.
+
+**Why it should solve the breaks:**
+
+- With `TestCases.cpp` restored to a valid state, all `CppTest_*` projects link cleanly.
+- With both `Reflection64.txt` and `Reflection32.txt` baselines updated, the baseline-comparison test in `CompilerTest_GenerateMetadata` passes for both platforms.
+- With `Reflection32.bin` regenerated (containing the new `att_rpc_*` types), the `<x86>` internal pass of `CompilerTest_LoadAndCompile` can resolve `@rpc:Interface` correctly, so the H0–H8 error-code assertions now see `H*:` as the first error rather than `D15:`.
 
 # !!!FINISHED!!!
 
