@@ -460,12 +460,9 @@ namespace vl
 			auto operator<=>(const att_cpp_Protected&) const = default;
 		};
 
-		// NOTE:
-		// - Must be serializable for ATTRIBUTE_* (cannot be ITypeDescriptor*).
-		// - Store the reflected type name (ITypeDescriptor::GetTypeName()) for round-tripping.
 		struct att_cpp_Friend
 		{
-			WString						argument;
+			reflection::description::ITypeDescriptor*	argument = nullptr;
 			auto operator<=>(const att_cpp_Friend&) const = default;
 		};
 	}

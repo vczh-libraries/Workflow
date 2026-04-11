@@ -118,17 +118,8 @@ namespace vl
 					for (auto attribute : attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 					{
 						auto attValue = attributeEvaluator->GetAttributeValue(attribute);
-						CHECK_ERROR(attValue.type == runtime::WfInsType::String, L"Unexpected value in attribute: @cpp.Friend.");
-						ITypeDescriptor* td = nullptr;
-						for (vint i = 0; i < manager->typeNames.Count(); i++)
-						{
-							if (manager->typeNames.Values()[i]->GetFriendlyName() == attValue.stringValue)
-							{
-								td = manager->typeNames.Keys()[i];
-								break;
-							}
-						}
-						CHECK_ERROR(td != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
+						CHECK_ERROR(attValue.type == runtime::WfInsType::Unknown && attValue.typeDescriptor != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
+						auto td = attValue.typeDescriptor;
 
 						auto scopeName = manager->typeNames[td];
 						if (scopeName->declarations.Count() == 0)

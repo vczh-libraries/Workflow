@@ -6,8 +6,6 @@
 
 ## Steps
 
-- Allow `ITypeDescriptor*` argument in attributes in VlppReflection.
-  - Remove special treatment for `@cpp:Friend`.
 - Workflow types with attribute should also exist in runtime (VM constructed ITypeDescriptor instances)
 - Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
   - All signed integers will share the same type in metadata, also for unsigned integers.

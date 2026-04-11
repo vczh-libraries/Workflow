@@ -253,32 +253,7 @@ ValidateSemantic(Declaration)
 
 						if (attribute->value)
 						{
-							if (attribute->category.value == L"cpp" && attribute->name.value == L"Friend"
-								&& info.hasArgument
-								&& info.argumentType
-								&& info.argumentType->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
-							{
-								ValidateConstantExpression(manager, attribute->value, nullptr);
-								Ptr<ITypeInfo> actualType;
-								if (auto index = manager->expressionResolvings.Keys().IndexOf(attribute->value.Obj()); index != -1)
-								{
-									actualType = manager->expressionResolvings.Values()[index].type;
-								}
-								if (actualType)
-								{
-									auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-									auto typeDescriptorType = TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo();
-									if (!IsSameType(actualType.Obj(), stringType.Obj())
-										&& !IsSameType(actualType.Obj(), typeDescriptorType.Obj()))
-									{
-										manager->errors.Add(WfErrors::ExpressionCannotImplicitlyConvertToType(attribute->value.Obj(), actualType.Obj(), info.argumentType.Obj()));
-									}
-								}
-							}
-							else
-							{
-								ValidateConstantExpression(manager, attribute->value, info.argumentType);
-							}
+							ValidateConstantExpression(manager, attribute->value, info.argumentType);
 						}
 						else if (info.hasArgument)
 						{

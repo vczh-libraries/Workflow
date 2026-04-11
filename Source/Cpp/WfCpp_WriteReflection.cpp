@@ -281,9 +281,21 @@ namespace vl
 					if (info.hasArgument)
 					{
 						auto value = attributeEvaluator->GetAttributeValue(att);
-						CHECK_ERROR(value.type == runtime::WfInsType::String, L"Attribute argument must be serialized as WString here.");
 						writer.WriteString(L", ");
-						WriteWStringLiteralUnmanaged(writer, value.stringValue);
+						if (value.type == runtime::WfInsType::String)
+						{
+							WriteWStringLiteralUnmanaged(writer, value.stringValue);
+						}
+						else if (value.type == runtime::WfInsType::Unknown && value.typeDescriptor != nullptr)
+						{
+							writer.WriteString(L"::vl::reflection::description::GetTypeDescriptor(::vl::WString::Unmanaged(L\"");
+							writer.WriteString(value.typeDescriptor->GetTypeName());
+							writer.WriteString(L"\"))");
+						}
+						else
+						{
+							CHECK_FAIL(L"Attribute argument must be a string or ITypeDescriptor*.");
+						}
 					}
 
 					writer.WriteLine(L")");

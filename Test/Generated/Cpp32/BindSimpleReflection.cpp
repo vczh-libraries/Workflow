@@ -37,7 +37,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 			BEGIN_CLASS_MEMBER(::Derived)
-				ATTRIBUTE_TYPE(::vl::__vwsn::att_cpp_Friend, ::vl::WString::Unmanaged(L"OuterClass"))
+				ATTRIBUTE_TYPE(::vl::__vwsn::att_cpp_Friend, ::vl::reflection::description::GetTypeDescriptor(::vl::WString::Unmanaged(L"OuterClass")))
 				CLASS_MEMBER_BASE(::OuterClass::Base)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::Derived>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Execute, NO_PARAMETER)
