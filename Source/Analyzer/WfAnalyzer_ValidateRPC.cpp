@@ -306,6 +306,7 @@ namespace vl
 
 				switch (type->GetHint())
 				{
+				case TypeInfoHint::LazyList:
 				case TypeInfoHint::Array:
 				case TypeInfoHint::List:
 					return genericType->GetGenericArgumentCount() == 1;
