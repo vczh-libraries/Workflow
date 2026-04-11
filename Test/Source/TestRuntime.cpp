@@ -154,59 +154,83 @@ func main():string
 
 	auto AssertRuntimeAttributes = [&]()
 	{
-		// BUG: Workflow emitter creates WfCustomType descriptors but never populates attributes.
-		// RegisterAttribute() is never called in the compilation pipeline.
-		// All attribute assertions below verify that attributes are MISSING (== nullptr).
-		// When this bug is fixed, these should be changed to verify attributes are PRESENT.
-
 		{
 			auto td = GetTypeDescriptor(L"MyClass");
 			TEST_ASSERT(td != nullptr);
 
-			// Type-level attribute: @test:Int(1) - expected to be missing
-			auto typeAtt = FindAttribute(td, L"system::workflow_attributes::att_test_Int");
-			TEST_ASSERT(typeAtt == nullptr);
-			TEST_ASSERT(td->GetAttributeCount() == 0);
+			// Type-level: @test:Int(1)
+			{
+				auto att = FindAttribute(td, L"system::workflow_attributes::att_test_Int");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(att->GetAttributeValueCount() == 1);
+				TEST_ASSERT(UnboxValue<vint>(att->GetAttributeValue(0)) == 1);
+			}
 
-			// Constructor group should exist but attributes missing
+			// Constructors: @test:Int(10) new() and @test:Int(20) new(a:int)
 			{
 				auto ctorGroup = td->GetConstructorGroup();
 				TEST_ASSERT(ctorGroup != nullptr);
+				bool foundCtor0 = false;
+				bool foundCtor1 = false;
 				for (vint i = 0; i < ctorGroup->GetMethodCount(); i++)
 				{
 					auto ctor = ctorGroup->GetMethod(i);
-					TEST_ASSERT(ctor->GetAttributeCount() == 0);
+					auto att = FindAttribute(ctor, L"system::workflow_attributes::att_test_Int");
+					if (att)
+					{
+						auto val = UnboxValue<vint>(att->GetAttributeValue(0));
+						if (ctor->GetParameterCount() == 0)
+						{
+							TEST_ASSERT(val == 10);
+							foundCtor0 = true;
+						}
+						else if (ctor->GetParameterCount() == 1)
+						{
+							TEST_ASSERT(val == 20);
+							foundCtor1 = true;
+						}
+					}
 				}
+				TEST_ASSERT(foundCtor0);
+				TEST_ASSERT(foundCtor1);
 			}
 
-			// Method: GetX should exist but attribute missing
+			// Method: @test:Range("hello") func GetX()
 			{
 				auto mg = td->GetMethodGroupByName(L"GetX", false);
 				TEST_ASSERT(mg != nullptr);
 				auto method = mg->GetMethod(0);
-				TEST_ASSERT(method->GetAttributeCount() == 0);
+				auto att = FindAttribute(method, L"system::workflow_attributes::att_test_Range");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<WString>(att->GetAttributeValue(0)) == L"hello");
 			}
 
-			// Method: SetX should exist but attribute missing
+			// Method: @test:List("setter") func SetX(value : int)
 			{
 				auto mg = td->GetMethodGroupByName(L"SetX", false);
 				TEST_ASSERT(mg != nullptr);
 				auto method = mg->GetMethod(0);
-				TEST_ASSERT(method->GetAttributeCount() == 0);
+				auto att = FindAttribute(method, L"system::workflow_attributes::att_test_List");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<WString>(att->GetAttributeValue(0)) == L"setter");
 			}
 
-			// Property: X should exist but attribute missing
+			// Property: @test:Map(2.5) prop X
 			{
 				auto prop = td->GetPropertyByName(L"X", false);
 				TEST_ASSERT(prop != nullptr);
-				TEST_ASSERT(prop->GetAttributeCount() == 0);
+				auto att = FindAttribute(prop, L"system::workflow_attributes::att_test_Map");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<double>(att->GetAttributeValue(0)) == 2.5);
 			}
 
-			// Event: XChanged should exist but attribute missing
+			// Event: @test:Int(100) event XChanged
 			{
 				auto ev = td->GetEventByName(L"XChanged", false);
 				TEST_ASSERT(ev != nullptr);
-				TEST_ASSERT(ev->GetAttributeCount() == 0);
+				auto att = FindAttribute(ev, L"system::workflow_attributes::att_test_Int");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<vint>(att->GetAttributeValue(0)) == 100);
 			}
 		}
 
@@ -214,29 +238,39 @@ func main():string
 			auto td = GetTypeDescriptor(L"MyInterface");
 			TEST_ASSERT(td != nullptr);
 
-			// Type-level attribute missing
-			TEST_ASSERT(td->GetAttributeCount() == 0);
+			// Type-level: @test:List("my-interface")
+			{
+				auto att = FindAttribute(td, L"system::workflow_attributes::att_test_List");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<WString>(att->GetAttributeValue(0)) == L"my-interface");
+			}
 
-			// Method: DoSomething should exist but attribute missing
+			// Method: @test:Int(42) func DoSomething()
 			{
 				auto mg = td->GetMethodGroupByName(L"DoSomething", false);
 				TEST_ASSERT(mg != nullptr);
 				auto method = mg->GetMethod(0);
-				TEST_ASSERT(method->GetAttributeCount() == 0);
+				auto att = FindAttribute(method, L"system::workflow_attributes::att_test_Int");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<vint>(att->GetAttributeValue(0)) == 42);
 			}
 
-			// Property: Value should exist but attribute missing
+			// Property: @test:Range("prop-value") prop Value
 			{
 				auto prop = td->GetPropertyByName(L"Value", false);
 				TEST_ASSERT(prop != nullptr);
-				TEST_ASSERT(prop->GetAttributeCount() == 0);
+				auto att = FindAttribute(prop, L"system::workflow_attributes::att_test_Range");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<WString>(att->GetAttributeValue(0)) == L"prop-value");
 			}
 
-			// Event: ValueChanged should exist but attribute missing
+			// Event: @test:Map(3.14) event ValueChanged
 			{
 				auto ev = td->GetEventByName(L"ValueChanged", false);
 				TEST_ASSERT(ev != nullptr);
-				TEST_ASSERT(ev->GetAttributeCount() == 0);
+				auto att = FindAttribute(ev, L"system::workflow_attributes::att_test_Map");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<double>(att->GetAttributeValue(0)) == 3.14);
 			}
 		}
 
@@ -244,21 +278,29 @@ func main():string
 			auto td = GetTypeDescriptor(L"MyStruct");
 			TEST_ASSERT(td != nullptr);
 
-			// Type-level attribute missing
-			TEST_ASSERT(td->GetAttributeCount() == 0);
+			// Type-level: @test:Range("my-struct")
+			{
+				auto att = FindAttribute(td, L"system::workflow_attributes::att_test_Range");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<WString>(att->GetAttributeValue(0)) == L"my-struct");
+			}
 
-			// Field: a should exist but attribute missing
+			// Field: @test:Int(7) a : int
 			{
 				auto prop = td->GetPropertyByName(L"a", false);
 				TEST_ASSERT(prop != nullptr);
-				TEST_ASSERT(prop->GetAttributeCount() == 0);
+				auto att = FindAttribute(prop, L"system::workflow_attributes::att_test_Int");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<vint>(att->GetAttributeValue(0)) == 7);
 			}
 
-			// Field: b should exist but attribute missing
+			// Field: @test:List("field-b") b : string
 			{
 				auto prop = td->GetPropertyByName(L"b", false);
 				TEST_ASSERT(prop != nullptr);
-				TEST_ASSERT(prop->GetAttributeCount() == 0);
+				auto att = FindAttribute(prop, L"system::workflow_attributes::att_test_List");
+				TEST_ASSERT(att != nullptr);
+				TEST_ASSERT(UnboxValue<WString>(att->GetAttributeValue(0)) == L"field-b");
 			}
 		}
 	};
@@ -282,15 +324,15 @@ func main():string
 		GetGlobalTypeManager()->RemoveTypeLoader(assembly->typeImpl);
 	});
 
-	// TODO: Enable after adding TestRuntime.cpp to CompilerTest_LoadAndCompile
-	// TEST_CASE(L"Runtime attributes from binary")
-	// {
-	// 	Ptr<WfAssembly> assembly;
-	// 	LoadSampleAssemblyBinary(L"Runtime", L"Attributes", assembly);
-	// 	TEST_ASSERT(assembly);
-	// 	TEST_ASSERT(assembly->typeImpl);
+	TEST_CASE(L"Runtime attributes from binary")
+	{
+		Ptr<WfAssembly> assembly;
+		LoadSampleAssemblyBinary(L"Runtime", L"Attributes", assembly);
+		TEST_ASSERT(assembly);
+		TEST_ASSERT(assembly->typeImpl);
 
-	// 	AssertRuntimeAttributes();
-	// 	GetGlobalTypeManager()->RemoveTypeLoader(assembly->typeImpl);
-	// });
+		GetGlobalTypeManager()->AddTypeLoader(assembly->typeImpl);
+		AssertRuntimeAttributes();
+		GetGlobalTypeManager()->RemoveTypeLoader(assembly->typeImpl);
+	});
 }
