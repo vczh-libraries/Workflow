@@ -1,0 +1,67 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    prop P : IMy* {}
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    prop P : IMy* {}
+}
+
+========================================================
+Errors
+========================================================
+Line: -1, Column: -1, Message: H2: @rpc:Interface cannot be applied to interface "IMy" because its member "IMy.P" is not serializable.
+Line: 6, Column: 1, Message: H2: @rpc:Interface cannot be applied to interface "IMy" because its member "IMy.GetP" is not serializable.
+Line: 6, Column: 1, Message: H2: @rpc:Interface cannot be applied to interface "IMy" because its member "IMy.SetP(<value>)" is not serializable.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 68}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 6, "column": 0, "index": 68}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 2, "column": 1, "index": 17}, "end": {"row": 2, "column": 3, "index": 19}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IMy", "codeRange": {"start": {"row": 3, "column": 10, "index": 42}, "end": {"row": 3, "column": 12, "index": 44}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 5, "column": 0, "index": 50}, "end": {"row": 5, "column": 15, "index": 65}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "P", "codeRange": {"start": {"row": 5, "column": 5, "index": 55}, "end": {"row": 5, "column": 5, "index": 55}, "codeIndex": -1}},
+            "expandedDeclarations": [],
+            "configConst": "Writable",
+            "configObserve": "Observable",
+            "expression": null,
+            "functionKind": "Normal",
+            "type": {
+                "$ast": { "type": "RawPointerType", "codeRange": {"start": {"row": 5, "column": 9, "index": 59}, "end": {"row": 5, "column": 12, "index": 62}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 5, "column": 9, "index": 59}, "end": {"row": 5, "column": 11, "index": 61}, "codeIndex": -1}},
+                    "name": { "value": "IMy", "codeRange": {"start": {"row": 5, "column": 9, "index": 59}, "end": {"row": 5, "column": 11, "index": 61}, "codeIndex": -1}}
+                }
+            }
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

@@ -1,0 +1,66 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface IMy
+{
+    @rpc:Byref
+    func M() : (int[]);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface IMy
+{
+    @rpc:Byref
+    func M() : (int[]);
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 1, Message: H5: @rpc:Byref can only be used inside an interface type with @rpc:Interface.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 65}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 6, "column": 0, "index": 65}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "IMy", "codeRange": {"start": {"row": 2, "column": 10, "index": 26}, "end": {"row": 2, "column": 12, "index": 28}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 0, "index": 34}, "end": {"row": 5, "column": 16, "index": 62}, "codeIndex": -1}},
+            "attributes": [{
+                "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 4, "column": 0, "index": 34}, "end": {"row": 4, "column": 9, "index": 43}, "codeIndex": -1}},
+                "category": { "value": "rpc", "codeRange": {"start": {"row": 4, "column": 1, "index": 35}, "end": {"row": 4, "column": 3, "index": 37}, "codeIndex": -1}},
+                "name": { "value": "Byref", "codeRange": {"start": {"row": 4, "column": 5, "index": 39}, "end": {"row": 4, "column": 9, "index": 43}, "codeIndex": -1}},
+                "value": null
+            }],
+            "name": { "value": "M", "codeRange": {"start": {"row": 5, "column": 5, "index": 51}, "end": {"row": 5, "column": 5, "index": 51}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 5, "column": 11, "index": 57}, "end": {"row": 5, "column": 15, "index": 61}, "codeIndex": -1}},
+                "key": null,
+                "value": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 11, "index": 57}, "end": {"row": 5, "column": 13, "index": 59}, "codeIndex": -1}},
+                    "name": "Int"
+                },
+                "writability": "Writable"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

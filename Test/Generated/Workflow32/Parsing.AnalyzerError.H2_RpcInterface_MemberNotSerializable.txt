@@ -1,0 +1,72 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    func M(x : IMy*) : (void);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    func M(x : IMy*) : (void);
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 8, Message: H2: @rpc:Interface cannot be applied to interface "IMy" because its member "IMy.M(x)" is not serializable.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 76}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 6, "column": 0, "index": 76}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 2, "column": 1, "index": 17}, "end": {"row": 2, "column": 3, "index": 19}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IMy", "codeRange": {"start": {"row": 3, "column": 10, "index": 42}, "end": {"row": 3, "column": 12, "index": 44}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 0, "index": 50}, "end": {"row": 5, "column": 23, "index": 73}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "M", "codeRange": {"start": {"row": 5, "column": 5, "index": 55}, "end": {"row": 5, "column": 5, "index": 55}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 7, "index": 57}, "end": {"row": 5, "column": 14, "index": 64}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "x", "codeRange": {"start": {"row": 5, "column": 7, "index": 57}, "end": {"row": 5, "column": 7, "index": 57}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "RawPointerType", "codeRange": {"start": {"row": 5, "column": 11, "index": 61}, "end": {"row": 5, "column": 14, "index": 64}, "codeIndex": -1}},
+                    "element": {
+                        "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 5, "column": 11, "index": 61}, "end": {"row": 5, "column": 13, "index": 63}, "codeIndex": -1}},
+                        "name": { "value": "IMy", "codeRange": {"start": {"row": 5, "column": 11, "index": 61}, "end": {"row": 5, "column": 13, "index": 63}, "codeIndex": -1}}
+                    }
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 19, "index": 69}, "end": {"row": 5, "column": 22, "index": 72}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

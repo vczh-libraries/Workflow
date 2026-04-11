@@ -1,0 +1,79 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    func M(@rpc:Byref x : int) : (int[]);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    func M(@rpc:Byref x : int) : (int[]);
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 8, Message: H6: @rpc:Byref cannot be used on member "IMy.M(x)" because it does not have a strong typed collection types.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 87}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 6, "column": 0, "index": 87}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 2, "column": 1, "index": 17}, "end": {"row": 2, "column": 3, "index": 19}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IMy", "codeRange": {"start": {"row": 3, "column": 10, "index": 42}, "end": {"row": 3, "column": 12, "index": 44}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 0, "index": 50}, "end": {"row": 5, "column": 34, "index": 84}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "M", "codeRange": {"start": {"row": 5, "column": 5, "index": 55}, "end": {"row": 5, "column": 5, "index": 55}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 5, "column": 7, "index": 57}, "end": {"row": 5, "column": 24, "index": 74}, "codeIndex": -1}},
+                "attributes": [{
+                    "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 5, "column": 7, "index": 57}, "end": {"row": 5, "column": 16, "index": 66}, "codeIndex": -1}},
+                    "category": { "value": "rpc", "codeRange": {"start": {"row": 5, "column": 8, "index": 58}, "end": {"row": 5, "column": 10, "index": 60}, "codeIndex": -1}},
+                    "name": { "value": "Byref", "codeRange": {"start": {"row": 5, "column": 12, "index": 62}, "end": {"row": 5, "column": 16, "index": 66}, "codeIndex": -1}},
+                    "value": null
+                }],
+                "name": { "value": "x", "codeRange": {"start": {"row": 5, "column": 18, "index": 68}, "end": {"row": 5, "column": 18, "index": 68}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 22, "index": 72}, "end": {"row": 5, "column": 24, "index": 74}, "codeIndex": -1}},
+                    "name": "Int"
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 5, "column": 29, "index": 79}, "end": {"row": 5, "column": 33, "index": 83}, "codeIndex": -1}},
+                "key": null,
+                "value": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 5, "column": 29, "index": 79}, "end": {"row": 5, "column": 31, "index": 81}, "codeIndex": -1}},
+                    "name": "Int"
+                },
+                "writability": "Writable"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

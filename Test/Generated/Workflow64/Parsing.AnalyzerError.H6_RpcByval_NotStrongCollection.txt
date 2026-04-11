@@ -1,0 +1,68 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    @rpc:Byval
+    func M() : (int);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+@rpc:Interface
+interface IMy
+{
+    @rpc:Byval
+    func M() : (int);
+}
+
+========================================================
+Errors
+========================================================
+Line: 6, Column: 1, Message: H6: @rpc:Byval cannot be used on member "IMy.M" because it does not have a strong typed collection types.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 7, "column": 0, "index": 79}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 7, "column": 0, "index": 79}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 2, "column": 1, "index": 17}, "end": {"row": 2, "column": 3, "index": 19}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 2, "column": 5, "index": 21}, "end": {"row": 2, "column": 13, "index": 29}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IMy", "codeRange": {"start": {"row": 3, "column": 10, "index": 42}, "end": {"row": 3, "column": 12, "index": 44}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 5, "column": 0, "index": 50}, "end": {"row": 6, "column": 14, "index": 76}, "codeIndex": -1}},
+            "attributes": [{
+                "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 5, "column": 0, "index": 50}, "end": {"row": 5, "column": 9, "index": 59}, "codeIndex": -1}},
+                "category": { "value": "rpc", "codeRange": {"start": {"row": 5, "column": 1, "index": 51}, "end": {"row": 5, "column": 3, "index": 53}, "codeIndex": -1}},
+                "name": { "value": "Byval", "codeRange": {"start": {"row": 5, "column": 5, "index": 55}, "end": {"row": 5, "column": 9, "index": 59}, "codeIndex": -1}},
+                "value": null
+            }],
+            "name": { "value": "M", "codeRange": {"start": {"row": 6, "column": 5, "index": 67}, "end": {"row": 6, "column": 5, "index": 67}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 6, "column": 11, "index": 73}, "end": {"row": 6, "column": 13, "index": 75}, "codeIndex": -1}},
+                "name": "Int"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}
