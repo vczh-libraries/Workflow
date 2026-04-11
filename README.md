@@ -45,7 +45,9 @@ You can also get rid of runtime reflection overhead in this way.
 
 For **Windows**, open `Test/UnitTest/UnitTest.sln`, and run the following projects in order:
 - **CompilerTest_GenerateMetadata** : Generate metadata file for involved C++ types (including classes only for unit test).
+  - **CompilerTest_LoadAndCompiler** will not function correctly if C++ reflection is changed but **CompilerTest_GenerateMetadata** is not executed.
 - **CompilerTest_LoadAndCompile** : Load the generated metadata, compile and run Workflow scripts, and generate C++ code from Workflow scripts.
+  - **Rebuild the solution after execution**.
 - **CppTest** : Run generated C++ code.
 - **CppTest_Metaonly** : Run generated C++ code.
 - **CppTest_Reflection** : Run generated C++ code.
