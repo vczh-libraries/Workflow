@@ -36,29 +36,30 @@ All types below count as serializable types:
 - When generating helper functions for an error, multiple error messages with the same format can share one helper function. Only text in `xxx` becomes a parameter (or if `xxx` has only one choice in this helper function, it should not be a parameter).
   - The error code should be `H\d+`.
   - Each helper function will be assigned with a unique error code.
+- (AST) does not belong to the error message, it is a hint that this error should be checked by traversing the AST, otherwise it should be checked against `ITypeDescriptor`.
 
 ## @rpc:Interface
 
-- `@rpc:Interface` can only apply to an interface definition, but not `FULL-NAME`.
+- (AST) `@rpc:Interface` can only apply to an interface definition, but not `FULL-NAME`.
   - Triggered when it is applied to anything else.
-- `@rpc:Interface` cannot be applied to interface `FULL-NAME` because its member `MEMBER-NAME` is not serializable.
-  - Triggered when the interface type has unserializable members.
-  - Triggered for each inqualify member.
 - `@rpc:Interface` cannot be applied to interface `FULL-NAME` because its base type `FULL-NAME` is not serializable.
   - Triggered when any base type does not apply with `@rpc:Interface`.
   - Triggered for each inqualify base type.
+- `@rpc:Interface` cannot be applied to interface `FULL-NAME` because its member `MEMBER-NAME` is not serializable.
+  - Triggered when the interface type has unserializable members.
+  - Triggered for each inqualify member.
 
 ## @rpc:Ctor
 
-- `@rpc:Ctor` can only apply to an interface definition with `@rpc:Interface`.
+- (AST) `@rpc:Ctor` can only apply to an interface definition with `@rpc:Interface`.
   - Triggered when it is applied to anything else.
   - Triggered when it is applied to an interface without `@rpc:Interface`.
 
 ## @rpc:Byval
 
-- `@rpc:Byval` can only apply to a property, a method or a parameter.
+- (AST) `@rpc:Byval` can only apply to a property, a method or a parameter.
   - Triggered when it is applied to anything else.
-- `@rpc:Byval` can only be used inside an interface type with `@rpc:Interface`.
+- (AST) `@rpc:Byval` can only be used inside an interface type with `@rpc:Interface`.
   - Not triggered any of the above error is triggered on the same attribute.
   - Triggered when the member it applies to is not in an interface with `@rpc:Interface`.
 - `@rpc:Byval` cannot be used on member `MEMBER-NAME` because it does not have a strong typed collection types.
@@ -69,12 +70,12 @@ All types below count as serializable types:
 
 ## @rpc:Byref
 
-- `@rpc:Byref` can only apply to a property, a method or a parameter.
+- (AST) `@rpc:Byref` can only apply to a property, a method or a parameter.
   - Triggered when it is applied to anything else.
-- `@rpc:Byref` cannot be used on member `MEMBER-NAME` because it already has `@rpc:Byval`.
+- (AST) `@rpc:Byref` cannot be used on member `MEMBER-NAME` because it already has `@rpc:Byval`.
   - Not triggered any of the above error is triggered on the same attribute.
   - Triggered when it is applied to a member with `@rpc:Byval`.
-- `@rpc:Byref` can only be used inside an interface type with `@rpc:Interface`.
+- (AST) `@rpc:Byref` can only be used inside an interface type with `@rpc:Interface`.
   - Not triggered any of the above error is triggered on the same attribute.
   - Triggered when the member it applies to is not in an interface with `@rpc:Interface`.
 - `@rpc:Byref` cannot be used on member `MEMBER-NAME` because it does not have a strong typed collection types.
@@ -85,7 +86,7 @@ All types below count as serializable types:
 
 ## @rpc:Cached
 
-- `@rpc:Cached` can only apply to a property.
+- (AST) `@rpc:Cached` can only apply to a property.
   - Triggered when it is applied to anything else.
 - `@rpc:Cached` can only be used inside an interface type with `@rpc:Interface`.
   - Not triggered any of the above error is triggered on the same attribute.
@@ -93,9 +94,9 @@ All types below count as serializable types:
 
 ## @rpc:Dynamic
 
-- `@rpc:Dynamic` can only apply to a property.
+- (AST) `@rpc:Dynamic` can only apply to a property.
   - Triggered when it is applied to anything else.
-- `@rpc:Dynamic` cannot be used on member `MEMBER-NAME` because it already has `@rpc:Cached`.
+- (AST) `@rpc:Dynamic` cannot be used on member `MEMBER-NAME` because it already has `@rpc:Cached`.
   - Not triggered any of the above error is triggered on the same attribute.
   - Triggered when it is applied to a member with `@rpc:Cached`.
 - `@rpc:Dynamic` can only be used inside an interface type with `@rpc:Interface`.
