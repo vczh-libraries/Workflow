@@ -6,7 +6,6 @@
 
 ## Steps
 
-- One last phase to verify rpc attributes.
 - Generate rpc metadata in strong typed and JSON, for types defined in current assembly only.
   - All signed integers will share the same type in metadata, also for unsigned integers.
   - C++ codegen still respect the original integer types.
