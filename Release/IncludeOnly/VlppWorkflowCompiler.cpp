@@ -22,6 +22,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Analyzer\WfAnalyzer_Misc.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_SearchOrderedName.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_TypeInfo.cpp"
+#include "..\..\Source\Analyzer\WfAnalyzer_ValidateRPC.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_ValidateScopeName.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_ValidateSemantic.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_ValidateSemantic_Declaration.cpp"

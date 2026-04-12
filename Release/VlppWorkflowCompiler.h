@@ -5328,6 +5328,12 @@ Semantic Analyzing
 			extern Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
 
 /***********************************************************************
+RPC Analyzing
+***********************************************************************/
+
+			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+
+/***********************************************************************
 Expanding Virtual Nodes
 ***********************************************************************/
 
@@ -5551,6 +5557,18 @@ Error Messages
 				static glr::ParsingError					TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
 				static glr::ParsingError					AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
 				static glr::ParsingError					AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
+
+				// H: RPC attribute checking
+				static glr::ParsingError					RpcInterfaceCanOnlyApplyToInterface(WfAttribute* node, const WString& fullName);
+				static glr::ParsingError					RpcInterfaceBaseNotSerializable(WfType* node, const WString& interfaceFullName, const WString& baseFullName);
+				static glr::ParsingError					RpcInterfaceMemberNotSerializable(WfDeclaration* node, const WString& interfaceFullName, const WString& memberName);
+				static glr::ParsingError					RpcInterfaceMemberNotSerializable(WfFunctionArgument* node, const WString& interfaceFullName, const WString& memberName);
+				static glr::ParsingError					RpcCtorCanOnlyApplyToRpcInterface(WfAttribute* node);
+				static glr::ParsingError					RpcAttributeCanOnlyApplyToPropertyMethodOrParameter(WfAttribute* node, const WString& attributeName);
+				static glr::ParsingError					RpcAttributeCanOnlyBeUsedInsideRpcInterface(WfAttribute* node, const WString& attributeName);
+				static glr::ParsingError					RpcAttributeRequiresStrongTypedCollection(WfAttribute* node, const WString& attributeName, const WString& memberName);
+				static glr::ParsingError					RpcAttributeCanOnlyApplyToProperty(WfAttribute* node, const WString& attributeName);
+				static glr::ParsingError					RpcAttributeCannotCoexistWithOther(WfAttribute* node, const WString& attributeName, const WString& otherAttributeName, const WString& memberName);
 
 				// CPP: C++ code generation error
 				static glr::ParsingError					CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
