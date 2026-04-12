@@ -6,6 +6,7 @@
 
 ## Steps
 
+- Remove async return value.
 - Generate rpc metadata in strong typed and JSON.
   - Regenerate Workflow AST as metadata.
     - Collect all used structs and enums, collect all `@rpc:Interface` interfaces from the current assembly, and regenerate their AST.
