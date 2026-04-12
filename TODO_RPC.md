@@ -7,16 +7,22 @@
 ## Steps
 
 - Generate rpc metadata in strong typed and JSON.
-  - We could reuse Workflow AST to be the metadata.
-  - Only include interfaces that defined in the current assembly.
-  - Include all used structs and enums.
+  - Regenerate Workflow AST as metadata.
+    - Copy interface declarations.
+    - Collect all used structs and enums, and regenerate their AST.
+    - Put them in one module in enums/structs/interfaces order.
+      - Enums are ordered by name.
+      - Structs are ordered by visiting order, keep struct dependency correct.
+      - Interface are ordered by AST order.
+      - Namespaces will be merged as much as possible.
   - Testing
-    - Prepare a workflow input, require enums followed by structs followed by interfaces, types in each group ordered by their name.
-    - Dump to metadata and generate back to workflow.
-    - Compare JSON from both AST.
-    - If the Workflow AST is the metadata, we could print its code instead of dumping to JSON for testing.
+    - Prepare a workflow input, strictly following the above coding convention.
+    - Compile and generate RPC metadata.
+    - Print AST/metadata back to Workflow script and compare them directly.
+  - New test case in `CompilerTest_LoadAndCompiler`, to verify against one complex input.
 - Add communication layer with unit test implementation.
   - Note: no metadata involved here, this is the architecture of commands.
+  - Unit test in `LibraryTest`.
 - Create dynamic serialization implementation based on reflection for all touched rpc types.
   - Server and client will contains copy of same interface types, but loading two assemblies into a process conflicts in reflection.
   - Should allow the same schema mapping to equivalent interfaces in different namespaces.
