@@ -8,8 +8,10 @@
 
 - Generate rpc metadata in strong typed and JSON.
   - Regenerate Workflow AST as metadata.
-    - Copy interface declarations.
-    - Collect all used structs and enums, and regenerate their AST.
+    - Collect all used structs and enums, collect all `@rpc:Interface` interfaces from the current assembly, and regenerate their AST.
+      - `GetTypeFromTypeInfo` function will be useful when reconstructing them.
+      - Attributes on interfaces and their content should remain.
+      - Shortcut declarations like auto properties will not generate, use their original forms.
     - Put them in one module in enums/structs/interfaces order.
       - Enums are ordered by name.
       - Structs are ordered by visiting order, keep struct dependency correct.
@@ -20,6 +22,8 @@
     - Compile and generate RPC metadata.
     - Print AST/metadata back to Workflow script and compare them directly.
   - New test case in `CompilerTest_LoadAndCompiler`, to verify against one complex input.
+    - Avoid types like `int` to keep consistency between different platforms.
+    - Avoid shortcut declarations like auto properties.
 - Add communication layer with unit test implementation.
   - Note: no metadata involved here, this is the architecture of commands.
   - Unit test in `LibraryTest`.

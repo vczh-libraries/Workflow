@@ -112,6 +112,7 @@ All types below count as serializable types:
 ## @rpc:Byval
 
 - This is the default option, for any property, parameter, method (means return type) is a strong typed collection type.
+- Event arguments will always be `@rpc:Byval`.
 - The whole collection is sent to a client, and it doesn't keep track on changes from the other side.
   - It only works when the element types are not interfaces.
   - If its element types are collection type, they are passed **by value** as well.
