@@ -6,32 +6,6 @@
 
 ## Steps
 
-- Remove async return value.
-- Generate rpc metadata in strong typed and JSON.
-  - Regenerate Workflow AST as metadata.
-    - Collect all used structs and enums, collect all `@rpc:Interface` interfaces from the current assembly, and regenerate their AST.
-      - `GetTypeFromTypeInfo` function will be useful when reconstructing them.
-      - Attributes on interfaces and their content should remain.
-      - Shortcut declarations like auto properties will not generate, use their original forms.
-    - Put them in one module in enums/structs/interfaces order.
-      - Enums are ordered by name.
-      - Structs are ordered by visiting order, keep struct dependency correct.
-      - Interface are ordered by AST order.
-      - Namespaces will be merged as much as possible.
-  - Testing
-    - Update TestRuntimeCompiler.cpp to add attribute metadata assertion.
-    - Add `Runtime\AttributesRpc.txt` to cover all possible usage of Rpc attributes, the definition is in TODO_RPC_Definition.md
-    - Only when RPC attributes are used, the added `WfLexicalScopeManager::rpcMetadata` will be non-null, and do these extra steps:
-      - Use `testCpuArchitecture` to understand what architecture you are in and serialize the generated metadata to:
-        - Test\Generated\RpcMetadata(32|64)\{itemName}.txt
-          - There is only one `AttributesRpc.txt` under `Runtime` that qualifies, so itemName becomes AttributesRpc
-      - Compare it to baseline files
-        - Test\Resources\Baseline\RpcMetadata(32|64)\{itemName.txt}
-        - There is no such baseline files at the beginning, you are going to make them, so that they can exactly match the generated rpc metadata. And it is also a chance for you to verify if the output is right.
-      - You must break baseline and metadata files into lines to compare them just like what CompilerTest_GenerateMetadata is doing
-      - Rpc metadata is a workflow module AST, call the `WfPrint` with `stream::GenerateToStream` to generate workflow source files from it. You can find many samples about how to use them directly.
-        - Rpc attributes are required to present in the metadata, so if `WfPrint` doesn't print them, you need to fix it. `WfPrint` is a general function, not for rpc metadata specifically, so the printing logic should be complete. Especially when handling printing assembly values, both literal or typeof.
-      - In order to verify generated Rpc metadata is legit, you need to stores all all rpc metadata to a `Dictioary<WString, Ptr<WfModule>> rpcMetadatas;` right inside `TEST_FILE`, key is itemName, and make another TEST_CATEGORY, run each key-value pair in each TEST_CASE. Follow the first TEST_CATEGORY to make loop right. But this time you don't need to print anything in this second TEST_CATEGORY, just assert that no build errors are generated.
 - Add communication layer with unit test implementation.
   - Note: no metadata involved here, this is the architecture of commands.
   - Unit test in `LibraryTest`.
