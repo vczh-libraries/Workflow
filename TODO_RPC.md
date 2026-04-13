@@ -6,7 +6,7 @@
 
 ## Steps
 
-- Add `delete{}` in new interface expression.
+- Add `delete{}` in new interface expression, with `NewInterfaceDtor.txt` similar to `ClassDtor.txt`.
 - Add communication layer with unit test implementation.
   - Note: no metadata involved here, this is the architecture of commands.
   - Unit test in `LibraryTest`.
