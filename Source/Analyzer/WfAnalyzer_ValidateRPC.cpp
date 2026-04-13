@@ -801,6 +801,575 @@ namespace vl
 				}
 			}
 
+/***********************************************************************
+Phase 3: Generate RPC Metadata
+***********************************************************************/
+
+			static Ptr<WfAttribute> CopyAttribute(Ptr<WfAttribute> src)
+			{
+				auto attr = Ptr(new WfAttribute);
+				attr->category.value = src->category.value;
+				attr->name.value = src->name.value;
+				if (src->value)
+				{
+					attr->value = CopyExpression(src->value, false);
+				}
+				return attr;
+			}
+
+			static void CopyAttributes(List<Ptr<WfAttribute>>& dst, const List<Ptr<WfAttribute>>& src)
+			{
+				for (auto attr : src)
+				{
+					dst.Add(CopyAttribute(attr));
+				}
+			}
+
+			static void CollectSerializableTypesFromTypeInfo(
+				ITypeInfo* typeInfo,
+				SortedList<ITypeDescriptor*>& collectedEnums,
+				SortedList<ITypeDescriptor*>& collectedStructs,
+				List<ITypeDescriptor*>& structVisitOrder,
+				const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+			{
+				if (!typeInfo) return;
+				switch (typeInfo->GetDecorator())
+				{
+				case ITypeInfo::SharedPtr:
+					{
+						auto e = typeInfo->GetElementType();
+						if (!e) return;
+						if (e->GetDecorator() == ITypeInfo::Generic)
+						{
+							for (vint i = 0; i < e->GetGenericArgumentCount(); i++)
+							{
+								CollectSerializableTypesFromTypeInfo(e->GetGenericArgument(i), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+							}
+						}
+					}
+					break;
+				case ITypeInfo::TypeDescriptor:
+					{
+						auto td = typeInfo->GetTypeDescriptor();
+						if (!td) return;
+						switch (td->GetTypeDescriptorFlags())
+						{
+						case TypeDescriptorFlags::FlagEnum:
+						case TypeDescriptorFlags::NormalEnum:
+							if (!collectedEnums.Contains(td))
+							{
+								collectedEnums.Add(td);
+							}
+							break;
+						case TypeDescriptorFlags::Struct:
+							if (!collectedStructs.Contains(td))
+							{
+								collectedStructs.Add(td);
+								// Recursively collect types used by struct members
+								for (vint i = 0; i < td->GetPropertyCount(); i++)
+								{
+									CollectSerializableTypesFromTypeInfo(td->GetProperty(i)->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+								}
+								structVisitOrder.Add(td);
+							}
+							break;
+						default:
+							break;
+						}
+					}
+					break;
+				default:
+					break;
+				}
+			}
+
+			static void CollectTypesFromInterface(
+				ITypeDescriptor* td,
+				SortedList<ITypeDescriptor*>& collectedEnums,
+				SortedList<ITypeDescriptor*>& collectedStructs,
+				List<ITypeDescriptor*>& structVisitOrder,
+				const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+			{
+				for (vint i = 0; i < td->GetPropertyCount(); i++)
+				{
+					auto propertyInfo = td->GetProperty(i);
+					if (propertyInfo->GetOwnerTypeDescriptor() != td) continue;
+					CollectSerializableTypesFromTypeInfo(propertyInfo->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+				}
+
+				for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+				{
+					auto group = td->GetMethodGroup(i);
+					if (group->GetOwnerTypeDescriptor() != td) continue;
+					for (vint j = 0; j < group->GetMethodCount(); j++)
+					{
+						auto methodInfo = group->GetMethod(j);
+						CollectSerializableTypesFromTypeInfo(methodInfo->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+						for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
+						{
+							CollectSerializableTypesFromTypeInfo(methodInfo->GetParameter(k)->GetType(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+						}
+					}
+				}
+
+				for (vint i = 0; i < td->GetEventCount(); i++)
+				{
+					auto eventInfo = td->GetEvent(i);
+					if (eventInfo->GetOwnerTypeDescriptor() != td) continue;
+					auto handlerType = eventInfo->GetHandlerType();
+					if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+					{
+						auto genericType = handlerType->GetElementType();
+						if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+						{
+							for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
+							{
+								CollectSerializableTypesFromTypeInfo(genericType->GetGenericArgument(j), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+							}
+						}
+					}
+				}
+			}
+
+			static Ptr<WfEnumDeclaration> GenerateEnumDecl(ITypeDescriptor* td)
+			{
+				auto enumType = td->GetEnumType();
+				if (!enumType) return nullptr;
+
+				auto decl = Ptr(new WfEnumDeclaration);
+				List<WString> fragments;
+				GetTypeFragments(td, fragments);
+				decl->name.value = fragments[fragments.Count() - 1];
+				decl->kind = enumType->IsFlagEnum() ? WfEnumKind::Flag : WfEnumKind::Normal;
+
+				// Collect items sorted by value
+				List<Pair<WString, vuint64_t>> items;
+				for (vint i = 0; i < enumType->GetItemCount(); i++)
+				{
+					items.Add({ enumType->GetItemName(i), enumType->GetItemValue(i) });
+				}
+				if (items.Count() > 1)
+				{
+					Sort(&items[0], items.Count(), [](const Pair<WString, vuint64_t>& a, const Pair<WString, vuint64_t>& b)
+					{
+						return (a.value <=> b.value);
+					});
+				}
+
+				if (enumType->IsFlagEnum())
+				{
+					// Build a map from power-of-2 values to item names
+					Dictionary<vuint64_t, WString> powerOf2Names;
+
+					// First pass: add constant items (0 and powers of 2)
+					for (auto&& [name, value] : items)
+					{
+						if (value == 0 || (value != 0 && (value & (value - 1)) == 0))
+						{
+							auto item = Ptr(new WfEnumItem);
+							item->name.value = name;
+							item->kind = WfEnumItemKind::Constant;
+							item->number.value = u64tow(value);
+							decl->items.Add(item);
+							powerOf2Names.Add(value, name);
+						}
+					}
+
+					// Second pass: add intersection items (composite values)
+					for (auto&& [name, value] : items)
+					{
+						if (value != 0 && (value & (value - 1)) != 0)
+						{
+							auto item = Ptr(new WfEnumItem);
+							item->name.value = name;
+							item->kind = WfEnumItemKind::Intersection;
+							for (vint bit = 0; bit < 64; bit++)
+							{
+								auto mask = (vuint64_t)1 << bit;
+								if (value & mask)
+								{
+									auto nameIndex = powerOf2Names.Keys().IndexOf(mask);
+									if (nameIndex != -1)
+									{
+										auto intersection = Ptr(new WfEnumItemIntersection);
+										intersection->name.value = powerOf2Names.Values()[nameIndex];
+										item->intersections.Add(intersection);
+									}
+								}
+							}
+							decl->items.Add(item);
+						}
+					}
+				}
+				else
+				{
+					for (auto&& [name, value] : items)
+					{
+						auto item = Ptr(new WfEnumItem);
+						item->name.value = name;
+						item->kind = WfEnumItemKind::Constant;
+						item->number.value = u64tow(value);
+						decl->items.Add(item);
+					}
+				}
+				return decl;
+			}
+
+			static Ptr<WfStructDeclaration> GenerateStructDecl(ITypeDescriptor* td)
+			{
+				auto decl = Ptr(new WfStructDeclaration);
+				List<WString> fragments;
+				GetTypeFragments(td, fragments);
+				decl->name.value = fragments[fragments.Count() - 1];
+
+				for (vint i = 0; i < td->GetPropertyCount(); i++)
+				{
+					auto propertyInfo = td->GetProperty(i);
+					auto member = Ptr(new WfStructMember);
+					member->name.value = propertyInfo->GetName();
+					member->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+					decl->members.Add(member);
+				}
+				return decl;
+			}
+
+			static WfClassDeclaration* FindOriginalClassDecl(WfLexicalScopeManager* manager, ITypeDescriptor* td)
+			{
+				for (vint i = 0; i < manager->declarationTypes.Count(); i++)
+				{
+					if (manager->declarationTypes.Values()[i].Obj() == td)
+					{
+						auto decl = manager->declarationTypes.Keys()[i].Cast<WfClassDeclaration>();
+						if (decl)
+						{
+							return decl.Obj();
+						}
+					}
+				}
+				return nullptr;
+			}
+
+			static Ptr<WfDeclaration> FindOriginalMemberDecl(WfLexicalScopeManager* manager, IMemberInfo* memberInfo)
+			{
+				for (vint i = 0; i < manager->declarationMemberInfos.Count(); i++)
+				{
+					if (manager->declarationMemberInfos.Values()[i].Obj() == memberInfo)
+					{
+						return manager->declarationMemberInfos.Keys()[i];
+					}
+				}
+				return nullptr;
+			}
+
+			static Ptr<WfClassDeclaration> GenerateInterfaceDecl(WfLexicalScopeManager* manager, ITypeDescriptor* td)
+			{
+				auto originalClassDecl = FindOriginalClassDecl(manager, td);
+				if (!originalClassDecl) return nullptr;
+
+				auto decl = Ptr(new WfClassDeclaration);
+				List<WString> fragments;
+				GetTypeFragments(td, fragments);
+				decl->name.value = fragments[fragments.Count() - 1];
+				decl->kind = WfClassKind::Interface;
+				decl->constructorType = originalClassDecl->constructorType;
+
+				// Copy attributes from the original interface declaration
+				CopyAttributes(decl->attributes, originalClassDecl->attributes);
+
+				// Copy base types from the original declaration
+				for (auto baseType : originalClassDecl->baseTypes)
+				{
+					decl->baseTypes.Add(CopyType(baseType));
+				}
+
+				// Generate properties from reflection
+				for (vint i = 0; i < td->GetPropertyCount(); i++)
+				{
+					auto propertyInfo = td->GetProperty(i);
+					if (propertyInfo->GetOwnerTypeDescriptor() != td) continue;
+
+					auto propDecl = Ptr(new WfPropertyDeclaration);
+					propDecl->name.value = propertyInfo->GetName();
+					propDecl->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+
+					if (auto getter = propertyInfo->GetGetter())
+					{
+						propDecl->getter.value = getter->GetName();
+					}
+					if (auto setter = propertyInfo->GetSetter())
+					{
+						propDecl->setter.value = setter->GetName();
+					}
+					if (auto valueChangedEvent = propertyInfo->GetValueChangedEvent())
+					{
+						propDecl->valueChangedEvent.value = valueChangedEvent->GetName();
+					}
+
+					// Copy attributes from original property declaration
+					auto originalMemberDecl = FindOriginalMemberDecl(manager, propertyInfo);
+					if (originalMemberDecl)
+					{
+						CopyAttributes(propDecl->attributes, originalMemberDecl->attributes);
+					}
+
+					decl->declarations.Add(propDecl);
+				}
+
+				// Generate events from reflection
+				for (vint i = 0; i < td->GetEventCount(); i++)
+				{
+					auto eventInfo = td->GetEvent(i);
+					if (eventInfo->GetOwnerTypeDescriptor() != td) continue;
+
+					auto eventDecl = Ptr(new WfEventDeclaration);
+					eventDecl->name.value = eventInfo->GetName();
+
+					// Extract event argument types from handler type
+					auto handlerType = eventInfo->GetHandlerType();
+					if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+					{
+						auto genericType = handlerType->GetElementType();
+						if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+						{
+							// Skip first generic argument (return type is void)
+							for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
+							{
+								auto argType = GetTypeFromTypeInfo(genericType->GetGenericArgument(j));
+								if (argType)
+								{
+									eventDecl->arguments.Add(argType);
+								}
+							}
+						}
+					}
+
+					// Copy attributes from original event declaration
+					auto originalMemberDecl = FindOriginalMemberDecl(manager, eventInfo);
+					if (originalMemberDecl)
+					{
+						CopyAttributes(eventDecl->attributes, originalMemberDecl->attributes);
+					}
+
+					decl->declarations.Add(eventDecl);
+				}
+
+				// Generate methods from reflection
+				for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+				{
+					auto group = td->GetMethodGroup(i);
+					if (group->GetOwnerTypeDescriptor() != td) continue;
+
+					for (vint j = 0; j < group->GetMethodCount(); j++)
+					{
+						auto methodInfo = group->GetMethod(j);
+
+						// Skip methods that are property getters/setters
+						if (methodInfo->GetOwnerProperty()) continue;
+
+						auto funcDecl = Ptr(new WfFunctionDeclaration);
+						funcDecl->name.value = methodInfo->GetName();
+						funcDecl->anonymity = WfFunctionAnonymity::Named;
+						funcDecl->functionKind = WfFunctionKind::Normal;
+						funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
+
+						// Find original function declaration to copy argument attributes
+						auto originalMemberDecl = FindOriginalMemberDecl(manager, methodInfo);
+						auto originalFuncDecl = originalMemberDecl ? originalMemberDecl.Cast<WfFunctionDeclaration>() : Ptr<WfFunctionDeclaration>();
+
+						for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
+						{
+							auto parameterInfo = methodInfo->GetParameter(k);
+							auto argument = Ptr(new WfFunctionArgument);
+							argument->name.value = parameterInfo->GetName();
+							argument->type = GetTypeFromTypeInfo(parameterInfo->GetType());
+
+							// Copy attributes from original function argument
+							if (originalFuncDecl && k < originalFuncDecl->arguments.Count())
+							{
+								CopyAttributes(argument->attributes, originalFuncDecl->arguments[k]->attributes);
+							}
+
+							funcDecl->arguments.Add(argument);
+						}
+
+						// Copy attributes from original method declaration
+						if (originalMemberDecl)
+						{
+							CopyAttributes(funcDecl->attributes, originalMemberDecl->attributes);
+						}
+
+						decl->declarations.Add(funcDecl);
+					}
+				}
+
+				return decl;
+			}
+
+			static Ptr<WfNamespaceDeclaration> EnsureNamespace(
+				List<Ptr<WfDeclaration>>& rootDeclarations,
+				Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
+				const List<WString>& fragments)
+			{
+				if (fragments.Count() <= 1)
+				{
+					return nullptr;
+				}
+
+				WString currentPath;
+				Ptr<WfNamespaceDeclaration> currentNs;
+				List<Ptr<WfDeclaration>>* currentList = &rootDeclarations;
+
+				for (vint i = 0; i < fragments.Count() - 1; i++)
+				{
+					if (currentPath.Length() > 0)
+					{
+						currentPath = currentPath + L"::" + fragments[i];
+					}
+					else
+					{
+						currentPath = fragments[i];
+					}
+
+					auto index = namespaceMap.Keys().IndexOf(currentPath);
+					if (index != -1)
+					{
+						currentNs = namespaceMap.Values()[index];
+						currentList = &currentNs->declarations;
+					}
+					else
+					{
+						auto ns = Ptr(new WfNamespaceDeclaration);
+						ns->name.value = fragments[i];
+						currentList->Add(ns);
+						namespaceMap.Add(currentPath, ns);
+						currentNs = ns;
+						currentList = &ns->declarations;
+					}
+				}
+
+				return currentNs;
+			}
+
+			static void AddDeclToModule(
+				List<Ptr<WfDeclaration>>& rootDeclarations,
+				Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
+				ITypeDescriptor* td,
+				Ptr<WfDeclaration> decl)
+			{
+				List<WString> fragments;
+				GetTypeFragments(td, fragments);
+
+				auto ns = EnsureNamespace(rootDeclarations, namespaceMap, fragments);
+				if (ns)
+				{
+					ns->declarations.Add(decl);
+				}
+				else
+				{
+					rootDeclarations.Add(decl);
+				}
+			}
+
+			static void CollectOrderedRpcInterfaces(
+				WfLexicalScopeManager* manager,
+				const List<Ptr<WfDeclaration>>& declarations,
+				const SortedList<ITypeDescriptor*>& rpcInterfaceTds,
+				List<ITypeDescriptor*>& orderedInterfaces)
+			{
+				for (auto decl : declarations)
+				{
+					if (auto classDecl = decl.Cast<WfClassDeclaration>())
+					{
+						auto td = GetClassTypeDescriptor(manager, classDecl.Obj());
+						if (td && rpcInterfaceTds.Contains(td) && !orderedInterfaces.Contains(td))
+						{
+							orderedInterfaces.Add(td);
+						}
+						CollectOrderedRpcInterfaces(manager, classDecl->declarations, rpcInterfaceTds, orderedInterfaces);
+					}
+					else if (auto nsDecl = decl.Cast<WfNamespaceDeclaration>())
+					{
+						CollectOrderedRpcInterfaces(manager, nsDecl->declarations, rpcInterfaceTds, orderedInterfaces);
+					}
+				}
+			}
+
+			static void ValidateModuleRPC_GenerateMetadata(WfLexicalScopeManager* manager, Ptr<WfModule> module, const RpcPhase1Context& context)
+			{
+				// Collect all enum and struct types used by RPC interfaces
+				SortedList<ITypeDescriptor*> collectedEnums;
+				SortedList<ITypeDescriptor*> collectedStructs;
+				List<ITypeDescriptor*> structVisitOrder;
+
+				for (auto td : context.workflowRpcInterfaceTds)
+				{
+					CollectTypesFromInterface(td, collectedEnums, collectedStructs, structVisitOrder, context.workflowRpcInterfaceTds);
+				}
+
+				// Sort enums by name
+				List<ITypeDescriptor*> sortedEnums;
+				for (auto td : collectedEnums)
+				{
+					sortedEnums.Add(td);
+				}
+				if (sortedEnums.Count() > 1)
+				{
+					Sort(&sortedEnums[0], sortedEnums.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+					{
+						return wcscmp(a->GetTypeName().Buffer(), b->GetTypeName().Buffer()) <=> 0;
+					});
+				}
+
+				// Collect RPC interfaces in AST order
+				List<ITypeDescriptor*> orderedInterfaces;
+				CollectOrderedRpcInterfaces(manager, module->declarations, context.workflowRpcInterfaceTds, orderedInterfaces);
+
+				// Build the metadata module
+				auto metadataModule = Ptr(new WfModule);
+				metadataModule->moduleType = WfModuleType::Module;
+				metadataModule->name.value = L"RpcMetadata";
+
+				List<Ptr<WfDeclaration>> rootDeclarations;
+				Dictionary<WString, Ptr<WfNamespaceDeclaration>> namespaceMap;
+
+				// Add enums (sorted by name)
+				for (auto td : sortedEnums)
+				{
+					auto decl = GenerateEnumDecl(td);
+					if (decl)
+					{
+						AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
+					}
+				}
+
+				// Add structs (sorted by visiting order - dependency correct)
+				for (auto td : structVisitOrder)
+				{
+					auto decl = GenerateStructDecl(td);
+					if (decl)
+					{
+						AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
+					}
+				}
+
+				// Add interfaces (sorted by AST order)
+				for (auto td : orderedInterfaces)
+				{
+					auto decl = GenerateInterfaceDecl(manager, td);
+					if (decl)
+					{
+						AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
+					}
+				}
+
+				for (auto decl : rootDeclarations)
+				{
+					metadataModule->declarations.Add(decl);
+				}
+
+				manager->rpcMetadata = metadataModule;
+			}
+
 			void ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
 				RpcPhase1Context context;
@@ -810,6 +1379,12 @@ namespace vl
 
 				// Phase 2 uses reflection (ITypeDescriptor/ITypeInfo) to validate the remaining rules.
 				ValidateModuleRPC_Reflection(manager, context);
+
+				// Phase 3 generates rpc metadata module.
+				if (context.workflowRpcInterfaceTds.Count() > 0 && manager->errors.Count() == 0)
+				{
+					ValidateModuleRPC_GenerateMetadata(manager, module, context);
+				}
 			}
 		}
 	}

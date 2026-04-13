@@ -1,0 +1,135 @@
+module test;
+
+enum Season
+{
+	Spring = 0,
+	Summer = 1,
+	Autumn = 2,
+	Winter = 3,
+}
+
+flagenum Permission
+{
+	None = 0,
+	Read = 1,
+	Write = 2,
+	Execute = 4,
+	All = Read | Write | Execute,
+}
+
+struct Point
+{
+	x : int;
+	y : int;
+}
+
+struct Line
+{
+	start : Point;
+	end : Point;
+}
+
+@rpc:Interface
+interface ISimple
+{
+	func Hello() : string;
+	func Add(a : int, b : int) : int;
+	prop Name : string {GetName, SetName : NameChanged}
+	func GetName() : string;
+	func SetName(value : string) : void;
+	event NameChanged();
+}
+
+@rpc:Interface
+@rpc:Ctor
+interface IWithCtor
+{
+	func GetValue() : int;
+}
+
+@rpc:Interface
+interface IBase
+{
+	func GetId() : int;
+}
+
+@rpc:Interface
+interface IDerived : IBase
+{
+	func GetLabel() : string;
+}
+
+@rpc:Interface
+interface IUsingEnum
+{
+	func GetSeason() : Season;
+	func SetSeason(value : Season) : void;
+	func GetPermission() : Permission;
+}
+
+@rpc:Interface
+interface IUsingStruct
+{
+	func GetPoint() : Point;
+	func SetLine(value : Line) : void;
+	func Transform(p : Point) : Point;
+}
+
+@rpc:Interface
+interface ICollections
+{
+	func GetItems() : int[];
+	@rpc:Byval
+	func GetNames() : string[];
+	@rpc:Byref
+	func GetScores() : int[];
+	func SetMapping(m : string[int]) : void;
+	prop Items : int[] {GetItems}
+	@rpc:Byval
+	prop ByvalProp : string[] {GetNames}
+	@rpc:Byref
+	prop ByrefProp : int[] {GetScores}
+	event ItemsChanged(int[]);
+}
+
+@rpc:Interface
+interface IMethodParams
+{
+	func Process(@rpc:Byval items : int[], @rpc:Byref refs : string[]) : void;
+}
+
+@rpc:Interface
+interface ICaching
+{
+	prop Value : int {GetValue : ValueChanged}
+	@rpc:Cached
+	prop CachedProp : string {GetCachedProp}
+	@rpc:Dynamic
+	prop DynamicProp : string {GetDynamicProp}
+	func GetValue() : int;
+	func GetCachedProp() : string;
+	func GetDynamicProp() : string;
+	event ValueChanged();
+}
+
+@rpc:Interface
+interface IVoidReturn
+{
+	func DoWork() : void;
+	func DoWorkWithArgs(x : int, y : string) : void;
+}
+
+@rpc:Interface
+interface INested
+{
+	func GetSimple() : ISimple^;
+	func SetSimple(value : ISimple^) : void;
+	prop Ref : ISimple^ {GetSimple, SetSimple}
+}
+
+@rpc:Interface
+interface IEventArgs
+{
+	event DataChanged(int, string);
+	event PointMoved(Point);
+}

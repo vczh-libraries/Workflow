@@ -1,0 +1,161 @@
+﻿module RpcMetadata;
+
+flagenum Permission
+{
+    None = 0,
+    Read = 1,
+    Write = 2,
+    Execute = 4,
+    All = Read | Write | Execute,
+}
+
+enum Season
+{
+    Spring = 0,
+    Summer = 1,
+    Autumn = 2,
+    Winter = 3,
+}
+
+struct Point
+{
+    x : ::system::Int32;
+    y : ::system::Int32;
+}
+
+struct Line
+{
+    end : ::Point;
+    start : ::Point;
+}
+
+@rpc:Interface
+interface ISimple
+{
+    prop Name : ::system::String{GetName, SetName : NameChanged}
+
+    event NameChanged();
+
+    func Add(a : ::system::Int32, b : ::system::Int32) : (::system::Int32);
+
+    func GetName() : (::system::String);
+
+    func Hello() : (::system::String);
+
+    func SetName(value : ::system::String) : (::system::Void);
+}
+
+@rpc:Interface
+@rpc:Ctor
+interface IWithCtor
+{
+    func GetValue() : (::system::Int32);
+}
+
+@rpc:Interface
+interface IBase
+{
+    func GetId() : (::system::Int32);
+}
+
+@rpc:Interface
+interface IDerived : IBase
+{
+    func GetLabel() : (::system::String);
+}
+
+@rpc:Interface
+interface IUsingEnum
+{
+    func GetPermission() : (::Permission);
+
+    func GetSeason() : (::Season);
+
+    func SetSeason(value : ::Season) : (::system::Void);
+}
+
+@rpc:Interface
+interface IUsingStruct
+{
+    func GetPoint() : (::Point);
+
+    func SetLine(value : ::Line) : (::system::Void);
+
+    func Transform(p : ::Point) : (::Point);
+}
+
+@rpc:Interface
+interface ICollections
+{
+    @rpc:Byref
+    prop ByrefProp : ::system::Int32[]{GetScores}
+
+    @rpc:Byval
+    prop ByvalProp : ::system::String[]{GetNames}
+
+    prop Items : ::system::Int32[]{GetItems}
+
+    event ItemsChanged(::system::Int32[]);
+
+    func GetItems() : (::system::Int32[]);
+
+    @rpc:Byval
+    func GetNames() : (::system::String[]);
+
+    @rpc:Byref
+    func GetScores() : (::system::Int32[]);
+
+    func SetMapping(m : ::system::String[::system::Int32]) : (::system::Void);
+}
+
+@rpc:Interface
+interface IMethodParams
+{
+    func Process(@rpc:Byval items : ::system::Int32[], @rpc:Byref refs : ::system::String[]) : (::system::Void);
+}
+
+@rpc:Interface
+interface ICaching
+{
+    @rpc:Cached
+    prop CachedProp : ::system::String{GetCachedProp}
+
+    @rpc:Dynamic
+    prop DynamicProp : ::system::String{GetDynamicProp}
+
+    prop Value : ::system::Int32{GetValue : ValueChanged}
+
+    event ValueChanged();
+
+    func GetCachedProp() : (::system::String);
+
+    func GetDynamicProp() : (::system::String);
+
+    func GetValue() : (::system::Int32);
+}
+
+@rpc:Interface
+interface IVoidReturn
+{
+    func DoWork() : (::system::Void);
+
+    func DoWorkWithArgs(x : ::system::Int32, y : ::system::String) : (::system::Void);
+}
+
+@rpc:Interface
+interface INested
+{
+    prop Ref : ::ISimple^{GetSimple, SetSimple}
+
+    func GetSimple() : (::ISimple^);
+
+    func SetSimple(value : ::ISimple^) : (::system::Void);
+}
+
+@rpc:Interface
+interface IEventArgs
+{
+    event DataChanged(::system::Int32, ::system::String);
+
+    event PointMoved(::Point);
+}

@@ -247,6 +247,7 @@ Scope Manager
 			public:
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
+				Ptr<WfModule>								rpcMetadata;						// rpc metadata module (null if no @rpc:Interface)
 
 				vint										usedTempVars = 0;
 				ParsingErrorList							errors;								// compile errors
