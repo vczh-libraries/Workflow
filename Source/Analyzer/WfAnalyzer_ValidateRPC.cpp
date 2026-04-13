@@ -814,23 +814,34 @@ ValidateModuleRPC_Reflection
 ValidateModuleRPC_GenerateMetadata
 ***********************************************************************/
 
-				Ptr<WfAttribute> CopyAttribute(Ptr<WfAttribute> src)
+				void GenerateAttributesFromBag(IAttributeBag* bag, List<Ptr<WfAttribute>>& attributes)
 				{
-					auto attr = Ptr(new WfAttribute);
-					attr->category.value = src->category.value;
-					attr->name.value = src->name.value;
-					if (src->value)
+					if (!bag) return;
+					for (vint i = 0; i < bag->GetAttributeCount(); i++)
 					{
-						attr->value = CopyExpression(src->value, false);
-					}
-					return attr;
-				}
+						auto attrInfo = bag->GetAttribute(i);
+						auto attrTd = attrInfo->GetAttributeType();
+						if (!attrTd) continue;
 
-				void CopyAttributes(List<Ptr<WfAttribute>>& dst, const List<Ptr<WfAttribute>>& src)
-				{
-					for (auto attr : src)
-					{
-						dst.Add(CopyAttribute(attr));
+						WString typeName = attrTd->GetTypeName();
+						const wchar_t* reading = typeName.Buffer();
+						const wchar_t* simpleName = reading;
+						while (true)
+						{
+							auto delimiter = wcsstr(simpleName, L"::");
+							if (!delimiter) break;
+							simpleName = delimiter + 2;
+						}
+
+						if (wcsncmp(simpleName, L"att_", 4) != 0) continue;
+						auto afterAtt = simpleName + 4;
+						auto underscore = wcschr(afterAtt, L'_');
+						if (!underscore) continue;
+
+						auto attr = Ptr(new WfAttribute);
+						attr->category.value = WString::CopyFrom(afterAtt, vint(underscore - afterAtt));
+						attr->name.value = underscore + 1;
+						attributes.Add(attr);
 					}
 				}
 
@@ -1042,53 +1053,64 @@ ValidateModuleRPC_GenerateMetadata
 					return decl;
 				}
 
-				WfClassDeclaration* FindOriginalClassDecl(WfLexicalScopeManager* manager, ITypeDescriptor* td)
+				Ptr<WfClassDeclaration> GenerateInterfaceDecl(ITypeDescriptor* td, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
 				{
-					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
-					{
-						if (manager->declarationTypes.Values()[i].Obj() == td)
-						{
-							auto decl = manager->declarationTypes.Keys()[i].Cast<WfClassDeclaration>();
-							if (decl)
-							{
-								return decl.Obj();
-							}
-						}
-					}
-					return nullptr;
-				}
-
-				Ptr<WfDeclaration> FindOriginalMemberDecl(WfLexicalScopeManager* manager, IMemberInfo* memberInfo)
-				{
-					for (vint i = 0; i < manager->declarationMemberInfos.Count(); i++)
-					{
-						if (manager->declarationMemberInfos.Values()[i].Obj() == memberInfo)
-						{
-							return manager->declarationMemberInfos.Keys()[i];
-						}
-					}
-					return nullptr;
-				}
-
-				Ptr<WfClassDeclaration> GenerateInterfaceDecl(WfLexicalScopeManager* manager, ITypeDescriptor* td)
-				{
-					auto originalClassDecl = FindOriginalClassDecl(manager, td);
-					if (!originalClassDecl) return nullptr;
-
 					auto decl = Ptr(new WfClassDeclaration);
 					List<WString> fragments;
 					GetTypeFragments(td, fragments);
 					decl->name.value = fragments[fragments.Count() - 1];
 					decl->kind = WfClassKind::Interface;
-					decl->constructorType = originalClassDecl->constructorType;
 
-					// Copy attributes from the original interface declaration
-					CopyAttributes(decl->attributes, originalClassDecl->attributes);
-
-					// Copy base types from the original declaration
-					for (auto baseType : originalClassDecl->baseTypes)
+					// Determine constructor type from reflection
+					if (auto ctorGroup = td->GetConstructorGroup())
 					{
-						decl->baseTypes.Add(CopyType(baseType));
+						if (ctorGroup->GetMethodCount() > 0)
+						{
+							auto ctorReturn = ctorGroup->GetMethod(0)->GetReturn();
+							if (ctorReturn && ctorReturn->GetDecorator() == ITypeInfo::RawPtr)
+							{
+								decl->constructorType = WfConstructorType::RawPtr;
+							}
+							else
+							{
+								decl->constructorType = WfConstructorType::SharedPtr;
+							}
+						}
+					}
+
+					// Generate attributes from reflection
+					GenerateAttributesFromBag(td, decl->attributes);
+
+					// Generate base types from reflection (only RPC interfaces, skip implicit IDescriptable)
+					for (vint i = 0; i < td->GetBaseTypeDescriptorCount(); i++)
+					{
+						auto baseTd = td->GetBaseTypeDescriptor(i);
+						if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, rpcInterfaceTds)) continue;
+
+						List<WString> baseFragments;
+						GetTypeFragments(baseTd, baseFragments);
+
+						Ptr<WfType> parentType;
+						for (auto fragment : baseFragments)
+						{
+							if (!parentType)
+							{
+								auto type = Ptr(new WfTopQualifiedType);
+								type->name.value = fragment;
+								parentType = type;
+							}
+							else
+							{
+								auto type = Ptr(new WfChildType);
+								type->parent = parentType;
+								type->name.value = fragment;
+								parentType = type;
+							}
+						}
+						if (parentType)
+						{
+							decl->baseTypes.Add(parentType);
+						}
 					}
 
 					// Generate properties from reflection
@@ -1114,13 +1136,7 @@ ValidateModuleRPC_GenerateMetadata
 							propDecl->valueChangedEvent.value = valueChangedEvent->GetName();
 						}
 
-						// Copy attributes from original property declaration
-						auto originalMemberDecl = FindOriginalMemberDecl(manager, propertyInfo);
-						if (originalMemberDecl)
-						{
-							CopyAttributes(propDecl->attributes, originalMemberDecl->attributes);
-						}
-
+						GenerateAttributesFromBag(propertyInfo, propDecl->attributes);
 						decl->declarations.Add(propDecl);
 					}
 
@@ -1140,7 +1156,6 @@ ValidateModuleRPC_GenerateMetadata
 							auto genericType = handlerType->GetElementType();
 							if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
 							{
-								// Skip first generic argument (return type is void)
 								for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
 								{
 									auto argType = GetTypeFromTypeInfo(genericType->GetGenericArgument(j));
@@ -1152,13 +1167,7 @@ ValidateModuleRPC_GenerateMetadata
 							}
 						}
 
-						// Copy attributes from original event declaration
-						auto originalMemberDecl = FindOriginalMemberDecl(manager, eventInfo);
-						if (originalMemberDecl)
-						{
-							CopyAttributes(eventDecl->attributes, originalMemberDecl->attributes);
-						}
-
+						GenerateAttributesFromBag(eventInfo, eventDecl->attributes);
 						decl->declarations.Add(eventDecl);
 					}
 
@@ -1171,8 +1180,6 @@ ValidateModuleRPC_GenerateMetadata
 						for (vint j = 0; j < group->GetMethodCount(); j++)
 						{
 							auto methodInfo = group->GetMethod(j);
-
-							// Skip methods that are property getters/setters
 							if (methodInfo->GetOwnerProperty()) continue;
 
 							auto funcDecl = Ptr(new WfFunctionDeclaration);
@@ -1181,32 +1188,17 @@ ValidateModuleRPC_GenerateMetadata
 							funcDecl->functionKind = WfFunctionKind::Normal;
 							funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
 
-							// Find original function declaration to copy argument attributes
-							auto originalMemberDecl = FindOriginalMemberDecl(manager, methodInfo);
-							auto originalFuncDecl = originalMemberDecl ? originalMemberDecl.Cast<WfFunctionDeclaration>() : Ptr<WfFunctionDeclaration>();
-
 							for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
 							{
 								auto parameterInfo = methodInfo->GetParameter(k);
 								auto argument = Ptr(new WfFunctionArgument);
 								argument->name.value = parameterInfo->GetName();
 								argument->type = GetTypeFromTypeInfo(parameterInfo->GetType());
-
-								// Copy attributes from original function argument
-								if (originalFuncDecl && k < originalFuncDecl->arguments.Count())
-								{
-									CopyAttributes(argument->attributes, originalFuncDecl->arguments[k]->attributes);
-								}
-
+								GenerateAttributesFromBag(parameterInfo, argument->attributes);
 								funcDecl->arguments.Add(argument);
 							}
 
-							// Copy attributes from original method declaration
-							if (originalMemberDecl)
-							{
-								CopyAttributes(funcDecl->attributes, originalMemberDecl->attributes);
-							}
-
+							GenerateAttributesFromBag(methodInfo, funcDecl->attributes);
 							decl->declarations.Add(funcDecl);
 						}
 					}
@@ -1305,6 +1297,17 @@ ValidateModuleRPC_GenerateMetadata
 
 				void ValidateModuleRPC_GenerateMetadata(WfLexicalScopeManager* manager, Ptr<WfModule> module, const RpcPhase1Context& context)
 				{
+					auto rpcInterfaceAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Interface>();
+					SortedList<ITypeDescriptor*> allRpcInterfaceTds;
+					for (auto td : context.workflowRpcInterfaceTds)
+					{
+						if (!allRpcInterfaceTds.Contains(td))
+						{
+							allRpcInterfaceTds.Add(td);
+						}
+					}
+					CollectAllWorkflowRpcInterfaceTds(manager, allRpcInterfaceTds);
+
 					// Collect all enum and struct types used by RPC interfaces
 					SortedList<ITypeDescriptor*> collectedEnums;
 					SortedList<ITypeDescriptor*> collectedStructs;
@@ -1364,7 +1367,7 @@ ValidateModuleRPC_GenerateMetadata
 					// Add interfaces (sorted by AST order)
 					for (auto td : orderedInterfaces)
 					{
-						auto decl = GenerateInterfaceDecl(manager, td);
+						auto decl = GenerateInterfaceDecl(td, rpcInterfaceAttrTd, allRpcInterfaceTds);
 						if (decl)
 						{
 							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
@@ -1377,6 +1380,171 @@ ValidateModuleRPC_GenerateMetadata
 					}
 
 					manager->rpcMetadata = metadataModule;
+				}
+			}
+
+/***********************************************************************
+PopulateAttributesOnTypeDescriptors
+***********************************************************************/
+
+			namespace attribute_populating
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				Value EvaluateAttributeLiteralExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expr, ITypeDescriptor* argumentTd)
+				{
+					if (auto literalExpr = expr.Cast<WfLiteralExpression>())
+					{
+						switch (literalExpr->value)
+						{
+						case WfLiteralValue::True:	return BoxValue(true);
+						case WfLiteralValue::False:	return BoxValue(false);
+						default:					return Value();
+						}
+					}
+					else if (auto stringExpr = expr.Cast<WfStringExpression>())
+					{
+						Value output;
+						argumentTd->GetSerializableType()->Deserialize(stringExpr->value.value, output);
+						return output;
+					}
+					else if (auto intExpr = expr.Cast<WfIntegerExpression>())
+					{
+						Value output;
+						argumentTd->GetSerializableType()->Deserialize(intExpr->value.value, output);
+						return output;
+					}
+					else if (auto floatExpr = expr.Cast<WfFloatingExpression>())
+					{
+						Value output;
+						argumentTd->GetSerializableType()->Deserialize(floatExpr->value.value, output);
+						return output;
+					}
+					else if (auto typeOfExpr = expr.Cast<WfTypeOfTypeExpression>())
+					{
+						auto scope = manager->nodeScopes[typeOfExpr.Obj()].Obj();
+						auto type = CreateTypeInfoFromType(scope, typeOfExpr->type, false);
+						auto td = type->GetTypeDescriptor();
+						if (argumentTd->GetSerializableType())
+						{
+							Value output;
+							argumentTd->GetSerializableType()->Deserialize(td->GetTypeName(), output);
+							return output;
+						}
+						return BoxValue<ITypeDescriptor*>(td);
+					}
+					else
+					{
+						auto&& result = manager->expressionResolvings[expr.Obj()];
+						if (auto enumType = result.type->GetTypeDescriptor()->GetEnumType())
+						{
+							auto refExpr = expr.Cast<WfReferenceExpression>();
+							auto childExpr = expr.Cast<WfChildExpression>();
+							WString name = refExpr ? refExpr->name.value : (childExpr ? childExpr->name.value : WString::Empty);
+							vint index = enumType->IndexOfItem(name);
+							if (index != -1)
+							{
+								return enumType->ToEnum(enumType->GetItemValue(index));
+							}
+						}
+						return Value();
+					}
+				}
+
+				void PopulateAttributesOnBag(
+					WfLexicalScopeManager* manager,
+					TypeDescriptorImplBase* td,
+					IMemberInfo* memberInfo,
+					List<Ptr<WfAttribute>>& atts
+				)
+				{
+					for (auto att : atts)
+					{
+						auto info = manager->ResolveWorkflowAttribute(att->category.value, att->name.value);
+						if (!info.exists || !info.attributeType) continue;
+
+						auto attInfo = Ptr(new AttributeInfoImpl(info.attributeType));
+						if (info.hasArgument && att->value)
+						{
+							auto valueTypeTd = info.argumentType->GetTypeDescriptor();
+							auto boxedValue = EvaluateAttributeLiteralExpression(manager, att->value, valueTypeTd);
+							attInfo->AddValue(valueTypeTd, boxedValue);
+						}
+						td->RegisterAttribute(memberInfo, attInfo);
+					}
+				}
+			}
+
+			void PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager)
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				for (auto [decl, index] : indexed(manager->declarationTypes.Keys()))
+				{
+					auto td = manager->declarationTypes.Values()[index];
+					auto tdImpl = dynamic_cast<TypeDescriptorImplBase*>(td.Obj());
+					if (!tdImpl) continue;
+
+					// Type-level attributes
+					attribute_populating::PopulateAttributesOnBag(manager, tdImpl, nullptr, decl->attributes);
+
+					// Member attributes for class/interface
+					if (auto classDecl = decl.Cast<WfClassDeclaration>())
+					{
+						for (auto memberDecl : classDecl->declarations)
+						{
+							vint memberIndex = manager->declarationMemberInfos.Keys().IndexOf(memberDecl.Obj());
+							if (memberIndex != -1)
+							{
+								auto memberInfoPtr = manager->declarationMemberInfos.Values()[memberIndex];
+								if (memberDecl->attributes.Count() > 0)
+								{
+									attribute_populating::PopulateAttributesOnBag(manager, tdImpl, memberInfoPtr.Obj(), memberDecl->attributes);
+								}
+
+								// Function argument attributes
+								if (auto funcDecl = memberDecl.Cast<WfFunctionDeclaration>())
+								{
+									if (auto methodInfo = dynamic_cast<IMethodInfo*>(memberInfoPtr.Obj()))
+									{
+										for (vint k = 0; k < funcDecl->arguments.Count() && k < methodInfo->GetParameterCount(); k++)
+										{
+											auto& argAttrs = funcDecl->arguments[k]->attributes;
+											if (argAttrs.Count() > 0)
+											{
+												auto paramInfo = methodInfo->GetParameter(k);
+												attribute_populating::PopulateAttributesOnBag(manager, tdImpl, paramInfo, argAttrs);
+											}
+										}
+									}
+								}
+							}
+							else if (auto autoPropDecl = memberDecl.Cast<WfAutoPropertyDeclaration>())
+							{
+								auto propInfo = td->GetPropertyByName(autoPropDecl->name.value, false);
+								if (propInfo && memberDecl->attributes.Count() > 0)
+								{
+									attribute_populating::PopulateAttributesOnBag(manager, tdImpl, propInfo, memberDecl->attributes);
+								}
+							}
+						}
+					}
+
+					// Member attributes for struct
+					if (auto structDecl = decl.Cast<WfStructDeclaration>())
+					{
+						for (auto member : structDecl->members)
+						{
+							if (member->attributes.Count() == 0) continue;
+							auto propInfo = td->GetPropertyByName(member->name.value, false);
+							if (!propInfo) continue;
+							attribute_populating::PopulateAttributesOnBag(manager, tdImpl, propInfo, member->attributes);
+						}
+					}
 				}
 			}
 

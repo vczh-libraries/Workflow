@@ -137,6 +137,15 @@ interface IEventArgs
 	event PointMoved(Point);
 }
 
+@rpc:Interface
+interface IAutoProps
+{
+	prop ReadWrite : string {}
+	prop ReadOnly : int {const}
+	prop NoObserve : string {not observe}
+	prop ConstNoObserve : int {const, not observe}
+}
+
 ========================================================
 Printed
 ========================================================
@@ -302,11 +311,39 @@ interface IEventArgs
     event PointMoved(Point);
 }
 
+@rpc:Interface
+interface IAutoProps
+{
+    func GetReadWrite() : (string);
+
+    func SetReadWrite(<value> : string) : (void);
+
+    event ReadWriteChanged();
+
+    prop ReadWrite : string{GetReadWrite, SetReadWrite : ReadWriteChanged}
+
+    func GetReadOnly() : (int);
+
+    event ReadOnlyChanged();
+
+    prop ReadOnly : int{GetReadOnly : ReadOnlyChanged}
+
+    func GetNoObserve() : (string);
+
+    func SetNoObserve(<value> : string) : (void);
+
+    prop NoObserve : string{GetNoObserve, SetNoObserve}
+
+    func GetConstNoObserve() : (int);
+
+    prop ConstNoObserve : int{GetConstNoObserve}
+}
+
 ========================================================
 AST
 ========================================================
 {
-    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 134, "column": 0, "index": 2275}, "codeIndex": 0}},
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 143, "column": 0, "index": 2469}, "codeIndex": 0}},
     "declarations": [{
         "$ast": { "type": "EnumDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 16}, "end": {"row": 8, "column": 0, "index": 88}, "codeIndex": -1}},
         "attributes": [],
@@ -1218,6 +1255,213 @@ AST
                 "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 133, "column": 18, "index": 2266}, "end": {"row": 133, "column": 22, "index": 2270}, "codeIndex": -1}},
                 "name": { "value": "Point", "codeRange": {"start": {"row": 133, "column": 18, "index": 2266}, "end": {"row": 133, "column": 22, "index": 2270}, "codeIndex": -1}}
             }]
+        }],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 136, "column": 0, "index": 2280}, "end": {"row": 143, "column": 0, "index": 2469}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 136, "column": 0, "index": 2280}, "end": {"row": 136, "column": 13, "index": 2293}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 136, "column": 1, "index": 2281}, "end": {"row": 136, "column": 3, "index": 2283}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 136, "column": 5, "index": 2285}, "end": {"row": 136, "column": 13, "index": 2293}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IAutoProps", "codeRange": {"start": {"row": 137, "column": 10, "index": 2306}, "end": {"row": 137, "column": 19, "index": 2315}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "ReadWrite", "codeRange": {"start": {"row": 139, "column": 6, "index": 2327}, "end": {"row": 139, "column": 14, "index": 2335}, "codeIndex": -1}},
+            "expandedDeclarations": [{
+                "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "GetReadWrite", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+                "anonymity": "Named",
+                "arguments": [],
+                "functionKind": "Normal",
+                "returnType": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 139, "column": 18, "index": 2339}, "end": {"row": 139, "column": 23, "index": 2344}, "codeIndex": -1}},
+                    "name": "String"
+                },
+                "statement": null
+            }, {
+                "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "SetReadWrite", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+                "anonymity": "Named",
+                "arguments": [{
+                    "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "<value>", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+                    "type": {
+                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 139, "column": 18, "index": 2339}, "end": {"row": 139, "column": 23, "index": 2344}, "codeIndex": -1}},
+                        "name": "String"
+                    }
+                }],
+                "functionKind": "Normal",
+                "returnType": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 139, "column": 1, "index": 2322}, "end": {"row": 139, "column": 26, "index": 2347}, "codeIndex": -1}},
+                    "name": "Void"
+                },
+                "statement": null
+            }, {
+                "$ast": { "type": "EventDeclaration", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "ReadWriteChanged", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": []
+            }, {
+                "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "ReadWrite", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "getter": { "value": "GetReadWrite", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "setter": { "value": "SetReadWrite", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 139, "column": 18, "index": 2339}, "end": {"row": 139, "column": 23, "index": 2344}, "codeIndex": -1}},
+                    "name": "String"
+                },
+                "valueChangedEvent": { "value": "ReadWriteChanged", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+            }],
+            "configConst": "Writable",
+            "configObserve": "Observable",
+            "expression": null,
+            "functionKind": "Normal",
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 139, "column": 18, "index": 2339}, "end": {"row": 139, "column": 23, "index": 2344}, "codeIndex": -1}},
+                "name": "String"
+            }
+        }, {
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 140, "column": 1, "index": 2351}, "end": {"row": 140, "column": 27, "index": 2377}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "ReadOnly", "codeRange": {"start": {"row": 140, "column": 6, "index": 2356}, "end": {"row": 140, "column": 13, "index": 2363}, "codeIndex": -1}},
+            "expandedDeclarations": [{
+                "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 140, "column": 1, "index": 2351}, "end": {"row": 140, "column": 27, "index": 2377}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "GetReadOnly", "codeRange": {"start": {"row": 140, "column": 1, "index": 2351}, "end": {"row": 140, "column": 27, "index": 2377}, "codeIndex": -1}},
+                "anonymity": "Named",
+                "arguments": [],
+                "functionKind": "Normal",
+                "returnType": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 140, "column": 17, "index": 2367}, "end": {"row": 140, "column": 19, "index": 2369}, "codeIndex": -1}},
+                    "name": "Int"
+                },
+                "statement": null
+            }, {
+                "$ast": { "type": "EventDeclaration", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "ReadOnlyChanged", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "arguments": []
+            }, {
+                "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "ReadOnly", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "getter": { "value": "GetReadOnly", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "setter": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 140, "column": 17, "index": 2367}, "end": {"row": 140, "column": 19, "index": 2369}, "codeIndex": -1}},
+                    "name": "Int"
+                },
+                "valueChangedEvent": { "value": "ReadOnlyChanged", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+            }],
+            "configConst": "Readonly",
+            "configObserve": "Observable",
+            "expression": null,
+            "functionKind": "Normal",
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 140, "column": 17, "index": 2367}, "end": {"row": 140, "column": 19, "index": 2369}, "codeIndex": -1}},
+                "name": "Int"
+            }
+        }, {
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "NoObserve", "codeRange": {"start": {"row": 141, "column": 6, "index": 2386}, "end": {"row": 141, "column": 14, "index": 2394}, "codeIndex": -1}},
+            "expandedDeclarations": [{
+                "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "GetNoObserve", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+                "anonymity": "Named",
+                "arguments": [],
+                "functionKind": "Normal",
+                "returnType": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 141, "column": 18, "index": 2398}, "end": {"row": 141, "column": 23, "index": 2403}, "codeIndex": -1}},
+                    "name": "String"
+                },
+                "statement": null
+            }, {
+                "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "SetNoObserve", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+                "anonymity": "Named",
+                "arguments": [{
+                    "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "<value>", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+                    "type": {
+                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 141, "column": 18, "index": 2398}, "end": {"row": 141, "column": 23, "index": 2403}, "codeIndex": -1}},
+                        "name": "String"
+                    }
+                }],
+                "functionKind": "Normal",
+                "returnType": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 141, "column": 1, "index": 2381}, "end": {"row": 141, "column": 37, "index": 2417}, "codeIndex": -1}},
+                    "name": "Void"
+                },
+                "statement": null
+            }, {
+                "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "NoObserve", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "getter": { "value": "GetNoObserve", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "setter": { "value": "SetNoObserve", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 141, "column": 18, "index": 2398}, "end": {"row": 141, "column": 23, "index": 2403}, "codeIndex": -1}},
+                    "name": "String"
+                },
+                "valueChangedEvent": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+            }],
+            "configConst": "Writable",
+            "configObserve": "NotObservable",
+            "expression": null,
+            "functionKind": "Normal",
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 141, "column": 18, "index": 2398}, "end": {"row": 141, "column": 23, "index": 2403}, "codeIndex": -1}},
+                "name": "String"
+            }
+        }, {
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 142, "column": 1, "index": 2421}, "end": {"row": 142, "column": 46, "index": 2466}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "ConstNoObserve", "codeRange": {"start": {"row": 142, "column": 6, "index": 2426}, "end": {"row": 142, "column": 19, "index": 2439}, "codeIndex": -1}},
+            "expandedDeclarations": [{
+                "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 142, "column": 1, "index": 2421}, "end": {"row": 142, "column": 46, "index": 2466}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "GetConstNoObserve", "codeRange": {"start": {"row": 142, "column": 1, "index": 2421}, "end": {"row": 142, "column": 46, "index": 2466}, "codeIndex": -1}},
+                "anonymity": "Named",
+                "arguments": [],
+                "functionKind": "Normal",
+                "returnType": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 142, "column": 23, "index": 2443}, "end": {"row": 142, "column": 25, "index": 2445}, "codeIndex": -1}},
+                    "name": "Int"
+                },
+                "statement": null
+            }, {
+                "$ast": { "type": "PropertyDeclaration", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "ConstNoObserve", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "getter": { "value": "GetConstNoObserve", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "setter": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 142, "column": 23, "index": 2443}, "end": {"row": 142, "column": 25, "index": 2445}, "codeIndex": -1}},
+                    "name": "Int"
+                },
+                "valueChangedEvent": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}}
+            }],
+            "configConst": "Readonly",
+            "configObserve": "NotObservable",
+            "expression": null,
+            "functionKind": "Normal",
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 142, "column": 23, "index": 2443}, "end": {"row": 142, "column": 25, "index": 2445}, "codeIndex": -1}},
+                "name": "Int"
+            }
         }],
         "kind": "Interface"
     }],

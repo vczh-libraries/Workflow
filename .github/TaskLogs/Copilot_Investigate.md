@@ -2,7 +2,29 @@
 
 # PROBLEM DESCRIPTION
 
-Create a new test category `Runtime` with sample `Runtime/Attributes.txt`, following the pattern of `IndexDebugger.txt` and the `Debugger` folder.
+Delete `CopyAttributes` and `CopyAttribute` from `WfAnalyzer_ValidateRPC.cpp`, because they should be recreated from reflection metadata. Functions like `FindOriginalClassDecl` and `FindOriginalMemberDecl` should also be removed since they are no longer needed.
+
+Requirements:
+- The whole rpc metadata is recreated from ITypeDescriptor instances
+- Input module ASTs is just for limiting how many `@rpc:Interface` marked interfaces are picked up (already calculated and put in context.workflowRpcInterfaceTds)
+- The original module ASTs should not be used for any reason
+- Add auto properties to the test case AttributesRpc.txt to verify expanded properties appear correctly in metadata
+- Run CompilerTest_LoadAndCompile, expect it to fail because baselines need to be updated
+- Verify the change by git diff
+
+# UPDATES
+
+# TEST
+
+1. Build `CompilerTest_LoadAndCompile` and run it - expect test failure due to baseline mismatch.
+2. Run git diff to verify the metadata output changes show:
+   - Base types now use fully-qualified names (e.g., `::IBase` instead of `IBase`)
+   - Attributes are regenerated from reflection (should be identical for RPC attributes)
+   - Auto properties from `IAutoProps` are expanded into regular properties, methods, and events
+3. Update baselines to match the new output.
+4. Re-run tests to confirm they pass.
+
+# PROPOSALS
 
 In `Attributes.txt`, create a Workflow script with class/interface/struct types, marking the types and every possible kind of members and parameters with `@test:*` attributes.
 

@@ -467,6 +467,7 @@ Semantic Analyzing
 RPC Analyzing
 ***********************************************************************/
 
+			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 /***********************************************************************

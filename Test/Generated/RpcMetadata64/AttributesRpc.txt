@@ -59,7 +59,7 @@ interface IBase
 }
 
 @rpc:Interface
-interface IDerived : IBase
+interface IDerived : ::IBase
 {
     func GetLabel() : (::system::String);
 }
@@ -158,4 +158,32 @@ interface IEventArgs
     event DataChanged(::system::Int64, ::system::String);
 
     event PointMoved(::Point);
+}
+
+@rpc:Interface
+interface IAutoProps
+{
+    prop ConstNoObserve : ::system::Int64{GetConstNoObserve}
+
+    prop NoObserve : ::system::String{GetNoObserve, SetNoObserve}
+
+    prop ReadOnly : ::system::Int64{GetReadOnly : ReadOnlyChanged}
+
+    prop ReadWrite : ::system::String{GetReadWrite, SetReadWrite : ReadWriteChanged}
+
+    event ReadOnlyChanged();
+
+    event ReadWriteChanged();
+
+    func GetConstNoObserve() : (::system::Int64);
+
+    func GetNoObserve() : (::system::String);
+
+    func GetReadOnly() : (::system::Int64);
+
+    func GetReadWrite() : (::system::String);
+
+    func SetNoObserve(<value> : ::system::String) : (::system::Void);
+
+    func SetReadWrite(<value> : ::system::String) : (::system::Void);
 }

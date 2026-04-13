@@ -601,6 +601,7 @@ WfLexicalScopeManager
 				}
 
 				EXIT_IF_ERRORS_EXIST;
+				PopulateAttributesOnTypeDescriptors(this);
 				for (auto module : modules)
 				{
 					ValidateModuleRPC(this, module);
