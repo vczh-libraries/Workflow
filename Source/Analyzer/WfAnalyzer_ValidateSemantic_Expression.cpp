@@ -1581,8 +1581,7 @@ ValidateSemantic(Expression)
 					WfLexicalScopeManager*							manager;
 					List<Ptr<WfFunctionDeclaration>>				overrideFunctions;
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
-					WfFunctionDeclaration*							lastFunction = nullptr;
-					WfDestructorDeclaration*						destructorDecl = nullptr;
+					WfDeclaration*									lastDecl = nullptr;
 
 					NewInterfaceExpressionVisitor(WfLexicalScopeManager* _manager)
 						:manager(_manager)
@@ -1604,7 +1603,7 @@ ValidateSemantic(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
-						lastFunction = node;
+						lastDecl = node;
 						if (node->functionKind == WfFunctionKind::Override)
 						{
 							overrideFunctions.Add(Ptr(node));
@@ -1625,14 +1624,7 @@ ValidateSemantic(Expression)
 
 					void Visit(WfDestructorDeclaration* node)override
 					{
-						destructorDecl = node;
-					}
-
-					glr::ParsingAstBase* GetLastCaptureNode()
-					{
-						if (lastFunction) return lastFunction;
-						if (destructorDecl) return destructorDecl;
-						return nullptr;
+						lastDecl = node;
 					}
 
 					void Execute(WfNewInterfaceExpression* node)
@@ -1742,7 +1734,7 @@ ValidateSemantic(Expression)
 									NewInterfaceExpressionVisitor declVisitor(manager);
 									declVisitor.Execute(node);
 
-									if (auto lastCaptureNode = declVisitor.GetLastCaptureNode())
+									if (auto lastCaptureNode = declVisitor.lastDecl)
 									{
 										for (auto func : declVisitor.overrideFunctions)
 										{

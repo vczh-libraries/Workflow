@@ -1067,7 +1067,7 @@ GenerateInstructions(Expression)
 					List<Ptr<WfLexicalSymbol>>				variableSymbols;
 					List<Ptr<WfFunctionDeclaration>>		closureFunctions;
 					List<Ptr<WfFunctionDeclaration>>		overrideFunctions;
-					WfFunctionDeclaration*					firstFunction = nullptr;
+					WfDeclaration*							firstDecl = nullptr;
 					WfDestructorDeclaration*				destructorDecl = nullptr;
 
 					NewInterfaceExpressionVisitor(WfCodegenContext& _context)
@@ -1090,9 +1090,9 @@ GenerateInstructions(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
-						if (!firstFunction)
+						if (!firstDecl)
 						{
-							firstFunction = node;
+							firstDecl = node;
 						}
 
 						if (node->functionKind == WfFunctionKind::Normal)
@@ -1112,14 +1112,11 @@ GenerateInstructions(Expression)
 
 					void Visit(WfDestructorDeclaration* node)override
 					{
+						if (!firstDecl)
+						{
+							firstDecl = node;
+						}
 						destructorDecl = node;
-					}
-
-					glr::ParsingAstBase* GetFirstCaptureNode()
-					{
-						if (firstFunction) return firstFunction;
-						if (destructorDecl) return destructorDecl;
-						return nullptr;
 					}
 
 					void Execute(WfNewInterfaceExpression* node)
@@ -1129,9 +1126,9 @@ GenerateInstructions(Expression)
 							memberDecl->Accept(this);
 						}
 
-						if (GetFirstCaptureNode() != nullptr && variableCount > 0)
+						if (firstDecl != nullptr && variableCount > 0)
 						{
-							auto capture = context.manager->lambdaCaptures.Get(GetFirstCaptureNode());
+							auto capture = context.manager->lambdaCaptures.Get(firstDecl);
 							CopyFrom(variableSymbols, From(capture->symbols).Take(variableCount));
 						}
 					}
@@ -1154,7 +1151,7 @@ GenerateInstructions(Expression)
 					NewInterfaceExpressionVisitor declVisitor(context);
 					declVisitor.Execute(node);
 
-					auto firstCaptureNode = declVisitor.GetFirstCaptureNode();
+					auto firstCaptureNode = declVisitor.firstDecl;
 					if (firstCaptureNode != nullptr)
 					{
 						for (vint i = 0; i < declVisitor.variableCount; i++)

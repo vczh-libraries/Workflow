@@ -80,6 +80,15 @@ Closures
 		this->next = static_cast<::IDtor*>(nullptr);
 	}
 
+	__vwsnc1_NewInterfaceDtor_main__IDtor::~__vwsnc1_NewInterfaceDtor_main__IDtor()
+	{
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + name) + ::vl::WString::Unmanaged(L"]")));
+		if ((next != nullptr))
+		{
+			::vl::__vwsn::This(next)->Dispose(true);
+		}
+	}
+
 	void __vwsnc1_NewInterfaceDtor_main__IDtor::SetName(const ::vl::WString& name_)
 	{
 		(name = name_);
@@ -88,15 +97,6 @@ Closures
 	void __vwsnc1_NewInterfaceDtor_main__IDtor::SetNext(::IDtor* next_)
 	{
 		(next = next_);
-	}
-
-	__vwsnc1_NewInterfaceDtor_main__IDtor::~__vwsnc1_NewInterfaceDtor_main__IDtor()
-	{
-		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + name) + ::vl::WString::Unmanaged(L"]")));
-		if ((next != nullptr))
-		{
-			::vl::__vwsn::This(next)->Dispose(true);
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -112,11 +112,6 @@ Closures
 		(name = name_);
 	}
 
-	void __vwsnc2_NewInterfaceDtor_main__IDtor::SetNext(::IDtor* next_)
-	{
-		(next = next_);
-	}
-
 	__vwsnc2_NewInterfaceDtor_main__IDtor::~__vwsnc2_NewInterfaceDtor_main__IDtor()
 	{
 		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + name) + ::vl::WString::Unmanaged(L"]")));
@@ -124,6 +119,11 @@ Closures
 		{
 			::vl::__vwsn::This(next)->Dispose(true);
 		}
+	}
+
+	void __vwsnc2_NewInterfaceDtor_main__IDtor::SetNext(::IDtor* next_)
+	{
+		(next = next_);
 	}
 
 	//-------------------------------------------------------------------

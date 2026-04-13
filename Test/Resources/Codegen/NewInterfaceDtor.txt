@@ -17,6 +17,15 @@ func main():string
 		var name = "";
 		var next : IDtor* = null;
 
+		delete
+		{
+			s = $"$(s)[$(name)]";
+			if (next is not null)
+			{
+				delete next;
+			}
+		}
+
 		override func SetName(name_ : string) : void
 		{
 			name = name_;
@@ -25,15 +34,6 @@ func main():string
 		override func SetNext(next_ : IDtor*) : void
 		{
 			next = next_;
-		}
-
-		delete
-		{
-			s = $"$(s)[$(name)]";
-			if (next is not null)
-			{
-				delete next;
-			}
 		}
 	};
 	x.SetName("x");
@@ -48,11 +48,6 @@ func main():string
 			name = name_;
 		}
 
-		override func SetNext(next_ : IDtor*) : void
-		{
-			next = next_;
-		}
-
 		delete
 		{
 			s = $"$(s)[$(name)]";
@@ -60,6 +55,11 @@ func main():string
 			{
 				delete next;
 			}
+		}
+
+		override func SetNext(next_ : IDtor*) : void
+		{
+			next = next_;
 		}
 	};
 	y.SetName("y");

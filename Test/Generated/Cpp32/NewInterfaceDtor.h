@@ -69,9 +69,9 @@ Closures
 
 		::vl::WString name;
 		::IDtor* next = nullptr;
+		~__vwsnc1_NewInterfaceDtor_main__IDtor();
 		void SetName(const ::vl::WString& name_) override;
 		void SetNext(::IDtor* next_) override;
-		~__vwsnc1_NewInterfaceDtor_main__IDtor();
 	};
 
 	class __vwsnc2_NewInterfaceDtor_main__IDtor : public ::vl::Object, public virtual ::IDtor
@@ -82,8 +82,8 @@ Closures
 		::vl::WString name;
 		::IDtor* next = nullptr;
 		void SetName(const ::vl::WString& name_) override;
-		void SetNext(::IDtor* next_) override;
 		~__vwsnc2_NewInterfaceDtor_main__IDtor();
+		void SetNext(::IDtor* next_) override;
 	};
 
 	class __vwsnc3_NewInterfaceDtor_main__IDtor : public ::vl::Object, public virtual ::IDtor
