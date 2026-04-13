@@ -532,7 +532,6 @@ GenerateInstructions(Closure)
 			{
 				auto scope = context.manager->nodeScopes[node].Obj();
 				auto meta = context.assembly->functions[functionIndex];
-				meta->name = L"<dtor>(" + itow(functionIndex) + L")";
 
 				List<Ptr<WfLexicalSymbol>> argumentSymbols, capturedSymbols;
 				{

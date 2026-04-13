@@ -1203,7 +1203,7 @@ GenerateInstructions(Expression)
 							lc.destructorDeclaration = declVisitor.destructorDecl;
 							auto functionIndex = AddClosure(context, lc, [=, this, &declVisitor](vint index)
 							{
-								return L"<destructor:<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index + declVisitor.closureFunctions.Count() + declVisitor.overrideFunctions.Count()) + L")> in " + context.functionContext->function->name;
+								return L"<dtor:<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
 							});
 							INSTRUCTION(Ins::LoadFunction(functionIndex));
 						}
