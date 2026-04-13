@@ -1,0 +1,27 @@
+module test;
+using system::*;
+using test::*;
+
+var s = "";
+
+interface IMyEmptyInterfaceDtor*
+{
+	static func Get50() : int
+	{
+		return 50;
+	}
+}
+
+func main():string
+{
+	var xs = new IMyEmptyInterfaceDtor*
+	{
+		delete
+		{
+			s = $"$(s)[dtor]";
+		}
+	};
+	var r = $"[$(xs.Get50())]";
+	delete xs;
+	return $"$(r)$(s)";
+}

@@ -1,0 +1,158 @@
+﻿========================================================
+Global Variables:
+========================================================
+s
+
+========================================================
+Functions:
+========================================================
+main (4 .. 27)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        obj
+        r
+
+<initialize> (0 .. 3)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<method:DoubleValue<IMyInterfaceDtor2>(2)> in main (28 .. 33)
+    Arguments:
+    Captured Variables:
+        <captured>value
+        <captured-this>0
+    Local Variables:
+
+<method:GetResult<IMyInterfaceDtor2>(4)> in main (34 .. 42)
+    Arguments:
+    Captured Variables:
+        <captured>value
+        <captured-this>0
+    Local Variables:
+
+<dtor:<IMyInterfaceDtor2>(4)> in main (43 .. 57)
+    Arguments:
+    Captured Variables:
+        <captured>value
+        <captured-this>0
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  ""
+0    :     LoadValue     : value = <String, >
+//  var s = "";
+1    :     StoreGlobalVar: var = 0(s)
+2    :     LoadValue     : value = <null>
+3    :     Return        
+//  42
+4    :     LoadValue     : value = <I4, 42>
+//  new (IMyInterfaceDtor2*)
+5    :     LoadValue     : value = <null>
+//  new (IMyInterfaceDtor2*)
+6    :     CreateClosureContext: stackPatternCount = 2
+//  new (IMyInterfaceDtor2*)
+7    :     LoadMethodInfo: methodInfo = GetResult<IMyInterfaceDtor2>
+//  func GetResult() : (string)
+8    :     LoadFunction  : func = 3(<method:GetResult<IMyInterfaceDtor2>(4)> in main)
+//  new (IMyInterfaceDtor2*)
+9    :     LoadValue     : value = <null>
+//  new (IMyInterfaceDtor2*)
+10   :     LoadFunction  : func = 4(<dtor:<IMyInterfaceDtor2>(4)> in main)
+//  new (IMyInterfaceDtor2*)
+11   :     CreateInterface: methodInfo = <IMyInterfaceDtor2>, stackPatternCount = 4
+//  var obj = new (IMyInterfaceDtor2*)
+12   :     StoreLocalVar : var = 0(obj)
+//  obj
+13   :     LoadLocalVar  : var = 0(obj)
+//  obj.GetResult()
+14   :     InvokeMethod  : methodInfo = GetResult<IMyInterfaceDtor2>, stackPatternCount = 0
+//  var r = obj.GetResult();
+15   :     StoreLocalVar : var = 1(r)
+//  obj
+16   :     LoadLocalVar  : var = 0(obj)
+//  delete obj;
+17   :     DeleteRawPtr  
+//  ""
+18   :     LoadValue     : value = <String, >
+//  r
+19   :     LoadLocalVar  : var = 1(r)
+//  ("" & r)
+20   :     OpConcat      
+//  ""
+21   :     LoadValue     : value = <String, >
+//  (("" & r) & "")
+22   :     OpConcat      
+//  s
+23   :     LoadGlobalVar : var = 0(s)
+//  ((("" & r) & "") & s)
+24   :     OpConcat      
+//  return ((("" & r) & "") & s);
+25   :     Return        
+//  func main() : (string)
+26   :     LoadValue     : value = <null>
+//  func main() : (string)
+27   :     Return        
+//  value
+28   :     LoadCapturedVar: var = 0(<captured>value)
+//  2
+29   :     LoadValue     : value = <I4, 2>
+//  (value * 2)
+30   :     OpMul         : type = I4
+//  return (value * 2);
+31   :     Return        
+//  func DoubleValue() : (int)
+32   :     LoadValue     : value = <null>
+//  func DoubleValue() : (int)
+33   :     Return        
+//  "["
+34   :     LoadValue     : value = <String, [>
+//  DoubleValue()
+35   :     InvokeWithContext: func = 2(<method:DoubleValue<IMyInterfaceDtor2>(2)> in main), stackPatternCount = 0
+//  DoubleValue()
+36   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ("[" & DoubleValue())
+37   :     OpConcat      
+//  "]"
+38   :     LoadValue     : value = <String, ]>
+//  (("[" & DoubleValue()) & "]")
+39   :     OpConcat      
+//  return (("[" & DoubleValue()) & "]");
+40   :     Return        
+//  func GetResult() : (string)
+41   :     LoadValue     : value = <null>
+//  func GetResult() : (string)
+42   :     Return        
+//  ""
+43   :     LoadValue     : value = <String, >
+//  s
+44   :     LoadGlobalVar : var = 0(s)
+//  ("" & s)
+45   :     OpConcat      
+//  "["
+46   :     LoadValue     : value = <String, [>
+//  (("" & s) & "[")
+47   :     OpConcat      
+//  DoubleValue()
+48   :     InvokeWithContext: func = 2(<method:DoubleValue<IMyInterfaceDtor2>(2)> in main), stackPatternCount = 0
+//  DoubleValue()
+49   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((("" & s) & "[") & DoubleValue())
+50   :     OpConcat      
+//  "]"
+51   :     LoadValue     : value = <String, ]>
+//  (((("" & s) & "[") & DoubleValue()) & "]")
+52   :     OpConcat      
+//  (s = (((("" & s) & "[") & DoubleValue()) & "]"))
+53   :     Duplicate     : stackPatternCount = 0
+//  (s = (((("" & s) & "[") & DoubleValue()) & "]"))
+54   :     StoreGlobalVar: var = 0(s)
+//  (s = (((("" & s) & "[") & DoubleValue()) & "]"));
+55   :     Pop           
+//  delete
+56   :     LoadValue     : value = <null>
+//  delete
+57   :     Return        

@@ -44,11 +44,15 @@
 #include "FailedThen.h"
 #include "NullableCastReflection.h"
 #include "NewEmptyInterfaceReflection.h"
+#include "NewEmptyInterfaceDtorReflection.h"
 #include "NewInterface.h"
 #include "NewInterfaceDtorReflection.h"
 #include "NewCustomInterfaceReflection.h"
 #include "NewCustomInterface2Reflection.h"
 #include "NewCustomInterface3Reflection.h"
+#include "NewCustomInterfaceDtorReflection.h"
+#include "NewCustomInterfaceDtor2Reflection.h"
+#include "NewCustomInterfaceDtor3Reflection.h"
 #include "BindSimpleReflection.h"
 #include "BindSimple2Reflection.h"
 #include "BindLetReflection.h"
@@ -110,10 +114,14 @@ void LoadTestCaseTypes()
 	 LoadEvent2Types();
 	 LoadNullableCastTypes();
 	 LoadNewEmptyInterfaceTypes();
+	 LoadNewEmptyInterfaceDtorTypes();
 	 LoadNewInterfaceDtorTypes();
 	 LoadNewCustomInterfaceTypes();
 	 LoadNewCustomInterface2Types();
 	 LoadNewCustomInterface3Types();
+	 LoadNewCustomInterfaceDtorTypes();
+	 LoadNewCustomInterfaceDtor2Types();
+	 LoadNewCustomInterfaceDtor3Types();
 	 LoadBindSimpleTypes();
 	 LoadBindSimple2Types();
 	 LoadBindLetTypes();
@@ -567,6 +575,15 @@ TEST_CASE(L"NewEmptyInterface")
 	TEST_ASSERT(actual == expected);
 });
 
+TEST_CASE(L"NewEmptyInterfaceDtor")
+{
+	WString expected = L"[50][dtor]";
+	WString actual = ::vl_workflow_global::NewEmptyInterfaceDtor::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
 TEST_CASE(L"NewInterface")
 {
 	WString expected = L"[1, 2, 3, 4, 5][5, 4, 3, 2, 1]";
@@ -607,6 +624,33 @@ TEST_CASE(L"NewCustomInterface3")
 {
 	WString expected = L"[100][15][15]";
 	WString actual = ::vl_workflow_global::NewCustomInterface3::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"NewCustomInterfaceDtor")
+{
+	WString expected = L"[hello:10:20][hello:10:20]";
+	WString actual = ::vl_workflow_global::NewCustomInterfaceDtor::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"NewCustomInterfaceDtor2")
+{
+	WString expected = L"[84][84]";
+	WString actual = ::vl_workflow_global::NewCustomInterfaceDtor2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"NewCustomInterfaceDtor3")
+{
+	WString expected = L"[10:5][10:5]";
+	WString actual = ::vl_workflow_global::NewCustomInterfaceDtor3::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

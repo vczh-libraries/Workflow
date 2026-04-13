@@ -1,0 +1,36 @@
+module test;
+using system::*;
+using test::*;
+
+var s = "";
+
+interface IMyInterfaceDtor2*
+{
+	func GetResult() : string;
+}
+
+func main():string
+{
+	var obj = new IMyInterfaceDtor2*
+	{
+		var value = 42;
+
+		func DoubleValue() : int
+		{
+			return value * 2;
+		}
+
+		override func GetResult() : string
+		{
+			return $"[$(DoubleValue())]";
+		}
+
+		delete
+		{
+			s = $"$(s)[$(DoubleValue())]";
+		}
+	};
+	var r = obj.GetResult();
+	delete obj;
+	return $"$(r)$(s)";
+}

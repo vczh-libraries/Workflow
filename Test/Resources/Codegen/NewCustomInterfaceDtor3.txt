@@ -1,0 +1,50 @@
+module test;
+using system::*;
+using test::*;
+
+var s = "";
+
+interface IMyInterfaceDtor3*
+{
+	func GetResult() : string;
+}
+
+class MyDtorClass
+{
+	var factor : int = 0;
+
+	new(f : int)
+	{
+		factor = f;
+	}
+
+	static func GetBase() : int
+	{
+		return 10;
+	}
+
+	func CreateInterface() : IMyInterfaceDtor3*
+	{
+		return new IMyInterfaceDtor3*
+		{
+			override func GetResult() : string
+			{
+				return $"[$(GetBase()):$(factor)]";
+			}
+
+			delete
+			{
+				s = $"$(s)[$(GetBase()):$(factor)]";
+			}
+		};
+	}
+}
+
+func main():string
+{
+	var x = new MyDtorClass^(5);
+	var obj = x.CreateInterface();
+	var r = obj.GetResult();
+	delete obj;
+	return $"$(r)$(s)";
+}

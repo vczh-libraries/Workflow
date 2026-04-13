@@ -1,0 +1,33 @@
+module test;
+using system::*;
+using test::*;
+
+var s = "";
+
+interface IMyInterfaceDtor*
+{
+	func GetResult() : string;
+}
+
+func main():string
+{
+	var x = 10;
+	var y = 20;
+	var obj = new IMyInterfaceDtor*
+	{
+		var name = "hello";
+
+		override func GetResult() : string
+		{
+			return $"[$(name):$(x):$(y)]";
+		}
+
+		delete
+		{
+			s = $"$(s)[$(name):$(x):$(y)]";
+		}
+	};
+	var r = obj.GetResult();
+	delete obj;
+	return $"$(r)$(s)";
+}
