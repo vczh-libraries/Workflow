@@ -60,6 +60,15 @@ WfRuntimeLambda
 WfRuntimeInterfaceInstance
 ***********************************************************************/
 
+			WfRuntimeInterfaceInstance::~WfRuntimeInterfaceInstance()
+			{
+				if (destructorFunctionIndex != -1)
+				{
+					auto arguments = IValueList::Create();
+					WfRuntimeLambda::Invoke(Ptr(globalContext), capturedVariables, destructorFunctionIndex, arguments);
+				}
+			}
+
 			Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueReadonlyList> arguments)
 			{
 				vint index = functions.Keys().IndexOf(methodInfo);

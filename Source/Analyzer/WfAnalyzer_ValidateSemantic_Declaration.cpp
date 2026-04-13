@@ -172,7 +172,6 @@ ValidateSemantic(ClassMember)
 				void Visit(WfDestructorDeclaration* node)override
 				{
 					ValidateDeclarationSemantic(manager, node);
-					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -312,6 +311,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
+					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfClassDeclaration* node)override

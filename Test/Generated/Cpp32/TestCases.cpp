@@ -62,6 +62,7 @@
 #include "ClassMethodReflection.h"
 #include "ClassCtorReflection.h"
 #include "ClassDtorReflection.h"
+#include "NewInterfaceDtorReflection.h"
 #include "StructCtorReflection.h"
 #include "StructCtor2Reflection.h"
 #include "EnumCtor.h"
@@ -123,6 +124,7 @@ void LoadTestCaseTypes()
 	 LoadClassMethodTypes();
 	 LoadClassCtorTypes();
 	 LoadClassDtorTypes();
+	 LoadNewInterfaceDtorTypes();
 	 LoadStructCtorTypes();
 	 LoadStructCtor2Types();
 	 LoadEnumCtor2Types();
@@ -722,6 +724,15 @@ TEST_CASE(L"ClassDtor")
 {
 	WString expected = L"[x][y][z]";
 	WString actual = ::vl_workflow_global::ClassDtor::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"NewInterfaceDtor")
+{
+	WString expected = L"[x][y][z]";
+	WString actual = ::vl_workflow_global::NewInterfaceDtor::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

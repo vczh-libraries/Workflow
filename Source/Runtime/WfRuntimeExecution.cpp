@@ -564,9 +564,16 @@ WfRuntimeThreadContext
 						{
 							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
 							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
-							auto name = UnboxValue<IMethodInfo*>(key);
-							auto func = UnboxValue<vint>(value);
-							proxy->functions.Add(name, func);
+							if (key.IsNull())
+							{
+								proxy->destructorFunctionIndex = UnboxValue<vint>(value);
+							}
+							else
+							{
+								auto name = UnboxValue<IMethodInfo*>(key);
+								auto func = UnboxValue<vint>(value);
+								proxy->functions.Add(name, func);
+							}
 						}
 
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");

@@ -528,6 +528,34 @@ GenerateInstructions(Closure)
 				GenerateFunctionInstructions(context, scope, meta, returnType, 0, argumentSymbols, capturedSymbols, node->body, node);
 			}
 
+			void GenerateClosureInstructions_Destructor(WfCodegenContext& context, vint functionIndex, WfDestructorDeclaration* node)
+			{
+				auto scope = context.manager->nodeScopes[node].Obj();
+				auto meta = context.assembly->functions[functionIndex];
+				meta->name = L"<dtor>(" + itow(functionIndex) + L")";
+
+				List<Ptr<WfLexicalSymbol>> argumentSymbols, capturedSymbols;
+				{
+					vint index = context.manager->lambdaCaptures.Keys().IndexOf(node);
+					if (index != -1)
+					{
+						auto capture = context.manager->lambdaCaptures.Values()[index];
+						for (auto symbol : capture->symbols)
+						{
+							meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
+							capturedSymbols.Add(symbol);
+						}
+					}
+
+					vint count = context.GetThisStackCount(scope);
+					for (vint i = 0; i < count; i++)
+					{
+						meta->capturedVariableNames.Add(L"<captured-this>" + itow(i));
+					}
+				}
+				GenerateFunctionInstructions(context, scope, meta, nullptr, nullptr, argumentSymbols, capturedSymbols, node->statement, node);
+			}
+
 			void GenerateClosureInstructions(WfCodegenContext& context, Ptr<WfCodegenFunctionContext> functionContext)
 			{
 				for (vint i = 0; i < functionContext->closuresToCodegen.Count(); i++)
@@ -546,6 +574,10 @@ GenerateInstructions(Closure)
 					else if (closure.functionDeclaration)
 					{
 						GenerateClosureInstructions_Function(context, functionIndex, closure.functionDeclaration, true);
+					}
+					else if (closure.destructorDeclaration)
+					{
+						GenerateClosureInstructions_Destructor(context, functionIndex, closure.destructorDeclaration);
 					}
 				}
 			}

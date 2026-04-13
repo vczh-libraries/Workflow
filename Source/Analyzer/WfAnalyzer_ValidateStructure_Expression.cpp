@@ -261,9 +261,21 @@ ValidateStructure(Expression)
 				void Visit(WfNewInterfaceExpression* node)override
 				{
 					ValidateTypeStructure(manager, node->type);
+					WfDestructorDeclaration* dtor = nullptr;
 					for (auto memberDecl : node->declarations)
 					{
 						ValidateDeclarationStructure(manager, memberDecl, nullptr, node);
+						if (auto dtorDecl = memberDecl.Cast<WfDestructorDeclaration>())
+						{
+							if (!dtor)
+							{
+								dtor = dtorDecl.Obj();
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::TooManyDestructor(dtorDecl.Obj(), node));
+							}
+						}
 					}
 				}
 

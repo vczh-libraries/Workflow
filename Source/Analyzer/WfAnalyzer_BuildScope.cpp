@@ -201,10 +201,20 @@ BuildScopeForDeclaration
 					{
 						auto config = Ptr(new WfLexicalFunctionConfig);
 						resultScope->functionConfig = config;
+						resultScope->ownerNodeSource = source;
 
-						config->lambda = false;
-						config->thisAccessable = true;
-						config->parentThisAccessable = false;
+						if (dynamic_cast<WfNewInterfaceExpression*>(source))
+						{
+							config->lambda = true;
+							config->thisAccessable = true;
+							config->parentThisAccessable = true;
+						}
+						else
+						{
+							config->lambda = false;
+							config->thisAccessable = true;
+							config->parentThisAccessable = false;
+						}
 					}
 					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
@@ -853,6 +863,11 @@ BuildScopeForExpression
 					}
 
 					void Visit(WfFunctionDeclaration* node)override
+					{
+						manager->CreateLambdaCapture(node, capture);
+					}
+
+					void Visit(WfDestructorDeclaration* node)override
 					{
 						manager->CreateLambdaCapture(node, capture);
 					}

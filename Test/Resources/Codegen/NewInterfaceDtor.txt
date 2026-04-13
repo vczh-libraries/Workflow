@@ -1,0 +1,98 @@
+module test;
+using test::*;
+using system::*;
+
+var s = "";
+
+interface IDtor*
+{
+	func SetName(name : string) : void;
+	func SetNext(next : IDtor*) : void;
+}
+
+func main():string
+{
+	var x = new IDtor*
+	{
+		var name = "";
+		var next : IDtor* = null;
+
+		override func SetName(name_ : string) : void
+		{
+			name = name_;
+		}
+
+		override func SetNext(next_ : IDtor*) : void
+		{
+			next = next_;
+		}
+
+		delete
+		{
+			s = $"$(s)[$(name)]";
+			if (next is not null)
+			{
+				delete next;
+			}
+		}
+	};
+	x.SetName("x");
+
+	var y = new IDtor*
+	{
+		var name = "";
+		var next : IDtor* = null;
+
+		override func SetName(name_ : string) : void
+		{
+			name = name_;
+		}
+
+		override func SetNext(next_ : IDtor*) : void
+		{
+			next = next_;
+		}
+
+		delete
+		{
+			s = $"$(s)[$(name)]";
+			if (next is not null)
+			{
+				delete next;
+			}
+		}
+	};
+	y.SetName("y");
+
+	var z = new IDtor*
+	{
+		var name = "";
+		var next : IDtor* = null;
+
+		override func SetName(name_ : string) : void
+		{
+			name = name_;
+		}
+
+		override func SetNext(next_ : IDtor*) : void
+		{
+			next = next_;
+		}
+
+		delete
+		{
+			s = $"$(s)[$(name)]";
+			if (next is not null)
+			{
+				delete next;
+			}
+		}
+	};
+	z.SetName("z");
+
+	x.SetNext(y);
+	y.SetNext(z);
+	delete x;
+
+	return s;
+}

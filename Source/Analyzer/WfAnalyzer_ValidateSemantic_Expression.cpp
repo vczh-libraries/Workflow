@@ -180,7 +180,7 @@ ValidateSemantic(Expression)
 
 													if (
 														lastConfigScope->parentScope != currentScope ||
-														!lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>() ||
+														(!lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>() && !lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>()) ||
 														(lastConfigScope->ownerNodeSource && lastConfigScope->ownerNodeSource != currentScope->ownerNode)
 														)
 													{
@@ -1582,6 +1582,7 @@ ValidateSemantic(Expression)
 					List<Ptr<WfFunctionDeclaration>>				overrideFunctions;
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
 					WfFunctionDeclaration*							lastFunction = nullptr;
+					WfDestructorDeclaration*						destructorDecl = nullptr;
 
 					NewInterfaceExpressionVisitor(WfLexicalScopeManager* _manager)
 						:manager(_manager)
@@ -1620,6 +1621,18 @@ ValidateSemantic(Expression)
 								})
 								.First()
 							);
+					}
+
+					void Visit(WfDestructorDeclaration* node)override
+					{
+						destructorDecl = node;
+					}
+
+					glr::ParsingAstBase* GetLastCaptureNode()
+					{
+						if (lastFunction) return lastFunction;
+						if (destructorDecl) return destructorDecl;
+						return nullptr;
 					}
 
 					void Execute(WfNewInterfaceExpression* node)
@@ -1729,14 +1742,14 @@ ValidateSemantic(Expression)
 									NewInterfaceExpressionVisitor declVisitor(manager);
 									declVisitor.Execute(node);
 
-									if (declVisitor.lastFunction)
+									if (auto lastCaptureNode = declVisitor.GetLastCaptureNode())
 									{
 										for (auto func : declVisitor.overrideFunctions)
 										{
 											implementMethods.Add(func->name.value, func);
 										}
 
-										auto capture = manager->lambdaCaptures[declVisitor.lastFunction];
+										auto capture = manager->lambdaCaptures[lastCaptureNode];
 										List<Ptr<WfLexicalSymbol>> readonlySymbols;
 										CopyFrom(readonlySymbols, From(capture->symbols).Except(declVisitor.variableSymbols));
 										CopyFrom(capture->symbols, declVisitor.variableSymbols);

@@ -115,7 +115,9 @@ InterfaceInstance
 				WfRuntimeGlobalContext*				globalContext = nullptr;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				FunctionMap							functions;
+				vint								destructorFunctionIndex = -1;
 
+				~WfRuntimeInterfaceInstance();
 				Value								Invoke(IMethodInfo* methodInfo, Ptr<IValueReadonlyList> arguments)override;
 			};
 		}

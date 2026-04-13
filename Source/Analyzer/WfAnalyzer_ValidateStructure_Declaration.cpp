@@ -359,6 +359,11 @@ ValidateStructure(Declaration)
 						ValidateStructureContext context;
 						ValidateStatementStructure(manager, &context, node->statement);
 					}
+					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					{
+						ValidateStructureContext context;
+						ValidateStatementStructure(manager, &context, node->statement);
+					}
 					else
 					{
 						manager->errors.Add(WfErrors::WrongDeclaration(node));

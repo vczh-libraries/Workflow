@@ -856,6 +856,11 @@ WfErrors
 				return MakeParsingError(node, L"G13: Class \"" + classDecl->name.value + L"\" has too many destructors.");
 			}
 
+			glr::ParsingError WfErrors::TooManyDestructor(WfDestructorDeclaration* node, WfNewInterfaceExpression* newInterfaceExpr)
+			{
+				return MakeParsingError(node, L"G13: New interface expression has too many destructors.");
+			}
+
 			glr::ParsingError WfErrors::AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node)
 			{
 				return MakeParsingError(node, L"G13: Auto property \"" + node->name.value + L"\" should be initialized.");

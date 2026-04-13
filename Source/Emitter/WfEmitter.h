@@ -47,6 +47,7 @@ Code Generation
 				WfFunctionDeclaration*				functionDeclaration = 0;
 				WfFunctionExpression*				functionExpression = 0;
 				WfOrderedLambdaExpression*			orderedLambdaExpression = 0;
+				WfDestructorDeclaration*			destructorDeclaration = 0;
 			};
 
 			enum class WfCodegenScopeType
