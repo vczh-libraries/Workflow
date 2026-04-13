@@ -1548,6 +1548,10 @@ PopulateAttributesOnTypeDescriptors
 				}
 			}
 
+/***********************************************************************
+ValidateModuleRPC
+***********************************************************************/
+
 			void ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
 				rpc_compiling::RpcPhase1Context context;
