@@ -46,6 +46,11 @@ When any test case fails, you must fix the issue immediately, even those errors 
   - It generates `Test/UnitTest/Generated/Reflection{32,64}.bin` and `Test/UnitTest/Generated/Reflection{32,64}.txt`,
     then compares the generated `.txt` against the baseline in `Test/Resources/Baseline/Reflection{32,64}.txt`.
   - If the schema of reflected types has changed, this comparison will fail. This is expected.
+- `CompilerTest_LoadAndCompile`:
+  - For `Runtime` test cases that use `@rpc:Interface` attributes, it generates RPC metadata and writes it to
+    `Test/Generated/RpcMetadata{32,64}/{itemName}.txt`, then compares against the baseline in
+    `Test/Resources/Baseline/RpcMetadata{32,64}/{itemName}.txt`.
+  - If the RPC metadata generation logic has changed, this comparison will fail. This is expected.
 
 When generated files are expected to change, baseline comparison will fail. You need to override baseline files with generated files, and run the test projects again.
 
