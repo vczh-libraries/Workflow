@@ -40,10 +40,9 @@ ValidateModuleRPC_Ast
 
 				struct RpcPhase1Context
 				{
-					SortedList<ITypeDescriptor*>			workflowRpcInterfaceTds;
-					Dictionary<Pair<ITypeDescriptor*, ITypeDescriptor*>, WfType*>
-														baseTypeNodeMap;
-					List<RpcDeferredCheck>					deferredChecks;
+					SortedList<ITypeDescriptor*>										workflowRpcInterfaceTds;
+					Dictionary<Pair<ITypeDescriptor*, ITypeDescriptor*>, WfType*>		baseTypeNodeMap;
+					List<RpcDeferredCheck>												deferredChecks;
 				};
 
 				bool IsRpcAttribute(WfAttribute* attribute, const wchar_t* name)
