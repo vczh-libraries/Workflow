@@ -368,22 +368,10 @@ namespace vl
 				}
 			}
 
-			static bool IsAsyncReturnType(ITypeInfo* type)
-			{
-				if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
-				auto e = type->GetElementType();
-				if (!e || e->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-
-				auto td = e->GetTypeDescriptor();
-				auto asyncTd = GetTypeDescriptor<IAsync>();
-				return td && td->CanConvertTo(asyncTd);
-			}
-
 			static bool IsSerializableReturnType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
 			{
 				if (!type) return false;
 				if (type->GetDecorator() == ITypeInfo::TypeDescriptor && type->GetTypeDescriptor() == GetTypeDescriptor<void>()) return true;
-				if (IsAsyncReturnType(type)) return true;
 				return IsSerializableType(type, rpcInterfaceAttrTd, rpcInterfaceTds);
 			}
 

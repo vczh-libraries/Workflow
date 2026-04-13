@@ -32,7 +32,6 @@ All types below count as serializable types:
   - If the target is a parameter, it becomes `type.method(parameter)`.
 - A method is serializable only when all argument types and the return type are serializable.
   - If the return type is `void`, it is also serializable.
-  - If the return type is `Async`, it is also serizliable.
 - When generating helper functions for an error, multiple error messages with the same format can share one helper function. Only text in `xxx` becomes a parameter (or if `xxx` has only one choice in this helper function, it should not be a parameter).
   - The error code should be `H\d+`.
   - Each helper function will be assigned with a unique error code.
