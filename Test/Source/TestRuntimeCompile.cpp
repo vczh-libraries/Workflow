@@ -43,13 +43,13 @@ static void AssertLines(const WString& expectedString, const WString& actualStri
 TEST_FILE
 {
 	Dictionary<WString, Ptr<WfModule>> rpcMetadatas;
+	WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
 
 	TEST_CATEGORY(L"Runtime compilation")
 	{
 		List<WString> runtimeNames;
 		LoadSampleIndex(L"Runtime", runtimeNames);
 
-		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
 		for (auto itemName : runtimeNames)
 		{
 			TEST_CASE(itemName)
@@ -115,10 +115,10 @@ TEST_FILE
 			TEST_CASE(itemName)
 			{
 				TEST_PRINT(L"Recompiling RPC metadata: " + itemName);
-				WfLexicalScopeManager metadataManager(GetWorkflowParser(), testCpuArchitecture);
-				metadataManager.AddModule(metadataModule);
-				metadataManager.Rebuild(true);
-				TEST_ASSERT(metadataManager.errors.Count() == 0);
+				manager.Clear(true, true);
+				manager.AddModule(metadataModule);
+				manager.Rebuild(true);
+				TEST_ASSERT(manager.errors.Count() == 0);
 			});
 		}
 	});
