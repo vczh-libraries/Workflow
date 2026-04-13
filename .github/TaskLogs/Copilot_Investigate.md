@@ -2,52 +2,28 @@
 
 # PROBLEM DESCRIPTION
 
-Delete `CopyAttributes` and `CopyAttribute` from `WfAnalyzer_ValidateRPC.cpp`, because they should be recreated from reflection metadata. Functions like `FindOriginalClassDecl` and `FindOriginalMemberDecl` should also be removed since they are no longer needed.
+I am going to allow `delete{}` destructor in `new InterfaceType^(or *){...}` expression. Currently the parser forbids it. The goal is to:
 
-Requirements:
-- The whole rpc metadata is recreated from ITypeDescriptor instances
-- Input module ASTs is just for limiting how many `@rpc:Interface` marked interfaces are picked up (already calculated and put in context.workflowRpcInterfaceTds)
-- The original module ASTs should not be used for any reason
-- Add auto properties to the test case AttributesRpc.txt to verify expanded properties appear correctly in metadata
-- Run CompilerTest_LoadAndCompile, expect it to fail because baselines need to be updated
-- Verify the change by git diff
+1. Create a new `Codegen/NewInterfaceDtor.txt` test case, doing what `ClassDtor` does but rewriting it to use interface and new interface expression.
+2. `delete{}` is optional and at most only once (this is ensured for class but a new test case is needed to test the `TooManyDestructor` error for new interface expression, error code G13). One more helper function for `WfNewInterfaceExpression` needs to be added to `WfErrors`.
+3. Run all test cases in debug with both Win32 and X64 to verify.
+4. First create the `NewInterfaceDtor.txt` test case and the test will just fail, fix it until every test project works. Fix the compiler to pass `CompilerTest_LoadAndCompile` project first.
+5. `delete{}` should work just like one in class to serve the destructor purpose as expected. In C++ code generation, just generate a destructor. This will make `CppTest*` test projects pass.
+6. For RuntimeTest: make the virtual machine work. Process the `CreateInterface` instruction correctly. Add a `destructorFunction` to `WfRuntimeInterfaceInstance`, and when `IMethodInfo` parameter is nullptr assign to `destructorFunction`. Call `destructorFunction` in `WfRuntimeInterfaceInstance`'s destructor. Fix `NewInterfaceExpressionVisitor` to process the `WfDestructorDeclaration` branch. Also check all other affected places in visitors starting from `WfNewInterfaceExpression` processing.
 
 # UPDATES
 
 # TEST
 
-1. Build `CompilerTest_LoadAndCompile` and run it - expect test failure due to baseline mismatch.
-2. Run git diff to verify the metadata output changes show:
-   - Base types now use fully-qualified names (e.g., `::IBase` instead of `IBase`)
-   - Attributes are regenerated from reflection (should be identical for RPC attributes)
-   - Auto properties from `IAutoProps` are expanded into regular properties, methods, and events
-3. Update baselines to match the new output.
-4. Re-run tests to confirm they pass.
+1. Create `Test/Resources/Codegen/NewInterfaceDtor.txt` - a test case that uses `delete{}` in a new interface expression, analogous to `ClassDtor.txt`.
+2. Create `Test/Resources/AnalyzerError/G13_DuplicatedDestructorInNewExpression.txt` - a test case that verifies the `TooManyDestructor` error for new interface expressions.
+3. Add entries to `IndexCodegen.txt` and `IndexAnalyzerError.txt`.
+4. Build and run `CompilerTest_LoadAndCompile` with Debug|x64 - expect initial failure, then fix.
+5. Build and run `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` with both Debug|x64 and Debug|Win32.
+6. Build and run `RuntimeTest` (if exists) or `LibraryTest` with both Debug|x64 and Debug|Win32.
+7. Criteria: All test cases pass in all projects, both Win32 and x64, in Debug configuration.
 
 # PROPOSALS
-
-In `Attributes.txt`, create a Workflow script with class/interface/struct types, marking the types and every possible kind of members and parameters with `@test:*` attributes.
-
-Write unit tests in the `RuntimeTest` project to:
-1. Load `Runtime/Attributes.txt`, compile it, load types into memory, then walk through `ITypeDescriptor` from workflow types to verify all attributes are accessible via the standard reflection API.
-2. Load pre-compiled binary of the same sample and do the same attribute verification.
-
-The user suspects that when workflow virtual machine loads these types, the `WfCustomType`/`WfTypeImpl` mock type descriptors do NOT load attributes into the mock objects, so attributes cannot be read from the standard reflection API.
-
-Also add `TestRuntime.cpp` to `CompilerTest_LoadAndCompile` project to compile `Runtime` category samples (without C++ codegen), and a corresponding test in `RuntimeTest` to load the compiled binary and verify attributes.
-
-# UPDATES
-
-## UPDATE: Test Infrastructure Complete
-
-All test infrastructure has been created:
-- `Test/Resources/IndexRuntime.txt` with `Attributes` entry
-- `Test/Resources/Runtime/Attributes.txt` with Workflow script containing classes/interfaces/structs decorated with `@test:*` attributes
-- `Test/Source/TestRuntimeCompile.cpp` for `CompilerTest_LoadAndCompile` project (compiles Runtime samples and saves binaries)
-- `Test/Source/TestRuntime.cpp` for `RuntimeTest` project (tests attribute access from source and from binary)
-- `AssertRuntimeAttributes` verifies expected attribute values on all type descriptors, constructors, methods, properties, events, and struct fields
-
-## UPDATE: Bug Confirmed - Attributes NOT Populated
 
 ### Root Cause Analysis
 
