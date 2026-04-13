@@ -19,12 +19,16 @@
       - Interface are ordered by AST order.
       - Namespaces will be merged as much as possible.
   - Testing
-    - Prepare a workflow input, strictly following the above coding convention.
-    - Compile and generate RPC metadata.
-    - Print AST/metadata back to Workflow script and compare them directly.
-  - New test case in `CompilerTest_LoadAndCompiler`, to verify against one complex input.
-    - Avoid types like `int` to keep consistency between different platforms.
-    - Avoid shortcut declarations like auto properties.
+    - Update TestRuntimeCompiler.cpp to add attribute metadata assertion.
+    - Use `testCpuArchitecture` to understand what architecture you are in and serialize the generated metadata to:
+      - Test\Generated\RpcMetadata(32|64)\{itemName}.txt
+        - There is only one `Attributes.txt` under `Runtime` so itemName becomes Attributes
+    - Compare it to baseline files
+      - Test\Resources\Baseline\RpcMetadata(32|64)\{itemName.txt}
+      - There is no such baseline files at the beginning, you are going to make them, so that they can exactly match the generated rpc metadata. And it is also a chance for you to verify if the output is right.
+    - You must break baseline and metadata files into lines to compare them just like what CompilerTest_GenerateMetadata is doing
+    - Rpc metadata is a workflow module AST, call the `WfPrint` with `stream::GenerateToStream` to generate workflow source files from it. You can find many samples about how to use them directly.
+    - In order to verify generated Rpc metadata is legit, you need to stores all all rpc metadata to a `Dictioary<WString, Ptr<WfModule>> rpcMetadatas;` right inside `TEST_FILE`, key is itemName, and make another TEST_CATEGORY, run each key-value pair in each TEST_CASE. Follow the first TEST_CATEGORY to make loop right. But this time you don't need to print anything in this second TEST_CATEGORY, just assert that no build errors are generated.
 - Add communication layer with unit test implementation.
   - Note: no metadata involved here, this is the architecture of commands.
   - Unit test in `LibraryTest`.
