@@ -6,17 +6,31 @@ This document proves that the controller interface design in [TODO_RPC_Definitio
 
 The communication chain is symmetric:
 ```
-Caller -> CallerWrapper -> IWorkflowRpcController -> protocol -> IWorkflowRpcController -> objectCallback -> Callee
+Caller -> CallerWrapper -> IRpcController -> protocol -> IRpcController -> objectCallback -> Callee
 ```
 
 - **Caller**: application code that calls typed interface methods.
-- **CallerWrapper**: generated per-type proxy implementing the `@rpc:Interface`. Translates typed calls to untyped `IWorkflowRpcObjectOps` calls on the controller.
-- **IWorkflowRpcController**: inherits all four Ops interfaces. Routes operations based on `RpcObjectReference.clientId` — local operations are dispatched to registered callbacks; remote operations go through the protocol.
+- **CallerWrapper**: generated per-type proxy implementing the `@rpc:Interface`. Translates typed calls to untyped `IRpcObjectOps` calls on the controller.
+- **IRpcController**: inherits all four Ops interfaces. Routes operations based on `RpcObjectReference.clientId` — local operations are dispatched to registered callbacks; remote operations go through the protocol.
 - **protocol**: serialization layer (JSON, binary, etc.). Not defined by the controller interfaces.
-- **objectCallback**: the callee's registered `IWorkflowRpcObjectOps` implementation. Dispatches untyped calls to the real objects.
+- **objectCallback**: the callee's registered `IRpcObjectOps` implementation. Dispatches untyped calls to the real objects.
 - **Callee**: the real interface implementation.
 
-Each client (process) has one `IWorkflowRpcController` instance. The `Register` function sets up all callee-side callbacks (raw pointers `*`, since the controller does not own callback lifetime): `objectCallback` for handling incoming interface operations, `eventCallback` for receiving event notifications, `listCallback` for handling incoming list/dict operations, `listEventCallback` for receiving observable collection notifications. Standard implementations exist for `listCallback` and `listEventCallback`. `Register` returns the `int[string]` ID mapping and calls `SyncIds(ids)` on the registered `objectCallback` and `eventCallback`.
+Each client (process) has one `IRpcController` instance.
+
+**Caller side — `IRpcController`:** Through its base interfaces the controller provides:
+- `IRpcObjectOps`: invoke methods on a remote object and request services.
+- `IRpcListOps`: invoke operations on a remote byref collection.
+- `IRpcObjectEventOps`: broadcast events on a local object to all remote holders.
+- `IRpcListEventOps`: broadcast change notifications on a local observable collection to remote holders.
+
+**Callee side — `Register` callbacks:** The `Register` function sets up all callee-side callbacks (raw pointers `*`, since the controller does not own callback lifetime) that handle the reverse direction:
+- `objectCallback : IRpcObjectOps*`: handles incoming requests to invoke methods on a local object, and to serve `RequestService` queries.
+- `listCallback : IRpcListOps*`: handles incoming requests for list/dict operations on a local byref collection.
+- `eventCallback : IRpcObjectEventOps*`: handles incoming event notifications from a remote object.
+- `listEventCallback : IRpcListEventOps*`: handles incoming change notifications from a remote observable collection.
+
+Standard implementations exist for `listCallback` and `listEventCallback`. `Register` returns the `int[string]` ID mapping and calls `SyncIds(ids)` on the registered `objectCallback` and `eventCallback`.
 
 ### Values at the Controller Layer
 
@@ -24,7 +38,7 @@ All `object` values flowing through the controller interfaces are serializable v
 
 ### ID Synchronization
 
-A central server assigns integer IDs for all known method names, property names, event names, and type names. The mapping is `int[string]`. When a client calls `Register`, the controller returns this mapping. The controller also calls `SyncIds(ids)` on the registered `objectCallback` and `eventCallback` (both inherit `IWorkflowRpcIdSync`), so they can translate between integer IDs and semantic names.
+A central server assigns integer IDs for all known method names, property names, event names, and type names. The mapping is `int[string]`. When a client calls `Register`, the controller returns this mapping. The controller also calls `SyncIds(ids)` on the registered `objectCallback` and `eventCallback` (both inherit `IRpcIdSync`), so they can translate between integer IDs and semantic names.
 
 ### RpcObjectReference Everywhere
 
@@ -77,7 +91,7 @@ interface ISimple
 ```
 class SimpleCallerProxy : ISimple
 {
-    var controller : IWorkflowRpcController^;
+    var controller : IRpcController^;
     var ref : RpcObjectReference;
 
     override func Add(a : int, b : int) : int
@@ -101,7 +115,7 @@ class SimpleCallerProxy : ISimple
 7. Client B's controller receives response, returns `cast object 8` from `InvokeMethod`.
 8. CallerWrapper casts result to `int` → returns `8`.
 
-**Symmetry demonstrated:** Both sides use `IWorkflowRpcObjectOps.InvokeMethod` — the caller calls it on the controller, the callee implements it in the objectCallback.
+**Symmetry demonstrated:** Both sides use `IRpcObjectOps.InvokeMethod` — the caller calls it on the controller, the callee implements it in the objectCallback.
 
 ## Scenario 2: Async Method Call
 
@@ -133,7 +147,7 @@ override func LongRunning(input : string) : system::Async^
 7. Client B's controller receives the response, calls `promise.SendResult(value)` on the `IFuture`.
 8. Caller's coroutine resumes with the result.
 
-**Symmetry demonstrated:** Both sides use `IWorkflowRpcObjectOps.InvokeMethodAsync`. The caller's controller returns a future immediately; the callee's objectCallback returns `IAsync^` which the callee's controller awaits.
+**Symmetry demonstrated:** Both sides use `IRpcObjectOps.InvokeMethodAsync`. The caller's controller returns a future immediately; the callee's objectCallback returns `IAsync^` which the callee's controller awaits.
 
 ## Scenario 3: Property Access
 
@@ -153,25 +167,25 @@ interface ISimple
 ```
 override func GetName() : string
 {
-    return cast string controller.GetProperty(ref, PROP_NAME);
+    return cast string controller.InvokeMethod(ref, METHOD_GETNAME, {});
 }
 override func SetName(value : string) : void
 {
-    controller.SetProperty(ref, PROP_NAME, cast object value);
+    controller.InvokeMethod(ref, METHOD_SETNAME, {cast object value});
 }
 ```
 
 **Flow (Get):**
-1. CallerWrapper calls `controller.GetProperty(ref, PROP_NAME)`.
+1. CallerWrapper calls `controller.InvokeMethod(ref, METHOD_GETNAME, [])` — property getters are regular method calls.
 2. Controller routes to Client A.
-3. Client A's controller calls `objectCallback.GetProperty(ref, PROP_NAME)`.
+3. Client A's controller calls `objectCallback.InvokeMethod(ref, METHOD_GETNAME, [])`.
 4. objectCallback calls `realObject.GetName()` → `"Alice"`.
 5. Returns through the chain.
 
 **Regarding @rpc:Cached and @rpc:Dynamic:**
-- `@rpc:Cached`: CallerWrapper maintains a local cache. On cache miss, calls `controller.GetProperty`. On associated event, clears cache.
-- `@rpc:Dynamic`: CallerWrapper always calls `controller.GetProperty`.
-- The controller interface does not distinguish these. Caching is a CallerWrapper responsibility.
+- `@rpc:Cached`: CallerWrapper maintains a local cache. On cache miss, calls `controller.InvokeMethod` for the getter. On associated event, clears cache.
+- `@rpc:Dynamic`: CallerWrapper always calls `controller.InvokeMethod` for the getter.
+- The controller interface does not distinguish these — property access is just method invocation. Caching is a CallerWrapper responsibility.
 
 ## Scenario 4: Event Notification
 
@@ -192,7 +206,7 @@ interface ISimple
 **Flow (Event Fires):**
 1. `realObject.SetName("Charlie")` triggers `NameChanged()` on Client A.
 2. objectCallback's event handler detects the event.
-3. objectCallback calls `controller.InvokeEvent(ref, EVENT_NAMECHANGED, [])` — the controller as `IWorkflowRpcObjectEventOps`.
+3. objectCallback calls `controller.InvokeEvent(ref, EVENT_NAMECHANGED, [])` — the controller as `IRpcObjectEventOps`.
 4. Client A's controller knows Client B holds an acquired reference to `ref`.
 5. Sends event notification to Client B over the protocol.
 6. Client B's controller receives the notification, calls `eventCallback.InvokeEvent(ref, EVENT_NAMECHANGED, [])`.
@@ -201,7 +215,7 @@ interface ISimple
 
 **No explicit subscribe/unsubscribe.** Holding an acquired reference to the object means the client receives all its events. Releasing the reference via `ReleaseRemoteObject` stops delivery. This avoids the C++ object model limitation of not having subscription callbacks.
 
-**Symmetry demonstrated:** Event notification uses `IWorkflowRpcObjectEventOps` symmetrically — callee calls `controller.InvokeEvent(...)` to push, caller's `eventCallback.InvokeEvent(...)` to receive.
+**Symmetry demonstrated:** Event notification uses `IRpcObjectEventOps` symmetrically — callee calls `controller.InvokeEvent(...)` to push, caller's `eventCallback.InvokeEvent(...)` to receive.
 
 ## Scenario 5: Interface Instance as Return Value
 
@@ -365,7 +379,7 @@ interface ICollections
 }
 ```
 
-**Goal:** Caller receives a proxy to a remote collection. All operations go through `IWorkflowRpcListOps`.
+**Goal:** Caller receives a proxy to a remote collection. All operations go through `IRpcListOps`.
 
 **objectCallback on Client A:**
 ```
@@ -396,7 +410,7 @@ override func GetScores() : int[]
 ```
 class ByrefIntListProxy
 {
-    var controller : IWorkflowRpcController^;
+    var controller : IRpcController^;
     var ref : RpcObjectReference;
 
     func GetCount() : int
@@ -494,19 +508,19 @@ interface IWithCtor
 }
 ```
 
-**Goal:** Client B requests the `IWithCtor` service. Client A, which registered the service, provides it.
+**Goal:** Client B requests the `IWithCtor` service. Client A, which provides the service, handles the request through its objectCallback.
 
 **Setup on Client A (callee):**
 ```
 var realObject = CreateWithCtorImpl();
 var serviceRef = controller.RegisterLocalObject(TYPE_IWITHCTOR);
 // objectCallback records: serviceRef.objectId -> realObject
-controller.RegisterService(TYPE_IWITHCTOR, serviceRef);
+// objectCallback also records: TYPE_IWITHCTOR -> serviceRef (for RequestService)
 ```
 
 **CallerWrapper on Client B:**
 ```
-static func RequestIWithCtor(controller : IWorkflowRpcController^) : IWithCtor^
+static func RequestIWithCtor(controller : IRpcController^) : IWithCtor^
 {
     var ref = controller.RequestService(TYPE_IWITHCTOR);
     return new WithCtorCallerProxy(controller, ref);
@@ -514,15 +528,13 @@ static func RequestIWithCtor(controller : IWorkflowRpcController^) : IWithCtor^
 ```
 
 **Flow:**
-1. Client A creates the real object, allocates a ref via `RegisterLocalObject(TYPE_IWITHCTOR)`, records the mapping, then registers the service with `RegisterService(TYPE_IWITHCTOR, serviceRef)`.
-2. Client B calls `controller.RequestService(TYPE_IWITHCTOR)`.
-3. Client B's controller knows (from central server) that Client A registered `TYPE_IWITHCTOR`.
-4. Routes request to Client A, which returns the `RpcObjectReference`.
+1. Client A creates the real object, allocates a ref via `RegisterLocalObject(TYPE_IWITHCTOR)`, records the mapping in its objectCallback.
+2. Client B calls `controller.RequestService(TYPE_IWITHCTOR)` — `RequestService` is part of `IRpcObjectOps`.
+3. Client B's controller routes the request to Client A's objectCallback.
+4. Client A's `objectCallback.RequestService(TYPE_IWITHCTOR)` returns the `RpcObjectReference` for the service.
 5. Client B creates a proxy.
 
-**Constraint:** Only one client may call `RegisterService` for a given `typeId`. A second registration throws.
-
-**No factory interface needed.** The callee creates the real object and registers the service with a pre-allocated `RpcObjectReference`. `RegisterService` just associates the `typeId` with the reference.
+**No factory interface needed.** The callee creates the real object and registers it locally. The objectCallback knows which services it provides and responds to `RequestService` queries.
 
 ## Scenario 11: P2P Object Passing Between Multiple Clients
 
@@ -556,7 +568,7 @@ static func RequestIWithCtor(controller : IWorkflowRpcController^) : IWithCtor^
 
 1. **Allocation:** Callee calls `RegisterLocalObject(typeId)` → `RpcObjectReference{calleeClient, id, typeId}`. The controller allocates IDs only — the objectCallback records the mapping from `id` to the real object in its own dispatch table.
 2. **Export:** objectCallback returns the reference (after calling `AcquireRemoteObject`). Remote ref count = 1.
-3. **Usage:** Caller uses the reference for method calls, property access, etc.
+3. **Usage:** Caller uses the reference for method calls (including property getters/setters), etc.
 4. **Release:** Caller's proxy destructor calls `ReleaseRemoteObject(ref)`. Remote ref count = 0.
 5. **Cleanup:** When remote ref count is 0 (and `ObjectHold` is not active), the callee can call `UnregisterLocalObject(ref)` to remove the ID from the controller's table and clean up the real object from the objectCallback's dispatch table.
 
@@ -671,7 +683,7 @@ interface IConfig
 ```
 class ByrefStringStringDictProxy
 {
-    var controller : IWorkflowRpcController^;
+    var controller : IRpcController^;
     var ref : RpcObjectReference;
 
     func GetCount() : int { return controller.DictGetCount(ref); }
@@ -685,7 +697,7 @@ class ByrefStringStringDictProxy
 }
 ```
 
-**Conclusion:** Dictionary operations use `IWorkflowRpcListOps.Dict*` methods. Same pattern as list proxies. Handled by the registered `listCallback`.
+**Conclusion:** Dictionary operations use `IRpcListOps.Dict*` methods. Same pattern as list proxies. Handled by the registered `listCallback`.
 
 ## Scenario 17: Same-Process Optimization
 
@@ -699,7 +711,7 @@ class ByrefStringStringDictProxy
 4. For list operations: calls `listCallback.ListGet(ref, ...)` directly.
 5. No serialization, no protocol, no network. Returns result directly.
 
-This applies to ALL operations: method calls, property access, events, list/dict operations.
+This applies to ALL operations: method calls (including property getters/setters), events, list/dict operations.
 
 **Conclusion:** The `RpcObjectReference.clientId` check enables transparent same-process optimization. The caller does not know (or care) whether the target is local or remote.
 
@@ -723,7 +735,7 @@ interface IAutoProps
 - `NoObserve`: Get/Set property, no change event.
 - `ConstNoObserve`: Get property only, no change event.
 
-All handled by `IWorkflowRpcObjectOps.GetProperty` and `SetProperty`. The CallerWrapper decides which properties have setters and which have events. The objectCallback generated for auto properties reads/writes backing fields.
+All handled by `IRpcObjectOps.InvokeMethod` — property getters and setters are just regular methods at the controller level. The CallerWrapper decides which properties have setters and which have events. Caching (`@rpc:Cached` / `@rpc:Dynamic`) is handled entirely by the CallerWrapper. The objectCallback generated for auto properties reads/writes backing fields.
 
 ## Scenario 19: Observable Byref Collection Change Notifications
 
@@ -739,18 +751,18 @@ interface IObservable
 }
 ```
 
-**Goal:** When items in the byref `ObservableList` change on the callee side, the caller receives change notifications via `IWorkflowRpcListEventOps`.
+**Goal:** When items in the byref `ObservableList` change on the callee side, the caller receives change notifications via `IRpcListEventOps`.
 
 **Flow:**
-1. Caller gets a byref list proxy via `controller.GetProperty(ref, PROP_ITEMS)`.
+1. Caller gets a byref list proxy via `controller.InvokeMethod(ref, METHOD_GETITEMS, [])` — the property getter is a regular method call.
 2. The callee's `listEventCallback` (standard implementation, registered via `Register`) monitors the registered observable list for changes.
-3. When an item is inserted on Client A, the standard implementation calls `controller.OnListItemInserted(listRef, index, value)`.
+3. When items change on Client A (insert, remove, replace, or clear), the standard implementation calls `controller.OnItemChanged(listRef, index, oldCount, newCount)` — mirroring the `IValueObservableList.ItemChanged` event.
 4. Controller routes the notification to Client B.
-5. Client B's `listEventCallback` receives `OnListItemInserted(listRef, index, value)`.
+5. Client B's `listEventCallback` receives `OnItemChanged(listRef, index, oldCount, newCount)`.
 6. Updates the local byref list proxy state or fires local observable events.
-7. Additionally, the interface-level `ItemsChanged` event fires through `IWorkflowRpcObjectEventOps.InvokeEvent`.
+7. Additionally, the interface-level `ItemsChanged` event fires through `IRpcObjectEventOps.InvokeEvent`.
 
-**Note:** `IWorkflowRpcListEventOps` is specifically for `ObservableList` change notifications. Regular byref list operations (read/write) go through `IWorkflowRpcListOps`.
+**Note:** `IRpcListEventOps` is specifically for `IValueObservableList` change notifications. Regular byref list operations (read/write) go through `IRpcListOps`.
 
 ## Scenario 20: ID Synchronization
 
@@ -766,4 +778,4 @@ interface IObservable
 
 **Why IDs instead of strings?** Integer comparisons are faster and protocol messages are smaller. The mapping is established once during registration.
 
-**Conclusion:** `IWorkflowRpcIdSync` ensures all parties agree on the ID scheme. The mapping is distributed during `Register`.
+**Conclusion:** `IRpcIdSync` ensures all parties agree on the ID scheme. The mapping is distributed during `Register`.

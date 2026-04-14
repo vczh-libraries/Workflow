@@ -6,7 +6,7 @@
 
 ## Steps
 
-- Add `IWorkflowRpcController` to the rpc library (new pair of file).
+- Add `IRpcController` to the rpc library (new pair of file).
   - Callee side list ops have default implementation.
   - `Byval` and `Byref` helper functions for containers.
 - Implementation in test library that connects a caller and a callee controller, all in one client.

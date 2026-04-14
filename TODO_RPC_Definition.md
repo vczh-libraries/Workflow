@@ -142,26 +142,28 @@ For scenario analysis proving this design works, see [TODO_RPC_Scenarios.md](./T
 The controller interface is a **symmetric** abstraction layer between typed wrappers and the protocol. At this layer all values are `object` (maps to `Value` in C++). All `object` values flowing through these interfaces are serializable values (primitives, structs, enums, or containers of serializable values recursively), or `RpcObjectReference` structs. An `object` value at this layer is **never** an actual registered interface instance — those are always represented as `RpcObjectReference`.
 
 The design is split into four Ops interfaces that separate concerns:
-- `IWorkflowRpcObjectOps`: interface method/property operations.
-- `IWorkflowRpcObjectEventOps`: event notification delivery.
-- `IWorkflowRpcListOps`: byref collection (list/dictionary/enumerator) operations.
-- `IWorkflowRpcListEventOps`: `ObservableList` change notifications.
+- `IRpcObjectOps`: interface method invocation and service requests.
+- `IRpcObjectEventOps`: interface event notification delivery.
+- `IRpcListOps`: byref collection (list/dictionary/enumerator) operations.
+- `IRpcListEventOps`: `IValueObservableList` change notifications.
 
-All Ops interfaces that use method/property/event IDs inherit from `IWorkflowRpcIdSync`, which provides the shared ID mapping (`int[string]`) between the central server and all clients.
+All Ops interfaces that use method/event IDs inherit from `IRpcIdSync`, which provides the shared ID mapping (`int[string]`) between the central server and all clients.
 
-`IWorkflowRpcController` inherits all four and adds registration and lifecycle management. Each client (process) has one `IWorkflowRpcController` instance. A client can be both caller and callee simultaneously.
+`IRpcController` inherits all four and adds registration and object lifecycle management. Each client (process) has one `IRpcController` instance. A client can be both caller and callee simultaneously.
 
-**Symmetry:** The same `IWorkflowRpcObjectOps` interface is used in both directions:
-- **Caller side**: CallerWrapper calls `controller.InvokeMethod(ref, ...)`. The controller (which inherits `IWorkflowRpcObjectOps`) routes the call to the callee.
-- **Callee side**: The callee registers an `IWorkflowRpcObjectOps` callback via `Register(...)`. The controller invokes `objectCallback.InvokeMethod(ref, ...)` when an incoming request arrives.
+**Caller side — `IRpcController`:** The controller is the caller's API. Through its base interfaces it provides:
+- `IRpcObjectOps`: invoke methods on a remote object and request services.
+- `IRpcListOps`: invoke operations on a remote byref collection.
+- `IRpcObjectEventOps`: broadcast events on a local object to all remote holders.
+- `IRpcListEventOps`: broadcast change notifications on a local observable collection to remote holders.
 
-The same symmetry applies to all four Ops interfaces. The `Register` function accepts callbacks for all four (as raw pointers `*`, not shared pointers `^`, since the controller does not own the callback lifetime), and also returns the `int[string]` ID mapping:
+**Callee side — `Register` callbacks:** The `Register` function accepts callbacks (raw pointers `*`, not shared pointers `^`, since the controller does not own the callback lifetime) that handle the reverse direction, and also returns the `int[string]` ID mapping:
+- `objectCallback : IRpcObjectOps*`: handles incoming requests to invoke methods on a local object, and to serve `RequestService` queries.
+- `listCallback : IRpcListOps*`: handles incoming requests for list/dict operations on a local byref collection.
+- `eventCallback : IRpcObjectEventOps*`: handles incoming event notifications from a remote object.
+- `listEventCallback : IRpcListEventOps*`: handles incoming change notifications from a remote observable collection.
 
-```
-Register(objectCallback, eventCallback, listCallback, listEventCallback) : int[string]
-```
-
-After `Register` returns, the controller calls `SyncIds(ids)` on `objectCallback` and `eventCallback` so they know the ID mapping.
+Standard implementations exist for `listCallback` and `listEventCallback`. After `Register` returns, the controller calls `SyncIds(ids)` on `objectCallback` and `eventCallback` so they know the ID mapping.
 
 **Event model:** There is no explicit subscribe/unsubscribe at the controller level. The C++ object model does not support subscription callbacks. Instead, when a callee registers an object, the objectCallback automatically subscribes to all events on the real object. When an event fires, the callee pushes it via `controller.InvokeEvent(ref, eventId, args)`. The controller routes notifications to all remote clients that hold acquired references to that object. Releasing a reference stops event delivery.
 
@@ -180,23 +182,23 @@ struct RpcObjectReference
 }
 ```
 
-### Interface: IWorkflowRpcIdSync
+### Interface: IRpcIdSync
 
 Base interface for Ops interfaces that use integer IDs for methods, properties, events, and types. The central server assigns string-to-int mappings. When a client calls `Register`, the controller calls `SyncIds` on the registered `objectCallback` and `eventCallback` so they know the mapping. `Register` also returns the mapping to the caller.
 
 ```
-interface IWorkflowRpcIdSync
+interface IRpcIdSync
 {
     func SyncIds(ids : int[string]) : void;
 }
 ```
 
-### Interface: IWorkflowRpcListOps
+### Interface: IRpcListOps
 
 Operations on byref collections. Has a **standard implementation** that delegates to the real `IValueList` / `IValueDictionary` / `IValueEnumerator` objects. The standard implementation can be passed to `Register` as `listCallback`. CallerWrapper creates proxies that call these methods on the controller; the controller routes to the owner where the registered `listCallback` accesses the real collection.
 
 ```
-interface IWorkflowRpcListOps
+interface IRpcListOps
 {
     // ===== Enumerator operations (T{}) =====
 
@@ -229,60 +231,53 @@ interface IWorkflowRpcListOps
 }
 ```
 
-### Interface: IWorkflowRpcObjectOps
+### Interface: IRpcObjectOps
 
-Operations on `@rpc:Interface` objects. The CallerWrapper calls these on the controller (outgoing). The callee implements these in a callback registered via `Register` (incoming). Inherits `IWorkflowRpcIdSync` for ID mapping.
+Operations on `@rpc:Interface` objects. The CallerWrapper calls these on the controller (outgoing). The callee implements these in a callback registered via `Register` (incoming). Inherits `IRpcIdSync` for ID mapping.
 
-- `InvokeMethod` / `InvokeMethodAsync`: dispatch to the real method. The async variant returns `system::Async^`; the callee's controller awaits the async result and sends it back.
-- `GetProperty` / `SetProperty`: dispatch to the real property getter/setter. Caching (`@rpc:Cached` / `@rpc:Dynamic`) is handled by the CallerWrapper, not the controller.
+- `InvokeMethod` / `InvokeMethodAsync`: dispatch to the real method. Property getters and setters are invoked through these methods — there are no separate property operations at the controller level. Caching (`@rpc:Cached` / `@rpc:Dynamic`) is handled by the CallerWrapper, not the controller. The async variant returns `system::Async^`; the callee's controller awaits the async result and sends it back.
 - `ObjectHold(ref, hold)`: the callee's objectCallback calls this to inform the controller whether a remote object can be released. When `hold` is `true`, the controller must not release the object even if ref count reaches 0. When `hold` is `false`, ordinary ref-count rules apply. This is informational, not a release request — only `ReleaseRemoteObject` actually decrements the count.
+- `RequestService(typeId)`: request the singleton service for the given `@rpc:Ctor` type. On the caller side, the controller routes the request to the client that provides the service. On the callee side, the objectCallback returns the `RpcObjectReference` for the requested service.
 
 There is no `SubscribeEvent` / `UnsubscribeEvent`. Events are automatically forwarded to all remote clients holding acquired references. See the **Event model** in Overview.
 
 ```
-interface IWorkflowRpcObjectOps : IWorkflowRpcIdSync
+interface IRpcObjectOps : IRpcIdSync
 {
     func InvokeMethod(ref : RpcObjectReference, methodId : int, arguments : object[]) : object;
     func InvokeMethodAsync(ref : RpcObjectReference, methodId : int, arguments : object[]) : system::Async^;
-    func GetProperty(ref : RpcObjectReference, propertyId : int) : object;
-    func SetProperty(ref : RpcObjectReference, propertyId : int, value : object) : void;
     func ObjectHold(ref : RpcObjectReference, hold : bool) : void;
+    func RequestService(typeId : int) : RpcObjectReference;
 }
 ```
 
-### Interface: IWorkflowRpcListEventOps
+### Interface: IRpcListEventOps
 
-Change notifications for `ObservableList` byref collections only. Has a **standard implementation** that can be passed to `Register` as `listEventCallback`. When a registered observable collection changes on the callee side, the callee's `listEventCallback` detects the change and calls these methods on the controller to push notifications. The caller-side standard implementation receives them and updates local proxies.
+Change notifications for `IValueObservableList` byref collections only. This interface mirrors the single `ItemChanged` event of `IValueObservableList`. Has a **standard implementation** that can be passed to `Register` as `listEventCallback`. On the callee side, the standard implementation monitors the real observable list and calls `controller.OnItemChanged(...)` to push notifications. On the caller side, the standard implementation receives notifications and fires local observable events on the proxy.
 
 ```
-interface IWorkflowRpcListEventOps
+interface IRpcListEventOps
 {
-    func OnListItemInserted(ref : RpcObjectReference, index : int, value : object) : void;
-    func OnListItemRemoved(ref : RpcObjectReference, index : int, count : int) : void;
-    func OnListItemSet(ref : RpcObjectReference, index : int, value : object) : void;
-    func OnListCleared(ref : RpcObjectReference) : void;
-    func OnDictItemSet(ref : RpcObjectReference, key : object, value : object) : void;
-    func OnDictItemRemoved(ref : RpcObjectReference, key : object) : void;
-    func OnDictCleared(ref : RpcObjectReference) : void;
+    func OnItemChanged(ref : RpcObjectReference, index : int, oldCount : int, newCount : int) : void;
 }
 ```
 
-### Interface: IWorkflowRpcObjectEventOps
+### Interface: IRpcObjectEventOps
 
-Delivers event notifications for `@rpc:Interface` objects. Inherits `IWorkflowRpcIdSync` for ID mapping. Both directions use the same interface:
+Delivers event notifications for `@rpc:Interface` objects. Inherits `IRpcIdSync` for ID mapping. Both directions use the same interface:
 - **Callee outgoing:** When a real event fires, the callee's objectCallback calls `controller.InvokeEvent(ref, eventId, args)` to send the notification to all holders.
 - **Caller incoming:** The controller calls `eventCallback.InvokeEvent(ref, eventId, args)` on the caller, which raises the local proxy event.
 
 ```
-interface IWorkflowRpcObjectEventOps : IWorkflowRpcIdSync
+interface IRpcObjectEventOps : IRpcIdSync
 {
     func InvokeEvent(ref : RpcObjectReference, eventId : int, arguments : object[]) : void;
 }
 ```
 
-### Interface: IWorkflowRpcController
+### Interface: IRpcController
 
-Main controller interface. One instance per client. Inherits all four Ops interfaces for routing operations. Adds registration, lifecycle, and service management.
+Main controller interface. One instance per client. Inherits all four Ops interfaces for routing operations. Adds registration and object lifecycle management. Service management (`@rpc:Ctor`) is handled through `IRpcObjectOps.RequestService` rather than the controller.
 
 **Registration:**
 - `Register`: set up all callee-side callbacks (raw pointers `*`, since the controller does not own callback lifetime). Returns `int[string]` ID mapping. After returning, the controller calls `SyncIds(ids)` on `objectCallback` and `eventCallback`. Standard implementations exist for `listCallback` and `listEventCallback` that operate on real collection objects.
@@ -296,22 +291,18 @@ Main controller interface. One instance per client. Inherits all four Ops interf
 - For smart pointer languages (C++/Workflow): proxy destructors call `ReleaseRemoteObject` automatically.
 - For GC languages (TypeScript/Python): explicit dispose, weak reference hooks, or session-based bulk release.
 
-**Service (@rpc:Ctor):**
-- `RegisterService`: register a singleton service for a `typeId`. Takes the `RpcObjectReference` of the already-registered service implementation. Only one client may register per `typeId`; duplicate registrations throw.
-- `RequestService`: request the singleton service. Returns the `RpcObjectReference` registered for that `typeId`.
-
 ```
-interface IWorkflowRpcController
-    : IWorkflowRpcListOps
-    , IWorkflowRpcObjectOps
-    , IWorkflowRpcListEventOps
-    , IWorkflowRpcObjectEventOps
+interface IRpcController
+    : IRpcListOps
+    , IRpcObjectOps
+    , IRpcListEventOps
+    , IRpcObjectEventOps
 {
     func Register(
-        objectCallback : IWorkflowRpcObjectOps*,
-        eventCallback : IWorkflowRpcObjectEventOps*,
-        listCallback : IWorkflowRpcListOps*,
-        listEventCallback : IWorkflowRpcListEventOps*
+        objectCallback : IRpcObjectOps*,
+        eventCallback : IRpcObjectEventOps*,
+        listCallback : IRpcListOps*,
+        listEventCallback : IRpcListEventOps*
     ) : int[string];
 
     // ===== Local Object Registration =====
@@ -323,10 +314,5 @@ interface IWorkflowRpcController
 
     func AcquireRemoteObject(ref : RpcObjectReference) : void;
     func ReleaseRemoteObject(ref : RpcObjectReference) : void;
-
-    // ===== Service (@rpc:Ctor) =====
-
-    func RegisterService(typeId : int, ref : RpcObjectReference) : void;
-    func RequestService(typeId : int) : RpcObjectReference;
 }
 ```
