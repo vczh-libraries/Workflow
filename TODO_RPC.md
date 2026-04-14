@@ -11,13 +11,17 @@
 
 - Update Workflow compiler to generate list of unique identifier (string) for all rpc types, methods, events.
 - Add `IRpcController` to the rpc library (new pair of file).
-  - Callee side list ops have default implementation.
+  - Caller side `IValue*` implementation to call list ops and listen to list event ops.
+  - Callee side list ops implementation to call `IValue*`, attach to all events to call list event ops.
   - `Byval` and `Byref` helper functions for containers.
 - Implementation in test library that connects a caller and a callee controller, all in one client.
   - Enable serialization pipeline injection.
+  - `DescriptableObject::SetInternalProperty` will be used to receive destructor call of local objects, to know if an object becomes unavailable.
 - Workflow compiler generates wrappers to call the controller.
   - Only supports `@rpc:Byval` and `@rpc:Cached`, also no `@rpc:Ctor`, no containers of interfaces, CHECK_FAIL if these happen.
-  - Callee side object ops based on reflection.
+  - Caller side interface implementation (in Workflow script), to call object ops and listen to object event ops.
+    - Destructor could call `ReleaseRemoteObject`.
+  - Callee side object ops implementation (in Workflow script), attach to all events to call object event ops.
   - JSON serialization based on reflection.
   - Lifecycle can be managed by wrapper destructor, acquire/release will be only called once per wrapper.
   - Now test cases can run.
