@@ -6,6 +6,7 @@
 
 ## Steps
 
+- Think about how to address containers of interfaces, especially batch lifecycles.
 - Add `IWorkflowRpcController` to the rpc library (new pair of file).
   - Callee side list ops have default implementation.
 - Implementation in test library that connects a caller and a callee controller, all in one client.
