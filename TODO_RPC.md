@@ -6,7 +6,6 @@
 
 ## Steps
 
-- Add NewCustomInterfaceDtor123.txt to call captured objects in dtor.
 - Add communication layer with unit test implementation.
   - Note: no metadata involved here, this is the architecture of commands.
   - Unit test in `LibraryTest`.
