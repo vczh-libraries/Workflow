@@ -139,7 +139,7 @@ For scenario analysis proving this design works, see [TODO_RPC_Scenarios.md](./T
 
 ### Overview
 
-The controller interface is a **symmetric** abstraction layer between typed wrappers and the protocol. At this layer all values are `object` (maps to `Value` in C++). Interface instances crossing process boundaries are represented as `RpcObjectReference` structs.
+The controller interface is a **symmetric** abstraction layer between typed wrappers and the protocol. At this layer all values are `object` (maps to `Value` in C++). All `object` values flowing through these interfaces are serializable values (primitives, structs, enums, or containers of serializable values recursively), or `RpcObjectReference` structs. An `object` value at this layer is **never** an actual registered interface instance — those are always represented as `RpcObjectReference`.
 
 The design is split into four Ops interfaces that separate concerns:
 - `IWorkflowRpcObjectOps`: interface method/property operations.
@@ -155,7 +155,7 @@ All Ops interfaces that use method/property/event IDs inherit from `IWorkflowRpc
 - **Caller side**: CallerWrapper calls `controller.InvokeMethod(ref, ...)`. The controller (which inherits `IWorkflowRpcObjectOps`) routes the call to the callee.
 - **Callee side**: The callee registers an `IWorkflowRpcObjectOps` callback via `Register(...)`. The controller invokes `objectCallback.InvokeMethod(ref, ...)` when an incoming request arrives.
 
-The same symmetry applies to all four Ops interfaces. The `Register` function accepts callbacks for all four, and also returns the `int[string]` ID mapping:
+The same symmetry applies to all four Ops interfaces. The `Register` function accepts callbacks for all four (as raw pointers `*`, not shared pointers `^`, since the controller does not own the callback lifetime), and also returns the `int[string]` ID mapping:
 
 ```
 Register(objectCallback, eventCallback, listCallback, listEventCallback) : int[string]
@@ -169,11 +169,14 @@ After `Register` returns, the controller calls `SyncIds(ids)` on `objectCallback
 
 `RpcObjectReference` is used everywhere as the object identifier. There are no local tokens — all operations take `RpcObjectReference` directly. The controller routes based on `clientId`: if it matches the local client, the operation is handled locally; otherwise it is forwarded to the remote client over the protocol.
 
+The `typeId` field identifies the type of the remote object (the `@rpc:Interface` type, or a collection type for byref collections). It uses the same integer ID scheme as the rest of the protocol (assigned by the central server). `RegisterLocalObject(typeId)` is semantically a constructor for `RpcObjectReference` — the controller does not hold or manage the actual object, only assigns IDs.
+
 ```
 struct RpcObjectReference
 {
     clientId : int;
     objectId : int;
+    typeId : int;
 }
 ```
 
@@ -232,6 +235,7 @@ Operations on `@rpc:Interface` objects. The CallerWrapper calls these on the con
 
 - `InvokeMethod` / `InvokeMethodAsync`: dispatch to the real method. The async variant returns `system::Async^`; the callee's controller awaits the async result and sends it back.
 - `GetProperty` / `SetProperty`: dispatch to the real property getter/setter. Caching (`@rpc:Cached` / `@rpc:Dynamic`) is handled by the CallerWrapper, not the controller.
+- `ObjectHold(ref, hold)`: the callee's objectCallback calls this to inform the controller whether a remote object can be released. When `hold` is `true`, the controller must not release the object even if ref count reaches 0. When `hold` is `false`, ordinary ref-count rules apply. This is informational, not a release request — only `ReleaseRemoteObject` actually decrements the count.
 
 There is no `SubscribeEvent` / `UnsubscribeEvent`. Events are automatically forwarded to all remote clients holding acquired references. See the **Event model** in Overview.
 
@@ -242,6 +246,7 @@ interface IWorkflowRpcObjectOps : IWorkflowRpcIdSync
     func InvokeMethodAsync(ref : RpcObjectReference, methodId : int, arguments : object[]) : system::Async^;
     func GetProperty(ref : RpcObjectReference, propertyId : int) : object;
     func SetProperty(ref : RpcObjectReference, propertyId : int, value : object) : void;
+    func ObjectHold(ref : RpcObjectReference, hold : bool) : void;
 }
 ```
 
@@ -280,8 +285,8 @@ interface IWorkflowRpcObjectEventOps : IWorkflowRpcIdSync
 Main controller interface. One instance per client. Inherits all four Ops interfaces for routing operations. Adds registration, lifecycle, and service management.
 
 **Registration:**
-- `Register`: set up all callee-side callbacks. Returns `int[string]` ID mapping. After returning, the controller calls `SyncIds(ids)` on `objectCallback` and `eventCallback`. Standard implementations exist for `listCallback` and `listEventCallback` that operate on real collection objects.
-- `RegisterLocalObject`: register a local object (interface instance, list, or dictionary) in the controller's table. Returns `RpcObjectReference` with the local `clientId` and a new `objectId`. The registered callbacks are responsible for dispatching operations to this object based on its `objectId`.
+- `Register`: set up all callee-side callbacks (raw pointers `*`, since the controller does not own callback lifetime). Returns `int[string]` ID mapping. After returning, the controller calls `SyncIds(ids)` on `objectCallback` and `eventCallback`. Standard implementations exist for `listCallback` and `listEventCallback` that operate on real collection objects.
+- `RegisterLocalObject`: allocate a new `RpcObjectReference` with the local `clientId`, a new `objectId`, and the given `typeId`. The controller does not hold or manage the actual object — it only assigns IDs. The registered callbacks are responsible for dispatching operations to the real object based on `objectId`.
 - `UnregisterLocalObject`: inform the controller that a local object is no longer available. Any remote clients still holding references will get errors on subsequent operations.
 
 **Remote Object Lifecycle:**
@@ -303,15 +308,15 @@ interface IWorkflowRpcController
     , IWorkflowRpcObjectEventOps
 {
     func Register(
-        objectCallback : IWorkflowRpcObjectOps^,
-        eventCallback : IWorkflowRpcObjectEventOps^,
-        listCallback : IWorkflowRpcListOps^,
-        listEventCallback : IWorkflowRpcListEventOps^
+        objectCallback : IWorkflowRpcObjectOps*,
+        eventCallback : IWorkflowRpcObjectEventOps*,
+        listCallback : IWorkflowRpcListOps*,
+        listEventCallback : IWorkflowRpcListEventOps*
     ) : int[string];
 
     // ===== Local Object Registration =====
 
-    func RegisterLocalObject(object : object) : RpcObjectReference;
+    func RegisterLocalObject(typeId : int) : RpcObjectReference;
     func UnregisterLocalObject(ref : RpcObjectReference) : void;
 
     // ===== Remote Object Lifecycle =====

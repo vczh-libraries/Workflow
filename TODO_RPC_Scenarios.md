@@ -16,7 +16,11 @@ Caller -> CallerWrapper -> IWorkflowRpcController -> protocol -> IWorkflowRpcCon
 - **objectCallback**: the callee's registered `IWorkflowRpcObjectOps` implementation. Dispatches untyped calls to the real objects.
 - **Callee**: the real interface implementation.
 
-Each client (process) has one `IWorkflowRpcController` instance. The `Register` function sets up all callee-side callbacks: `objectCallback` for handling incoming interface operations, `eventCallback` for receiving event notifications, `listCallback` for handling incoming list/dict operations, `listEventCallback` for receiving observable collection notifications. Standard implementations exist for `listCallback` and `listEventCallback`. `Register` returns the `int[string]` ID mapping and calls `SyncIds(ids)` on the registered `objectCallback` and `eventCallback`.
+Each client (process) has one `IWorkflowRpcController` instance. The `Register` function sets up all callee-side callbacks (raw pointers `*`, since the controller does not own callback lifetime): `objectCallback` for handling incoming interface operations, `eventCallback` for receiving event notifications, `listCallback` for handling incoming list/dict operations, `listEventCallback` for receiving observable collection notifications. Standard implementations exist for `listCallback` and `listEventCallback`. `Register` returns the `int[string]` ID mapping and calls `SyncIds(ids)` on the registered `objectCallback` and `eventCallback`.
+
+### Values at the Controller Layer
+
+All `object` values flowing through the controller interfaces are serializable values (primitives, structs, enums, or containers of serializable values recursively), or `RpcObjectReference` structs. An `object` value at this layer is **never** an actual interface instance — those are always represented as `RpcObjectReference`. The controller does not hold or manage actual objects; it only assigns IDs and routes signals.
 
 ### ID Synchronization
 
@@ -27,7 +31,10 @@ A central server assigns integer IDs for all known method names, property names,
 There are no local tokens. All operations use `RpcObjectReference` directly:
 - `RpcObjectReference.clientId` identifies the owning client.
 - `RpcObjectReference.objectId` identifies the object within that client.
+- `RpcObjectReference.typeId` identifies the type of the object (the `@rpc:Interface` type or collection type), using the same integer ID scheme.
 - The controller routes based on `clientId`: if local, handle directly; if remote, forward over the protocol.
+
+`RegisterLocalObject(typeId)` is semantically a constructor for `RpcObjectReference` — the controller assigns `clientId` and `objectId` and stores the given `typeId`. It does not hold or manage the actual object.
 
 ### RpcObjectReference in Arguments
 
@@ -40,6 +47,10 @@ This keeps the controller type-agnostic. The wrappers know the types and handle 
 ### Reference Counting Convention
 
 When an `RpcObjectReference` is returned from a method call or event notification, it represents an **acquired reference** that the receiver owns. The receiver must call `ReleaseRemoteObject` when done (typically in the proxy destructor). If the reference is passed further, the sender calls `AcquireRemoteObject` before passing.
+
+### ObjectHold
+
+The callee's objectCallback can call `controller.ObjectHold(ref, true)` to inform the controller that the object must not be released even if ref count reaches 0. Calling `ObjectHold(ref, false)` restores ordinary ref-count rules. This is informational — it does not increment or decrement any count. Use case: the callee knows the object is still in use locally even after all remote clients have released their references.
 
 ### Event Model
 
@@ -212,7 +223,8 @@ override func InvokeMethod(ref : RpcObjectReference, methodId : int, arguments :
     if (methodId == METHOD_GETSIMPLE)
     {
         var result : ISimple^ = realObject.GetSimple();
-        var resultRef = controller.RegisterLocalObject(cast object result);
+        var resultRef = controller.RegisterLocalObject(TYPE_ISIMPLE);
+        // objectCallback records: resultRef.objectId -> result
         controller.AcquireRemoteObject(resultRef);  // +1 for the caller
         return cast object resultRef;
     }
@@ -234,12 +246,13 @@ override func GetSimple() : ISimple^
 **Flow:**
 1. CallerWrapper calls `controller.InvokeMethod(ref, METHOD_GETSIMPLE, [])`.
 2. Routes to Client A's objectCallback.
-3. objectCallback gets the real `ISimple^`, registers it: `RegisterLocalObject(obj)` → `RpcObjectReference{clientA, newId}`.
-4. objectCallback acquires: `AcquireRemoteObject(resultRef)` — ref count = 1 for the caller.
-5. Returns `RpcObjectReference` as `object`.
-6. Result flows back to Client B.
-7. CallerWrapper creates `SimpleCallerProxy(controller, simpleRef)`.
-8. Proxy destructor will call `ReleaseRemoteObject(simpleRef)` when the proxy is destroyed.
+3. objectCallback gets the real `ISimple^`, allocates a ref: `RegisterLocalObject(TYPE_ISIMPLE)` → `RpcObjectReference{clientA, newId, TYPE_ISIMPLE}`.
+4. objectCallback records the mapping from `newId` to the real object in its own dispatch table.
+5. objectCallback acquires: `AcquireRemoteObject(resultRef)` — ref count = 1 for the caller.
+6. Returns `RpcObjectReference` as `object`.
+7. Result flows back to Client B.
+8. CallerWrapper creates `SimpleCallerProxy(controller, simpleRef)`.
+9. Proxy destructor will call `ReleaseRemoteObject(simpleRef)` when the proxy is destroyed.
 
 ## Scenario 6: Interface Instance as Parameter
 
@@ -266,7 +279,8 @@ override func SetSimple(value : ISimple^) : void
     }
     else  // local object, register it
     {
-        argRef = controller.RegisterLocalObject(cast object value);
+        argRef = controller.RegisterLocalObject(TYPE_ISIMPLE);
+        // objectCallback records: argRef.objectId -> value
         controller.AcquireRemoteObject(argRef);  // +1 for the callee
     }
     var args = {cast object argRef};
@@ -292,9 +306,9 @@ override func InvokeMethod(ref : RpcObjectReference, methodId : int, arguments :
 
 **Flow:**
 1. CallerWrapper converts the `ISimple^` to `RpcObjectReference`, acquires it for the callee.
-2. If local: registers via `RegisterLocalObject` first. If already a proxy: uses the existing ref.
+2. If local: allocates via `RegisterLocalObject(TYPE_ISIMPLE)` and records the mapping. If already a proxy: uses the existing ref.
 3. Puts the `RpcObjectReference` in arguments, calls `InvokeMethod`.
-4. Callee's objectCallback receives `RpcObjectReference{clientB, id}`.
+4. Callee's objectCallback receives `RpcObjectReference{clientB, id, TYPE_ISIMPLE}`.
 5. Creates a proxy with that ref. When the callee accesses the `ISimple^`, the proxy calls **back to Client B** (bidirectional P2P).
 
 ## Scenario 7: @rpc:Byval Collection
@@ -360,7 +374,8 @@ override func InvokeMethod(ref : RpcObjectReference, methodId : int, arguments :
     if (methodId == METHOD_GETSCORES)
     {
         var list = realObject.GetScores();
-        var listRef = controller.RegisterLocalObject(cast object list);
+        var listRef = controller.RegisterLocalObject(TYPE_INT_LIST);
+        // listCallback records: listRef.objectId -> list
         controller.AcquireRemoteObject(listRef);  // +1 for the caller
         return cast object listRef;
     }
@@ -402,13 +417,14 @@ class ByrefIntListProxy
 ```
 
 **Flow:**
-1. objectCallback registers the local list: `RegisterLocalObject(list)` → `RpcObjectReference{clientA, listId}`.
-2. Acquires and returns the reference.
-3. CallerWrapper creates `ByrefIntListProxy` wrapping the reference.
-4. Every list operation on the proxy calls `controller.ListGetCount(ref)`, `controller.ListGet(ref, ...)`, etc.
-5. Controller routes to Client A where the registered `listCallback` (standard implementation) accesses the real list.
+1. objectCallback allocates a ref for the local list: `RegisterLocalObject(TYPE_INT_LIST)` → `RpcObjectReference{clientA, listId, TYPE_INT_LIST}`.
+2. listCallback records the mapping from `listId` to the real list.
+3. Acquires and returns the reference.
+4. CallerWrapper creates `ByrefIntListProxy` wrapping the reference.
+5. Every list operation on the proxy calls `controller.ListGetCount(ref)`, `controller.ListGet(ref, ...)`, etc.
+6. Controller routes to Client A where the registered `listCallback` (standard implementation) accesses the real list.
 
-**Key point:** The `listCallback` registered via `Register` handles incoming list operations. The standard implementation looks up the registered object and calls the real list's methods.
+**Key point:** The `listCallback` registered via `Register` handles incoming list operations. The standard implementation looks up the real list by `objectId` and calls its methods.
 
 ## Scenario 9: @rpc:Byref Collection as Parameter
 
@@ -431,7 +447,8 @@ override func Process(items : int[], refs : string[]) : void
     var arg0 = cast object items;
 
     // refs: @rpc:Byref -> register locally, send reference
-    var refsRef = controller.RegisterLocalObject(cast object refs);
+    var refsRef = controller.RegisterLocalObject(TYPE_STRING_LIST);
+    // listCallback records: refsRef.objectId -> refs
     controller.AcquireRemoteObject(refsRef);  // +1 for the callee
     var arg1 = cast object refsRef;
 
@@ -456,9 +473,9 @@ override func InvokeMethod(ref : RpcObjectReference, methodId : int, arguments :
 ```
 
 **Flow:**
-1. Caller registers its local `string[]`: `RegisterLocalObject(refs)` → `RpcObjectReference{clientB, refsId}`.
-2. Sends the byval list data and the byref reference to the callee.
-3. Callee creates a proxy wrapping `RpcObjectReference{clientB, refsId}`.
+1. Caller allocates a ref for its local `string[]`: `RegisterLocalObject(TYPE_STRING_LIST)` → `RpcObjectReference{clientB, refsId, TYPE_STRING_LIST}`.
+2. listCallback records the mapping, then acquires and sends the reference to the callee.
+3. Callee creates a proxy wrapping `RpcObjectReference{clientB, refsId, TYPE_STRING_LIST}`.
 4. When `realObject.Process` accesses `refs` (e.g., `refs.Get(0)`), the proxy calls `controller.ListGet(refsRef, 0)`.
 5. The callee's controller sees `refsRef.clientId == clientB`, routes the list-get request **back to the caller** (bidirectional P2P).
 6. Client B's controller calls its registered `listCallback.ListGet(refsRef, 0)`, which accesses the real list.
@@ -482,7 +499,8 @@ interface IWithCtor
 **Setup on Client A (callee):**
 ```
 var realObject = CreateWithCtorImpl();
-var serviceRef = controller.RegisterLocalObject(cast object realObject);
+var serviceRef = controller.RegisterLocalObject(TYPE_IWITHCTOR);
+// objectCallback records: serviceRef.objectId -> realObject
 controller.RegisterService(TYPE_IWITHCTOR, serviceRef);
 ```
 
@@ -496,7 +514,7 @@ static func RequestIWithCtor(controller : IWorkflowRpcController^) : IWithCtor^
 ```
 
 **Flow:**
-1. Client A creates the real object, registers it locally, then registers the service with `RegisterService(TYPE_IWITHCTOR, serviceRef)`.
+1. Client A creates the real object, allocates a ref via `RegisterLocalObject(TYPE_IWITHCTOR)`, records the mapping, then registers the service with `RegisterService(TYPE_IWITHCTOR, serviceRef)`.
 2. Client B calls `controller.RequestService(TYPE_IWITHCTOR)`.
 3. Client B's controller knows (from central server) that Client A registered `TYPE_IWITHCTOR`.
 4. Routes request to Client A, which returns the `RpcObjectReference`.
@@ -504,7 +522,7 @@ static func RequestIWithCtor(controller : IWorkflowRpcController^) : IWithCtor^
 
 **Constraint:** Only one client may call `RegisterService` for a given `typeId`. A second registration throws.
 
-**No factory interface needed.** The callee creates and registers the service object directly. `RegisterService` just associates the `typeId` with the already-registered `RpcObjectReference`.
+**No factory interface needed.** The callee creates the real object and registers the service with a pre-allocated `RpcObjectReference`. `RegisterService` just associates the `typeId` with the reference.
 
 ## Scenario 11: P2P Object Passing Between Multiple Clients
 
@@ -514,17 +532,17 @@ static func RequestIWithCtor(controller : IWorkflowRpcController^) : IWithCtor^
 - Client B passes F to Client C in a method call.
 
 **Flow:**
-1. Client A registers F: `RegisterLocalObject(F)` → `RpcObjectReference{clientA, idA}`.
-2. Client B holds `RpcObjectReference{clientA, idA}` (acquired).
+1. Client A allocates: `RegisterLocalObject(TYPE_IFOO)` → `RpcObjectReference{clientA, idA, TYPE_IFOO}`.
+2. Client B holds `RpcObjectReference{clientA, idA, TYPE_IFOO}` (acquired).
 3. Client B passes F to Client C:
-   a. CallerWrapper calls `controller.AcquireRemoteObject({clientA, idA})` — ref count on Client A: 2.
-   b. Puts `RpcObjectReference{clientA, idA}` in arguments.
+   a. CallerWrapper calls `controller.AcquireRemoteObject({clientA, idA, TYPE_IFOO})` — ref count on Client A: 2.
+   b. Puts `RpcObjectReference{clientA, idA, TYPE_IFOO}` in arguments.
    c. Sends to Client C.
-4. Client C's objectCallback receives `RpcObjectReference{clientA, idA}`.
+4. Client C's objectCallback receives `RpcObjectReference{clientA, idA, TYPE_IFOO}`.
 5. Client C creates a proxy with that reference.
 6. Client C calls methods on F **directly to Client A** (not through Client B).
-7. When Client B releases: `ReleaseRemoteObject({clientA, idA})` → Client A ref count: 1.
-8. When Client C releases: `ReleaseRemoteObject({clientA, idA})` → Client A ref count: 0.
+7. When Client B releases: `ReleaseRemoteObject({clientA, idA, TYPE_IFOO})` → Client A ref count: 1.
+8. When Client C releases: `ReleaseRemoteObject({clientA, idA, TYPE_IFOO})` → Client A ref count: 0.
 
 **Key Points:**
 - The `RpcObjectReference` always points to the OWNER (Client A).
@@ -536,20 +554,25 @@ static func RequestIWithCtor(controller : IWorkflowRpcController^) : IWithCtor^
 
 **Lifecycle of a remote interface object:**
 
-1. **Registration:** Callee calls `RegisterLocalObject(obj)` → `RpcObjectReference{calleeClient, id}`. The controller holds a strong reference to the object.
+1. **Allocation:** Callee calls `RegisterLocalObject(typeId)` → `RpcObjectReference{calleeClient, id, typeId}`. The controller allocates IDs only — the objectCallback records the mapping from `id` to the real object in its own dispatch table.
 2. **Export:** objectCallback returns the reference (after calling `AcquireRemoteObject`). Remote ref count = 1.
 3. **Usage:** Caller uses the reference for method calls, property access, etc.
 4. **Release:** Caller's proxy destructor calls `ReleaseRemoteObject(ref)`. Remote ref count = 0.
-5. **Cleanup:** When remote ref count is 0, the callee can call `UnregisterLocalObject(ref)` to remove the object from the table.
+5. **Cleanup:** When remote ref count is 0 (and `ObjectHold` is not active), the callee can call `UnregisterLocalObject(ref)` to remove the ID from the controller's table and clean up the real object from the objectCallback's dispatch table.
 
 **Convention for returning references:**
 - When objectCallback returns an `RpcObjectReference` in a method result, it calls `AcquireRemoteObject` first. The caller inherits the reference and is responsible for `ReleaseRemoteObject`.
 - When passing a reference in arguments, the sender calls `AcquireRemoteObject`. The receiver calls `ReleaseRemoteObject` when done.
 
 **Local lifecycle:**
-- `RegisterLocalObject` places the object in the controller's table.
-- `UnregisterLocalObject` removes it. Any remote clients still holding references will get errors on subsequent operations.
+- `RegisterLocalObject(typeId)` allocates an ID in the controller. The objectCallback manages the actual object.
+- `UnregisterLocalObject` removes the ID. Any remote clients still holding references will get errors on subsequent operations.
 - The callee uses `UnregisterLocalObject` when the object is being destroyed or is no longer available.
+
+**ObjectHold:**
+- The callee's objectCallback can call `controller.ObjectHold(ref, true)` to prevent cleanup even when ref count reaches 0.
+- This is useful when the callee knows the object is still in use locally (e.g., stored in a local collection) and should remain accessible if new remote callers appear.
+- Calling `ObjectHold(ref, false)` restores ordinary ref-count rules.
 
 **Multiple holders:**
 - If three clients hold the same reference: ref count = 3.
@@ -590,7 +613,8 @@ interface INotifier
 **Flow when event fires on Client A:**
 1. Real object fires `ObjectUpdated(simpleObj)`.
 2. objectCallback's event handler:
-   - Registers `simpleObj`: `RegisterLocalObject(obj)` → `RpcObjectReference{clientA, newId}`.
+   - Allocates ref: `RegisterLocalObject(TYPE_ISIMPLE)` → `RpcObjectReference{clientA, newId, TYPE_ISIMPLE}`.
+   - Records the mapping from `newId` to `simpleObj`.
    - Acquires: `AcquireRemoteObject(newRef)`.
    - Calls `controller.InvokeEvent(ref, EVENT_OBJECTUPDATED, [cast object newRef])`.
 3. Controller routes notification to all holders (e.g., Client B).
@@ -622,14 +646,14 @@ interface IDerived : IBase { func GetLabel() : string; }
 
 **Casting from `IBase^` to `IDerived^`:**
 1. The caller has an `IBase^` proxy with `RpcObjectReference ref`.
-2. The caller knows from metadata that the real type is `IDerived`.
+2. The caller knows from `ref.typeId` that the real type is `IDerived`.
 3. The caller creates a new `IDerivedCallerProxy(controller, ref)` using the same ref.
 4. No controller method is needed — casting is a local operation on the proxy.
 
 **Casting from `IDerived^` to `IBase^`:**
 Same ref, different wrapper. Local operation, no remote call.
 
-**Conclusion:** Casting is handled entirely by the CallerWrapper. The controller is type-agnostic. The same `RpcObjectReference` works regardless of which interface view is used.
+**Conclusion:** Casting is handled entirely by the CallerWrapper. The controller is type-agnostic. The same `RpcObjectReference` works regardless of which interface view is used. The `typeId` field helps the caller determine the real type for up-casting.
 
 ## Scenario 16: Byref Dictionary Operations
 
