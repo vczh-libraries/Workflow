@@ -5557,6 +5557,7 @@ Error Messages
 				static glr::ParsingError					WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static glr::ParsingError					DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static glr::ParsingError					TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					TooManyDestructor(WfDestructorDeclaration* node, WfNewInterfaceExpression* newInterfaceExpr);
 				static glr::ParsingError					AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
 				static glr::ParsingError					AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
 
@@ -5634,6 +5635,7 @@ Code Generation
 				WfFunctionDeclaration*				functionDeclaration = 0;
 				WfFunctionExpression*				functionExpression = 0;
 				WfOrderedLambdaExpression*			orderedLambdaExpression = 0;
+				WfDestructorDeclaration*			destructorDeclaration = 0;
 			};
 
 			enum class WfCodegenScopeType

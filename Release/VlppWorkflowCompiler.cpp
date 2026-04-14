@@ -1477,10 +1477,20 @@ BuildScopeForDeclaration
 					{
 						auto config = Ptr(new WfLexicalFunctionConfig);
 						resultScope->functionConfig = config;
+						resultScope->ownerNodeSource = source;
 
-						config->lambda = false;
-						config->thisAccessable = true;
-						config->parentThisAccessable = false;
+						if (dynamic_cast<WfNewInterfaceExpression*>(source))
+						{
+							config->lambda = true;
+							config->thisAccessable = true;
+							config->parentThisAccessable = true;
+						}
+						else
+						{
+							config->lambda = false;
+							config->thisAccessable = true;
+							config->parentThisAccessable = false;
+						}
 					}
 					BuildScopeForStatement(manager, resultScope, node->statement);
 				}
@@ -2129,6 +2139,11 @@ BuildScopeForExpression
 					}
 
 					void Visit(WfFunctionDeclaration* node)override
+					{
+						manager->CreateLambdaCapture(node, capture);
+					}
+
+					void Visit(WfDestructorDeclaration* node)override
 					{
 						manager->CreateLambdaCapture(node, capture);
 					}
@@ -4568,6 +4583,11 @@ WfErrors
 			glr::ParsingError WfErrors::TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl)
 			{
 				return MakeParsingError(node, L"G13: Class \"" + classDecl->name.value + L"\" has too many destructors.");
+			}
+
+			glr::ParsingError WfErrors::TooManyDestructor(WfDestructorDeclaration* node, WfNewInterfaceExpression* newInterfaceExpr)
+			{
+				return MakeParsingError(node, L"G13: New interface expression has too many destructors.");
 			}
 
 			glr::ParsingError WfErrors::AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node)
@@ -13344,7 +13364,6 @@ ValidateSemantic(ClassMember)
 				void Visit(WfDestructorDeclaration* node)override
 				{
 					ValidateDeclarationSemantic(manager, node);
-					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -13484,6 +13503,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfDestructorDeclaration* node)override
 				{
+					ValidateStatementSemantic(manager, node->statement);
 				}
 
 				void Visit(WfClassDeclaration* node)override
@@ -13843,7 +13863,7 @@ ValidateSemantic(Expression)
 
 													if (
 														lastConfigScope->parentScope != currentScope ||
-														!lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>() ||
+														(!lastConfigScope->ownerNode.Cast<WfFunctionDeclaration>() && !lastConfigScope->ownerNode.Cast<WfDestructorDeclaration>()) ||
 														(lastConfigScope->ownerNodeSource && lastConfigScope->ownerNodeSource != currentScope->ownerNode)
 														)
 													{
@@ -15244,7 +15264,7 @@ ValidateSemantic(Expression)
 					WfLexicalScopeManager*							manager;
 					List<Ptr<WfFunctionDeclaration>>				overrideFunctions;
 					List<Ptr<WfLexicalSymbol>>						variableSymbols;
-					WfFunctionDeclaration*							lastFunction = nullptr;
+					WfDeclaration*									lastDecl = nullptr;
 
 					NewInterfaceExpressionVisitor(WfLexicalScopeManager* _manager)
 						:manager(_manager)
@@ -15266,7 +15286,7 @@ ValidateSemantic(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
-						lastFunction = node;
+						lastDecl = node;
 						if (node->functionKind == WfFunctionKind::Override)
 						{
 							overrideFunctions.Add(Ptr(node));
@@ -15283,6 +15303,11 @@ ValidateSemantic(Expression)
 								})
 								.First()
 							);
+					}
+
+					void Visit(WfDestructorDeclaration* node)override
+					{
+						lastDecl = node;
 					}
 
 					void Execute(WfNewInterfaceExpression* node)
@@ -15392,14 +15417,14 @@ ValidateSemantic(Expression)
 									NewInterfaceExpressionVisitor declVisitor(manager);
 									declVisitor.Execute(node);
 
-									if (declVisitor.lastFunction)
+									if (auto lastCaptureNode = declVisitor.lastDecl)
 									{
 										for (auto func : declVisitor.overrideFunctions)
 										{
 											implementMethods.Add(func->name.value, func);
 										}
 
-										auto capture = manager->lambdaCaptures[declVisitor.lastFunction];
+										auto capture = manager->lambdaCaptures[lastCaptureNode];
 										List<Ptr<WfLexicalSymbol>> readonlySymbols;
 										CopyFrom(readonlySymbols, From(capture->symbols).Except(declVisitor.variableSymbols));
 										CopyFrom(capture->symbols, declVisitor.variableSymbols);
@@ -17130,6 +17155,11 @@ ValidateStructure(Declaration)
 						ValidateStructureContext context;
 						ValidateStatementStructure(manager, &context, node->statement);
 					}
+					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
+					{
+						ValidateStructureContext context;
+						ValidateStatementStructure(manager, &context, node->statement);
+					}
 					else
 					{
 						manager->errors.Add(WfErrors::WrongDeclaration(node));
@@ -17738,9 +17768,21 @@ ValidateStructure(Expression)
 				void Visit(WfNewInterfaceExpression* node)override
 				{
 					ValidateTypeStructure(manager, node->type);
+					WfDestructorDeclaration* dtor = nullptr;
 					for (auto memberDecl : node->declarations)
 					{
 						ValidateDeclarationStructure(manager, memberDecl, nullptr, node);
+						if (auto dtorDecl = memberDecl.Cast<WfDestructorDeclaration>())
+						{
+							if (!dtor)
+							{
+								dtor = dtorDecl.Obj();
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::TooManyDestructor(dtorDecl.Obj(), node));
+							}
+						}
 					}
 				}
 
@@ -26850,6 +26892,33 @@ GenerateInstructions(Closure)
 				GenerateFunctionInstructions(context, scope, meta, returnType, 0, argumentSymbols, capturedSymbols, node->body, node);
 			}
 
+			void GenerateClosureInstructions_Destructor(WfCodegenContext& context, vint functionIndex, WfDestructorDeclaration* node)
+			{
+				auto scope = context.manager->nodeScopes[node].Obj();
+				auto meta = context.assembly->functions[functionIndex];
+
+				List<Ptr<WfLexicalSymbol>> argumentSymbols, capturedSymbols;
+				{
+					vint index = context.manager->lambdaCaptures.Keys().IndexOf(node);
+					if (index != -1)
+					{
+						auto capture = context.manager->lambdaCaptures.Values()[index];
+						for (auto symbol : capture->symbols)
+						{
+							meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
+							capturedSymbols.Add(symbol);
+						}
+					}
+
+					vint count = context.GetThisStackCount(scope);
+					for (vint i = 0; i < count; i++)
+					{
+						meta->capturedVariableNames.Add(L"<captured-this>" + itow(i));
+					}
+				}
+				GenerateFunctionInstructions(context, scope, meta, nullptr, nullptr, argumentSymbols, capturedSymbols, node->statement, node);
+			}
+
 			void GenerateClosureInstructions(WfCodegenContext& context, Ptr<WfCodegenFunctionContext> functionContext)
 			{
 				for (vint i = 0; i < functionContext->closuresToCodegen.Count(); i++)
@@ -26868,6 +26937,10 @@ GenerateInstructions(Closure)
 					else if (closure.functionDeclaration)
 					{
 						GenerateClosureInstructions_Function(context, functionIndex, closure.functionDeclaration, true);
+					}
+					else if (closure.destructorDeclaration)
+					{
+						GenerateClosureInstructions_Destructor(context, functionIndex, closure.destructorDeclaration);
 					}
 				}
 			}
@@ -27948,7 +28021,8 @@ GenerateInstructions(Expression)
 					List<Ptr<WfLexicalSymbol>>				variableSymbols;
 					List<Ptr<WfFunctionDeclaration>>		closureFunctions;
 					List<Ptr<WfFunctionDeclaration>>		overrideFunctions;
-					WfFunctionDeclaration*					firstFunction = nullptr;
+					WfDeclaration*							firstDecl = nullptr;
+					WfDestructorDeclaration*				destructorDecl = nullptr;
 
 					NewInterfaceExpressionVisitor(WfCodegenContext& _context)
 						:context(_context)
@@ -27970,9 +28044,9 @@ GenerateInstructions(Expression)
 
 					void Visit(WfFunctionDeclaration* node)override
 					{
-						if (!firstFunction)
+						if (!firstDecl)
 						{
-							firstFunction = node;
+							firstDecl = node;
 						}
 
 						if (node->functionKind == WfFunctionKind::Normal)
@@ -27990,6 +28064,15 @@ GenerateInstructions(Expression)
 						variableCount++;
 					}
 
+					void Visit(WfDestructorDeclaration* node)override
+					{
+						if (!firstDecl)
+						{
+							firstDecl = node;
+						}
+						destructorDecl = node;
+					}
+
 					void Execute(WfNewInterfaceExpression* node)
 					{
 						for (auto memberDecl : node->declarations)
@@ -27997,9 +28080,9 @@ GenerateInstructions(Expression)
 							memberDecl->Accept(this);
 						}
 
-						if (firstFunction != nullptr && variableCount > 0)
+						if (firstDecl != nullptr && variableCount > 0)
 						{
-							auto capture = context.manager->lambdaCaptures.Get(firstFunction);
+							auto capture = context.manager->lambdaCaptures.Get(firstDecl);
 							CopyFrom(variableSymbols, From(capture->symbols).Take(variableCount));
 						}
 					}
@@ -28022,7 +28105,8 @@ GenerateInstructions(Expression)
 					NewInterfaceExpressionVisitor declVisitor(context);
 					declVisitor.Execute(node);
 
-					if (declVisitor.firstFunction != nullptr)
+					auto firstCaptureNode = declVisitor.firstDecl;
+					if (firstCaptureNode != nullptr)
 					{
 						for (vint i = 0; i < declVisitor.variableCount; i++)
 						{
@@ -28030,7 +28114,7 @@ GenerateInstructions(Expression)
 							GenerateExpressionInstructions(context, var->expression);
 						}
 
-						auto capture = context.manager->lambdaCaptures.Get(declVisitor.firstFunction);
+						auto capture = context.manager->lambdaCaptures.Get(firstCaptureNode);
 						for (vint i = declVisitor.variableCount; i < capture->symbols.Count(); i++)
 						{
 							GenerateLoadSymbolInstructions(context, capture->symbols[i].Obj(), node);
@@ -28065,13 +28149,30 @@ GenerateInstructions(Expression)
 								return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index + declVisitor.closureFunctions.Count()) + L")> in " + context.functionContext->function->name;
 							});
 						}
+
+						if (declVisitor.destructorDecl)
+						{
+							INSTRUCTION(Ins::LoadValue({}));
+							WfCodegenLambdaContext lc;
+							lc.destructorDeclaration = declVisitor.destructorDecl;
+							auto functionIndex = AddClosure(context, lc, [=, this, &declVisitor](vint index)
+							{
+								return L"<dtor:<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
+							});
+							INSTRUCTION(Ins::LoadFunction(functionIndex));
+						}
 					}
 					else
 					{
 						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CreateClosureContext(1));
 					}
-					INSTRUCTION(Ins::CreateInterface(result.constructorInfo, declVisitor.overrideFunctions.Count() * 2));
+					vint methodCount = declVisitor.overrideFunctions.Count() * 2;
+					if (declVisitor.destructorDecl)
+					{
+						methodCount += 2;
+					}
+					INSTRUCTION(Ins::CreateInterface(result.constructorInfo, methodCount));
 				}
 
 				void Visit(WfVirtualCfeExpression* node)override
