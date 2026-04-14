@@ -3,6 +3,9 @@
 ## Goal
 
 - When running with an interpretor or running generated code, all features should be available.
+- References:
+  - [Definition](./TODO_RPC_Definition.md)
+  - [Scenarios](./TODO_RPC_Scenarios.md)
 
 ## ToDo
 
