@@ -6,13 +6,21 @@
 
 ## Steps
 
-- Add communication layer with unit test implementation.
-  - Note: no metadata involved here, this is the architecture of commands.
-  - Unit test in `LibraryTest`.
-- Create dynamic serialization implementation based on reflection for all touched rpc types.
-  - Server and client will contains copy of same interface types, but loading two assemblies into a process conflicts in reflection.
-  - Should allow the same schema mapping to equivalent interfaces in different namespaces.
-- Add C++ codegen.
+- Add `IWorkflowRpcController` to the rpc library (new pair of file).
+  - Callee side list ops have default implementation.
+- Implementation in test library that connects a caller and a callee controller, all in one client.
+  - Enable serialization pipeline injection.
+- Workflow compiler generates wrappers to call the controller.
+  - Only supports `@rpc:Byval` and `@rpc:Cached`, CHECK_FAIL if seeing other options, also no `@rpc:Ctor`.
+  - JSON serialization based on reflection.
+  - Lifecycle can be managed by wrapper destructor, acquire/release will be only called once per wrapper.
+  - Now test cases can run.
+- C++ codegen for wrappers (should be normal codegen) with JSON serizliation in C++.
+- Implement `@rpc:Byref`.
+- Implement `@rpc:Dynamic`.
+- Implement `@rpc:Ctor`.
+- Solve interface inheritance and casting.
+- Solve duplicating serialization when two different assemblies share the same set of structs/enums.
 
 ## Thoughts
 
