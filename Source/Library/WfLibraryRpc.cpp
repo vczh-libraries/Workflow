@@ -87,10 +87,10 @@ namespace vl
 		}
 		
 /***********************************************************************
-* RpcByrefList
+* RpcByrefReadonlyList
 ***********************************************************************/
 
-		RpcByrefList::RpcByrefList(IRpcLifeCycle* lc, RpcObjectReference listRef)
+		RpcByrefReadonlyList::RpcByrefReadonlyList(IRpcLifeCycle* lc, RpcObjectReference listRef)
 			: lifeCycle(lc)
 			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(listRef)
@@ -98,34 +98,72 @@ namespace vl
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
 		}
 
-		RpcByrefList::~RpcByrefList()
+		RpcByrefReadonlyList::~RpcByrefReadonlyList()
 		{
 			controller->ReleaseRemoteObject(ref);
 		}
 
-		Ptr<IValueEnumerator> RpcByrefList::CreateEnumerator()
+		Ptr<IValueEnumerator> RpcByrefReadonlyList::CreateEnumerator()
 		{
 			return Ptr(new RpcByrefEnumerator(lifeCycle, controller->EnumCreate(ref)));
 		}
 
-		vint RpcByrefList::GetCount()
+		vint RpcByrefReadonlyList::GetCount()
 		{
 			return controller->ListGetCount(ref);
 		}
 
-		Value RpcByrefList::Get(vint index)
+		Value RpcByrefReadonlyList::Get(vint index)
 		{
 			return RpcUnboxByref(controller->ListGet(ref, index), lifeCycle);
 		}
 
-		bool RpcByrefList::Contains(const Value& value)
+		bool RpcByrefReadonlyList::Contains(const Value& value)
 		{
 			return controller->ListContains(ref, RpcBoxByref(value, lifeCycle));
 		}
 
-		vint RpcByrefList::IndexOf(const Value& value)
+		vint RpcByrefReadonlyList::IndexOf(const Value& value)
 		{
 			return controller->ListIndexOf(ref, RpcBoxByref(value, lifeCycle));
+		}
+		
+/***********************************************************************
+* RpcByrefList
+***********************************************************************/
+
+		RpcByrefList::RpcByrefList(IRpcLifeCycle* lc, RpcObjectReference listRef)
+			: RpcByrefReadonlyList(lc, listRef)
+		{
+		}
+
+		RpcByrefList::~RpcByrefList()
+		{
+		}
+
+		Ptr<IValueEnumerator> RpcByrefList::CreateEnumerator()
+		{
+			return RpcByrefReadonlyList::CreateEnumerator();
+		}
+
+		vint RpcByrefList::GetCount()
+		{
+			return RpcByrefReadonlyList::GetCount();
+		}
+
+		Value RpcByrefList::Get(vint index)
+		{
+			return RpcByrefReadonlyList::Get(index);
+		}
+
+		bool RpcByrefList::Contains(const Value& value)
+		{
+			return RpcByrefReadonlyList::Contains(value);
+		}
+
+		vint RpcByrefList::IndexOf(const Value& value)
+		{
+			return RpcByrefReadonlyList::IndexOf(value);
 		}
 
 		void RpcByrefList::Set(vint index, const Value& value)
@@ -308,26 +346,12 @@ namespace vl
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetKeys()
 		{
-			auto remote = controller->DictGetKeys(ref);
-			auto snapshot = IValueArray::Create();
-			snapshot->Resize(remote->GetCount());
-			for (vint i = 0; i < remote->GetCount(); i++)
-			{
-				snapshot->Set(i, RpcUnboxByref(remote->Get(i), lifeCycle));
-			}
-			return snapshot;
+			return Ptr(new RpcByrefReadonlyList(lifeCycle, controller->DictGetKeys(ref)));
 		}
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetValues()
 		{
-			auto remote = controller->DictGetValues(ref);
-			auto snapshot = IValueArray::Create();
-			snapshot->Resize(remote->GetCount());
-			for (vint i = 0; i < remote->GetCount(); i++)
-			{
-				snapshot->Set(i, RpcUnboxByref(remote->Get(i), lifeCycle));
-			}
-			return snapshot;
+			return Ptr(new RpcByrefReadonlyList(lifeCycle, controller->DictGetValues(ref)));
 		}
 
 		vint RpcByrefDictionary::GetCount()
@@ -552,34 +576,20 @@ namespace vl
 			return dict->GetKeys()->Contains(RpcUnboxByref(key, lifeCycle));
 		}
 
-		Ptr<IValueArray> RpcCalleeListOps::DictGetKeys(RpcObjectReference ref)
+		RpcObjectReference RpcCalleeListOps::DictGetKeys(RpcObjectReference ref)
 		{
 			auto obj = lifeCycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetKeys cannot find the target dictionary.");
-			auto keys = dict->GetKeys();
-			auto snapshot = IValueArray::Create();
-			snapshot->Resize(keys->GetCount());
-			for (vint i = 0; i < keys->GetCount(); i++)
-			{
-				snapshot->Set(i, RpcBoxByref(keys->Get(i), lifeCycle));
-			}
-			return snapshot;
+			return lifeCycle->PtrToRef(dict->GetKeys());
 		}
 
-		Ptr<IValueArray> RpcCalleeListOps::DictGetValues(RpcObjectReference ref)
+		RpcObjectReference RpcCalleeListOps::DictGetValues(RpcObjectReference ref)
 		{
 			auto obj = lifeCycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
-			auto values = dict->GetValues();
-			auto snapshot = IValueArray::Create();
-			snapshot->Resize(values->GetCount());
-			for (vint i = 0; i < values->GetCount(); i++)
-			{
-				snapshot->Set(i, RpcBoxByref(values->Get(i), lifeCycle));
-			}
-			return snapshot;
+			return lifeCycle->PtrToRef(dict->GetValues());
 		}
 		
 /***********************************************************************

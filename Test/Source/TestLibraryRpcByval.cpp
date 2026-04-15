@@ -10,6 +10,23 @@ using namespace vl::rpc_controller_test;
 
 namespace
 {
+	class StubObjectOps : public Object, public IRpcObjectOps
+	{
+	public:
+		void SyncIds(Ptr<IValueDictionary> ids)override { (void)ids; }
+		Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return {}; }
+		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return nullptr; }
+		void ObjectHold(RpcObjectReference ref, bool hold)override { (void)ref; (void)hold; CHECK_FAIL(L"Not Supported!"); }
+		RpcObjectReference RequestService(vint typeId)override { (void)typeId; CHECK_FAIL(L"Not Supported!"); return {}; }
+	};
+
+	class StubObjectEventOps : public Object, public IRpcObjectEventOps
+	{
+	public:
+		void SyncIds(Ptr<IValueDictionary> ids)override { (void)ids; }
+		void InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override { (void)ref; (void)eventId; (void)arguments; CHECK_FAIL(L"Not Supported!"); }
+	};
+
 	struct RpcTestContext
 	{
 		Ptr<RpcByvalLifecycleMock>			lifeCycle;
@@ -23,7 +40,7 @@ namespace
 		context.lifeCycle = Ptr(new RpcByvalLifecycleMock);
 		context.listOps = Ptr(new RpcCalleeListOps(context.lifeCycle.Obj()));
 		context.listEventBridge = Ptr(new RpcCalleeListEventBridge(context.lifeCycle.Obj()));
-		context.lifeCycle->Register(nullptr, nullptr, context.listOps, context.listEventBridge);
+		context.lifeCycle->Register(Ptr(new StubObjectOps), Ptr(new StubObjectEventOps), context.listOps, context.listEventBridge);
 		return context;
 	}
 }
@@ -88,7 +105,7 @@ TEST_FILE
 		TEST_ASSERT(values.Count() == 0);
 	});
 
-	TEST_CASE(L"RpcByrefDictionary forwards Set Get Remove Clear and snapshots")
+	TEST_CASE(L"RpcByrefDictionary forwards Set Get Remove Clear with live views")
 	{
 		auto context = CreateContext();
 		Dictionary<vint, vint> values;
@@ -100,14 +117,14 @@ TEST_FILE
 		auto ref = UnboxValue<RpcObjectReference>(serializable);
 		auto proxy = Ptr(new RpcByrefDictionary(context.lifeCycle.Obj(), ref));
 
-		auto keysSnapshot = proxy->GetKeys();
-		auto valuesSnapshot = proxy->GetValues();
+		auto keysView = proxy->GetKeys();
+		auto valuesView = proxy->GetValues();
 
-		TEST_ASSERT(keysSnapshot->GetCount() == 2);
-		TEST_ASSERT(UnboxValue<vint>(keysSnapshot->Get(0)) == 1);
-		TEST_ASSERT(UnboxValue<vint>(keysSnapshot->Get(1)) == 2);
-		TEST_ASSERT(UnboxValue<vint>(valuesSnapshot->Get(0)) == 10);
-		TEST_ASSERT(UnboxValue<vint>(valuesSnapshot->Get(1)) == 20);
+		TEST_ASSERT(keysView->GetCount() == 2);
+		TEST_ASSERT(UnboxValue<vint>(keysView->Get(0)) == 1);
+		TEST_ASSERT(UnboxValue<vint>(keysView->Get(1)) == 2);
+		TEST_ASSERT(UnboxValue<vint>(valuesView->Get(0)) == 10);
+		TEST_ASSERT(UnboxValue<vint>(valuesView->Get(1)) == 20);
 
 		proxy->Set(BoxParameter((vint)3), BoxParameter((vint)30));
 		TEST_ASSERT(values.Count() == 3);
@@ -117,10 +134,13 @@ TEST_FILE
 		TEST_ASSERT(proxy->Remove(BoxParameter((vint)1)));
 		TEST_ASSERT(!values.Keys().Contains(1));
 
-		TEST_ASSERT(keysSnapshot->GetCount() == 2);
-		TEST_ASSERT(valuesSnapshot->GetCount() == 2);
-		TEST_ASSERT(UnboxValue<vint>(keysSnapshot->Get(0)) == 1);
-		TEST_ASSERT(UnboxValue<vint>(valuesSnapshot->Get(0)) == 10);
+		// keysView and valuesView are live views, reflecting current dictionary state
+		TEST_ASSERT(keysView->GetCount() == 2);
+		TEST_ASSERT(valuesView->GetCount() == 2);
+		TEST_ASSERT(UnboxValue<vint>(keysView->Get(0)) == 2);
+		TEST_ASSERT(UnboxValue<vint>(keysView->Get(1)) == 3);
+		TEST_ASSERT(UnboxValue<vint>(valuesView->Get(0)) == 20);
+		TEST_ASSERT(UnboxValue<vint>(valuesView->Get(1)) == 30);
 
 		proxy->Clear();
 		TEST_ASSERT(values.Count() == 0);

@@ -30,6 +30,7 @@ namespace vl
 		inline constexpr vint				RpcTypeId_IValueList = -4;
 		inline constexpr vint				RpcTypeId_IValueObservableList = -5;
 		inline constexpr vint				RpcTypeId_IValueDictionary = -6;
+		inline constexpr vint				RpcTypeId_IValueReadonlyList = -7;
 		
 /***********************************************************************
 * Interfaces
@@ -68,8 +69,8 @@ namespace vl
 			virtual bool												DictRemove(RpcObjectReference ref, const vl::reflection::description::Value& key) = 0;
 			virtual void												DictClear(RpcObjectReference ref) = 0;
 			virtual bool												DictContainsKey(RpcObjectReference ref, const vl::reflection::description::Value& key) = 0;
-			virtual vl::Ptr<vl::reflection::description::IValueArray>	DictGetKeys(RpcObjectReference ref) = 0;
-			virtual vl::Ptr<vl::reflection::description::IValueArray>	DictGetValues(RpcObjectReference ref) = 0;
+			virtual RpcObjectReference									DictGetKeys(RpcObjectReference ref) = 0;
+			virtual RpcObjectReference									DictGetValues(RpcObjectReference ref) = 0;
 		};
 
 		class IRpcObjectOps
@@ -165,12 +166,25 @@ namespace vl
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 		};
 
-		class RpcByrefList : public Object, public vl::reflection::description::IValueList
+		class RpcByrefReadonlyList : public Object, public virtual vl::reflection::description::IValueReadonlyList
 		{
 		protected:
 			IRpcLifeCycle*					lifeCycle = nullptr;
 			IRpcController*					controller = nullptr;
 			RpcObjectReference				ref;
+		public:
+			RpcByrefReadonlyList(IRpcLifeCycle* lc, RpcObjectReference listRef);
+			~RpcByrefReadonlyList();
+
+			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
+			vint													GetCount()override;
+			vl::reflection::description::Value						Get(vint index)override;
+			bool													Contains(const vl::reflection::description::Value& value)override;
+			vint													IndexOf(const vl::reflection::description::Value& value)override;
+		};
+
+		class RpcByrefList : public RpcByrefReadonlyList, public virtual vl::reflection::description::IValueList
+		{
 		public:
 			RpcByrefList(IRpcLifeCycle* lc, RpcObjectReference listRef);
 			~RpcByrefList()override;
@@ -281,8 +295,8 @@ namespace vl
 			bool												DictRemove(RpcObjectReference ref, const vl::reflection::description::Value& key)override;
 			void												DictClear(RpcObjectReference ref)override;
 			bool												DictContainsKey(RpcObjectReference ref, const vl::reflection::description::Value& key)override;
-			vl::Ptr<vl::reflection::description::IValueArray>	DictGetKeys(RpcObjectReference ref)override;
-			vl::Ptr<vl::reflection::description::IValueArray>	DictGetValues(RpcObjectReference ref)override;
+			RpcObjectReference									DictGetKeys(RpcObjectReference ref)override;
+			RpcObjectReference									DictGetValues(RpcObjectReference ref)override;
 		};
 
 		class RpcCalleeListEventBridge : public Object, public IRpcListEventOps

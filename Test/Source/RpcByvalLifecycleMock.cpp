@@ -35,6 +35,10 @@ namespace vl
 			{
 				return Ptr(new RpcByrefArray(lc, ref));
 			});
+			proxyFactories.Set(RpcTypeId_IValueReadonlyList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			{
+				return Ptr(new RpcByrefReadonlyList(lc, ref));
+			});
 			proxyFactories.Set(RpcTypeId_IValueList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				return Ptr(new RpcByrefList(lc, ref));
@@ -57,6 +61,7 @@ namespace vl
 			if (dynamic_cast<IValueDictionary*>(obj)) return RpcTypeId_IValueDictionary;
 			if (dynamic_cast<IValueArray*>(obj)) return RpcTypeId_IValueArray;
 			if (dynamic_cast<IValueList*>(obj)) return RpcTypeId_IValueList;
+			if (dynamic_cast<IValueReadonlyList*>(obj)) return RpcTypeId_IValueReadonlyList;
 			if (dynamic_cast<IValueEnumerator*>(obj)) return RpcTypeId_IValueEnumerator;
 			if (dynamic_cast<IValueEnumerable*>(obj)) return RpcTypeId_IValueEnumerable;
 			CHECK_FAIL(L"RpcByvalLifecycleMock::DecideTypeId cannot determine the proxy type.");
@@ -117,12 +122,6 @@ namespace vl
 			observableProxies.Remove(ref.objectId);
 		}
 
-		IRpcListOps* RpcByvalLifecycleMock::RequireListCallback()const
-		{
-			CHECK_ERROR(listCallback != nullptr, L"RpcByvalLifecycleMock requires a list callback.");
-			return listCallback;
-		}
-
 		bool RpcByvalLifecycleMock::IsTracked(vint objectId)const
 		{
 			return localObjects.Keys().Contains(objectId);
@@ -140,30 +139,8 @@ namespace vl
 		}
 
 /***********************************************************************
-* RpcByvalLifecycleMock (IRpcIdSync)
-***********************************************************************/
-
-		void RpcByvalLifecycleMock::SyncIds(Ptr<IValueDictionary> ids)
-		{
-			(void)ids;
-		}
-
-/***********************************************************************
 * RpcByvalLifecycleMock (IRpcController)
 ***********************************************************************/
-
-		Ptr<IValueDictionary> RpcByvalLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
-		{
-			objectCallback = _objectCallback.Obj();
-			eventCallback = _eventCallback.Obj();
-			listCallback = _listCallback.Obj();
-			listEventCallback = _listEventCallback.Obj();
-
-			auto ids = IValueDictionary::Create();
-			if (objectCallback) objectCallback->SyncIds(ids);
-			if (eventCallback) eventCallback->SyncIds(ids);
-			return ids;
-		}
 
 		RpcObjectReference RpcByvalLifecycleMock::RegisterLocalObject(vint typeId)
 		{
@@ -208,11 +185,6 @@ namespace vl
 * RpcByvalLifecycleMock (IRpcLifeCycle)
 ***********************************************************************/
 
-		Ptr<IRpcController> RpcByvalLifecycleMock::GetController()const
-		{
-			return Ptr(const_cast<RpcByvalLifecycleMock*>(this));
-		}
-
 		Ptr<IDescriptable> RpcByvalLifecycleMock::RefToPtr(RpcObjectReference ref)
 		{
 			// Check local objects first (callee-side use)
@@ -244,158 +216,6 @@ namespace vl
 			ownedObjects.Set(ref.objectId, obj);
 			TrackLocalObject(ref, obj.Obj());
 			return ref;
-		}
-
-/***********************************************************************
-* RpcByvalLifecycleMock (IRpcObjectOps)
-***********************************************************************/
-
-		Value RpcByvalLifecycleMock::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
-		{
-			(void)ref;
-			(void)methodId;
-			(void)arguments;
-			CHECK_FAIL(L"Not Supported!");
-			return {};
-		}
-
-		Ptr<IAsync> RpcByvalLifecycleMock::InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
-		{
-			(void)ref;
-			(void)methodId;
-			(void)arguments;
-			CHECK_FAIL(L"Not Supported!");
-			return nullptr;
-		}
-
-		void RpcByvalLifecycleMock::ObjectHold(RpcObjectReference ref, bool hold)
-		{
-			(void)ref;
-			(void)hold;
-			CHECK_FAIL(L"Not Supported!");
-		}
-
-		RpcObjectReference RpcByvalLifecycleMock::RequestService(vint typeId)
-		{
-			(void)typeId;
-			CHECK_FAIL(L"Not Supported!");
-			return {};
-		}
-
-/***********************************************************************
-* RpcByvalLifecycleMock (IRpcObjectEventOps)
-***********************************************************************/
-
-		void RpcByvalLifecycleMock::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
-		{
-			(void)ref;
-			(void)eventId;
-			(void)arguments;
-			CHECK_FAIL(L"Not Supported!");
-		}
-
-/***********************************************************************
-* RpcByvalLifecycleMock (IRpcListOps)
-***********************************************************************/
-
-		RpcObjectReference RpcByvalLifecycleMock::EnumCreate(RpcObjectReference ref)
-		{
-			return RequireListCallback()->EnumCreate(ref);
-		}
-
-		bool RpcByvalLifecycleMock::EnumNext(RpcObjectReference enumerator)
-		{
-			return RequireListCallback()->EnumNext(enumerator);
-		}
-
-		Value RpcByvalLifecycleMock::EnumGetCurrent(RpcObjectReference enumerator)
-		{
-			return RequireListCallback()->EnumGetCurrent(enumerator);
-		}
-
-		vint RpcByvalLifecycleMock::ListGetCount(RpcObjectReference ref)
-		{
-			return RequireListCallback()->ListGetCount(ref);
-		}
-
-		Value RpcByvalLifecycleMock::ListGet(RpcObjectReference ref, vint index)
-		{
-			return RequireListCallback()->ListGet(ref, index);
-		}
-
-		void RpcByvalLifecycleMock::ListSet(RpcObjectReference ref, vint index, const Value& value)
-		{
-			RequireListCallback()->ListSet(ref, index, value);
-		}
-
-		vint RpcByvalLifecycleMock::ListAdd(RpcObjectReference ref, const Value& value)
-		{
-			return RequireListCallback()->ListAdd(ref, value);
-		}
-
-		vint RpcByvalLifecycleMock::ListInsert(RpcObjectReference ref, vint index, const Value& value)
-		{
-			return RequireListCallback()->ListInsert(ref, index, value);
-		}
-
-		bool RpcByvalLifecycleMock::ListRemoveAt(RpcObjectReference ref, vint index)
-		{
-			return RequireListCallback()->ListRemoveAt(ref, index);
-		}
-
-		void RpcByvalLifecycleMock::ListClear(RpcObjectReference ref)
-		{
-			RequireListCallback()->ListClear(ref);
-		}
-
-		bool RpcByvalLifecycleMock::ListContains(RpcObjectReference ref, const Value& value)
-		{
-			return RequireListCallback()->ListContains(ref, value);
-		}
-
-		vint RpcByvalLifecycleMock::ListIndexOf(RpcObjectReference ref, const Value& value)
-		{
-			return RequireListCallback()->ListIndexOf(ref, value);
-		}
-
-		vint RpcByvalLifecycleMock::DictGetCount(RpcObjectReference ref)
-		{
-			return RequireListCallback()->DictGetCount(ref);
-		}
-
-		Value RpcByvalLifecycleMock::DictGet(RpcObjectReference ref, const Value& key)
-		{
-			return RequireListCallback()->DictGet(ref, key);
-		}
-
-		void RpcByvalLifecycleMock::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
-		{
-			RequireListCallback()->DictSet(ref, key, value);
-		}
-
-		bool RpcByvalLifecycleMock::DictRemove(RpcObjectReference ref, const Value& key)
-		{
-			return RequireListCallback()->DictRemove(ref, key);
-		}
-
-		void RpcByvalLifecycleMock::DictClear(RpcObjectReference ref)
-		{
-			RequireListCallback()->DictClear(ref);
-		}
-
-		bool RpcByvalLifecycleMock::DictContainsKey(RpcObjectReference ref, const Value& key)
-		{
-			return RequireListCallback()->DictContainsKey(ref, key);
-		}
-
-		Ptr<IValueArray> RpcByvalLifecycleMock::DictGetKeys(RpcObjectReference ref)
-		{
-			return RequireListCallback()->DictGetKeys(ref);
-		}
-
-		Ptr<IValueArray> RpcByvalLifecycleMock::DictGetValues(RpcObjectReference ref)
-		{
-			return RequireListCallback()->DictGetValues(ref);
 		}
 
 /***********************************************************************
