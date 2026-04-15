@@ -12,54 +12,6 @@ namespace vl
 
 		namespace
 		{
-			template<typename T>
-			vint GetRpcTypeId()
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto typeDescriptor = GetTypeDescriptor<T>())
-				{
-					if (auto manager = GetGlobalTypeManager())
-					{
-						for (vint i = 0; i < manager->GetTypeDescriptorCount(); i++)
-						{
-							if (manager->GetTypeDescriptor(i) == typeDescriptor)
-							{
-								return i;
-							}
-						}
-					}
-				}
-#endif
-				if constexpr (std::same_as<T, IValueEnumerable>)
-				{
-					return RpcTypeId_IValueEnumerable;
-				}
-				else if constexpr (std::same_as<T, IValueEnumerator>)
-				{
-					return RpcTypeId_IValueEnumerator;
-				}
-				else if constexpr (std::same_as<T, IValueArray>)
-				{
-					return RpcTypeId_IValueArray;
-				}
-				else if constexpr (std::same_as<T, IValueList>)
-				{
-					return RpcTypeId_IValueList;
-				}
-				else if constexpr (std::same_as<T, IValueObservableList>)
-				{
-					return RpcTypeId_IValueObservableList;
-				}
-				else if constexpr (std::same_as<T, IValueDictionary>)
-				{
-					return RpcTypeId_IValueDictionary;
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
 			bool IsRpcObjectReferenceValue(const Value& value)
 			{
 				return value.GetValueType() == Value::BoxedValue && value.GetBoxedValue().Cast<IValueType::TypedBox<RpcObjectReference>>();
@@ -77,14 +29,11 @@ namespace vl
 			{
 				return xs.Keys().Contains(key);
 			}
-
-			template<typename T>
-			Ptr<T> GetValue(const Dictionary<vint, Ptr<T>>& xs, vint objectId, const wchar_t* error)
-			{
-				CHECK_ERROR(ContainsKey(xs, objectId), error);
-				return xs.Get(objectId);
-			}
 		}
+		
+/***********************************************************************
+* RpcByrefEnumerator
+***********************************************************************/
 
 		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef)
 			: lifeCycle(lc)
@@ -136,6 +85,10 @@ namespace vl
 		{
 			return Ptr(new RpcByrefEnumerator(lifeCycle, controller->EnumCreate(ref)));
 		}
+		
+/***********************************************************************
+* RpcByrefList
+***********************************************************************/
 
 		RpcByrefList::RpcByrefList(IRpcLifeCycle* lc, RpcObjectReference listRef)
 			: lifeCycle(lc)
@@ -205,6 +158,10 @@ namespace vl
 		{
 			controller->ListClear(ref);
 		}
+		
+/***********************************************************************
+* RpcByrefArray
+***********************************************************************/
 
 		RpcByrefArray::RpcByrefArray(IRpcLifeCycle* lc, RpcObjectReference arrayRef)
 			: lifeCycle(lc)
@@ -258,6 +215,10 @@ namespace vl
 				controller->ListRemoveAt(ref, i);
 			}
 		}
+		
+/***********************************************************************
+* RpcByrefObservableList
+***********************************************************************/
 
 		RpcByrefObservableList::RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef)
 			: lifeCycle(lc)
@@ -327,6 +288,10 @@ namespace vl
 		{
 			controller->ListClear(ref);
 		}
+		
+/***********************************************************************
+* RpcByrefDictionary
+***********************************************************************/
 
 		RpcByrefDictionary::RpcByrefDictionary(IRpcLifeCycle* lc, RpcObjectReference dictRef)
 			: lifeCycle(lc)
@@ -389,6 +354,10 @@ namespace vl
 		{
 			controller->DictClear(ref);
 		}
+		
+/***********************************************************************
+* RpcCalleeListOps
+***********************************************************************/
 
 		RpcCalleeListOps::RpcCalleeListOps(IRpcLifeCycle* lc)
 			: lifeCycle(lc)
@@ -400,14 +369,10 @@ namespace vl
 		{
 			auto obj = lifeCycle->RefToPtr(ref);
 			Ptr<IValueEnumerator> enumerator;
-			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
-				enumerator = array->CreateEnumerator();
-			else if (auto observableList = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>()))
-				enumerator = observableList->CreateEnumerator();
-			else if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
-				enumerator = list->CreateEnumerator();
-			else if (auto enumerable = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerable>()))
-				enumerator = enumerable->CreateEnumerator();
+			if (auto xs = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerable>()))
+			{
+				enumerator = xs->CreateEnumerator();
+			}
 			else
 			{
 				CHECK_FAIL(L"RpcCalleeListOps::EnumCreate cannot find the target collection.");
@@ -616,6 +581,10 @@ namespace vl
 			}
 			return snapshot;
 		}
+		
+/***********************************************************************
+* RpcCalleeListEventBridge
+***********************************************************************/
 
 		RpcCalleeListEventBridge::RpcCalleeListEventBridge(IRpcLifeCycle* lc)
 			: lifeCycle(lc)
@@ -627,6 +596,10 @@ namespace vl
 		{
 			lifeCycle->GetController()->OnItemChanged(ref, index, oldCount, newCount);
 		}
+		
+/***********************************************************************
+* Helpers
+***********************************************************************/
 
 		Value RpcBoxByref(const Value& trivial, IRpcLifeCycle* lc)
 		{
