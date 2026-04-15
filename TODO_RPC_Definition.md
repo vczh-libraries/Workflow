@@ -316,3 +316,20 @@ interface IRpcController
     func ReleaseRemoteObject(ref : RpcObjectReference) : void;
 }
 ```
+
+### Interface: IRpcLifeCycle
+
+This is a caller/callee side interface. It converts between `interface^` and `RefObjectReference`. Both local or remote objects will be properly handled.
+
+Implementation of this interface need to maintain such bidirectional relationship with high performance data structure. Ensure that same objects result in same pointers. Proper `IRpcController` methods should be called in the implementation.
+
+Test projects could also implement dummy or simpler life cycle management for special testing purpose.
+
+```
+interface IRpcLifeCycle
+{
+  prop Controller : IRpcController {const}
+  func RefToPtr(ref : RpcObjectReference) : interface^;
+  func PtrToRef(obj : interface^) : RefObjectReference;
+}
+```
