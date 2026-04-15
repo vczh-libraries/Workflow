@@ -133,22 +133,8 @@ namespace vl
 		};
 		
 /***********************************************************************
-* RpcByrefListEventDispatcher
-***********************************************************************/
-
-		class RpcByrefListEventDispatcher : public Object, public IRpcListEventOps
-		{
-		private:
-			vl::collections::Dictionary<vint, vl::reflection::description::IValueObservableList*>	targets;
-		public:
-			void											Track(vint objectId, vl::reflection::description::IValueObservableList* list);
-			void											Untrack(vint objectId);
-			void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
-		};
-		
-/***********************************************************************
 * Collection Caller Wrappers
-***********************************************************************/
+**********************************************************************/
 
 		class RpcByrefEnumerator : public Object, public vl::reflection::description::IValueEnumerator
 		{
@@ -227,10 +213,8 @@ namespace vl
 			IRpcLifeCycle*					lifeCycle = nullptr;
 			IRpcController*					controller = nullptr;
 			RpcObjectReference				ref;
-			vl::Ptr<RpcByrefListEventDispatcher>
-										dispatcher;
 		public:
-			RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef, vl::Ptr<RpcByrefListEventDispatcher> listDispatcher);
+			RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef);
 			~RpcByrefObservableList();
 
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
@@ -273,20 +257,9 @@ namespace vl
 		{
 		private:
 			IRpcLifeCycle*																					lifeCycle = nullptr;
-			IRpcController*																					controller = nullptr;
-			vl::collections::Dictionary<vint, vl::Ptr<vl::reflection::description::IValueEnumerator>>		enumerators;
-			vl::collections::Dictionary<vint, vl::Ptr<vl::reflection::description::IValueArray>>			arrays;
-			vl::collections::Dictionary<vint, vl::Ptr<vl::reflection::description::IValueList>>				lists;
-			vl::collections::Dictionary<vint, vl::Ptr<vl::reflection::description::IValueDictionary>>		dicts;
-			vl::collections::Dictionary<vint, vl::Ptr<vl::reflection::description::IValueObservableList>>	observableLists;
 
 		public:
 			RpcCalleeListOps(IRpcLifeCycle* lc);
-
-			void												RegisterLocalObject(RpcObjectReference ref, vl::Ptr<vl::reflection::IDescriptable> obj);
-			void												UnregisterLocalObject(RpcObjectReference ref);
-			bool												HasTrackedObject(vint objectId)const;
-			bool												HasTrackedEnumerator(vint objectId)const;
 
 			RpcObjectReference									EnumCreate(RpcObjectReference ref)override;
 			bool												EnumNext(RpcObjectReference enumerator)override;
@@ -316,16 +289,9 @@ namespace vl
 		{
 		private:
 			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
-			vl::collections::Dictionary<vint, RpcObjectReference>											refs;
-			vl::collections::Dictionary<vint, vl::Ptr<vl::reflection::description::IValueObservableList>>	sources;
-			vl::collections::Dictionary<vint, vl::Ptr<vl::EventHandler>>									handlers;
+
 		public:
 			RpcCalleeListEventBridge(IRpcLifeCycle* lc);
-
-			void												RegisterLocalObject(RpcObjectReference ref, vl::Ptr<vl::reflection::IDescriptable> obj);
-			void												UnregisterLocalObject(RpcObjectReference ref);
-			bool												HasTrackedHandler(vint objectId)const;
 
 			void												OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};

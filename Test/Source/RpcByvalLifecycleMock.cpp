@@ -8,8 +8,20 @@ namespace vl
 		using namespace reflection::description;
 		using namespace rpc_controller;
 
+		RpcObjectTracker::RpcObjectTracker(RpcByvalLifecycleMock* m, RpcObjectReference r)
+			: mock(m), ref(r)
+		{
+		}
+
+		RpcObjectTracker::~RpcObjectTracker()
+		{
+			if (mock->IsTracked(ref.objectId))
+			{
+				mock->UntrackLocalObject(ref);
+			}
+		}
+
 		RpcByvalLifecycleMock::RpcByvalLifecycleMock()
-			: dispatcher(Ptr(new RpcByrefListEventDispatcher))
 		{
 			proxyFactories.Set(RpcTypeId_IValueEnumerable, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
@@ -29,8 +41,8 @@ namespace vl
 			});
 			proxyFactories.Set(RpcTypeId_IValueObservableList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
-				auto proxy = Ptr(new RpcByrefObservableList(lc, ref, dispatcher));
-				dispatcher->Track(ref.objectId, proxy.Cast<IValueObservableList>().Obj());
+				auto proxy = Ptr(new RpcByrefObservableList(lc, ref));
+				observableProxies.Set(ref.objectId, dynamic_cast<IValueObservableList*>(proxy.Obj()));
 				return proxy;
 			});
 			proxyFactories.Set(RpcTypeId_IValueDictionary, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
@@ -39,52 +51,70 @@ namespace vl
 			});
 		}
 
-		vint RpcByvalLifecycleMock::DecideTypeId(Ptr<IDescriptable> obj)const
+		vint RpcByvalLifecycleMock::DecideTypeId(IDescriptable* obj)const
 		{
-			if (obj.Cast<IValueObservableList>()) return RpcTypeId_IValueObservableList;
-			if (obj.Cast<IValueDictionary>()) return RpcTypeId_IValueDictionary;
-			if (obj.Cast<IValueArray>()) return RpcTypeId_IValueArray;
-			if (obj.Cast<IValueList>()) return RpcTypeId_IValueList;
-			if (obj.Cast<IValueEnumerator>()) return RpcTypeId_IValueEnumerator;
-			if (obj.Cast<IValueEnumerable>()) return RpcTypeId_IValueEnumerable;
-			CHECK_FAIL(L"RpcByvalLifecycleMock::PtrToRef cannot determine the proxy type.");
+			if (dynamic_cast<IValueObservableList*>(obj)) return RpcTypeId_IValueObservableList;
+			if (dynamic_cast<IValueDictionary*>(obj)) return RpcTypeId_IValueDictionary;
+			if (dynamic_cast<IValueArray*>(obj)) return RpcTypeId_IValueArray;
+			if (dynamic_cast<IValueList*>(obj)) return RpcTypeId_IValueList;
+			if (dynamic_cast<IValueEnumerator*>(obj)) return RpcTypeId_IValueEnumerator;
+			if (dynamic_cast<IValueEnumerable*>(obj)) return RpcTypeId_IValueEnumerable;
+			CHECK_FAIL(L"RpcByvalLifecycleMock::DecideTypeId cannot determine the proxy type.");
 			return 0;
 		}
 
-		void RpcByvalLifecycleMock::TrackLocalObject(RpcObjectReference ref, Ptr<IDescriptable> obj)
+		void RpcByvalLifecycleMock::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
 		{
 			localObjects.Set(ref.objectId, obj);
-			refsByPtr.Set(obj.Obj(), ref);
+			refsByPtr.Set(obj, ref);
 			refsById.Set(ref.objectId, ref);
 
-			if (auto callee = dynamic_cast<RpcCalleeListOps*>(listCallback))
+			// Subscribe to ItemChanged for observable lists
+			if (auto observable = dynamic_cast<IValueObservableList*>(obj))
 			{
-				callee->RegisterLocalObject(ref, obj);
+				auto handler = observable->ItemChanged.Add([this, ref](vint index, vint oldCount, vint newCount)
+				{
+					this->OnItemChanged(ref, index, oldCount, newCount);
+				});
+				eventHandlers.Set(ref.objectId, handler);
 			}
-			if (auto bridge = dynamic_cast<RpcCalleeListEventBridge*>(listEventCallback))
+
+			// Use DescriptableObject internal property for release tracking
+			if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
 			{
-				bridge->RegisterLocalObject(ref, obj);
+				auto tracker = Ptr(new RpcObjectTracker(this, ref));
+				descriptable->SetInternalProperty(L"RpcLifecycleTracker", tracker);
 			}
 		}
 
 		void RpcByvalLifecycleMock::UntrackLocalObject(RpcObjectReference ref)
 		{
+			// Unsubscribe from observable list events
+			if (eventHandlers.Keys().Contains(ref.objectId))
+			{
+				if (localObjects.Keys().Contains(ref.objectId))
+				{
+					if (auto observable = dynamic_cast<IValueObservableList*>(localObjects.Get(ref.objectId)))
+					{
+						observable->ItemChanged.Remove(eventHandlers.Get(ref.objectId));
+					}
+				}
+				eventHandlers.Remove(ref.objectId);
+			}
+
 			if (localObjects.Keys().Contains(ref.objectId))
 			{
 				auto obj = localObjects.Get(ref.objectId);
-				refsByPtr.Remove(obj.Obj());
+				refsByPtr.Remove(obj);
 				localObjects.Remove(ref.objectId);
 			}
 			refsById.Remove(ref.objectId);
 
-			if (auto callee = dynamic_cast<RpcCalleeListOps*>(listCallback))
-			{
-				callee->UnregisterLocalObject(ref);
-			}
-			if (auto bridge = dynamic_cast<RpcCalleeListEventBridge*>(listEventCallback))
-			{
-				bridge->UnregisterLocalObject(ref);
-			}
+			// Clean up ownership
+			ownedObjects.Remove(ref.objectId);
+
+			// Clean up observable proxy tracking
+			observableProxies.Remove(ref.objectId);
 		}
 
 		IRpcListOps* RpcByvalLifecycleMock::RequireListCallback()const
@@ -93,14 +123,20 @@ namespace vl
 			return listCallback;
 		}
 
+		bool RpcByvalLifecycleMock::IsTracked(vint objectId)const
+		{
+			return localObjects.Keys().Contains(objectId);
+		}
+
 		RpcObjectReference RpcByvalLifecycleMock::GetLastRegisteredObject()const
 		{
 			return lastRegisteredObject;
 		}
 
-		Ptr<RpcByrefListEventDispatcher> RpcByvalLifecycleMock::GetDispatcher()const
+		Ptr<IDescriptable> RpcByvalLifecycleMock::CreateCallerProxy(RpcObjectReference ref)
 		{
-			return dispatcher;
+			CHECK_ERROR(proxyFactories.Keys().Contains(ref.typeId), L"RpcByvalLifecycleMock::CreateCallerProxy cannot find a proxy factory.");
+			return proxyFactories.Get(ref.typeId)(const_cast<RpcByvalLifecycleMock*>(this), ref);
 		}
 
 /***********************************************************************
@@ -179,13 +215,15 @@ namespace vl
 
 		Ptr<IDescriptable> RpcByvalLifecycleMock::RefToPtr(RpcObjectReference ref)
 		{
+			// Check local objects first (callee-side use)
+			if (localObjects.Keys().Contains(ref.objectId))
+			{
+				return Ptr(localObjects.Get(ref.objectId));
+			}
+			// Otherwise create a proxy (caller-side use)
 			if (proxyFactories.Keys().Contains(ref.typeId))
 			{
 				return proxyFactories.Get(ref.typeId)(const_cast<RpcByvalLifecycleMock*>(this), ref);
-			}
-			if (localObjects.Keys().Contains(ref.objectId))
-			{
-				return localObjects.Get(ref.objectId);
 			}
 			CHECK_FAIL(L"RpcByvalLifecycleMock::RefToPtr cannot find a proxy factory.");
 			return nullptr;
@@ -201,8 +239,10 @@ namespace vl
 				return ref;
 			}
 
-			auto ref = RegisterLocalObject(DecideTypeId(obj));
-			TrackLocalObject(ref, obj);
+			auto ref = RegisterLocalObject(DecideTypeId(obj.Obj()));
+			// Store ownership for objects not externally owned (e.g. enumerators created by callee)
+			ownedObjects.Set(ref.objectId, obj);
+			TrackLocalObject(ref, obj.Obj());
 			return ref;
 		}
 
@@ -364,8 +404,10 @@ namespace vl
 
 		void RpcByvalLifecycleMock::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
-			CHECK_ERROR(dispatcher != nullptr, L"RpcByvalLifecycleMock requires a list event dispatcher.");
-			dispatcher->OnItemChanged(ref, index, oldCount, newCount);
+			if (observableProxies.Keys().Contains(ref.objectId))
+			{
+				observableProxies.Get(ref.objectId)->ItemChanged(index, oldCount, newCount);
+			}
 		}
 	}
 }

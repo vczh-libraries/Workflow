@@ -7,8 +7,19 @@ namespace vl
 {
 	namespace rpc_controller_test
 	{
+		class RpcObjectTracker : public Object
+		{
+		private:
+			class RpcByvalLifecycleMock*										mock;
+			rpc_controller::RpcObjectReference									ref;
+		public:
+			RpcObjectTracker(class RpcByvalLifecycleMock* m, rpc_controller::RpcObjectReference r);
+			~RpcObjectTracker();
+		};
+
 		class RpcByvalLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle, public rpc_controller::IRpcController
 		{
+			friend class RpcObjectTracker;
 		private:
 			vint																																		clientId = 1;
 			vint																																		nextObjectId = 1;
@@ -19,21 +30,24 @@ namespace vl
 			IRpcListEventOps*																															listEventCallback = nullptr;
 			collections::Dictionary<vint, vint>																											refCounts;
 			collections::Dictionary<vint, vint>																											typeIds;
-			collections::Dictionary<vint, Ptr<reflection::IDescriptable>>																				localObjects;
+			collections::Dictionary<vint, reflection::IDescriptable*>																					localObjects;
+			collections::Dictionary<vint, Ptr<reflection::IDescriptable>>																				ownedObjects;
 			collections::Dictionary<const reflection::IDescriptable*, rpc_controller::RpcObjectReference>												refsByPtr;
 			collections::Dictionary<vint, rpc_controller::RpcObjectReference>																			refsById;
 			collections::Dictionary<vint, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*, rpc_controller::RpcObjectReference)>>		proxyFactories;
-			Ptr<rpc_controller::RpcByrefListEventDispatcher>																							dispatcher;
+			collections::Dictionary<vint, reflection::description::IValueObservableList*>																observableProxies;
+			collections::Dictionary<vint, Ptr<EventHandler>>																							eventHandlers;
 
-			vint																	DecideTypeId(Ptr<reflection::IDescriptable> obj)const;
-			void																	TrackLocalObject(rpc_controller::RpcObjectReference ref, Ptr<reflection::IDescriptable> obj);
+			vint																	DecideTypeId(reflection::IDescriptable* obj)const;
+			void																	TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
 			void																	UntrackLocalObject(rpc_controller::RpcObjectReference ref);
 			IRpcListOps*															RequireListCallback()const;
+			bool																	IsTracked(vint objectId)const;
 		public:
 			RpcByvalLifecycleMock();
 
 			rpc_controller::RpcObjectReference										GetLastRegisteredObject()const;
-			Ptr<rpc_controller::RpcByrefListEventDispatcher>						GetDispatcher()const;
+			Ptr<reflection::IDescriptable>											CreateCallerProxy(rpc_controller::RpcObjectReference ref);
 
 			// IRpcIdSync
 

@@ -86,24 +86,6 @@ namespace vl
 			}
 		}
 
-		void RpcByrefListEventDispatcher::Track(vint objectId, IValueObservableList* list)
-		{
-			targets.Set(objectId, list);
-		}
-
-		void RpcByrefListEventDispatcher::Untrack(vint objectId)
-		{
-			targets.Remove(objectId);
-		}
-
-		void RpcByrefListEventDispatcher::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
-		{
-			if (ContainsKey(targets, ref.objectId))
-			{
-				targets.Get(ref.objectId)->ItemChanged(index, oldCount, newCount);
-			}
-		}
-
 		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef)
 			: lifeCycle(lc)
 			, controller(lc ? lc->GetController().Obj() : nullptr)
@@ -277,21 +259,16 @@ namespace vl
 			}
 		}
 
-		RpcByrefObservableList::RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef, Ptr<RpcByrefListEventDispatcher> listDispatcher)
+		RpcByrefObservableList::RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef)
 			: lifeCycle(lc)
 			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(listRef)
-			, dispatcher(listDispatcher)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
 		}
 
 		RpcByrefObservableList::~RpcByrefObservableList()
 		{
-			if (dispatcher)
-			{
-				dispatcher->Untrack(ref.objectId);
-			}
 			controller->ReleaseRemoteObject(ref);
 		}
 
@@ -415,100 +392,61 @@ namespace vl
 
 		RpcCalleeListOps::RpcCalleeListOps(IRpcLifeCycle* lc)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
 		{
-			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
-		}
-
-		void RpcCalleeListOps::RegisterLocalObject(RpcObjectReference ref, Ptr<IDescriptable> obj)
-		{
-			if (auto array = obj.Cast<IValueArray>())
-			{
-				arrays.Set(ref.objectId, array);
-			}
-			if (auto list = obj.Cast<IValueList>())
-			{
-				lists.Set(ref.objectId, list);
-			}
-			if (auto dict = obj.Cast<IValueDictionary>())
-			{
-				dicts.Set(ref.objectId, dict);
-			}
-			if (auto observable = obj.Cast<IValueObservableList>())
-			{
-				observableLists.Set(ref.objectId, observable);
-			}
-		}
-
-		void RpcCalleeListOps::UnregisterLocalObject(RpcObjectReference ref)
-		{
-			enumerators.Remove(ref.objectId);
-			arrays.Remove(ref.objectId);
-			lists.Remove(ref.objectId);
-			dicts.Remove(ref.objectId);
-			observableLists.Remove(ref.objectId);
-		}
-
-		bool RpcCalleeListOps::HasTrackedObject(vint objectId)const
-		{
-			return ContainsKey(arrays, objectId) || ContainsKey(lists, objectId) || ContainsKey(dicts, objectId) || ContainsKey(observableLists, objectId);
-		}
-
-		bool RpcCalleeListOps::HasTrackedEnumerator(vint objectId)const
-		{
-			return ContainsKey(enumerators, objectId);
+			if (!lifeCycle) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
 		}
 
 		RpcObjectReference RpcCalleeListOps::EnumCreate(RpcObjectReference ref)
 		{
+			auto obj = lifeCycle->RefToPtr(ref);
 			Ptr<IValueEnumerator> enumerator;
-			if (ContainsKey(arrays, ref.objectId))
-			{
-				enumerator = arrays.Get(ref.objectId)->CreateEnumerator();
-			}
-			else if (ContainsKey(observableLists, ref.objectId))
-			{
-				enumerator = observableLists.Get(ref.objectId)->CreateEnumerator();
-			}
-			else if (ContainsKey(lists, ref.objectId))
-			{
-				enumerator = lists.Get(ref.objectId)->CreateEnumerator();
-			}
+			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
+				enumerator = array->CreateEnumerator();
+			else if (auto observableList = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>()))
+				enumerator = observableList->CreateEnumerator();
+			else if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+				enumerator = list->CreateEnumerator();
+			else if (auto enumerable = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerable>()))
+				enumerator = enumerable->CreateEnumerator();
 			else
 			{
 				CHECK_FAIL(L"RpcCalleeListOps::EnumCreate cannot find the target collection.");
 				return {};
 			}
 
-			auto enumeratorRef = controller->RegisterLocalObject(GetRpcTypeId<IValueEnumerator>());
-			enumerators.Set(enumeratorRef.objectId, enumerator);
-			return enumeratorRef;
+			return lifeCycle->PtrToRef(enumerator);
 		}
 
 		bool RpcCalleeListOps::EnumNext(RpcObjectReference enumerator)
 		{
-			return GetValue(enumerators, enumerator.objectId, L"RpcCalleeListOps::EnumNext cannot find the target enumerator.")->Next();
+			auto obj = lifeCycle->RefToPtr(enumerator);
+			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
+			CHECK_ERROR(e, L"RpcCalleeListOps::EnumNext cannot find the target enumerator.");
+			return e->Next();
 		}
 
 		Value RpcCalleeListOps::EnumGetCurrent(RpcObjectReference enumerator)
 		{
-			return RpcBoxByref(GetValue(enumerators, enumerator.objectId, L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.")->GetCurrent(), lifeCycle);
+			auto obj = lifeCycle->RefToPtr(enumerator);
+			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
+			CHECK_ERROR(e, L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.");
+			return RpcBoxByref(e->GetCurrent(), lifeCycle);
 		}
 
 		vint RpcCalleeListOps::ListGetCount(RpcObjectReference ref)
 		{
-			if (ContainsKey(arrays, ref.objectId)) return arrays.Get(ref.objectId)->GetCount();
-			if (ContainsKey(observableLists, ref.objectId)) return observableLists.Get(ref.objectId)->GetCount();
-			if (ContainsKey(lists, ref.objectId)) return lists.Get(ref.objectId)->GetCount();
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return roList->GetCount();
 			CHECK_FAIL(L"RpcCalleeListOps::ListGetCount cannot find the target list.");
 			return 0;
 		}
 
 		Value RpcCalleeListOps::ListGet(RpcObjectReference ref, vint index)
 		{
-			if (ContainsKey(arrays, ref.objectId)) return RpcBoxByref(arrays.Get(ref.objectId)->Get(index), lifeCycle);
-			if (ContainsKey(observableLists, ref.objectId)) return RpcBoxByref(observableLists.Get(ref.objectId)->Get(index), lifeCycle);
-			if (ContainsKey(lists, ref.objectId)) return RpcBoxByref(lists.Get(ref.objectId)->Get(index), lifeCycle);
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return RpcBoxByref(roList->Get(index), lifeCycle);
 			CHECK_FAIL(L"RpcCalleeListOps::ListGet cannot find the target list.");
 			return {};
 		}
@@ -516,19 +454,15 @@ namespace vl
 		void RpcCalleeListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
 		{
 			auto trivial = RpcUnboxByref(value, lifeCycle);
-			if (ContainsKey(arrays, ref.objectId))
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
 			{
-				arrays.Get(ref.objectId)->Set(index, trivial);
+				array->Set(index, trivial);
 				return;
 			}
-			if (ContainsKey(observableLists, ref.objectId))
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 			{
-				observableLists.Get(ref.objectId)->Set(index, trivial);
-				return;
-			}
-			if (ContainsKey(lists, ref.objectId))
-			{
-				lists.Get(ref.objectId)->Set(index, trivial);
+				list->Set(index, trivial);
 				return;
 			}
 			CHECK_FAIL(L"RpcCalleeListOps::ListSet cannot find the target list.");
@@ -537,14 +471,9 @@ namespace vl
 		vint RpcCalleeListOps::ListAdd(RpcObjectReference ref, const Value& value)
 		{
 			auto trivial = RpcUnboxByref(value, lifeCycle);
-			if (ContainsKey(observableLists, ref.objectId))
-			{
-				return observableLists.Get(ref.objectId)->Add(trivial);
-			}
-			if (ContainsKey(lists, ref.objectId))
-			{
-				return lists.Get(ref.objectId)->Add(trivial);
-			}
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+				return list->Add(trivial);
 			CHECK_FAIL(L"RpcCalleeListOps::ListAdd cannot find a writable list.");
 			return -1;
 		}
@@ -552,54 +481,39 @@ namespace vl
 		vint RpcCalleeListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
 		{
 			auto trivial = RpcUnboxByref(value, lifeCycle);
-			if (ContainsKey(observableLists, ref.objectId))
-			{
-				return observableLists.Get(ref.objectId)->Insert(index, trivial);
-			}
-			if (ContainsKey(lists, ref.objectId))
-			{
-				return lists.Get(ref.objectId)->Insert(index, trivial);
-			}
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+				return list->Insert(index, trivial);
 			CHECK_FAIL(L"RpcCalleeListOps::ListInsert cannot find a writable list.");
 			return -1;
 		}
 
 		bool RpcCalleeListOps::ListRemoveAt(RpcObjectReference ref, vint index)
 		{
-			if (ContainsKey(arrays, ref.objectId))
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
 			{
-				auto array = arrays.Get(ref.objectId);
 				CHECK_ERROR(index == array->GetCount() - 1, L"RpcCalleeListOps::ListRemoveAt only supports tail removal for arrays.");
 				array->Resize(index);
 				return true;
 			}
-			if (ContainsKey(observableLists, ref.objectId))
-			{
-				return observableLists.Get(ref.objectId)->RemoveAt(index);
-			}
-			if (ContainsKey(lists, ref.objectId))
-			{
-				return lists.Get(ref.objectId)->RemoveAt(index);
-			}
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+				return list->RemoveAt(index);
 			CHECK_FAIL(L"RpcCalleeListOps::ListRemoveAt cannot find the target list.");
 			return false;
 		}
 
 		void RpcCalleeListOps::ListClear(RpcObjectReference ref)
 		{
-			if (ContainsKey(arrays, ref.objectId))
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
 			{
-				arrays.Get(ref.objectId)->Resize(0);
+				array->Resize(0);
 				return;
 			}
-			if (ContainsKey(observableLists, ref.objectId))
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 			{
-				observableLists.Get(ref.objectId)->Clear();
-				return;
-			}
-			if (ContainsKey(lists, ref.objectId))
-			{
-				lists.Get(ref.objectId)->Clear();
+				list->Clear();
 				return;
 			}
 			CHECK_FAIL(L"RpcCalleeListOps::ListClear cannot find the target list.");
@@ -608,9 +522,9 @@ namespace vl
 		bool RpcCalleeListOps::ListContains(RpcObjectReference ref, const Value& value)
 		{
 			auto trivial = RpcUnboxByref(value, lifeCycle);
-			if (ContainsKey(arrays, ref.objectId)) return arrays.Get(ref.objectId)->Contains(trivial);
-			if (ContainsKey(observableLists, ref.objectId)) return observableLists.Get(ref.objectId)->Contains(trivial);
-			if (ContainsKey(lists, ref.objectId)) return lists.Get(ref.objectId)->Contains(trivial);
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return roList->Contains(trivial);
 			CHECK_FAIL(L"RpcCalleeListOps::ListContains cannot find the target list.");
 			return false;
 		}
@@ -618,51 +532,67 @@ namespace vl
 		vint RpcCalleeListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
 		{
 			auto trivial = RpcUnboxByref(value, lifeCycle);
-			if (ContainsKey(arrays, ref.objectId)) return arrays.Get(ref.objectId)->IndexOf(trivial);
-			if (ContainsKey(observableLists, ref.objectId)) return observableLists.Get(ref.objectId)->IndexOf(trivial);
-			if (ContainsKey(lists, ref.objectId)) return lists.Get(ref.objectId)->IndexOf(trivial);
+			auto obj = lifeCycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return roList->IndexOf(trivial);
 			CHECK_FAIL(L"RpcCalleeListOps::ListIndexOf cannot find the target list.");
 			return -1;
 		}
 
 		vint RpcCalleeListOps::DictGetCount(RpcObjectReference ref)
 		{
-			return GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictGetCount cannot find the target dictionary.")->GetCount();
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetCount cannot find the target dictionary.");
+			return dict->GetCount();
 		}
 
 		Value RpcCalleeListOps::DictGet(RpcObjectReference ref, const Value& key)
 		{
-			auto dict = GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
-			auto trivialKey = RpcUnboxByref(key, lifeCycle);
-			return RpcBoxByref(dict->Get(trivialKey), lifeCycle);
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
+			return RpcBoxByref(dict->Get(RpcUnboxByref(key, lifeCycle)), lifeCycle);
 		}
 
 		void RpcCalleeListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
 		{
-			auto dict = GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
 			dict->Set(RpcUnboxByref(key, lifeCycle), RpcUnboxByref(value, lifeCycle));
 		}
 
 		bool RpcCalleeListOps::DictRemove(RpcObjectReference ref, const Value& key)
 		{
-			auto dict = GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
 			return dict->Remove(RpcUnboxByref(key, lifeCycle));
 		}
 
 		void RpcCalleeListOps::DictClear(RpcObjectReference ref)
 		{
-			GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictClear cannot find the target dictionary.")->Clear();
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictClear cannot find the target dictionary.");
+			dict->Clear();
 		}
 
 		bool RpcCalleeListOps::DictContainsKey(RpcObjectReference ref, const Value& key)
 		{
-			auto keys = GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.")->GetKeys();
-			return keys->Contains(RpcUnboxByref(key, lifeCycle));
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.");
+			return dict->GetKeys()->Contains(RpcUnboxByref(key, lifeCycle));
 		}
 
 		Ptr<IValueArray> RpcCalleeListOps::DictGetKeys(RpcObjectReference ref)
 		{
-			auto keys = GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictGetKeys cannot find the target dictionary.")->GetKeys();
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetKeys cannot find the target dictionary.");
+			auto keys = dict->GetKeys();
 			auto snapshot = IValueArray::Create();
 			snapshot->Resize(keys->GetCount());
 			for (vint i = 0; i < keys->GetCount(); i++)
@@ -674,7 +604,10 @@ namespace vl
 
 		Ptr<IValueArray> RpcCalleeListOps::DictGetValues(RpcObjectReference ref)
 		{
-			auto values = GetValue(dicts, ref.objectId, L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.")->GetValues();
+			auto obj = lifeCycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
+			auto values = dict->GetValues();
 			auto snapshot = IValueArray::Create();
 			snapshot->Resize(values->GetCount());
 			for (vint i = 0; i < values->GetCount(); i++)
@@ -686,46 +619,13 @@ namespace vl
 
 		RpcCalleeListEventBridge::RpcCalleeListEventBridge(IRpcLifeCycle* lc)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
 		{
-			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
-		}
-
-		void RpcCalleeListEventBridge::RegisterLocalObject(RpcObjectReference ref, Ptr<IDescriptable> obj)
-		{
-			if (auto observable = obj.Cast<IValueObservableList>())
-			{
-				refs.Set(ref.objectId, ref);
-				sources.Set(ref.objectId, observable);
-				handlers.Set(ref.objectId, observable->ItemChanged.Add([this, ref](vint index, vint oldCount, vint newCount)
-				{
-					controller->OnItemChanged(ref, index, oldCount, newCount);
-				}));
-			}
-		}
-
-		void RpcCalleeListEventBridge::UnregisterLocalObject(RpcObjectReference ref)
-		{
-			if (ContainsKey(handlers, ref.objectId))
-			{
-				if (ContainsKey(sources, ref.objectId))
-				{
-					sources.Get(ref.objectId)->ItemChanged.Remove(handlers.Get(ref.objectId));
-				}
-				handlers.Remove(ref.objectId);
-			}
-			refs.Remove(ref.objectId);
-			sources.Remove(ref.objectId);
-		}
-
-		bool RpcCalleeListEventBridge::HasTrackedHandler(vint objectId)const
-		{
-			return ContainsKey(handlers, objectId);
+			if (!lifeCycle) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
 		}
 
 		void RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
-			controller->OnItemChanged(ref, index, oldCount, newCount);
+			lifeCycle->GetController()->OnItemChanged(ref, index, oldCount, newCount);
 		}
 
 		Value RpcBoxByref(const Value& trivial, IRpcLifeCycle* lc)
