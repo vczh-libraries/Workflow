@@ -328,7 +328,7 @@ Test projects could also implement dummy or simpler life cycle management for sp
 ```
 interface IRpcLifeCycle
 {
-  prop Controller : IRpcController {const}
+  prop Controller : IRpcController* {const}
   func RefToPtr(ref : RpcObjectReference) : interface^;
   func PtrToRef(obj : interface^) : RefObjectReference;
 }

@@ -53,10 +53,19 @@ There are no local tokens. All operations use `RpcObjectReference` directly:
 ### RpcObjectReference in Arguments
 
 The controller does **not** inspect or translate argument values. Instead:
-- CallerWrapper converts interface arguments to `RpcObjectReference` structs before passing them in `object[]`.
-- The callee's objectCallback detects `RpcObjectReference` structs in arguments and creates proxies.
+- CallerWrapper uses `IRpcLifeCycle.PtrToRef` to convert interface arguments to `RpcObjectReference` structs before passing them in `object[]`.
+- The callee's objectCallback uses `IRpcLifeCycle.RefToPtr` to convert `RpcObjectReference` structs in arguments back to interface pointers.
 
-This keeps the controller type-agnostic. The wrappers know the types and handle conversions.
+This keeps the controller type-agnostic. `IRpcLifeCycle` centralizes the conversion logic and maintains bidirectional mappings.
+
+### IRpcLifeCycle
+
+Both CallerWrapper and objectCallback use an `IRpcLifeCycle` instance to convert between `interface^` and `RpcObjectReference`, instead of manually managing registrations, proxies, and reference counting.
+
+- `PtrToRef(obj)`: converts `interface^` to `RpcObjectReference`. If the object is already a remote proxy, extracts the existing ref. If local, registers via `RegisterLocalObject` if not already registered. In both cases, calls `AcquireRemoteObject` for the receiver.
+- `RefToPtr(ref)`: converts `RpcObjectReference` to `interface^`. If the ref is local, returns the real object. If remote, creates or reuses a proxy. The returned pointer owns the acquired reference.
+
+The implementation maintains a bidirectional mapping to ensure the same object always produces the same `RpcObjectReference` and vice versa.
 
 ### Reference Counting Convention
 
@@ -237,10 +246,7 @@ override func InvokeMethod(ref : RpcObjectReference, methodId : int, arguments :
     if (methodId == METHOD_GETSIMPLE)
     {
         var result : ISimple^ = realObject.GetSimple();
-        var resultRef = controller.RegisterLocalObject(TYPE_ISIMPLE);
-        // objectCallback records: resultRef.objectId -> result
-        controller.AcquireRemoteObject(resultRef);  // +1 for the caller
-        return cast object resultRef;
+        return cast object lifeCycle.PtrToRef(result);
     }
 }
 ```
@@ -251,22 +257,18 @@ override func GetSimple() : ISimple^
 {
     var result = controller.InvokeMethod(ref, METHOD_GETSIMPLE, {});
     var simpleRef = cast RpcObjectReference result;
-    // simpleRef is already acquired (convention), caller owns it
-    return new SimpleCallerProxy(controller, simpleRef);
-    // proxy destructor calls controller.ReleaseRemoteObject(simpleRef)
+    return cast ISimple^ lifeCycle.RefToPtr(simpleRef);
 }
 ```
 
 **Flow:**
 1. CallerWrapper calls `controller.InvokeMethod(ref, METHOD_GETSIMPLE, [])`.
 2. Routes to Client A's objectCallback.
-3. objectCallback gets the real `ISimple^`, allocates a ref: `RegisterLocalObject(TYPE_ISIMPLE)` → `RpcObjectReference{clientA, newId, TYPE_ISIMPLE}`.
-4. objectCallback records the mapping from `newId` to the real object in its own dispatch table.
-5. objectCallback acquires: `AcquireRemoteObject(resultRef)` — ref count = 1 for the caller.
-6. Returns `RpcObjectReference` as `object`.
-7. Result flows back to Client B.
-8. CallerWrapper creates `SimpleCallerProxy(controller, simpleRef)`.
-9. Proxy destructor will call `ReleaseRemoteObject(simpleRef)` when the proxy is destroyed.
+3. objectCallback calls `lifeCycle.PtrToRef(result)` which registers the object (if not already registered) via `RegisterLocalObject`, records the bidirectional mapping, and calls `AcquireRemoteObject` for the caller.
+4. Returns `RpcObjectReference` as `object`.
+5. Result flows back to Client B.
+6. CallerWrapper calls `lifeCycle.RefToPtr(simpleRef)` which creates or reuses a proxy wrapping the reference.
+7. The proxy owns the acquired reference; its destructor will call `ReleaseRemoteObject`.
 
 ## Scenario 6: Interface Instance as Parameter
 
@@ -285,18 +287,7 @@ interface INested
 ```
 override func SetSimple(value : ISimple^) : void
 {
-    var argRef : RpcObjectReference;
-    if (value is SimpleCallerProxy)  // already a remote proxy
-    {
-        argRef = (cast SimpleCallerProxy^ value).ref;
-        controller.AcquireRemoteObject(argRef);  // +1 for the callee
-    }
-    else  // local object, register it
-    {
-        argRef = controller.RegisterLocalObject(TYPE_ISIMPLE);
-        // objectCallback records: argRef.objectId -> value
-        controller.AcquireRemoteObject(argRef);  // +1 for the callee
-    }
+    var argRef = lifeCycle.PtrToRef(value);
     var args = {cast object argRef};
     controller.InvokeMethod(ref, METHOD_SETSIMPLE, args);
 }
@@ -309,21 +300,18 @@ override func InvokeMethod(ref : RpcObjectReference, methodId : int, arguments :
     if (methodId == METHOD_SETSIMPLE)
     {
         var argRef = cast RpcObjectReference arguments[0];
-        // argRef is already acquired (convention)
-        var proxy = new SimpleCallerProxy(controller, argRef);
-        realObject.SetSimple(proxy);
-        // proxy destructor calls ReleaseRemoteObject when callee is done
+        var value = cast ISimple^ lifeCycle.RefToPtr(argRef);
+        realObject.SetSimple(value);
         return null;
     }
 }
 ```
 
 **Flow:**
-1. CallerWrapper converts the `ISimple^` to `RpcObjectReference`, acquires it for the callee.
-2. If local: allocates via `RegisterLocalObject(TYPE_ISIMPLE)` and records the mapping. If already a proxy: uses the existing ref.
-3. Puts the `RpcObjectReference` in arguments, calls `InvokeMethod`.
-4. Callee's objectCallback receives `RpcObjectReference{clientB, id, TYPE_ISIMPLE}`.
-5. Creates a proxy with that ref. When the callee accesses the `ISimple^`, the proxy calls **back to Client B** (bidirectional P2P).
+1. CallerWrapper calls `lifeCycle.PtrToRef(value)` which handles both cases: if `value` is already a remote proxy, extracts the existing ref; if local, registers via `RegisterLocalObject` if not already registered. In both cases, calls `AcquireRemoteObject` for the callee.
+2. Puts the `RpcObjectReference` in arguments, calls `InvokeMethod`.
+3. Callee's objectCallback receives `RpcObjectReference{clientB, id, TYPE_ISIMPLE}`.
+4. Calls `lifeCycle.RefToPtr(argRef)` which creates or reuses a proxy. When the callee accesses the `ISimple^`, the proxy calls **back to Client B** (bidirectional P2P).
 
 ## Scenario 7: @rpc:Byval Collection
 
@@ -520,10 +508,10 @@ var serviceRef = controller.RegisterLocalObject(TYPE_IWITHCTOR);
 
 **CallerWrapper on Client B:**
 ```
-static func RequestIWithCtor(controller : IRpcController^) : IWithCtor^
+static func RequestIWithCtor(lifeCycle : IRpcLifeCycle^) : IWithCtor^
 {
-    var ref = controller.RequestService(TYPE_IWITHCTOR);
-    return new WithCtorCallerProxy(controller, ref);
+    var ref = lifeCycle.Controller.RequestService(TYPE_IWITHCTOR);
+    return cast IWithCtor^ lifeCycle.RefToPtr(ref);
 }
 ```
 
@@ -532,7 +520,7 @@ static func RequestIWithCtor(controller : IRpcController^) : IWithCtor^
 2. Client B calls `controller.RequestService(TYPE_IWITHCTOR)` — `RequestService` is part of `IRpcObjectOps`.
 3. Client B's controller routes the request to Client A's objectCallback.
 4. Client A's `objectCallback.RequestService(TYPE_IWITHCTOR)` returns the `RpcObjectReference` for the service.
-5. Client B creates a proxy.
+5. Client B calls `lifeCycle.RefToPtr(ref)` to create or reuse a proxy.
 
 **No factory interface needed.** The callee creates the real object and registers it locally. The objectCallback knows which services it provides and responds to `RequestService` queries.
 
@@ -547,11 +535,11 @@ static func RequestIWithCtor(controller : IRpcController^) : IWithCtor^
 1. Client A allocates: `RegisterLocalObject(TYPE_IFOO)` → `RpcObjectReference{clientA, idA, TYPE_IFOO}`.
 2. Client B holds `RpcObjectReference{clientA, idA, TYPE_IFOO}` (acquired).
 3. Client B passes F to Client C:
-   a. CallerWrapper calls `controller.AcquireRemoteObject({clientA, idA, TYPE_IFOO})` — ref count on Client A: 2.
+   a. CallerWrapper calls `lifeCycle.PtrToRef(F)` — extracts the existing ref and calls `AcquireRemoteObject`, ref count on Client A: 2.
    b. Puts `RpcObjectReference{clientA, idA, TYPE_IFOO}` in arguments.
    c. Sends to Client C.
 4. Client C's objectCallback receives `RpcObjectReference{clientA, idA, TYPE_IFOO}`.
-5. Client C creates a proxy with that reference.
+5. Client C calls `lifeCycle.RefToPtr(ref)` which creates a proxy with that reference.
 6. Client C calls methods on F **directly to Client A** (not through Client B).
 7. When Client B releases: `ReleaseRemoteObject({clientA, idA, TYPE_IFOO})` → Client A ref count: 1.
 8. When Client C releases: `ReleaseRemoteObject({clientA, idA, TYPE_IFOO})` → Client A ref count: 0.
@@ -625,15 +613,12 @@ interface INotifier
 **Flow when event fires on Client A:**
 1. Real object fires `ObjectUpdated(simpleObj)`.
 2. objectCallback's event handler:
-   - Allocates ref: `RegisterLocalObject(TYPE_ISIMPLE)` → `RpcObjectReference{clientA, newId, TYPE_ISIMPLE}`.
-   - Records the mapping from `newId` to `simpleObj`.
-   - Acquires: `AcquireRemoteObject(newRef)`.
+   - Calls `lifeCycle.PtrToRef(simpleObj)` → `RpcObjectReference{clientA, newId, TYPE_ISIMPLE}` (registers if needed, acquires for receiver).
    - Calls `controller.InvokeEvent(ref, EVENT_OBJECTUPDATED, [cast object newRef])`.
 3. Controller routes notification to all holders (e.g., Client B).
 4. Client B's `eventCallback.InvokeEvent(ref, EVENT_OBJECTUPDATED, [cast object newRef])`.
-5. eventCallback detects `RpcObjectReference` in args.
-6. Creates proxy: `new SimpleCallerProxy(controller, newRef)`.
-7. Raises local event: `raise ObjectUpdated(proxy)`.
+5. eventCallback calls `lifeCycle.RefToPtr(newRef)` → creates or reuses proxy.
+6. Raises local event: `raise ObjectUpdated(proxy)`.
 
 **Conclusion:** Interface arguments in events work through the same `RpcObjectReference` mechanism. The `InvokeEvent(ref, eventId, object[])` signature is generic enough to carry any argument types.
 
@@ -659,13 +644,13 @@ interface IDerived : IBase { func GetLabel() : string; }
 **Casting from `IBase^` to `IDerived^`:**
 1. The caller has an `IBase^` proxy with `RpcObjectReference ref`.
 2. The caller knows from `ref.typeId` that the real type is `IDerived`.
-3. The caller creates a new `IDerivedCallerProxy(controller, ref)` using the same ref.
-4. No controller method is needed — casting is a local operation on the proxy.
+3. The caller calls `lifeCycle.RefToPtr(ref)` which returns or reuses the proxy. The caller casts the result to `IDerived^`.
+4. No controller method is needed — casting is a local operation via `IRpcLifeCycle`.
 
 **Casting from `IDerived^` to `IBase^`:**
-Same ref, different wrapper. Local operation, no remote call.
+Same ref via `lifeCycle`. Local operation, no remote call.
 
-**Conclusion:** Casting is handled entirely by the CallerWrapper. The controller is type-agnostic. The same `RpcObjectReference` works regardless of which interface view is used. The `typeId` field helps the caller determine the real type for up-casting.
+**Conclusion:** Casting is handled through `IRpcLifeCycle`. The controller is type-agnostic. The same `RpcObjectReference` works regardless of which interface view is used. The `typeId` field helps the caller determine the real type for up-casting.
 
 ## Scenario 16: Byref Dictionary Operations
 
