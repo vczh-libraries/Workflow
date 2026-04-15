@@ -924,4 +924,17 @@ Run the build/test matrix in `# AFFECTED PROJECTS` in order.
 
 - If `CompilerTest_GenerateMetadata` fails only on baseline comparison, update the baseline files as described in `# AFFECTED PROJECTS` and rerun.
 
+## Fixing attempt No.13
+
+- Why the original change did not work:
+  - `RpcByrefListEventDispatcher::targets` stored `Ptr<IValueObservableList>` (strong reference to proxies), while `RpcByrefObservableList::dispatcher` stored `Ptr<RpcByrefListEventDispatcher>` (strong reference back). This created a reference cycle that prevented either destructor from running, causing CRT memory leak detection to raise a fatal dialog on Windows debug builds.
+- What I changed:
+  - Changed `RpcByrefListEventDispatcher::targets` from `Dictionary<vint, Ptr<IValueObservableList>>` to `Dictionary<vint, IValueObservableList*>` (raw non-owning pointer).
+  - Updated `Track()` signature to accept a raw pointer.
+  - Updated the mock's proxy factory to pass `.Obj()` instead of a `Ptr`.
+- Why it should solve the test break:
+  - The dispatcher no longer holds a strong reference to the observable list proxy. The proxy owns the dispatcher via `Ptr`, and the dispatcher holds a non-owning back-reference. When the proxy is released, its destructor calls `Untrack` to clean up the raw pointer, and then the dispatcher's refcount can also drop to zero. No cycle remains.
+
 # !!!FINISHED!!!
+
+# !!!VERIFIED!!!

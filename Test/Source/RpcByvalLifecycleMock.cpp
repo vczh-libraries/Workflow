@@ -30,7 +30,7 @@ namespace vl
 			proxyFactories.Set(RpcTypeId_IValueObservableList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				auto proxy = Ptr(new RpcByrefObservableList(lc, ref, dispatcher));
-				dispatcher->Track(ref.objectId, proxy.Cast<IValueObservableList>());
+				dispatcher->Track(ref.objectId, proxy.Cast<IValueObservableList>().Obj());
 				return proxy;
 			});
 			proxyFactories.Set(RpcTypeId_IValueDictionary, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>

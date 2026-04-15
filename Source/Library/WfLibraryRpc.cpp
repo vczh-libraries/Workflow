@@ -86,7 +86,7 @@ namespace vl
 			}
 		}
 
-		void RpcByrefListEventDispatcher::Track(vint objectId, Ptr<IValueObservableList> list)
+		void RpcByrefListEventDispatcher::Track(vint objectId, IValueObservableList* list)
 		{
 			targets.Set(objectId, list);
 		}

@@ -153,10 +153,10 @@ namespace vl
 		class RpcByrefListEventDispatcher : public Object, public IRpcListEventOps
 		{
 		private:
-			vl::collections::Dictionary<vint, vl::Ptr<vl::reflection::description::IValueObservableList>>
-										targets;
+			vl::collections::Dictionary<vint, vl::reflection::description::IValueObservableList*>
+											targets;
 		public:
-			void							Track(vint objectId, vl::Ptr<vl::reflection::description::IValueObservableList> list);
+			void							Track(vint objectId, vl::reflection::description::IValueObservableList* list);
 			void							Untrack(vint objectId);
 			void							OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};
