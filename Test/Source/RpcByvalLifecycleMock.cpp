@@ -108,12 +108,12 @@ namespace vl
 			(void)ids;
 		}
 
-		Ptr<IValueDictionary> RpcByvalLifecycleMock::Register(IRpcObjectOps* _objectCallback, IRpcObjectEventOps* _eventCallback, IRpcListOps* _listCallback, IRpcListEventOps* _listEventCallback)
+		Ptr<IValueDictionary> RpcByvalLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
 		{
-			objectCallback = _objectCallback;
-			eventCallback = _eventCallback;
-			listCallback = _listCallback;
-			listEventCallback = _listEventCallback;
+			objectCallback = _objectCallback.Obj();
+			eventCallback = _eventCallback.Obj();
+			listCallback = _listCallback.Obj();
+			listEventCallback = _listEventCallback.Obj();
 
 			auto ids = IValueDictionary::Create();
 			if (objectCallback) objectCallback->SyncIds(ids);
@@ -194,8 +194,8 @@ namespace vl
 
 		void RpcByvalLifecycleMock::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
-			CHECK_ERROR(listEventCallback != nullptr, L"RpcByvalLifecycleMock requires a list event callback.");
-			listEventCallback->OnItemChanged(ref, index, oldCount, newCount);
+			CHECK_ERROR(dispatcher != nullptr, L"RpcByvalLifecycleMock requires a list event dispatcher.");
+			dispatcher->OnItemChanged(ref, index, oldCount, newCount);
 		}
 
 		void RpcByvalLifecycleMock::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
@@ -206,19 +206,23 @@ namespace vl
 			CHECK_FAIL(L"Not Supported!");
 		}
 
-		IRpcController* RpcByvalLifecycleMock::GetController()const
+		Ptr<IRpcController> RpcByvalLifecycleMock::GetController()const
 		{
-			return const_cast<RpcByvalLifecycleMock*>(this);
+			return Ptr(const_cast<RpcByvalLifecycleMock*>(this));
 		}
 
 		Ptr<IDescriptable> RpcByvalLifecycleMock::RefToPtr(RpcObjectReference ref)
 		{
+			if (proxyFactories.Keys().Contains(ref.typeId))
+			{
+				return proxyFactories.Get(ref.typeId)(const_cast<RpcByvalLifecycleMock*>(this), ref);
+			}
 			if (localObjects.Keys().Contains(ref.objectId))
 			{
 				return localObjects.Get(ref.objectId);
 			}
-			CHECK_ERROR(proxyFactories.Keys().Contains(ref.typeId), L"RpcByvalLifecycleMock::RefToPtr cannot find a proxy factory.");
-			return proxyFactories.Get(ref.typeId)(const_cast<RpcByvalLifecycleMock*>(this), ref);
+			CHECK_FAIL(L"RpcByvalLifecycleMock::RefToPtr cannot find a proxy factory.");
+			return nullptr;
 		}
 
 		RpcObjectReference RpcByvalLifecycleMock::PtrToRef(Ptr<IDescriptable> obj)

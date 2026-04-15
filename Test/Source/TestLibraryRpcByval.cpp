@@ -23,7 +23,7 @@ namespace
 		context.lifeCycle = Ptr(new RpcByvalLifecycleMock);
 		context.listOps = Ptr(new RpcCalleeListOps(context.lifeCycle.Obj()));
 		context.listEventBridge = Ptr(new RpcCalleeListEventBridge(context.lifeCycle.Obj()));
-		context.lifeCycle->Register(nullptr, nullptr, context.listOps.Obj(), context.listEventBridge.Obj());
+		context.lifeCycle->Register(nullptr, nullptr, context.listOps, context.listEventBridge);
 		return context;
 	}
 }

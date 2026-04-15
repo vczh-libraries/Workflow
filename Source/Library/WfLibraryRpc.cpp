@@ -106,7 +106,7 @@ namespace vl
 
 		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(enumeratorRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -139,7 +139,7 @@ namespace vl
 
 		RpcByrefEnumerable::RpcByrefEnumerable(IRpcLifeCycle* lc, RpcObjectReference enumerableRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(enumerableRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -157,7 +157,7 @@ namespace vl
 
 		RpcByrefList::RpcByrefList(IRpcLifeCycle* lc, RpcObjectReference listRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(listRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -226,7 +226,7 @@ namespace vl
 
 		RpcByrefArray::RpcByrefArray(IRpcLifeCycle* lc, RpcObjectReference arrayRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(arrayRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -279,7 +279,7 @@ namespace vl
 
 		RpcByrefObservableList::RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef, Ptr<RpcByrefListEventDispatcher> listDispatcher)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(listRef)
 			, dispatcher(listDispatcher)
 		{
@@ -353,7 +353,7 @@ namespace vl
 
 		RpcByrefDictionary::RpcByrefDictionary(IRpcLifeCycle* lc, RpcObjectReference dictRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 			, ref(dictRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -415,7 +415,7 @@ namespace vl
 
 		RpcCalleeListOps::RpcCalleeListOps(IRpcLifeCycle* lc)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
 		}
@@ -686,7 +686,7 @@ namespace vl
 
 		RpcCalleeListEventBridge::RpcCalleeListEventBridge(IRpcLifeCycle* lc)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController() : nullptr)
+			, controller(lc ? lc->GetController().Obj() : nullptr)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
 		}

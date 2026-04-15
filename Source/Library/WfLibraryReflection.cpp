@@ -166,9 +166,6 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcController)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)
-				CLASS_MEMBER_PROPERTY_READONLY(Controller, GetController)
-				CLASS_MEMBER_METHOD(RefToPtr, { L"ref" })
-				CLASS_MEMBER_METHOD(PtrToRef, { L"obj" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 
 			BEGIN_CLASS_MEMBER(Sys)

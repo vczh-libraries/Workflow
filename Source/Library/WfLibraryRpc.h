@@ -126,10 +126,10 @@ namespace vl
 		public:
 			virtual vl::Ptr<vl::reflection::description::IValueDictionary>
 										Register(
-											IRpcObjectOps* objectCallback,
-											IRpcObjectEventOps* eventCallback,
-											IRpcListOps* listCallback,
-											IRpcListEventOps* listEventCallback
+											vl::Ptr<IRpcObjectOps> objectCallback,
+											vl::Ptr<IRpcObjectEventOps> eventCallback,
+											vl::Ptr<IRpcListOps> listCallback,
+											vl::Ptr<IRpcListEventOps> listEventCallback
 										) = 0;
 
 			virtual RpcObjectReference		RegisterLocalObject(vl::vint typeId) = 0;
@@ -144,7 +144,7 @@ namespace vl
 			, public vl::reflection::Description<IRpcLifeCycle>
 		{
 		public:
-			virtual IRpcController*			GetController()const = 0;
+			virtual vl::Ptr<IRpcController>	GetController()const = 0;
 			virtual vl::Ptr<vl::reflection::IDescriptable>
 										RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference		PtrToRef(vl::Ptr<vl::reflection::IDescriptable> obj) = 0;

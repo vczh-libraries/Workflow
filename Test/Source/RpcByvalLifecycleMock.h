@@ -39,7 +39,7 @@ namespace vl
 			Ptr<rpc_controller::RpcByrefListEventDispatcher>							GetDispatcher()const;
 
 			void																	SyncIds(Ptr<reflection::description::IValueDictionary> ids)override;
-			Ptr<reflection::description::IValueDictionary>							Register(IRpcObjectOps* objectCallback, IRpcObjectEventOps* eventCallback, IRpcListOps* listCallback, IRpcListEventOps* listEventCallback)override;
+			Ptr<reflection::description::IValueDictionary>							Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback)override;
 			rpc_controller::RpcObjectReference										RegisterLocalObject(vint typeId)override;
 			void																	UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override;
 			void																	AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override;
@@ -53,7 +53,7 @@ namespace vl
 			void																	OnItemChanged(rpc_controller::RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 			void																	InvokeEvent(rpc_controller::RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override;
 
-			rpc_controller::IRpcController*											GetController()const override;
+			Ptr<rpc_controller::IRpcController>										GetController()const override;
 			Ptr<reflection::IDescriptable>											RefToPtr(rpc_controller::RpcObjectReference ref)override;
 			rpc_controller::RpcObjectReference										PtrToRef(Ptr<reflection::IDescriptable> obj)override;
 
