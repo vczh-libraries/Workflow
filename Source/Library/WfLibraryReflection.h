@@ -57,6 +57,14 @@ Predefined Types
 			F(AsyncCoroutine)				\
 			F(StateMachine)					\
 			F(Versioning)					\
+			F(vl::rpc_controller::RpcObjectReference)\
+			F(vl::rpc_controller::IRpcIdSync)\
+			F(vl::rpc_controller::IRpcListOps)\
+			F(vl::rpc_controller::IRpcListEventOps)\
+			F(vl::rpc_controller::IRpcObjectOps)\
+			F(vl::rpc_controller::IRpcObjectEventOps)\
+			F(vl::rpc_controller::IRpcController)\
+			F(vl::rpc_controller::IRpcLifeCycle)\
 			WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)

@@ -22,7 +22,7 @@
 
 # EXECUTION PLAN
 
-## STEP 0: Reconcile signatures and reflection surface
+## STEP 0: Reconcile signatures and reflection surface [DONE]
 - Reconcile every proposed method signature against:
   - `TODO_RPC_Definition.md` (source of truth)
   - `REPO-ROOT\Source\Library\WfLibraryRpc.h`
@@ -32,7 +32,7 @@
   - `object[]` -> `vl::Ptr<vl::reflection::description::IValueArray>`
   - `int[string]` -> `vl::Ptr<vl::reflection::description::IValueDictionary>`
 
-## STEP 1: Add reflected controller-layer RPC types (WfLibraryRpc.h)
+## STEP 1: Add reflected controller-layer RPC types (WfLibraryRpc.h) [DONE]
 - Edit `REPO-ROOT\Source\Library\WfLibraryRpc.h`.
 - Add: `RpcObjectReference`, ops interfaces (`IRpcIdSync`, `IRpcListOps`, `IRpcListEventOps`, `IRpcObjectOps`, `IRpcObjectEventOps`, `IRpcController`), `IRpcLifeCycle`.
 - Ensure `IRpcController` uses virtual inheritance to avoid duplicated `IRpcIdSync`.
@@ -177,7 +177,7 @@ namespace vl
 }
 ```
 
-## STEP 2: Implement Value boxing / unboxing helpers (WfLibraryRpc.cpp)
+## STEP 2: Implement Value boxing / unboxing helpers (WfLibraryRpc.cpp) [DONE]
 - Edit `REPO-ROOT\Source\Library\WfLibraryRpc.cpp`.
 - Implement:
   - `RpcBoxByref / RpcUnboxByref`
@@ -308,7 +308,7 @@ Value RpcUnboxByref(const Value& serializable, IRpcLifeCycle* lc)
   - `RpcUnboxByval` mirrors the above: detect readonly list/dict value, allocate a new list/dict, and recursively unbox elements.
   - If byval is expected to support interface values, that must be explicitly designed; for this task treat interface `Value::SharedPtr` as byref-only.
 
-## STEP 3: Implement caller-side byref IValue* proxies (Source\Library)
+## STEP 3: Implement caller-side byref IValue* proxies (Source\Library) [DONE]
 - Implement caller-side byref proxies forwarding to `IRpcController` list ops.
 - Forwarding rules:
   - Args to controller: `RpcBoxByref(value, lc)`.
@@ -554,7 +554,7 @@ public:
   };
   ```
 
-## STEP 4: Implement standard callee-side list ops + list event bridge
+## STEP 4: Implement standard callee-side list ops + list event bridge [DONE]
 - Provide standard callee-side implementations passed to `IRpcController::Register`.
 - Name them explicitly so STEP 6 can instantiate them deterministically (suggested names):
   - `RpcCalleeListOps` : implements `IRpcListOps` (Enum/List/Dict operations).
@@ -638,7 +638,7 @@ public:
 
 - In callee list ops implementations, element values returned to the controller should use `RpcBoxByref` / `RpcUnboxByref` consistently so interface values flow byref.
 
-## STEP 5: Reflect all new RPC types in WfLibraryReflection.(h|cpp)
+## STEP 5: Reflect all new RPC types in WfLibraryReflection.(h|cpp) [DONE]
 - Edit `REPO-ROOT\Source\Library\WfLibraryReflection.h`:
   - Add all `vl::rpc_controller::*` types to `WORKFLOW_LIBRARY_TYPES(F)`.
   - Enumerate explicitly (do not leave as "etc"), and use fully-qualified names:
@@ -737,7 +737,7 @@ BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)
 END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 ```
 
-## STEP 6: Implement unit tests and byval controller mock (LibraryTest)
+## STEP 6: Implement unit tests and byval controller mock (LibraryTest) [DONE]
 - Implement / add:
   - `REPO-ROOT\Test\Source\TestLibraryRpcByval.cpp`
   - `REPO-ROOT\Test\Source\RpcByvalLifecycleMock.h`
@@ -777,7 +777,81 @@ END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 Run the build/test matrix in `# AFFECTED PROJECTS` in order.
 
 # FIXING ATTEMPTS
-- None yet.
+
+## Fixing attempt No.1
+
+- Why the original change did not work:
+  - `Source\Library\WfLibraryRpc.h` inherited from `vl::reflection::description::IDescriptable` and `vl::reflection::description::Description`, but those reflection base types are declared in `vl::reflection`.
+  - The new async controller signature used `vl::reflection::description::IAsync`, but `WfLibraryRpc.h` only included `<VlppReflection.h>`, which does not declare Workflow predefined async types.
+  - `Test\Source\RpcByvalLifecycleMock.h` copied the same wrong `IDescriptable` namespace, so the mismatch cascaded into template and override failures in the test project.
+- What I changed:
+  - Replaced `#include <VlppReflection.h>` in `Source\Library\WfLibraryRpc.h` with `#include "WfLibraryPredefined.h"` so `IAsync` is declared.
+  - Updated all RPC interface and lifecycle `IDescriptable` / `Description<>` references in `WfLibraryRpc.h` to use `vl::reflection`.
+  - Updated matching `IDescriptable` references in `Test\Source\RpcByvalLifecycleMock.h` to use `vl::reflection::IDescriptable`.
+- Why it should solve the build break:
+  - The RPC types now inherit from the actual reflection base classes used elsewhere in this repo.
+  - `InvokeMethodAsync` now sees the Workflow async interface declaration.
+  - The mock header now matches the corrected controller interfaces, eliminating the namespace-driven compile cascade.
+
+## Fixing attempt No.2
+
+- Why the original change did not work:
+  - The new controller-layer implementation used `collections::Dictionary::Contains`, but this collection API exposes key lookup via `Keys().Contains(...)`, not a direct `Contains(key)` member.
+  - The byval cycle-detection cache also used `const Object*` keys and duplicate forward declarations for `RpcUnboxByvalInternal`, which caused invalid pointer conversions and an ambiguous overload.
+- What I changed:
+  - Added a `ContainsKey(...)` helper in `Source\Library\WfLibraryRpc.cpp` and replaced dictionary membership checks there with the correct key lookup pattern.
+  - Updated the same dictionary key checks in `Test\Source\RpcByvalLifecycleMock.cpp`.
+  - Switched the byval visited-set dictionaries to `const DescriptableObject*`, used `Value::GetRawPtr()` as the cycle-detection key, and removed the now-conflicting anonymous-namespace forward declarations by replacing that block with the helper.
+- Why it should solve the build break:
+  - The implementation now matches the actual Vlpp collection API used elsewhere in the repo.
+  - Cycle tracking now uses the same raw pointer type produced by `Value`, avoiding unrelated-pointer casts.
+  - Removing the conflicting declarations leaves a single visible `RpcUnboxByvalInternal`, so the recursive calls resolve cleanly.
+
+## Fixing attempt No.3
+
+- Why the original change did not work:
+  - The new `ContainsKey(...)` helper expected the lookup key type to exactly match the dictionary key type.
+  - `Value::GetRawPtr()` returns `DescriptableObject*`, while the visited-set dictionary stores `const DescriptableObject*`, so template deduction became ambiguous in the byval cycle checks.
+- What I changed:
+  - Explicitly cast the `GetRawPtr()` results used for byval cycle detection to `const DescriptableObject*`.
+- Why it should solve the build break:
+  - The visited-set lookup key type now exactly matches the dictionary key type, so `ContainsKey(...)` can be instantiated without ambiguity.
+
+## Fixing attempt No.4
+
+- Why the original change did not work:
+  - The reflected type id code assumed `ITypeDescriptor` exposed `GetTypeId()`, but this API is not available in the current reflection layer.
+  - The new unit test file used `TEST_CASE` blocks without the required `});` terminator, and it still used `Dictionary::Contains` on a Vlpp dictionary.
+- What I changed:
+  - Reworked `GetRpcTypeId<T>()` to compute the reflected type id by locating the descriptor index from `GetGlobalTypeManager()`.
+  - Fixed every `TEST_CASE` terminator in `Test\Source\TestLibraryRpcByval.cpp` to use `});`.
+  - Replaced the remaining dictionary membership check in `TestLibraryRpcByval.cpp` with `values.Keys().Contains(1)`.
+- Why it should solve the build break:
+  - The controller-layer type id logic now uses the reflection API that actually exists in this repo.
+  - The unit test file now matches the unit test macro syntax used throughout the codebase.
+  - The last remaining invalid dictionary API call in the new test is removed.
+
+## Fixing attempt No.5
+
+- Why the original change did not work:
+  - One `TEST_CASE` in `Test\Source\TestLibraryRpcByval.cpp` still ended with `}` instead of `});`, so the test macro expansion remained unbalanced.
+- What I changed:
+  - Fixed the remaining `RpcByrefList forwards Add Insert RemoveAt and Clear` test case terminator to `});`.
+- Why it should solve the build break:
+  - All new test cases now use the same `TEST_CASE` closing syntax as the existing test suite, so the unit test macro expansion should parse correctly.
+
+## Fixing attempt No.6
+
+- Why the original change did not work:
+  - The helper implementation and the new tests use `BoxValue` / `UnboxValue` with `vl::rpc_controller::RpcObjectReference`, but the corresponding `DECL_TYPE_INFO` declarations live in `Source\Library\WfLibraryReflection.h`, not in `WfLibraryRpc.h`.
+  - One earlier test-case terminator fix accidentally changed the local `CreateContext()` helper to end with `});`.
+- What I changed:
+  - Included `Source\Library\WfLibraryReflection.h` in `Source\Library\WfLibraryRpc.cpp` and in `Test\Source\TestLibraryRpcByval.cpp` so `RpcObjectReference` type info is visible where boxing and unboxing happen.
+  - Restored the `CreateContext()` helper terminator in `TestLibraryRpcByval.cpp` back to a normal `}`.
+- Why it should solve the build break:
+  - `BoxValue` / `UnboxValue` can now see the reflection type-info declarations for `RpcObjectReference`.
+  - The helper function is syntactically correct again, so the test file should parse.
+
 - If `CompilerTest_GenerateMetadata` fails only on baseline comparison, update the baseline files as described in `# AFFECTED PROJECTS` and rerun.
 
 # !!!FINISHED!!!
