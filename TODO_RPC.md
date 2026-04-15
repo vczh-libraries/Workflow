@@ -10,6 +10,7 @@
 ## ToDo
 
 - Update Workflow compiler to generate list of unique identifier (string) for all rpc types, methods, events.
+  - metadata module name should leave blank, the unit test will fill "test" to it.
 - Implementation in test library that connects a caller and a callee controller, all in one client.
   - Enable serialization pipeline injection.
   - `DescriptableObject::SetInternalProperty` will be used to receive destructor call of local objects, to know if an object becomes unavailable.
@@ -32,3 +33,5 @@
 - Solve interface inheritance and casting.
 - Solve containers of interfaces.
 - Solve duplicating serialization when two different assemblies share the same set of structs/enums.
+  - After generating assemblies, collect all generated rpc metadata module, remove existing and duplicating declarations.
+  - And then do codegen works for rpc.
