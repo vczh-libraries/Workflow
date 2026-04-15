@@ -103,10 +103,18 @@ namespace vl
 			return dispatcher;
 		}
 
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcIdSync)
+***********************************************************************/
+
 		void RpcByvalLifecycleMock::SyncIds(Ptr<IValueDictionary> ids)
 		{
 			(void)ids;
 		}
+
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcController)
+***********************************************************************/
 
 		Ptr<IValueDictionary> RpcByvalLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
 		{
@@ -160,51 +168,9 @@ namespace vl
 			}
 		}
 
-		Value RpcByvalLifecycleMock::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
-		{
-			(void)ref;
-			(void)methodId;
-			(void)arguments;
-			CHECK_FAIL(L"Not Supported!");
-			return {};
-		}
-
-		Ptr<IAsync> RpcByvalLifecycleMock::InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
-		{
-			(void)ref;
-			(void)methodId;
-			(void)arguments;
-			CHECK_FAIL(L"Not Supported!");
-			return nullptr;
-		}
-
-		void RpcByvalLifecycleMock::ObjectHold(RpcObjectReference ref, bool hold)
-		{
-			(void)ref;
-			(void)hold;
-			CHECK_FAIL(L"Not Supported!");
-		}
-
-		RpcObjectReference RpcByvalLifecycleMock::RequestService(vint typeId)
-		{
-			(void)typeId;
-			CHECK_FAIL(L"Not Supported!");
-			return {};
-		}
-
-		void RpcByvalLifecycleMock::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
-		{
-			CHECK_ERROR(dispatcher != nullptr, L"RpcByvalLifecycleMock requires a list event dispatcher.");
-			dispatcher->OnItemChanged(ref, index, oldCount, newCount);
-		}
-
-		void RpcByvalLifecycleMock::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
-		{
-			(void)ref;
-			(void)eventId;
-			(void)arguments;
-			CHECK_FAIL(L"Not Supported!");
-		}
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcLifeCycle)
+***********************************************************************/
 
 		Ptr<IRpcController> RpcByvalLifecycleMock::GetController()const
 		{
@@ -239,6 +205,58 @@ namespace vl
 			TrackLocalObject(ref, obj);
 			return ref;
 		}
+
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcObjectOps)
+***********************************************************************/
+
+		Value RpcByvalLifecycleMock::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+			(void)ref;
+			(void)methodId;
+			(void)arguments;
+			CHECK_FAIL(L"Not Supported!");
+			return {};
+		}
+
+		Ptr<IAsync> RpcByvalLifecycleMock::InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+			(void)ref;
+			(void)methodId;
+			(void)arguments;
+			CHECK_FAIL(L"Not Supported!");
+			return nullptr;
+		}
+
+		void RpcByvalLifecycleMock::ObjectHold(RpcObjectReference ref, bool hold)
+		{
+			(void)ref;
+			(void)hold;
+			CHECK_FAIL(L"Not Supported!");
+		}
+
+		RpcObjectReference RpcByvalLifecycleMock::RequestService(vint typeId)
+		{
+			(void)typeId;
+			CHECK_FAIL(L"Not Supported!");
+			return {};
+		}
+
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcObjectEventOps)
+***********************************************************************/
+
+		void RpcByvalLifecycleMock::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		{
+			(void)ref;
+			(void)eventId;
+			(void)arguments;
+			CHECK_FAIL(L"Not Supported!");
+		}
+
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcListOps)
+***********************************************************************/
 
 		RpcObjectReference RpcByvalLifecycleMock::EnumCreate(RpcObjectReference ref)
 		{
@@ -338,6 +356,16 @@ namespace vl
 		Ptr<IValueArray> RpcByvalLifecycleMock::DictGetValues(RpcObjectReference ref)
 		{
 			return RequireListCallback()->DictGetValues(ref);
+		}
+
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcListEventOps)
+***********************************************************************/
+
+		void RpcByvalLifecycleMock::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		{
+			CHECK_ERROR(dispatcher != nullptr, L"RpcByvalLifecycleMock requires a list event dispatcher.");
+			dispatcher->OnItemChanged(ref, index, oldCount, newCount);
 		}
 	}
 }
