@@ -1,5 +1,4 @@
-#include "Helper.h"
-#include "../Source/CppTypes.h"
+#include "../../Source/Helper.h"
 
 bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& itemResult, bool& cppCodegen)
 {

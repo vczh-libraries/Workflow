@@ -1,5 +1,5 @@
-#include "Helper.h"
-#include "CppTypes.h"
+#include "../../Source/Helper.h"
+#include "../../Source/CppTypes.h"
 
 extern WfCpuArchitecture testCpuArchitecture;
 

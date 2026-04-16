@@ -7,3 +7,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Library\WfLibraryCppHelper.cpp"
 #include "..\..\Source\Library\WfLibraryPredefined.cpp"
 #include "..\..\Source\Library\WfLibraryReflection.cpp"
+#include "..\..\Source\Library\WfLibraryRpc.cpp"

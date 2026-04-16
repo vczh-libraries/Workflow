@@ -9,8 +9,6 @@
 
 ## ToDo
 
-- metadata module name should leave blank, the unit test will fill "test" to it.
-- sub folder in Test/Source to store compiler test and runtime test specific files.
 - Solve duplicating serialization when two different assemblies share the same set of structs/enums.
   - After generating assemblies, collect all generated rpc metadata module, remove existing and duplicating declarations.
   - And then do codegen works for rpc.

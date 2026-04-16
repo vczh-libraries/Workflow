@@ -1,5 +1,5 @@
-#include "RpcByvalLifecycleMock.h"
-#include "../../Source/Library/WfLibraryReflection.h"
+#include "../../Source/RpcByvalLifecycleMock.h"
+#include "../../../Source/Library/WfLibraryReflection.h"
 
 using namespace vl;
 using namespace vl::collections;

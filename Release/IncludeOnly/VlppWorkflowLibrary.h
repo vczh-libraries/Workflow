@@ -9,4 +9,5 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\Library\WfLibraryPredefined.h"
 #include "..\..\Source\Library\WfLibraryCppHelper.h"
+#include "..\..\Source\Library\WfLibraryRpc.h"
 #include "..\..\Source\Library\WfLibraryReflection.h"
