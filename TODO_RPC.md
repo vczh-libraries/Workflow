@@ -32,6 +32,8 @@ Create a very simple test case in a new `Rpc` category, you needs to create a `R
 To build this case, you will need to do the similar thing as `TestRuntimeCompile.cpp` in `CompilerTest_LoadAndCompile`, but in a new file called `TestRpcCompiler.cpp`, using a shared manager like other test files:
 - Clear and load a case, compile. And you will get the `WfRpcMetadata`, no log file will be created.
 - Generate wrapper implementations from `WfRpcMetadata`, write this file to `Test\Generated\RpcMetadata(32|64)\Wrapper_<CASE-NAME>.txt`.
+  - It will not be another pass, create `WfAnalyzer_GenerateRpc.cpp`, taking the manager and returning a new `WfModule`.
+  - The exported function will be `GenerateModuleRpc` and extern in `WfAnalyzer.h` below ValidateModuleRPC.
 - Clear and load the case again as well as the generated wrapper, do a normal compiling like `TestRuntime.cpp` processing `Codegen` but skip the C++ code generation.
   - `TestRuntimeCompile.cpp` seems to not generate `Parsing.Runtime.CASE-NAME.txt`, fix it.
   - `TestRpcCompiler.cpp` will do `Parsing.Rpc.CASE-NAME.txt` too, but the wrapper file does not need to create this file.
