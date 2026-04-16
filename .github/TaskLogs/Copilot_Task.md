@@ -1,276 +1,351 @@
 # !!!TASK!!!
 
 # PROBLEM DESCRIPTION
-# Problem
-- References:
-  - [Definition](./TODO_RPC_Definition.md)
-  - [Scenarios](./TODO_RPC_Scenarios.md)
+Create a `WfRpcMetadata` struct before `WfLexicalScopeManager` to contain:
+- `rpcMetadata`: Move from `WfLexicalScopeManager` to here.
+- `typeNames`: A `Dictionary<WString, WfDeclaration*>` storing all full name of types in `rpcMetadata`, identifiers joined with "::" just like C++/Workfoow.
+- `methodNames`: A `SortedList<WString, WfFunctionDeclaration*>` storing all full name of methods in `rpcMetadata`.
+  - It includes all methods in all interfaces (`rpcMetadata` interfaces are all marked with `@rpc:Interface` already)
+  - The method name would be `<FULL-TYPE-NAME>.<MethodName>`.
+  - **ONLY WHEN** overloading exists, the method name will be appended by `_ArgName1_ArgName2...`. Nothing will be appended if there is no argument.
+  - For overloading methods that still result in the same name, `_0`, `_1`... need to be appended, including the first one.
+- `eventNames`: Just like method names but it stores `WfEventDeclaration` and there will be no overloading.
 
-- Add `IRpcController` and `IRpcLifeCycle` to the `WfLibraryRpc.(h|cpp).
-  - Caller side `IValue*` implementation to call list ops and listen to list event ops.
-    - Each `IValue*` collection (enumeratle, list, dictionary, observable) should have a wrapper implementation, accepting `IRpcLifeCycle` and a `RpcObjectReference` arguments in their constructors. Only writable versions are needed because they also implement readonly version interfaces.
-    - `RpcByref*` inherits from `IValue*`, meaning they implement `@rpc:Byref` containers. When convert between objects and serializable objects, they should use the `byref` helper function.
-  - Callee side list ops implementation to call `IValue*`, attach to all events to call list event ops.
-    - Callee side implementations accepting `IRpcLifeCycle` argument in their constructors.
-  - No object ops implementations are introduced in this task.
-  - Boxing and unboxing helper functions:
-    - `RpcBoxByref`, `RpcUnboxByref`, `RpcBoxByval`, `RpcUnboxByval`.
-    - `Box` converts from trivial objects to serializable objects. `Unbox` do the reverse.
-    - Trivial objects means objects in their original form, like an `@rpc:Interface` interface implementation, `IValue*` collections, enums, structs.
-    - Serializable objects means objects in their controller form. `@rpc:Interface` and `byref` `IValue*` collections become `RpcObjectReference`. `byval` `IValue*` collections become their `IValue*` version of serializable objects (this happens recursively, so boxing/unboxing byval collections could just be recursive functions).
-    - All these functions convert between `Value` to `Value`, taking `IRpcLifeCycle` as their second argument.
-    - All values passing to `IRpcController` should be serializable objects. All values passing to or returning from the interface of wrappers or `@rpc:Interface` implementations should be trivial objects. The `BoxValue` and `UnboxValue` function would help to process non-interface values.
+Create a very simple test case in a new `Rpc` category, you needs to create a `Rpc` folder as well as `IndexRpc.txt`, with the following content:
+- `serviceMain` function accepts a `IRpcLifecycle*` and run.
+- `clientMain` function accepts a `IRpcLifecycle*` and register a service.
+- A service will be an interface with `@rpc:Ctor`. For the first new test case it will be named after `RequestService`.
+- The interface has a `GetText` method without argument, the `serviceMain` will use create an implementation:
+  - `GetText` returns a text.
+  - Call lifecycle interface's `RegisterService(string, interface^)` to register the service with its full name. This function does not exist, you need to create it, there is an implementation in `LibraryTest` for testing purpose, say `CHECK_FAIL(L"Not Supported!");` there.
+  - `clientMain` will all `RequestService(string): interface^` and do a cast (also not exists as above), call `GetText` and return the result as the test case result.
+
+To build this case, you will need to do the similar thing as `TestRuntimeCompile.cpp` in `CompilerTest_LoadAndCompile`, but in a new file called `TestRpcCompiler.cpp`, using a shared manager like other test files:
+- Clear and load a case, compile. And you will get the `WfRpcMetadata`, no log file will be created.
+- Generate wrapper implementations from `WfRpcMetadata`, write this file to `Test\Generated\RpcMetadata(32|64)\Wrapper_<CASE-NAME>.txt`.
+  - It will not be another pass, create `WfAnalyzer_GenerateRpc.cpp`, taking the manager and returning a new `WfModule`.
+  - The exported function will be `GenerateModuleRpc` and extern in `WfAnalyzer.h` below ValidateModuleRPC.
+- Clear and load the case again as well as the generated wrapper, do a normal compiling like `TestRuntime.cpp` processing `Codegen` but skip the C++ code generation.
+  - `TestRuntimeCompile.cpp` seems to not generate `Parsing.Runtime.CASE-NAME.txt`, fix it.
+  - `TestRpcCompiler.cpp` will do `Parsing.Rpc.CASE-NAME.txt` too, but the wrapper file does not need to create this file.
+- `RuntimeTest` needs to load these cases in a new file `TestRpc.cpp`, doing what `TestRuntime.cpp` do, but only load the assembly, no running is needed. Because the lifecycle interface implementation is not created yet.
+
+In the generated wrapper, you need to do these things:
+- Since the original code will compile with the generated wrappers, so it doesn't need to include anything from `rpcMetadata`.
+- The generated wrapper will be in a module called `RpcMetadata`, which is the same as the one in `rpcMetadata`.
+- Global variables of `int`
+  - `rpctype_xxx`, `rpcmethod_xxx` and `rpcevent_xxx`, all comes from `WfRpcMetadata`, `::` and `.` will be replaced by `_`.
+  - List type followed by method followed by event, values from 0 ascending even across group.
+- Global variables of `int[string]`, maps from these number to their original name (`::` and `.` version).
+- Implementations callee side ops interface, global function `rpc_IRpcXXXOps` function returning `IRpcXXXOps^`:
+  - `IRpcObjectOps`: Call `Rpc(UnbB)oxBy(ref|val)` according to if `@rpc:Byref` is attached or not (doesn't matter if `@rpc:Byval` is attached or not because it is the default value):
+    - For property getter and setter, see the property. You need to read property definition to know which methods are getters and setters, the method names mean nothing.
+    - For method return type, see the method.
+    - For method argument, see the argument.
+  - `IRpcObjectEventOps`: Call `Rpc(Unb|B)oxByval` for argument serialization.
+  - These functions are not reflectable yet, you need to register them as `IRpcLifecycle`'s static function.
+  - Callee side ops interfaces take an input of `IRpcLifecycle*`.
+  - Those global variables help to know which ID is which.
+- Implementations caller side `@rpc:Interface` interface implementation:
+  - If the function name is `my::favorite::namespace_name::interface_name`, the function will be `my::favorite::namespace_name::rpcwrapper_interface_name`.
+  - The function returns `interface_name^`.
+  - The function takes a `IRpcLifecycle*` as a parameter and implement redirect all methods to those ops interfaces, following the same rule above about byval or byref.
+- Caller side ops:
+  - `IRpcObjectOps` will take method arguments from the wrapper and send them to the remote.
+  - `IRpcObjectEventOps` will take event arguments from wrapper, these events will be triggered in the caller side directly, so in each rpc interface wrapper all events will be listened to call `IRpcObjectEventOps`.
+- Callee side ops:
+  - `IRpcObjectOps` do the reverse, read arguments and call methods.
+  - `IRpcObjectEventOps` do the reverse, read arguments and call events.
+  - You will notice that, the implementation is symmentric but why callee side doesn't hook events from the actual interface (unlike the caller side hooking wrappers), because it will be part of the future implementation of `IRpcLifecycle`.
+- No more global variable to create.
+- Ops interface implementations are for both service and client.
+- You cannot assume the ops implementation will be registered to the same `IRpcLifecycle` instance with the one passed to the function to create it.
+
+Since the test case can't be actually launched yet, just compile in `CompileTest_LoadAndCompile` and load assembly in `RuntimeTest` is enough.
+Actually execution will be in the future when `IRpcLifecycle` is implemented.
 
 # UPDATES
+- (none)
 
 # INSIGHTS AND REASONING
 
-## Existing structure / evidence
-- `Source\Library\WfLibraryRpc.h/.cpp` currently contain only an empty `vl::rpc_controller` namespace (no types yet).
-- `Source\Library\WfLibraryReflection.h` already includes `WfLibraryRpc.h`, and the library type-loading is driven by `WORKFLOW_LIBRARY_TYPES(F)` / `IMPL_TYPE_INFO_RENAME(...)` / `BEGIN_*_MEMBER(...)` blocks in `WfLibraryReflection.(h|cpp)`.
-- `TODO_RPC_Definition.md` defines the controller-layer Ops interfaces (`IRpcListOps`, `IRpcListEventOps`, ...), plus `RpcObjectReference`, `IRpcController`, and `IRpcLifeCycle`.
-- `TODO_RPC_Scenarios.md` describes required byref list/dict proxy behavior (Scenario 8/16) and observable change forwarding (Scenario 19).
-- `Import\VlppReflection.h` documents that observable list change args match `reflection::description::IValueObservableList::ItemChanged(index, oldCount, newCount)` (see `typedef void ItemChangedProc(vint index, vint oldCount, vint newCount);`).
-- `TODO_RPC.md` adds two additional constraints for this task:
-  - Everything declared in `WfLibraryRpc.h` should be reflected via `WfLibraryReflection.(h|cpp)`.
-  - Unit tests will validate that caller-side byref wrappers call into `IRpcController` list ops, mutate the underlying real collections, and that observable list events are forwarded back.
+## Current codebase observations (evidence)
 
-## Design overview
-This task adds the **library-side runtime abstractions** needed by generated RPC wrappers and unit tests:
+- RPC metadata already exists as a generated `vl::workflow::WfModule` named `RpcMetadata`.
+  - `Source\Analyzer\WfAnalyzer_ValidateRPC.cpp` builds the metadata module inside `ValidateModuleRPC_GenerateMetadata(...)` and currently stores it on `WfLexicalScopeManager` (via `manager->rpcMetadata = metadataModule;`).
+- RPC validation is part of the normal analyzer rebuild pipeline.
+  - `Source\Analyzer\WfAnalyzer.cpp` calls `ValidateModuleRPC(this, module);` from `WfLexicalScopeManager::Rebuild(...)`.
+- The runtime reflection surface for RPC lifecycle exists but is currently empty.
+  - `Source\Library\WfLibraryReflection.cpp` has `BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)` with no members, while other RPC ops (`IRpcObjectOps`, etc.) are reflected.
+  - Type rename shows Workflow-side name is `system::rpc_controller::LifeCycle` (`IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcLifeCycle, system::rpc_controller::LifeCycle)`). This is a naming mismatch with the problem statement’s `IRpcLifecycle*`.
+- Compiler tests already baseline-compare RPC metadata for `Runtime` cases.
+  - `Test\UnitTest\CompilerTest_LoadAndCompile\TestRuntimeCompile.cpp` writes `Test\Generated\RpcMetadata{32|64}\<case>.txt` and compares against `Test\Resources\Baseline\RpcMetadata{32|64}`.
+- Parse logs are produced via a shared helper.
+  - `Test\Source\Helper.cpp` provides `LogSampleParseResult(category, itemName, module);` which writes `Test\Generated\Workflow{32|64}\Parsing.<Category>.<Case>.txt`.
 
-1. **Controller-facing untyped RPC surface** (`IRpcController` and its base Ops interfaces), using `Value` as the universal payload type.
-2. **A lifecycle bridge** (`IRpcLifeCycle`) that converts between "trivial" runtime objects (real interface implementations / real `IValue*` collections) and "serializable" controller-layer representations (`RpcObjectReference` and recursively boxed values).
-3. **Byref collection proxies** (caller-side `IValue*` implementations) that forward list/dict/enumerator operations to `IRpcController::List*` / `Dict*` / `Enum*`, and (for observable lists) receive `IRpcListEventOps::OnItemChanged` to raise local `ItemChanged`.
-4. **Standard callee-side list ops / list event implementations** to delegate incoming list operations to real `IValue*` collections and to bridge `ItemChanged` from real observable lists back to the controller.
-5. **Value-to-Value boxing/unboxing helpers**:
-   - `RpcBoxByref`, `RpcUnboxByref` for byref semantics.
-   - `RpcBoxByval`, `RpcUnboxByval` for byval semantics.
+These existing structures strongly suggest we should:
+1) keep `ValidateModuleRPC` as the source of truth for “what is RPC and what needs wrappers”,
+2) move “where metadata is stored” and “precomputed name lookup tables” into a new struct, and
+3) add a dedicated wrapper-generation step that consumes this struct.
 
-No interface-object invocation (`IRpcObjectOps`) implementations are introduced here (as required).
+## Proposed architecture
 
-## Review-driven clarifications (applied)
-The initial design is directionally correct; the following clarifications tighten the spec so future implementation and unit tests are unambiguous:
+### 1) Introduce `WfRpcMetadata` (data ownership and lookup tables)
 
-1) Lock interface signatures to the definition and fix spec typos
-- `IRpcLifeCycle::Controller` returns `IRpcController*` (non-owning). Controller and lifecycle should not own each other.
-- `IRpcLifeCycle::PtrToRef` returns `RpcObjectReference`.
-- `TODO_RPC_Definition.md` contains a typo where it says `RefObjectReference`; it should be `RpcObjectReference`.
+Add a new `struct WfRpcMetadata` in `Source\Analyzer\WfAnalyzer.h` before `WfLexicalScopeManager`.
 
-2) Make the `IRpcIdSync` hierarchy explicit and address diamond inheritance
-- `IRpcObjectOps` and `IRpcObjectEventOps` inherit `IRpcIdSync`; `IRpcListOps` and `IRpcListEventOps` do not.
-- Since `IRpcController` inherits all four Ops interfaces, C++ interface inheritance must be **virtual** (or otherwise avoid duplicated `IRpcIdSync`) so it compiles and reflects cleanly.
+Fields (concrete types, no placeholders):
+- `Ptr<vl::workflow::WfModule> rpcMetadata;`
+  - Moved from `WfLexicalScopeManager`.
+- Final unique-name maps (lookup by full name):
+  - `vl::collections::Dictionary<vl::WString, vl::workflow::WfDeclaration*> typeNames;`
+  - `vl::collections::Dictionary<vl::WString, vl::workflow::WfFunctionDeclaration*> methodNames;`
+  - `vl::collections::Dictionary<vl::WString, vl::workflow::WfEventDeclaration*> eventNames;`
+- Deterministic ID ordering (do not rely on `Dictionary` key order):
+  - `vl::collections::List<vl::WString> typeFullNames;`
+  - `vl::collections::List<vl::WString> methodFullNames;`
+  - `vl::collections::List<vl::WString> eventFullNames;`
 
-3) Specify object/collection/enumerator registries: ownership, storage type, and cleanup rules
-- `IRpcLifeCycle` implementation owns the registries that map `RpcObjectReference` (typically by `objectId`) to:
-  - real local objects / local byref collections
-  - created enumerators
-  - cached caller-side proxies
-- Use concrete, heterogeneous-capable storage (e.g. separate dictionaries for `Ptr<reflection::description::IValueList>`, `Ptr<reflection::description::IValueDictionary>`, `Ptr<reflection::description::IValueEnumerator>`), instead of ambiguous wording like “`Ptr<IValue*>`”.
-- Define precise removal rules (e.g. on `UnregisterLocalObject` and/or when `ReleaseRemoteObject` drops the last remote reference) to prevent leaks and stale dispatch.
+Construction algorithm (single-pass, no redundant traversal):
+- `ValidateModuleRPC_GenerateMetadata(...)` remains responsible for producing the `RpcMetadata` module.
+- While constructing metadata declarations, also compute and record:
+  - the final full name for each type/method/event (post-disambiguation),
+  - populate the corresponding `*Names` dictionary,
+  - append the full name into the corresponding `*FullNames` list in the exact order that will define IDs.
+- If temporary grouping is needed during name construction (e.g. before disambiguation), use a temporary `vl::collections::Group<vl::WString, vl::workflow::WfFunctionDeclaration*>` (or equivalent) and only store final unique names in the `Dictionary` fields.
 
-4) Clarify observable list event dispatcher wiring and safe lifetime management
-- Caller constructs an `IRpcListEventOps` dispatcher and passes it as `listEventCallback` in `IRpcController::Register`.
-- `RpcByrefObservableList` registers/unregisters itself to that dispatcher; the dispatcher routes `OnItemChanged` to the correct proxy.
-- Use an explicit safe mechanism suitable for this codebase (intrusive `Ptr<T>`): typically an `objectId`-keyed registry holding raw pointers that are explicitly deregistered in proxy destructors.
-- Do not assume observable changes are batched; forward each `OnItemChanged` individually.
-- Align with `Import\VlppReflection.h`: `IValueObservableList::ItemChanged` uses parameter name `index`.
+Naming rules (core requirement, now fully specified):
+- Type full names: join nested namespaces/types with `::`.
+- Method full names: `<FULL-TYPE-NAME>.<MethodName>`.
+  - Overload disambiguation is applied only when multiple methods share the same base `<FULL-TYPE-NAME>.<MethodName>`.
+  - Step 1: append `_ArgName1_ArgName2...` using parameter *names* in declaration order. If there is no argument, append nothing.
+  - Step 2: if there are still collisions (same final name after Step 1), append numeric suffixes `_0`, `_1`, ... **including the first one**.
+    - Tie-breaker for `_0/_1/...`: use AST declaration order within the interface (stable across runs) so `Wrapper_<CASE>.txt` is deterministic.
+- Event full names: `<FULL-TYPE-NAME>.<EventName>` (no overloading).
 
-5) Define null-callback behavior for `IRpcController::Register`
-- Unit tests may pass `nullptr` for object ops callbacks; either allow null and require the controller to guard every call, or treat null as a programming error. This task will assume **null is allowed** and all uses are guarded.
+Reset semantics (required by `collections::Dictionary` behavior):
+- `collections::Dictionary` copy assignment is deleted. Any “reset” must call `.Clear()` on each `Dictionary`/`List` field (or reconstruct the whole `WfRpcMetadata` by move/swap).
 
-6) Define enumerator lifecycle end-to-end
-- `EnumCreate` returns an acquired reference; `RpcByrefEnumerator` releases its remote reference in its destructor.
-- Callee-side enumerator registry cleanup is tied to `ReleaseRemoteObject` for that enumerator `RpcObjectReference`.
 
-7) Make boxing/unboxing rules first-class and consistent
-- For non-interface values, use `BoxValue` / `UnboxValue`.
-- Treat interface values and byref collections separately via lifecycle conversion (`PtrToRef` / `RefToPtr`) and `RpcBoxByref` / `RpcUnboxByref`.
-- For byref collection ops, both caller proxies and callee-side standard implementations must consistently apply `RpcBoxByref` / `RpcUnboxByref` to element payloads.
-- For byval recursive boxing/unboxing, state an explicit **acyclic** precondition (or specify cycle detection) to avoid infinite recursion.
+### 2) Store RPC metadata on the manager as a single concept
 
-8) Define DictGetKeys / DictGetValues return handling
-- Treat results as snapshot collections. Specify where element-level boxing/unboxing happens (in `Rpc(Un)boxBy(val|ref)`, not in the controller).
+Modify `WfLexicalScopeManager` (in `Source\Analyzer\WfAnalyzer.h`) to replace the existing `rpcMetadata` field with a single `WfRpcMetadata rpc;` (or similarly named field).
 
-9) Resolve proxy surface ambiguities
-- If `RpcByrefArray` exists, define supported operation subset and deterministic failure (`CHECK_FAIL`) for unsupported list mutations.
-- If standalone `RpcByrefEnumerable` proxies are needed, document `CreateEnumerator()` flow (`EnumCreate` then wrap as `RpcByrefEnumerator`).
+Rationale:
+- Keeps RPC-related information cohesive.
+- Avoids additional recomputation across phases (validation, wrapper generation, tests).
 
-10) Specify `typeId` derivation for byref collection proxies
-- Document how `typeId` is obtained from the strong-typed Workflow collection type descriptor and mapped through the `IRpcIdSync` id table.
+### 3) Add wrapper-generation entry point: `GenerateModuleRpc`
 
-11) Reflection registration requirements
-- Commit to the reflected naming scheme (e.g. `system::rpc_controller::*`) and `IMPL_TYPE_INFO_RENAME` usage.
-- Specify which interfaces should use `BEGIN_INTERFACE_MEMBER` vs `BEGIN_INTERFACE_MEMBER_NOPROXY` (callback-only vs script-implementable).
-- Ensure reflected methods have argument names where required for Workflow compilation.
+Create a new analyzer source file `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp` implementing:
+- `Ptr<vl::workflow::WfModule> GenerateModuleRpc(WfLexicalScopeManager* manager);`
 
-12) Testing section should reference the task’s required wiring
-- Align with `TODO_RPC.md`: `RpcByvalLifecycleMock.(h|cpp)` structure, controller mock redirecting to callee list ops passed to `Register`, and per-container-type `TEST_CASE` coverage.
-- For unimplemented object ops in this task, define a deterministic stub policy (`CHECK_FAIL`) so partial rollout fails loudly.
+Export/extern:
+- Add an `extern` declaration in `Source\Analyzer\WfAnalyzer.h` below `ValidateModuleRPC` declarations, per requirement.
 
-## Core types and interfaces to add (in `WfLibraryRpc.h`)
-All types below live under `namespace vl::rpc_controller` (matching current stub), and should be reflected in `WfLibraryReflection.(h|cpp)`.
+Input/Output contract:
+- Input: the manager after `ValidateModuleRPC` has run (so `manager->rpc` is populated).
+- Output: a new `WfModule` representing the generated wrapper module.
+  - Module name must be `RpcMetadata` (exactly matching the metadata module name).
 
-### `RpcObjectReference`
-A reflected `struct` holding:
-- `vint clientId;`
-- `vint objectId;`
-- `vint typeId;`
+Wrapper module contents (high-level):
 
-This struct is the only identifier that crosses the controller boundary.
+1. Global ID constants:
+- Generate global `int` variables:
+  - `rpctype_xxx`, `rpcmethod_xxx`, `rpcevent_xxx`.
+  - Name mangling: replace `::` and `.` with `_`.
+- ID assignment must be deterministic:
+  - Types first, then methods, then events.
+  - Values are assigned from 0 ascending across all groups (i.e., method IDs continue after the last type ID, event IDs continue after the last method ID).
 
-### Ops interfaces (as in TODO_RPC_Definition.md)
-Define (reflected) interfaces matching the definition document:
-- `IRpcIdSync` (`SyncIds(Dictionary<WString,vint> ids)` conceptually; actual signature uses Workflow’s `int[string]` mapping representation in C++ reflection types)
-- `IRpcListOps` (Enum*, List*, Dict* methods)
-- `IRpcListEventOps` (`OnItemChanged`)
-- `IRpcObjectOps` / `IRpcObjectEventOps` (declared but not implemented in this task)
-- `IRpcController : IRpcListOps, IRpcObjectOps, IRpcListEventOps, IRpcObjectEventOps` with:
-  - `Register(...)` (stores callback pointers, returns ID map)
-  - `RegisterLocalObject(typeId)`, `UnregisterLocalObject(ref)`
-  - `AcquireRemoteObject(ref)`, `ReleaseRemoteObject(ref)`
+2. Global name mapping dictionaries:
+- Workflow generic direction is treated as: `T[K]` means **value type `T`**, **key type `K`**.
+- To avoid any ambiguity and make wrappers self-sufficient, generate **both directions** with explicit names:
+  - `rpcNameToId : int[string]` (key: full name, value: ID)
+  - `rpcIdToName : string[int]` (key: ID, value: full name)
+- These maps cover type/method/event IDs in the unified 0..N-1 range (types first, then methods, then events).
 
-### `IRpcLifeCycle`
-Define (reflected) interface as specified:
-- `Controller` property returns `IRpcController*` (non-owning). Controller and lifecycle should not own each other.
-- `RefToPtr(ref)` converts `RpcObjectReference` to a trivial pointer (creates/reuses proxies).
-- `PtrToRef(obj)` converts a trivial pointer to `RpcObjectReference` (registers local objects if needed).
 
-Design note (collections): byref `IValue*` collections are also “objects” that need lifecycle conversion, so `IRpcLifeCycle` is expected to support both:
-- `@rpc:Interface` instances
-- byref `IValue*` collection instances
+3. Callee-side ops implementations:
+- Generate concrete implementations for ops interfaces (e.g. `system::rpc_controller::ObjectOps^`, `ObjectEventOps^`, etc.; exact reflected names depend on `WfLibraryReflection.cpp` renames).
+- Provide global factory functions `rpc_IRpcXXXOps(lifecycle: LifeCycle*): IRpcXXXOps^`.
+  - These functions must exist for both service and client usage.
+  - They must not assume the created ops object is registered to the same lifecycle instance that is passed in.
+- Boxing/unboxing and byref/byval:
+  - Wrapper-generated code must call `Rpc(Unb|B)oxBy(ref|val)` based on `@rpc:Byref` presence.
+  - For property accessors, “getter vs setter” must be determined from the property declaration, not method naming.
 
-## Boxing / unboxing layer (Value -> Value)
+4. Caller-side wrappers for `@rpc:Interface` interfaces:
+- For each `@rpc:Interface` interface type `my::ns::IService`, generate a factory function:
+  - `my::ns::rpcwrapper_IService(lifecycle: LifeCycle*): IService^`.
+- The returned object implements `IService` and redirects:
+  - Methods to `IRpcObjectOps`.
+  - Events are hooked on the caller side and dispatched through `IRpcObjectEventOps`.
 
-### Concepts
-- **Trivial objects**: values in their “native” runtime representation, e.g.:
-  - `@rpc:Interface` implementations (as reflected interface shared pointers)
-  - `IValue*` collections (`IValueArray/IValueList/IValueDictionary/IValueObservableList/IValueEnumerable/IValueEnumerator`)
-  - enums, structs, primitives
-- **Serializable objects**: controller-layer payloads:
-  - `RpcObjectReference` for interface values and for byref collections
-  - recursively serializable values for byval collections
+### 4) Required library API surface for compilation
 
-Rule enforced by helpers:
-- Values going into `IRpcController` calls must be **serializable**.
-- Values returned from / passed into user-facing proxies and real implementations must be **trivial**.
+The new Workflow test case requires two lifecycle methods that do not currently exist:
+- `RegisterService(string, interface^)`.
+- `RequestService(string): interface^`.
 
-### Functions
-Add free functions (and reflect them via a helper type if needed):
-- `Value RpcBoxByref(const Value& trivial, IRpcLifeCycle* lc);`
-- `Value RpcUnboxByref(const Value& serializable, IRpcLifeCycle* lc);`
-- `Value RpcBoxByval(const Value& trivial, IRpcLifeCycle* lc);`
-- `Value RpcUnboxByval(const Value& serializable, IRpcLifeCycle* lc);`
+Design proposal:
+- Add these as members on `vl::rpc_controller::IRpcLifeCycle` in `Source\Library\WfLibraryRpc.h`.
+- Reflect them in `Source\Library\WfLibraryReflection.cpp` under `BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)`.
+  - This is also where we will add the “static functions for boxing/unboxing” required by the wrapper generator.
 
-High-level behavior:
-- For primitives/enums/structs: pass-through (or use `BoxValue`/`UnboxValue` helpers where type conversion is required).
-- For interface values (`Value::SharedPtr` with an interface type descriptor):
-  - `Box`: use `lc->PtrToRef(...)`, return `RpcObjectReference` boxed into `Value`.
-  - `Unbox`: use `lc->RefToPtr(...)`.
-- For collection values:
-  - **Byref boxing** (`RpcBoxByref`): register the collection as a local object (via lifecycle/controller) and return a `RpcObjectReference` (serializable).
-  - **Byref unboxing** (`RpcUnboxByref`): convert `RpcObjectReference` into a caller-side byref collection proxy (`RpcByref*`) that implements the correct `IValue*` interface.
-  - **Byval boxing/unboxing**: recursively walk the container, boxing/unboxing elements using byval recursion. This produces a new `IValue*` tree whose elements are themselves serializable/trivial as appropriate.
+Rationale:
+- The immediate goal is compile-time availability to allow wrapper code and test cases to type-check.
+- Runtime behavior is not required yet (tests do not execute RPC), so test-only implementations can fail fast.
 
-Important design constraint from `TODO_RPC.md`:
-- `Rpc(Unb|B)oxBy(Val|Ref)` should rely on `BoxValue` / `UnboxValue` for non-interface values, and treat reference types (interfaces and byref collections) as a separate branch.
+Test-only implementation location:
+- Implement stub behavior in existing test lifecycle mocks (e.g. `Test\Source\RpcLifecycleMock.*`) or in the `LibraryTest` side per requirement.
+  - The stub can use `CHECK_FAIL(L"Not Supported!");` from Vlpp (see KB guidance in `.github\KnowledgeBase\Index.md`, exception-handling section).
 
-## Caller-side byref collection proxies (`RpcByref*`)
+Lifecycle naming contract (no alias / no rename):
+- Treat `IRpcLifecycle` as a spelling mistake in the problem statement.
+- Keep the existing C++ interface `vl::rpc_controller::IRpcLifeCycle` and the existing Workflow name `system::rpc_controller::LifeCycle` as the contract.
+- All new Workflow test cases in this task will use `LifeCycle*` (not `IRpcLifecycle*`).
 
-### Scope
-Provide concrete implementations (C++ classes) of the relevant `reflection::description::IValue*` interfaces that forward operations to controller list ops:
-- `RpcByrefEnumerable` : `IValueEnumerable`
-- `RpcByrefEnumerator` : `IValueEnumerator`
-- `RpcByrefList` / `RpcByrefArray` : `IValueList` / `IValueArray` (depending on how `T[]` is represented; tests will explicitly cover Array vs List)
-- `RpcByrefObservableList` : `IValueObservableList`
-- `RpcByrefDictionary` : `IValueDictionary`
 
-Each proxy’s constructor takes:
-- `IRpcLifeCycle* lifeCycle`
-- `RpcObjectReference ref`
+## Test strategy and artifacts
 
-Only writable interfaces are implemented explicitly; readonly interfaces are satisfied via inheritance.
+### 1) New `Rpc` resource category
 
-### Forwarding rules
-- All operations that send a `Value` argument to the controller must first convert from trivial -> serializable using the **byref** boxing helper (so nested collection elements are treated as byref too):
-  - `controller.ListSet(ref, index, RpcBoxByref(value, lc))`
-  - `controller.DictSet(ref, RpcBoxByref(key, lc), RpcBoxByref(value, lc))`
-- All operations that return an element (`ListGet`, `DictGet`, `EnumGetCurrent`) must convert serializable -> trivial via **byref** unboxing.
+Add a new resource category:
+- `Test\Resources\Rpc\` folder.
+- `Test\Resources\IndexRpc.txt` listing cases.
 
-### Observable list event reception
-`RpcByrefObservableList` must surface the local `ItemChanged(index, oldCount, newCount)` event.
+Add the first case (explicit Workflow sketch):
+- `serviceMain(lifecycle: LifeCycle*) : void`
+  - Create an implementation object of `RequestService`.
+  - Call `lifecycle.RegisterService("<FULL-INTERFACE-NAME>", service)`.
+- `clientMain(lifecycle: LifeCycle*) : string`
+  - Call `lifecycle.RequestService("<FULL-INTERFACE-NAME>")`.
+  - Cast to `RequestService^`, call `GetText()`, return the string.
+- Service interface:
+  - Must satisfy existing analyzer rule: `@rpc:Ctor` can only apply to an interface that also has `@rpc:Interface`.
+  - Therefore the case uses:
+    - `@rpc:Interface`
+    - `@rpc:Ctor`
+    - `interface RequestService { func GetText() : string; }`
 
-Design approach:
-- Introduce a caller-side `IRpcListEventOps` implementation (dispatcher) that the controller calls when remote events arrive.
-- The dispatcher maintains a map from `RpcObjectReference` to active `RpcByrefObservableList` proxies (weak references / safe pointers).
-- `RpcByrefObservableList` registers/unregisters itself with the dispatcher on construction/destruction.
-- On `OnItemChanged(ref, ...)`, the dispatcher finds the proxy and raises `ItemChanged(...)` on it.
 
-This matches Scenario 19 in `TODO_RPC_Scenarios.md` and the signature documented in `Import\VlppReflection.h`.
+### 2) Compiler test: `TestRpcCompiler.cpp`
 
-## Callee-side list ops + list event bridge
+In `Test\UnitTest\CompilerTest_LoadAndCompile`, add `TestRpcCompiler.cpp` modeled after `TestRuntimeCompile.cpp`, but with a 2-pass flow:
 
-### `IRpcListOps` standard implementation
-Provide a standard callee-side implementation of `IRpcListOps` that:
-- Looks up the real target collection/enumerator by `ref.objectId`.
-- For each operation, translates arguments and results:
-  - Incoming values from controller are **serializable** -> unbox to trivial before applying to real collections.
-  - Outgoing values from real collections are **trivial** -> box to serializable before returning.
+Pass 1 (metadata only):
+- Clear/load one `Rpc` case and compile far enough to produce `WfRpcMetadata` (i.e., to run `ValidateModuleRPC`).
+- Do not generate parsing logs for this pass (per requirement).
 
-It requires access to:
-- A mapping `objectId -> Ptr<IValue*>` for registered byref collections.
-- A mapping for enumerators created by `EnumCreate`.
+Wrapper generation:
+- Call `GenerateModuleRpc(manager)` to produce the wrapper `WfModule`.
+- Print it to `Test\Generated\RpcMetadata{32|64}\Wrapper_<CASE-NAME>.txt`.
+  - This is a generated artifact, not a baseline input.
 
-The mapping is populated when boxing byref collections (see Boxing layer): the component that allocates the `RpcObjectReference` must also register `(objectId -> realCollection)` so later `List*`/`Dict*` calls can dispatch.
+Pass 2 (compile case + wrapper, codegen to assembly, no C++ generation):
+- Clear/load the same case again.
+- Load the generated wrapper module as an additional module.
+- **Prevent module name collision**: since both the RPC metadata module and the wrapper module are named `RpcMetadata`, pass 2 must **skip RPC validation/metadata generation**.
+  - Design commitment: introduce a test-only compile option/flag that disables `ValidateModuleRPC` for this pass, because the wrapper module is already provided and we only need type-checking + codegen.
+- Perform the normal compilation pipeline similar to what `TestRuntime.cpp` does for executable cases, but stop after VM assembly generation (skip C++ code generation).
+- Generate parse log:
+  - `Test\Generated\Workflow{32|64}\Parsing.Rpc.<CASE-NAME>.txt`.
 
-### `IRpcListEventOps` standard implementation (callee side)
-Provide a standard implementation that monitors real `IValueObservableList` instances:
-- On association of a `RpcObjectReference` with a real observable list, attach to its `ItemChanged` event.
-- When it fires, call `lifeCycle->Controller()->OnItemChanged(ref, index, oldCount, newCount)` (controller routes to remote holders).
-- Detach handlers when the object is unregistered/unavailable.
 
-The constructor accepts `IRpcLifeCycle*` per requirement, so the implementation can access the controller via `lifeCycle->Controller`.
+Additionally:
+- Re-check `TestRuntimeCompile.cpp` behavior regarding `Parsing.Runtime.<CASE-NAME>.txt`.
+  - The shared helper supports this; if missing, the fix is to ensure the runtime compile test calls `LogSampleParseResult(L"Runtime", ...)` consistently (as other categories do).
 
-## Reflection exposure (`WfLibraryReflection.(h|cpp)`)
-Because `WfLibraryReflection.h` already includes `WfLibraryRpc.h`, the reflection step should:
-- Extend `WORKFLOW_LIBRARY_TYPES(F)` to include at least:
-  - `rpc_controller::RpcObjectReference`
-  - `rpc_controller::IRpcIdSync`
-  - `rpc_controller::IRpcListOps`
-  - `rpc_controller::IRpcListEventOps`
-  - `rpc_controller::IRpcObjectOps`
-  - `rpc_controller::IRpcObjectEventOps`
-  - `rpc_controller::IRpcController`
-  - `rpc_controller::IRpcLifeCycle`
-  - A helper type (e.g. `rpc_controller::RpcBoxing`) to expose `RpcBoxByref/RpcUnboxByref/RpcBoxByval/RpcUnboxByval` to Workflow if codegen needs to call them.
-- Add `IMPL_TYPE_INFO_RENAME(...)` mappings to place them under a stable Workflow namespace (e.g. `system::rpc_controller::*`).
-- Add `BEGIN_STRUCT_MEMBER` / `BEGIN_INTERFACE_MEMBER` registrations.
+### 3) Runtime test: `RuntimeTest\TestRpc.cpp`
 
-## Expected unit test shape (from TODO_RPC.md)
-LibraryTest should validate:
-- `RpcBoxByref` creates caller-side proxies (as `IValue*`) that forward to list ops.
-- Mutating the proxy mutates the real underlying collection.
-- For observable lists, mutating the real underlying collection triggers `ItemChanged` on the proxy via list event ops.
+In `Test\UnitTest\RuntimeTest`, add `TestRpc.cpp` that:
+- Loads `Rpc` cases similarly to `TestRuntime.cpp`.
+- Only loads/deserializes the generated assembly; does not execute `serviceMain/clientMain`.
 
-## Key non-goals / boundaries
-- No implementation of interface-object ops (`IRpcObjectOps`) or object event ops is required here.
-- No protocol/serialization format is defined here; `Value` is treated as the universal payload.
+Rationale:
+- Lifecycle is not implemented yet, but assembly load ensures:
+  - the wrapper module type-checks with the case,
+  - the codegen pipeline is stable,
+  - serialization/deserialization of assemblies is correct.
+
+## Determinism and baseline impact
+
+- Determinism is required for stable `Wrapper_<CASE>.txt` generation and stable ID assignment.
+  - Determinism is enforced by `WfRpcMetadata::{typeFullNames, methodFullNames, eventFullNames}` (explicit ordered lists) plus the overload tie-breaker rule (AST declaration order for `_0/_1/...`).
+- Baseline comparisons that may change:
+  - Existing `RpcMetadata{32|64}\<case>.txt` may change if the metadata module content changes.
+- Wrapper baseline policy (explicit):
+  - `Wrapper_<CASE-NAME>.txt` is a generated artifact written under `Test\Generated\RpcMetadata{32|64}`.
+  - In this task it is **not** baseline-compared; acceptance is: file exists, non-empty, and is deterministic across repeated runs on the same architecture.
+
+
+## Resolved design decisions (review-driven)
+
+To make implementation/test behavior deterministic and reviewable, the following are committed (not open questions):
+
+1) **`WfRpcMetadata` collections are concrete `vl::collections` types**
+- Final unique-name maps are `Dictionary<WString, ...>` (`typeNames`, `methodNames`, `eventNames`).
+- Deterministic ID order is defined by explicit `List<WString>` sequences (`typeFullNames`, `methodFullNames`, `eventFullNames`).
+
+2) **`int[string]` direction is fixed and both maps are generated**
+- Treat `T[K]` as value `T`, key `K`.
+- Generate `rpcNameToId : int[string]` and `rpcIdToName : string[int]`.
+
+3) **Lifecycle naming is locked (no alias)**
+- C++: `vl::rpc_controller::IRpcLifeCycle`.
+- Workflow: `system::rpc_controller::LifeCycle`.
+
+4) **Pass-2 module collision is handled explicitly**
+- Wrapper module name remains `RpcMetadata` (per requirement).
+- Pass 2 disables `ValidateModuleRPC` so the metadata module is not regenerated and cannot collide with the wrapper module.
+
+5) **`@rpc:Ctor` semantics are explicit**
+- `@rpc:Ctor` is only meaningful on an `@rpc:Interface` interface (existing analyzer rule).
+- For metadata/wrapper generation it behaves like a normal RPC interface for method/event enumeration; additionally it marks the interface as eligible for lifecycle-level `RegisterService(name, interface^)` / `RequestService(name): interface^` usage.
+
+6) **Single-pass metadata population**
+- `ValidateModuleRPC_GenerateMetadata` populates name maps and ordered lists while constructing the metadata module (no second traversal).
+
+7) **Reset semantics are explicit**
+- No copy assignment is used for `Dictionary` fields; reset uses `.Clear()` on all `Dictionary`/`List` fields (or reconstruct by move/swap).
+
+8) **Runtime parse log scope is minimal**
+- Do not change `TestRuntimeCompile.cpp` unless `Parsing.Runtime.<CASE>.txt` is actually missing; if missing, add the missing `LogSampleParseResult(L"Runtime", ...)` call.
+
+9) **Overload disambiguation is deterministic**
+- Disambiguation uses arg-name suffixing first, then `_0/_1/...` with AST declaration order as the tie-breaker.
+
+10) **`RequestService` name overlap is acknowledged**
+- `IRpcObjectOps::RequestService(vint typeId)` already exists.
+- New lifecycle methods are separate and name-based; document this distinction in code/comments and wrapper generation naming to avoid confusion.
+
+11) **Ops factories and boxing helpers are reflected in a stable way**
+- Reflection commits to exposing required ops factory functions and boxing/unboxing helpers as `LifeCycle` static functions in `WfLibraryReflection.cpp` (validate macro compatibility with `BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)`).
+
+12) **Reflection scope is complete for wrapper compilation**
+- `LifeCycle` reflection will include existing members (`GetController`, `RefToPtr`, `PtrToRef`) plus any wrapper-required helpers (`RpcBoxByref`, `RpcUnboxByref`, `RpcBoxByval`, `RpcUnboxByval`) and the new service registry APIs.
+
+13) **Concrete Workflow test sketch is part of the design**
+- The `Rpc` case uses `LifeCycle*`, `@rpc:Interface`, and `@rpc:Ctor` explicitly and calls `RegisterService/RequestService` by full interface name.
+
+14) **Wrapper artifact acceptance criteria are explicit**
+- Wrapper files are not baseline-compared in this task; determinism and existence are the acceptance criteria.
+
+15) **Expected artifacts per phase are explicit**
+- Pass 1: metadata produced, no parsing log; wrapper file written.
+- Pass 2: assembly codegen succeeds; `Parsing.Rpc.<CASE>.txt` generated.
 
 # AFFECTED PROJECTS
-- Build the solution in folder `REPO-ROOT\Test\UnitTest` (`Debug|x64`).
-- Always Run UnitTest project `LibraryTest` (`Debug|x64`).
-- Always Run UnitTest project `CompilerTest_GenerateMetadata` (`Debug|x64`) because `Source\Library` changes can affect reflected types.
-  - If reflection metadata baselines change, update `REPO-ROOT\Test\Resources\Baseline\Reflection64.txt` from `REPO-ROOT\Test\UnitTest\Generated\Reflection64.txt` and rerun.
-- Always Run UnitTest project `CompilerTest_LoadAndCompile` (`Debug|x64`).
-- Always Run UnitTest project `CppTest` (`Debug|x64`).
-- Always Run UnitTest project `CppTest_Metaonly` (`Debug|x64`).
-- Always Run UnitTest project `CppTest_Reflection` (`Debug|x64`).
 
-- Build the solution in folder `REPO-ROOT\Test\UnitTest` (`Debug|Win32`).
-- Always Run UnitTest project `LibraryTest` (`Debug|Win32`).
-- Always Run UnitTest project `CompilerTest_GenerateMetadata` (`Debug|Win32`).
-  - If reflection metadata baselines change, update `REPO-ROOT\Test\Resources\Baseline\Reflection32.txt` from `REPO-ROOT\Test\UnitTest\Generated\Reflection32.txt` and rerun.
-- Always Run UnitTest project `CppTest` (`Debug|Win32`).
-- Always Run UnitTest project `CppTest_Metaonly` (`Debug|Win32`).
-- Always Run UnitTest project `CppTest_Reflection` (`Debug|Win32`).
+- Build the solution in folder `REPO-ROOT\Test\UnitTest` (Debug|x64).
+- Build the solution in folder `REPO-ROOT\Test\UnitTest` (Debug|Win32).
+- Always Run UnitTest project `LibraryTest` (Debug|x64, Debug|Win32).
+- Run UnitTest project `CompilerTest_GenerateMetadata` (Debug|x64, Debug|Win32) only when files in `REPO-ROOT\Source\Library`, `REPO-ROOT\Source\Parser`, or `REPO-ROOT\Test\Source` are changed (reflection/lifecycle API changes will trigger this).
+- Always Run UnitTest project `CompilerTest_LoadAndCompile` (Debug|x64).
+- Always Run UnitTest project `RuntimeTest` (Debug|x64, Debug|Win32).
+- Always Run UnitTest project `CppTest` (Debug|x64, Debug|Win32).
+- Always Run UnitTest project `CppTest_Metaonly` (Debug|x64, Debug|Win32).
+- Always Run UnitTest project `CppTest_Reflection` (Debug|x64, Debug|Win32).
 
 # !!!FINISHED!!!
