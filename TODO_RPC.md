@@ -33,3 +33,4 @@
   - Generate C++ code from Rpc category with the new pattern.
   - This time new lifecycle implementations will be created tonise JSON serialization for values (protocol not included).
 - Solve interface inheritance and casting.
+- Delete Runtime test category.
