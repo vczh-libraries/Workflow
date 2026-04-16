@@ -10,6 +10,7 @@
 ## ToDo
 
 - metadata module name should leave blank, the unit test will fill "test" to it.
+- sub folder in Test/Source to store compiler test and runtime test specific files.
 - Solve duplicating serialization when two different assemblies share the same set of structs/enums.
   - After generating assemblies, collect all generated rpc metadata module, remove existing and duplicating declarations.
   - And then do codegen works for rpc.
@@ -25,7 +26,7 @@
     - They have client id 1 and 2.
     - lifecycle1 redirect ops to lifecycle2 callee ops, vice versa.
     - it means lifecycle2 callee ops are created with lifecycle2 reference and are registered into lifecycle1.
-    - `RumtimeTest` need to create two set of objects, call `serviceMain` followed by `clientMain`.
+- `RumtimeTest` need to create two set of objects, call `serviceMain` followed by `clientMain`.
   - `DescriptableObject::SetInternalProperty` will be used to receive destructor call of local objects, to know if an object becomes unavailable.
 - Continue to add more test cases until all features are covered.
 - C++ codegen for wrappers (should be normal codegen) with JSON serizliation in C++.
