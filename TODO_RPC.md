@@ -10,28 +10,25 @@
 ## ToDo
 
 - metadata module name should leave blank, the unit test will fill "test" to it.
-- Implementation in test library that connects a caller and a callee controller, all in one client.
-  - Enable serialization pipeline injection.
-  - `DescriptableObject::SetInternalProperty` will be used to receive destructor call of local objects, to know if an object becomes unavailable.
-- Workflow compiler generates wrappers to call the controller.
-  - Only supports `@rpc:Byval` and `@rpc:Cached`, also no `@rpc:Ctor`, no containers of interfaces, CHECK_FAIL if these happen.
-  - Caller side interface implementation (in Workflow script), to call object ops and listen to object event ops.
-    - Destructor could call `ReleaseRemoteObject`.
-  - Callee side object ops implementation (in Workflow script), attach to all events to call object event ops.
-  - JSON serialization based on reflection.
-  - Lifecycle can be managed by wrapper destructor, acquire/release will be only called once per wrapper.
-  - Now test cases can run.
-    - Create a Rpc category, do not do C++ code generation. TestRuntimeCompile.cpp will handle this.
-    - Need to expose another function besides of `main` and `RuntimeTest` will pick them up and connect them with controller constructions.
-- C++ codegen for wrappers (should be normal codegen) with JSON serizliation in C++.
-  - Generate C++ code from Rpc category with a new pattern.
-- Implement event handling.
-- Implement `@rpc:Byref` and `ObservableList`.
-- Implement `@rpc:Dynamic`.
-- Implement `@rpc:Ctor`.
-- Solve interface inheritance and casting.
-- Solve containers of interfaces.
 - Solve duplicating serialization when two different assemblies share the same set of structs/enums.
   - After generating assemblies, collect all generated rpc metadata module, remove existing and duplicating declarations.
   - And then do codegen works for rpc.
   - generate list of unique identifier (string) for all rpc types, methods, events.
+- Workflow compiler generates wrappers to call the controller.
+  - Add RPC test categories.
+  - Load test case and generate metadata.
+  - Load metadata and generate wrappers.
+  - Load test case with wrappers and generate C++/binary.
+  - One very simple test case to call a `@rpc:Ctor` service.
+    - `serviceMain` accepts a lifecycle interface and run.
+    - `clientMain` accepts a lifecycle interface and register a service.
+    - They have client id 1 and 2.
+    - lifecycle1 redirect ops to lifecycle2 callee ops, vice versa.
+    - it means lifecycle2 callee ops are created with lifecycle2 reference and are registered into lifecycle1.
+    - `RumtimeTest` need to create two set of objects, call `serviceMain` followed by `clientMain`.
+  - `DescriptableObject::SetInternalProperty` will be used to receive destructor call of local objects, to know if an object becomes unavailable.
+- Continue to add more test cases until all features are covered.
+- C++ codegen for wrappers (should be normal codegen) with JSON serizliation in C++.
+  - Generate C++ code from Rpc category with the new pattern.
+  - This time new lifecycle implementations will be created tonise JSON serialization for values (protocol not included).
+- Solve interface inheritance and casting.
