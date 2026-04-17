@@ -8,13 +8,9 @@ var rpcNameToId : int[string] = {"RpcTest::IService" : 0; "RpcTest::IService.Get
 
 var rpcIdToName : string[int] = {0 : "RpcTest::IService"; 1 : "RpcTest::IService.GetText";};
 
-interface RpcEndpointObjectOps : system::IRpcObjectOps
-{
-}
-
 func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 {
-    return new (RpcEndpointObjectOps^)
+    return new (system::IRpcObjectOps^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
@@ -61,13 +57,9 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-interface RpcEndpointObjectEventOps : system::IRpcObjectEventOps
-{
-}
-
 func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
 {
-    return new (RpcEndpointObjectEventOps^)
+    return new (system::IRpcObjectEventOps^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 

@@ -799,23 +799,11 @@ namespace vl
 					return branch;
 				}
 
-				Ptr<WfDeclaration> GenerateObjectOpsClass(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
-				{
-					(void)manager;
-					(void)interfaces;
-					auto interfaceDecl = Ptr(new WfClassDeclaration);
-					interfaceDecl->name.value = L"RpcEndpointObjectOps";
-					interfaceDecl->kind = WfClassKind::Interface;
-					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
-					interfaceDecl->baseTypes.Add(CreateQualifiedType(L"system::IRpcObjectOps"));
-					return interfaceDecl;
-				}
-
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpc_IRpcObjectOps", CreateSharedType(L"system::IRpcObjectOps"), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"RpcEndpointObjectOps")).Cast<WfNewInterfaceExpression>();
+					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
 					newOps->declarations.Add(CreateVariableDeclaration(L"_holds", CreateSharedType(L"system::Dictionary"), CreateConstructor()));
 
@@ -867,23 +855,11 @@ namespace vl
 					return functionDecl;
 				}
 
-				Ptr<WfDeclaration> GenerateObjectEventOpsClass(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
-				{
-					(void)manager;
-					(void)interfaces;
-					auto interfaceDecl = Ptr(new WfClassDeclaration);
-					interfaceDecl->name.value = L"RpcEndpointObjectEventOps";
-					interfaceDecl->kind = WfClassKind::Interface;
-					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
-					interfaceDecl->baseTypes.Add(CreateQualifiedType(L"system::IRpcObjectEventOps"));
-					return interfaceDecl;
-				}
-
 				Ptr<WfDeclaration> GenerateObjectEventOpsFactory(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpc_IRpcObjectEventOps", CreateSharedType(L"system::IRpcObjectEventOps"), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"RpcEndpointObjectEventOps")).Cast<WfNewInterfaceExpression>();
+					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
 
 					{
@@ -1052,9 +1028,7 @@ namespace vl
 				}
 				module->declarations.Add(CreateVariableDeclaration(L"rpcIdToName", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreatePredefinedType(WfPredefinedTypeName::String)), idToName));
 
-				module->declarations.Add(GenerateObjectOpsClass(manager, interfaces));
 				module->declarations.Add(GenerateObjectOpsFactory(manager, interfaces));
-				module->declarations.Add(GenerateObjectEventOpsClass(manager, interfaces));
 				module->declarations.Add(GenerateObjectEventOpsFactory(manager, interfaces));
 
 				List<Ptr<WfDeclaration>> wrapperDeclarations;
