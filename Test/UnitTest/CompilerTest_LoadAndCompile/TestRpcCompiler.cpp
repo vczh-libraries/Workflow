@@ -37,9 +37,9 @@ TEST_FILE
 					TEST_ASSERT(manager.errors.Count() == 0);
 
 					manager.AddModule(module);
-					manager.Rebuild(true, nullptr, true);
+					manager.Rebuild(true);
 					TEST_ASSERT(manager.errors.Count() == 0);
-					TEST_ASSERT(manager.rpc.rpcMetadata);
+					TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
 
 					wrapperModule = GenerateModuleRpc(&manager);
 					TEST_ASSERT(wrapperModule);

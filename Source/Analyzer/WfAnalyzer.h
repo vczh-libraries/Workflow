@@ -174,25 +174,14 @@ Scope Manager
 
 			struct WfRpcMetadata
 			{
-				vl::Ptr<vl::workflow::WfModule>												rpcMetadata;
-				vl::collections::Dictionary<vl::WString, vl::workflow::WfClassDeclaration*>	typeNames;
+				vl::Ptr<vl::workflow::WfModule>													metadataModule;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfClassDeclaration*>		typeNames;
 				vl::collections::Dictionary<vl::WString, vl::workflow::WfFunctionDeclaration*>	methodNames;
-				vl::collections::Dictionary<vl::WString, vl::workflow::WfEventDeclaration*>	eventNames;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfEventDeclaration*>		eventNames;
 
-				vl::collections::List<vl::WString>											typeFullNames;
-				vl::collections::List<vl::WString>											methodFullNames;
-				vl::collections::List<vl::WString>											eventFullNames;
-
-				void Clear()
-				{
-					rpcMetadata = nullptr;
-					typeNames.Clear();
-					methodNames.Clear();
-					eventNames.Clear();
-					typeFullNames.Clear();
-					methodFullNames.Clear();
-					eventFullNames.Clear();
-				}
+				vl::collections::List<vl::WString>												typeFullNames;
+				vl::collections::List<vl::WString>												methodFullNames;
+				vl::collections::List<vl::WString>												eventFullNames;
 			};
 
 			/// <summary>
@@ -270,7 +259,7 @@ Scope Manager
 			public:
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
-				WfRpcMetadata								rpc;								// rpc metadata module and generated lookup tables
+				Ptr<WfRpcMetadata>							rpcMetadata;						// rpc metadata module and generated lookup tables
 
 				vint										usedTempVars = 0;
 				ParsingErrorList							errors;								// compile errors

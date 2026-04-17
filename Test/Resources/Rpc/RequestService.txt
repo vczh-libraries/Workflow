@@ -1,33 +1,32 @@
 module Rpc;
 
 using system::*;
-using system::rpc_controller::*;
 
-namespace Rpc
+namespace RpcTest
 {
 	@rpc:Interface
 	@rpc:Ctor
-	interface RequestService
+	interface IService
 	{
 		func GetText() : string;
 	}
 }
 
-func serviceMain(lc : LifeCycle*) : void
+func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var service = new (Rpc::RequestService^)
+	var service = new (RpcTest::IService^)
 	{
 		override func GetText() : string
 		{
 			return "Hello";
 		}
 	};
-	lc.RegisterService("Rpc::RequestService", service);
+	lc.RegisterService("RpcTest::IService", service);
 }
 
-func clientMain(lc : LifeCycle*) : string
+func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var obj = lc.RequestService("Rpc::RequestService");
-	var service = cast (Rpc::RequestService^) obj;
+	var obj = lc.RequestService("RpcTest::IService");
+	var service = cast (RpcTest::IService^) obj;
 	return service.GetText();
 }

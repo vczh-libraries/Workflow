@@ -522,7 +522,7 @@ WfLexicalScopeManager
 					usedCodeIndex = 0;
 				}
 
-				rpc.Clear();
+				rpcMetadata = nullptr;
 				usedTempVars = 0;
 				errors.Clear();
 				resolvedAttributes.Clear();

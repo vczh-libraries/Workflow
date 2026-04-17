@@ -11,10 +11,6 @@ namespace vl
 	{
 		namespace description
 		{
-			vl::Ptr<vl::rpc_controller::IRpcController> GetRpcLifeCycleController(vl::rpc_controller::IRpcLifeCycle* lifeCycle)
-			{
-				return lifeCycle->GetController();
-			}
 
 /***********************************************************************
 TypeName
@@ -40,14 +36,14 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine, system::AsyncCoroutine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::rpc_controller::RpcObjectReference)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcIdSync, system::rpc_controller::IdSync)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::rpc_controller::ListOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::rpc_controller::ListEventOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectOps, system::rpc_controller::ObjectOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectEventOps, system::rpc_controller::ObjectEventOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcController, system::rpc_controller::Controller)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcLifeCycle, system::rpc_controller::LifeCycle)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::RpcObjectReference)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcIdSync, system::IRpcIdSync)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::IRpcListEventOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectOps, system::IRpcObjectOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectEventOps, system::IRpcObjectEventOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcController, system::IRpcController)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcLifeCycle, system::IRpcLifeCycle)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_File, system::workflow_attributes::att_cpp_File)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_UserImpl, system::workflow_attributes::att_cpp_UserImpl)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_Private, system::workflow_attributes::att_cpp_Private)
@@ -170,7 +166,7 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcController)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)
-				CLASS_MEMBER_EXTERNALMETHOD(GetController, NO_PARAMETER, vl::Ptr<vl::rpc_controller::IRpcController>(vl::rpc_controller::IRpcLifeCycle::*)(), vl::reflection::description::GetRpcLifeCycleController)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Controller)
 				CLASS_MEMBER_METHOD(RefToPtr, { L"ref" })
 				CLASS_MEMBER_METHOD(PtrToRef, { L"obj" })
 				CLASS_MEMBER_METHOD(RegisterService, { L"fullName" _ L"service" })

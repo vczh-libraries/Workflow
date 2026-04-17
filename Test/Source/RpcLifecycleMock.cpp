@@ -66,9 +66,9 @@ namespace vl
 * RpcLifecycleMock (IRpcLifeCycle)
 ***********************************************************************/
 
-		Ptr<IRpcController> RpcLifecycleMock::GetController()const
+		IRpcController* RpcLifecycleMock::GetController()
 		{
-			return Ptr(const_cast<RpcLifecycleMock*>(this));
+			return this;
 		}
 
 		void RpcLifecycleMock::RegisterService(const WString& fullName, Ptr<IDescriptable> service)

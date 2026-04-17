@@ -32,7 +32,7 @@ namespace vl
 
 			// IRpcLifeCycle
 
-			Ptr<rpc_controller::IRpcController>												GetController()const override;
+			rpc_controller::IRpcController*													GetController() override;
 			void																			RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
 			Ptr<reflection::IDescriptable>													RequestService(const WString& fullName)override;
 

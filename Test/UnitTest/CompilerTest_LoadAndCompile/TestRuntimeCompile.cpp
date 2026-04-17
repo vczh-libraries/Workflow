@@ -73,12 +73,12 @@ TEST_FILE
 				LogSampleCodegenResult(L"Runtime", itemName, assembly);
 				LogSampleAssemblyBinary(L"Runtime", itemName, assembly);
 
-				if (manager.rpc.rpcMetadata)
+				if (manager.rpcMetadata && manager.rpcMetadata->metadataModule)
 				{
 					auto bits = GetBitsFromArchitecture();
 					auto metadataString = GenerateToStream([&](StreamWriter& writer)
 					{
-						WfPrint(manager.rpc.rpcMetadata, L"", writer);
+						WfPrint(manager.rpcMetadata->metadataModule, L"", writer);
 					});
 
 					auto outputFolder = GetTestOutputBasePath() + L"RpcMetadata" + bits + L"\\";
@@ -102,7 +102,7 @@ TEST_FILE
 					auto expectedString = File(baselinePath).ReadAllTextByBom();
 					AssertLines(expectedString, metadataString);
 
-					rpcMetadatas.Set(itemName, manager.rpc.rpcMetadata);
+					rpcMetadatas.Set(itemName, manager.rpcMetadata->metadataModule);
 				}
 			});
 		}

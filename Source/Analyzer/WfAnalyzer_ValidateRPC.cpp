@@ -1406,7 +1406,7 @@ ValidateModuleRPC_GenerateMetadata
 					auto metadataModule = Ptr(new WfModule);
 					metadataModule->moduleType = WfModuleType::Module;
 					metadataModule->name.value = L"RpcMetadata";
-					manager->rpc.Clear();
+					manager->rpcMetadata = Ptr(new WfRpcMetadata);
 
 					List<Ptr<WfDeclaration>> rootDeclarations;
 					Dictionary<WString, Ptr<WfNamespaceDeclaration>> namespaceMap;
@@ -1440,14 +1440,14 @@ ValidateModuleRPC_GenerateMetadata
 							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
 
 							auto typeFullName = td->GetTypeName();
-							if (manager->rpc.typeNames.Keys().Contains(typeFullName))
+							if (manager->rpcMetadata->typeNames.Keys().Contains(typeFullName))
 							{
 								manager->errors.Add(WfErrors::RpcGeneratedNameConflict(decl.Obj(), L"type", typeFullName));
 							}
 							else
 							{
-								manager->rpc.typeNames.Add(typeFullName, decl.Obj());
-								manager->rpc.typeFullNames.Add(typeFullName);
+								manager->rpcMetadata->typeNames.Add(typeFullName, decl.Obj());
+								manager->rpcMetadata->typeFullNames.Add(typeFullName);
 							}
 
 							auto sourceDecl = FindRpcInterfaceDeclaration(manager, td);
@@ -1562,14 +1562,14 @@ ValidateModuleRPC_GenerateMetadata
 								{
 									auto finalName = candidateNames[j];
 									auto generatedMethod = generatedMethods[methodIndexes[j]];
-									if (manager->rpc.methodNames.Keys().Contains(finalName))
+									if (manager->rpcMetadata->methodNames.Keys().Contains(finalName))
 									{
 										manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedMethod, L"method", finalName));
 									}
 									else
 									{
-										manager->rpc.methodNames.Add(finalName, generatedMethod);
-										manager->rpc.methodFullNames.Add(finalName);
+										manager->rpcMetadata->methodNames.Add(finalName, generatedMethod);
+										manager->rpcMetadata->methodFullNames.Add(finalName);
 									}
 								}
 							}
@@ -1578,14 +1578,14 @@ ValidateModuleRPC_GenerateMetadata
 							{
 								auto finalName = typeFullName + L"." + orderedEvents[i]->name.value;
 								auto generatedEvent = generatedEvents[i];
-								if (manager->rpc.eventNames.Keys().Contains(finalName))
+								if (manager->rpcMetadata->eventNames.Keys().Contains(finalName))
 								{
 									manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedEvent, L"event", finalName));
 								}
 								else
 								{
-									manager->rpc.eventNames.Add(finalName, generatedEvent);
-									manager->rpc.eventFullNames.Add(finalName);
+									manager->rpcMetadata->eventNames.Add(finalName, generatedEvent);
+									manager->rpcMetadata->eventFullNames.Add(finalName);
 								}
 							}
 						}
@@ -1596,7 +1596,7 @@ ValidateModuleRPC_GenerateMetadata
 						metadataModule->declarations.Add(decl);
 					}
 
-					manager->rpc.rpcMetadata = metadataModule;
+					manager->rpcMetadata->metadataModule = metadataModule;
 				}
 			}
 

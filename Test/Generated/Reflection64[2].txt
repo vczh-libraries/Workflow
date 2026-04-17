@@ -240,6 +240,80 @@ interface system::Future : system::Async, system::Promise {
 
 }
 
+@FullName:vl::rpc_controller::IRpcController
+interface system::IRpcController : system::IRpcListOps, system::IRpcObjectOps, system::IRpcListEventOps, system::IRpcObjectEventOps {
+    function AcquireRemoteObject(ref : system::RpcObjectReference) : system::Void;
+    function Register(objectCallback : system::IRpcObjectOps^, eventCallback : system::IRpcObjectEventOps^, listCallback : system::IRpcListOps^, listEventCallback : system::IRpcListEventOps^) : system::Dictionary^;
+    function RegisterLocalObject(typeId : system::Int64) : system::RpcObjectReference;
+    function ReleaseRemoteObject(ref : system::RpcObjectReference) : system::Void;
+    function UnregisterLocalObject(ref : system::RpcObjectReference) : system::Void;
+
+}
+
+@FullName:vl::rpc_controller::IRpcIdSync
+interface system::IRpcIdSync : system::Interface {
+    function SyncIds(ids : system::Dictionary^) : system::Void;
+
+}
+
+@FullName:vl::rpc_controller::IRpcLifeCycle
+interface system::IRpcLifeCycle : system::Interface {
+    property Controller : system::IRpcController* { get:GetController }
+
+    function GetController() : system::IRpcController*;
+    function PtrToRef(obj : system::Interface^) : system::RpcObjectReference;
+    function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
+    function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
+    function RequestService(fullName : system::String) : system::Interface^;
+
+}
+
+@FullName:vl::rpc_controller::IRpcListEventOps
+interface system::IRpcListEventOps : system::Interface {
+    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int64, oldCount : system::Int64, newCount : system::Int64) : system::Void;
+
+}
+
+@FullName:vl::rpc_controller::IRpcListOps
+interface system::IRpcListOps : system::Interface {
+    function DictClear(ref : system::RpcObjectReference) : system::Void;
+    function DictContainsKey(ref : system::RpcObjectReference, key : system::Object) : system::Boolean;
+    function DictGet(ref : system::RpcObjectReference, key : system::Object) : system::Object;
+    function DictGetCount(ref : system::RpcObjectReference) : system::Int64;
+    function DictGetKeys(ref : system::RpcObjectReference) : system::RpcObjectReference;
+    function DictGetValues(ref : system::RpcObjectReference) : system::RpcObjectReference;
+    function DictRemove(ref : system::RpcObjectReference, key : system::Object) : system::Boolean;
+    function DictSet(ref : system::RpcObjectReference, key : system::Object, value : system::Object) : system::Void;
+    function EnumCreate(ref : system::RpcObjectReference) : system::RpcObjectReference;
+    function EnumGetCurrent(enumerator : system::RpcObjectReference) : system::Object;
+    function EnumNext(enumerator : system::RpcObjectReference) : system::Boolean;
+    function ListAdd(ref : system::RpcObjectReference, value : system::Object) : system::Int64;
+    function ListClear(ref : system::RpcObjectReference) : system::Void;
+    function ListContains(ref : system::RpcObjectReference, value : system::Object) : system::Boolean;
+    function ListGet(ref : system::RpcObjectReference, index : system::Int64) : system::Object;
+    function ListGetCount(ref : system::RpcObjectReference) : system::Int64;
+    function ListIndexOf(ref : system::RpcObjectReference, value : system::Object) : system::Int64;
+    function ListInsert(ref : system::RpcObjectReference, index : system::Int64, value : system::Object) : system::Int64;
+    function ListRemoveAt(ref : system::RpcObjectReference, index : system::Int64) : system::Boolean;
+    function ListSet(ref : system::RpcObjectReference, index : system::Int64, value : system::Object) : system::Void;
+
+}
+
+@FullName:vl::rpc_controller::IRpcObjectEventOps
+interface system::IRpcObjectEventOps : system::IRpcIdSync {
+    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int64, arguments : system::Array^) : system::Void;
+
+}
+
+@FullName:vl::rpc_controller::IRpcObjectOps
+interface system::IRpcObjectOps : system::IRpcIdSync {
+    function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int64, arguments : system::Array^) : system::Object;
+    function InvokeMethodAsync(ref : system::RpcObjectReference, methodId : system::Int64, arguments : system::Array^) : system::Async^;
+    function ObjectHold(ref : system::RpcObjectReference, hold : system::Boolean) : system::Void;
+    function RequestService(typeId : system::Int64) : system::RpcObjectReference;
+
+}
+
 @FullName:vl::vint16_t
 @ValueType
 @Serializable
@@ -532,6 +606,14 @@ interface system::ReadonlyList : system::Enumerable {
 
 @FullName:vl::reflection::DescriptableObject
 class system::ReferenceType {
+}
+
+@FullName:vl::rpc_controller::RpcObjectReference
+@ValueType
+struct system::RpcObjectReference {
+    property clientId : system::Int64;
+    property objectId : system::Int64;
+    property typeId : system::Int64;
 }
 
 @FullName:float
@@ -959,88 +1041,6 @@ enum system::reflection::ValueType::CompareResult {
     Greater = 1,
     NotComparable = 3,
     Smaller = 0,
-}
-
-@FullName:vl::rpc_controller::IRpcController
-interface system::rpc_controller::Controller : system::rpc_controller::ListOps, system::rpc_controller::ObjectOps, system::rpc_controller::ListEventOps, system::rpc_controller::ObjectEventOps {
-    function AcquireRemoteObject(ref : system::rpc_controller::RpcObjectReference) : system::Void;
-    function Register(objectCallback : system::rpc_controller::ObjectOps^, eventCallback : system::rpc_controller::ObjectEventOps^, listCallback : system::rpc_controller::ListOps^, listEventCallback : system::rpc_controller::ListEventOps^) : system::Dictionary^;
-    function RegisterLocalObject(typeId : system::Int64) : system::rpc_controller::RpcObjectReference;
-    function ReleaseRemoteObject(ref : system::rpc_controller::RpcObjectReference) : system::Void;
-    function UnregisterLocalObject(ref : system::rpc_controller::RpcObjectReference) : system::Void;
-
-}
-
-@FullName:vl::rpc_controller::IRpcIdSync
-interface system::rpc_controller::IdSync : system::Interface {
-    function SyncIds(ids : system::Dictionary^) : system::Void;
-
-}
-
-@FullName:vl::rpc_controller::IRpcLifeCycle
-interface system::rpc_controller::LifeCycle : system::Interface {
-    @InvokeTemplate:::vl::reflection::description::GetRpcLifeCycleController($This, $Arguments)
-    @ClosureTemplate:::vl::Func<$Func>($This, &::vl::reflection::description::GetRpcLifeCycleController)
-    function GetController() : system::rpc_controller::Controller^;
-    function PtrToRef(obj : system::Interface^) : system::rpc_controller::RpcObjectReference;
-    function RefToPtr(ref : system::rpc_controller::RpcObjectReference) : system::Interface^;
-    function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
-    function RequestService(fullName : system::String) : system::Interface^;
-
-}
-
-@FullName:vl::rpc_controller::IRpcListEventOps
-interface system::rpc_controller::ListEventOps : system::Interface {
-    function OnItemChanged(ref : system::rpc_controller::RpcObjectReference, index : system::Int64, oldCount : system::Int64, newCount : system::Int64) : system::Void;
-
-}
-
-@FullName:vl::rpc_controller::IRpcListOps
-interface system::rpc_controller::ListOps : system::Interface {
-    function DictClear(ref : system::rpc_controller::RpcObjectReference) : system::Void;
-    function DictContainsKey(ref : system::rpc_controller::RpcObjectReference, key : system::Object) : system::Boolean;
-    function DictGet(ref : system::rpc_controller::RpcObjectReference, key : system::Object) : system::Object;
-    function DictGetCount(ref : system::rpc_controller::RpcObjectReference) : system::Int64;
-    function DictGetKeys(ref : system::rpc_controller::RpcObjectReference) : system::rpc_controller::RpcObjectReference;
-    function DictGetValues(ref : system::rpc_controller::RpcObjectReference) : system::rpc_controller::RpcObjectReference;
-    function DictRemove(ref : system::rpc_controller::RpcObjectReference, key : system::Object) : system::Boolean;
-    function DictSet(ref : system::rpc_controller::RpcObjectReference, key : system::Object, value : system::Object) : system::Void;
-    function EnumCreate(ref : system::rpc_controller::RpcObjectReference) : system::rpc_controller::RpcObjectReference;
-    function EnumGetCurrent(enumerator : system::rpc_controller::RpcObjectReference) : system::Object;
-    function EnumNext(enumerator : system::rpc_controller::RpcObjectReference) : system::Boolean;
-    function ListAdd(ref : system::rpc_controller::RpcObjectReference, value : system::Object) : system::Int64;
-    function ListClear(ref : system::rpc_controller::RpcObjectReference) : system::Void;
-    function ListContains(ref : system::rpc_controller::RpcObjectReference, value : system::Object) : system::Boolean;
-    function ListGet(ref : system::rpc_controller::RpcObjectReference, index : system::Int64) : system::Object;
-    function ListGetCount(ref : system::rpc_controller::RpcObjectReference) : system::Int64;
-    function ListIndexOf(ref : system::rpc_controller::RpcObjectReference, value : system::Object) : system::Int64;
-    function ListInsert(ref : system::rpc_controller::RpcObjectReference, index : system::Int64, value : system::Object) : system::Int64;
-    function ListRemoveAt(ref : system::rpc_controller::RpcObjectReference, index : system::Int64) : system::Boolean;
-    function ListSet(ref : system::rpc_controller::RpcObjectReference, index : system::Int64, value : system::Object) : system::Void;
-
-}
-
-@FullName:vl::rpc_controller::IRpcObjectEventOps
-interface system::rpc_controller::ObjectEventOps : system::rpc_controller::IdSync {
-    function InvokeEvent(ref : system::rpc_controller::RpcObjectReference, eventId : system::Int64, arguments : system::Array^) : system::Void;
-
-}
-
-@FullName:vl::rpc_controller::IRpcObjectOps
-interface system::rpc_controller::ObjectOps : system::rpc_controller::IdSync {
-    function InvokeMethod(ref : system::rpc_controller::RpcObjectReference, methodId : system::Int64, arguments : system::Array^) : system::Object;
-    function InvokeMethodAsync(ref : system::rpc_controller::RpcObjectReference, methodId : system::Int64, arguments : system::Array^) : system::Async^;
-    function ObjectHold(ref : system::rpc_controller::RpcObjectReference, hold : system::Boolean) : system::Void;
-    function RequestService(typeId : system::Int64) : system::rpc_controller::RpcObjectReference;
-
-}
-
-@FullName:vl::rpc_controller::RpcObjectReference
-@ValueType
-struct system::rpc_controller::RpcObjectReference {
-    property clientId : system::Int64;
-    property objectId : system::Int64;
-    property typeId : system::Int64;
 }
 
 @FullName:vl::__vwsn::att_cpp_File

@@ -182,17 +182,17 @@ namespace vl
 
 				WfDeclaration* FindRpcDeclaration(WfLexicalScopeManager* manager, const WString& fullName)
 				{
-					if (auto index = manager->rpc.typeNames.Keys().IndexOf(fullName); index != -1)
+					if (auto index = manager->rpcMetadata->typeNames.Keys().IndexOf(fullName); index != -1)
 					{
-						return manager->rpc.typeNames.Values()[index];
+						return manager->rpcMetadata->typeNames.Values()[index];
 					}
-					if (auto index = manager->rpc.methodNames.Keys().IndexOf(fullName); index != -1)
+					if (auto index = manager->rpcMetadata->methodNames.Keys().IndexOf(fullName); index != -1)
 					{
-						return manager->rpc.methodNames.Values()[index];
+						return manager->rpcMetadata->methodNames.Values()[index];
 					}
-					if (auto index = manager->rpc.eventNames.Keys().IndexOf(fullName); index != -1)
+					if (auto index = manager->rpcMetadata->eventNames.Keys().IndexOf(fullName); index != -1)
 					{
-						return manager->rpc.eventNames.Values()[index];
+						return manager->rpcMetadata->eventNames.Values()[index];
 					}
 					return nullptr;
 				}
@@ -202,13 +202,13 @@ namespace vl
 			{
 				using namespace rpc_generating;
 
-				if (!manager || !manager->rpc.rpcMetadata)
+				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
 				{
 					return nullptr;
 				}
 
 				Dictionary<WString, WString> mangledNames;
-				for (auto fullName : manager->rpc.typeFullNames)
+				for (auto fullName : manager->rpcMetadata->typeFullNames)
 				{
 					auto mangled = MangleRpcFullName(fullName);
 					auto index = mangledNames.Keys().IndexOf(mangled);
@@ -223,7 +223,7 @@ namespace vl
 					}
 				}
 
-				for (auto fullName : manager->rpc.methodFullNames)
+				for (auto fullName : manager->rpcMetadata->methodFullNames)
 				{
 					auto mangled = MangleRpcFullName(fullName);
 					auto index = mangledNames.Keys().IndexOf(mangled);
@@ -238,7 +238,7 @@ namespace vl
 					}
 				}
 
-				for (auto fullName : manager->rpc.eventFullNames)
+				for (auto fullName : manager->rpcMetadata->eventFullNames)
 				{
 					auto mangled = MangleRpcFullName(fullName);
 					auto index = mangledNames.Keys().IndexOf(mangled);
@@ -259,15 +259,15 @@ namespace vl
 					writer.WriteLine(L"");
 
 					vint id = 0;
-					for (auto fullName : manager->rpc.typeFullNames)
+					for (auto fullName : manager->rpcMetadata->typeFullNames)
 					{
 						writer.WriteLine(L"var rpctype_" + MangleRpcFullName(fullName) + L" : int = " + itow(id++) + L";");
 					}
-					for (auto fullName : manager->rpc.methodFullNames)
+					for (auto fullName : manager->rpcMetadata->methodFullNames)
 					{
 						writer.WriteLine(L"var rpcmethod_" + MangleRpcFullName(fullName) + L" : int = " + itow(id++) + L";");
 					}
-					for (auto fullName : manager->rpc.eventFullNames)
+					for (auto fullName : manager->rpcMetadata->eventFullNames)
 					{
 						writer.WriteLine(L"var rpcevent_" + MangleRpcFullName(fullName) + L" : int = " + itow(id++) + L";");
 					}
@@ -276,17 +276,17 @@ namespace vl
 					writer.WriteLine(L"var rpcNameToId : int[string] =");
 					writer.WriteLine(L"{");
 					id = 0;
-					for (auto fullName : manager->rpc.typeFullNames)
+					for (auto fullName : manager->rpcMetadata->typeFullNames)
 					{
 						WriteIndent(writer, 1);
 						writer.WriteLine(L"\"" + EscapeStringLiteral(fullName) + L"\": " + itow(id++));
 					}
-					for (auto fullName : manager->rpc.methodFullNames)
+					for (auto fullName : manager->rpcMetadata->methodFullNames)
 					{
 						WriteIndent(writer, 1);
 						writer.WriteLine(L"\"" + EscapeStringLiteral(fullName) + L"\": " + itow(id++));
 					}
-					for (auto fullName : manager->rpc.eventFullNames)
+					for (auto fullName : manager->rpcMetadata->eventFullNames)
 					{
 						WriteIndent(writer, 1);
 						writer.WriteLine(L"\"" + EscapeStringLiteral(fullName) + L"\": " + itow(id++));
@@ -297,17 +297,17 @@ namespace vl
 					writer.WriteLine(L"var rpcIdToName : string[int] =");
 					writer.WriteLine(L"{");
 					id = 0;
-					for (auto fullName : manager->rpc.typeFullNames)
+					for (auto fullName : manager->rpcMetadata->typeFullNames)
 					{
 						WriteIndent(writer, 1);
 						writer.WriteLine(itow(id++) + L": \"" + EscapeStringLiteral(fullName) + L"\"");
 					}
-					for (auto fullName : manager->rpc.methodFullNames)
+					for (auto fullName : manager->rpcMetadata->methodFullNames)
 					{
 						WriteIndent(writer, 1);
 						writer.WriteLine(itow(id++) + L": \"" + EscapeStringLiteral(fullName) + L"\"");
 					}
-					for (auto fullName : manager->rpc.eventFullNames)
+					for (auto fullName : manager->rpcMetadata->eventFullNames)
 					{
 						WriteIndent(writer, 1);
 						writer.WriteLine(itow(id++) + L": \"" + EscapeStringLiteral(fullName) + L"\"");
@@ -315,20 +315,20 @@ namespace vl
 					writer.WriteLine(L"};");
 					writer.WriteLine(L"");
 
-					writer.WriteLine(L"func rpc_IRpcObjectOps(lc : system::rpc_controller::LifeCycle*) : system::rpc_controller::ObjectOps^");
+					writer.WriteLine(L"func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : system::IRpcObjectOps^");
 					writer.WriteLine(L"{");
 					writer.WriteLine(L"\treturn null;");
 					writer.WriteLine(L"}");
 					writer.WriteLine(L"");
-					writer.WriteLine(L"func rpc_IRpcObjectEventOps(lc : system::rpc_controller::LifeCycle*) : system::rpc_controller::ObjectEventOps^");
+					writer.WriteLine(L"func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : system::IRpcObjectEventOps^");
 					writer.WriteLine(L"{");
 					writer.WriteLine(L"\treturn null;");
 					writer.WriteLine(L"}");
 					writer.WriteLine(L"");
 
-					for (auto typeFullName : manager->rpc.typeFullNames)
+					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
 					{
-						auto interfaceDecl = manager->rpc.typeNames.Values()[manager->rpc.typeNames.Keys().IndexOf(typeFullName)];
+						auto interfaceDecl = manager->rpcMetadata->typeNames.Values()[manager->rpcMetadata->typeNames.Keys().IndexOf(typeFullName)];
 						List<WString> fragments;
 						SplitTypeFullName(typeFullName, fragments);
 						for (vint i = 0; i < fragments.Count() - 1; i++)
@@ -342,7 +342,7 @@ namespace vl
 						auto indent = fragments.Count() - 1;
 						auto interfaceName = fragments[fragments.Count() - 1];
 						WriteIndent(writer, indent);
-						writer.WriteLine(L"func rpcwrapper_" + interfaceName + L"(lc : system::rpc_controller::LifeCycle*) : (" + interfaceName + L"^)");
+						writer.WriteLine(L"func rpcwrapper_" + interfaceName + L"(lc : system::IRpcLifeCycle*) : (" + interfaceName + L"^)");
 						WriteIndent(writer, indent);
 						writer.WriteLine(L"{");
 						WriteIndent(writer, indent + 1);
