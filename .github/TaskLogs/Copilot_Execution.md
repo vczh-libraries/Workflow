@@ -55,7 +55,7 @@
 ## STEP 3: Ensure wrapper generation does not incorrectly block event interfaces
 - In `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp`, remove or rework the guard `CanGenerateWrapperObject` (it rejects interfaces containing `WfEventDeclaration`), so event-enabled wrappers are generated.
 
-## STEP 4: Expose boxing helpers to Workflow as `system::IRpcLifeCycle` static methods (reflection-safe)
+## STEP 4: Expose boxing helpers to Workflow as `system::IRpcLifeCycle` static methods (reflection-safe) [DONE]
 - Add Workflow-visible entry points for boxing/unboxing helpers implemented in `Source\Library\WfLibraryRpc.cpp`:
   - `RpcBoxByref`, `RpcUnboxByref`, `RpcBoxByval`, `RpcUnboxByval`.
 - Register them in `Source\Library\WfLibraryReflection.cpp` under `BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)` using `CLASS_MEMBER_STATIC_METHOD(...)`.
@@ -119,7 +119,7 @@ BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)
 END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 ```
 
-## STEP 5: Replace text-printing + parsing with direct `Ptr<WfModule>` construction
+## STEP 5: Replace text-printing + parsing with direct `Ptr<WfModule>` construction [DONE]
 - In `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp::GenerateModuleRpc`:
   - Delete the `GenerateToStream([&](TextWriter& writer){ ... writer.WriteLine(...) ... })` pathway.
   - Delete the `ParseModule(source, manager->workflowParser)` call.
@@ -132,7 +132,7 @@ END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
   - Reuse existing mangling / escaping helpers to avoid duplication and drift.
   - When dereferencing `vl::Ptr<T>`, use `.Obj()` (not `*ptr`).
 
-## STEP 6: Generate deterministic IDs and lookup tables from existing `WfRpcMetadata`
+## STEP 6: Generate deterministic IDs and lookup tables from existing `WfRpcMetadata` [DONE]
 - Use `manager->rpcMetadata->typeFullNames`, `methodFullNames`, `eventFullNames` to:
   - Assign IDs: types first, then methods, then events, from 0 upward.
   - Emit variables:
@@ -146,7 +146,7 @@ END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
   - Confirm these lists are populated deterministically by `Source\Analyzer\WfAnalyzer_ValidateRPC.cpp` before emission.
   - ID ordering (types then methods then events, 0-based) is part of the RPC contract.
 
-## STEP 7: Build a generation model from `metadataModule` (property-level Byref is authoritative for accessors)
+## STEP 7: Build a generation model from `metadataModule` (property-level Byref is authoritative for accessors) [DONE]
 - In `WfAnalyzer_GenerateRpc.cpp`, build an intermediate C++ model by traversing `manager->rpcMetadata->metadataModule` declarations:
   - Interfaces: `WfClassDeclaration` with `kind == WfClassKind::Interface` and `@rpc:Interface`.
   - Properties: `WfPropertyDeclaration` (getter/setter method names + property-level `@rpc:Byref`).
@@ -243,7 +243,66 @@ END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 - Current RPC tests may not fully exercise event forwarding paths; treat event handling as “compile-gated” unless additional event-containing RPC samples are covered by existing tests.
 
 # FIXING ATTEMPTS
-- None yet.
+
+## Fixing attempt No.1
+- Previous change failed because `BuildInterfaceModels` appended `RpcPropertyModel`, `RpcMethodModel`, `RpcEventModel`, and `RpcInterfaceModel` instances into `vl::collections::List` by copy. These models contain nested `vl::collections::List` members, so their implicit copy constructors are deleted when `List` becomes move-only, producing `error C2280` while compiling `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp`.
+- I changed every affected append site in `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp` to use `Move(...)` when transferring those temporary models into their destination lists.
+- This should fix the break because `vl::collections::List::Add` can then consume the move-only model values without requiring deleted copy constructors, matching the container semantics used elsewhere in this codebase.
+
+## Fixing attempt No.2
+- The previous fix failed because `Move(...)` is not a helper available in this translation unit or the repo-wide utility headers included by `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp`, so the compiler reported `error C3861: 'Move': identifier not found`.
+- I replaced those calls with `std::move(...)`, which is the move utility actually available through the existing C++ standard library includes already pulled in by the project headers.
+- This should solve the remaining break because it preserves the intended move semantics from attempt 1 while using the valid, standard move function that `vl::collections::List::Add` accepts.
+
+## Fixing attempt No.3
+- After the builds succeeded, `CompilerTest_LoadAndCompile` still failed during `GenerateModuleRpc` because the emitted wrapper AST used `new interface` for `system::IRpcObjectOps` / `system::IRpcObjectEventOps`, and it emitted static helper calls as `system::IRpcLifeCycle.Rpc...(...)`. Workflow rejected those constructs with errors including `A23` (no constructor), `A6` (arguments not allowed in new interface expression), and `A7` (type symbol used as an expression).
+- I reworked the generator so the endpoint ops are emitted as named Workflow classes with constructors (`RpcEndpointObjectOps`, `RpcEndpointObjectEventOps`) plus separate factory functions that instantiate them with `new ...^(lc)`. I also changed lifecycle helper calls to use Workflow static-call syntax via `system::IRpcLifeCycle::Rpc...(...)`.
+- This should fix the code-generation failure because it matches Workflow’s proven syntax patterns: constructors are invoked on named classes, and static methods are referenced through `::` child expressions instead of member-expression syntax.
+
+## Fixing attempt No.4
+- The class-based rework in attempt 3 still failed: Workflow reported `G8` override errors because named `class` declarations do not satisfy interface overrides for `system::IRpcObjectOps` / `system::IRpcObjectEventOps` in this context.
+- I changed the endpoint ops surface again so `RpcEndpointObjectOps` and `RpcEndpointObjectEventOps` are emitted as named Workflow interfaces inheriting the reflected RPC interfaces, and the factories now return `new RpcEndpointObjectOps^ { ... }` / `new RpcEndpointObjectEventOps^ { ... }` with the actual state and overrides.
+- This should fix the remaining semantic break because the anonymous implementations now target Workflow-defined interfaces with inherited RPC members, which is the same pattern used by valid `new Interface^ { override ... }` code elsewhere in the repository.
+
+## Fixing attempt No.5
+- Attempt 4 still failed because the reflected RPC interfaces themselves were registered with `BEGIN_INTERFACE_MEMBER_NOPROXY(...)`. Workflow then rejected `RpcEndpointObjectOps : system::IRpcObjectOps` and `RpcEndpointObjectEventOps : system::IRpcObjectEventOps` with `G6`, explicitly requiring proxy-capable interface metadata (`system::InterfaceProxy^` constructor support) for those base interfaces.
+- I updated `Source\Library\WfLibraryReflection.cpp` so the implementable RPC interfaces (`vl::rpc_controller::IRpcIdSync`, `IRpcListOps`, `IRpcListEventOps`, `IRpcObjectOps`, `IRpcObjectEventOps`, and `IRpcController`) use `BEGIN_INTERFACE_MEMBER(...)` instead of the `NOPROXY` form. I kept `vl::rpc_controller::IRpcLifeCycle` on the `NOPROXY` path because this task only needs its static helpers to be callable from Workflow, not implemented in Workflow.
+- This should resolve the proxy-related semantic errors by making the RPC callback interfaces inheritably visible to Workflow, while preserving the intended special handling for `system::IRpcLifeCycle`.
+
+## Fixing attempt No.6
+- Attempt 5 broke the C++ build because switching additional RPC interfaces to proxy-enabled reflection requires concrete `ValueInterfaceProxy<...>` specializations. The repository already provides proxy classes for interfaces like `ICoroutine` and `IAsync`, but not for the RPC callback interfaces, so MSVC failed in `Source\Library\WfLibraryReflection.cpp` when it tried to use missing `Create` members on `ValueInterfaceProxy<vl::rpc_controller::IRpcIdSync>`.
+- I narrowed the proxy-enabled reflection set to only the interfaces that must be implemented from Workflow for this task (`vl::rpc_controller::IRpcIdSync`, `IRpcObjectOps`, `IRpcObjectEventOps`) and added matching proxy implementations in `Source\Library\WfLibraryReflection.h`. I reverted the unrelated RPC interfaces back to `NOPROXY`.
+- This should restore buildability while still enabling the generated Workflow endpoint objects to implement the RPC callback interfaces that the wrapper factories need.
+
+## Fixing attempt No.7
+- After proxy support was added, the generated wrapper module still failed semantic analysis with `G6` / `A6`. The emitted intermediate interfaces (`RpcEndpointObjectOps`, `RpcEndpointObjectEventOps`) were unnecessary and actually introduced extra inheritance constraints that Workflow still rejected.
+- I simplified the generator again so the factories now implement `system::IRpcObjectOps` and `system::IRpcObjectEventOps` directly using `new (::system::IRpcObjectOps^) { ... }` / `new (::system::IRpcObjectEventOps^) { ... }`, leveraging the newly added proxy-enabled reflection for those interfaces.
+- This should eliminate the remaining wrapper-semantic failure by removing the problematic intermediate interface layer while preserving proxy-backed direct implementation of the reflected RPC interfaces.
+
+## Fixing attempt No.8
+- Attempt 7 proved too aggressive: direct `new (::system::IRpcObjectOps^) { ... }` / `new (::system::IRpcObjectEventOps^) { ... }` still triggered `A23` constructor errors during wrapper-module validation, which means Workflow continued to treat those reflected interfaces as unsuitable direct `new interface` targets even after proxy metadata was added.
+- I restored the intermediate Workflow interface layer (`RpcEndpointObjectOps`, `RpcEndpointObjectEventOps`) so the generated anonymous implementations again target Workflow-defined interfaces that inherit the RPC callback contracts, while keeping the proxy-enabled reflection support introduced in attempts 5 and 6.
+- This should give the validator the shape it expects: Workflow-defined interfaces as `new interface` targets, backed by reflected base interfaces that now expose proxy constructors.
+
+## Fixing attempt No.9
+- The remaining `RequestService` failure came from semantic errors in the generated wrapper module, not from C++ compilation. The parser log showed `G6`/`A6` on the intermediate Workflow interfaces (`RpcEndpointObjectOps`, `RpcEndpointObjectEventOps`) plus missing `IRpcLifeCycle::Rpc...` helpers in reflection output, which indicated the wrapper shape was still wrong and the library reflection changes needed to be rebuilt.
+- I switched the generator back to direct anonymous implementations of `system::IRpcObjectOps` / `system::IRpcObjectEventOps`, removed the now-harmful intermediate interface declarations from the emitted module, and refreshed the directly related RPC header so the library reflection / helper changes are rebuilt into the test binaries.
+- This should solve the blocker because the reflected RPC callback interfaces already have proxy implementations in C++, so the generated Workflow wrappers can target them directly once the updated reflection metadata (including `IRpcLifeCycle::RpcBox*` / `RpcUnbox*`) is actually rebuilt and loaded.
+
+## Fixing attempt No.10
+- After regenerating reflection metadata, the remaining semantic errors narrowed to plain `A6` on the two direct `new (system::IRpcObjectOps^) { ... }` / `new (system::IRpcObjectEventOps^) { ... }` expressions. That proved the direct reflected-interface approach is still invalid even with proxy constructors and visible `IRpcLifeCycle::Rpc...` helpers.
+- I restored the generated intermediate Workflow interfaces (`RpcEndpointObjectOps`, `RpcEndpointObjectEventOps`) and their factory targets, while keeping the rebuilt reflection metadata changes from the previous attempt.
+- This should work now because the original `G6` blocker was the stale reflection metadata; with proxy-capable `IRpcIdSync` / `IRpcObjectOps` / `IRpcObjectEventOps` and static lifecycle helper methods now generated into metadata, the Workflow-defined intermediate interfaces should inherit those contracts cleanly and remain valid `new interface` targets.
+
+## Fixing attempt No.11
+- The regenerated x86 wrapper text finally exposed the remaining parser issue precisely: the emitted `new interface` targets were printed as `new (::RpcEndpointObjectOps^)` / `new (::RpcEndpointObjectEventOps^)`. Existing Workflow samples use ordinary reference types there (`new IAdder^`, `new RpcTest::IService^`), and the parser was reporting `A6` before it ever got to semantic validation.
+- I changed the generator’s type builder to emit normal `WfReferenceType` roots instead of `WfTopQualifiedType`, removing the leading global `::` prefix from generated type syntax while keeping qualified child fragments like `system::IRpcObjectOps` intact.
+- This should clear the last `RequestService` blocker because the wrapper module will now print and reparse with the same type spelling style that the Workflow parser already accepts for `new interface`, casts, and declarations.
+
+## Fixing attempt No.12
+- The latest regenerated wrapper made the remaining `A6` source clear: the errors were no longer on the RPC wrapper interfaces themselves, but on `new (system::Dictionary^)()` / `new (system::Array^)()` inside the generated body. Those are interface types, so Workflow rejects constructor-call syntax on them as “arguments are not allowed in new interface expression”.
+- I replaced those generated allocations with constructor expressions (`{}` in Workflow AST form) while keeping the declared target types as `system::Dictionary^` / `system::Array^`. The existing code still resizes and mutates the resulting collections the same way afterward.
+- This should let the wrapper module pass semantic analysis because the generated collections now use Workflow’s collection-constructor syntax instead of invalid `new interface` constructor-call syntax.
 
 # !!!FINISHED!!!
 

@@ -254,6 +254,9 @@ interface system::IRpcController : system::IRpcListOps, system::IRpcObjectOps, s
 interface system::IRpcIdSync : system::Interface {
     function SyncIds(ids : system::Dictionary^) : system::Void;
 
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcIdSync>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcIdSync>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcIdSync^;
 }
 
 @FullName:vl::rpc_controller::IRpcLifeCycle
@@ -265,6 +268,10 @@ interface system::IRpcLifeCycle : system::Interface {
     function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
     function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
     function RequestService(fullName : system::String) : system::Interface^;
+    static function RpcBoxByref(trivial : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    static function RpcBoxByval(trivial : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    static function RpcUnboxByref(serializable : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    static function RpcUnboxByval(serializable : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
 
 }
 
@@ -303,6 +310,9 @@ interface system::IRpcListOps : system::Interface {
 interface system::IRpcObjectEventOps : system::IRpcIdSync {
     function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int32, arguments : system::Array^) : system::Void;
 
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcObjectEventOps^;
 }
 
 @FullName:vl::rpc_controller::IRpcObjectOps
@@ -312,6 +322,9 @@ interface system::IRpcObjectOps : system::IRpcIdSync {
     function ObjectHold(ref : system::RpcObjectReference, hold : system::Boolean) : system::Void;
     function RequestService(typeId : system::Int32) : system::RpcObjectReference;
 
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcObjectOps^;
 }
 
 @FullName:vl::vint16_t

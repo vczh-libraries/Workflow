@@ -630,6 +630,11 @@ namespace vl
 			return trivial;
 		}
 
+		Value IRpcLifeCycle::RpcBoxByref(const Value& trivial, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcBoxByref(trivial, lc);
+		}
+
 		Value RpcUnboxByref(const Value& serializable, IRpcLifeCycle* lc)
 		{
 			if (!lc) CHECK_FAIL(L"IRpcLifeCycle cannot be null.");
@@ -641,6 +646,11 @@ namespace vl
 			}
 
 			return serializable;
+		}
+
+		Value IRpcLifeCycle::RpcUnboxByref(const Value& serializable, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcUnboxByref(serializable, lc);
 		}
 
 		Value RpcBoxByvalInternal(const Value& trivial, IRpcLifeCycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
@@ -694,6 +704,11 @@ namespace vl
 			return RpcBoxByvalInternal(trivial, lc, visited);
 		}
 
+		Value IRpcLifeCycle::RpcBoxByval(const Value& trivial, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcBoxByval(trivial, lc);
+		}
+
 		Value RpcUnboxByvalInternal(const Value& serializable, IRpcLifeCycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
 		{
 			(void)lc;
@@ -743,6 +758,11 @@ namespace vl
 			if (!lc) CHECK_FAIL(L"IRpcLifeCycle cannot be null.");
 			Dictionary<const DescriptableObject*, bool> visited;
 			return RpcUnboxByvalInternal(serializable, lc, visited);
+		}
+
+		Value IRpcLifeCycle::RpcUnboxByval(const Value& serializable, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcUnboxByval(serializable, lc);
 		}
 	}
 }

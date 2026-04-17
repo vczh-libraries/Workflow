@@ -8,20 +8,103 @@ var rpcNameToId : int[string] = {"RpcTest::IService" : 0; "RpcTest::IService.Get
 
 var rpcIdToName : string[int] = {0 : "RpcTest::IService"; 1 : "RpcTest::IService.GetText";};
 
+interface RpcEndpointObjectOps : system::IRpcObjectOps
+{
+}
+
 func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 {
-    return null;
+    return new (RpcEndpointObjectOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _holds : system::Dictionary^ = {};
+
+        override func SyncIds(ids : system::Dictionary^) : (void)
+        {
+            ids.Set("RpcTest::IService", 0);
+            ids.Set("RpcTest::IService.GetText", 1);
+        }
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            if ((methodId == rpcmethod_RpcTest__IService_GetText))
+            {
+                var target : RpcTest::IService^ = (cast (RpcTest::IService^) _lc.RefToPtr(ref));
+                return system::IRpcLifeCycle::RpcBoxByval(target.GetText(), _lc);
+            }
+            else
+            raise "Unknown RPC method id.";
+        }
+
+        override func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+        {
+            raise "InvokeMethodAsync is not supported.";
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _holds.Set(ref, _lc.RefToPtr(ref));
+            }
+            else
+            {
+                _holds.Remove(ref);
+            }
+        }
+
+        override func RequestService(typeId : int) : (system::RpcObjectReference)
+        {
+            return _lc.PtrToRef(_lc.RequestService(rpcIdToName[typeId]));
+        }
+    };
+}
+
+interface RpcEndpointObjectEventOps : system::IRpcObjectEventOps
+{
 }
 
 func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
 {
-    return null;
+    return new (RpcEndpointObjectEventOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        override func SyncIds(ids : system::Dictionary^) : (void)
+        {
+            ids.Set("RpcTest::IService", 0);
+            ids.Set("RpcTest::IService.GetText", 1);
+        }
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
 }
 
 namespace RpcTest
 {
-    func rpcwrapper_IService(lc : system::IRpcLifeCycle*) : (IService^)
+    func rpcwrapper_IService(lc : system::IRpcLifeCycle*) : (RpcTest::IService^)
     {
-        return null;
+        var controller : system::IRpcController* = lc.Controller;
+        var proxyRef : system::RpcObjectReference = controller.RequestService(rpctype_RpcTest__IService);
+        var proxy : RpcTest::IService^ = new (RpcTest::IService^)
+        {
+            var _lc : system::IRpcLifeCycle* = lc;
+
+            var _controller : system::IRpcController* = controller;
+
+            var _ref : system::RpcObjectReference = proxyRef;
+
+            override func GetText() : (::system::String)
+            {
+                var arguments : system::Array^ = {};
+                arguments.Resize(0);
+                return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_controller.InvokeMethod(_ref, rpcmethod_RpcTest__IService_GetText, arguments), _lc));
+            }
+        };
+        return proxy;
     }
 }
