@@ -1033,14 +1033,14 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine, system::AsyncCoroutine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::rpc_controller::RpcObjectReference)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcIdSync, system::rpc_controller::IdSync)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::rpc_controller::ListOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::rpc_controller::ListEventOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectOps, system::rpc_controller::ObjectOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectEventOps, system::rpc_controller::ObjectEventOps)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcController, system::rpc_controller::Controller)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcLifeCycle, system::rpc_controller::LifeCycle)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::RpcObjectReference)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcIdSync, system::IRpcIdSync)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::IRpcListEventOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectOps, system::IRpcObjectOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectEventOps, system::IRpcObjectEventOps)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcController, system::IRpcController)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcLifeCycle, system::IRpcLifeCycle)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_File, system::workflow_attributes::att_cpp_File)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_UserImpl, system::workflow_attributes::att_cpp_UserImpl)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_Private, system::workflow_attributes::att_cpp_Private)
@@ -1163,6 +1163,11 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcController)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Controller)
+				CLASS_MEMBER_METHOD(RefToPtr, { L"ref" })
+				CLASS_MEMBER_METHOD(PtrToRef, { L"obj" })
+				CLASS_MEMBER_METHOD(RegisterService, { L"fullName" _ L"service" })
+				CLASS_MEMBER_METHOD(RequestService, { L"fullName" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 
 			BEGIN_CLASS_MEMBER(Sys)
@@ -1438,7 +1443,7 @@ namespace vl
 
 		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
+			, controller(lc ? lc->GetController() : nullptr)
 			, ref(enumeratorRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -1471,7 +1476,7 @@ namespace vl
 
 		RpcByrefEnumerable::RpcByrefEnumerable(IRpcLifeCycle* lc, RpcObjectReference enumerableRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
+			, controller(lc ? lc->GetController() : nullptr)
 			, ref(enumerableRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -1493,7 +1498,7 @@ namespace vl
 
 		RpcByrefReadonlyList::RpcByrefReadonlyList(IRpcLifeCycle* lc, RpcObjectReference listRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
+			, controller(lc ? lc->GetController() : nullptr)
 			, ref(listRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -1604,7 +1609,7 @@ namespace vl
 
 		RpcByrefArray::RpcByrefArray(IRpcLifeCycle* lc, RpcObjectReference arrayRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
+			, controller(lc ? lc->GetController() : nullptr)
 			, ref(arrayRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -1661,7 +1666,7 @@ namespace vl
 
 		RpcByrefObservableList::RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
+			, controller(lc ? lc->GetController() : nullptr)
 			, ref(listRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
@@ -1734,7 +1739,7 @@ namespace vl
 
 		RpcByrefDictionary::RpcByrefDictionary(IRpcLifeCycle* lc, RpcObjectReference dictRef)
 			: lifeCycle(lc)
-			, controller(lc ? lc->GetController().Obj() : nullptr)
+			, controller(lc ? lc->GetController() : nullptr)
 			, ref(dictRef)
 		{
 			if (!lifeCycle || !controller) CHECK_FAIL(L"Invalid IRpcLifeCycle.");
