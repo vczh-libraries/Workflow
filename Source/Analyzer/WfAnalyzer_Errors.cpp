@@ -921,6 +921,16 @@ WfErrors
 				return MakeParsingError(node, L"H8: @rpc:" + attributeName + L" cannot be used on member \"" + memberName + L"\" because it already has @rpc:" + otherAttributeName + L".");
 			}
 
+			glr::ParsingError WfErrors::RpcGeneratedNameConflict(WfDeclaration* node, const WString& category, const WString& generatedName)
+			{
+				return MakeParsingError(node, L"H9: RPC generated " + category + L" name \"" + generatedName + L"\" is duplicated.");
+			}
+
+			glr::ParsingError WfErrors::RpcMangledNameConflict(WfDeclaration* node, const WString& mangledName, const WString& previousFullName, const WString& currentFullName)
+			{
+				return MakeParsingError(node, L"H10: RPC mangled name \"" + mangledName + L"\" is ambiguous between \"" + previousFullName + L"\" and \"" + currentFullName + L"\".");
+			}
+
 			glr::ParsingError WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });

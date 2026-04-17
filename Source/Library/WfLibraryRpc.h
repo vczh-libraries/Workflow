@@ -131,6 +131,8 @@ namespace vl
 			virtual vl::Ptr<IRpcController>					GetController()const = 0;
 			virtual vl::Ptr<vl::reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference						PtrToRef(vl::Ptr<vl::reflection::IDescriptable> obj) = 0;
+			virtual void									RegisterService(const vl::WString& fullName, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
+			virtual vl::Ptr<vl::reflection::IDescriptable>	RequestService(const vl::WString& fullName) = 0;
 		};
 		
 /***********************************************************************

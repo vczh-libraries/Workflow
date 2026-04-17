@@ -152,7 +152,11 @@ void LoadSampleIndex(const WString& sampleName, List<WString>& itemNames)
 
 	while (!reader.IsEnd())
 	{
-		itemNames.Add(reader.ReadLine());
+		auto itemName = reader.ReadLine();
+		if (itemName != WString::Empty)
+		{
+			itemNames.Add(itemName);
+		}
 	}
 }
 

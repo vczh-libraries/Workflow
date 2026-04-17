@@ -172,6 +172,29 @@ Scope Manager
 				collections::Dictionary<WString, vint>		stateIds;
 			};
 
+			struct WfRpcMetadata
+			{
+				vl::Ptr<vl::workflow::WfModule>												rpcMetadata;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfClassDeclaration*>	typeNames;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfFunctionDeclaration*>	methodNames;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfEventDeclaration*>	eventNames;
+
+				vl::collections::List<vl::WString>											typeFullNames;
+				vl::collections::List<vl::WString>											methodFullNames;
+				vl::collections::List<vl::WString>											eventFullNames;
+
+				void Clear()
+				{
+					rpcMetadata = nullptr;
+					typeNames.Clear();
+					methodNames.Clear();
+					eventNames.Clear();
+					typeFullNames.Clear();
+					methodFullNames.Clear();
+					eventFullNames.Clear();
+				}
+			};
+
 			/// <summary>
 			/// CPU architecture
 			/// </summary>
@@ -247,7 +270,7 @@ Scope Manager
 			public:
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
-				Ptr<WfModule>								rpcMetadata;						// rpc metadata module (null if no @rpc:Interface)
+				WfRpcMetadata								rpc;								// rpc metadata module and generated lookup tables
 
 				vint										usedTempVars = 0;
 				ParsingErrorList							errors;								// compile errors
@@ -308,7 +331,8 @@ Scope Manager
 				/// <summary>Perform semantic analyzing for added modules.</summary>
 				/// <param name="keepTypeDescriptorNames">The same to the argument in <see cref="Clear"/>.</param>
 				/// <param name="callback">The callback to receive progress information (optional).</param>
-				void										Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback = nullptr);
+				/// <param name="validateRpc">Set to false to skip RPC metadata validation and generation.</param>
+				void										Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback = nullptr, bool validateRpc = true);
 
 				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);
 				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
@@ -469,6 +493,7 @@ RPC Analyzing
 
 			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager);
 
 /***********************************************************************
 Expanding Virtual Nodes
@@ -707,6 +732,8 @@ Error Messages
 				static glr::ParsingError					RpcAttributeRequiresStrongTypedCollection(WfAttribute* node, const WString& attributeName, const WString& memberName);
 				static glr::ParsingError					RpcAttributeCanOnlyApplyToProperty(WfAttribute* node, const WString& attributeName);
 				static glr::ParsingError					RpcAttributeCannotCoexistWithOther(WfAttribute* node, const WString& attributeName, const WString& otherAttributeName, const WString& memberName);
+				static glr::ParsingError					RpcGeneratedNameConflict(WfDeclaration* node, const WString& category, const WString& generatedName);
+				static glr::ParsingError					RpcMangledNameConflict(WfDeclaration* node, const WString& mangledName, const WString& previousFullName, const WString& currentFullName);
 
 				// CPP: C++ code generation error
 				static glr::ParsingError					CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);

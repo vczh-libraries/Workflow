@@ -71,6 +71,20 @@ namespace vl
 			return Ptr(const_cast<RpcLifecycleMock*>(this));
 		}
 
+		void RpcLifecycleMock::RegisterService(const WString& fullName, Ptr<IDescriptable> service)
+		{
+			services.Set(fullName, service);
+		}
+
+		Ptr<IDescriptable> RpcLifecycleMock::RequestService(const WString& fullName)
+		{
+			if (auto index = services.Keys().IndexOf(fullName); index != -1)
+			{
+				return services.Values()[index];
+			}
+			return nullptr;
+		}
+
 /***********************************************************************
 * RpcLifecycleMock (IRpcObjectOps)
 ***********************************************************************/

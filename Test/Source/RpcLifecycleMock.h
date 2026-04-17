@@ -14,6 +14,7 @@ namespace vl
 			IRpcObjectEventOps*																eventCallback = nullptr;
 			IRpcListOps*																	listCallback = nullptr;
 			IRpcListEventOps*																listEventCallback = nullptr;
+			collections::Dictionary<WString, Ptr<reflection::IDescriptable>>				services;
 
 			IRpcObjectOps*																	RequireObjectCallback()const;
 			IRpcObjectEventOps*																RequireEventCallback()const;
@@ -32,6 +33,8 @@ namespace vl
 			// IRpcLifeCycle
 
 			Ptr<rpc_controller::IRpcController>												GetController()const override;
+			void																			RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
+			Ptr<reflection::IDescriptable>													RequestService(const WString& fullName)override;
 
 			// IRpcObjectOps
 

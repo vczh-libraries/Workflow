@@ -1295,6 +1295,72 @@ ValidateModuleRPC_GenerateMetadata
 					}
 				}
 
+				WfClassDeclaration* FindRpcInterfaceDeclaration(WfLexicalScopeManager* manager, ITypeDescriptor* td)
+				{
+					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
+					{
+						if (manager->declarationTypes.Values()[i].Obj() == td)
+						{
+							if (auto classDecl = manager->declarationTypes.Keys()[i].Cast<WfClassDeclaration>())
+							{
+								return classDecl.Obj();
+							}
+						}
+					}
+					return nullptr;
+				}
+
+				WfFunctionDeclaration* GetGeneratedMethodByOccurrence(WfClassDeclaration* interfaceDecl, const WString& name, vint occurrence)
+				{
+					vint index = 0;
+					for (auto decl : interfaceDecl->declarations)
+					{
+						if (auto methodDecl = decl.Cast<WfFunctionDeclaration>())
+						{
+							if (methodDecl->name.value == name)
+							{
+								if (index++ == occurrence)
+								{
+									return methodDecl.Obj();
+								}
+							}
+						}
+					}
+					return nullptr;
+				}
+
+				WfEventDeclaration* GetGeneratedEventByOccurrence(WfClassDeclaration* interfaceDecl, const WString& name, vint occurrence)
+				{
+					vint index = 0;
+					for (auto decl : interfaceDecl->declarations)
+					{
+						if (auto eventDecl = decl.Cast<WfEventDeclaration>())
+						{
+							if (eventDecl->name.value == name)
+							{
+								if (index++ == occurrence)
+								{
+									return eventDecl.Obj();
+								}
+							}
+						}
+					}
+					return nullptr;
+				}
+
+				WString MakeRpcMethodFullName(const WString& typeFullName, WfFunctionDeclaration* methodDecl, bool appendArgNames)
+				{
+					auto name = typeFullName + L"." + methodDecl->name.value;
+					if (appendArgNames)
+					{
+						for (auto arg : methodDecl->arguments)
+						{
+							name += L"_" + arg->name.value;
+						}
+					}
+					return name;
+				}
+
 				void ValidateModuleRPC_GenerateMetadata(WfLexicalScopeManager* manager, Ptr<WfModule> module, const RpcPhase1Context& context)
 				{
 					auto rpcInterfaceAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Interface>();
@@ -1340,6 +1406,7 @@ ValidateModuleRPC_GenerateMetadata
 					auto metadataModule = Ptr(new WfModule);
 					metadataModule->moduleType = WfModuleType::Module;
 					metadataModule->name.value = L"RpcMetadata";
+					manager->rpc.Clear();
 
 					List<Ptr<WfDeclaration>> rootDeclarations;
 					Dictionary<WString, Ptr<WfNamespaceDeclaration>> namespaceMap;
@@ -1371,6 +1438,156 @@ ValidateModuleRPC_GenerateMetadata
 						if (decl)
 						{
 							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
+
+							auto typeFullName = td->GetTypeName();
+							if (manager->rpc.typeNames.Keys().Contains(typeFullName))
+							{
+								manager->errors.Add(WfErrors::RpcGeneratedNameConflict(decl.Obj(), L"type", typeFullName));
+							}
+							else
+							{
+								manager->rpc.typeNames.Add(typeFullName, decl.Obj());
+								manager->rpc.typeFullNames.Add(typeFullName);
+							}
+
+							auto sourceDecl = FindRpcInterfaceDeclaration(manager, td);
+							if (!sourceDecl)
+							{
+								continue;
+							}
+
+							List<WfFunctionDeclaration*> orderedMethods;
+							List<WfFunctionDeclaration*> generatedMethods;
+							List<WfEventDeclaration*> orderedEvents;
+							List<WfEventDeclaration*> generatedEvents;
+							Dictionary<WString, vint> methodNameCounters;
+							Dictionary<WString, vint> eventNameCounters;
+
+							for (auto memberDecl : sourceDecl->declarations)
+							{
+								if (auto methodDecl = memberDecl.Cast<WfFunctionDeclaration>())
+								{
+									auto name = methodDecl->name.value;
+									auto nameIndex = methodNameCounters.Keys().IndexOf(name);
+									auto occurrence = nameIndex == -1 ? 0 : methodNameCounters.Values()[nameIndex];
+									auto generatedMethod = GetGeneratedMethodByOccurrence(decl.Obj(), name, occurrence);
+									if (generatedMethod)
+									{
+										orderedMethods.Add(methodDecl.Obj());
+										generatedMethods.Add(generatedMethod);
+									}
+
+									if (nameIndex == -1)
+									{
+										methodNameCounters.Add(name, 1);
+									}
+									else
+									{
+										methodNameCounters.Set(name, occurrence + 1);
+									}
+								}
+								else if (auto eventDecl = memberDecl.Cast<WfEventDeclaration>())
+								{
+									auto name = eventDecl->name.value;
+									auto nameIndex = eventNameCounters.Keys().IndexOf(name);
+									auto occurrence = nameIndex == -1 ? 0 : eventNameCounters.Values()[nameIndex];
+									auto generatedEvent = GetGeneratedEventByOccurrence(decl.Obj(), name, occurrence);
+									if (generatedEvent)
+									{
+										orderedEvents.Add(eventDecl.Obj());
+										generatedEvents.Add(generatedEvent);
+									}
+
+									if (nameIndex == -1)
+									{
+										eventNameCounters.Add(name, 1);
+									}
+									else
+									{
+										eventNameCounters.Set(name, occurrence + 1);
+									}
+								}
+							}
+
+							SortedList<WString> processedMethodBaseNames;
+							for (vint i = 0; i < orderedMethods.Count(); i++)
+							{
+								auto baseName = MakeRpcMethodFullName(typeFullName, orderedMethods[i], false);
+								if (processedMethodBaseNames.Contains(baseName))
+								{
+									continue;
+								}
+								processedMethodBaseNames.Add(baseName);
+
+								List<vint> methodIndexes;
+								List<WString> candidateNames;
+								for (vint j = 0; j < orderedMethods.Count(); j++)
+								{
+									if (MakeRpcMethodFullName(typeFullName, orderedMethods[j], false) == baseName)
+									{
+										methodIndexes.Add(j);
+										candidateNames.Add(MakeRpcMethodFullName(typeFullName, orderedMethods[j], true));
+									}
+								}
+
+								if (methodIndexes.Count() == 1)
+								{
+									candidateNames[0] = baseName;
+								}
+								else
+								{
+									bool duplicated = false;
+									for (vint j = 0; j < candidateNames.Count() && !duplicated; j++)
+									{
+										for (vint k = j + 1; k < candidateNames.Count(); k++)
+										{
+											if (candidateNames[j] == candidateNames[k])
+											{
+												duplicated = true;
+												break;
+											}
+										}
+									}
+
+									if (duplicated)
+									{
+										for (vint j = 0; j < candidateNames.Count(); j++)
+										{
+											candidateNames[j] = candidateNames[j] + L"_" + itow(j);
+										}
+									}
+								}
+
+								for (vint j = 0; j < methodIndexes.Count(); j++)
+								{
+									auto finalName = candidateNames[j];
+									auto generatedMethod = generatedMethods[methodIndexes[j]];
+									if (manager->rpc.methodNames.Keys().Contains(finalName))
+									{
+										manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedMethod, L"method", finalName));
+									}
+									else
+									{
+										manager->rpc.methodNames.Add(finalName, generatedMethod);
+										manager->rpc.methodFullNames.Add(finalName);
+									}
+								}
+							}
+
+							for (vint i = 0; i < orderedEvents.Count(); i++)
+							{
+								auto finalName = typeFullName + L"." + orderedEvents[i]->name.value;
+								auto generatedEvent = generatedEvents[i];
+								if (manager->rpc.eventNames.Keys().Contains(finalName))
+								{
+									manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedEvent, L"event", finalName));
+								}
+								else
+								{
+									manager->rpc.eventNames.Add(finalName, generatedEvent);
+									manager->rpc.eventFullNames.Add(finalName);
+								}
+							}
 						}
 					}
 
@@ -1379,7 +1596,7 @@ ValidateModuleRPC_GenerateMetadata
 						metadataModule->declarations.Add(decl);
 					}
 
-					manager->rpcMetadata = metadataModule;
+					manager->rpc.rpcMetadata = metadataModule;
 				}
 			}
 

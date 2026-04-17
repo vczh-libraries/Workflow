@@ -522,6 +522,7 @@ WfLexicalScopeManager
 					usedCodeIndex = 0;
 				}
 
+				rpc.Clear();
 				usedTempVars = 0;
 				errors.Clear();
 				resolvedAttributes.Clear();
@@ -550,7 +551,7 @@ WfLexicalScopeManager
 
 #define EXECUTE_CALLBACK(EXPR) if (callback) callback->EXPR
 
-			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback)
+			void WfLexicalScopeManager::Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback, bool validateRpc)
 			{
 				EXECUTE_CALLBACK(OnLoadEnvironment());
 				Clear(keepTypeDescriptorNames, false);
@@ -602,9 +603,12 @@ WfLexicalScopeManager
 
 				EXIT_IF_ERRORS_EXIST;
 				PopulateAttributesOnTypeDescriptors(this);
-				for (auto module : modules)
+				if (validateRpc)
 				{
-					ValidateModuleRPC(this, module);
+					for (auto module : modules)
+					{
+						ValidateModuleRPC(this, module);
+					}
 				}
 
 #undef EXIT_IF_ERRORS_EXIST

@@ -11,6 +11,10 @@ namespace vl
 	{
 		namespace description
 		{
+			vl::Ptr<vl::rpc_controller::IRpcController> GetRpcLifeCycleController(vl::rpc_controller::IRpcLifeCycle* lifeCycle)
+			{
+				return lifeCycle->GetController();
+			}
 
 /***********************************************************************
 TypeName
@@ -166,6 +170,11 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcController)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifeCycle)
+				CLASS_MEMBER_EXTERNALMETHOD(GetController, NO_PARAMETER, vl::Ptr<vl::rpc_controller::IRpcController>(vl::rpc_controller::IRpcLifeCycle::*)(), vl::reflection::description::GetRpcLifeCycleController)
+				CLASS_MEMBER_METHOD(RefToPtr, { L"ref" })
+				CLASS_MEMBER_METHOD(PtrToRef, { L"obj" })
+				CLASS_MEMBER_METHOD(RegisterService, { L"fullName" _ L"service" })
+				CLASS_MEMBER_METHOD(RequestService, { L"fullName" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 
 			BEGIN_CLASS_MEMBER(Sys)
