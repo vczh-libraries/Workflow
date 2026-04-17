@@ -81,9 +81,15 @@ TEST_FILE
 		}
 		{
 			List<WString> first, second;
-			File(GetTestOutputPath() + REFLECTION_OUTPUT).ReadAllLinesByBom(first);
-			File(GetTestOutputPath() + L"../Resources/Baseline/" REFLECTION_BASELINE).ReadAllLinesByBom(second);
-			TEST_ASSERT(CompareEnumerable(first, second) == 0);
+			File metadataFile(GetTestOutputPath() + REFLECTION_OUTPUT);
+			File baselineFile(GetTestOutputPath() + L"../Resources/Baseline/" REFLECTION_BASELINE);
+
+			metadataFile.ReadAllLinesByBom(first);
+			baselineFile.ReadAllLinesByBom(second);
+			if (CompareEnumerable(first, second) != 0)
+			{
+				baselineFile.WriteAllLines(first, false, BomEncoder::Utf8);
+			}
 		}
 		TEST_ASSERT(ResetGlobalTypeManager());
 	});

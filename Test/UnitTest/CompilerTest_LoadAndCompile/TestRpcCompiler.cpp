@@ -51,15 +51,15 @@ TEST_FILE
 						WfPrint(wrapperModule, L"", writer);
 					});
 
-					auto outputFolder = GetTestOutputBasePath() + L"RpcMetadata" + bits + L"\\";
+					auto outputFolder = FilePath(GetTestOutputBasePath()) / (WString::Unmanaged(L"RpcMetadata") + bits);
 					Folder folder(outputFolder);
 					if (!folder.Exists())
 					{
 						folder.Create(false);
 					}
 
-					auto outputPath = outputFolder + L"Wrapper_" + itemName + L".txt";
-					FileStream fileStream(outputPath, FileStream::WriteOnly);
+					auto outputPath = outputFolder / (L"Wrapper_" + itemName + L".txt");
+					FileStream fileStream(outputPath.GetFullPath(), FileStream::WriteOnly);
 					BomEncoder encoder(BomEncoder::Utf8);
 					EncoderStream encoderStream(fileStream, encoder);
 					StreamWriter writer(encoderStream);

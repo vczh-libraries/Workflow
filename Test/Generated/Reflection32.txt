@@ -287,6 +287,9 @@ interface system::IRpcLifeCycle : system::Interface {
 interface system::IRpcListEventOps : system::Interface {
     function OnItemChanged(ref : system::RpcObjectReference, index : system::Int32, oldCount : system::Int32, newCount : system::Int32) : system::Void;
 
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcListEventOps^;
 }
 
 @FullName:vl::rpc_controller::IRpcListOps
@@ -312,6 +315,9 @@ interface system::IRpcListOps : system::Interface {
     function ListRemoveAt(ref : system::RpcObjectReference, index : system::Int32) : system::Boolean;
     function ListSet(ref : system::RpcObjectReference, index : system::Int32, value : system::Object) : system::Void;
 
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcListOps^;
 }
 
 @FullName:vl::rpc_controller::IRpcObjectEventOps

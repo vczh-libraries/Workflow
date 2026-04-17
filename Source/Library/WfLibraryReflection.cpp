@@ -111,7 +111,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(SyncIds, { L"ids" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcIdSync)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcListOps)
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcListOps)
 				CLASS_MEMBER_METHOD(EnumCreate, { L"ref" })
 				CLASS_MEMBER_METHOD(EnumNext, { L"enumerator" })
 				CLASS_MEMBER_METHOD(EnumGetCurrent, { L"enumerator" })
@@ -136,7 +136,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(DictGetValues, { L"ref" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcListOps)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcListEventOps)
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcListEventOps)
 				CLASS_MEMBER_METHOD(OnItemChanged, { L"ref" _ L"index" _ L"oldCount" _ L"newCount" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcListEventOps)
 

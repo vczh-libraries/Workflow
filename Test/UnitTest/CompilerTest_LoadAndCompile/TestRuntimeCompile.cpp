@@ -81,7 +81,7 @@ TEST_FILE
 						WfPrint(manager.rpcMetadata->metadataModule, L"", writer);
 					});
 
-					auto outputFolder = GetTestOutputBasePath() + L"RpcMetadata" + bits + L"\\";
+					auto outputFolder = FilePath(GetTestOutputBasePath()) / (WString::Unmanaged(L"RpcMetadata") + bits);
 					{
 						Folder folder(outputFolder);
 						if (!folder.Exists())
@@ -89,16 +89,16 @@ TEST_FILE
 							folder.Create(false);
 						}
 					}
-					auto outputPath = outputFolder + itemName + L".txt";
+					auto outputPath = outputFolder / (itemName + L".txt");
 					{
-						FileStream fileStream(outputPath, FileStream::WriteOnly);
+						FileStream fileStream(outputPath.GetFullPath(), FileStream::WriteOnly);
 						BomEncoder encoder(BomEncoder::Utf8);
 						EncoderStream encoderStream(fileStream, encoder);
 						StreamWriter writer(encoderStream);
 						writer.WriteString(metadataString);
 					}
 
-					auto baselinePath = GetTestResourcePath() + L"Baseline\\RpcMetadata" + bits + L"\\" + itemName + L".txt";
+					auto baselinePath = FilePath(GetTestResourcePath()) / L"Baseline" / (WString::Unmanaged(L"RpcMetadata") + bits) / (itemName + L".txt");
 					auto expectedString = File(baselinePath).ReadAllTextByBom();
 					AssertLines(expectedString, metadataString);
 
