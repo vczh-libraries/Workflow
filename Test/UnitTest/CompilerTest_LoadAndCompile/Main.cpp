@@ -249,5 +249,13 @@ int main(int argc, char* argv[])
 #if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
+	if (result32 != 0)
+	{
+		unittest::UnitTest::PrintMessage(L"Win32 test run failed, please go back and check the result", unittest::UnitTest::MessageKind::Error);
+	}
+	if (result64 != 0)
+	{
+		unittest::UnitTest::PrintMessage(L"x64 test run failed, please go back and check the result", unittest::UnitTest::MessageKind::Error);
+	}
 	return result32 + result64;
 }
