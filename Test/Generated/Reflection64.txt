@@ -268,9 +268,17 @@ interface system::IRpcLifeCycle : system::Interface {
     function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
     function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
     function RequestService(fullName : system::String) : system::Interface^;
+    @InvokeTemplate:::vl::rpc_controller::RpcBoxByref($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByref)
     static function RpcBoxByref(trivial : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcBoxByval($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByval)
     static function RpcBoxByval(trivial : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcUnboxByref($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByref)
     static function RpcUnboxByref(serializable : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcUnboxByval($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByval)
     static function RpcUnboxByval(serializable : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
 
 }

@@ -133,11 +133,6 @@ namespace vl
 			virtual RpcObjectReference						PtrToRef(vl::Ptr<vl::reflection::IDescriptable> obj) = 0;
 			virtual void									RegisterService(const vl::WString& fullName, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
 			virtual vl::Ptr<vl::reflection::IDescriptable>	RequestService(const vl::WString& fullName) = 0;
-
-			static vl::reflection::description::Value			RpcBoxByref(const vl::reflection::description::Value& trivial, IRpcLifeCycle* lc);
-			static vl::reflection::description::Value			RpcUnboxByref(const vl::reflection::description::Value& serializable, IRpcLifeCycle* lc);
-			static vl::reflection::description::Value			RpcBoxByval(const vl::reflection::description::Value& trivial, IRpcLifeCycle* lc);
-			static vl::reflection::description::Value			RpcUnboxByval(const vl::reflection::description::Value& serializable, IRpcLifeCycle* lc);
 		};
 		
 /***********************************************************************
