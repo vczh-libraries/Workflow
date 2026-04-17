@@ -1022,6 +1022,11 @@ namespace vl
 			virtual RpcObjectReference						PtrToRef(vl::Ptr<vl::reflection::IDescriptable> obj) = 0;
 			virtual void									RegisterService(const vl::WString& fullName, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
 			virtual vl::Ptr<vl::reflection::IDescriptable>	RequestService(const vl::WString& fullName) = 0;
+
+			static vl::reflection::description::Value			RpcBoxByref(const vl::reflection::description::Value& trivial, IRpcLifeCycle* lc);
+			static vl::reflection::description::Value			RpcUnboxByref(const vl::reflection::description::Value& serializable, IRpcLifeCycle* lc);
+			static vl::reflection::description::Value			RpcBoxByval(const vl::reflection::description::Value& trivial, IRpcLifeCycle* lc);
+			static vl::reflection::description::Value			RpcUnboxByval(const vl::reflection::description::Value& serializable, IRpcLifeCycle* lc);
 		};
 		
 /***********************************************************************
@@ -1297,6 +1302,42 @@ Interface Implementation Proxy (Implement)
 
 #pragma warning(push)
 #pragma warning(disable:4250)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcIdSync)
+				void SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override
+				{
+					INVOKE_INTERFACE_PROXY(SyncIds, ids);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcIdSync)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcObjectOps, vl::rpc_controller::IRpcIdSync)
+				vl::reflection::description::Value InvokeMethod(vl::rpc_controller::RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod, ref, methodId, arguments);
+				}
+
+				vl::Ptr<vl::reflection::description::IAsync> InvokeMethodAsync(vl::rpc_controller::RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethodAsync, ref, methodId, arguments);
+				}
+
+				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, bool hold)override
+				{
+					INVOKE_INTERFACE_PROXY(ObjectHold, ref, hold);
+				}
+
+				vl::rpc_controller::RpcObjectReference RequestService(vl::vint typeId)override
+				{
+					INVOKEGET_INTERFACE_PROXY(RequestService, typeId);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcObjectEventOps, vl::rpc_controller::IRpcIdSync)
+				void InvokeEvent(vl::rpc_controller::RpcObjectReference ref, vl::vint eventId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent, ref, eventId, arguments);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectEventOps)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(ICoroutine)
 

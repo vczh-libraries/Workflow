@@ -1104,7 +1104,7 @@ WfLoadLibraryTypes
 				STRUCT_MEMBER(typeId)
 			END_STRUCT_MEMBER(vl::rpc_controller::RpcObjectReference)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcIdSync)
 				CLASS_MEMBER_METHOD(SyncIds, { L"ids" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcIdSync)
 
@@ -1137,7 +1137,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(OnItemChanged, { L"ref" _ L"index" _ L"oldCount" _ L"newCount" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcListEventOps)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcObjectOps)
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 				CLASS_MEMBER_BASE(vl::rpc_controller::IRpcIdSync)
 				CLASS_MEMBER_METHOD(InvokeMethod, { L"ref" _ L"methodId" _ L"arguments" })
 				CLASS_MEMBER_METHOD(InvokeMethodAsync, { L"ref" _ L"methodId" _ L"arguments" })
@@ -1145,7 +1145,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(RequestService, { L"typeId" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcObjectEventOps)
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
 				CLASS_MEMBER_BASE(vl::rpc_controller::IRpcIdSync)
 				CLASS_MEMBER_METHOD(InvokeEvent, { L"ref" _ L"eventId" _ L"arguments" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
@@ -1168,6 +1168,10 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(PtrToRef, { L"obj" })
 				CLASS_MEMBER_METHOD(RegisterService, { L"fullName" _ L"service" })
 				CLASS_MEMBER_METHOD(RequestService, { L"fullName" })
+				CLASS_MEMBER_STATIC_METHOD(RpcBoxByref, { L"trivial" _ L"lc" })
+				CLASS_MEMBER_STATIC_METHOD(RpcUnboxByref, { L"serializable" _ L"lc" })
+				CLASS_MEMBER_STATIC_METHOD(RpcBoxByval, { L"trivial" _ L"lc" })
+				CLASS_MEMBER_STATIC_METHOD(RpcUnboxByval, { L"serializable" _ L"lc" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
 
 			BEGIN_CLASS_MEMBER(Sys)
@@ -2036,6 +2040,11 @@ namespace vl
 			return trivial;
 		}
 
+		Value IRpcLifeCycle::RpcBoxByref(const Value& trivial, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcBoxByref(trivial, lc);
+		}
+
 		Value RpcUnboxByref(const Value& serializable, IRpcLifeCycle* lc)
 		{
 			if (!lc) CHECK_FAIL(L"IRpcLifeCycle cannot be null.");
@@ -2047,6 +2056,11 @@ namespace vl
 			}
 
 			return serializable;
+		}
+
+		Value IRpcLifeCycle::RpcUnboxByref(const Value& serializable, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcUnboxByref(serializable, lc);
 		}
 
 		Value RpcBoxByvalInternal(const Value& trivial, IRpcLifeCycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
@@ -2100,6 +2114,11 @@ namespace vl
 			return RpcBoxByvalInternal(trivial, lc, visited);
 		}
 
+		Value IRpcLifeCycle::RpcBoxByval(const Value& trivial, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcBoxByval(trivial, lc);
+		}
+
 		Value RpcUnboxByvalInternal(const Value& serializable, IRpcLifeCycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
 		{
 			(void)lc;
@@ -2149,6 +2168,11 @@ namespace vl
 			if (!lc) CHECK_FAIL(L"IRpcLifeCycle cannot be null.");
 			Dictionary<const DescriptableObject*, bool> visited;
 			return RpcUnboxByvalInternal(serializable, lc, visited);
+		}
+
+		Value IRpcLifeCycle::RpcUnboxByval(const Value& serializable, IRpcLifeCycle* lc)
+		{
+			return vl::rpc_controller::RpcUnboxByval(serializable, lc);
 		}
 	}
 }
