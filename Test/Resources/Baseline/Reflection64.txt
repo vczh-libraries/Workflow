@@ -979,6 +979,14 @@ interface system::rpc_controller::IdSync : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcLifeCycle
 interface system::rpc_controller::LifeCycle : system::Interface {
+    @InvokeTemplate:::vl::reflection::description::GetRpcLifeCycleController($This, $Arguments)
+    @ClosureTemplate:::vl::Func<$Func>($This, &::vl::reflection::description::GetRpcLifeCycleController)
+    function GetController() : system::rpc_controller::Controller^;
+    function PtrToRef(obj : system::Interface^) : system::rpc_controller::RpcObjectReference;
+    function RefToPtr(ref : system::rpc_controller::RpcObjectReference) : system::Interface^;
+    function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
+    function RequestService(fullName : system::String) : system::Interface^;
+
 }
 
 @FullName:vl::rpc_controller::IRpcListEventOps

@@ -1,0 +1,176 @@
+﻿========================================================
+Global Variables:
+========================================================
+rpctype_Rpc__RequestService
+rpcmethod_Rpc__RequestService_GetText
+rpcNameToId
+rpcIdToName
+
+========================================================
+Functions:
+========================================================
+serviceMain (18 .. 31)
+    Arguments:
+        lc
+    Captured Variables:
+    Local Variables:
+        service
+
+clientMain (36 .. 47)
+    Arguments:
+        lc
+    Captured Variables:
+    Local Variables:
+        obj
+        service
+
+rpc_IRpcObjectOps (48 .. 51)
+    Arguments:
+        lc
+    Captured Variables:
+    Local Variables:
+
+rpc_IRpcObjectEventOps (52 .. 55)
+    Arguments:
+        lc
+    Captured Variables:
+    Local Variables:
+
+Rpc::rpcwrapper_RequestService (56 .. 59)
+    Arguments:
+        lc
+    Captured Variables:
+    Local Variables:
+
+<initialize> (0 .. 17)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<method:GetText<Rpc::RequestService>(6)> in serviceMain (32 .. 35)
+    Arguments:
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  0
+0    :     LoadValue     : value = <I4, 0>
+//  var rpctype_Rpc__RequestService : int = 0;
+1    :     StoreGlobalVar: var = 0(rpctype_Rpc__RequestService)
+//  1
+2    :     LoadValue     : value = <I4, 1>
+//  var rpcmethod_Rpc__RequestService_GetText : int = 1;
+3    :     StoreGlobalVar: var = 1(rpcmethod_Rpc__RequestService_GetText)
+//  "Rpc::RequestService.GetText"
+4    :     LoadValue     : value = <String, Rpc::RequestService.GetText>
+//  1
+5    :     LoadValue     : value = <I4, 1>
+//  "Rpc::RequestService"
+6    :     LoadValue     : value = <String, Rpc::RequestService>
+//  0
+7    :     LoadValue     : value = <I4, 0>
+//  {"Rpc::RequestService" : 0; "Rpc::RequestService.GetText" : 1;}
+8    :     NewDictionary : stackPatternCount = 4
+//  var rpcNameToId : int[string] = {"Rpc::RequestService" : 0; "Rpc::RequestService.GetText" : 1;};
+9    :     StoreGlobalVar: var = 2(rpcNameToId)
+//  1
+10   :     LoadValue     : value = <I4, 1>
+//  "Rpc::RequestService.GetText"
+11   :     LoadValue     : value = <String, Rpc::RequestService.GetText>
+//  0
+12   :     LoadValue     : value = <I4, 0>
+//  "Rpc::RequestService"
+13   :     LoadValue     : value = <String, Rpc::RequestService>
+//  {0 : "Rpc::RequestService"; 1 : "Rpc::RequestService.GetText";}
+14   :     NewDictionary : stackPatternCount = 4
+//  var rpcIdToName : string[int] = {0 : "Rpc::RequestService"; 1 : "Rpc::RequestService.GetText";};
+15   :     StoreGlobalVar: var = 3(rpcIdToName)
+16   :     LoadValue     : value = <null>
+17   :     Return        
+//  new (Rpc::RequestService^)
+18   :     LoadValue     : value = <null>
+//  new (Rpc::RequestService^)
+19   :     CreateClosureContext: stackPatternCount = 1
+//  new (Rpc::RequestService^)
+20   :     LoadMethodInfo: methodInfo = GetText<Rpc::RequestService>
+//  func GetText() : (string)
+21   :     LoadFunction  : func = 6(<method:GetText<Rpc::RequestService>(6)> in serviceMain)
+//  new (Rpc::RequestService^)
+22   :     CreateInterface: methodInfo = <Rpc::RequestService>, stackPatternCount = 2
+//  var service = new (Rpc::RequestService^)
+23   :     StoreLocalVar : var = 1(service)
+//  "Rpc::RequestService"
+24   :     LoadValue     : value = <String, Rpc::RequestService>
+//  service
+25   :     LoadLocalVar  : var = 1(service)
+//  service
+26   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
+//  lc
+27   :     LoadLocalVar  : var = 0(lc)
+//  lc.RegisterService("Rpc::RequestService", service)
+28   :     InvokeMethod  : methodInfo = RegisterService<system::rpc_controller::LifeCycle>, stackPatternCount = 2
+//  lc.RegisterService("Rpc::RequestService", service);
+29   :     Pop           
+//  func serviceMain(lc : LifeCycle*) : (void)
+30   :     LoadValue     : value = <null>
+//  func serviceMain(lc : LifeCycle*) : (void)
+31   :     Return        
+//  "Hello"
+32   :     LoadValue     : value = <String, Hello>
+//  return "Hello";
+33   :     Return        
+//  func GetText() : (string)
+34   :     LoadValue     : value = <null>
+//  func GetText() : (string)
+35   :     Return        
+//  "Rpc::RequestService"
+36   :     LoadValue     : value = <String, Rpc::RequestService>
+//  lc
+37   :     LoadLocalVar  : var = 0(lc)
+//  lc.RequestService("Rpc::RequestService")
+38   :     InvokeMethod  : methodInfo = RequestService<system::rpc_controller::LifeCycle>, stackPatternCount = 1
+//  var obj = lc.RequestService("Rpc::RequestService");
+39   :     StoreLocalVar : var = 1(obj)
+//  obj
+40   :     LoadLocalVar  : var = 1(obj)
+//  obj
+41   :     ConvertToType : flag = SharedPtr, typeDescriptor = Rpc::RequestService
+//  var service = (cast (Rpc::RequestService^) obj);
+42   :     StoreLocalVar : var = 2(service)
+//  service
+43   :     LoadLocalVar  : var = 2(service)
+//  service.GetText()
+44   :     InvokeMethod  : methodInfo = GetText<Rpc::RequestService>, stackPatternCount = 0
+//  return service.GetText();
+45   :     Return        
+//  func clientMain(lc : LifeCycle*) : (string)
+46   :     LoadValue     : value = <null>
+//  func clientMain(lc : LifeCycle*) : (string)
+47   :     Return        
+//  null
+48   :     LoadValue     : value = <null>
+//  return null;
+49   :     Return        
+//  func rpc_IRpcObjectOps(lc : system::rpc_controller::LifeCycle*) : (system::rpc_controller::ObjectOps^)
+50   :     LoadValue     : value = <null>
+//  func rpc_IRpcObjectOps(lc : system::rpc_controller::LifeCycle*) : (system::rpc_controller::ObjectOps^)
+51   :     Return        
+//  null
+52   :     LoadValue     : value = <null>
+//  return null;
+53   :     Return        
+//  func rpc_IRpcObjectEventOps(lc : system::rpc_controller::LifeCycle*) : (system::rpc_controller::ObjectEventOps^)
+54   :     LoadValue     : value = <null>
+//  func rpc_IRpcObjectEventOps(lc : system::rpc_controller::LifeCycle*) : (system::rpc_controller::ObjectEventOps^)
+55   :     Return        
+//  null
+56   :     LoadValue     : value = <null>
+//  return null;
+57   :     Return        
+//  func rpcwrapper_RequestService(lc : system::rpc_controller::LifeCycle*) : (RequestService^)
+58   :     LoadValue     : value = <null>
+//  func rpcwrapper_RequestService(lc : system::rpc_controller::LifeCycle*) : (RequestService^)
+59   :     Return        
