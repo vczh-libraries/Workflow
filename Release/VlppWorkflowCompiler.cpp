@@ -9842,6 +9842,14 @@ namespace vl
 					return type;
 				}
 
+				Ptr<WfType> GetSyncIdsParamType()
+				{
+					auto td = GetTypeDescriptor(L"system::IRpcIdSync");
+					auto group = td->GetMethodGroupByName(L"SyncIds", false);
+					auto method = group->GetMethod(0);
+					return GetTypeFromTypeInfo(method->GetParameter(0)->GetType());
+				}
+
 				Ptr<WfExpression> CreateNull()
 				{
 					auto expression = Ptr(new WfLiteralExpression);
@@ -10314,23 +10322,6 @@ namespace vl
 					currentDeclarations->Add(declaration);
 				}
 
-				void AppendSyncIdsBody(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager)
-				{
-					vint id = 0;
-					for (auto fullName : manager->rpcMetadata->typeFullNames)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"ids"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-					for (auto fullName : manager->rpcMetadata->methodFullNames)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"ids"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-					for (auto fullName : manager->rpcMetadata->eventFullNames)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"ids"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-				}
-
 				Ptr<WfStatement> BuildInvokeMethodBranch(const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
 				{
 					auto block = CreateBlock();
@@ -10381,62 +10372,65 @@ namespace vl
 
 				Ptr<WfStatement> BuildDispatchChain(const List<RpcInterfaceModel>& interfaces, bool forEvent)
 				{
-					Ptr<WfStatement> branch = CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.");
-					for (vint i = interfaces.Count() - 1; i >= 0; i--)
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(forEvent ? L"eventId" : L"methodId");
+					switchStat->defaultBranch = CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.");
+
+					for (auto&& interfaceModel : interfaces)
 					{
-						auto&& interfaceModel = interfaces[i];
 						if (forEvent)
 						{
-							for (vint j = interfaceModel.events.Count() - 1; j >= 0; j--)
+							for (auto&& eventModel : interfaceModel.events)
 							{
-								auto condition = CreateBinary(
-									WfBinaryOperator::EQ,
-									CreateReference(L"eventId"),
-									CreateRpcConstantReference(L"rpcevent_", interfaceModel.events[j].fullName)
-								);
-								branch = CreateIf(condition, BuildInvokeEventBranch(interfaceModel, interfaceModel.events[j]), branch);
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcevent_", eventModel.fullName);
+								switchCase->statement = BuildInvokeEventBranch(interfaceModel, eventModel);
+								switchStat->caseBranches.Add(switchCase);
 							}
 						}
 						else
 						{
-							for (vint j = interfaceModel.methods.Count() - 1; j >= 0; j--)
+							for (auto&& methodModel : interfaceModel.methods)
 							{
-								auto condition = CreateBinary(
-									WfBinaryOperator::EQ,
-									CreateReference(L"methodId"),
-									CreateRpcConstantReference(L"rpcmethod_", interfaceModel.methods[j].fullName)
-								);
-								branch = CreateIf(condition, BuildInvokeMethodBranch(interfaceModel, interfaceModel.methods[j]), branch);
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName);
+								switchCase->statement = BuildInvokeMethodBranch(interfaceModel, methodModel);
+								switchStat->caseBranches.Add(switchCase);
 							}
 						}
 					}
-					return branch;
+					return switchStat;
 				}
 
-				Ptr<WfDeclaration> GenerateObjectOpsClass(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
+				Ptr<WfStatement> BuildRequestServiceSwitch(WfLexicalScopeManager* manager)
 				{
-					(void)manager;
-					(void)interfaces;
-					auto interfaceDecl = Ptr(new WfClassDeclaration);
-					interfaceDecl->name.value = L"RpcEndpointObjectOps";
-					interfaceDecl->kind = WfClassKind::Interface;
-					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
-					interfaceDecl->baseTypes.Add(CreateQualifiedType(L"system::IRpcObjectOps"));
-					return interfaceDecl;
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(L"typeId");
+					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id.");
+
+					for (auto fullName : manager->rpcMetadata->typeFullNames)
+					{
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", fullName);
+						auto block = CreateBlock();
+						AddStatement(block, CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateCall(CreateMember(CreateReference(L"_lc"), L"RequestService"), CreateString(fullName)))));
+						switchCase->statement = block;
+						switchStat->caseBranches.Add(switchCase);
+					}
+					return switchStat;
 				}
 
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpc_IRpcObjectOps", CreateSharedType(L"system::IRpcObjectOps"), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"RpcEndpointObjectOps")).Cast<WfNewInterfaceExpression>();
+					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_holds", CreateSharedType(L"system::Dictionary"), CreateConstructor()));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_holds", CreateMapType(CreateQualifiedType(L"system::RpcObjectReference"), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
 
 					{
 						auto sync = CreateFunctionDeclaration(L"SyncIds", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						sync->arguments.Add(CreateFunctionArgument(L"ids", CreateSharedType(L"system::Dictionary")));
-						AppendSyncIdsBody(sync->statement.Cast<WfBlockStatement>(), manager);
+						sync->arguments.Add(CreateFunctionArgument(L"ids", GetSyncIdsParamType()));
 						newOps->declarations.Add(sync);
 					}
 
@@ -10473,7 +10467,7 @@ namespace vl
 					{
 						auto requestService = CreateFunctionDeclaration(L"RequestService", CreateQualifiedType(L"system::RpcObjectReference"), WfFunctionKind::Override);
 						requestService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						AddStatement(requestService->statement.Cast<WfBlockStatement>(), CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateCall(CreateMember(CreateReference(L"_lc"), L"RequestService"), CreateIndex(CreateReference(L"rpcIdToName"), CreateReference(L"typeId"))))));
+						AddStatement(requestService->statement.Cast<WfBlockStatement>(), BuildRequestServiceSwitch(manager));
 						newOps->declarations.Add(requestService);
 					}
 
@@ -10481,29 +10475,16 @@ namespace vl
 					return functionDecl;
 				}
 
-				Ptr<WfDeclaration> GenerateObjectEventOpsClass(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
-				{
-					(void)manager;
-					(void)interfaces;
-					auto interfaceDecl = Ptr(new WfClassDeclaration);
-					interfaceDecl->name.value = L"RpcEndpointObjectEventOps";
-					interfaceDecl->kind = WfClassKind::Interface;
-					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
-					interfaceDecl->baseTypes.Add(CreateQualifiedType(L"system::IRpcObjectEventOps"));
-					return interfaceDecl;
-				}
-
 				Ptr<WfDeclaration> GenerateObjectEventOpsFactory(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpc_IRpcObjectEventOps", CreateSharedType(L"system::IRpcObjectEventOps"), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"RpcEndpointObjectEventOps")).Cast<WfNewInterfaceExpression>();
+					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
 
 					{
 						auto sync = CreateFunctionDeclaration(L"SyncIds", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						sync->arguments.Add(CreateFunctionArgument(L"ids", CreateSharedType(L"system::Dictionary")));
-						AppendSyncIdsBody(sync->statement.Cast<WfBlockStatement>(), manager);
+						sync->arguments.Add(CreateFunctionArgument(L"ids", GetSyncIdsParamType()));
 						newOps->declarations.Add(sync);
 					}
 
@@ -10634,41 +10615,28 @@ namespace vl
 					module->declarations.Add(CreateVariableDeclaration(L"rpcevent_" + MangleRpcFullName(fullName), CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
 				}
 
-				auto nameToId = CreateConstructor();
-				id = 0;
-				for (auto fullName : manager->rpcMetadata->typeFullNames)
 				{
-					AddIdLookupEntry(nameToId, CreateString(fullName), CreateInt(id++));
+					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), WfFunctionKind::Normal);
+					auto block = getIds->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"result", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), CreateConstructor()));
+					id = 0;
+					for (auto fullName : manager->rpcMetadata->typeFullNames)
+					{
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
+					}
+					for (auto fullName : manager->rpcMetadata->methodFullNames)
+					{
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
+					}
+					for (auto fullName : manager->rpcMetadata->eventFullNames)
+					{
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
+					}
+					AddStatement(block, CreateReturn(CreateReference(L"result")));
+					module->declarations.Add(getIds);
 				}
-				for (auto fullName : manager->rpcMetadata->methodFullNames)
-				{
-					AddIdLookupEntry(nameToId, CreateString(fullName), CreateInt(id++));
-				}
-				for (auto fullName : manager->rpcMetadata->eventFullNames)
-				{
-					AddIdLookupEntry(nameToId, CreateString(fullName), CreateInt(id++));
-				}
-				module->declarations.Add(CreateVariableDeclaration(L"rpcNameToId", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), nameToId));
 
-				auto idToName = CreateConstructor();
-				id = 0;
-				for (auto fullName : manager->rpcMetadata->typeFullNames)
-				{
-					AddIdLookupEntry(idToName, CreateInt(id++), CreateString(fullName));
-				}
-				for (auto fullName : manager->rpcMetadata->methodFullNames)
-				{
-					AddIdLookupEntry(idToName, CreateInt(id++), CreateString(fullName));
-				}
-				for (auto fullName : manager->rpcMetadata->eventFullNames)
-				{
-					AddIdLookupEntry(idToName, CreateInt(id++), CreateString(fullName));
-				}
-				module->declarations.Add(CreateVariableDeclaration(L"rpcIdToName", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreatePredefinedType(WfPredefinedTypeName::String)), idToName));
-
-				module->declarations.Add(GenerateObjectOpsClass(manager, interfaces));
 				module->declarations.Add(GenerateObjectOpsFactory(manager, interfaces));
-				module->declarations.Add(GenerateObjectEventOpsClass(manager, interfaces));
 				module->declarations.Add(GenerateObjectEventOpsFactory(manager, interfaces));
 
 				List<Ptr<WfDeclaration>> wrapperDeclarations;
