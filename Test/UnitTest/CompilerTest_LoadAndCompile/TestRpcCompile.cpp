@@ -13,6 +13,16 @@ static const wchar_t* GetBitsFromArchitecture()
 	}
 }
 
+static bool DecodeRpcName(const WString& rpcLine, WString& itemName)
+{
+	const wchar_t* reading = rpcLine.Buffer();
+	auto eq = wcschr(reading, L'=');
+	if (!eq) return false;
+	vint index = eq - reading;
+	itemName = rpcLine.Sub(0, index);
+	return true;
+}
+
 TEST_FILE
 {
 	WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
@@ -22,8 +32,11 @@ TEST_FILE
 		List<WString> rpcNames;
 		LoadSampleIndex(L"Rpc", rpcNames);
 
-		for (auto itemName : rpcNames)
+		for (auto rpcLine : rpcNames)
 		{
+			WString itemName;
+			if (!DecodeRpcName(rpcLine, itemName)) continue;
+
 			TEST_CASE(itemName)
 			{
 				TEST_PRINT(itemName);
