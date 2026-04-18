@@ -13,7 +13,7 @@ namespace
 	class StubObjectOps : public Object, public IRpcObjectOps
 	{
 	public:
-		void SyncIds(const Dictionary<WString, vint>& ids)override { (void)ids; }
+		void SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override { (void)ids; }
 		Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return {}; }
 		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return nullptr; }
 		void ObjectHold(RpcObjectReference ref, bool hold)override { (void)ref; (void)hold; CHECK_FAIL(L"Not Supported!"); }
@@ -23,7 +23,7 @@ namespace
 	class StubObjectEventOps : public Object, public IRpcObjectEventOps
 	{
 	public:
-		void SyncIds(const Dictionary<WString, vint>& ids)override { (void)ids; }
+		void SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override { (void)ids; }
 		void InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override { (void)ref; (void)eventId; (void)arguments; CHECK_FAIL(L"Not Supported!"); }
 	};
 

@@ -9,6 +9,7 @@
 
 ## ToDo
 
+- Verify `RpcDualLifecycleMock` and `TestCasesRpc.cpp`.
 - Continue to add more test cases until all features are covered.
 - C++ codegen for wrappers (should be normal codegen) with JSON serizliation in C++.
   - Generate C++ code from Rpc category with the new pattern.

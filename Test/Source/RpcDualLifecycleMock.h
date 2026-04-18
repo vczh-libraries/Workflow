@@ -63,6 +63,7 @@ namespace vl
 			collections::Dictionary<WString, vint>																										idMap;
 			collections::Dictionary<vint, WString>																										typeIdToName;
 			collections::Dictionary<vint, WString>																										typeIdToWrapperName;
+			collections::Dictionary<vint, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*)>>											wrapperFactories;
 
 			vint																	DecideTypeId(reflection::IDescriptable* obj)const;
 			void																	TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
@@ -77,6 +78,7 @@ namespace vl
 			void																	SetGlobalContext(Ptr<workflow::runtime::WfRuntimeGlobalContext> _globalContext);
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	SetAdapter(RpcDualLifeCycleAdapter* _adapter);
+			void																	RegisterWrapperFactory(vint typeId, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*)> factory);
 
 			// IRpcController
 

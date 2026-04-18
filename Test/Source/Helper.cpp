@@ -134,6 +134,46 @@ WString GetCppMergePath()
 #endif
 }
 
+WString GetCppOutputPathRpc()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"CppRpc" + GetBits() + L"\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"CppRpc" + GetBits() + L"/";
+#endif
+}
+
+WString GetCppOutputPath32Rpc()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"CppRpc32\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"CppRpc32/";
+#endif
+}
+
+WString GetCppOutputPath64Rpc()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"CppRpc64\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"CppRpc64/";
+#endif
+}
+
+WString GetCppMergePathRpc()
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+	return GetExePath() + L"..\\..\\..\\SourceCppGenRpc\\";
+#else
+	return GetExePath() + L"..\\..\\SourceCppGenRpc\\";
+#endif
+#elif defined VCZH_GCC
+	return L"../../SourceCppGenRpc/";
+#endif
+}
+
 WString GetWorkflowOutputPath()
 {
 #if defined VCZH_MSVC

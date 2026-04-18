@@ -24,11 +24,11 @@ namespace vl
 
 			// IRpcIdSync
 
-			void																	SyncIds(const collections::Dictionary<WString, vint>& ids)override;
+			void																			SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override;
 
 			// IRpcController
 
-			void																	Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback)override;
+			void																			Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback)override;
 
 			// IRpcLifeCycle
 

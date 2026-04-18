@@ -164,6 +164,11 @@ namespace vl
 			adapter = _adapter;
 		}
 
+		void RpcDualLifecycleMock::RegisterWrapperFactory(vint typeId, Func<Ptr<IDescriptable>(IRpcLifeCycle*)> factory)
+		{
+			wrapperFactories.Set(typeId, factory);
+		}
+
 		vint RpcDualLifecycleMock::DecideTypeId(IDescriptable* obj)const
 		{
 			if (dynamic_cast<IValueObservableList*>(obj)) return RpcTypeId_IValueObservableList;
@@ -254,6 +259,13 @@ namespace vl
 			if (proxyFactories.Keys().Contains(ref.typeId))
 			{
 				return proxyFactories.Get(ref.typeId)(adapter ? (IRpcLifeCycle*)adapter : (IRpcLifeCycle*)this, ref);
+			}
+
+			// For RPC interface types, use registered wrapper factories (C++ compiled code)
+			if (wrapperFactories.Keys().Contains(ref.typeId))
+			{
+				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
+				return wrapperFactories.Get(ref.typeId)(adapter);
 			}
 
 			// For RPC interface types, use the Workflow wrapper function
@@ -353,6 +365,17 @@ namespace vl
 			if (auto index = services.Keys().IndexOf(fullName); index != -1)
 			{
 				return services.Values()[index];
+			}
+
+			// Use registered wrapper factories (C++ compiled code)
+			if (idMap.Keys().Contains(fullName))
+			{
+				auto typeId = idMap.Get(fullName);
+				if (wrapperFactories.Keys().Contains(typeId))
+				{
+					CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
+					return wrapperFactories.Get(typeId)(adapter);
+				}
 			}
 
 			// Use wrapper function to create a proxy for the remote service

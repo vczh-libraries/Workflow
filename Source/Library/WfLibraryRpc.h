@@ -41,7 +41,7 @@ namespace vl
 			, public vl::reflection::Description<IRpcIdSync>
 		{
 		public:
-			virtual void					SyncIds(const vl::collections::Dictionary<vl::WString, vl::vint>& ids) = 0;
+			virtual void					SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids) = 0;
 		};
 
 		class IRpcListOps

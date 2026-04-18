@@ -6,6 +6,7 @@ using namespace vl::reflection::description;
 using namespace test;
 
 extern void LoadTestCaseTypes();
+extern void LoadTestCaseRpcTypes();
 
 void LoadTypes()
 {
@@ -15,6 +16,7 @@ void LoadTypes()
 	JsonAstLoadTypes();
 	LoadCppTypes();
 	LoadTestCaseTypes();
+	LoadTestCaseRpcTypes();
 	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
 }
 

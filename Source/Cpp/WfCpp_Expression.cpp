@@ -587,6 +587,27 @@ WfGenerateExpressionVisitor
 							return;
 						}
 					}
+					else if (symbol->creatorNode.Cast<WfFunctionArgument>())
+					{
+						if (auto closureInfo = GetClosureInfo(node, (forLambdaArgument ? nullptr : symbol)))
+						{
+							//if (closureInfo->symbols.Values().Contains(symbol.Obj()))
+							//{
+							//	writer.WriteString(L"this->");
+							//	writer.WriteString(config->ConvertName(symbol->name));
+							//	return;
+							//}
+							//else
+							if (closureInfo->ctorArgumentSymbols.Values().Contains(symbol.Obj()))
+							{
+								writer.WriteString(L"__vwsnctor_");
+								writer.WriteString(config->ConvertName(symbol->name));
+								return;
+							}
+						}
+						writer.WriteString(config->ConvertName(symbol->name));
+						return;
+					}
 					writer.WriteString(config->ConvertName(symbol->name));
 				}
 

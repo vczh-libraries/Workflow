@@ -1,0 +1,78 @@
+#include "RequestServiceReflection.h"
+#ifndef VCZH_DEBUG_NO_REFLECTION
+#include "../Source/RpcDualLifecycleMock.h"
+
+using namespace vl;
+using namespace vl::collections;
+using namespace vl::console;
+using namespace vl::reflection::description;
+using namespace vl::rpc_controller;
+using namespace vl::rpc_controller_test;
+
+void LoadTestCaseRpcTypes()
+{
+	 LoadRequestServiceTypes();
+}
+
+TEST_FILE
+{
+
+TEST_CASE(L"Rpc:RequestService")
+{
+	WString expected = L"Hello";
+
+	auto& instance = ::vl_workflow_global::RequestService::Instance();
+
+	auto idDictObj = instance.rpc_GetIds();
+	Dictionary<WString, vint> idMap;
+	{
+		auto keys = idDictObj->GetKeys();
+		auto values = idDictObj->GetValues();
+		for (vint i = 0; i < idDictObj->GetCount(); i++)
+		{
+			auto key = UnboxValue<WString>(keys->Get(i));
+			auto val = UnboxValue<vint>(values->Get(i));
+			idMap.Set(key, val);
+		}
+	}
+
+	auto lc1 = Ptr(new RpcDualLifecycleMock(1));
+	auto lc2 = Ptr(new RpcDualLifecycleMock(2));
+	auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
+	auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
+	lc1->SetPeer(lc2.Obj());
+	lc2->SetPeer(lc1.Obj());
+	lc1->SetIdMap(idMap);
+	lc2->SetIdMap(idMap);
+	lc1->SetAdapter(adapter1.Obj());
+	lc2->SetAdapter(adapter2.Obj());
+
+	{
+		auto typeId = idMap.Get(L"RpcTest::IService");
+		lc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<reflection::IDescriptable> { return instance.rpcwrapper_IService(lc); });
+		lc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<reflection::IDescriptable> { return instance.rpcwrapper_IService(lc); });
+	}
+
+	auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));
+	auto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));
+	auto lo2 = Ptr(new RpcCalleeListOps(adapter2.Obj()));
+	auto leo2 = Ptr(new RpcCalleeListEventBridge(adapter2.Obj()));
+
+	auto oo1 = instance.rpc_IRpcObjectOps(adapter1.Obj());
+	auto oeo1 = instance.rpc_IRpcObjectEventOps(adapter1.Obj());
+	auto oo2 = instance.rpc_IRpcObjectOps(adapter2.Obj());
+	auto oeo2 = instance.rpc_IRpcObjectEventOps(adapter2.Obj());
+
+	lc2->Register(oo1, oeo1, lo1, leo1);
+	lc1->Register(oo2, oeo2, lo2, leo2);
+
+	instance.serviceMain(adapter1.Obj());
+
+	auto actual = instance.clientMain(adapter2.Obj());
+
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+}
+#endif

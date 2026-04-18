@@ -170,22 +170,39 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
+	auto createOrCleanFolder = [](const WString& path, const wchar_t* msgCreate, const wchar_t* msgGetFiles, const wchar_t* msgDelete)
 	{
-		Folder folder(GetCppOutputPath());
+		Folder folder(path);
 		if (!folder.Exists())
 		{
-			CHECK_ERROR(folder.Create(false) == true, L"Failed to create GetCppOutputPath()");
+			CHECK_ERROR(folder.Create(false) == true, msgCreate);
 		}
 		else
 		{
 			List<File> files;
-			CHECK_ERROR(folder.GetFiles(files) == true, L"Failed to get files from GetCppOutputPath()");
+			CHECK_ERROR(folder.GetFiles(files) == true, msgGetFiles);
 			for (auto file : files)
 			{
-				CHECK_ERROR(file.Delete() == true, L"Failed to delete file");
+				CHECK_ERROR(file.Delete() == true, msgDelete);
 			}
 		}
-	}
+	};
+	createOrCleanFolder(GetCppOutputPath32(),
+		L"Failed to create GetCppOutputPath32()",
+		L"Failed to get files from GetCppOutputPath32()",
+		L"Failed to delete file from GetCppOutputPath32()");
+	createOrCleanFolder(GetCppOutputPath64(),
+		L"Failed to create GetCppOutputPath64()",
+		L"Failed to get files from GetCppOutputPath64()",
+		L"Failed to delete file from GetCppOutputPath64()");
+	createOrCleanFolder(GetCppOutputPath32Rpc(),
+		L"Failed to create GetCppOutputPath32Rpc()",
+		L"Failed to get files from GetCppOutputPath32Rpc()",
+		L"Failed to delete file from GetCppOutputPath32Rpc()");
+	createOrCleanFolder(GetCppOutputPath64Rpc(),
+		L"Failed to create GetCppOutputPath64Rpc()",
+		L"Failed to get files from GetCppOutputPath64Rpc()",
+		L"Failed to delete file from GetCppOutputPath64Rpc()");
 #endif
 	int result32 = 0;
 	int result64 = 0;
@@ -222,6 +239,44 @@ int main(int argc, char* argv[])
 			auto file32 = GetCppOutputPath32() + fileName;
 			auto file64 = GetCppOutputPath64() + fileName;
 			auto fileOutput = GetCppMergePath() + fileName;
+
+			auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
+
+			File file(fileOutput);
+			if (file.Exists())
+			{
+				code = MergeCppFileContent(file.ReadAllTextByBom(), code);
+			}
+
+			if (file.Exists())
+			{
+				auto originalCode = file.ReadAllTextByBom();
+				if (originalCode == code)
+				{
+					continue;
+				}
+			}
+
+			file.WriteAllText(code, false, BomEncoder::Mbcs);
+		}
+	}
+
+	{
+		console::Console::WriteLine(L"<Merging Rpc>");
+		SortedList<WString> fileNames32;
+		SortedList<WString> fileNames64;
+		{
+			FillFileNames(GetCppOutputPath32Rpc(), fileNames32);
+			FillFileNames(GetCppOutputPath64Rpc(), fileNames64);
+			CHECK_ERROR(CompareEnumerable(fileNames32, fileNames64) == 0, L"Rpc file names in x64 and x86 folder are different.");
+		}
+
+		for (auto fileName : fileNames32)
+		{
+			console::Console::WriteLine(L"    " + fileName);
+			auto file32 = GetCppOutputPath32Rpc() + fileName;
+			auto file64 = GetCppOutputPath64Rpc() + fileName;
+			auto fileOutput = GetCppMergePathRpc() + fileName;
 
 			auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
 
