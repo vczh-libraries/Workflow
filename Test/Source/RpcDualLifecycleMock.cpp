@@ -97,6 +97,23 @@ namespace vl
 			});
 		}
 
+		RpcDualLifecycleMock::~RpcDualLifecycleMock()
+		{
+			// Must clean up tracked objects before member destruction begins.
+			// Objects can exist in both ownedObjects (derived) and services (base).
+			// Derived members are destroyed before base members, so when services
+			// releases the last Ptr, the object's RpcDualObjectTracker destructor
+			// would access already-destroyed members (localObjects, ownedObjects).
+			// Explicitly untracking and clearing everything here prevents that.
+			while (localObjects.Count() > 0)
+			{
+				auto ref = refsById.Values()[refsById.Count() - 1];
+				UntrackLocalObject(ref);
+			}
+			ownedObjects.Clear();
+			services.Clear();
+		}
+
 		void RpcDualLifecycleMock::SetPeer(RpcDualLifecycleMock* _peer)
 		{
 			peer = _peer;

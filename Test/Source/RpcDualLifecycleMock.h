@@ -71,6 +71,7 @@ namespace vl
 			Ptr<reflection::IDescriptable>											CreateCallerProxy(rpc_controller::RpcObjectReference ref);
 		public:
 			RpcDualLifecycleMock(vint _clientId);
+			~RpcDualLifecycleMock();
 
 			void																	SetPeer(RpcDualLifecycleMock* _peer);
 			void																	SetGlobalContext(Ptr<workflow::runtime::WfRuntimeGlobalContext> _globalContext);
