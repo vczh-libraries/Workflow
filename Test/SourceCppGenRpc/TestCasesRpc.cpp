@@ -27,9 +27,9 @@ TEST_CASE(L"Rpc:RequestService")
 		vint DecideTypeId(IDescriptable* obj)const override
 		{
 			auto result = RpcDualLifecycleMock::DecideTypeId(obj);
-			if (result != 0) return result;
+			if (result != RpcTypeId_NotFound) return result;
 			if (dynamic_cast<::RpcTest::IService*>(obj)) return idMap.Get(L"RpcTest::IService");
-			return 0;
+			return RpcTypeId_NotFound;
 		}
 	};
 

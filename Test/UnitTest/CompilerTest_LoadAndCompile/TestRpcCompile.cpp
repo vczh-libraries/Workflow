@@ -206,7 +206,7 @@ TEST_FILE
 						writer.WriteLine(L"\t\tvint DecideTypeId(IDescriptable* obj)const override");
 						writer.WriteLine(L"\t\t{");
 						writer.WriteLine(L"\t\t\tauto result = RpcDualLifecycleMock::DecideTypeId(obj);");
-						writer.WriteLine(L"\t\t\tif (result != 0) return result;");
+						writer.WriteLine(L"\t\t\tif (result != RpcTypeId_NotFound) return result;");
 						for (auto&& fullName : typeFullNames)
 						{
 							writer.WriteString(L"\t\t\tif (dynamic_cast<::");
@@ -215,7 +215,7 @@ TEST_FILE
 							writer.WriteString(fullName);
 							writer.WriteLine(L"\");");
 						}
-						writer.WriteLine(L"\t\t\treturn 0;");
+						writer.WriteLine(L"\t\t\treturn RpcTypeId_NotFound;");
 						writer.WriteLine(L"\t\t}");
 						writer.WriteLine(L"\t};");
 						writer.WriteLine(L"");

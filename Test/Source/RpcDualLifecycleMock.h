@@ -7,6 +7,7 @@ namespace vl
 {
 	namespace rpc_controller_test
 	{
+		static constexpr vint RpcTypeId_NotFound = -100;
 		class RpcDualObjectTracker : public Object
 		{
 		private:

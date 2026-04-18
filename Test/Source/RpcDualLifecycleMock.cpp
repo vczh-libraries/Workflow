@@ -158,7 +158,7 @@ namespace vl
 				}
 			}
 
-			return 0;
+			return RpcTypeId_NotFound;
 		}
 
 		void RpcDualLifecycleMock::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
@@ -366,7 +366,7 @@ namespace vl
 			}
 
 			auto typeId = DecideTypeId(obj.Obj());
-			CHECK_ERROR(typeId != 0, L"RpcDualLifecycleMock::PtrToRef: DecideTypeId returned 0 (unknown type).");
+			CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RpcDualLifecycleMock::PtrToRef: DecideTypeId returned RpcTypeId_NotFound (unknown type).");
 			auto ref = RegisterLocalObject(typeId);
 			ownedObjects.Set(ref.objectId, obj);
 			TrackLocalObject(ref, obj.Obj());

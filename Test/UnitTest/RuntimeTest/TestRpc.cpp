@@ -78,7 +78,7 @@ namespace
 		vint DecideTypeId(IDescriptable* obj)const override
 		{
 			auto baseResult = RpcDualLifecycleMock::DecideTypeId(obj);
-			if (baseResult != 0) return baseResult;
+			if (baseResult != RpcTypeId_NotFound) return baseResult;
 
 			auto descriptable = dynamic_cast<DescriptableObject*>(obj);
 			if (descriptable)
@@ -97,7 +97,7 @@ namespace
 				}
 			}
 
-			return 0;
+			return RpcTypeId_NotFound;
 		}
 	};
 }
