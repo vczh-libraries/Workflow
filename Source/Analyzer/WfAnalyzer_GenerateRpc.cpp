@@ -228,6 +228,14 @@ namespace vl
 					return type;
 				}
 
+				Ptr<WfType> GetSyncIdsParamType()
+				{
+					auto td = GetTypeDescriptor(L"system::IRpcIdSync");
+					auto group = td->GetMethodGroupByName(L"SyncIds", false);
+					auto method = group->GetMethod(0);
+					return GetTypeFromTypeInfo(method->GetParameter(0)->GetType());
+				}
+
 				Ptr<WfExpression> CreateNull()
 				{
 					auto expression = Ptr(new WfLiteralExpression);
@@ -804,11 +812,11 @@ namespace vl
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_holds", CreateSharedType(L"system::Dictionary"), CreateConstructor()));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_holds", CreateMapType(CreateQualifiedType(L"system::RpcObjectReference"), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
 
 					{
 						auto sync = CreateFunctionDeclaration(L"SyncIds", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						sync->arguments.Add(CreateFunctionArgument(L"ids", CreateSharedType(L"system::Dictionary")));
+						sync->arguments.Add(CreateFunctionArgument(L"ids", GetSyncIdsParamType()));
 						newOps->declarations.Add(sync);
 					}
 
@@ -862,7 +870,7 @@ namespace vl
 
 					{
 						auto sync = CreateFunctionDeclaration(L"SyncIds", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						sync->arguments.Add(CreateFunctionArgument(L"ids", CreateSharedType(L"system::Dictionary")));
+						sync->arguments.Add(CreateFunctionArgument(L"ids", GetSyncIdsParamType()));
 						newOps->declarations.Add(sync);
 					}
 
@@ -996,21 +1004,21 @@ namespace vl
 				{
 					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), WfFunctionKind::Normal);
 					auto block = getIds->statement.Cast<WfBlockStatement>();
-					auto nameToId = CreateConstructor();
+					AddStatement(block, CreateVariableStatement(L"result", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), CreateConstructor()));
 					id = 0;
 					for (auto fullName : manager->rpcMetadata->typeFullNames)
 					{
-						AddIdLookupEntry(nameToId, CreateString(fullName), CreateInt(id++));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
 					}
 					for (auto fullName : manager->rpcMetadata->methodFullNames)
 					{
-						AddIdLookupEntry(nameToId, CreateString(fullName), CreateInt(id++));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
 					}
 					for (auto fullName : manager->rpcMetadata->eventFullNames)
 					{
-						AddIdLookupEntry(nameToId, CreateString(fullName), CreateInt(id++));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
 					}
-					AddStatement(block, CreateReturn(nameToId));
+					AddStatement(block, CreateReturn(CreateReference(L"result")));
 					module->declarations.Add(getIds);
 				}
 

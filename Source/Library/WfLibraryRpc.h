@@ -41,7 +41,7 @@ namespace vl
 			, public vl::reflection::Description<IRpcIdSync>
 		{
 		public:
-			virtual void					SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids) = 0;
+			virtual void					SyncIds(const vl::collections::Dictionary<vl::WString, vl::vint>& ids) = 0;
 		};
 
 		class IRpcListOps
@@ -108,13 +108,12 @@ namespace vl
 			, public vl::reflection::Description<IRpcController>
 		{
 		public:
-			virtual vl::Ptr<vl::reflection::description::IValueDictionary>
-											Register(
-												vl::Ptr<IRpcObjectOps> objectCallback,
-												vl::Ptr<IRpcObjectEventOps> eventCallback,
-												vl::Ptr<IRpcListOps> listCallback,
-												vl::Ptr<IRpcListEventOps> listEventCallback
-											) = 0;
+			virtual void					Register(
+											vl::Ptr<IRpcObjectOps> objectCallback,
+											vl::Ptr<IRpcObjectEventOps> eventCallback,
+											vl::Ptr<IRpcListOps> listCallback,
+											vl::Ptr<IRpcListEventOps> listEventCallback
+										) = 0;
 
 			virtual RpcObjectReference		RegisterLocalObject(vl::vint typeId) = 0;
 			virtual void					UnregisterLocalObject(RpcObjectReference ref) = 0;

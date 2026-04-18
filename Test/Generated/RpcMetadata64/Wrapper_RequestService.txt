@@ -6,7 +6,10 @@ var rpcmethod_RpcTest__IService_GetText : int = 1;
 
 func rpc_GetIds() : (int[string])
 {
-    return {"RpcTest::IService" : 0; "RpcTest::IService.GetText" : 1;};
+    var result : int[string] = {};
+    result.Set("RpcTest::IService", 0);
+    result.Set("RpcTest::IService.GetText", 1);
+    return result;
 }
 
 func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
@@ -15,9 +18,9 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
-        var _holds : system::Dictionary^ = {};
+        var _holds : object[system::RpcObjectReference] = {};
 
-        override func SyncIds(ids : system::Dictionary^) : (void)
+        override func SyncIds(ids : const ::system::Int64[::system::String]) : (void)
         {
         }
 
@@ -73,7 +76,7 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEv
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
-        override func SyncIds(ids : system::Dictionary^) : (void)
+        override func SyncIds(ids : const ::system::Int64[::system::String]) : (void)
         {
         }
 

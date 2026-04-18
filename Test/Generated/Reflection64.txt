@@ -243,7 +243,7 @@ interface system::Future : system::Async, system::Promise {
 @FullName:vl::rpc_controller::IRpcController
 interface system::IRpcController : system::IRpcListOps, system::IRpcObjectOps, system::IRpcListEventOps, system::IRpcObjectEventOps {
     function AcquireRemoteObject(ref : system::RpcObjectReference) : system::Void;
-    function Register(objectCallback : system::IRpcObjectOps^, eventCallback : system::IRpcObjectEventOps^, listCallback : system::IRpcListOps^, listEventCallback : system::IRpcListEventOps^) : system::Dictionary^;
+    function Register(objectCallback : system::IRpcObjectOps^, eventCallback : system::IRpcObjectEventOps^, listCallback : system::IRpcListOps^, listEventCallback : system::IRpcListEventOps^) : system::Void;
     function RegisterLocalObject(typeId : system::Int64) : system::RpcObjectReference;
     function ReleaseRemoteObject(ref : system::RpcObjectReference) : system::Void;
     function UnregisterLocalObject(ref : system::RpcObjectReference) : system::Void;
@@ -252,11 +252,8 @@ interface system::IRpcController : system::IRpcListOps, system::IRpcObjectOps, s
 
 @FullName:vl::rpc_controller::IRpcIdSync
 interface system::IRpcIdSync : system::Interface {
-    function SyncIds(ids : system::Dictionary^) : system::Void;
+    function SyncIds(ids : system::ReadonlyDictionary<system::String, system::Int64>^) : system::Void;
 
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcIdSync>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcIdSync>::Create)
-    constructor (proxy : system::InterfaceProxy^) : system::IRpcIdSync^;
 }
 
 @FullName:vl::rpc_controller::IRpcLifeCycle
@@ -287,9 +284,6 @@ interface system::IRpcLifeCycle : system::Interface {
 interface system::IRpcListEventOps : system::Interface {
     function OnItemChanged(ref : system::RpcObjectReference, index : system::Int64, oldCount : system::Int64, newCount : system::Int64) : system::Void;
 
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create)
-    constructor (proxy : system::InterfaceProxy^) : system::IRpcListEventOps^;
 }
 
 @FullName:vl::rpc_controller::IRpcListOps
@@ -315,9 +309,6 @@ interface system::IRpcListOps : system::Interface {
     function ListRemoveAt(ref : system::RpcObjectReference, index : system::Int64) : system::Boolean;
     function ListSet(ref : system::RpcObjectReference, index : system::Int64, value : system::Object) : system::Void;
 
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create)
-    constructor (proxy : system::InterfaceProxy^) : system::IRpcListOps^;
 }
 
 @FullName:vl::rpc_controller::IRpcObjectEventOps

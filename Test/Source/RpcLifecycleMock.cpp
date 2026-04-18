@@ -7,6 +7,7 @@ namespace vl
 		using namespace reflection;
 		using namespace reflection::description;
 		using namespace rpc_controller;
+		using namespace collections;
 
 /***********************************************************************
 * RpcLifecycleMock (Require helpers)
@@ -40,7 +41,7 @@ namespace vl
 * RpcLifecycleMock (IRpcIdSync)
 ***********************************************************************/
 
-		void RpcLifecycleMock::SyncIds(Ptr<IValueDictionary> ids)
+		void RpcLifecycleMock::SyncIds(const Dictionary<WString, vint>& ids)
 		{
 			(void)ids;
 		}
@@ -49,17 +50,16 @@ namespace vl
 * RpcLifecycleMock (IRpcController)
 ***********************************************************************/
 
-		Ptr<IValueDictionary> RpcLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
+		void RpcLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
 		{
 			objectCallback = _objectCallback.Obj();
 			eventCallback = _eventCallback.Obj();
 			listCallback = _listCallback.Obj();
 			listEventCallback = _listEventCallback.Obj();
 
-			auto ids = IValueDictionary::Create();
+			Dictionary<WString, vint> ids;
 			if (objectCallback) objectCallback->SyncIds(ids);
 			if (eventCallback) eventCallback->SyncIds(ids);
-			return ids;
 		}
 
 /***********************************************************************
