@@ -19,7 +19,7 @@ These files are prepared for foreign dependencies.
 
 ## Projects for Verification
 
-Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.vcxproj` folder, you are required to run all of them in order:
+Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.vcxproj` folder, you are required to run all of them:
 - `LibraryTest`: Unit test for libraries implemented in C++ that offers to Workflow script language
 - `CompilerTest_GenerateMetadata`: Generate binary metadata that is used by `CompilerTest_GenerateMetadata`
   - This project is special, it is required to run only when files in these folders are changed:
@@ -30,15 +30,26 @@ Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.v
   - Test cases are in `REPO-ROOT/Test/Resources/Index*.txt`. Each index file lists files in the corresponding sub folder in `REPO-ROOT/Test/Resources`.
   - The compiler would generate binary files for both x86 and x64.
   - Binary files are Workflow virtual machine instructions, the difference is that some native C++ types and Workflow type mappings vary between x86 and x64, e.g., `vint` in C++ and `int` in Workflow, as well as a little bit others.
-  - Only test cases in category `Codegen` and `Debugger` are executable, test cases in other categories are for testing Workflow compiler errors.
 - `CppTest`: Generated C++ code from executable test cases.
 - `CppTest_Metaonly`: Generated C++ code from executable test cases.
 - `CppTest_Reflection`: Generated C++ code from executable test cases.
+
 When any *.h or *.cpp file is changed, unit test is required to run.
-
-You are required to build and run all unit test projects with both `Debug|x64` and `Debug|Win32`. Except for `CompilerTest_LoadAndCompile` which only needs `Debug|x64`.
-
 When any test case fails, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
+
+### Project Execution Order
+
+`CompilerTest_GenerateMetadata` read all reflectable types in C++ code and generate metadata of type information.
+`CompilerTest_LoadAndCompile` load these metadata so that reflectable C++ types are visible to Workflow script, generating C++ source code from some Workflow scripts and they are to be executed later.
+
+The correct order to run them is:
+- Build debug Win32 and x64.
+- Run `LibraryTest` for Win32 and x64.
+- Run `CompilerTest_GenerateMetadata` for Win32 and x64.
+- Run `CompilerTest_LoadAndCompile` for x64.
+  - If it updates any C++ source code, build debug Win32 and x64 again.
+- Run `RuntimeTest` for Win32 and x64.
+- Run `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` for Win32 and x64.
 
 ### Baseline Comparison
 
@@ -52,6 +63,20 @@ When any test case fails, you must fix the issue immediately, even those errors 
   - If the RPC metadata generation logic has changed, this comparison will fail. This is expected.
 
 When generated files are expected to change, baseline comparison will fail. You need to override baseline files with generated files, and run the test projects again.
+### Workflow Test Samples
+
+`Test/Resources/Index*.txt` is an index of all files in `Test/Resources/*`.
+- `AnalyzerScope`: Compiled in `TestAnalyzer.cpp`, testing against multiple modules.
+- `AnalyzerError`: Compiled in `TestAnalyzer.cpp`, testing against Workflow compile errors.
+- `Runtime`: Compiled in `TestRuntimeCompile.cpp` and loaded in `TestRuntime.cpp`, testing against attribute metadata.
+- `Codegen`: Compiled in `TestCodegen.cpp` and executed in `TestRuntime.cpp`, testing against binary generation and virtual machine execution.
+- `Rpc`: Compiled in `TestRpcCompile.cpp` and executed in `TestRpc.cpp`, testing against RPC feature.
+- `Debugger`: Compiled and executed in `TestDebugger.cpp`, testing against Workflow virtual machine debugger feature.
+- Others: Compiled in `TestSamples.cpp`, test against the Workflow parser.
+
+`Codegen` and `Rpc` generates C++ source files from each sample, affecting `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`.
+- Changing the compiler or samples will end up updating C++ source files in these projects, causing them need to rebuild.
+- `Rpc` part is to be finished.
 
 ### Code Generation Tools
 
