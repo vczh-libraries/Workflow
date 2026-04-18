@@ -162,6 +162,7 @@ TEST_FILE
 			writer.WriteLine(L"using namespace vl;");
 			writer.WriteLine(L"using namespace vl::collections;");
 			writer.WriteLine(L"using namespace vl::console;");
+			writer.WriteLine(L"using namespace vl::reflection;");
 			writer.WriteLine(L"using namespace vl::reflection::description;");
 			writer.WriteLine(L"using namespace vl::rpc_controller;");
 			writer.WriteLine(L"using namespace vl::rpc_controller_test;");
@@ -192,6 +193,35 @@ TEST_FILE
 				writer.WriteLine(L"\")");
 				writer.WriteLine(L"{");
 
+				// Generate a local subclass that overrides DecideTypeId with dynamic_cast
+				if (rpcTypeFullNamesPerItem.Keys().Contains(itemName))
+				{
+					auto&& typeFullNames = *rpcTypeFullNamesPerItem.Get(itemName).Obj();
+					if (typeFullNames.Count() > 0)
+					{
+						writer.WriteLine(L"\tclass LocalRpcMock : public RpcDualLifecycleMock");
+						writer.WriteLine(L"\t{");
+						writer.WriteLine(L"\tpublic:");
+						writer.WriteLine(L"\t\tusing RpcDualLifecycleMock::RpcDualLifecycleMock;");
+						writer.WriteLine(L"\t\tvint DecideTypeId(IDescriptable* obj)const override");
+						writer.WriteLine(L"\t\t{");
+						writer.WriteLine(L"\t\t\tauto result = RpcDualLifecycleMock::DecideTypeId(obj);");
+						writer.WriteLine(L"\t\t\tif (result != 0) return result;");
+						for (auto&& fullName : typeFullNames)
+						{
+							writer.WriteString(L"\t\t\tif (dynamic_cast<::");
+							writer.WriteString(fullName);
+							writer.WriteString(L"*>(obj)) return idMap.Get(L\"");
+							writer.WriteString(fullName);
+							writer.WriteLine(L"\");");
+						}
+						writer.WriteLine(L"\t\t\treturn 0;");
+						writer.WriteLine(L"\t\t}");
+						writer.WriteLine(L"\t};");
+						writer.WriteLine(L"");
+					}
+				}
+
 				writer.WriteString(L"\tWString expected = L\"");
 				writer.WriteString(itemResult);
 				writer.WriteLine(L"\";");
@@ -218,9 +248,16 @@ TEST_FILE
 				writer.WriteLine(L"\t}");
 				writer.WriteLine(L"");
 
-				// Create two lifecycle mocks with adapters
-				writer.WriteLine(L"\tauto lc1 = Ptr(new RpcDualLifecycleMock(1));");
-				writer.WriteLine(L"\tauto lc2 = Ptr(new RpcDualLifecycleMock(2));");
+				// Create two lifecycle mocks with adapters (use LocalRpcMock if types exist)
+				bool hasTypes = rpcTypeFullNamesPerItem.Keys().Contains(itemName) && rpcTypeFullNamesPerItem.Get(itemName)->Count() > 0;
+				auto mockType = hasTypes ? L"LocalRpcMock" : L"RpcDualLifecycleMock";
+
+				writer.WriteString(L"\tauto lc1 = Ptr(new ");
+				writer.WriteString(mockType);
+				writer.WriteLine(L"(1));");
+				writer.WriteString(L"\tauto lc2 = Ptr(new ");
+				writer.WriteString(mockType);
+				writer.WriteLine(L"(2));");
 				writer.WriteLine(L"\tauto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));");
 				writer.WriteLine(L"\tauto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));");
 				writer.WriteLine(L"\tlc1->SetPeer(lc2.Obj());");
@@ -254,11 +291,11 @@ TEST_FILE
 						writer.WriteString(fullName);
 						writer.WriteLine(L"\");");
 
-						writer.WriteString(L"\t\tlc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<reflection::IDescriptable> { return instance.rpcwrapper_");
+						writer.WriteString(L"\t\tlc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_");
 						writer.WriteString(simpleName);
 						writer.WriteLine(L"(lc); });");
 
-						writer.WriteString(L"\t\tlc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<reflection::IDescriptable> { return instance.rpcwrapper_");
+						writer.WriteString(L"\t\tlc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_");
 						writer.WriteString(simpleName);
 						writer.WriteLine(L"(lc); });");
 

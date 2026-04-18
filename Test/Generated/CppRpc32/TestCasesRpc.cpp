@@ -5,6 +5,7 @@
 using namespace vl;
 using namespace vl::collections;
 using namespace vl::console;
+using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::rpc_controller;
 using namespace vl::rpc_controller_test;
@@ -19,6 +20,19 @@ TEST_FILE
 
 TEST_CASE(L"Rpc:RequestService")
 {
+	class LocalRpcMock : public RpcDualLifecycleMock
+	{
+	public:
+		using RpcDualLifecycleMock::RpcDualLifecycleMock;
+		vint DecideTypeId(IDescriptable* obj)const override
+		{
+			auto result = RpcDualLifecycleMock::DecideTypeId(obj);
+			if (result != 0) return result;
+			if (dynamic_cast<::RpcTest::IService*>(obj)) return idMap.Get(L"RpcTest::IService");
+			return 0;
+		}
+	};
+
 	WString expected = L"Hello";
 
 	auto& instance = ::vl_workflow_global::RequestService::Instance();
@@ -36,8 +50,8 @@ TEST_CASE(L"Rpc:RequestService")
 		}
 	}
 
-	auto lc1 = Ptr(new RpcDualLifecycleMock(1));
-	auto lc2 = Ptr(new RpcDualLifecycleMock(2));
+	auto lc1 = Ptr(new LocalRpcMock(1));
+	auto lc2 = Ptr(new LocalRpcMock(2));
 	auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
 	auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
 	lc1->SetPeer(lc2.Obj());
@@ -49,8 +63,8 @@ TEST_CASE(L"Rpc:RequestService")
 
 	{
 		auto typeId = idMap.Get(L"RpcTest::IService");
-		lc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<reflection::IDescriptable> { return instance.rpcwrapper_IService(lc); });
-		lc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<reflection::IDescriptable> { return instance.rpcwrapper_IService(lc); });
+		lc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_IService(lc); });
+		lc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_IService(lc); });
 	}
 
 	auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));

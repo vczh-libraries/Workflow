@@ -2,7 +2,6 @@
 #define VCZH_WORKFLOW_TEST_RPC_DUAL_LIFECYCLE_MOCK
 
 #include "RpcLifecycleMock.h"
-#include "../../Source/Runtime/WfRuntime.h"
 
 namespace vl
 {
@@ -18,15 +17,6 @@ namespace vl
 			~RpcDualObjectTracker();
 		};
 
-		/// <summary>
-		/// A thin adapter that only inherits from Object and IRpcLifeCycle.
-		/// This is needed because the reflection system uses GetTypeDescriptor()
-		/// to determine the type of an object. When a class inherits from both
-		/// IRpcLifeCycle and IRpcController (like RpcLifecycleMock), the type
-		/// descriptor ends up as IRpcController (the larger type), which can't
-		/// be passed as IRpcLifeCycle* to Workflow functions.
-		/// This adapter ensures the type descriptor is IRpcLifeCycle.
-		/// </summary>
 		class RpcDualLifeCycleAdapter : public Object, public virtual rpc_controller::IRpcLifeCycle
 		{
 		private:
@@ -45,11 +35,10 @@ namespace vl
 		{
 			friend class RpcDualObjectTracker;
 			friend class RpcDualLifeCycleAdapter;
-		private:
+		protected:
 			vint																																		clientId = 1;
 			vint																																		nextObjectId = 1;
 			RpcDualLifecycleMock*																														peer = nullptr;
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>																								globalContext;
 			RpcDualLifeCycleAdapter*																													adapter = nullptr;
 			collections::Dictionary<vint, vint>																											refCounts;
 			collections::Dictionary<vint, vint>																											typeIds;
@@ -61,21 +50,18 @@ namespace vl
 			collections::Dictionary<vint, reflection::description::IValueObservableList*>																observableProxies;
 			collections::Dictionary<vint, Ptr<EventHandler>>																							eventHandlers;
 			collections::Dictionary<WString, vint>																										idMap;
-			collections::Dictionary<vint, WString>																										typeIdToName;
-			collections::Dictionary<vint, WString>																										typeIdToWrapperName;
 			collections::Dictionary<vint, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*)>>											wrapperFactories;
 
-			vint																	DecideTypeId(reflection::IDescriptable* obj)const;
-			void																	TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
-			void																	UntrackLocalObject(rpc_controller::RpcObjectReference ref);
-			bool																	IsTracked(vint objectId)const;
-			Ptr<reflection::IDescriptable>											CreateCallerProxy(rpc_controller::RpcObjectReference ref);
+			virtual vint																DecideTypeId(reflection::IDescriptable* obj)const;
+			void																		TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
+			void																		UntrackLocalObject(rpc_controller::RpcObjectReference ref);
+			bool																		IsTracked(vint objectId)const;
+			Ptr<reflection::IDescriptable>												CreateCallerProxy(rpc_controller::RpcObjectReference ref);
 		public:
 			RpcDualLifecycleMock(vint _clientId);
 			~RpcDualLifecycleMock();
 
 			void																	SetPeer(RpcDualLifecycleMock* _peer);
-			void																	SetGlobalContext(Ptr<workflow::runtime::WfRuntimeGlobalContext> _globalContext);
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	SetAdapter(RpcDualLifeCycleAdapter* _adapter);
 			void																	RegisterWrapperFactory(vint typeId, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*)> factory);

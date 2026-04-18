@@ -1,5 +1,6 @@
 #include "../../Source/Helper.h"
 #include "../../Source/RpcDualLifecycleMock.h"
+#include "../../../Source/Runtime/WfRuntime.h"
 #include "../../../Source/Library/WfLibraryReflection.h"
 
 using namespace vl::rpc_controller;
@@ -15,6 +16,90 @@ bool DecodeRpcName(const WString& rpcLine, WString& itemName, WString& itemResul
 	itemName = rpcLine.Sub(0, index);
 	itemResult = rpcLine.Sub(index + 1, rpcLine.Length() - index - 1);
 	return true;
+}
+
+namespace
+{
+	using namespace vl;
+	using namespace vl::collections;
+	using namespace vl::reflection;
+	using namespace vl::reflection::description;
+
+	class RpcWorkflowLifecycleMock : public RpcDualLifecycleMock
+	{
+	private:
+		Ptr<WfRuntimeGlobalContext>								globalContext;
+		Dictionary<vint, WString>								typeIdToName;
+		Dictionary<vint, WString>								typeIdToWrapperName;
+	public:
+		RpcWorkflowLifecycleMock(vint _clientId)
+			: RpcDualLifecycleMock(_clientId)
+		{
+		}
+
+		void SetGlobalContext(Ptr<WfRuntimeGlobalContext> _globalContext)
+		{
+			globalContext = _globalContext;
+		}
+
+		void SetIdMapWithReflection(const Dictionary<WString, vint>& _idMap)
+		{
+			SetIdMap(_idMap);
+
+			for (auto&& [key, value] : _idMap)
+			{
+				if (!key.Buffer() || wcschr(key.Buffer(), L'.') != nullptr) continue;
+
+				typeIdToName.Set(value, key);
+
+				auto lastColonColon = wcsrchr(key.Buffer(), L':');
+				WString wrapperName;
+				if (lastColonColon && lastColonColon > key.Buffer() && *(lastColonColon - 1) == L':')
+				{
+					auto nsLen = (lastColonColon - key.Buffer()) + 1;
+					auto ns = key.Sub(0, (vint)nsLen);
+					auto shortName = key.Sub((vint)nsLen, key.Length() - (vint)nsLen);
+					wrapperName = ns + L"rpcwrapper_" + shortName;
+				}
+				else
+				{
+					wrapperName = L"rpcwrapper_" + key;
+				}
+				typeIdToWrapperName.Set(value, wrapperName);
+
+				RegisterWrapperFactory(value, [this, wrapperName](IRpcLifeCycle* lc) -> Ptr<IDescriptable>
+				{
+					auto wrapperFunc = LoadFunction<Ptr<IDescriptable>(IRpcLifeCycle*)>(globalContext, wrapperName);
+					return wrapperFunc(lc);
+				});
+			}
+		}
+
+		vint DecideTypeId(IDescriptable* obj)const override
+		{
+			auto baseResult = RpcDualLifecycleMock::DecideTypeId(obj);
+			if (baseResult != 0) return baseResult;
+
+			auto descriptable = dynamic_cast<DescriptableObject*>(obj);
+			if (descriptable)
+			{
+				auto td = descriptable->GetTypeDescriptor();
+				if (td)
+				{
+					for (auto&& [typeId, typeName] : typeIdToName)
+					{
+						auto knownTd = description::GetTypeDescriptor(typeName);
+						if (knownTd && td->CanConvertTo(knownTd))
+						{
+							return typeId;
+						}
+					}
+				}
+			}
+
+			return 0;
+		}
+	};
 }
 
 TEST_FILE
@@ -54,16 +139,16 @@ TEST_FILE
 				}
 
 				// Create two lifecycle mocks with adapters
-				auto lc1 = Ptr(new RpcDualLifecycleMock(1));
-				auto lc2 = Ptr(new RpcDualLifecycleMock(2));
+				auto lc1 = Ptr(new RpcWorkflowLifecycleMock(1));
+				auto lc2 = Ptr(new RpcWorkflowLifecycleMock(2));
 				auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
 				auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
 				lc1->SetPeer(lc2.Obj());
 				lc2->SetPeer(lc1.Obj());
 				lc1->SetGlobalContext(globalContext);
 				lc2->SetGlobalContext(globalContext);
-				lc1->SetIdMap(idMap);
-				lc2->SetIdMap(idMap);
+				lc1->SetIdMapWithReflection(idMap);
+				lc2->SetIdMapWithReflection(idMap);
 				lc1->SetAdapter(adapter1.Obj());
 				lc2->SetAdapter(adapter2.Obj());
 

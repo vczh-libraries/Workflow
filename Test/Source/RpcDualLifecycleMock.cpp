@@ -1,5 +1,4 @@
 #include "RpcDualLifecycleMock.h"
-#include "../../Source/Library/WfLibraryReflection.h"
 
 namespace vl
 {
@@ -9,7 +8,6 @@ namespace vl
 		using namespace reflection::description;
 		using namespace rpc_controller;
 		using namespace collections;
-		using namespace workflow::runtime;
 
 		RpcDualObjectTracker::RpcDualObjectTracker(RpcDualLifecycleMock* m, RpcObjectReference r)
 			: mock(m), ref(r)
@@ -119,43 +117,11 @@ namespace vl
 			peer = _peer;
 		}
 
-		void RpcDualLifecycleMock::SetGlobalContext(Ptr<WfRuntimeGlobalContext> _globalContext)
-		{
-			globalContext = _globalContext;
-		}
-
 		void RpcDualLifecycleMock::SetIdMap(const Dictionary<WString, vint>& _idMap)
 		{
 			for (auto&& [key, value] : _idMap)
 			{
 				idMap.Set(key, value);
-			}
-
-			// Build typeId -> type name and wrapper name mappings
-			for (auto&& [key, value] : _idMap)
-			{
-				// Type entries don't have "." in their name (methods use "TypeName.MethodName")
-				if (!key.Buffer() || wcschr(key.Buffer(), L'.') != nullptr) continue;
-
-				typeIdToName.Set(value, key);
-
-				// Derive wrapper function name:
-				// For "RpcTest::IService" -> wrapper is "RpcTest::rpcwrapper_IService"
-				// For "IService" (no namespace) -> wrapper is "rpcwrapper_IService"
-				auto lastColonColon = wcsrchr(key.Buffer(), L':');
-				WString wrapperName;
-				if (lastColonColon && lastColonColon > key.Buffer() && *(lastColonColon - 1) == L':')
-				{
-					auto nsLen = (lastColonColon - key.Buffer()) + 1;
-					auto ns = key.Sub(0, (vint)nsLen);
-					auto shortName = key.Sub((vint)nsLen, key.Length() - (vint)nsLen);
-					wrapperName = ns + L"rpcwrapper_" + shortName;
-				}
-				else
-				{
-					wrapperName = L"rpcwrapper_" + key;
-				}
-				typeIdToWrapperName.Set(value, wrapperName);
 			}
 		}
 
@@ -179,25 +145,19 @@ namespace vl
 			if (dynamic_cast<IValueEnumerator*>(obj)) return RpcTypeId_IValueEnumerator;
 			if (dynamic_cast<IValueEnumerable*>(obj)) return RpcTypeId_IValueEnumerable;
 
-			// Check user-defined RPC interface types using the reflection system
-			auto descriptable = dynamic_cast<DescriptableObject*>(obj);
-			if (descriptable)
+			// Check registered services
+			for (vint i = 0; i < services.Count(); i++)
 			{
-				auto td = descriptable->GetTypeDescriptor();
-				if (td)
+				if (services.Values()[i].Obj() == obj)
 				{
-					for (auto&& [typeId, typeName] : typeIdToName)
+					auto& name = services.Keys()[i];
+					if (auto index = idMap.Keys().IndexOf(name); index != -1)
 					{
-						auto knownTd = description::GetTypeDescriptor(typeName);
-						if (knownTd && td->CanConvertTo(knownTd))
-						{
-							return typeId;
-						}
+						return idMap.Values()[index];
 					}
 				}
 			}
 
-			CHECK_FAIL(L"RpcDualLifecycleMock::DecideTypeId cannot determine the proxy type.");
 			return 0;
 		}
 
@@ -261,21 +221,11 @@ namespace vl
 				return proxyFactories.Get(ref.typeId)(adapter ? (IRpcLifeCycle*)adapter : (IRpcLifeCycle*)this, ref);
 			}
 
-			// For RPC interface types, use registered wrapper factories (C++ compiled code)
+			// For RPC interface types, use registered wrapper factories
 			if (wrapperFactories.Keys().Contains(ref.typeId))
 			{
 				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
 				return wrapperFactories.Get(ref.typeId)(adapter);
-			}
-
-			// For RPC interface types, use the Workflow wrapper function
-			// Pass the adapter (which has IRpcLifeCycle type descriptor) instead of this
-			if (typeIdToWrapperName.Keys().Contains(ref.typeId))
-			{
-				auto&& wrapperName = typeIdToWrapperName.Get(ref.typeId);
-				auto wrapperFunc = LoadFunction<Ptr<IDescriptable>(IRpcLifeCycle*)>(globalContext, wrapperName);
-				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
-				return wrapperFunc(adapter);
 			}
 
 			CHECK_FAIL(L"RpcDualLifecycleMock::CreateCallerProxy cannot find a proxy factory.");
@@ -367,7 +317,7 @@ namespace vl
 				return services.Values()[index];
 			}
 
-			// Use registered wrapper factories (C++ compiled code)
+			// Use registered wrapper factories
 			if (idMap.Keys().Contains(fullName))
 			{
 				auto typeId = idMap.Get(fullName);
@@ -375,20 +325,6 @@ namespace vl
 				{
 					CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
 					return wrapperFactories.Get(typeId)(adapter);
-				}
-			}
-
-			// Use wrapper function to create a proxy for the remote service
-			// Pass the adapter (which has IRpcLifeCycle type descriptor) instead of this
-			if (idMap.Keys().Contains(fullName))
-			{
-				auto typeId = idMap.Get(fullName);
-				if (typeIdToWrapperName.Keys().Contains(typeId))
-				{
-					auto&& wrapperName = typeIdToWrapperName.Get(typeId);
-					auto wrapperFunc = LoadFunction<Ptr<IDescriptable>(IRpcLifeCycle*)>(globalContext, wrapperName);
-					CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
-					return wrapperFunc(adapter);
 				}
 			}
 
@@ -429,7 +365,9 @@ namespace vl
 				return ref;
 			}
 
-			auto ref = RegisterLocalObject(DecideTypeId(obj.Obj()));
+			auto typeId = DecideTypeId(obj.Obj());
+			CHECK_ERROR(typeId != 0, L"RpcDualLifecycleMock::PtrToRef: DecideTypeId returned 0 (unknown type).");
+			auto ref = RegisterLocalObject(typeId);
 			ownedObjects.Set(ref.objectId, obj);
 			TrackLocalObject(ref, obj.Obj());
 			return ref;
