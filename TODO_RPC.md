@@ -10,6 +10,8 @@
 ## ToDo
 
 - Verify `RpcDualLifecycleMock` and `TestCasesRpc.cpp`.
+  - Ensure rpcwrapper_typename encodes namespace.
+  - Generate wrapper picker function from type id, remove TestCasesRpc.cpp and TestRpc.cpp constructions.
 - Continue to add more test cases until all features are covered.
 - C++ codegen for wrappers (should be normal codegen) with JSON serizliation in C++.
   - Generate C++ code from Rpc category with the new pattern.
