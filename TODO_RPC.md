@@ -35,11 +35,6 @@
 
 # Prompt
 
-- Execute the task.
-- Pass all unit test, fix any test failure including pre-existings.
-- git commit and git push to the current branch.
-- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
-
 Follow job.new-sample.md to add a new Rpc\LocalAndWrapper.txt
 
 ```Workflow
@@ -122,6 +117,8 @@ Understand what the test case trying to say, you are not allowed to change:
 - Workflow to C++ code generation.
 
 You are highly possibly need to fix implementation of `IRpcLifecycle` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
+- After finishing everything, git commit and git push to the current branch.
+- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 # Prompt
 
