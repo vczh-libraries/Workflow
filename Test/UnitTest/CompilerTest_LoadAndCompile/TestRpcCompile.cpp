@@ -176,6 +176,76 @@ TEST_FILE
 			}
 			writer.WriteLine(L"}");
 
+			// Generate the RunRpcTestCase template function
+			writer.WriteLine(L"");
+			writer.WriteLine(L"template<typename TInstance>");
+			writer.WriteLine(L"void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*, const Dictionary<WString, vint>&))");
+			writer.WriteLine(L"{");
+			writer.WriteLine(L"\tclass LocalRpcMock : public RpcDualLifecycleMock");
+			writer.WriteLine(L"\t{");
+			writer.WriteLine(L"\tpublic:");
+			writer.WriteLine(L"\t\tvint(*decideTypeIdCallback)(IDescriptable*, const Dictionary<WString, vint>&) = nullptr;");
+			writer.WriteLine(L"\t\tusing RpcDualLifecycleMock::RpcDualLifecycleMock;");
+			writer.WriteLine(L"\t\tvint DecideTypeId(IDescriptable* obj)const override");
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\t\tauto result = RpcDualLifecycleMock::DecideTypeId(obj);");
+			writer.WriteLine(L"\t\t\tif (result != RpcTypeId_NotFound) return result;");
+			writer.WriteLine(L"\t\t\treturn decideTypeIdCallback(obj, idMap);");
+			writer.WriteLine(L"\t\t}");
+			writer.WriteLine(L"\t};");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tauto& instance = TInstance::Instance();");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tauto idDictObj = instance.rpc_GetIds();");
+			writer.WriteLine(L"\tDictionary<WString, vint> idMap;");
+			writer.WriteLine(L"\t{");
+			writer.WriteLine(L"\t\tauto keys = idDictObj->GetKeys();");
+			writer.WriteLine(L"\t\tauto values = idDictObj->GetValues();");
+			writer.WriteLine(L"\t\tfor (vint i = 0; i < idDictObj->GetCount(); i++)");
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\t\tauto key = UnboxValue<WString>(keys->Get(i));");
+			writer.WriteLine(L"\t\t\tauto val = UnboxValue<vint>(values->Get(i));");
+			writer.WriteLine(L"\t\t\tidMap.Set(key, val);");
+			writer.WriteLine(L"\t\t}");
+			writer.WriteLine(L"\t}");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tauto lc1 = Ptr(new LocalRpcMock(1));");
+			writer.WriteLine(L"\tauto lc2 = Ptr(new LocalRpcMock(2));");
+			writer.WriteLine(L"\tlc1->decideTypeIdCallback = decideTypeId;");
+			writer.WriteLine(L"\tlc2->decideTypeIdCallback = decideTypeId;");
+			writer.WriteLine(L"\tauto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));");
+			writer.WriteLine(L"\tauto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));");
+			writer.WriteLine(L"\tlc1->SetPeer(lc2.Obj());");
+			writer.WriteLine(L"\tlc2->SetPeer(lc1.Obj());");
+			writer.WriteLine(L"\tlc1->SetIdMap(idMap);");
+			writer.WriteLine(L"\tlc2->SetIdMap(idMap);");
+			writer.WriteLine(L"\tlc1->SetAdapter(adapter1.Obj());");
+			writer.WriteLine(L"\tlc2->SetAdapter(adapter2.Obj());");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tauto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));");
+			writer.WriteLine(L"\tauto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));");
+			writer.WriteLine(L"\tauto lo2 = Ptr(new RpcCalleeListOps(adapter2.Obj()));");
+			writer.WriteLine(L"\tauto leo2 = Ptr(new RpcCalleeListEventBridge(adapter2.Obj()));");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tauto oo1 = instance.rpc_IRpcObjectOps(adapter1.Obj());");
+			writer.WriteLine(L"\tauto oeo1 = instance.rpc_IRpcObjectEventOps(adapter1.Obj());");
+			writer.WriteLine(L"\tauto oo2 = instance.rpc_IRpcObjectOps(adapter2.Obj());");
+			writer.WriteLine(L"\tauto oeo2 = instance.rpc_IRpcObjectEventOps(adapter2.Obj());");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tlc2->Register(oo1, oeo1, lo1, leo1);");
+			writer.WriteLine(L"\tlc1->Register(oo2, oeo2, lo2, leo2);");
+			writer.WriteLine(L"\tlc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
+			writer.WriteLine(L"\tlc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tinstance.serviceMain(adapter1.Obj());");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tauto actual = instance.clientMain(adapter2.Obj());");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"\tConsole::WriteLine(L\"    expected : \" + expected);");
+			writer.WriteLine(L"\tConsole::WriteLine(L\"    actual   : \" + actual);");
+			writer.WriteLine(L"\tTEST_ASSERT(actual == expected);");
+			writer.WriteLine(L"}");
+
 			writer.WriteLine(L"");
 			writer.WriteLine(L"TEST_FILE");
 			writer.WriteLine(L"{");
@@ -192,141 +262,29 @@ TEST_FILE
 				writer.WriteLine(L"\")");
 				writer.WriteLine(L"{");
 
-				// Generate a local subclass that overrides DecideTypeId with dynamic_cast
-				if (rpcTypeFullNamesPerItem.Keys().Contains(itemName))
-				{
-					auto&& typeFullNames = *rpcTypeFullNamesPerItem.Get(itemName).Obj();
-					if (typeFullNames.Count() > 0)
-					{
-						writer.WriteLine(L"\tclass LocalRpcMock : public RpcDualLifecycleMock");
-						writer.WriteLine(L"\t{");
-						writer.WriteLine(L"\tpublic:");
-						writer.WriteLine(L"\t\tusing RpcDualLifecycleMock::RpcDualLifecycleMock;");
-						writer.WriteLine(L"\t\tvint DecideTypeId(IDescriptable* obj)const override");
-						writer.WriteLine(L"\t\t{");
-						writer.WriteLine(L"\t\t\tauto result = RpcDualLifecycleMock::DecideTypeId(obj);");
-						writer.WriteLine(L"\t\t\tif (result != RpcTypeId_NotFound) return result;");
-						for (auto&& fullName : typeFullNames)
-						{
-							writer.WriteString(L"\t\t\tif (dynamic_cast<::");
-							writer.WriteString(fullName);
-							writer.WriteString(L"*>(obj)) return idMap.Get(L\"");
-							writer.WriteString(fullName);
-							writer.WriteLine(L"\");");
-						}
-						writer.WriteLine(L"\t\t\treturn RpcTypeId_NotFound;");
-						writer.WriteLine(L"\t\t}");
-						writer.WriteLine(L"\t};");
-						writer.WriteLine(L"");
-					}
-				}
-
-				writer.WriteString(L"\tWString expected = L\"");
-				writer.WriteString(itemResult);
-				writer.WriteLine(L"\";");
-
-				writer.WriteLine(L"");
-				writer.WriteString(L"\tauto& instance = ::vl_workflow_global::");
+				// Generate RunRpcTestCase call with DecideTypeId lambda
+				writer.WriteString(L"\tRunRpcTestCase<::vl_workflow_global::");
 				writer.WriteString(itemName);
-				writer.WriteLine(L"::Instance();");
+				writer.WriteString(L">(L\"");
+				writer.WriteString(itemResult);
+				writer.WriteLine(L"\",");
 
-				writer.WriteLine(L"");
-
-				// Get the id map from rpc_GetIds
-				writer.WriteLine(L"\tauto idDictObj = instance.rpc_GetIds();");
-				writer.WriteLine(L"\tDictionary<WString, vint> idMap;");
-				writer.WriteLine(L"\t{");
-				writer.WriteLine(L"\t\tauto keys = idDictObj->GetKeys();");
-				writer.WriteLine(L"\t\tauto values = idDictObj->GetValues();");
-				writer.WriteLine(L"\t\tfor (vint i = 0; i < idDictObj->GetCount(); i++)");
+				writer.WriteLine(L"\t\t[](IDescriptable* obj, const Dictionary<WString, vint>& idMap) -> vint");
 				writer.WriteLine(L"\t\t{");
-				writer.WriteLine(L"\t\t\tauto key = UnboxValue<WString>(keys->Get(i));");
-				writer.WriteLine(L"\t\t\tauto val = UnboxValue<vint>(values->Get(i));");
-				writer.WriteLine(L"\t\t\tidMap.Set(key, val);");
-				writer.WriteLine(L"\t\t}");
-				writer.WriteLine(L"\t}");
-				writer.WriteLine(L"");
-
-				// Create two lifecycle mocks with adapters (use LocalRpcMock if types exist)
-				bool hasTypes = rpcTypeFullNamesPerItem.Keys().Contains(itemName) && rpcTypeFullNamesPerItem.Get(itemName)->Count() > 0;
-				auto mockType = hasTypes ? L"LocalRpcMock" : L"RpcDualLifecycleMock";
-
-				writer.WriteString(L"\tauto lc1 = Ptr(new ");
-				writer.WriteString(mockType);
-				writer.WriteLine(L"(1));");
-				writer.WriteString(L"\tauto lc2 = Ptr(new ");
-				writer.WriteString(mockType);
-				writer.WriteLine(L"(2));");
-				writer.WriteLine(L"\tauto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));");
-				writer.WriteLine(L"\tauto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));");
-				writer.WriteLine(L"\tlc1->SetPeer(lc2.Obj());");
-				writer.WriteLine(L"\tlc2->SetPeer(lc1.Obj());");
-				writer.WriteLine(L"\tlc1->SetIdMap(idMap);");
-				writer.WriteLine(L"\tlc2->SetIdMap(idMap);");
-				writer.WriteLine(L"\tlc1->SetAdapter(adapter1.Obj());");
-				writer.WriteLine(L"\tlc2->SetAdapter(adapter2.Obj());");
-				writer.WriteLine(L"");
-
-				// Register wrapper factories for C++ compiled code
 				if (rpcTypeFullNamesPerItem.Keys().Contains(itemName))
 				{
 					auto&& typeFullNames = *rpcTypeFullNamesPerItem.Get(itemName).Obj();
 					for (auto&& fullName : typeFullNames)
 					{
-						// Mangle the full name: replace :: with __
-						WString mangledName;
-						for (vint i = 0; i < fullName.Length(); i++)
-						{
-							if (i + 1 < fullName.Length() && fullName[i] == L':' && fullName[i + 1] == L':')
-							{
-								mangledName += L"__";
-								i++;
-							}
-							else
-							{
-								mangledName += WString::FromChar(fullName[i]);
-							}
-						}
+						writer.WriteString(L"\t\t\tif (dynamic_cast<::");
+						writer.WriteString(fullName);
+						writer.WriteString(L"*>(obj)) return idMap.Get(L\"");
+						writer.WriteString(fullName);
+						writer.WriteLine(L"\");");
 					}
-					writer.WriteLine(L"");
 				}
-
-				// Create list ops default implementations
-				writer.WriteLine(L"\tauto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));");
-				writer.WriteLine(L"\tauto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));");
-				writer.WriteLine(L"\tauto lo2 = Ptr(new RpcCalleeListOps(adapter2.Obj()));");
-				writer.WriteLine(L"\tauto leo2 = Ptr(new RpcCalleeListEventBridge(adapter2.Obj()));");
-				writer.WriteLine(L"");
-
-				// Create object ops implementations from the generated C++ code
-				writer.WriteString(L"\tauto oo1 = instance.rpc_IRpcObjectOps(adapter1.Obj());");
-				writer.WriteLine(L"");
-				writer.WriteString(L"\tauto oeo1 = instance.rpc_IRpcObjectEventOps(adapter1.Obj());");
-				writer.WriteLine(L"");
-				writer.WriteString(L"\tauto oo2 = instance.rpc_IRpcObjectOps(adapter2.Obj());");
-				writer.WriteLine(L"");
-				writer.WriteString(L"\tauto oeo2 = instance.rpc_IRpcObjectEventOps(adapter2.Obj());");
-				writer.WriteLine(L"");
-				writer.WriteLine(L"");
-
-				// Register cross: ops from lc1 go to lc2, and vice versa
-				writer.WriteLine(L"\tlc2->Register(oo1, oeo1, lo1, leo1);");
-				writer.WriteLine(L"\tlc1->Register(oo2, oeo2, lo2, leo2);");
-				writer.WriteLine(L"\tlc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
-				writer.WriteLine(L"\tlc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
-				writer.WriteLine(L"");
-
-				// Run serviceMain with lc1
-				writer.WriteLine(L"\tinstance.serviceMain(adapter1.Obj());");
-				writer.WriteLine(L"");
-
-				// Run clientMain with lc2 and get the result
-				writer.WriteLine(L"\tauto actual = instance.clientMain(adapter2.Obj());");
-				writer.WriteLine(L"");
-
-				writer.WriteLine(L"\tConsole::WriteLine(L\"    expected : \" + expected);");
-				writer.WriteLine(L"\tConsole::WriteLine(L\"    actual   : \" + actual);");
-				writer.WriteLine(L"\tTEST_ASSERT(actual == expected);");
+				writer.WriteLine(L"\t\t\treturn RpcTypeId_NotFound;");
+				writer.WriteLine(L"\t\t});");
 
 				writer.WriteLine(L"});");
 			}

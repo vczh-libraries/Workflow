@@ -357,7 +357,8 @@ namespace vl
 				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
 				if (universalWrapperFactory)
 				{
-					return universalWrapperFactory(typeId, adapter);
+					auto ref = RpcLifecycleMock::RequestService(typeId);
+					return CreateCallerProxy(ref);
 				}
 			}
 

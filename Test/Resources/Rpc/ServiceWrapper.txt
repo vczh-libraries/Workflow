@@ -1,0 +1,36 @@
+module Rpc;
+using system::*;
+using RpcServiceWrapperTest::*;
+
+namespace RpcServiceWrapperTest
+{
+	@rpc:Interface
+	@rpc:Ctor
+	interface IService
+	{
+		func Self(obj : IService^) : bool;
+	}
+}
+
+var serviceObj : IService^ = null;
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	serviceObj = new (RpcServiceWrapperTest::IService^)
+	{
+		override func Self(obj : IService^) : bool
+		{
+			return obj == serviceObj;
+		}
+	};
+	lc.RegisterService("RpcServiceWrapperTest::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+	var obj = lc.RequestService("RpcServiceWrapperTest::IService");
+	var clientObj = cast (RpcServiceWrapperTest::IService^) obj;
+	return
+		$"[$(clientObj == serviceObj)]" &
+		$"[$(clientObj.Self(clientObj))]";
+}
