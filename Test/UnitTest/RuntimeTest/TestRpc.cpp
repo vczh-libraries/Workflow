@@ -36,6 +36,35 @@ namespace
 		{
 		}
 
+		~RpcWorkflowLifecycleMock()
+		{
+			// Disconnect wrappers while globalContext is still alive,
+			// because DisconnectFromLifecycle executes Workflow bytecode.
+			for (auto base : wrapperBases)
+			{
+				base->DisconnectFromLifecycle();
+			}
+			wrapperBases.Clear();
+			wrapperProxies.Clear();
+			wrapperRefs.Clear();
+			for (auto service : services.Values())
+			{
+				if (auto obj = service->SafeAggregationCast<IRpcWrapperBase>())
+				{
+					obj->DisconnectFromLifecycle();
+				}
+			}
+			services.Clear();
+			ownedObjects.Clear();
+			while (localObjects.Count() > 0)
+			{
+				auto ref = refsById.Values()[refsById.Count() - 1];
+				UntrackLocalObject(ref);
+			}
+			wrapperCreateFunc = nullptr;
+			globalContext = nullptr;
+		}
+
 		void SetGlobalContext(Ptr<WfRuntimeGlobalContext> _globalContext)
 		{
 			globalContext = _globalContext;
@@ -165,6 +194,23 @@ TEST_FILE
 				TEST_PRINT(L"    expected  : " + itemResult);
 				TEST_PRINT(L"    actual    : " + actual);
 				TEST_ASSERT(actual == itemResult);
+
+				// Explicit cleanup order to avoid circular references
+				// between WfRuntimeGlobalContext and Workflow objects
+				oeo2 = nullptr;
+				oo2 = nullptr;
+				oeo1 = nullptr;
+				oo1 = nullptr;
+				leo2 = nullptr;
+				lo2 = nullptr;
+				leo1 = nullptr;
+				lo1 = nullptr;
+				adapter2 = nullptr;
+				adapter1 = nullptr;
+				globalContext->globalVariables = nullptr;
+				lc2 = nullptr;
+				lc1 = nullptr;
+				globalContext = nullptr;
 			});
 		}
 	});

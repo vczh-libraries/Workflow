@@ -104,6 +104,13 @@ namespace vl
 					obj->DisconnectFromLifecycle();
 				}
 			}
+			for (auto base : wrapperBases)
+			{
+				base->DisconnectFromLifecycle();
+			}
+			wrapperBases.Clear();
+			wrapperProxies.Clear();
+			wrapperRefs.Clear();
 			while (localObjects.Count() > 0)
 			{
 				auto ref = refsById.Values()[refsById.Count() - 1];
@@ -203,6 +210,10 @@ namespace vl
 				auto obj = localObjects.Get(ref.objectId);
 				refsByPtr.Remove(obj);
 				localObjects.Remove(ref.objectId);
+				if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
+				{
+					descriptable->SetInternalProperty(L"RpcLifecycleTracker", nullptr);
+				}
 			}
 			refsById.Remove(ref.objectId);
 			ownedObjects.Remove(ref.objectId);
@@ -226,7 +237,15 @@ namespace vl
 			if (universalWrapperFactory)
 			{
 				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
-				return universalWrapperFactory(ref.typeId, adapter);
+				pendingProxyRef = ref;
+				auto proxy = universalWrapperFactory(ref.typeId, adapter);
+				pendingProxyRef = {};
+				auto wrapperBase = proxy.Obj()->SafeAggregationCast<IRpcWrapperBase>();
+				CHECK_ERROR(wrapperBase, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper does not implement IRpcWrapperBase.");
+				wrapperRefs.Set(proxy.Obj(), ref);
+				wrapperProxies.Add(proxy);
+				wrapperBases.Add(wrapperBase);
+				return proxy;
 			}
 
 			CHECK_FAIL(L"RpcDualLifecycleMock::CreateCallerProxy cannot find a proxy factory.");
@@ -307,6 +326,19 @@ namespace vl
 		}
 
 /***********************************************************************
+* RpcDualLifecycleMock (IRpcObjectOps)
+***********************************************************************/
+
+		RpcObjectReference RpcDualLifecycleMock::RequestService(vint typeId)
+		{
+			if (pendingProxyRef.clientId != 0)
+			{
+				return pendingProxyRef;
+			}
+			return RpcLifecycleMock::RequestService(typeId);
+		}
+
+/***********************************************************************
 * RpcDualLifecycleMock (IRpcLifeCycle)
 ***********************************************************************/
 
@@ -359,6 +391,13 @@ namespace vl
 		RpcObjectReference RpcDualLifecycleMock::PtrToRef(Ptr<IDescriptable> obj)
 		{
 			CHECK_ERROR(obj, L"RpcDualLifecycleMock::PtrToRef requires a value.");
+
+			// Check if this is a wrapper proxy for a remote object
+			if (wrapperRefs.Keys().Contains(obj.Obj()))
+			{
+				return wrapperRefs.Get(obj.Obj());
+			}
+
 			if (refsByPtr.Keys().Contains(obj.Obj()))
 			{
 				auto ref = refsByPtr.Get(obj.Obj());

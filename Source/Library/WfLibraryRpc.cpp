@@ -620,9 +620,9 @@ namespace vl
 			{
 				if (auto raw = trivial.GetRawPtr())
 				{
-					if (auto obj = Ptr(raw->SafeAggregationCast<IDescriptable>()))
+					if (auto obj = dynamic_cast<IDescriptable*>(raw))
 					{
-						return BoxValue(lc->PtrToRef(obj));
+						return BoxValue(lc->PtrToRef(Ptr<IDescriptable>(obj)));
 					}
 				}
 			}
@@ -645,7 +645,6 @@ namespace vl
 
 		Value RpcBoxByvalInternal(const Value& trivial, IRpcLifeCycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
 		{
-			(void)lc;
 			if (trivial.IsNull()) return trivial;
 			if (trivial.GetValueType() == Value::SharedPtr)
 			{
@@ -683,6 +682,14 @@ namespace vl
 					visited.Remove(key);
 					return BoxValue(list);
 				}
+
+				if (auto raw = trivial.GetRawPtr())
+				{
+					if (auto obj = dynamic_cast<IDescriptable*>(raw))
+					{
+						return BoxValue(lc->PtrToRef(Ptr<IDescriptable>(obj)));
+					}
+				}
 			}
 			return trivial;
 		}
@@ -696,8 +703,13 @@ namespace vl
 
 		Value RpcUnboxByvalInternal(const Value& serializable, IRpcLifeCycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
 		{
-			(void)lc;
 			if (serializable.IsNull()) return serializable;
+
+			if (IsRpcObjectReferenceValue(serializable))
+			{
+				return BoxValue(lc->RefToPtr(GetRpcObjectReference(serializable)));
+			}
+
 			if (serializable.GetValueType() == Value::SharedPtr)
 			{
 				if (auto roDict = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueReadonlyDictionary>()) : nullptr)

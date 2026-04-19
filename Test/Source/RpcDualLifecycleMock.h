@@ -52,6 +52,10 @@ namespace vl
 			collections::Dictionary<vint, Ptr<EventHandler>>																							eventHandlers;
 			collections::Dictionary<WString, vint>																										idMap;
 			Func<Ptr<reflection::IDescriptable>(vint, rpc_controller::IRpcLifeCycle*)>																	universalWrapperFactory;
+			rpc_controller::RpcObjectReference																												pendingProxyRef;
+			collections::Dictionary<const reflection::IDescriptable*, rpc_controller::RpcObjectReference>												wrapperRefs;
+			collections::List<Ptr<reflection::IDescriptable>>																							wrapperProxies;
+			collections::List<rpc_controller::IRpcWrapperBase*>																							wrapperBases;
 
 			virtual vint																DecideTypeId(reflection::IDescriptable* obj)const;
 			void																		TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
@@ -74,7 +78,9 @@ namespace vl
 			void																	UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override;
 			void																	AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override;
 			void																	ReleaseRemoteObject(rpc_controller::RpcObjectReference ref)override;
+			// IRpcObjectOps
 
+			rpc_controller::RpcObjectReference											RequestService(vint typeId)override;
 			// IRpcLifeCycle
 
 			Ptr<reflection::IDescriptable>											RequestService(const WString& fullName)override;
