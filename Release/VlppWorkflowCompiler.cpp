@@ -9857,6 +9857,22 @@ namespace vl
 					return expression;
 				}
 
+				Ptr<WfExpression> CreateIsNull(Ptr<WfExpression> expression)
+				{
+					auto testing = Ptr(new WfTypeTestingExpression);
+					testing->test = WfTypeTesting::IsNull;
+					testing->expression = expression;
+					return testing;
+				}
+
+				Ptr<WfExpression> CreateIsNotNull(Ptr<WfExpression> expression)
+				{
+					auto testing = Ptr(new WfTypeTestingExpression);
+					testing->test = WfTypeTesting::IsNotNull;
+					testing->expression = expression;
+					return testing;
+				}
+
 				Ptr<WfExpression> CreateBool(bool value)
 				{
 					auto expression = Ptr(new WfLiteralExpression);
@@ -10512,19 +10528,65 @@ namespace vl
 					return functionDecl;
 				}
 
+				Ptr<WfDeclaration> GenerateWrapperInterface(const RpcInterfaceModel& interfaceModel)
+				{
+					auto interfaceDecl = Ptr(new WfClassDeclaration);
+					interfaceDecl->name.value = L"IRpcWrapper_" + interfaceModel.interfaceName;
+					interfaceDecl->kind = WfClassKind::Interface;
+					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
+
+					{
+						auto baseType = Ptr(new WfReferenceType);
+						baseType->name.value = interfaceModel.fullName;
+						auto qualType = CreateQualifiedType(interfaceModel.fullName);
+						interfaceDecl->baseTypes.Add(qualType);
+					}
+
+					{
+						auto baseType = CreateQualifiedType(L"system::IRpcWrapperBase");
+						interfaceDecl->baseTypes.Add(baseType);
+					}
+
+					return interfaceDecl;
+				}
+
 				Ptr<WfDeclaration> GenerateWrapperFactory(const RpcInterfaceModel& interfaceModel)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + interfaceModel.interfaceName, CreateSharedType(interfaceModel.fullName), WfFunctionKind::Normal);
+					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
+					auto wrapperInterfaceFullName = interfaceModel.fullName.Sub(0, interfaceModel.fullName.Length() - interfaceModel.interfaceName.Length()) + L"IRpcWrapper_" + interfaceModel.interfaceName;
+
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(interfaceModel.fullName), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
-					AddStatement(block, CreateVariableStatement(L"controller", CreateRawType(L"system::IRpcController"), CreateMember(CreateReference(L"lc"), L"Controller")));
-					AddStatement(block, CreateVariableStatement(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference"), CreateCall(CreateMember(CreateReference(L"controller"), L"RequestService"), CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName))));
+					AddStatement(block, CreateVariableStatement(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference"), CreateCall(CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"RequestService"), CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName))));
 
-					auto proxyExpr = CreateNewInterface(CreateSharedType(interfaceModel.fullName)).Cast<WfNewInterfaceExpression>();
+					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_controller", CreateRawType(L"system::IRpcController"), CreateReference(L"controller")));
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateQualifiedType(L"system::RpcObjectReference"), CreateReference(L"proxyRef")));
+
+					// Generate DisconnectFromLifecycle override
+					{
+						auto disconnectDecl = CreateFunctionDeclaration(L"DisconnectFromLifecycle", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						auto disconnectBlock = disconnectDecl->statement.Cast<WfBlockStatement>();
+						AddStatement(disconnectBlock, CreateExpressionStatement(CreateAssign(CreateReference(L"_lc"), CreateNull())));
+						proxyExpr->declarations.Add(disconnectDecl);
+					}
+
+					// Generate destructor: delete{}
+					{
+						auto dtorDecl = Ptr(new WfDestructorDeclaration);
+						auto dtorBlock = CreateBlock();
+						dtorDecl->statement = dtorBlock;
+
+						// if (_lc is not null) { _lc.Controller.ReleaseRemoteObject(_ref); }
+						auto condition = CreateIsNotNull(CreateReference(L"_lc"));
+						auto trueBranch = CreateBlock();
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"ReleaseRemoteObject"), CreateReference(L"_ref"))));
+						AddStatement(dtorBlock, CreateIf(condition, trueBranch));
+
+						proxyExpr->declarations.Add(dtorDecl);
+					}
 
 					for (auto&& methodModel : interfaceModel.methods)
 					{
@@ -10535,6 +10597,14 @@ namespace vl
 						}
 
 						auto methodBlock = methodDecl->statement.Cast<WfBlockStatement>();
+
+						// null check: if (_lc is null) raise "..."
+						{
+							auto condition = CreateIsNull(CreateReference(L"_lc"));
+							auto trueBranch = CreateRaise(L"RPC wrapper has been disconnected from lifecycle.");
+							AddStatement(methodBlock, CreateIf(condition, trueBranch));
+						}
+
 						AddStatement(methodBlock, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
 						AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(methodModel.params.Count()))));
 						for (vint i = 0; i < methodModel.params.Count(); i++)
@@ -10543,7 +10613,7 @@ namespace vl
 							AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(paramModel.byref ? L"RpcBoxByref" : L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"_lc")))));
 						}
 
-						auto invoke = CreateCall(CreateMember(CreateReference(L"_controller"), L"InvokeMethod"), CreateReference(L"_ref"), CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName), CreateReference(L"arguments"));
+						auto invoke = CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"InvokeMethod"), CreateReference(L"_ref"), CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName), CreateReference(L"arguments"));
 						if (IsVoidType(methodModel.returnType.Obj()))
 						{
 							AddStatement(methodBlock, CreateExpressionStatement(invoke));
@@ -10561,6 +10631,11 @@ namespace vl
 					for (auto&& eventModel : interfaceModel.events)
 					{
 						auto lambdaBody = CreateBlock();
+
+						// null check: if (_lc is null) raise "..."
+						// Note: lambdas capture from the enclosing interface, need to check via proxy's _lc
+						// Actually lambdas in Workflow capture the enclosing context,
+						// so we use lc (the function parameter) for event lambda bodies
 						AddStatement(lambdaBody, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
 						AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(eventModel.params.Count()))));
 						for (vint i = 0; i < eventModel.params.Count(); i++)
@@ -10568,7 +10643,7 @@ namespace vl
 							auto&& paramModel = eventModel.params[i];
 							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"lc")))));
 						}
-						AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"controller"), L"InvokeEvent"), CreateReference(L"proxyRef"), CreateRpcConstantReference(L"rpcevent_", eventModel.fullName), CreateReference(L"arguments"))));
+						AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"InvokeEvent"), CreateReference(L"proxyRef"), CreateRpcConstantReference(L"rpcevent_", eventModel.fullName), CreateReference(L"arguments"))));
 
 						auto attach = Ptr(new WfAttachEventExpression);
 						attach->event = CreateMember(CreateReference(L"proxy"), eventModel.name);
@@ -10577,6 +10652,34 @@ namespace vl
 					}
 
 					AddStatement(block, CreateReturn(CreateReference(L"proxy")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto returnType = Ptr(new WfSharedPointerType);
+					returnType->element = CreatePredefinedType(WfPredefinedTypeName::Interface);
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", returnType, WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(L"typeId");
+					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id for wrapper creation.");
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
+						auto caseBranch = CreateBlock();
+						auto mangledName = MangleRpcFullName(interfaceModel.fullName);
+						AddStatement(caseBranch, CreateReturn(CreateCall(CreateReference(L"rpcwrapper_" + mangledName), CreateReference(L"lc"))));
+						switchCase->statement = caseBranch;
+						switchStat->caseBranches.Add(switchCase);
+					}
+
+					AddStatement(block, switchStat);
 					return functionDecl;
 				}
 			}
@@ -10646,12 +10749,19 @@ namespace vl
 					List<WString> namespaceFragments;
 					SplitTypeFullName(interfaceModel.fullName, namespaceFragments);
 					namespaceFragments.RemoveAt(namespaceFragments.Count() - 1);
-					AddDeclarationToNamespaces(wrapperDeclarations, wrapperNamespaces, namespaceFragments, GenerateWrapperFactory(interfaceModel));
+					AddDeclarationToNamespaces(wrapperDeclarations, wrapperNamespaces, namespaceFragments, GenerateWrapperInterface(interfaceModel));
 				}
 				for (auto declaration : wrapperDeclarations)
 				{
 					module->declarations.Add(declaration);
 				}
+
+				for (auto&& interfaceModel : interfaces)
+				{
+					module->declarations.Add(GenerateWrapperFactory(interfaceModel));
+				}
+
+				module->declarations.Add(GenerateWrapperDispatcher(interfaces));
 
 				return module;
 			}

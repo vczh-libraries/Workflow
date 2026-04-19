@@ -1022,6 +1022,14 @@ namespace vl
 			virtual void									RegisterService(const vl::WString& fullName, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
 			virtual vl::Ptr<vl::reflection::IDescriptable>	RequestService(const vl::WString& fullName) = 0;
 		};
+
+		class IRpcWrapperBase
+			: public virtual vl::reflection::IDescriptable
+			, public vl::reflection::Description<IRpcWrapperBase>
+		{
+		public:
+			virtual void									DisconnectFromLifecycle() = 0;
+		};
 		
 /***********************************************************************
 * Collection Caller Wrappers
@@ -1282,6 +1290,7 @@ Predefined Types
 			F(vl::rpc_controller::IRpcObjectEventOps)\
 			F(vl::rpc_controller::IRpcController)\
 			F(vl::rpc_controller::IRpcLifeCycle)\
+			F(vl::rpc_controller::IRpcWrapperBase)\
 			WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)
@@ -1441,6 +1450,13 @@ Interface Implementation Proxy (Implement)
 					INVOKE_INTERFACE_PROXY(InvokeEvent, ref, eventId, arguments);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectEventOps)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcWrapperBase)
+				void DisconnectFromLifecycle()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(DisconnectFromLifecycle);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcWrapperBase)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(ICoroutine)
 
