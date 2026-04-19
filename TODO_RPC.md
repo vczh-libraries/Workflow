@@ -9,11 +9,9 @@
 
 ## ToDo
 
+- Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
 - Continue to add more test cases until all features are covered.
-  - Local objects and remote objects.
-    - Local objects pass to remote and pass back, remote side gets a wrapper, expect the same local object instance.
-    - Remote objects pass to remote and pass back, remote side gets a local object, expect the same wrapper instance.
-    - Destructor calling.
+  - Destructor calling.
   - Function overloading.
   - Byval and byref collections.
     - A function accepts a byval or byref arguments, add one element, return it back as byval or byref arguments.
