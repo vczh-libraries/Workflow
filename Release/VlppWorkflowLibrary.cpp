@@ -2034,7 +2034,7 @@ namespace vl
 			{
 				if (auto raw = trivial.GetRawPtr())
 				{
-					if (auto obj = Ptr(dynamic_cast<IDescriptable*>(raw)))
+					if (auto obj = Ptr(raw->SafeAggregationCast<IDescriptable>()))
 					{
 						return BoxValue(lc->PtrToRef(obj));
 					}
