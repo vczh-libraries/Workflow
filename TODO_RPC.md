@@ -79,3 +79,15 @@ While keeping the function returning `IService^`, but inside the function an ins
 - Remove `controller` in the function and `_controller` in the interface, you can always use `_lc.Controller` for that. No need to make a cache.
 - In `IRpcWrapperBase::DisconnectFromLifecycle` set `_lc` to `null`. Any function should check the `_lc` and throw when it is null.
 - In its destructor `delete{}`, call `_lc.Controller.ReleaseRemoteObject`. But here you don't need to throw when `_lc` is `null`, instead skip the `ReleaseRemoteObject` when `_lc` is `null`.
+
+## Task 2
+
+Functions like `rpcwrapper_RpcTest__IService` are created for each `@rpc:Ctor` interface. But I would like you to add a dispatcher function:
+
+```Workflow
+func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : interface^;
+```
+
+To call correspinding `rpcwrapper_RpcTest__IService` according to its `typeId` (which will be `rpctype_RpcTest__IService`). The pattern is easy to build, and when a type id does not exist, or it is not an interface marked with `@rpc:Ctor`, throw.
+
+So you can perform changes to `RpcWorkflowLifecycleMock` in `TestRpc.cpp` and generated `LocalRpcMock` in `TestCasesRpc.cpp` to make it simpler.
