@@ -76,7 +76,11 @@ When generated files are expected to change, baseline comparison will fail. You 
 
 `Codegen` and `Rpc` generates C++ source files from each sample, affecting `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`.
 - Changing the compiler or samples will end up updating C++ source files in these projects, causing them need to rebuild.
-- `Rpc` part is to be finished.
+- Generated C++ source code will be added to `Generated_(Cpp|Reflection)(Rpc)?.vcxitems`, they will be consumed by `CppTest*` unit test projects.
+- `Codegen` will also generate `TestCases.cpp`, `Rpc` will also generate `TestCasesRpc.cpp`, they are referenced by `CppTest*` unit test projects.
+- Different `CppTest*` compile the same set of source code using different reflection options, source files used by them should be compatible with all reflection options:
+  - Avoid using any reflection features.
+  - The only exception are type reflection registration files for workflow generated types, they are referenced in `Generated_Reflection(Rpc)?.vcxitems` with preprocessor applied.
 
 ### Code Generation Tools
 

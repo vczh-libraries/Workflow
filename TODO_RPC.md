@@ -13,8 +13,7 @@
   - Ensure rpcwrapper_typename encodes namespace.
   - Generate wrapper picker function from type id, remove TestCasesRpc.cpp and TestRpc.cpp constructions.
 - Continue to add more test cases until all features are covered.
-- C++ codegen for wrappers (should be normal codegen) with JSON serizliation in C++.
-  - Generate C++ code from Rpc category with the new pattern.
-  - This time new lifecycle implementations will be created tonise JSON serialization for values (protocol not included).
+  - Complete `.github\jobs\NewSample.prompt.md` guiding AI to add new Workflow test case and do necessary bug fixings.
+- C++ codegen for rpc data type JSON serialization.
 - Solve interface inheritance and casting.
 - Delete Runtime test category.
