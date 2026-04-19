@@ -22,6 +22,9 @@ namespace vl
 			IRpcListEventOps*																RequireListEventCallback()const;
 		public:
 
+			RpcLifecycleMock();
+			~RpcLifecycleMock();
+
 			// IRpcIdSync
 
 			void																			SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override;

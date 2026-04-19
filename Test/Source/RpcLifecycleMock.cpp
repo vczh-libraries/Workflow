@@ -10,7 +10,7 @@ namespace vl
 		using namespace collections;
 
 /***********************************************************************
-* RpcLifecycleMock (Require helpers)
+* RpcLifecycleMock
 ***********************************************************************/
 
 		IRpcObjectOps* RpcLifecycleMock::RequireObjectCallback()const
@@ -35,6 +35,15 @@ namespace vl
 		{
 			CHECK_ERROR(listEventCallback != nullptr, L"RpcLifecycleMock requires a list event callback.");
 			return listEventCallback;
+		}
+
+		RpcLifecycleMock::RpcLifecycleMock()
+		{
+		}
+
+		RpcLifecycleMock::~RpcLifecycleMock()
+		{
+			services.Clear();
 		}
 
 /***********************************************************************
