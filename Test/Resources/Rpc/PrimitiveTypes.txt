@@ -1,0 +1,99 @@
+module Rpc;
+using system::*;
+
+namespace RpcPrimitiveTest
+{
+	enum Season
+	{
+		Spring = 0,
+		Summer = 1,
+		Autumn = 2,
+		Winter = 3,
+	}
+
+	struct Point
+	{
+		x : int;
+		y : int;
+	}
+
+	@rpc:Interface
+	@rpc:Ctor
+	interface IService
+	{
+		func ProcessInt(value : int) : int;
+		func ProcessUInt(value : uint) : uint;
+		func ProcessFloat(value : float) : float;
+		func ProcessDouble(value : double) : double;
+		func ProcessString(value : string) : string;
+		func ProcessBool(value : bool) : bool;
+		func ProcessEnum(value : Season) : Season;
+		func ProcessStruct(value : Point) : Point;
+	}
+}
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	var service = new (RpcPrimitiveTest::IService^)
+	{
+		override func ProcessInt(value : int) : int
+		{
+			return value + 1;
+		}
+
+		override func ProcessUInt(value : uint) : uint
+		{
+			return value + (cast uint 2);
+		}
+
+		override func ProcessFloat(value : float) : float
+		{
+			return value + (cast float 0.25);
+		}
+
+		override func ProcessDouble(value : double) : double
+		{
+			return value + 0.125;
+		}
+
+		override func ProcessString(value : string) : string
+		{
+			return value & "!";
+		}
+
+		override func ProcessBool(value : bool) : bool
+		{
+			return not value;
+		}
+
+		override func ProcessEnum(value : RpcPrimitiveTest::Season) : RpcPrimitiveTest::Season
+		{
+			return value;
+		}
+
+		override func ProcessStruct(value : RpcPrimitiveTest::Point) : RpcPrimitiveTest::Point
+		{
+			var result : RpcPrimitiveTest::Point = {x : (value.x + 10) y : (value.y + 20)};
+			return result;
+		}
+	};
+	lc.RegisterService("RpcPrimitiveTest::IService", service);
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+	var obj = lc.RequestService("RpcPrimitiveTest::IService");
+	var service = cast (RpcPrimitiveTest::IService^) obj;
+	var result = "";
+	result = result & "[" & (cast string service.ProcessInt(5)) & "]";
+	result = result & "[" & (cast string service.ProcessUInt(cast uint 10)) & "]";
+	result = result & "[" & (cast string service.ProcessFloat(cast float 1.5)) & "]";
+	result = result & "[" & (cast string service.ProcessDouble(2.75)) & "]";
+	result = result & "[" & service.ProcessString("Hi") & "]";
+	result = result & "[" & (cast string service.ProcessBool(true)) & "]";
+	var season = service.ProcessEnum(RpcPrimitiveTest::Season::Autumn);
+	result = result & "[" & (season == RpcPrimitiveTest::Season::Autumn ? "Autumn" : "Wrong") & "]";
+	var pt = service.ProcessStruct({x:3 y:7});
+	result = result & "[" & (cast string pt.x) & "," & (cast string pt.y) & "]";
+	return result;
+}
