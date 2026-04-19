@@ -1,0 +1,62 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+namespace RpcWrapperTest
+{
+	@rpc:Interface
+	interface IObj1{}
+
+	@rpc:Interface
+	interface IObj2{}
+
+	@rpc:Interface
+	@rpc:Ctor
+	interface IService
+	{
+		func Exchange1(o : IObj1^) : IObj2^;
+		func Exchange2(o : IObj2^) : IObj1^;
+	}
+}
+
+var clientObj1 : IObj1^ = new IObj1^{};
+var serviceObj2 : IObj2^ = new IObj2^{};
+
+var serviceReceived_Obj1 : IObj1^ = null;
+var serviceReceived_Obj2 : IObj2^ = null;
+var clientReceived_Obj1 : IObj1^ = null;
+var clientReceived_Obj2 : IObj2^ = null;
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	var service = new (RpcWrapperTest::IService^)
+	{
+		override func Exchange1(o : IObj1^) : IObj2^
+		{
+			serviceReceived_Obj1 = o;
+			return serviceObj2;
+		}
+
+		override func Exchange2(o : IObj2^) : IObj1^
+		{
+			serviceReceived_Obj2 = o;
+			return serviceReceived_Obj1;
+		}
+	};
+	lc.RegisterService("RpcWrapperTest::IService", service);
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+	var obj = lc.RequestService("RpcWrapperTest::IService");
+	var service = cast (RpcWrapperTest::IService^) obj;
+
+	clientReceived_Obj2 = service.Exchange1(clientObj1);
+	clientReceived_Obj1 = service.Exchange2(clientReceived_Obj2);
+
+	return
+		$"[$(serviceReceived_Obj1 == clientObj1)]" &
+		$"[$(serviceReceived_Obj2 == serviceObj2)]" &
+		$"[$(clientReceived_Obj1 == clientObj1)]" &
+		$"[$(clientReceived_Obj2 == serviceObj2)]";
+}

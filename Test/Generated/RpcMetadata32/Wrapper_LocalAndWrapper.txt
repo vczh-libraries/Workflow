@@ -1,0 +1,245 @@
+﻿module RpcMetadata;
+
+var rpctype_RpcWrapperTest__IObj1 : int = 0;
+
+var rpctype_RpcWrapperTest__IObj2 : int = 1;
+
+var rpctype_RpcWrapperTest__IService : int = 2;
+
+var rpcmethod_RpcWrapperTest__IService_Exchange1 : int = 3;
+
+var rpcmethod_RpcWrapperTest__IService_Exchange2 : int = 4;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("RpcWrapperTest::IObj1", 0);
+    result.Set("RpcWrapperTest::IObj2", 1);
+    result.Set("RpcWrapperTest::IService", 2);
+    result.Set("RpcWrapperTest::IService.Exchange1", 3);
+    result.Set("RpcWrapperTest::IService.Exchange2", 4);
+    return result;
+}
+
+func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _holds : object[system::RpcObjectReference] = {};
+
+        override func SyncIds(ids : ::system::Dictionary^) : (void)
+        {
+        }
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            switch (methodId)
+            {
+                case rpcmethod_RpcWrapperTest__IService_Exchange1:
+                {
+                    var target : RpcWrapperTest::IService^ = (cast (RpcWrapperTest::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifeCycle::RpcBoxByval(target.Exchange1((cast (::RpcWrapperTest::IObj1^) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                }
+                case rpcmethod_RpcWrapperTest__IService_Exchange2:
+                {
+                    var target : RpcWrapperTest::IService^ = (cast (RpcWrapperTest::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifeCycle::RpcBoxByval(target.Exchange2((cast (::RpcWrapperTest::IObj2^) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+        }
+
+        override func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+        {
+            raise "InvokeMethodAsync is not supported.";
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _holds.Set(ref, _lc.RefToPtr(ref));
+            }
+            else
+            {
+                _holds.Remove(ref);
+            }
+        }
+
+        override func RequestService(typeId : int) : (system::RpcObjectReference)
+        {
+            switch (typeId)
+            {
+                case rpctype_RpcWrapperTest__IObj1:
+                {
+                    return _lc.PtrToRef(_lc.RequestService("RpcWrapperTest::IObj1"));
+                }
+                case rpctype_RpcWrapperTest__IObj2:
+                {
+                    return _lc.PtrToRef(_lc.RequestService("RpcWrapperTest::IObj2"));
+                }
+                case rpctype_RpcWrapperTest__IService:
+                {
+                    return _lc.PtrToRef(_lc.RequestService("RpcWrapperTest::IService"));
+                }
+                default:
+                raise "Unknown RPC type id.";
+            }
+        }
+    };
+}
+
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        override func SyncIds(ids : ::system::Dictionary^) : (void)
+        {
+        }
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            switch (eventId)
+            {
+                default:
+                raise "Unknown RPC event id.";
+            }
+        }
+    };
+}
+
+namespace RpcWrapperTest
+{
+    interface IRpcWrapper_IObj1 : RpcWrapperTest::IObj1, system::IRpcWrapperBase
+    {
+    }
+
+    interface IRpcWrapper_IObj2 : RpcWrapperTest::IObj2, system::IRpcWrapperBase
+    {
+    }
+
+    interface IRpcWrapper_IService : RpcWrapperTest::IService, system::IRpcWrapperBase
+    {
+    }
+}
+
+func rpcwrapper_RpcWrapperTest__IObj1(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IObj1^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcWrapperTest__IObj1);
+    var proxy : RpcWrapperTest::IObj1^ = new (RpcWrapperTest::IRpcWrapper_IObj1^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+    };
+    return proxy;
+}
+
+func rpcwrapper_RpcWrapperTest__IObj2(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IObj2^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcWrapperTest__IObj2);
+    var proxy : RpcWrapperTest::IObj2^ = new (RpcWrapperTest::IRpcWrapper_IObj2^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+    };
+    return proxy;
+}
+
+func rpcwrapper_RpcWrapperTest__IService(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IService^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcWrapperTest__IService);
+    var proxy : RpcWrapperTest::IService^ = new (RpcWrapperTest::IRpcWrapper_IService^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+
+        override func Exchange1(o : ::RpcWrapperTest::IObj1^) : (::RpcWrapperTest::IObj2^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(o, _lc));
+            return (cast (::RpcWrapperTest::IObj2^) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcWrapperTest__IService_Exchange1, arguments), _lc));
+        }
+
+        override func Exchange2(o : ::RpcWrapperTest::IObj2^) : (::RpcWrapperTest::IObj1^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(o, _lc));
+            return (cast (::RpcWrapperTest::IObj1^) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcWrapperTest__IService_Exchange2, arguments), _lc));
+        }
+    };
+    return proxy;
+}
+
+func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (interface^)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcWrapperTest__IObj1:
+        {
+            return rpcwrapper_RpcWrapperTest__IObj1(lc);
+        }
+        case rpctype_RpcWrapperTest__IObj2:
+        {
+            return rpcwrapper_RpcWrapperTest__IObj2(lc);
+        }
+        case rpctype_RpcWrapperTest__IService:
+        {
+            return rpcwrapper_RpcWrapperTest__IService(lc);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}
