@@ -52,25 +52,33 @@ namespace
 
 				typeIdToName.Set(value, key);
 
-				auto lastColonColon = wcsrchr(key.Buffer(), L':');
-				WString wrapperName;
-				if (lastColonColon && lastColonColon > key.Buffer() && *(lastColonColon - 1) == L':')
+				auto wrapperName = L"rpcwrapper_" + WString(key.Buffer());
+				// Mangle :: to __ in the full name
+				WString mangled;
+				for (vint i = 0; i < wrapperName.Length(); i++)
 				{
-					auto nsLen = (lastColonColon - key.Buffer()) + 1;
-					auto ns = key.Sub(0, (vint)nsLen);
-					auto shortName = key.Sub((vint)nsLen, key.Length() - (vint)nsLen);
-					wrapperName = ns + L"rpcwrapper_" + shortName;
+					if (i + 1 < wrapperName.Length() && wrapperName[i] == L':' && wrapperName[i + 1] == L':')
+					{
+						mangled += L"__";
+						i++;
+					}
+					else
+					{
+						mangled += WString::FromChar(wrapperName[i]);
+					}
 				}
-				else
-				{
-					wrapperName = L"rpcwrapper_" + key;
-				}
-				typeIdToWrapperName.Set(value, wrapperName);
+				typeIdToWrapperName.Set(value, mangled);
 
-				RegisterWrapperFactory(value, [this, wrapperName](IRpcLifeCycle* lc) -> Ptr<IDescriptable>
+				RegisterWrapperFactory(value, [this, mangled](IRpcLifeCycle* lc) -> Ptr<IDescriptable>
 				{
-					auto wrapperFunc = LoadFunction<Ptr<IDescriptable>(IRpcLifeCycle*)>(globalContext, wrapperName);
-					return wrapperFunc(lc);
+					// Avoid LoadFunction<Ptr<IDescriptable>(...)> which uses UnboxValue/SafeAggregationCast.
+					// Aggregated WfInterfaceInstance objects have duplicate IDescriptable nodes,
+					// causing SafeAggregationCast to fail. Invoke through the proxy directly.
+					auto proxy = LoadFunction(globalContext, mangled);
+					auto argList = IValueList::Create();
+					argList->Add(Value::From(dynamic_cast<DescriptableObject*>(lc)));
+					auto result = proxy->Invoke(argList);
+					return Ptr(dynamic_cast<IDescriptable*>(result.GetRawPtr()));
 				});
 			}
 		}

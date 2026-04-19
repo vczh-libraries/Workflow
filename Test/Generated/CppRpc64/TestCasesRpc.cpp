@@ -62,8 +62,8 @@ TEST_CASE(L"Rpc:RequestService")
 
 	{
 		auto typeId = idMap.Get(L"RpcTest::IService");
-		lc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_IService(lc); });
-		lc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_IService(lc); });
+		lc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_RpcTest__IService(lc); });
+		lc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_RpcTest__IService(lc); });
 	}
 
 	auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));

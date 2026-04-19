@@ -273,16 +273,19 @@ TEST_FILE
 					auto&& typeFullNames = *rpcTypeFullNamesPerItem.Get(itemName).Obj();
 					for (auto&& fullName : typeFullNames)
 					{
-						// Derive simple name: for "RpcTest::IService", get "IService"
-						auto lastColon = wcsrchr(fullName.Buffer(), L':');
-						WString simpleName;
-						if (lastColon)
+						// Mangle the full name: replace :: with __
+						WString mangledName;
+						for (vint i = 0; i < fullName.Length(); i++)
 						{
-							simpleName = WString(lastColon + 1);
-						}
-						else
-						{
-							simpleName = fullName;
+							if (i + 1 < fullName.Length() && fullName[i] == L':' && fullName[i + 1] == L':')
+							{
+								mangledName += L"__";
+								i++;
+							}
+							else
+							{
+								mangledName += WString::FromChar(fullName[i]);
+							}
 						}
 
 						writer.WriteLine(L"\t{");
@@ -291,11 +294,11 @@ TEST_FILE
 						writer.WriteLine(L"\");");
 
 						writer.WriteString(L"\t\tlc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_");
-						writer.WriteString(simpleName);
+						writer.WriteString(mangledName);
 						writer.WriteLine(L"(lc); });");
 
 						writer.WriteString(L"\t\tlc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_");
-						writer.WriteString(simpleName);
+						writer.WriteString(mangledName);
 						writer.WriteLine(L"(lc); });");
 
 						writer.WriteLine(L"\t}");

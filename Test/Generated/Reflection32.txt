@@ -341,6 +341,15 @@ interface system::IRpcObjectOps : system::IRpcIdSync {
     constructor (proxy : system::InterfaceProxy^) : system::IRpcObjectOps^;
 }
 
+@FullName:vl::rpc_controller::IRpcWrapperBase
+interface system::IRpcWrapperBase : system::Interface {
+    function DisconnectFromLifecycle() : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcWrapperBase>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcWrapperBase>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcWrapperBase^;
+}
+
 @FullName:vl::vint16_t
 @ValueType
 @Serializable

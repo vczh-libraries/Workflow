@@ -253,7 +253,7 @@ WfInterfaceMethod
 			Value WfInterfaceMethod::InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto instance = thisObject.GetRawPtr()->SafeAggregationCast<WfInterfaceInstance>();
+				auto instance = dynamic_cast<WfInterfaceInstance*>(thisObject.GetRawPtr());
 				return instance->GetProxy()->Invoke(this, IValueList::Create(From(arguments)));
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");

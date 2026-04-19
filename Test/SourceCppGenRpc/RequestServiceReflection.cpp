@@ -30,10 +30,16 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(RpcTest::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcTest::IService)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::RpcTest::IRpcWrapper_IService)
+				CLASS_MEMBER_BASE(::RpcTest::IService)
+				CLASS_MEMBER_BASE(::vl::rpc_controller::IRpcWrapperBase)
+			END_INTERFACE_MEMBER(::RpcTest::IRpcWrapper_IService)
+
 			BEGIN_INTERFACE_MEMBER(::RpcTest::IService)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Ctor)
@@ -47,6 +53,7 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(::RpcTest::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcTest::IService)
 				}
 

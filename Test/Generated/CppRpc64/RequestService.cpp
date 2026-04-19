@@ -80,11 +80,10 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_RequestService_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcTest::IService> RequestService::rpcwrapper_IService(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcTest::IService> RequestService::rpcwrapper_RpcTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
-		auto controller = ::vl::__vwsn::This(lc)->GetController();
-		auto proxyRef = ::vl::__vwsn::This(controller)->RequestService(GLOBAL_NAME rpctype_RpcTest__IService);
-		auto proxy = ::vl::Ptr<::RpcTest::IService>(new ::vl_workflow_global::__vwsnc4_RequestService_RpcTest_rpcwrapper_IService__RpcTest_IService(controller, lc, proxyRef));
+		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcTest__IService);
+		auto proxy = ::vl::Ptr<::RpcTest::IService>(::vl::Ptr<::RpcTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService(lc, proxyRef)));
 		return proxy;
 	}
 
@@ -185,18 +184,32 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_RequestService_RpcTest_rpcwrapper_IService__RpcTest_IService::__vwsnc4_RequestService_RpcTest_rpcwrapper_IService__RpcTest_IService(::vl::rpc_controller::IRpcController* __vwsnctor_controller, ::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService::__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
-		this->_controller = __vwsnctor_controller;
 		this->_ref = __vwsnctor_proxyRef;
 	}
 
-	::vl::WString __vwsnc4_RequestService_RpcTest_rpcwrapper_IService__RpcTest_IService::GetText()
+	void __vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
+		(_lc = static_cast<::vl::rpc_controller::IRpcLifeCycle*>(nullptr));
+	}
+
+	__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService::~__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService()
+	{
+		if ((_lc != nullptr))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->ReleaseRemoteObject(_ref);
+		}
+	}
+
+	::vl::WString __vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService::GetText()
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(_controller)->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcTest__IService_GetText, arguments), _lc));
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcTest__IService_GetText, arguments), _lc));
 	}
 
 }
@@ -207,6 +220,10 @@ Class (::RpcTest::IService)
 
 namespace RpcTest
 {
+/***********************************************************************
+Class (::RpcTest::IRpcWrapper_IService)
+***********************************************************************/
+
 }
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME

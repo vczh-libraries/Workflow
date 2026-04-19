@@ -43,6 +43,24 @@ namespace vl
 
 		RpcLifecycleMock::~RpcLifecycleMock()
 		{
+			for (vint i = 0; i < services.Count(); i++)
+			{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				auto obj = dynamic_cast<reflection::DescriptableObject*>(services.Values()[i].Obj());
+				if (obj)
+				{
+					auto td = obj->GetTypeDescriptor();
+					auto wrapperTd = reflection::description::GetTypeDescriptor(L"system::IRpcWrapperBase");
+					if (td && wrapperTd && td->CanConvertTo(wrapperTd))
+					{
+						auto value = reflection::description::Value::From(obj);
+						auto method = wrapperTd->GetMethodGroupByName(L"DisconnectFromLifecycle", false)->GetMethod(0);
+						collections::Array<reflection::description::Value> args;
+						method->Invoke(value, args);
+					}
+				}
+#endif
+			}
 			services.Clear();
 		}
 

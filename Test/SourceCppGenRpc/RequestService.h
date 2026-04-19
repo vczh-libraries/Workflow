@@ -27,12 +27,13 @@ namespace vl_workflow_global
 	class __vwsnc1_RequestService_serviceMain__RpcTest_IService;
 	class __vwsnc2_RequestService_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc3_RequestService_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_RequestService_RpcTest_rpcwrapper_IService__RpcTest_IService;
+	class __vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService;
 }
 
 namespace RpcTest
 {
 	class IService;
+	class IRpcWrapper_IService;
 
 	class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 	{
@@ -41,6 +42,13 @@ namespace RpcTest
 #endif
 	public:
 		virtual ::vl::WString GetText() = 0;
+	};
+
+	class IRpcWrapper_IService : public virtual ::RpcTest::IService, public virtual ::vl::rpc_controller::IRpcWrapperBase, public ::vl::reflection::Description<IRpcWrapper_IService>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IRpcWrapper_IService>;
+#endif
 	};
 
 }
@@ -62,7 +70,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::RpcTest::IService> rpcwrapper_IService(::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::RpcTest::IService> rpcwrapper_RpcTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc);
 
 		static RequestService& Instance();
 	};
@@ -103,14 +111,15 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_RequestService_RpcTest_rpcwrapper_IService__RpcTest_IService : public ::vl::Object, public virtual ::RpcTest::IService
+	class __vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcTest::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc4_RequestService_RpcTest_rpcwrapper_IService__RpcTest_IService(::vl::rpc_controller::IRpcController* __vwsnctor_controller, ::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
-		::vl::rpc_controller::IRpcController* _controller = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService();
 		::vl::WString GetText() override;
 	};
 }

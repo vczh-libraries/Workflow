@@ -133,6 +133,14 @@ namespace vl
 			virtual void									RegisterService(const vl::WString& fullName, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
 			virtual vl::Ptr<vl::reflection::IDescriptable>	RequestService(const vl::WString& fullName) = 0;
 		};
+
+		class IRpcWrapperBase
+			: public virtual vl::reflection::IDescriptable
+			, public vl::reflection::Description<IRpcWrapperBase>
+		{
+		public:
+			virtual void									DisconnectFromLifecycle() = 0;
+		};
 		
 /***********************************************************************
 * Collection Caller Wrappers

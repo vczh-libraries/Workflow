@@ -44,6 +44,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectEventOps, system::IRpcObjectEventOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcController, system::IRpcController)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcLifeCycle, system::IRpcLifeCycle)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcWrapperBase, system::IRpcWrapperBase)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_File, system::workflow_attributes::att_cpp_File)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_UserImpl, system::workflow_attributes::att_cpp_UserImpl)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_Private, system::workflow_attributes::att_cpp_Private)
@@ -176,6 +177,10 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifeCycle*), vl::rpc_controller::RpcBoxByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByval, { L"serializable" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifeCycle*), vl::rpc_controller::RpcUnboxByval)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifeCycle)
+
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcWrapperBase)
+				CLASS_MEMBER_METHOD(DisconnectFromLifecycle, NO_PARAMETER)
+			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcWrapperBase)
 
 			BEGIN_CLASS_MEMBER(Sys)
 				CLASS_MEMBER_STATIC_METHOD(Int32ToInt, { L"value" })

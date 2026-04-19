@@ -33,6 +33,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::RpcTest::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcTest::IService)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -43,6 +44,9 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetText);
 				}
 			END_INTERFACE_PROXY(::RpcTest::IService)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcTest::IRpcWrapper_IService, ::RpcTest::IService, ::vl::rpc_controller::IRpcWrapperBase)
+			END_INTERFACE_PROXY(::RpcTest::IRpcWrapper_IService)
 #endif
 #endif
 

@@ -93,25 +93,41 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEv
 
 namespace RpcTest
 {
-    func rpcwrapper_IService(lc : system::IRpcLifeCycle*) : (RpcTest::IService^)
+    interface IRpcWrapper_IService : RpcTest::IService, system::IRpcWrapperBase
     {
-        var controller : system::IRpcController* = lc.Controller;
-        var proxyRef : system::RpcObjectReference = controller.RequestService(rpctype_RpcTest__IService);
-        var proxy : RpcTest::IService^ = new (RpcTest::IService^)
-        {
-            var _lc : system::IRpcLifeCycle* = lc;
-
-            var _controller : system::IRpcController* = controller;
-
-            var _ref : system::RpcObjectReference = proxyRef;
-
-            override func GetText() : (::system::String)
-            {
-                var arguments : system::Array^ = {};
-                arguments.Resize(0);
-                return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_controller.InvokeMethod(_ref, rpcmethod_RpcTest__IService_GetText, arguments), _lc));
-            }
-        };
-        return proxy;
     }
+}
+
+func rpcwrapper_RpcTest__IService(lc : system::IRpcLifeCycle*) : (RpcTest::IService^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcTest__IService);
+    var proxy : RpcTest::IService^ = new (RpcTest::IRpcWrapper_IService^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+
+        override func GetText() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcTest__IService_GetText, arguments), _lc));
+        }
+    };
+    return proxy;
 }
