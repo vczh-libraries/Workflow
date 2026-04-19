@@ -13,11 +13,45 @@
   - Ensure rpcwrapper_typename encodes namespace.
   - Generate wrapper picker function from type id, remove TestCasesRpc.cpp and TestRpc.cpp constructions.
 - Continue to add more test cases until all features are covered.
+  - Primitive types.
+  - Local objects and remote objects.
+    - Local objects pass to remote and pass back, remote side gets a wrapper, expect the same local object instance.
+    - Remote objects pass to remote and pass back, remote side gets a local object, expect the same wrapper instance.
+    - Destructor calling.
+  - Function overloading.
+  - Byval and byref collections.
+    - A function accepts a byval or byref arguments, add one element, return it back as byval or byref arguments.
+      - Byval -> byval.
+      - Byval -> byref.
+      - Byref -> byval.
+      - Byref -> byref.
+    - remote side will remember the object.
+    - local side add another element.
+    - check performed in boch local and remote side to see if side effects are visible or invisible as expected.
+    - Including array, list, dictionary, observable list.
+  - Simpler collection cases using property, testing if property attributes applied to both getter return values and setter arguments.
+  - Collections of interfaces.
+  - Collections of collections of primitive types.
+  - Collections of collections of interfaces.
 - C++ codegen for rpc data type JSON serialization.
 - Solve interface inheritance and casting.
 - Delete Runtime test category.
 
 # Prompt
+
+You must complete all following tasks. In order to make the work easier, when performing each task you should:
+- Execute the task.
+- Pass all unit test, fix any test failure including pre-existings.
+- git commit and git push to the current branch.
+
+Perform this per task, one after another, and only after all task is done:
+- Run `..\Tools\Tools\Build.ps1 Workflow` for a complete CI.
+- Pass all unit test, fix any test failure including pre-existings.
+- git commit and git push to the current branch.
+
+Perform each task like a new `# Repro`, which means when a task is done, you can wipe the `Copilot_Investigate.md` for the next task.
+
+DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 ## Task 1
 
@@ -91,3 +125,24 @@ func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : interface^;
 To call correspinding `rpcwrapper_RpcTest__IService` according to its `typeId` (which will be `rpctype_RpcTest__IService`). The pattern is easy to build, and when a type id does not exist, or it is not an interface marked with `@rpc:Ctor`, throw.
 
 So you can perform changes to `RpcWorkflowLifecycleMock` in `TestRpc.cpp` and generated `LocalRpcMock` in `TestCasesRpc.cpp` to make it simpler.
+
+## Task 3
+
+Follow job.new-sample.md to create a new `Rpc\PrimitiveTypes.txt`. This test case is for verifying if all kinds of primitive types are correctly handled.
+
+All types includes predefine primitive types, a custom struct, a custom enum.
+
+Each type has a function in `IService` and it will look like this:
+
+```Workflow
+// declaration
+func ProcessInt(value : int) : int;
+
+// implementation
+override func ProcessInt(value : int) : int
+{
+  return value + 1;
+}
+```
+
+You need to perform a random change to each primitive type, and join them in `clientMain` like `[x][y][z]...`, and see if all functions return expected values.
