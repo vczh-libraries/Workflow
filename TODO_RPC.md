@@ -21,6 +21,7 @@
 - predefined proxies is a dictionary in RocDualLifecycleMock, if it is only used once, it is not necessary.
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
 - Other clean up in RpcDualLifecycleMock.
+- Verify in LocalAndWrapper/ServiceWrapper, case a remote object to IRpcWrapperBase and ensure it is successful.
 - Continue to add more test cases until all features are covered.
   - Destructor calling.
   - Function overloading.
