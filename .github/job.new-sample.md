@@ -61,7 +61,6 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	var service = cast (YourFavoriteNamespace::IService^) obj;
 	return "Test Result";
 }
-
 ```
 
 Calculations are performed and the result returns from `clientMain`. In `Test\Resource\IndexRpc.txt`, the expected result of the sample should be written down. And the script goes through the following process:
