@@ -9,18 +9,11 @@
 
 ## ToDo
 
-- Delete IRpcSyncIds.
-- Delete IRpcController::Register but keep them in implementation.
-- Collection proxies shoild implement IRpcWrapperBase.
-  - Change rpcwrapper_Create to use IRpcWrapperBase.
-  - Wrappers stored in lifecycle should use IRpcWrapperBase instead of IDescriptable.
-  - Force all wrappers to use IRpcWrapperBase.
 - Upgrade data in internal property.
   - Originally it is used to detect if a local object is destroyed.
   - Now informations should be stored in any local/remote object so that:
     - Remove maps in RpcDualLifecycleMock.
-    - Verify ifnlnthr object is registered and detect its owner lifecycle.
-- predefined proxies is a dictionary in RocDualLifecycleMock, if it is only used once, it is not necessary.
+    - Verify if an object is registered and detect its owner lifecycle.
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
 - Other clean up in RpcDualLifecycleMock.
 - Verify in LocalAndWrapper/ServiceWrapper, case a remote object to IRpcWrapperBase and ensure it is successful.
