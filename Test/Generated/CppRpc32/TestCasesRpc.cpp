@@ -62,11 +62,6 @@ TEST_CASE(L"Rpc:RequestService")
 	lc1->SetAdapter(adapter1.Obj());
 	lc2->SetAdapter(adapter2.Obj());
 
-	{
-		auto typeId = idMap.Get(L"RpcTest::IService");
-		lc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_RpcTest__IService(lc); });
-		lc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_RpcTest__IService(lc); });
-	}
 
 	auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));
 	auto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));
@@ -80,6 +75,8 @@ TEST_CASE(L"Rpc:RequestService")
 
 	lc2->Register(oo1, oeo1, lo1, leo1);
 	lc1->Register(oo2, oeo2, lo2, leo2);
+	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });
+	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });
 
 	instance.serviceMain(adapter1.Obj());
 
@@ -133,11 +130,6 @@ TEST_CASE(L"Rpc:PrimitiveTypes")
 	lc1->SetAdapter(adapter1.Obj());
 	lc2->SetAdapter(adapter2.Obj());
 
-	{
-		auto typeId = idMap.Get(L"RpcPrimitiveTest::IService");
-		lc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_RpcPrimitiveTest__IService(lc); });
-		lc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_RpcPrimitiveTest__IService(lc); });
-	}
 
 	auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));
 	auto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));
@@ -151,6 +143,8 @@ TEST_CASE(L"Rpc:PrimitiveTypes")
 
 	lc2->Register(oo1, oeo1, lo1, leo1);
 	lc1->Register(oo2, oeo2, lo2, leo2);
+	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });
+	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });
 
 	instance.serviceMain(adapter1.Obj());
 

@@ -287,21 +287,6 @@ TEST_FILE
 								mangledName += WString::FromChar(fullName[i]);
 							}
 						}
-
-						writer.WriteLine(L"\t{");
-						writer.WriteString(L"\t\tauto typeId = idMap.Get(L\"");
-						writer.WriteString(fullName);
-						writer.WriteLine(L"\");");
-
-						writer.WriteString(L"\t\tlc1->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_");
-						writer.WriteString(mangledName);
-						writer.WriteLine(L"(lc); });");
-
-						writer.WriteString(L"\t\tlc2->RegisterWrapperFactory(typeId, [&instance](IRpcLifeCycle* lc) -> Ptr<IDescriptable> { return instance.rpcwrapper_");
-						writer.WriteString(mangledName);
-						writer.WriteLine(L"(lc); });");
-
-						writer.WriteLine(L"\t}");
 					}
 					writer.WriteLine(L"");
 				}
@@ -327,6 +312,8 @@ TEST_FILE
 				// Register cross: ops from lc1 go to lc2, and vice versa
 				writer.WriteLine(L"\tlc2->Register(oo1, oeo1, lo1, leo1);");
 				writer.WriteLine(L"\tlc1->Register(oo2, oeo2, lo2, leo2);");
+				writer.WriteLine(L"\tlc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
+				writer.WriteLine(L"\tlc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
 				writer.WriteLine(L"");
 
 				// Run serviceMain with lc1

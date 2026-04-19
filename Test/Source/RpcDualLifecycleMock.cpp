@@ -97,23 +97,12 @@ namespace vl
 
 		RpcDualLifecycleMock::~RpcDualLifecycleMock()
 		{
-			for (vint i = 0; i < services.Count(); i++)
+			for (auto service : services.Values())
 			{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto obj = dynamic_cast<reflection::DescriptableObject*>(services.Values()[i].Obj());
-				if (obj)
+				if (auto obj = service->SafeAggregationCast<IRpcWrapperBase>())
 				{
-					auto td = obj->GetTypeDescriptor();
-					auto wrapperTd = reflection::description::GetTypeDescriptor(L"system::IRpcWrapperBase");
-					if (td && wrapperTd && td->CanConvertTo(wrapperTd))
-					{
-						auto value = reflection::description::Value::From(obj);
-						auto method = wrapperTd->GetMethodGroupByName(L"DisconnectFromLifecycle", false)->GetMethod(0);
-						collections::Array<reflection::description::Value> args;
-						method->Invoke(value, args);
-					}
+					obj->DisconnectFromLifecycle();
 				}
-#endif
 			}
 			while (localObjects.Count() > 0)
 			{
@@ -140,11 +129,6 @@ namespace vl
 		void RpcDualLifecycleMock::SetAdapter(RpcDualLifeCycleAdapter* _adapter)
 		{
 			adapter = _adapter;
-		}
-
-		void RpcDualLifecycleMock::RegisterWrapperFactory(vint typeId, Func<Ptr<IDescriptable>(IRpcLifeCycle*)> factory)
-		{
-			wrapperFactories.Set(typeId, factory);
 		}
 
 		void RpcDualLifecycleMock::RegisterWrapperFactory(Func<Ptr<IDescriptable>(vint, IRpcLifeCycle*)> factory)
@@ -236,13 +220,6 @@ namespace vl
 			if (proxyFactories.Keys().Contains(ref.typeId))
 			{
 				return proxyFactories.Get(ref.typeId)(adapter ? (IRpcLifeCycle*)adapter : (IRpcLifeCycle*)this, ref);
-			}
-
-			// For RPC interface types, use registered wrapper factories
-			if (wrapperFactories.Keys().Contains(ref.typeId))
-			{
-				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
-				return wrapperFactories.Get(ref.typeId)(adapter);
 			}
 
 			// Fallback to universal wrapper factory
@@ -346,10 +323,6 @@ namespace vl
 			{
 				auto typeId = idMap.Get(fullName);
 				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
-				if (wrapperFactories.Keys().Contains(typeId))
-				{
-					return wrapperFactories.Get(typeId)(adapter);
-				}
 				if (universalWrapperFactory)
 				{
 					return universalWrapperFactory(typeId, adapter);
