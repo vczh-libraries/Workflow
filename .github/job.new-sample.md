@@ -8,6 +8,7 @@ This instruction focuses on adding `Test\Resource\Codegen\*.txt` and `Test\Resou
 - The Workflow compiler may need to generate more Workflow script from the input, such generation should be done by constructing Workflow AST instead of building a string.
 - DO NOT introduce breaking changes UNLESS explicitly instructed. The Workflow compiler have been tested by many cases in `Codegen` category, try your best not to intruduce changing to existing samples.
 - C++ code generation is sensitive, you should always try to make minimum or even no changes to C++ code generation, until you have no other choices. Besides type reflection part, generated C++ code should not use any reflection features, and all `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` should actually run the code and pass.
+  - By saying "not use any reflection features", it means you are not allowed to use reflection features and protect it with preprocessor intrinsics, you should always do it in non-reflection related ways.
 - Any sample should not be disabled in `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` and `RuntimeTest`.
 
 ## Codegen Sample
