@@ -1,5 +1,4 @@
 #include "RequestServiceReflection.h"
-#ifndef VCZH_DEBUG_NO_REFLECTION
 #include "../Source/RpcDualLifecycleMock.h"
 
 using namespace vl;
@@ -89,4 +88,3 @@ TEST_CASE(L"Rpc:RequestService")
 	TEST_ASSERT(actual == expected);
 });
 }
-#endif

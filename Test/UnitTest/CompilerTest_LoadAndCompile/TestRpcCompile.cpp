@@ -156,7 +156,6 @@ TEST_FILE
 				writer.WriteLine(L".h\"");
 			}
 
-			writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
 			writer.WriteLine(L"#include \"../Source/RpcDualLifecycleMock.h\"");
 			writer.WriteLine(L"");
 			writer.WriteLine(L"using namespace vl;");
@@ -342,7 +341,6 @@ TEST_FILE
 				writer.WriteLine(L"});");
 			}
 			writer.WriteLine(L"}");
-			writer.WriteLine(L"#endif");
 		});
 #endif
 	});
