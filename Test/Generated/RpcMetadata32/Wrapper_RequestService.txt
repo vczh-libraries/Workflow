@@ -131,3 +131,16 @@ func rpcwrapper_RpcTest__IService(lc : system::IRpcLifeCycle*) : (RpcTest::IServ
     };
     return proxy;
 }
+
+func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (interface^)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcTest__IService:
+        {
+            return rpcwrapper_RpcTest__IService(lc);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}

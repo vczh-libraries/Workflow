@@ -1040,6 +1040,34 @@ namespace vl
 					AddStatement(block, CreateReturn(CreateReference(L"proxy")));
 					return functionDecl;
 				}
+
+				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto returnType = Ptr(new WfSharedPointerType);
+					returnType->element = CreatePredefinedType(WfPredefinedTypeName::Interface);
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", returnType, WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(L"typeId");
+					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id for wrapper creation.");
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
+						auto caseBranch = CreateBlock();
+						auto mangledName = MangleRpcFullName(interfaceModel.fullName);
+						AddStatement(caseBranch, CreateReturn(CreateCall(CreateReference(L"rpcwrapper_" + mangledName), CreateReference(L"lc"))));
+						switchCase->statement = caseBranch;
+						switchStat->caseBranches.Add(switchCase);
+					}
+
+					AddStatement(block, switchStat);
+					return functionDecl;
+				}
 			}
 
 			Ptr<WfModule> GenerateModuleRpc(WfLexicalScopeManager* manager)
@@ -1118,6 +1146,8 @@ namespace vl
 				{
 					module->declarations.Add(GenerateWrapperFactory(interfaceModel));
 				}
+
+				module->declarations.Add(GenerateWrapperDispatcher(interfaces));
 
 				return module;
 			}

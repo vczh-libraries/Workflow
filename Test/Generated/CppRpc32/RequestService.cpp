@@ -87,6 +87,19 @@ Global Functions
 		return proxy;
 	}
 
+	::vl::Ptr<::vl::reflection::IDescriptable> RequestService::rpcwrapper_Create(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
+	{
+		{
+			auto __vwsn_switch_3 = typeId;
+			if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcTest__IService))
+			{
+				return ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME rpcwrapper_RpcTest__IService(lc));
+			}
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
+		}
+	}
+
 	RequestService& RequestService::Instance()
 	{
 		return Getvl_workflow_global_RequestService().instance;

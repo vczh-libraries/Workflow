@@ -147,6 +147,11 @@ namespace vl
 			wrapperFactories.Set(typeId, factory);
 		}
 
+		void RpcDualLifecycleMock::RegisterWrapperFactory(Func<Ptr<IDescriptable>(vint, IRpcLifeCycle*)> factory)
+		{
+			universalWrapperFactory = factory;
+		}
+
 		vint RpcDualLifecycleMock::DecideTypeId(IDescriptable* obj)const
 		{
 			if (dynamic_cast<IValueObservableList*>(obj)) return RpcTypeId_IValueObservableList;
@@ -238,6 +243,13 @@ namespace vl
 			{
 				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
 				return wrapperFactories.Get(ref.typeId)(adapter);
+			}
+
+			// Fallback to universal wrapper factory
+			if (universalWrapperFactory)
+			{
+				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
+				return universalWrapperFactory(ref.typeId, adapter);
 			}
 
 			CHECK_FAIL(L"RpcDualLifecycleMock::CreateCallerProxy cannot find a proxy factory.");
@@ -333,10 +345,14 @@ namespace vl
 			if (idMap.Keys().Contains(fullName))
 			{
 				auto typeId = idMap.Get(fullName);
+				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
 				if (wrapperFactories.Keys().Contains(typeId))
 				{
-					CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
 					return wrapperFactories.Get(typeId)(adapter);
+				}
+				if (universalWrapperFactory)
+				{
+					return universalWrapperFactory(typeId, adapter);
 				}
 			}
 

@@ -71,6 +71,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::RpcTest::IService> rpcwrapper_RpcTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::vl::reflection::IDescriptable> rpcwrapper_Create(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc);
 
 		static RequestService& Instance();
 	};

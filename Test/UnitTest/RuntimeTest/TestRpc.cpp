@@ -29,8 +29,7 @@ namespace
 	{
 	private:
 		Ptr<WfRuntimeGlobalContext>								globalContext;
-		Dictionary<vint, WString>								typeIdToName;
-		Dictionary<vint, WString>								typeIdToWrapperName;
+		Ptr<IValueFunctionProxy>								wrapperCreateFunc;
 	public:
 		RpcWorkflowLifecycleMock(vint _clientId)
 			: RpcDualLifecycleMock(_clientId)
@@ -45,42 +44,18 @@ namespace
 		void SetIdMapWithReflection(const Dictionary<WString, vint>& _idMap)
 		{
 			SetIdMap(_idMap);
+			wrapperCreateFunc = LoadFunction(globalContext, L"rpcwrapper_Create");
 
-			for (auto&& [key, value] : _idMap)
+			RegisterWrapperFactory([this](vint typeId, IRpcLifeCycle* lc) -> Ptr<IDescriptable>
 			{
-				if (!key.Buffer() || wcschr(key.Buffer(), L'.') != nullptr) continue;
-
-				typeIdToName.Set(value, key);
-
-				auto wrapperName = L"rpcwrapper_" + WString(key.Buffer());
-				// Mangle :: to __ in the full name
-				WString mangled;
-				for (vint i = 0; i < wrapperName.Length(); i++)
-				{
-					if (i + 1 < wrapperName.Length() && wrapperName[i] == L':' && wrapperName[i + 1] == L':')
-					{
-						mangled += L"__";
-						i++;
-					}
-					else
-					{
-						mangled += WString::FromChar(wrapperName[i]);
-					}
-				}
-				typeIdToWrapperName.Set(value, mangled);
-
-				RegisterWrapperFactory(value, [this, mangled](IRpcLifeCycle* lc) -> Ptr<IDescriptable>
-				{
-					// Avoid LoadFunction<Ptr<IDescriptable>(...)> which uses UnboxValue/SafeAggregationCast.
-					// Aggregated WfInterfaceInstance objects have duplicate IDescriptable nodes,
-					// causing SafeAggregationCast to fail. Invoke through the proxy directly.
-					auto proxy = LoadFunction(globalContext, mangled);
-					auto argList = IValueList::Create();
-					argList->Add(Value::From(dynamic_cast<DescriptableObject*>(lc)));
-					auto result = proxy->Invoke(argList);
-					return Ptr(dynamic_cast<IDescriptable*>(result.GetRawPtr()));
-				});
-			}
+				// Invoke rpcwrapper_Create(typeId, lc) through the proxy directly
+				// to avoid UnboxValue/SafeAggregationCast on aggregated WfInterfaceInstance.
+				auto argList = IValueList::Create();
+				argList->Add(BoxValue<vint>(typeId));
+				argList->Add(Value::From(dynamic_cast<DescriptableObject*>(lc)));
+				auto result = wrapperCreateFunc->Invoke(argList);
+				return Ptr(dynamic_cast<IDescriptable*>(result.GetRawPtr()));
+			});
 		}
 
 		vint DecideTypeId(IDescriptable* obj)const override
@@ -94,8 +69,9 @@ namespace
 				auto td = descriptable->GetTypeDescriptor();
 				if (td)
 				{
-					for (auto&& [typeId, typeName] : typeIdToName)
+					for (auto&& [typeName, typeId] : idMap)
 					{
+						if (typeName.Length() == 0 || wcschr(typeName.Buffer(), L'.') != nullptr) continue;
 						auto knownTd = description::GetTypeDescriptor(typeName);
 						if (knownTd && td->CanConvertTo(knownTd))
 						{

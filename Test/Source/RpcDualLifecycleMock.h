@@ -52,6 +52,7 @@ namespace vl
 			collections::Dictionary<vint, Ptr<EventHandler>>																							eventHandlers;
 			collections::Dictionary<WString, vint>																										idMap;
 			collections::Dictionary<vint, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*)>>											wrapperFactories;
+			Func<Ptr<reflection::IDescriptable>(vint, rpc_controller::IRpcLifeCycle*)>																	universalWrapperFactory;
 
 			virtual vint																DecideTypeId(reflection::IDescriptable* obj)const;
 			void																		TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
@@ -66,6 +67,7 @@ namespace vl
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	SetAdapter(RpcDualLifeCycleAdapter* _adapter);
 			void																	RegisterWrapperFactory(vint typeId, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*)> factory);
+			void																	RegisterWrapperFactory(Func<Ptr<reflection::IDescriptable>(vint, rpc_controller::IRpcLifeCycle*)> factory);
 
 			// IRpcController
 
