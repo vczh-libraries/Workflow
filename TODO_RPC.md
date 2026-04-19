@@ -35,7 +35,7 @@
 
 # Prompt
 
-Follow job.new-sample.md to add a new Rpc\LocalAndWrapper.txt
+Follow job.new-sample.md to add a new Rpc\ServiceWrapper.txt
 
 ```Workflow
 module Rpc;
@@ -44,69 +44,38 @@ using RpcWrapperTest::*;
 
 namespace RpcWrapperTest
 {
-  @rpc:Interface
-  interface IObj1{}
-
-  @rpc:Interface
-  interface IObj2{}
-
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    func Exchange1(o : IObj1^) : IObj2^;
-    func Exchange1(o : IObj2^) : IObj1^;
+    func Self(obj : IService^): bool;
 	}
 }
 
-var clientObj1 : IObj1^ = new IObj1^{}; // clientObj1 is a client side object
-var serviceObj2 : IObj2^ = new IObj2^{}; // serviceObj2 is a service side object
-
-var serviceReceived_Obj1 : IObj1^ = null;
-var serviceReceived_Obj2 : IObj2^ = null;
-var clientReceived_Obj1 : IObj1^ = null;
-var clientReceived_Obj2 : IObj2^ = null;
+var serviceObj : IService^ = null;
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var service = new (YourFavoriteNamespace::IService^)
+	serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    override func Exchange1(o : IObj1^) : IObj2^
+    override func Self(obj : IService^): bool
     {
-      // serviceReceived_Obj1 should be a wrapper.
-      // client sents clientObj1 and service receives it.
-      // this is a remote object for service, IRpcLifeCycle will wrap it.
-      serviceReceived_Obj1 = o;
-      return serviceObj2;
-    }
-
-    override func Exchange2(o : IObj2^) : IObj1^
-    {
-      // serviceReceived_Obj2 should be real.
-      // client sents clientReceived_Obj2 to and service receives it.
-      // this is a local object for service, IRpcLifeCycle will recognize it and grab the stored local object.
-      serviceReceived_Obj2 = o;
-      return serviceReceived_Obj1;
+      return obj == serviceObj;
     }
 	};
-	lc.RegisterService("YourFavoriteNamespace::IService", service);
+	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var obj = lc.RequestService("YourFavoriteNamespace::IService");
-	var service = cast (YourFavoriteNamespace::IService^) obj;
+	var clientObj = cast (YourFavoriteNamespace::IService^) obj;
 
-  // clientReceived_Obj2 should be a wrapper and clientReceived_Obj1 should be real.
-  // this is a reversed operation.
-  clientReceived_Obj2 = service.Exchange1(clientObj1);
-  clientReceived_Obj1 = service.Exchange2(clientReceived_Obj1);
-
-	return
-    $"[$(serviceReceived_Obj1 == clientObj1)]" &  // false
-    $"[$(serviceReceived_Obj2 == serviceObj2)]" & // true
-    $"[$(clientReceived_Obj1 == clientObj1)]" &   // true
-    $"[$(clientReceived_Obj2 == serviceObj2)]";   // false
+  // serviceObj is stored by serviceMain so it is the real object.
+  // clientObj should be its wrapper because they live in different lifecycle space.
+  // when clientObj sents back from clientMain to serviceMain it should get the real object back.
+  // because an object should be a wrapper if and only if it is a remote object.
+	return $"[$(clientObj == serviceObj)][$(obj.Self(clientObj))]"; // false and true
 }
 ```
 
@@ -116,7 +85,13 @@ Understand what the test case trying to say, you are not allowed to change:
 - Workflow compiling.
 - Workflow to C++ code generation.
 
+You are also required to update the generation for TestCasesRpc.cpp. All test cases are almost the same except one line:
+`auto& instance = ::vl_workflow_global::RequestService::Instance();`
+- Verify if my statement is correct, or if not, what else is different?
+- Make a template function so that you can just call `RunRpcTestCase<::vl_workflow_global::RequestService>` instead of just duplicating code in test cases.
+
 You are highly possibly need to fix implementation of `IRpcLifecycle` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
+- If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
 - After finishing everything, git commit and git push to the current branch.
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
@@ -137,4 +112,3 @@ Perform each task like a new `# Repro`, which means when a task is done, you can
 DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 ## Task 1
-
