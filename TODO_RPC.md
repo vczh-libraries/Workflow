@@ -9,6 +9,7 @@
 
 ## ToDo
 
+- Collection proxies shoild implement IRpcWrapperBase.
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
 - Continue to add more test cases until all features are covered.
   - Destructor calling.
