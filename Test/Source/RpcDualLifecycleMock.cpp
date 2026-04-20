@@ -9,6 +9,8 @@ namespace vl
 		using namespace rpc_controller;
 		using namespace collections;
 
+		WString RpcDualLifecycleMock::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
+
 		RpcDualObjectTracker::RpcDualObjectTracker(RpcDualLifecycleMock* m, RpcObjectReference r)
 			: mock(m), ref(r)
 		{
@@ -74,19 +76,16 @@ namespace vl
 					obj->DisconnectFromLifecycle();
 				}
 			}
-			for (auto base : wrapperBases)
+			for (vint i = 0; i < wrapperEntries.Count(); i++)
 			{
-				base->DisconnectFromLifecycle();
+				wrapperEntries[i].proxy->DisconnectFromLifecycle();
 			}
-			wrapperBases.Clear();
-			wrapperProxies.Clear();
-			wrapperRefs.Clear();
-			while (localObjects.Count() > 0)
+			wrapperEntries.Clear();
+			while (localObjectProps.Count() > 0)
 			{
-				auto ref = refsById.Values()[refsById.Count() - 1];
-				UntrackLocalObject(ref);
+				auto props = localObjectProps.Values().Get(localObjectProps.Count() - 1);
+				UnregisterLocalObject(props->ref);
 			}
-			ownedObjects.Clear();
 			services.Clear();
 		}
 
@@ -141,9 +140,12 @@ namespace vl
 
 		void RpcDualLifecycleMock::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
 		{
-			localObjects.Set(ref.objectId, obj);
-			refsByPtr.Set(obj, ref);
-			refsById.Set(ref.objectId, ref);
+			auto index = localObjectProps.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::TrackLocalObject: Object not registered.");
+			auto props = localObjectProps.Values().Get(index);
+			CHECK_ERROR(props->rawPtr == nullptr, L"RpcDualLifecycleMock::TrackLocalObject: Object already tracked.");
+
+			props->rawPtr = obj;
 
 			if (auto observable = dynamic_cast<IValueObservableList*>(obj))
 			{
@@ -151,48 +153,52 @@ namespace vl
 				{
 					this->OnItemChanged(ref, index, oldCount, newCount);
 				});
-				eventHandlers.Set(ref.objectId, handler);
+				props->eventHandler = handler;
 			}
 
 			if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
 			{
 				auto tracker = Ptr(new RpcDualObjectTracker(this, ref));
-				descriptable->SetInternalProperty(L"RpcLifecycleTracker", tracker);
+				descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, tracker);
 			}
 		}
 
 		void RpcDualLifecycleMock::UntrackLocalObject(RpcObjectReference ref)
 		{
-			if (eventHandlers.Keys().Contains(ref.objectId))
+			auto index = localObjectProps.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::UntrackLocalObject: Object not registered.");
+			auto props = localObjectProps.Values().Get(index);
+
+			if (props->eventHandler)
 			{
-				if (localObjects.Keys().Contains(ref.objectId))
+				if (auto observable = dynamic_cast<IValueObservableList*>(props->rawPtr))
 				{
-					if (auto observable = dynamic_cast<IValueObservableList*>(localObjects.Get(ref.objectId)))
-					{
-						observable->ItemChanged.Remove(eventHandlers.Get(ref.objectId));
-					}
+					observable->ItemChanged.Remove(props->eventHandler);
 				}
-				eventHandlers.Remove(ref.objectId);
+				props->eventHandler = nullptr;
 			}
 
-			if (localObjects.Keys().Contains(ref.objectId))
+			// Clear rawPtr first so IsTracked returns false, preventing re-entrant cleanup
+			auto rawPtr = props->rawPtr;
+			props->rawPtr = nullptr;
+
+			// Clear internal property (tracker destructor checks IsTracked → false → no re-entry)
+			if (rawPtr)
 			{
-				auto obj = localObjects.Get(ref.objectId);
-				refsByPtr.Remove(obj);
-				localObjects.Remove(ref.objectId);
-				if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
+				if (auto descriptable = dynamic_cast<DescriptableObject*>(rawPtr))
 				{
-					descriptable->SetInternalProperty(L"RpcLifecycleTracker", nullptr);
+					descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, nullptr);
 				}
 			}
-			refsById.Remove(ref.objectId);
-			ownedObjects.Remove(ref.objectId);
-			observableProxies.Remove(ref.objectId);
+
+			// Clear owned ptr last (may destroy the object, but internal property is already cleared)
+			props->ownedPtr = nullptr;
 		}
 
 		bool RpcDualLifecycleMock::IsTracked(vint objectId)const
 		{
-			return localObjects.Keys().Contains(objectId);
+			auto index = localObjectProps.Keys().IndexOf(objectId);
+			return index != -1 && localObjectProps.Values().Get(index)->rawPtr != nullptr;
 		}
 
 		Ptr<IDescriptable> RpcDualLifecycleMock::CreateCallerProxy(RpcObjectReference ref)
@@ -219,37 +225,28 @@ namespace vl
 				wrapper = Ptr(new RpcByrefList(lc, ref));
 				break;
 			case RpcTypeId_IValueObservableList:
-				{
-					auto proxy = Ptr(new RpcByrefObservableList(lc, ref));
-					observableProxies.Set(ref.objectId, dynamic_cast<IValueObservableList*>(proxy.Obj()));
-					wrapper = proxy;
-				}
+				wrapper = Ptr(new RpcByrefObservableList(lc, ref));
 				break;
 			case RpcTypeId_IValueDictionary:
 				wrapper = Ptr(new RpcByrefDictionary(lc, ref));
 				break;
 			default:
 				// Fallback to universal wrapper factory
-				if (universalWrapperFactory)
-				{
-					CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
-					pendingProxyRef = ref;
-					wrapper = universalWrapperFactory(ref.typeId, adapter);
-					pendingProxyRef = {};
-					CHECK_ERROR(wrapper, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper factory returned null.");
-				}
-				else
-				{
-					CHECK_FAIL(L"RpcDualLifecycleMock::CreateCallerProxy cannot find a proxy factory.");
-				}
+				CHECK_ERROR(universalWrapperFactory, L"RpcDualLifecycleMock::CreateCallerProxy: No wrapper factory registered.");
+				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
+				pendingProxyRef = ref;
+				wrapper = universalWrapperFactory(ref.typeId, adapter);
+				pendingProxyRef = {};
+				CHECK_ERROR(wrapper, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper factory returned null.");
 				break;
 			}
 
 			auto descriptable = dynamic_cast<IDescriptable*>(wrapper.Obj());
 			CHECK_ERROR(descriptable, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper does not implement IDescriptable.");
-			wrapperRefs.Set(descriptable, ref);
-			wrapperProxies.Add(wrapper);
-			wrapperBases.Add(wrapper.Obj());
+			RpcWrapperEntry entry;
+			entry.proxy = wrapper;
+			entry.ref = ref;
+			wrapperEntries.Add(entry);
 			return Ptr(descriptable);
 		}
 
@@ -272,30 +269,31 @@ namespace vl
 		RpcObjectReference RpcDualLifecycleMock::RegisterLocalObject(vint typeId)
 		{
 			auto ref = RpcObjectReference{ clientId, nextObjectId++, typeId };
-			typeIds.Set(ref.objectId, typeId);
-			refCounts.Set(ref.objectId, 1);
+			CHECK_ERROR(!localObjectProps.Keys().Contains(ref.objectId), L"RpcDualLifecycleMock::RegisterLocalObject: Object ID already registered.");
+			auto props = Ptr(new RpcLocalObjectProperties());
+			props->ref = ref;
+			props->refCount = 1;
+			localObjectProps.Set(ref.objectId, props);
 			return ref;
 		}
 
 		void RpcDualLifecycleMock::UnregisterLocalObject(RpcObjectReference ref)
 		{
 			UntrackLocalObject(ref);
-			refCounts.Remove(ref.objectId);
-			typeIds.Remove(ref.objectId);
+			localObjectProps.Remove(ref.objectId);
 		}
 
 		void RpcDualLifecycleMock::AcquireRemoteObject(RpcObjectReference ref)
 		{
 			if (ref.clientId == clientId)
 			{
-				if (refCounts.Keys().Contains(ref.objectId))
-				{
-					refCounts.Set(ref.objectId, refCounts.Get(ref.objectId) + 1);
-				}
+				auto index = localObjectProps.Keys().IndexOf(ref.objectId);
+				CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::AcquireRemoteObject: Object not registered.");
+				localObjectProps.Values().Get(index)->refCount++;
 			}
 			else
 			{
-				// Route to peer
+				CHECK_ERROR(peer != nullptr, L"RpcDualLifecycleMock::AcquireRemoteObject: No peer configured.");
 				peer->AcquireRemoteObject(ref);
 			}
 		}
@@ -304,24 +302,18 @@ namespace vl
 		{
 			if (ref.clientId == clientId)
 			{
-				if (!refCounts.Keys().Contains(ref.objectId))
-				{
-					return;
-				}
-
-				auto count = refCounts.Get(ref.objectId) - 1;
-				if (count <= 0)
+				auto index = localObjectProps.Keys().IndexOf(ref.objectId);
+				CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::ReleaseRemoteObject: Object not registered.");
+				auto props = localObjectProps.Values().Get(index);
+				props->refCount--;
+				if (props->refCount <= 0)
 				{
 					UnregisterLocalObject(ref);
-				}
-				else
-				{
-					refCounts.Set(ref.objectId, count);
 				}
 			}
 			else
 			{
-				// Route to peer
+				CHECK_ERROR(peer != nullptr, L"RpcDualLifecycleMock::ReleaseRemoteObject: No peer configured.");
 				peer->ReleaseRemoteObject(ref);
 			}
 		}
@@ -356,11 +348,9 @@ namespace vl
 			{
 				auto typeId = idMap.Get(fullName);
 				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
-				if (universalWrapperFactory)
-				{
-					auto ref = RpcLifecycleMock::RequestService(typeId);
-					return CreateCallerProxy(ref);
-				}
+				CHECK_ERROR(universalWrapperFactory, L"RpcDualLifecycleMock::RequestService: No wrapper factory registered.");
+				auto ref = RpcLifecycleMock::RequestService(typeId);
+				return CreateCallerProxy(ref);
 			}
 
 			return nullptr;
@@ -371,12 +361,11 @@ namespace vl
 			if (ref.clientId == clientId)
 			{
 				// Local object
-				if (localObjects.Keys().Contains(ref.objectId))
-				{
-					return Ptr(localObjects.Get(ref.objectId));
-				}
-				CHECK_FAIL(L"RpcDualLifecycleMock::RefToPtr cannot find local object.");
-				return nullptr;
+				auto index = localObjectProps.Keys().IndexOf(ref.objectId);
+				CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::RefToPtr: Object not registered.");
+				auto props = localObjectProps.Values().Get(index);
+				CHECK_ERROR(props->rawPtr != nullptr, L"RpcDualLifecycleMock::RefToPtr: Object not tracked.");
+				return Ptr(props->rawPtr);
 			}
 			else
 			{
@@ -390,37 +379,58 @@ namespace vl
 			CHECK_ERROR(obj, L"RpcDualLifecycleMock::PtrToRef requires a value.");
 
 			// Check if this is a wrapper proxy for a remote object
-			if (wrapperRefs.Keys().Contains(obj.Obj()))
+			for (vint i = 0; i < wrapperEntries.Count(); i++)
 			{
-				return wrapperRefs.Get(obj.Obj());
+				auto&& entry = wrapperEntries[i];
+				if (dynamic_cast<IDescriptable*>(entry.proxy.Obj()) == obj.Obj())
+				{
+					return entry.ref;
+				}
 			}
 
 			// For aggregated objects (Workflow-generated wrappers), the pointer passed here
-			// may be the aggregation root, while wrapperRefs stores the proxy pointer.
+			// may be the aggregation root, while wrapperEntries stores the proxy pointer.
 			// Use SafeAggregationCast to find the IRpcWrapperBase proxy and look it up.
 			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
 			{
 				if (auto wrapperBase = descObj->SafeAggregationCast<IRpcWrapperBase>())
 				{
-					auto wrapperDescriptable = dynamic_cast<IDescriptable*>(wrapperBase);
-					if (wrapperDescriptable && wrapperRefs.Keys().Contains(wrapperDescriptable))
+					for (vint i = 0; i < wrapperEntries.Count(); i++)
 					{
-						return wrapperRefs.Get(wrapperDescriptable);
+						auto&& entry = wrapperEntries[i];
+						if (entry.proxy.Obj() == wrapperBase)
+						{
+							return entry.ref;
+						}
 					}
 				}
 			}
 
-			if (refsByPtr.Keys().Contains(obj.Obj()))
+			// Check if this is an already-tracked local object (via internal property)
+			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
 			{
-				auto ref = refsByPtr.Get(obj.Obj());
-				refCounts.Set(ref.objectId, refCounts.Get(ref.objectId) + 1);
-				return ref;
+				if (auto trackerObj = descObj->GetInternalProperty(InternalProperty_LocalObjectTracker))
+				{
+					auto tracker = trackerObj.Cast<RpcDualObjectTracker>();
+					CHECK_ERROR(tracker, L"RpcDualLifecycleMock::PtrToRef: Invalid internal property type.");
+					CHECK_ERROR(tracker->GetMock() == this, L"RpcDualLifecycleMock::PtrToRef: Object registered to a different lifecycle.");
+					auto trackerRef = tracker->GetRef();
+					auto index = localObjectProps.Keys().IndexOf(trackerRef.objectId);
+					CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::PtrToRef: Tracked object not registered.");
+					localObjectProps.Values().Get(index)->refCount++;
+					return trackerRef;
+				}
 			}
 
+			// Register new local object
 			auto typeId = DecideTypeId(obj.Obj());
 			CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RpcDualLifecycleMock::PtrToRef: DecideTypeId returned RpcTypeId_NotFound (unknown type).");
 			auto ref = RegisterLocalObject(typeId);
-			ownedObjects.Set(ref.objectId, obj);
+
+			auto index = localObjectProps.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::PtrToRef: Failed to register object.");
+			localObjectProps.Values().Get(index)->ownedPtr = obj;
+
 			TrackLocalObject(ref, obj.Obj());
 			return ref;
 		}
@@ -431,9 +441,17 @@ namespace vl
 
 		void RpcDualLifecycleMock::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
-			if (observableProxies.Keys().Contains(ref.objectId))
+			for (vint i = 0; i < wrapperEntries.Count(); i++)
 			{
-				observableProxies.Get(ref.objectId)->ItemChanged(index, oldCount, newCount);
+				auto&& entry = wrapperEntries[i];
+				if (entry.ref.objectId == ref.objectId)
+				{
+					if (auto observable = dynamic_cast<IValueObservableList*>(entry.proxy.Obj()))
+					{
+						observable->ItemChanged(index, oldCount, newCount);
+						return;
+					}
+				}
 			}
 		}
 	}

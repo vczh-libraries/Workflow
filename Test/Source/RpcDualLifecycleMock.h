@@ -8,14 +8,33 @@ namespace vl
 	namespace rpc_controller_test
 	{
 		static constexpr vint RpcTypeId_NotFound = -100;
+
 		class RpcDualObjectTracker : public Object
 		{
+			friend class RpcDualLifecycleMock;
 		private:
 			class RpcDualLifecycleMock*									mock;
 			rpc_controller::RpcObjectReference							ref;
 		public:
 			RpcDualObjectTracker(class RpcDualLifecycleMock* m, rpc_controller::RpcObjectReference r);
 			~RpcDualObjectTracker();
+			rpc_controller::RpcObjectReference							GetRef() const { return ref; }
+			class RpcDualLifecycleMock*									GetMock() const { return mock; }
+		};
+
+		struct RpcLocalObjectProperties : public Object
+		{
+			rpc_controller::RpcObjectReference							ref;
+			vint														refCount = 0;
+			reflection::IDescriptable*									rawPtr = nullptr;
+			Ptr<reflection::IDescriptable>								ownedPtr;
+			Ptr<EventHandler>											eventHandler;
+		};
+
+		struct RpcWrapperEntry
+		{
+			Ptr<rpc_controller::IRpcWrapperBase>						proxy;
+			rpc_controller::RpcObjectReference							ref;
 		};
 
 		class RpcDualLifeCycleAdapter : public Object, public virtual rpc_controller::IRpcLifeCycle
@@ -37,24 +56,16 @@ namespace vl
 			friend class RpcDualObjectTracker;
 			friend class RpcDualLifeCycleAdapter;
 		protected:
-			vint																																		clientId = 1;
-			vint																																		nextObjectId = 1;
-			RpcDualLifecycleMock*																														peer = nullptr;
-			RpcDualLifeCycleAdapter*																													adapter = nullptr;
-			collections::Dictionary<vint, vint>																											refCounts;
-			collections::Dictionary<vint, vint>																											typeIds;
-			collections::Dictionary<vint, reflection::IDescriptable*>																					localObjects;
-			collections::Dictionary<vint, Ptr<reflection::IDescriptable>>																				ownedObjects;
-			collections::Dictionary<const reflection::IDescriptable*, rpc_controller::RpcObjectReference>												refsByPtr;
-			collections::Dictionary<vint, rpc_controller::RpcObjectReference>																			refsById;
-			collections::Dictionary<vint, reflection::description::IValueObservableList*>																observableProxies;
-			collections::Dictionary<vint, Ptr<EventHandler>>																							eventHandlers;
-			collections::Dictionary<WString, vint>																										idMap;
-			Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)>																	universalWrapperFactory;
-			rpc_controller::RpcObjectReference																												pendingProxyRef;
-			collections::Dictionary<const reflection::IDescriptable*, rpc_controller::RpcObjectReference>												wrapperRefs;
-			collections::List<Ptr<rpc_controller::IRpcWrapperBase>>																						wrapperProxies;
-			collections::List<rpc_controller::IRpcWrapperBase*>																							wrapperBases;
+			static WString																				InternalProperty_LocalObjectTracker;
+			vint																						clientId = 1;
+			vint																						nextObjectId = 1;
+			RpcDualLifecycleMock*																		peer = nullptr;
+			RpcDualLifeCycleAdapter*																	adapter = nullptr;
+			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>								localObjectProps;
+			collections::Dictionary<WString, vint>														idMap;
+			Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)>				universalWrapperFactory;
+			rpc_controller::RpcObjectReference															pendingProxyRef;
+			collections::List<RpcWrapperEntry>															wrapperEntries;
 
 			virtual vint																DecideTypeId(reflection::IDescriptable* obj)const;
 			void																		TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);

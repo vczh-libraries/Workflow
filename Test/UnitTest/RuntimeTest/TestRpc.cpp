@@ -40,13 +40,11 @@ namespace
 		{
 			// Disconnect wrappers while globalContext is still alive,
 			// because DisconnectFromLifecycle executes Workflow bytecode.
-			for (auto base : wrapperBases)
+			for (vint i = 0; i < wrapperEntries.Count(); i++)
 			{
-				base->DisconnectFromLifecycle();
+				wrapperEntries[i].proxy->DisconnectFromLifecycle();
 			}
-			wrapperBases.Clear();
-			wrapperProxies.Clear();
-			wrapperRefs.Clear();
+			wrapperEntries.Clear();
 			for (auto service : services.Values())
 			{
 				if (auto obj = service->SafeAggregationCast<IRpcWrapperBase>())
@@ -55,12 +53,11 @@ namespace
 				}
 			}
 			services.Clear();
-			while (localObjects.Count() > 0)
+			while (localObjectProps.Count() > 0)
 			{
-				auto ref = refsById.Values()[refsById.Count() - 1];
-				UntrackLocalObject(ref);
+				auto props = localObjectProps.Values().Get(localObjectProps.Count() - 1);
+				UnregisterLocalObject(props->ref);
 			}
-			ownedObjects.Clear();
 			wrapperCreateFunc = nullptr;
 			globalContext = nullptr;
 		}
