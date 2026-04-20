@@ -36,33 +36,29 @@
 
 # Prompt
 
-Follow job.new-sample.md to add a new Rpc\ServiceWrapper.txt
+Follow job.new-sample.md to add a new Rpc\Dtor.txt
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace RpcWrapperTest
+namespace YourFavoriteNamespace // use RpcDtorTest
 {
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    func Self(obj : IService^): bool;
 	}
 }
 
-var serviceObj : IService^ = null;
+var s = "Not Deleted";
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    override func Self(obj : IService^): bool
-    {
-      return obj == serviceObj;
-    }
+    delete { s = "Deleted"; }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
 }
@@ -71,12 +67,13 @@ func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var obj = lc.RequestService("YourFavoriteNamespace::IService");
 	var clientObj = cast (YourFavoriteNamespace::IService^) obj;
-
-  // serviceObj is stored by serviceMain so it is the real object.
-  // clientObj should be its wrapper because they live in different lifecycle space.
-  // when clientObj sents back from clientMain to serviceMain it should get the real object back.
-  // because an object should be a wrapper if and only if it is a remote object.
-	return $"[$(clientObj == serviceObj)][$(obj.Self(clientObj))]"; // false and true
+  // remote object becomes a wrapper, crashing means bug in the RPC framework
+  var wrapperObj = cast (IRpcWrapperBase^) clientObj;
+  wrapperObj = null;
+  var m = $"[$(s)]"; // s should be "Not Deleted"
+  clientObj = null;  // Releasing the wrapper causing ReleaseRemoteObject and ObjectHold(false) to be called
+  var m = $"[$(s)]"; // s should be "Deleted"
+  return s;
 }
 ```
 
@@ -85,11 +82,6 @@ Understand what the test case trying to say, you are not allowed to change:
 - Workflow parser.
 - Workflow compiling.
 - Workflow to C++ code generation.
-
-You are also required to update the generation for TestCasesRpc.cpp. All test cases are almost the same except one line:
-`auto& instance = ::vl_workflow_global::RequestService::Instance();`
-- Verify if my statement is correct, or if not, what else is different?
-- Make a template function so that you can just call `RunRpcTestCase<::vl_workflow_global::RequestService>` instead of just duplicating code in test cases.
 
 You are highly possibly need to fix implementation of `IRpcLifecycle` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
 - If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
