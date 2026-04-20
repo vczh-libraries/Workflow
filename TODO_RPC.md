@@ -9,16 +9,12 @@
 
 ## ToDo
 
-- Upgrade data in internal property.
-  - Originally it is used to detect if a local object is destroyed.
-  - Now informations should be stored in any local/remote object so that:
-    - Remove maps in RpcDualLifecycleMock.
-    - Verify if an object is registered and detect its owner lifecycle.
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
 - Other clean up in RpcDualLifecycleMock.
 - Verify in LocalAndWrapper/ServiceWrapper, case a remote object to IRpcWrapperBase and ensure it is successful.
 - Continue to add more test cases until all features are covered.
   - Destructor calling.
+  - Register local object in two lifecycles.
   - Function overloading.
   - Byval and byref collections.
     - A function accepts a byval or byref arguments, add one element, return it back as byval or byref arguments.
