@@ -80,20 +80,20 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_RequestService_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcTest::IService> RequestService::rpcwrapper_RpcTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcTest::IRpcWrapper_IService> RequestService::rpcwrapper_RpcTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcTest__IService);
-		auto proxy = ::vl::Ptr<::RpcTest::IService>(::vl::Ptr<::RpcTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService(lc, proxyRef)));
+		auto proxy = ::vl::Ptr<::RpcTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_RequestService_rpcwrapper_RpcTest__IService__RpcTest_IRpcWrapper_IService(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::reflection::IDescriptable> RequestService::rpcwrapper_Create(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> RequestService::rpcwrapper_Create(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
 			auto __vwsn_switch_3 = typeId;
 			if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcTest__IService))
 			{
-				return ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME rpcwrapper_RpcTest__IService(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcTest__IService(lc));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -126,10 +126,6 @@ Closures
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_holds = ::vl::reflection::description::IValueDictionary::Create();
-	}
-
-	void __vwsnc2_RequestService_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids)
-	{
 	}
 
 	::vl::reflection::description::Value __vwsnc2_RequestService_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -181,10 +177,6 @@ Closures
 	__vwsnc3_RequestService_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc3_RequestService_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
-	}
-
-	void __vwsnc3_RequestService_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids)
-	{
 	}
 
 	void __vwsnc3_RequestService_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)

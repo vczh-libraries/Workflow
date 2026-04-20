@@ -54,15 +54,6 @@ namespace vl
 		}
 
 /***********************************************************************
-* RpcLifecycleMock (IRpcIdSync)
-***********************************************************************/
-
-		void RpcLifecycleMock::SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)
-		{
-			(void)ids;
-		}
-
-/***********************************************************************
 * RpcLifecycleMock (IRpcController)
 ***********************************************************************/
 
@@ -72,10 +63,6 @@ namespace vl
 			eventCallback = _eventCallback.Obj();
 			listCallback = _listCallback.Obj();
 			listEventCallback = _listEventCallback.Obj();
-
-			auto ids = IValueDictionary::Create();
-			if (objectCallback) objectCallback->SyncIds(ids);
-			if (eventCallback) eventCallback->SyncIds(ids);
 		}
 
 /***********************************************************************

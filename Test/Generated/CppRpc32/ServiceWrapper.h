@@ -71,8 +71,8 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::RpcServiceWrapperTest::IService> rpcwrapper_RpcServiceWrapperTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::vl::reflection::IDescriptable> rpcwrapper_Create(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::RpcServiceWrapperTest::IRpcWrapper_IService> rpcwrapper_RpcServiceWrapperTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc);
 
 		static ServiceWrapper& Instance();
 	};
@@ -96,7 +96,6 @@ Closures
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> _holds;
-		void SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids) override;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, bool hold) override;
@@ -109,7 +108,6 @@ Closures
 		__vwsnc3_ServiceWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
-		void SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids) override;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 

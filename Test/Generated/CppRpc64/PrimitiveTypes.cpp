@@ -105,20 +105,20 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcPrimitiveTest::IService> PrimitiveTypes::rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> PrimitiveTypes::rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcPrimitiveTest__IService);
-		auto proxy = ::vl::Ptr<::RpcPrimitiveTest::IService>(::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(lc, proxyRef)));
+		auto proxy = ::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::reflection::IDescriptable> PrimitiveTypes::rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> PrimitiveTypes::rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
 			auto __vwsn_switch_3 = typeId;
 			if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcPrimitiveTest__IService))
 			{
-				return ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME rpcwrapper_RpcPrimitiveTest__IService(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcPrimitiveTest__IService(lc));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -187,10 +187,6 @@ Closures
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_holds = ::vl::reflection::description::IValueDictionary::Create();
-	}
-
-	void __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids)
-	{
 	}
 
 	::vl::reflection::description::Value __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -277,10 +273,6 @@ Closures
 	__vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
-	}
-
-	void __vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids)
-	{
 	}
 
 	void __vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)

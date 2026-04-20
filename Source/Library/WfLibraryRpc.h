@@ -36,14 +36,6 @@ namespace vl
 * Interfaces
 ***********************************************************************/
 
-		class IRpcIdSync
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcIdSync>
-		{
-		public:
-			virtual void					SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids) = 0;
-		};
-
 		class IRpcListOps
 			: public virtual vl::reflection::IDescriptable
 			, public vl::reflection::Description<IRpcListOps>
@@ -74,7 +66,7 @@ namespace vl
 		};
 
 		class IRpcObjectOps
-			: public virtual IRpcIdSync
+			: public virtual vl::reflection::IDescriptable
 			, public vl::reflection::Description<IRpcObjectOps>
 		{
 		public:
@@ -93,7 +85,7 @@ namespace vl
 		};
 
 		class IRpcObjectEventOps
-			: public virtual IRpcIdSync
+			: public virtual vl::reflection::IDescriptable
 			, public vl::reflection::Description<IRpcObjectEventOps>
 		{
 		public:
@@ -108,13 +100,6 @@ namespace vl
 			, public vl::reflection::Description<IRpcController>
 		{
 		public:
-			virtual void					Register(
-											vl::Ptr<IRpcObjectOps> objectCallback,
-											vl::Ptr<IRpcObjectEventOps> eventCallback,
-											vl::Ptr<IRpcListOps> listCallback,
-											vl::Ptr<IRpcListEventOps> listEventCallback
-										) = 0;
-
 			virtual RpcObjectReference		RegisterLocalObject(vl::vint typeId) = 0;
 			virtual void					UnregisterLocalObject(RpcObjectReference ref) = 0;
 
@@ -146,7 +131,7 @@ namespace vl
 * Collection Caller Wrappers
 **********************************************************************/
 
-		class RpcByrefEnumerator : public Object, public vl::reflection::description::IValueEnumerator
+		class RpcByrefEnumerator : public Object, public vl::reflection::description::IValueEnumerator, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*											lifeCycle = nullptr;
@@ -157,12 +142,13 @@ namespace vl
 			RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef);
 			~RpcByrefEnumerator();
 
+			void													DisconnectFromLifecycle()override;
 			vl::reflection::description::Value						GetCurrent()override;
 			vint													GetIndex()override;
 			bool													Next()override;
 		};
 
-		class RpcByrefEnumerable : public Object, public vl::reflection::description::IValueEnumerable
+		class RpcByrefEnumerable : public Object, public vl::reflection::description::IValueEnumerable, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*											lifeCycle = nullptr;
@@ -172,10 +158,11 @@ namespace vl
 			RpcByrefEnumerable(IRpcLifeCycle* lc, RpcObjectReference enumerableRef);
 			~RpcByrefEnumerable();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 		};
 
-		class RpcByrefReadonlyList : public Object, public virtual vl::reflection::description::IValueReadonlyList
+		class RpcByrefReadonlyList : public Object, public virtual vl::reflection::description::IValueReadonlyList, public virtual IRpcWrapperBase
 		{
 		protected:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -185,6 +172,7 @@ namespace vl
 			RpcByrefReadonlyList(IRpcLifeCycle* lc, RpcObjectReference listRef);
 			~RpcByrefReadonlyList();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			vint													GetCount()override;
 			vl::reflection::description::Value						Get(vint index)override;
@@ -211,7 +199,7 @@ namespace vl
 			void													Clear()override;
 		};
 
-		class RpcByrefArray : public Object, public vl::reflection::description::IValueArray
+		class RpcByrefArray : public Object, public vl::reflection::description::IValueArray, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -221,6 +209,7 @@ namespace vl
 			RpcByrefArray(IRpcLifeCycle* lc, RpcObjectReference arrayRef);
 			~RpcByrefArray();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			vint													GetCount()override;
 			vl::reflection::description::Value						Get(vint index)override;
@@ -230,7 +219,7 @@ namespace vl
 			void													Resize(vint size)override;
 		};
 
-		class RpcByrefObservableList : public Object, public vl::reflection::description::IValueObservableList
+		class RpcByrefObservableList : public Object, public vl::reflection::description::IValueObservableList, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -240,6 +229,7 @@ namespace vl
 			RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef);
 			~RpcByrefObservableList();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			vint													GetCount()override;
 			vl::reflection::description::Value						Get(vint index)override;
@@ -253,7 +243,7 @@ namespace vl
 			void													Clear()override;
 		};
 
-		class RpcByrefDictionary : public Object, public vl::reflection::description::IValueDictionary
+		class RpcByrefDictionary : public Object, public vl::reflection::description::IValueDictionary, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -263,6 +253,7 @@ namespace vl
 			RpcByrefDictionary(IRpcLifeCycle* lc, RpcObjectReference dictRef);
 			~RpcByrefDictionary();
 
+			void														DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueReadonlyList>	GetKeys()override;
 			vl::Ptr<vl::reflection::description::IValueReadonlyList>	GetValues()override;
 			vint														GetCount()override;

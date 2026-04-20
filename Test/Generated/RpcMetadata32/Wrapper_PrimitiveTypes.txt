@@ -41,10 +41,6 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 
         var _holds : object[system::RpcObjectReference] = {};
 
-        override func SyncIds(ids : ::system::Dictionary^) : (void)
-        {
-        }
-
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -132,10 +128,6 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEv
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
-        override func SyncIds(ids : ::system::Dictionary^) : (void)
-        {
-        }
-
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
             switch (eventId)
@@ -154,10 +146,10 @@ namespace RpcPrimitiveTest
     }
 }
 
-func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*) : (RpcPrimitiveTest::IService^)
+func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*) : (RpcPrimitiveTest::IRpcWrapper_IService^)
 {
     var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcPrimitiveTest__IService);
-    var proxy : RpcPrimitiveTest::IService^ = new (RpcPrimitiveTest::IRpcWrapper_IService^)
+    var proxy : RpcPrimitiveTest::IRpcWrapper_IService^ = new (RpcPrimitiveTest::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
@@ -259,7 +251,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*) : (RpcPr
     return proxy;
 }
 
-func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (interface^)
+func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
 {
     switch (typeId)
     {

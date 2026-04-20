@@ -37,7 +37,6 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::RpcObjectReference)
-			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcIdSync, system::IRpcIdSync)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::IRpcListEventOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectOps, system::IRpcObjectOps)
@@ -108,10 +107,6 @@ WfLoadLibraryTypes
 				STRUCT_MEMBER(typeId)
 			END_STRUCT_MEMBER(vl::rpc_controller::RpcObjectReference)
 
-			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcIdSync)
-				CLASS_MEMBER_METHOD(SyncIds, { L"ids" })
-			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcIdSync)
-
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcListOps)
 				CLASS_MEMBER_METHOD(EnumCreate, { L"ref" })
 				CLASS_MEMBER_METHOD(EnumNext, { L"enumerator" })
@@ -142,7 +137,6 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcListEventOps)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
-				CLASS_MEMBER_BASE(vl::rpc_controller::IRpcIdSync)
 				CLASS_MEMBER_METHOD(InvokeMethod, { L"ref" _ L"methodId" _ L"arguments" })
 				CLASS_MEMBER_METHOD(InvokeMethodAsync, { L"ref" _ L"methodId" _ L"arguments" })
 				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"hold" })
@@ -150,7 +144,6 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
-				CLASS_MEMBER_BASE(vl::rpc_controller::IRpcIdSync)
 				CLASS_MEMBER_METHOD(InvokeEvent, { L"ref" _ L"eventId" _ L"arguments" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
 
@@ -159,7 +152,6 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_BASE(vl::rpc_controller::IRpcObjectOps)
 				CLASS_MEMBER_BASE(vl::rpc_controller::IRpcListEventOps)
 				CLASS_MEMBER_BASE(vl::rpc_controller::IRpcObjectEventOps)
-				CLASS_MEMBER_METHOD(Register, { L"objectCallback" _ L"eventCallback" _ L"listCallback" _ L"listEventCallback" })
 				CLASS_MEMBER_METHOD(RegisterLocalObject, { L"typeId" })
 				CLASS_MEMBER_METHOD(UnregisterLocalObject, { L"ref" })
 				CLASS_MEMBER_METHOD(AcquireRemoteObject, { L"ref" })

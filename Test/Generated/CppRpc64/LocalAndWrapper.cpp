@@ -100,42 +100,42 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc5_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcWrapperTest::IObj1> LocalAndWrapper::rpcwrapper_RpcWrapperTest__IObj1(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj1> LocalAndWrapper::rpcwrapper_RpcWrapperTest__IObj1(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcWrapperTest__IObj1);
-		auto proxy = ::vl::Ptr<::RpcWrapperTest::IObj1>(::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj1>(new ::vl_workflow_global::__vwsnc6_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj1__RpcWrapperTest_IRpcWrapper_IObj1(lc, proxyRef)));
+		auto proxy = ::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj1>(new ::vl_workflow_global::__vwsnc6_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj1__RpcWrapperTest_IRpcWrapper_IObj1(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::RpcWrapperTest::IObj2> LocalAndWrapper::rpcwrapper_RpcWrapperTest__IObj2(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj2> LocalAndWrapper::rpcwrapper_RpcWrapperTest__IObj2(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcWrapperTest__IObj2);
-		auto proxy = ::vl::Ptr<::RpcWrapperTest::IObj2>(::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj2>(new ::vl_workflow_global::__vwsnc7_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj2__RpcWrapperTest_IRpcWrapper_IObj2(lc, proxyRef)));
+		auto proxy = ::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj2>(new ::vl_workflow_global::__vwsnc7_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj2__RpcWrapperTest_IRpcWrapper_IObj2(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::RpcWrapperTest::IService> LocalAndWrapper::rpcwrapper_RpcWrapperTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IService> LocalAndWrapper::rpcwrapper_RpcWrapperTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcWrapperTest__IService);
-		auto proxy = ::vl::Ptr<::RpcWrapperTest::IService>(::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc8_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IService__RpcWrapperTest_IRpcWrapper_IService(lc, proxyRef)));
+		auto proxy = ::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc8_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IService__RpcWrapperTest_IRpcWrapper_IService(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::reflection::IDescriptable> LocalAndWrapper::rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> LocalAndWrapper::rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
 			auto __vwsn_switch_3 = typeId;
 			if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcWrapperTest__IObj1))
 			{
-				return ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME rpcwrapper_RpcWrapperTest__IObj1(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcWrapperTest__IObj1(lc));
 			}
 			else if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcWrapperTest__IObj2))
 			{
-				return ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME rpcwrapper_RpcWrapperTest__IObj2(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcWrapperTest__IObj2(lc));
 			}
 			else if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcWrapperTest__IService))
 			{
-				return ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME rpcwrapper_RpcWrapperTest__IService(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcWrapperTest__IService(lc));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -187,10 +187,6 @@ Closures
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_holds = ::vl::reflection::description::IValueDictionary::Create();
-	}
-
-	void __vwsnc4_LocalAndWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids)
-	{
 	}
 
 	::vl::reflection::description::Value __vwsnc4_LocalAndWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -255,10 +251,6 @@ Closures
 	__vwsnc5_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc5_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
-	}
-
-	void __vwsnc5_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::SyncIds(::vl::Ptr<::vl::reflection::description::IValueDictionary> ids)
-	{
 	}
 
 	void __vwsnc5_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)

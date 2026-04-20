@@ -58,7 +58,6 @@ Predefined Types
 			F(StateMachine)					\
 			F(Versioning)					\
 			F(vl::rpc_controller::RpcObjectReference)\
-			F(vl::rpc_controller::IRpcIdSync)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
@@ -81,14 +80,7 @@ Interface Implementation Proxy (Implement)
 #pragma warning(push)
 #pragma warning(disable:4250)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcIdSync)
-				void SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override
-				{
-					INVOKE_INTERFACE_PROXY(SyncIds, ids);
-				}
-			END_INTERFACE_PROXY(vl::rpc_controller::IRpcIdSync)
-
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcListOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListOps)
 				vl::rpc_controller::RpcObjectReference EnumCreate(vl::rpc_controller::RpcObjectReference ref)override
 				{
 					INVOKEGET_INTERFACE_PROXY(EnumCreate, ref);
@@ -190,7 +182,7 @@ Interface Implementation Proxy (Implement)
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcListOps)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcObjectOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcObjectOps)
 				vl::reflection::description::Value InvokeMethod(vl::rpc_controller::RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod, ref, methodId, arguments);
@@ -212,14 +204,14 @@ Interface Implementation Proxy (Implement)
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcListEventOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListEventOps)
 				void OnItemChanged(vl::rpc_controller::RpcObjectReference ref, vl::vint index, vl::vint oldCount, vl::vint newCount)override
 				{
 					INVOKE_INTERFACE_PROXY(OnItemChanged, ref, index, oldCount, newCount);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcListEventOps)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcObjectEventOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcObjectEventOps)
 				void InvokeEvent(vl::rpc_controller::RpcObjectReference ref, vl::vint eventId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
 				{
 					INVOKE_INTERFACE_PROXY(InvokeEvent, ref, eventId, arguments);

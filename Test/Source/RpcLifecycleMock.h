@@ -25,13 +25,9 @@ namespace vl
 			RpcLifecycleMock();
 			~RpcLifecycleMock();
 
-			// IRpcIdSync
-
-			void																			SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override;
-
 			// IRpcController
 
-			void																			Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback)override;
+			void																			Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
 
 			// IRpcLifeCycle
 

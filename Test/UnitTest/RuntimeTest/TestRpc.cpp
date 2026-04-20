@@ -75,15 +75,15 @@ namespace
 			SetIdMap(_idMap);
 			wrapperCreateFunc = LoadFunction(globalContext, L"rpcwrapper_Create");
 
-			RegisterWrapperFactory([this](vint typeId, IRpcLifeCycle* lc) -> Ptr<IDescriptable>
+			RegisterWrapperFactory([this](vint typeId, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
 			{
-				// Invoke rpcwrapper_Create(typeId, lc) through the proxy directly
-				// to avoid UnboxValue/SafeAggregationCast on aggregated WfInterfaceInstance.
 				auto argList = IValueList::Create();
 				argList->Add(BoxValue<vint>(typeId));
 				argList->Add(Value::From(dynamic_cast<DescriptableObject*>(lc)));
 				auto result = wrapperCreateFunc->Invoke(argList);
-				return Ptr(dynamic_cast<IDescriptable*>(result.GetRawPtr()));
+				auto wrapper = Ptr(result.GetRawPtr()->SafeAggregationCast<IRpcWrapperBase>());
+				CHECK_ERROR(wrapper, L"rpcwrapper_Create did not return IRpcWrapperBase.");
+				return wrapper;
 			});
 		}
 

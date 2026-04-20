@@ -45,7 +45,13 @@ namespace vl
 
 		RpcByrefEnumerator::~RpcByrefEnumerator()
 		{
-			controller->ReleaseRemoteObject(ref);
+			if (controller) controller->ReleaseRemoteObject(ref);
+		}
+
+		void RpcByrefEnumerator::DisconnectFromLifecycle()
+		{
+			lifeCycle = nullptr;
+			controller = nullptr;
 		}
 
 		Value RpcByrefEnumerator::GetCurrent()
@@ -78,7 +84,13 @@ namespace vl
 
 		RpcByrefEnumerable::~RpcByrefEnumerable()
 		{
-			controller->ReleaseRemoteObject(ref);
+			if (controller) controller->ReleaseRemoteObject(ref);
+		}
+
+		void RpcByrefEnumerable::DisconnectFromLifecycle()
+		{
+			lifeCycle = nullptr;
+			controller = nullptr;
 		}
 
 		Ptr<IValueEnumerator> RpcByrefEnumerable::CreateEnumerator()
@@ -100,7 +112,13 @@ namespace vl
 
 		RpcByrefReadonlyList::~RpcByrefReadonlyList()
 		{
-			controller->ReleaseRemoteObject(ref);
+			if (controller) controller->ReleaseRemoteObject(ref);
+		}
+
+		void RpcByrefReadonlyList::DisconnectFromLifecycle()
+		{
+			lifeCycle = nullptr;
+			controller = nullptr;
 		}
 
 		Ptr<IValueEnumerator> RpcByrefReadonlyList::CreateEnumerator()
@@ -211,7 +229,13 @@ namespace vl
 
 		RpcByrefArray::~RpcByrefArray()
 		{
-			controller->ReleaseRemoteObject(ref);
+			if (controller) controller->ReleaseRemoteObject(ref);
+		}
+
+		void RpcByrefArray::DisconnectFromLifecycle()
+		{
+			lifeCycle = nullptr;
+			controller = nullptr;
 		}
 
 		Ptr<IValueEnumerator> RpcByrefArray::CreateEnumerator()
@@ -268,7 +292,13 @@ namespace vl
 
 		RpcByrefObservableList::~RpcByrefObservableList()
 		{
-			controller->ReleaseRemoteObject(ref);
+			if (controller) controller->ReleaseRemoteObject(ref);
+		}
+
+		void RpcByrefObservableList::DisconnectFromLifecycle()
+		{
+			lifeCycle = nullptr;
+			controller = nullptr;
 		}
 
 		Ptr<IValueEnumerator> RpcByrefObservableList::CreateEnumerator()
@@ -341,7 +371,13 @@ namespace vl
 
 		RpcByrefDictionary::~RpcByrefDictionary()
 		{
-			controller->ReleaseRemoteObject(ref);
+			if (controller) controller->ReleaseRemoteObject(ref);
+		}
+
+		void RpcByrefDictionary::DisconnectFromLifecycle()
+		{
+			lifeCycle = nullptr;
+			controller = nullptr;
 		}
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetKeys()

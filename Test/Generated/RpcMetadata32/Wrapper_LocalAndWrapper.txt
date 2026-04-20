@@ -29,10 +29,6 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 
         var _holds : object[system::RpcObjectReference] = {};
 
-        override func SyncIds(ids : ::system::Dictionary^) : (void)
-        {
-        }
-
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -98,10 +94,6 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEv
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
-        override func SyncIds(ids : ::system::Dictionary^) : (void)
-        {
-        }
-
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
             switch (eventId)
@@ -128,10 +120,10 @@ namespace RpcWrapperTest
     }
 }
 
-func rpcwrapper_RpcWrapperTest__IObj1(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IObj1^)
+func rpcwrapper_RpcWrapperTest__IObj1(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IRpcWrapper_IObj1^)
 {
     var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcWrapperTest__IObj1);
-    var proxy : RpcWrapperTest::IObj1^ = new (RpcWrapperTest::IRpcWrapper_IObj1^)
+    var proxy : RpcWrapperTest::IRpcWrapper_IObj1^ = new (RpcWrapperTest::IRpcWrapper_IObj1^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
@@ -153,10 +145,10 @@ func rpcwrapper_RpcWrapperTest__IObj1(lc : system::IRpcLifeCycle*) : (RpcWrapper
     return proxy;
 }
 
-func rpcwrapper_RpcWrapperTest__IObj2(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IObj2^)
+func rpcwrapper_RpcWrapperTest__IObj2(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IRpcWrapper_IObj2^)
 {
     var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcWrapperTest__IObj2);
-    var proxy : RpcWrapperTest::IObj2^ = new (RpcWrapperTest::IRpcWrapper_IObj2^)
+    var proxy : RpcWrapperTest::IRpcWrapper_IObj2^ = new (RpcWrapperTest::IRpcWrapper_IObj2^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
@@ -178,10 +170,10 @@ func rpcwrapper_RpcWrapperTest__IObj2(lc : system::IRpcLifeCycle*) : (RpcWrapper
     return proxy;
 }
 
-func rpcwrapper_RpcWrapperTest__IService(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IService^)
+func rpcwrapper_RpcWrapperTest__IService(lc : system::IRpcLifeCycle*) : (RpcWrapperTest::IRpcWrapper_IService^)
 {
     var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcWrapperTest__IService);
-    var proxy : RpcWrapperTest::IService^ = new (RpcWrapperTest::IRpcWrapper_IService^)
+    var proxy : RpcWrapperTest::IRpcWrapper_IService^ = new (RpcWrapperTest::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
@@ -223,7 +215,7 @@ func rpcwrapper_RpcWrapperTest__IService(lc : system::IRpcLifeCycle*) : (RpcWrap
     return proxy;
 }
 
-func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (interface^)
+func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
 {
     switch (typeId)
     {

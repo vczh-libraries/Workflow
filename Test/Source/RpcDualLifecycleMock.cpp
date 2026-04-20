@@ -63,36 +63,6 @@ namespace vl
 		RpcDualLifecycleMock::RpcDualLifecycleMock(vint _clientId)
 			: clientId(_clientId)
 		{
-			proxyFactories.Set(RpcTypeId_IValueEnumerable, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
-			{
-				return Ptr(new RpcByrefEnumerable(lc, ref));
-			});
-			proxyFactories.Set(RpcTypeId_IValueEnumerator, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
-			{
-				return Ptr(new RpcByrefEnumerator(lc, ref));
-			});
-			proxyFactories.Set(RpcTypeId_IValueArray, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
-			{
-				return Ptr(new RpcByrefArray(lc, ref));
-			});
-			proxyFactories.Set(RpcTypeId_IValueReadonlyList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
-			{
-				return Ptr(new RpcByrefReadonlyList(lc, ref));
-			});
-			proxyFactories.Set(RpcTypeId_IValueList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
-			{
-				return Ptr(new RpcByrefList(lc, ref));
-			});
-			proxyFactories.Set(RpcTypeId_IValueObservableList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
-			{
-				auto proxy = Ptr(new RpcByrefObservableList(lc, ref));
-				observableProxies.Set(ref.objectId, dynamic_cast<IValueObservableList*>(proxy.Obj()));
-				return proxy;
-			});
-			proxyFactories.Set(RpcTypeId_IValueDictionary, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
-			{
-				return Ptr(new RpcByrefDictionary(lc, ref));
-			});
 		}
 
 		RpcDualLifecycleMock::~RpcDualLifecycleMock()
@@ -138,7 +108,7 @@ namespace vl
 			adapter = _adapter;
 		}
 
-		void RpcDualLifecycleMock::RegisterWrapperFactory(Func<Ptr<IDescriptable>(vint, IRpcLifeCycle*)> factory)
+		void RpcDualLifecycleMock::RegisterWrapperFactory(Func<Ptr<IRpcWrapperBase>(vint, IRpcLifeCycle*)> factory)
 		{
 			universalWrapperFactory = factory;
 		}
@@ -227,29 +197,60 @@ namespace vl
 
 		Ptr<IDescriptable> RpcDualLifecycleMock::CreateCallerProxy(RpcObjectReference ref)
 		{
-			// For built-in collection types, use the standard proxy factories
-			if (proxyFactories.Keys().Contains(ref.typeId))
+			auto lc = adapter ? (IRpcLifeCycle*)adapter : (IRpcLifeCycle*)this;
+			Ptr<IRpcWrapperBase> wrapper;
+
+			// For built-in collection types, use switch-case
+			switch (ref.typeId)
 			{
-				return proxyFactories.Get(ref.typeId)(adapter ? (IRpcLifeCycle*)adapter : (IRpcLifeCycle*)this, ref);
+			case RpcTypeId_IValueEnumerable:
+				wrapper = Ptr(new RpcByrefEnumerable(lc, ref));
+				break;
+			case RpcTypeId_IValueEnumerator:
+				wrapper = Ptr(new RpcByrefEnumerator(lc, ref));
+				break;
+			case RpcTypeId_IValueArray:
+				wrapper = Ptr(new RpcByrefArray(lc, ref));
+				break;
+			case RpcTypeId_IValueReadonlyList:
+				wrapper = Ptr(new RpcByrefReadonlyList(lc, ref));
+				break;
+			case RpcTypeId_IValueList:
+				wrapper = Ptr(new RpcByrefList(lc, ref));
+				break;
+			case RpcTypeId_IValueObservableList:
+				{
+					auto proxy = Ptr(new RpcByrefObservableList(lc, ref));
+					observableProxies.Set(ref.objectId, dynamic_cast<IValueObservableList*>(proxy.Obj()));
+					wrapper = proxy;
+				}
+				break;
+			case RpcTypeId_IValueDictionary:
+				wrapper = Ptr(new RpcByrefDictionary(lc, ref));
+				break;
+			default:
+				// Fallback to universal wrapper factory
+				if (universalWrapperFactory)
+				{
+					CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
+					pendingProxyRef = ref;
+					wrapper = universalWrapperFactory(ref.typeId, adapter);
+					pendingProxyRef = {};
+					CHECK_ERROR(wrapper, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper factory returned null.");
+				}
+				else
+				{
+					CHECK_FAIL(L"RpcDualLifecycleMock::CreateCallerProxy cannot find a proxy factory.");
+				}
+				break;
 			}
 
-			// Fallback to universal wrapper factory
-			if (universalWrapperFactory)
-			{
-				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
-				pendingProxyRef = ref;
-				auto proxy = universalWrapperFactory(ref.typeId, adapter);
-				pendingProxyRef = {};
-				auto wrapperBase = proxy.Obj()->SafeAggregationCast<IRpcWrapperBase>();
-				CHECK_ERROR(wrapperBase, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper does not implement IRpcWrapperBase.");
-				wrapperRefs.Set(proxy.Obj(), ref);
-				wrapperProxies.Add(proxy);
-				wrapperBases.Add(wrapperBase);
-				return proxy;
-			}
-
-			CHECK_FAIL(L"RpcDualLifecycleMock::CreateCallerProxy cannot find a proxy factory.");
-			return nullptr;
+			auto descriptable = dynamic_cast<IDescriptable*>(wrapper.Obj());
+			CHECK_ERROR(descriptable, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper does not implement IDescriptable.");
+			wrapperRefs.Set(descriptable, ref);
+			wrapperProxies.Add(wrapper);
+			wrapperBases.Add(wrapper.Obj());
+			return Ptr(descriptable);
 		}
 
 /***********************************************************************
@@ -374,11 +375,6 @@ namespace vl
 				{
 					return Ptr(localObjects.Get(ref.objectId));
 				}
-				// Local but not tracked yet - create proxy for built-in collection types
-				if (proxyFactories.Keys().Contains(ref.typeId))
-				{
-					return proxyFactories.Get(ref.typeId)(this, ref);
-				}
 				CHECK_FAIL(L"RpcDualLifecycleMock::RefToPtr cannot find local object.");
 				return nullptr;
 			}
@@ -397,6 +393,21 @@ namespace vl
 			if (wrapperRefs.Keys().Contains(obj.Obj()))
 			{
 				return wrapperRefs.Get(obj.Obj());
+			}
+
+			// For aggregated objects (Workflow-generated wrappers), the pointer passed here
+			// may be the aggregation root, while wrapperRefs stores the proxy pointer.
+			// Use SafeAggregationCast to find the IRpcWrapperBase proxy and look it up.
+			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
+			{
+				if (auto wrapperBase = descObj->SafeAggregationCast<IRpcWrapperBase>())
+				{
+					auto wrapperDescriptable = dynamic_cast<IDescriptable*>(wrapperBase);
+					if (wrapperDescriptable && wrapperRefs.Keys().Contains(wrapperDescriptable))
+					{
+						return wrapperRefs.Get(wrapperDescriptable);
+					}
+				}
 			}
 
 			if (refsByPtr.Keys().Contains(obj.Obj()))

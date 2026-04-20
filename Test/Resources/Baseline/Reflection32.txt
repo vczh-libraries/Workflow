@@ -243,20 +243,10 @@ interface system::Future : system::Async, system::Promise {
 @FullName:vl::rpc_controller::IRpcController
 interface system::IRpcController : system::IRpcListOps, system::IRpcObjectOps, system::IRpcListEventOps, system::IRpcObjectEventOps {
     function AcquireRemoteObject(ref : system::RpcObjectReference) : system::Void;
-    function Register(objectCallback : system::IRpcObjectOps^, eventCallback : system::IRpcObjectEventOps^, listCallback : system::IRpcListOps^, listEventCallback : system::IRpcListEventOps^) : system::Void;
     function RegisterLocalObject(typeId : system::Int32) : system::RpcObjectReference;
     function ReleaseRemoteObject(ref : system::RpcObjectReference) : system::Void;
     function UnregisterLocalObject(ref : system::RpcObjectReference) : system::Void;
 
-}
-
-@FullName:vl::rpc_controller::IRpcIdSync
-interface system::IRpcIdSync : system::Interface {
-    function SyncIds(ids : system::Dictionary^) : system::Void;
-
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcIdSync>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcIdSync>::Create)
-    constructor (proxy : system::InterfaceProxy^) : system::IRpcIdSync^;
 }
 
 @FullName:vl::rpc_controller::IRpcLifeCycle
@@ -321,7 +311,7 @@ interface system::IRpcListOps : system::Interface {
 }
 
 @FullName:vl::rpc_controller::IRpcObjectEventOps
-interface system::IRpcObjectEventOps : system::IRpcIdSync {
+interface system::IRpcObjectEventOps : system::Interface {
     function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int32, arguments : system::Array^) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create($Arguments)
@@ -330,7 +320,7 @@ interface system::IRpcObjectEventOps : system::IRpcIdSync {
 }
 
 @FullName:vl::rpc_controller::IRpcObjectOps
-interface system::IRpcObjectOps : system::IRpcIdSync {
+interface system::IRpcObjectOps : system::Interface {
     function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Object;
     function InvokeMethodAsync(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Async^;
     function ObjectHold(ref : system::RpcObjectReference, hold : system::Boolean) : system::Void;

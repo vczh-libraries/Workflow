@@ -47,14 +47,13 @@ namespace vl
 			collections::Dictionary<vint, Ptr<reflection::IDescriptable>>																				ownedObjects;
 			collections::Dictionary<const reflection::IDescriptable*, rpc_controller::RpcObjectReference>												refsByPtr;
 			collections::Dictionary<vint, rpc_controller::RpcObjectReference>																			refsById;
-			collections::Dictionary<vint, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*, rpc_controller::RpcObjectReference)>>		proxyFactories;
 			collections::Dictionary<vint, reflection::description::IValueObservableList*>																observableProxies;
 			collections::Dictionary<vint, Ptr<EventHandler>>																							eventHandlers;
 			collections::Dictionary<WString, vint>																										idMap;
-			Func<Ptr<reflection::IDescriptable>(vint, rpc_controller::IRpcLifeCycle*)>																	universalWrapperFactory;
+			Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)>																	universalWrapperFactory;
 			rpc_controller::RpcObjectReference																												pendingProxyRef;
 			collections::Dictionary<const reflection::IDescriptable*, rpc_controller::RpcObjectReference>												wrapperRefs;
-			collections::List<Ptr<reflection::IDescriptable>>																							wrapperProxies;
+			collections::List<Ptr<rpc_controller::IRpcWrapperBase>>																						wrapperProxies;
 			collections::List<rpc_controller::IRpcWrapperBase*>																							wrapperBases;
 
 			virtual vint																DecideTypeId(reflection::IDescriptable* obj)const;
@@ -69,11 +68,11 @@ namespace vl
 			void																	SetPeer(RpcDualLifecycleMock* _peer);
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	SetAdapter(RpcDualLifeCycleAdapter* _adapter);
-			void																	RegisterWrapperFactory(Func<Ptr<reflection::IDescriptable>(vint, rpc_controller::IRpcLifeCycle*)> factory);
+			void																RegisterWrapperFactory(Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)> factory);
 
 			// IRpcController
 
-			void																	Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback)override;
+			void																Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
 			rpc_controller::RpcObjectReference										RegisterLocalObject(vint typeId)override;
 			void																	UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override;
 			void																	AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override;
