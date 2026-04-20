@@ -9842,14 +9842,6 @@ namespace vl
 					return type;
 				}
 
-				Ptr<WfType> GetSyncIdsParamType()
-				{
-					auto td = GetTypeDescriptor(L"system::IRpcIdSync");
-					auto group = td->GetMethodGroupByName(L"SyncIds", false);
-					auto method = group->GetMethod(0);
-					return GetTypeFromTypeInfo(method->GetParameter(0)->GetType());
-				}
-
 				Ptr<WfExpression> CreateNull()
 				{
 					auto expression = Ptr(new WfLiteralExpression);
@@ -10445,12 +10437,6 @@ namespace vl
 					newOps->declarations.Add(CreateVariableDeclaration(L"_holds", CreateMapType(CreateQualifiedType(L"system::RpcObjectReference"), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
 
 					{
-						auto sync = CreateFunctionDeclaration(L"SyncIds", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						sync->arguments.Add(CreateFunctionArgument(L"ids", GetSyncIdsParamType()));
-						newOps->declarations.Add(sync);
-					}
-
-					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
@@ -10497,12 +10483,6 @@ namespace vl
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
-
-					{
-						auto sync = CreateFunctionDeclaration(L"SyncIds", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						sync->arguments.Add(CreateFunctionArgument(L"ids", GetSyncIdsParamType()));
-						newOps->declarations.Add(sync);
-					}
 
 					{
 						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
@@ -10555,7 +10535,7 @@ namespace vl
 					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
 					auto wrapperInterfaceFullName = interfaceModel.fullName.Sub(0, interfaceModel.fullName.Length() - interfaceModel.interfaceName.Length()) + L"IRpcWrapper_" + interfaceModel.interfaceName;
 
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(interfaceModel.fullName), WfFunctionKind::Normal);
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
@@ -10626,7 +10606,7 @@ namespace vl
 						proxyExpr->declarations.Add(methodDecl);
 					}
 
-					AddStatement(block, CreateVariableStatement(L"proxy", CreateSharedType(interfaceModel.fullName), proxyExpr));
+					AddStatement(block, CreateVariableStatement(L"proxy", CreateSharedType(wrapperInterfaceFullName), proxyExpr));
 
 					for (auto&& eventModel : interfaceModel.events)
 					{
@@ -10658,7 +10638,7 @@ namespace vl
 				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces)
 				{
 					auto returnType = Ptr(new WfSharedPointerType);
-					returnType->element = CreatePredefinedType(WfPredefinedTypeName::Interface);
+					returnType->element = CreateQualifiedType(L"system::IRpcWrapperBase");
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", returnType, WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));

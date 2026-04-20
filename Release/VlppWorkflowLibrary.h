@@ -925,14 +925,6 @@ namespace vl
 * Interfaces
 ***********************************************************************/
 
-		class IRpcIdSync
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcIdSync>
-		{
-		public:
-			virtual void					SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids) = 0;
-		};
-
 		class IRpcListOps
 			: public virtual vl::reflection::IDescriptable
 			, public vl::reflection::Description<IRpcListOps>
@@ -963,7 +955,7 @@ namespace vl
 		};
 
 		class IRpcObjectOps
-			: public virtual IRpcIdSync
+			: public virtual vl::reflection::IDescriptable
 			, public vl::reflection::Description<IRpcObjectOps>
 		{
 		public:
@@ -982,7 +974,7 @@ namespace vl
 		};
 
 		class IRpcObjectEventOps
-			: public virtual IRpcIdSync
+			: public virtual vl::reflection::IDescriptable
 			, public vl::reflection::Description<IRpcObjectEventOps>
 		{
 		public:
@@ -997,13 +989,6 @@ namespace vl
 			, public vl::reflection::Description<IRpcController>
 		{
 		public:
-			virtual void					Register(
-											vl::Ptr<IRpcObjectOps> objectCallback,
-											vl::Ptr<IRpcObjectEventOps> eventCallback,
-											vl::Ptr<IRpcListOps> listCallback,
-											vl::Ptr<IRpcListEventOps> listEventCallback
-										) = 0;
-
 			virtual RpcObjectReference		RegisterLocalObject(vl::vint typeId) = 0;
 			virtual void					UnregisterLocalObject(RpcObjectReference ref) = 0;
 
@@ -1035,7 +1020,7 @@ namespace vl
 * Collection Caller Wrappers
 **********************************************************************/
 
-		class RpcByrefEnumerator : public Object, public vl::reflection::description::IValueEnumerator
+		class RpcByrefEnumerator : public Object, public vl::reflection::description::IValueEnumerator, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*											lifeCycle = nullptr;
@@ -1046,12 +1031,13 @@ namespace vl
 			RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef);
 			~RpcByrefEnumerator();
 
+			void													DisconnectFromLifecycle()override;
 			vl::reflection::description::Value						GetCurrent()override;
 			vint													GetIndex()override;
 			bool													Next()override;
 		};
 
-		class RpcByrefEnumerable : public Object, public vl::reflection::description::IValueEnumerable
+		class RpcByrefEnumerable : public Object, public vl::reflection::description::IValueEnumerable, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*											lifeCycle = nullptr;
@@ -1061,10 +1047,11 @@ namespace vl
 			RpcByrefEnumerable(IRpcLifeCycle* lc, RpcObjectReference enumerableRef);
 			~RpcByrefEnumerable();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 		};
 
-		class RpcByrefReadonlyList : public Object, public virtual vl::reflection::description::IValueReadonlyList
+		class RpcByrefReadonlyList : public Object, public virtual vl::reflection::description::IValueReadonlyList, public virtual IRpcWrapperBase
 		{
 		protected:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -1074,6 +1061,7 @@ namespace vl
 			RpcByrefReadonlyList(IRpcLifeCycle* lc, RpcObjectReference listRef);
 			~RpcByrefReadonlyList();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			vint													GetCount()override;
 			vl::reflection::description::Value						Get(vint index)override;
@@ -1100,7 +1088,7 @@ namespace vl
 			void													Clear()override;
 		};
 
-		class RpcByrefArray : public Object, public vl::reflection::description::IValueArray
+		class RpcByrefArray : public Object, public vl::reflection::description::IValueArray, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -1110,6 +1098,7 @@ namespace vl
 			RpcByrefArray(IRpcLifeCycle* lc, RpcObjectReference arrayRef);
 			~RpcByrefArray();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			vint													GetCount()override;
 			vl::reflection::description::Value						Get(vint index)override;
@@ -1119,7 +1108,7 @@ namespace vl
 			void													Resize(vint size)override;
 		};
 
-		class RpcByrefObservableList : public Object, public vl::reflection::description::IValueObservableList
+		class RpcByrefObservableList : public Object, public vl::reflection::description::IValueObservableList, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -1129,6 +1118,7 @@ namespace vl
 			RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef);
 			~RpcByrefObservableList();
 
+			void													DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			vint													GetCount()override;
 			vl::reflection::description::Value						Get(vint index)override;
@@ -1142,7 +1132,7 @@ namespace vl
 			void													Clear()override;
 		};
 
-		class RpcByrefDictionary : public Object, public vl::reflection::description::IValueDictionary
+		class RpcByrefDictionary : public Object, public vl::reflection::description::IValueDictionary, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifeCycle*					lifeCycle = nullptr;
@@ -1152,6 +1142,7 @@ namespace vl
 			RpcByrefDictionary(IRpcLifeCycle* lc, RpcObjectReference dictRef);
 			~RpcByrefDictionary();
 
+			void														DisconnectFromLifecycle()override;
 			vl::Ptr<vl::reflection::description::IValueReadonlyList>	GetKeys()override;
 			vl::Ptr<vl::reflection::description::IValueReadonlyList>	GetValues()override;
 			vint														GetCount()override;
@@ -1283,7 +1274,6 @@ Predefined Types
 			F(StateMachine)					\
 			F(Versioning)					\
 			F(vl::rpc_controller::RpcObjectReference)\
-			F(vl::rpc_controller::IRpcIdSync)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
@@ -1306,14 +1296,7 @@ Interface Implementation Proxy (Implement)
 #pragma warning(push)
 #pragma warning(disable:4250)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcIdSync)
-				void SyncIds(vl::Ptr<vl::reflection::description::IValueDictionary> ids)override
-				{
-					INVOKE_INTERFACE_PROXY(SyncIds, ids);
-				}
-			END_INTERFACE_PROXY(vl::rpc_controller::IRpcIdSync)
-
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcListOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListOps)
 				vl::rpc_controller::RpcObjectReference EnumCreate(vl::rpc_controller::RpcObjectReference ref)override
 				{
 					INVOKEGET_INTERFACE_PROXY(EnumCreate, ref);
@@ -1415,7 +1398,7 @@ Interface Implementation Proxy (Implement)
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcListOps)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcObjectOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcObjectOps)
 				vl::reflection::description::Value InvokeMethod(vl::rpc_controller::RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod, ref, methodId, arguments);
@@ -1437,14 +1420,14 @@ Interface Implementation Proxy (Implement)
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcListEventOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListEventOps)
 				void OnItemChanged(vl::rpc_controller::RpcObjectReference ref, vl::vint index, vl::vint oldCount, vl::vint newCount)override
 				{
 					INVOKE_INTERFACE_PROXY(OnItemChanged, ref, index, oldCount, newCount);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcListEventOps)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(vl::rpc_controller::IRpcObjectEventOps, vl::rpc_controller::IRpcIdSync)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcObjectEventOps)
 				void InvokeEvent(vl::rpc_controller::RpcObjectReference ref, vl::vint eventId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
 				{
 					INVOKE_INTERFACE_PROXY(InvokeEvent, ref, eventId, arguments);
