@@ -20,6 +20,16 @@ All test projects must pass, even when there is any pre-existing failures fix th
 
 # UPDATES
 
+## CI RuntimeTest Failure (heap corruption)
+
+**Root cause**: In `~RpcWorkflowLifecycleMock` (TestRpc.cpp), the cleanup sequence had `ownedObjects.Clear()` before the `while (localObjects.Count() > 0)` loop. When `ownedObjects.Clear()` destroys Workflow objects, their `RpcDualObjectTracker` destructors call `UntrackLocalObject` which calls `ownedObjects.Remove()` on an already-being-cleared dictionary — causing heap corruption (use-after-free).
+
+The base class `~RpcDualLifecycleMock` had the correct order (untrack loop first, then `ownedObjects.Clear()`), but the derived class override in TestRpc.cpp had them swapped.
+
+**Fix**: Moved `ownedObjects.Clear()` after the `while (localObjects.Count() > 0)` loop, matching the base class order.
+
+**Verification**: Win32 141/141 passed, x64 141/141 passed. The heap corruption was reproducible locally under the debug CRT's heap validation (`VCZH_CHECK_MEMORY_LEAKS`).
+
 # TEST
 
 The test is the existing Rpc test cases in TestCasesRpc.cpp plus RuntimeTest, CppTest, CppTest_Metaonly, CppTest_Reflection. Success criteria:

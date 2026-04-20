@@ -55,12 +55,12 @@ namespace
 				}
 			}
 			services.Clear();
-			ownedObjects.Clear();
 			while (localObjects.Count() > 0)
 			{
 				auto ref = refsById.Values()[refsById.Count() - 1];
 				UntrackLocalObject(ref);
 			}
+			ownedObjects.Clear();
 			wrapperCreateFunc = nullptr;
 			globalContext = nullptr;
 		}
