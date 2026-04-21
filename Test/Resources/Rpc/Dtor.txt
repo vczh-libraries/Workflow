@@ -1,0 +1,40 @@
+module Rpc;
+using system::*;
+using RpcDtorTest::*;
+
+namespace RpcDtorTest
+{
+	@rpc:Interface
+	@rpc:Ctor
+	interface IService
+	{
+	}
+}
+
+var serviceObj : IService^ = null;
+var s = "Not Deleted";
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	serviceObj = new (RpcDtorTest::IService^)
+	{
+		delete
+		{
+			s = "Deleted";
+		}
+	};
+	lc.RegisterService("RpcDtorTest::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+	var obj = lc.RequestService("RpcDtorTest::IService");
+	var clientObj = cast (RpcDtorTest::IService^) obj;
+	/* remote object becomes a wrapper, crashing means bug in the RPC framework */
+	var wrapperObj = cast (system::IRpcWrapperBase^) obj;
+	wrapperObj = null;
+	var m = $"[$(s)]"; /* s should be "Not Deleted" */
+	clientObj = null;  /* Releasing the wrapper causing ReleaseRemoteObject and ObjectHold(false) to be called */
+	m = $"[$(s)]"; /* s should be "Deleted" */
+	return s;
+}
