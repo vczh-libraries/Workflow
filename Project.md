@@ -51,6 +51,7 @@ The correct order to run them is:
 - Run `RuntimeTest` for Win32 and x64.
 - Run `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` for Win32 and x64.
 - When you believe that all test projects should run, call `..\Tools\Tools\Build.ps1 Workflow` to test against everything.
+  - It does not write any building or execution log.
   - It stops at the first failure.
   - If all test projects pass, some files in the `Release` could be changed, this is expected.
   - If you used this script, then you will be required to always run this script after you finishing a complete user instructions given to you.
