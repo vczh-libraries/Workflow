@@ -2,136 +2,52 @@
 
 # PROBLEM DESCRIPTION
 
-Follow job.new-sample.md to add a new Rpc\Dtor2.txt
+Do not use `Dictionary<WString, vint>` in `TestCasesRpc.cpp`, if `rpc_GetIds` only serves for this purpose, maybe a better way is not to call it at all in `TestCaeseRpc.cpp`, the compile script generates variables for each type, use them directly with if-else statements. But keep `rpc_GetIds` generated, it is useful in somewhere else.
 
-```Workflow
-module Rpc;
-using system::*;
-using RpcWrapperTest::*;
+Pay attention to inheritance. Although there is no test samples about it, but I would like you to do that. Use `PartialOrderPreprocessor`, put inheritance relationship in, figure out the correction direction and make sure leaf types appear eariler. The reason is simple, if IDerived inherits from IBase, testing IBase first ends up everything returning IBase. Test cases for inheritance will be added in the future.
 
-namespace YourFavoriteNamespace // use RpcDtor2Test
-{
-    @rpc:Interface
-    @rpc:Ctor
-    interface IService
-    {
-    func GetServiceAgain() : IService^;
-    }
-}
-
-var s = "Not Deleted";
-
-func serviceMain(lc : IRpcLifeCycle*) : void
-{
-    var serviceObj = new (RpcDtorTest::IService^)
-    {
-    delete { s = "Deleted"; }
-    override func GetServiceAgain() : IService^
-    {
-      var obj = lc.RequestService("YourFavoriteNamespace::IService");
-      if ((obj as (IRpcWrapperBase^) is not null)) { throw "IService(obj) should be a local object in serviceMain"; }
-      return obj;
-    }
-    };
-    lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
-}
-
-func clientMain(lc : IRpcLifeCycle*) : string
-{
-    var obj = cast (RpcPrimitiveTest::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  if ((obj as (IRpcWrapperBase^) is null)) { throw "IService(obj) should be a wrapper object in clientMain"; }
-  var wrapperObj = obj.GetServiceAgain();
-  if ((wrapperObj as (IRpcWrapperBase^) is null)) { throw "IService(wrapperObj) should be a wrapper object in clientMain"; }
-  wrapperObj = null;
-  var m = $"[$(s)]"; // s should be "Not Deleted"
-  clientObj = null;  // Releasing the wrapper causing ReleaseRemoteObject and ObjectHold(false) to be called
-  var m = $"[$(s)]"; // s should be "Deleted"
-  return s;
-}
-```
-
-Understand what the test case trying to say, you are not allowed to change:
-- This test is an upgrade to Rpc\Dtor.txt. If both fail, fix Dtor.txt first and then this one.
-- The content of the sample, unless it doesn't build.
-- Workflow parser.
-- Workflow compiling.
-- Workflow to C++ code generation.
-
-You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
-- If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
-- Pass all unit test, fix any test failure including pre-existings.
-- After finishing everything, git commit and git push to the current branch.
-- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+Run unit test to ensure your change works. git push after finishing.
 
 # UPDATES
 
 ## UPDATE
 
-Added `Test/Resources/Rpc/Dtor2.txt` and registered it in `Test/Resources/IndexRpc.txt` and `Test/UnitTest/CompilerTest_LoadAndCompile/CompilerTest_LoadAndCompile.vcxproj`.
+I am actually asking you to change the code which generates TestCasesRpc.cpp, so the sorting should be there. RpcDualLifecycleMock doesnt need to be change, unless the Dictionary is declared.
 
-The first `CompilerTest_LoadAndCompile` failure happened before runtime behavior was involved:
-- Workflow syntax does not support `throw` in the sample. It must use `raise`.
-- After fixing that, the analyzer reported `A11: Expression of type "RpcDtor2Test::IService^" cannot explicitly convert to "system::IRpcWrapperBase^".`
+# TEST [CONFIRMED]
 
-The Dtor2 sample needed to preserve the intended behavior while matching Workflow's type system:
-- keep the request result as raw `object`
-- cast once to `RpcDtor2Test::IService^` for method calls
-- keep wrapper checks on raw `object` values instead of explicitly converting `IService^` to `IRpcWrapperBase^`
-
-After the sample compiled, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` still failed to link in Debug x64.
-The unresolved externals were all for `vl_workflow_global::Dtor2::*` and `LoadDtor2Types`.
-
-Root cause: the shared RPC item lists were not updated for the newly generated Dtor2 files.
-- `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems` was missing `Dtor2.cpp` and `Dtor2.h`.
-- `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems` was missing `Dtor2Reflection.cpp` and `Dtor2Reflection.h`.
-
-No change to `Test/Source/RpcDualLifecycleMock.*` was required for Dtor2. Once the sample and RPC shared item lists were correct, runtime and generated-C++ tests both passed on Win32 and x64.
-
-# TEST
-
-- Build Debug x64: passed.
-- Build Debug Win32: passed.
-- `LibraryTest` Debug x64: passed, `14/14`.
-- `LibraryTest` Debug Win32: passed, `14/14`.
-- `CompilerTest_GenerateMetadata` Debug x64: passed, `2/2`.
-- `CompilerTest_GenerateMetadata` Debug Win32: passed, `2/2`.
-- `CompilerTest_LoadAndCompile` Debug x64: passed, `585/585`.
-  - `Dtor2` compiled and serialized successfully: `52902 bytes`.
-- `RuntimeTest` Debug x64: passed, `143/143`.
-  - `Rpc:Dtor2` expected `[Not Deleted][Deleted]`, actual `[Not Deleted][Deleted]`.
-- `RuntimeTest` Debug Win32: passed, `143/143`.
-  - `Rpc:Dtor2` expected `[Not Deleted][Deleted]`, actual `[Not Deleted][Deleted]`.
-- `CppTest` Debug x64: passed, `109/109`.
-- `CppTest` Debug Win32: passed, `109/109`.
-- `CppTest_Metaonly` Debug x64: passed, `109/109`.
-- `CppTest_Metaonly` Debug Win32: passed, `109/109`.
-- `CppTest_Reflection` Debug x64: passed, `109/109`.
-- `CppTest_Reflection` Debug Win32: passed, `109/109`.
+- The generator in `Test/UnitTest/CompilerTest_LoadAndCompile/TestRpcCompile.cpp` must emit `TestCasesRpc.cpp` without building a local `Dictionary<WString, vint>` from `instance.rpc_GetIds()`.
+- The generated RPC harness must keep `rpc_GetIds` available elsewhere and use generated `rpctype_...` globals directly when registering or deciding type ids.
+- RPC interface matching order must be leaf-first for inheritance, so a derived interface is checked before its base.
+- A focused compiler-side unit test is required to prove the inheritance ordering for `ILeaf : IDerived : IBase`.
+- Verification requires the project order from `Project.md`: build Debug Win32 and x64, run `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+- The repo-wide `..\Tools\Tools\Build.ps1 Workflow` wrapper must also be attempted, and any failure must be classified as either code-related or environment-related.
 
 # PROPOSALS
 
-- No.1 Fix Dtor2 sample semantics and RPC project wiring
+- No.1 Generate direct RPC type-id dispatch in `TestCasesRpc.cpp` and sort RPC interfaces leaf first [CONFIRMED]
 
-## No.1 Fix Dtor2 sample semantics and RPC project wiring
-
-`Rpc:Dtor2` was not blocked by RPC lifetime behavior in `RuntimeTest` or `CppTest*`.
-The actual blockers were one invalid Workflow-language construct in the sample, one Workflow type-system restriction in the wrapper check, and missing generated-file registrations in the shared RPC project items.
+## No.1 Generate direct RPC type-id dispatch in `TestCasesRpc.cpp` and sort RPC interfaces leaf first
 
 ### CODE CHANGE
 
-- Added `Test/Resources/Rpc/Dtor2.txt`.
-- Added `Dtor2=[Not Deleted][Deleted]` to `Test/Resources/IndexRpc.txt`.
-- Added Dtor2 to `Test/UnitTest/CompilerTest_LoadAndCompile/CompilerTest_LoadAndCompile.vcxproj` and `.filters`.
-- Updated the Dtor2 sample so it uses `raise` instead of `throw`.
-- Updated the Dtor2 sample so client-side wrapper checks are performed on raw `object` values:
-  - `var obj = lc.RequestService("RpcDtor2Test::IService");`
-  - `var clientObj = cast (RpcDtor2Test::IService^) obj;`
-  - `var wrapperObj : object = clientObj.GetServiceAgain();`
-- Added generated Dtor2 source entries to `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems`.
-- Added generated Dtor2 reflection entries to `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems`.
+- Added `MangleRpcFullName`, `FindRpcTypeDescriptor`, and `SortRpcTypeFullNamesLeafFirst` in `Test/UnitTest/CompilerTest_LoadAndCompile/TestRpcCompile.cpp`.
+- Added `TEST_CASE(L"Inherited interfaces are ordered leaf first")` to prove `ILeaf`, `IDerived`, and `IBase` are emitted in the correct order.
+- Replaced the direct copy of `manager.rpcMetadata->typeFullNames` with `SortRpcTypeFullNamesLeafFirst(...)` before generating RPC test cases.
+- Rewrote the generated `RunRpcTestCase` template to accept a registration callback and a direct `decideTypeId` callback, populate the inherited `idMap` from a local subclass helper, and avoid calling `instance.rpc_GetIds()`.
+- Rewrote emitted RPC test-case lambdas to register and return `instance.rpctype_<mangled full name>` directly.
+- Regenerated `Test/SourceCppGenRpc/TestCasesRpc.cpp`, `Test/Generated/CppRpc32/TestCasesRpc.cpp`, and `Test/Generated/CppRpc64/TestCasesRpc.cpp` from the updated generator.
+- Reverted earlier experimentation in `Test/Source/RpcDualLifecycleMock.*`; the final proposal does not require source changes there.
 
 ### CONFIRMED
 
-- The compiler, runtime VM path, and generated-C++ path all accept Dtor2 after those changes.
-- `Rpc:Dtor2` passes in `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both Win32 and x64.
-- `RpcDualLifecycleMock` did not need modification for this task.
+- The final generated `TestCasesRpc.cpp` no longer builds a local `Dictionary<WString, vint>` and no longer calls `instance.rpc_GetIds()` for the RPC C++ test harness.
+- `rpc_GetIds` generation remains untouched outside this harness.
+- The inheritance-order unit test passed in `CompilerTest_LoadAndCompile`, confirming `ILeaf < IDerived < IBase`.
+- The Debug verification matrix passed:
+  - `LibraryTest` Win32 and x64: `14/14`.
+  - `CompilerTest_GenerateMetadata` Win32 and x64: `2/2`.
+  - `CompilerTest_LoadAndCompile` x64: `586/586`.
+  - `RuntimeTest` Win32 and x64: `143/143`.
+  - `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` Win32 and x64 all completed successfully in the post-merge run; the combined command exited with code `0`, and the captured output showed the RPC generated-C++ cases passing with `109/109` for the final runs.
+- The repo-wide wrapper `..\Tools\Tools\Build.ps1 Workflow` was attempted as required by `Project.md`. It progressed through the release build and test sequence until `Release\RuntimeTest.exe`, then stopped with `This command cannot be run due to the error: An Application Control policy has blocked this file.` This is an environment policy issue rather than a regression from this proposal.

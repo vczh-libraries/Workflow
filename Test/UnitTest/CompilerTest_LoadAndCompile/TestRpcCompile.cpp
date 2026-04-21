@@ -24,6 +24,88 @@ static bool DecodeRpcName(const WString& rpcLine, WString& itemName, WString& it
 	return true;
 }
 
+static WString MangleRpcFullName(const WString& fullName)
+{
+	WString mangled;
+	for (vint i = 0; i < fullName.Length(); i++)
+	{
+		if (i + 1 < fullName.Length() && fullName[i] == L':' && fullName[i + 1] == L':')
+		{
+			mangled += L"__";
+			i++;
+		}
+		else if (fullName[i] == L'.')
+		{
+			mangled += L"_";
+		}
+		else
+		{
+			mangled += WString::FromChar(fullName[i]);
+		}
+	}
+	return mangled;
+}
+
+static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName)
+{
+	for (auto [decl, index] : indexed(manager.declarationTypes.Keys()))
+	{
+		if (!manager.declarationTypes.Keys()[index].Cast<WfClassDeclaration>())
+		{
+			continue;
+		}
+
+		auto td = manager.declarationTypes.Values()[index].Obj();
+		if (td && td->GetTypeName() == fullName)
+		{
+			return td;
+		}
+	}
+	return nullptr;
+}
+
+static void SortRpcTypeFullNamesLeafFirst(WfLexicalScopeManager& manager, const List<WString>& typeFullNames, List<WString>& sortedTypeFullNames)
+{
+	sortedTypeFullNames.Clear();
+
+	Group<WString, WString> dependencyGroup;
+	for (auto typeFullName : typeFullNames)
+	{
+		auto td = FindRpcTypeDescriptor(manager, typeFullName);
+		if (!td)
+		{
+			continue;
+		}
+
+		for (vint i = 0; i < td->GetBaseTypeDescriptorCount(); i++)
+		{
+			auto baseTd = td->GetBaseTypeDescriptor(i);
+			if (!baseTd)
+			{
+				continue;
+			}
+
+			auto baseFullName = baseTd->GetTypeName();
+			if (typeFullNames.Contains(baseFullName))
+			{
+				dependencyGroup.Add(baseFullName, typeFullName);
+			}
+		}
+	}
+
+	PartialOrderingProcessor pop;
+	pop.InitWithGroup(typeFullNames, dependencyGroup);
+	pop.Sort();
+
+	for (auto&& component : pop.components)
+	{
+		for (vint i = 0; i < component.nodeCount; i++)
+		{
+			sortedTypeFullNames.Add(typeFullNames[component.firstNode[i]]);
+		}
+	}
+}
+
 TEST_FILE
 {
 	WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
@@ -34,6 +116,54 @@ TEST_FILE
 		Dictionary<WString, WString> assemblyEntries;
 		Dictionary<WString, Ptr<List<WString>>> rpcTypeFullNamesPerItem;
 		LoadSampleIndex(L"Rpc", rpcNames);
+
+		TEST_CASE(L"Inherited interfaces are ordered leaf first")
+		{
+			manager.Clear(true, true);
+
+			auto sample = WString::Unmanaged(LR"WORKFLOW(module Rpc;
+using system::*;
+
+namespace RpcInheritanceOrderTest
+{
+	@rpc:Interface
+	interface IBase
+	{
+	}
+
+	@rpc:Interface
+	interface IDerived : IBase
+	{
+	}
+
+	@rpc:Interface
+	interface ILeaf : IDerived
+	{
+	}
+}
+)WORKFLOW");
+
+			auto module = ParseModule(sample, GetWorkflowParser());
+			TEST_ASSERT(module);
+			TEST_ASSERT(manager.errors.Count() == 0);
+
+			manager.AddModule(module);
+			manager.Rebuild(true);
+			TEST_ASSERT(manager.errors.Count() == 0);
+			TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
+
+			List<WString> sortedTypeFullNames;
+			SortRpcTypeFullNamesLeafFirst(manager, manager.rpcMetadata->typeFullNames, sortedTypeFullNames);
+
+			auto baseIndex = sortedTypeFullNames.IndexOf(L"RpcInheritanceOrderTest::IBase");
+			auto derivedIndex = sortedTypeFullNames.IndexOf(L"RpcInheritanceOrderTest::IDerived");
+			auto leafIndex = sortedTypeFullNames.IndexOf(L"RpcInheritanceOrderTest::ILeaf");
+			TEST_ASSERT(baseIndex != -1);
+			TEST_ASSERT(derivedIndex != -1);
+			TEST_ASSERT(leafIndex != -1);
+			TEST_ASSERT(leafIndex < derivedIndex);
+			TEST_ASSERT(derivedIndex < baseIndex);
+		});
 
 		for (auto rpcLine : rpcNames)
 		{
@@ -62,7 +192,10 @@ TEST_FILE
 					TEST_ASSERT(manager.errors.Count() == 0);
 
 					auto typeFullNames = Ptr(new List<WString>());
-					CopyFrom(*typeFullNames.Obj(), manager.rpcMetadata->typeFullNames);
+					SortRpcTypeFullNamesLeafFirst(
+						manager,
+						manager.rpcMetadata->typeFullNames,
+						*typeFullNames.Obj());
 					rpcTypeFullNamesPerItem.Add(itemName, typeFullNames);
 
 					auto bits = GetBitsFromArchitecture();
@@ -179,46 +312,39 @@ TEST_FILE
 			// Generate the RunRpcTestCase template function
 			writer.WriteLine(L"");
 			writer.WriteLine(L"template<typename TInstance>");
-			writer.WriteLine(L"void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*, const Dictionary<WString, vint>&))");
+			writer.WriteLine(L"void RunRpcTestCase(const WString& expected, void(*registerTypeIds)(const Func<void(const WString&, vint)>&), vint(*decideTypeId)(IDescriptable*))");
 			writer.WriteLine(L"{");
 			writer.WriteLine(L"\tclass LocalRpcMock : public RpcDualLifecycleMock");
 			writer.WriteLine(L"\t{");
 			writer.WriteLine(L"\tpublic:");
-			writer.WriteLine(L"\t\tvint(*decideTypeIdCallback)(IDescriptable*, const Dictionary<WString, vint>&) = nullptr;");
+			writer.WriteLine(L"\t\tvint(*decideTypeIdCallback)(IDescriptable*) = nullptr;");
 			writer.WriteLine(L"\t\tusing RpcDualLifecycleMock::RpcDualLifecycleMock;");
+			writer.WriteLine(L"\t\tvoid RegisterTypeId(const WString& fullName, vint typeId)");
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\t\tidMap.Set(fullName, typeId);");
+			writer.WriteLine(L"\t\t}");
 			writer.WriteLine(L"\t\tvint DecideTypeId(IDescriptable* obj)const override");
 			writer.WriteLine(L"\t\t{");
 			writer.WriteLine(L"\t\t\tauto result = RpcDualLifecycleMock::DecideTypeId(obj);");
 			writer.WriteLine(L"\t\t\tif (result != RpcTypeId_NotFound) return result;");
-			writer.WriteLine(L"\t\t\treturn decideTypeIdCallback(obj, idMap);");
+			writer.WriteLine(L"\t\t\treturn decideTypeIdCallback(obj);");
 			writer.WriteLine(L"\t\t}");
 			writer.WriteLine(L"\t};");
 			writer.WriteLine(L"");
 			writer.WriteLine(L"\tauto& instance = TInstance::Instance();");
 			writer.WriteLine(L"");
-			writer.WriteLine(L"\tauto idDictObj = instance.rpc_GetIds();");
-			writer.WriteLine(L"\tDictionary<WString, vint> idMap;");
-			writer.WriteLine(L"\t{");
-			writer.WriteLine(L"\t\tauto keys = idDictObj->GetKeys();");
-			writer.WriteLine(L"\t\tauto values = idDictObj->GetValues();");
-			writer.WriteLine(L"\t\tfor (vint i = 0; i < idDictObj->GetCount(); i++)");
-			writer.WriteLine(L"\t\t{");
-			writer.WriteLine(L"\t\t\tauto key = UnboxValue<WString>(keys->Get(i));");
-			writer.WriteLine(L"\t\t\tauto val = UnboxValue<vint>(values->Get(i));");
-			writer.WriteLine(L"\t\t\tidMap.Set(key, val);");
-			writer.WriteLine(L"\t\t}");
-			writer.WriteLine(L"\t}");
-			writer.WriteLine(L"");
 			writer.WriteLine(L"\tauto lc1 = Ptr(new LocalRpcMock(1));");
 			writer.WriteLine(L"\tauto lc2 = Ptr(new LocalRpcMock(2));");
+			writer.WriteLine(L"\tauto registerTypeId1 = Func<void(const WString&, vint)>([&](const WString& fullName, vint typeId) { lc1->RegisterTypeId(fullName, typeId); });");
+			writer.WriteLine(L"\tauto registerTypeId2 = Func<void(const WString&, vint)>([&](const WString& fullName, vint typeId) { lc2->RegisterTypeId(fullName, typeId); });");
+			writer.WriteLine(L"\tregisterTypeIds(registerTypeId1);");
+			writer.WriteLine(L"\tregisterTypeIds(registerTypeId2);");
 			writer.WriteLine(L"\tlc1->decideTypeIdCallback = decideTypeId;");
 			writer.WriteLine(L"\tlc2->decideTypeIdCallback = decideTypeId;");
 			writer.WriteLine(L"\tauto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));");
 			writer.WriteLine(L"\tauto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));");
 			writer.WriteLine(L"\tlc1->SetPeer(lc2.Obj());");
 			writer.WriteLine(L"\tlc2->SetPeer(lc1.Obj());");
-			writer.WriteLine(L"\tlc1->SetIdMap(idMap);");
-			writer.WriteLine(L"\tlc2->SetIdMap(idMap);");
 			writer.WriteLine(L"\tlc1->SetAdapter(adapter1.Obj());");
 			writer.WriteLine(L"\tlc2->SetAdapter(adapter2.Obj());");
 			writer.WriteLine(L"");
@@ -269,8 +395,30 @@ TEST_FILE
 				writer.WriteString(itemResult);
 				writer.WriteLine(L"\",");
 
-				writer.WriteLine(L"\t\t[](IDescriptable* obj, const Dictionary<WString, vint>& idMap) -> vint");
+				writer.WriteLine(L"\t\t[](const Func<void(const WString&, vint)>& registerTypeId)");
 				writer.WriteLine(L"\t\t{");
+				writer.WriteString(L"\t\t\tauto& instance = ::vl_workflow_global::");
+				writer.WriteString(itemName);
+				writer.WriteLine(L"::Instance();");
+				if (rpcTypeFullNamesPerItem.Keys().Contains(itemName))
+				{
+					auto&& typeFullNames = *rpcTypeFullNamesPerItem.Get(itemName).Obj();
+					for (auto&& fullName : typeFullNames)
+					{
+						writer.WriteString(L"\t\t\tregisterTypeId(L\"");
+						writer.WriteString(fullName);
+						writer.WriteString(L"\", instance.rpctype_");
+						writer.WriteString(MangleRpcFullName(fullName));
+						writer.WriteLine(L");");
+					}
+				}
+				writer.WriteLine(L"\t\t},");
+
+				writer.WriteLine(L"\t\t[](IDescriptable* obj) -> vint");
+				writer.WriteLine(L"\t\t{");
+				writer.WriteString(L"\t\t\tauto& instance = ::vl_workflow_global::");
+				writer.WriteString(itemName);
+				writer.WriteLine(L"::Instance();");
 				if (rpcTypeFullNamesPerItem.Keys().Contains(itemName))
 				{
 					auto&& typeFullNames = *rpcTypeFullNamesPerItem.Get(itemName).Obj();
@@ -278,9 +426,9 @@ TEST_FILE
 					{
 						writer.WriteString(L"\t\t\tif (dynamic_cast<::");
 						writer.WriteString(fullName);
-						writer.WriteString(L"*>(obj)) return idMap.Get(L\"");
-						writer.WriteString(fullName);
-						writer.WriteLine(L"\");");
+						writer.WriteString(L"*>(obj)) return instance.rpctype_");
+						writer.WriteString(MangleRpcFullName(fullName));
+						writer.WriteLine(L";");
 					}
 				}
 				writer.WriteLine(L"\t\t\treturn RpcTypeId_NotFound;");
