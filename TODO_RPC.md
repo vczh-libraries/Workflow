@@ -92,6 +92,7 @@ Understand what the test case trying to say, you are not allowed to change:
 
 You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
 - If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
+- Pass all unit test, fix any test failure including pre-existings.
 - After finishing everything, git commit and git push to the current branch.
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
