@@ -137,7 +137,7 @@ TEST_CASE(L"Rpc:ServiceWrapper")
 
 TEST_CASE(L"Rpc:Dtor")
 {
-	RunRpcTestCase<::vl_workflow_global::Dtor>(L"Deleted",
+	RunRpcTestCase<::vl_workflow_global::Dtor>(L"[Not Deleted][Deleted]",
 		[](IDescriptable* obj, const Dictionary<WString, vint>& idMap) -> vint
 		{
 			if (dynamic_cast<::RpcDtorTest::IService*>(obj)) return idMap.Get(L"RpcDtorTest::IService");

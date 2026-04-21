@@ -40,11 +40,7 @@ namespace
 		{
 			// Disconnect wrappers while globalContext is still alive,
 			// because DisconnectFromLifecycle executes Workflow bytecode.
-			for (vint i = 0; i < wrapperEntries.Count(); i++)
-			{
-				wrapperEntries[i].proxy->DisconnectFromLifecycle();
-			}
-			wrapperEntries.Clear();
+			DisconnectTrackedWrappers();
 			for (auto service : services.Values())
 			{
 				if (auto obj = service->SafeAggregationCast<IRpcWrapperBase>())

@@ -56,7 +56,20 @@ You are highly possibly need to fix implementation of `IRpcLifecycle` and its co
 
 # UPDATES
 
-# TEST
+## UPDATE
+
+Looks like the script is stuck, I have run CI for you, LoadAndCompile works, but CppTest fail. The rest of the 3 I don't know. And I have committed your work so far. The compiler looks good, so the problem might still be in RpcDualLifecycleMock.
+
+## UPDATE
+
+actually you can also change the clientMain to do
+m = $"$(m)[$(s)]";
+return m;
+so it could return [Not Deleted][Deleted], giving you richer information
+
+Continue to follow #file:investigate.prompt.md to finish the work.
+
+# TEST [CONFIRMED]
 
 Add a new `Rpc\Dtor.txt` sample and register it in `IndexRpc.txt` and the `CompilerTest_LoadAndCompile` resource list.
 
@@ -70,4 +83,40 @@ Success criteria:
 - `RuntimeTest`, `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` all pass for Win32 and x64 with the new `Rpc:Dtor` case.
 - If any failure only appears in runtime or only in generated C++, use that split to narrow the bug to lifecycle/runtime behavior rather than parser/compiler/codegen.
 
+Observed confirmation:
+- `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all fail on `Rpc:Dtor` in x64 with `actual = Not Deleted`, so the failure is in shared lifecycle behavior rather than parser/compiler/code generation.
+- Rebuilding the sample with a local `serviceObj` removes one artificial root reference, but the failure still reproduces, so the remaining problem is in RPC lifetime management.
+
 # PROPOSALS
+
+- No.1 Stop RpcDualLifecycleMock From Pinning Wrappers And Services
+
+## No.1 Stop RpcDualLifecycleMock From Pinning Wrappers And Services
+
+`Rpc:Dtor` only passes if the client-side proxy can actually die when the last user-visible reference is released, and if the server-side service object is not kept alive forever by the mock's service registry. The current mock keeps strong `Ptr<>` ownership in both places, which delays destruction until lifecycle teardown.
+
+### CODE CHANGE
+
+- Updated `Test/Source/RpcDualLifecycleMock.h/.cpp` so wrapper tracking is non-owning:
+    - `wrapperEntries` now keep raw pointers instead of strong `Ptr<IRpcWrapperBase>` references.
+    - Added `RpcDualWrapperTracker` via internal properties so tracked wrappers can unregister themselves when the wrapper object dies.
+    - `PtrToRef` can still resolve wrappers and local objects without extending their lifetime.
+- Updated `UnregisterLocalObject` to remove the matching entry from `services`, so releasing the last remote reference can actually release the registered service object.
+- Added `DisconnectTrackedWrappers()` and used it from both `RpcWorkflowLifecycleMock::~RpcWorkflowLifecycleMock()` and `RpcDualLifeCycleAdapter::~RpcDualLifeCycleAdapter()`.
+    - This prevents surviving workflow wrappers from running their destructors after the adapter `_lc` capture has already been destroyed.
+    - Without this, `LocalAndWrapper` still crashed during teardown even after `Rpc:Dtor` started passing.
+- Updated `Test/Resources/Rpc/Dtor.txt` to return the richer signal `[Not Deleted][Deleted]`, and updated the expected result in `Test/Resources/IndexRpc.txt` and generated RPC test cases.
+
+### CONFIRMED
+
+- Isolated `RuntimeTest` x64 runs showed:
+    - `Rpc:Dtor` now returns `[Not Deleted][Deleted]`.
+    - `Rpc:ServiceWrapper` passes.
+    - The remaining failure moved to teardown after `Rpc:LocalAndWrapper`.
+- Debugging that teardown crash showed a workflow wrapper destructor invoking through a freed adapter capture, which confirmed the second issue was cleanup ordering after wrappers stopped being pinned.
+- After disconnecting tracked wrappers in `RpcDualLifeCycleAdapter::~RpcDualLifeCycleAdapter()`, the full matrix passes:
+    - `RuntimeTest` Win32 and x64
+    - `CppTest` Win32 and x64
+    - `CppTest_Metaonly` Win32 and x64
+    - `CppTest_Reflection` Win32 and x64
+- Conclusion: the root cause was in shared RPC lifecycle mock ownership and teardown behavior, not in Workflow parsing, compilation, or Workflow-to-C++ generation.

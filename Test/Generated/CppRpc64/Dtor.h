@@ -60,7 +60,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Ptr<::RpcDtorTest::IService> serviceObj;
 		::vl::WString s;
 		::vl::vint64_t rpctype_RpcDtorTest__IService = 0;
 

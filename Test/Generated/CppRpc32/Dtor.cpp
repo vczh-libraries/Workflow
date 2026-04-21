@@ -37,12 +37,10 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Dtor)
 	vl_workflow_global::Dtor instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceObj = ::vl::Ptr<::RpcDtorTest::IService>();
 		instance.s = ::vl::WString::Unmanaged(L"Not Deleted");
 		instance.rpctype_RpcDtorTest__IService = static_cast<::vl::vint32_t>(0);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceObj = nullptr;
 		instance.s = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Dtor)
 
@@ -54,8 +52,8 @@ Global Functions
 
 	void Dtor::serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
-		(GLOBAL_NAME serviceObj = ::vl::Ptr<::RpcDtorTest::IService>(new ::vl_workflow_global::__vwsnc1_Dtor_serviceMain__RpcDtorTest_IService()));
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcDtorTest::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME serviceObj));
+		auto serviceObj = ::vl::Ptr<::RpcDtorTest::IService>(new ::vl_workflow_global::__vwsnc1_Dtor_serviceMain__RpcDtorTest_IService());
+		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcDtorTest::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Dtor::clientMain(::vl::rpc_controller::IRpcLifeCycle* lc)
@@ -66,8 +64,9 @@ Global Functions
 		(wrapperObj = ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>());
 		auto m = ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]"));
 		(clientObj = ::vl::Ptr<::RpcDtorTest::IService>());
-		(m = ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]")));
-		return GLOBAL_NAME s;
+		(obj = ::vl::Ptr<::vl::reflection::IDescriptable>());
+		(m = ((((::vl::WString::Unmanaged(L"") + m) + ::vl::WString::Unmanaged(L"[")) + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]")));
+		return m;
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Dtor::rpc_GetIds()

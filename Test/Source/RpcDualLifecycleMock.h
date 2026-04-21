@@ -22,6 +22,21 @@ namespace vl
 			class RpcDualLifecycleMock*									GetMock() const { return mock; }
 		};
 
+		class RpcDualWrapperTracker : public Object
+		{
+			friend class RpcDualLifecycleMock;
+		private:
+			class RpcDualLifecycleMock*									mock;
+			rpc_controller::IRpcWrapperBase*							proxy;
+			rpc_controller::RpcObjectReference							ref;
+		public:
+			RpcDualWrapperTracker(class RpcDualLifecycleMock* m, rpc_controller::IRpcWrapperBase* p, rpc_controller::RpcObjectReference r);
+			~RpcDualWrapperTracker();
+			void											Detach();
+			rpc_controller::RpcObjectReference							GetRef() const { return ref; }
+			class RpcDualLifecycleMock*								GetMock() const { return mock; }
+		};
+
 		struct RpcLocalObjectProperties : public Object
 		{
 			rpc_controller::RpcObjectReference							ref;
@@ -33,7 +48,8 @@ namespace vl
 
 		struct RpcWrapperEntry
 		{
-			Ptr<rpc_controller::IRpcWrapperBase>						proxy;
+			reflection::DescriptableObject*							root = nullptr;
+			rpc_controller::IRpcWrapperBase*							proxy = nullptr;
 			rpc_controller::RpcObjectReference							ref;
 		};
 
@@ -43,6 +59,7 @@ namespace vl
 			class RpcDualLifecycleMock*									mock;
 		public:
 			RpcDualLifeCycleAdapter(class RpcDualLifecycleMock* _mock);
+			~RpcDualLifeCycleAdapter();
 
 			rpc_controller::IRpcController*								GetController()override;
 			Ptr<reflection::IDescriptable>								RefToPtr(rpc_controller::RpcObjectReference ref)override;
@@ -54,9 +71,11 @@ namespace vl
 		class RpcDualLifecycleMock : public RpcLifecycleMock
 		{
 			friend class RpcDualObjectTracker;
+			friend class RpcDualWrapperTracker;
 			friend class RpcDualLifeCycleAdapter;
 		protected:
 			static WString																				InternalProperty_LocalObjectTracker;
+			static WString																				InternalProperty_WrapperTracker;
 			vint																						clientId = 1;
 			vint																						nextObjectId = 1;
 			RpcDualLifecycleMock*																		peer = nullptr;
@@ -68,6 +87,10 @@ namespace vl
 			collections::List<RpcWrapperEntry>															wrapperEntries;
 
 			virtual vint																DecideTypeId(reflection::IDescriptable* obj)const;
+			void																		TrackWrapper(reflection::DescriptableObject* root, rpc_controller::IRpcWrapperBase* proxy, rpc_controller::RpcObjectReference ref);
+			void																		UntrackWrapper(rpc_controller::IRpcWrapperBase* proxy);
+			void																		DisconnectTrackedWrappers();
+			bool																		TryGetTrackedWrapperRef(reflection::DescriptableObject* obj, rpc_controller::RpcObjectReference& ref)const;
 			void																		TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
 			void																		UntrackLocalObject(rpc_controller::RpcObjectReference ref);
 			bool																		IsTracked(vint objectId)const;

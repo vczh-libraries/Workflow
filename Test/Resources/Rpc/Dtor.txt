@@ -11,12 +11,11 @@ namespace RpcDtorTest
 	}
 }
 
-var serviceObj : IService^ = null;
 var s = "Not Deleted";
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	serviceObj = new (RpcDtorTest::IService^)
+	var serviceObj = new (RpcDtorTest::IService^)
 	{
 		delete
 		{
@@ -34,7 +33,8 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	var wrapperObj = cast (system::IRpcWrapperBase^) obj;
 	wrapperObj = null;
 	var m = $"[$(s)]"; /* s should be "Not Deleted" */
-	clientObj = null;  /* Releasing the wrapper causing ReleaseRemoteObject and ObjectHold(false) to be called */
-	m = $"[$(s)]"; /* s should be "Deleted" */
-	return s;
+	clientObj = null;
+	obj = null; /* obj also owns the same wrapper, so drop it before checking the final state */
+	m = $"$(m)[$(s)]"; /* s should be "Deleted" */
+	return m;
 }

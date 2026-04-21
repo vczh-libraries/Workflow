@@ -10,6 +10,7 @@ namespace vl
 		using namespace collections;
 
 		WString RpcDualLifecycleMock::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
+		WString RpcDualLifecycleMock::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
 
 		RpcDualObjectTracker::RpcDualObjectTracker(RpcDualLifecycleMock* m, RpcObjectReference r)
 			: mock(m), ref(r)
@@ -24,6 +25,25 @@ namespace vl
 			}
 		}
 
+		RpcDualWrapperTracker::RpcDualWrapperTracker(RpcDualLifecycleMock* m, IRpcWrapperBase* p, RpcObjectReference r)
+			: mock(m), proxy(p), ref(r)
+		{
+		}
+
+		RpcDualWrapperTracker::~RpcDualWrapperTracker()
+		{
+			if (mock && proxy)
+			{
+				mock->UntrackWrapper(proxy);
+			}
+		}
+
+		void RpcDualWrapperTracker::Detach()
+		{
+			mock = nullptr;
+			proxy = nullptr;
+		}
+
 /***********************************************************************
 * RpcDualLifeCycleAdapter
 ***********************************************************************/
@@ -31,6 +51,14 @@ namespace vl
 		RpcDualLifeCycleAdapter::RpcDualLifeCycleAdapter(RpcDualLifecycleMock* _mock)
 			: mock(_mock)
 		{
+		}
+
+		RpcDualLifeCycleAdapter::~RpcDualLifeCycleAdapter()
+		{
+			if (mock)
+			{
+				mock->DisconnectTrackedWrappers();
+			}
 		}
 
 		IRpcController* RpcDualLifeCycleAdapter::GetController()
@@ -76,11 +104,7 @@ namespace vl
 					obj->DisconnectFromLifecycle();
 				}
 			}
-			for (vint i = 0; i < wrapperEntries.Count(); i++)
-			{
-				wrapperEntries[i].proxy->DisconnectFromLifecycle();
-			}
-			wrapperEntries.Clear();
+			DisconnectTrackedWrappers();
 			while (localObjectProps.Count() > 0)
 			{
 				auto props = localObjectProps.Values().Get(localObjectProps.Count() - 1);
@@ -201,6 +225,73 @@ namespace vl
 			return index != -1 && localObjectProps.Values().Get(index)->rawPtr != nullptr;
 		}
 
+		void RpcDualLifecycleMock::TrackWrapper(DescriptableObject* root, IRpcWrapperBase* proxy, RpcObjectReference ref)
+		{
+			CHECK_ERROR(root != nullptr, L"RpcDualLifecycleMock::TrackWrapper: Wrapper does not implement DescriptableObject.");
+			CHECK_ERROR(proxy != nullptr, L"RpcDualLifecycleMock::TrackWrapper: Wrapper is null.");
+
+			auto tracker = Ptr(new RpcDualWrapperTracker(this, proxy, ref));
+			root->SetInternalProperty(InternalProperty_WrapperTracker, tracker);
+
+			RpcWrapperEntry entry;
+			entry.root = root;
+			entry.proxy = proxy;
+			entry.ref = ref;
+			wrapperEntries.Add(entry);
+		}
+
+		void RpcDualLifecycleMock::UntrackWrapper(IRpcWrapperBase* proxy)
+		{
+			for (vint i = 0; i < wrapperEntries.Count(); i++)
+			{
+				if (wrapperEntries[i].proxy == proxy)
+				{
+					wrapperEntries.RemoveAt(i);
+					return;
+				}
+			}
+		}
+
+		void RpcDualLifecycleMock::DisconnectTrackedWrappers()
+		{
+			while (wrapperEntries.Count() > 0)
+			{
+				auto entry = wrapperEntries[wrapperEntries.Count() - 1];
+				wrapperEntries.RemoveAt(wrapperEntries.Count() - 1);
+
+				if (entry.root)
+				{
+					if (auto trackerObj = entry.root->GetInternalProperty(InternalProperty_WrapperTracker))
+					{
+						auto tracker = trackerObj.Cast<RpcDualWrapperTracker>();
+						if (tracker)
+						{
+							tracker->Detach();
+						}
+						entry.root->SetInternalProperty(InternalProperty_WrapperTracker, nullptr);
+					}
+				}
+
+				if (entry.proxy)
+				{
+					entry.proxy->DisconnectFromLifecycle();
+				}
+			}
+		}
+
+		bool RpcDualLifecycleMock::TryGetTrackedWrapperRef(DescriptableObject* obj, RpcObjectReference& ref)const
+		{
+			if (auto trackerObj = obj->GetInternalProperty(InternalProperty_WrapperTracker))
+			{
+				auto tracker = trackerObj.Cast<RpcDualWrapperTracker>();
+				CHECK_ERROR(tracker, L"RpcDualLifecycleMock::TryGetTrackedWrapperRef: Invalid internal property type.");
+				CHECK_ERROR(tracker->GetMock() == this, L"RpcDualLifecycleMock::TryGetTrackedWrapperRef: Wrapper registered to a different lifecycle.");
+				ref = tracker->GetRef();
+				return true;
+			}
+			return false;
+		}
+
 		Ptr<IDescriptable> RpcDualLifecycleMock::CreateCallerProxy(RpcObjectReference ref)
 		{
 			auto lc = adapter ? (IRpcLifeCycle*)adapter : (IRpcLifeCycle*)this;
@@ -243,10 +334,8 @@ namespace vl
 
 			auto descriptable = dynamic_cast<IDescriptable*>(wrapper.Obj());
 			CHECK_ERROR(descriptable, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper does not implement IDescriptable.");
-			RpcWrapperEntry entry;
-			entry.proxy = wrapper;
-			entry.ref = ref;
-			wrapperEntries.Add(entry);
+			auto root = dynamic_cast<DescriptableObject*>(descriptable);
+			TrackWrapper(root, wrapper.Obj(), ref);
 			return Ptr(descriptable);
 		}
 
@@ -279,6 +368,18 @@ namespace vl
 
 		void RpcDualLifecycleMock::UnregisterLocalObject(RpcObjectReference ref)
 		{
+			auto index = localObjectProps.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::UnregisterLocalObject: Object not registered.");
+			auto props = localObjectProps.Values().Get(index);
+
+			for (vint i = services.Count() - 1; i >= 0; i--)
+			{
+				if (services.Values()[i].Obj() == props->rawPtr)
+				{
+					services.Remove(services.Keys()[i]);
+				}
+			}
+
 			UntrackLocalObject(ref);
 			localObjectProps.Remove(ref.objectId);
 		}
@@ -378,27 +479,20 @@ namespace vl
 		{
 			CHECK_ERROR(obj, L"RpcDualLifecycleMock::PtrToRef requires a value.");
 
-			// Check if this is a wrapper proxy for a remote object
-			for (vint i = 0; i < wrapperEntries.Count(); i++)
-			{
-				auto&& entry = wrapperEntries[i];
-				if (dynamic_cast<IDescriptable*>(entry.proxy.Obj()) == obj.Obj())
-				{
-					return entry.ref;
-				}
-			}
-
-			// For aggregated objects (Workflow-generated wrappers), the pointer passed here
-			// may be the aggregation root, while wrapperEntries stores the proxy pointer.
-			// Use SafeAggregationCast to find the IRpcWrapperBase proxy and look it up.
 			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
 			{
+				RpcObjectReference wrapperRef;
+				if (TryGetTrackedWrapperRef(descObj, wrapperRef))
+				{
+					return wrapperRef;
+				}
+
 				if (auto wrapperBase = descObj->SafeAggregationCast<IRpcWrapperBase>())
 				{
 					for (vint i = 0; i < wrapperEntries.Count(); i++)
 					{
 						auto&& entry = wrapperEntries[i];
-						if (entry.proxy.Obj() == wrapperBase)
+						if (entry.proxy == wrapperBase)
 						{
 							return entry.ref;
 						}
@@ -446,7 +540,7 @@ namespace vl
 				auto&& entry = wrapperEntries[i];
 				if (entry.ref.objectId == ref.objectId)
 				{
-					if (auto observable = dynamic_cast<IValueObservableList*>(entry.proxy.Obj()))
+					if (auto observable = dynamic_cast<IValueObservableList*>(entry.proxy))
 					{
 						observable->ItemChanged(index, oldCount, newCount);
 						return;
