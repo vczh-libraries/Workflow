@@ -11,7 +11,7 @@
 
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
 - Other clean up in RpcDualLifecycleMock.
-- Verify in LocalAndWrapper/ServiceWrapper, case a remote object to IRpcWrapperBase and ensure it is successful.
+- Verify in LocalAndWrapper/ServiceWrapper, case a remote object to IRpcWrapperBase and ensure it is successful (like Rpc\Dtor2.txt)
 - Continue to add more test cases until all features are covered.
   - Destructor calling.
   - Register local object in two lifecycles.
@@ -72,10 +72,10 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var obj = lc.RequestService("YourFavoriteNamespace::IService");
+	var obj = cast (RpcPrimitiveTest::IService^) lc.RequestService("YourFavoriteNamespace::IService");
   if ((obj as (IRpcWrapperBase^) is null)) { throw "IService(obj) should be a wrapper object in clientMain"; }
   var wrapperObj = obj.GetServiceAgain();
-  if ((wrapperObj as (IRpcWrapperBase^) is null)) { throw "IService(obj) should be a wrapper object in clientMain"; }
+  if ((wrapperObj as (IRpcWrapperBase^) is null)) { throw "IService(wrapperObj) should be a wrapper object in clientMain"; }
   wrapperObj = null;
   var m = $"[$(s)]"; // s should be "Not Deleted"
   clientObj = null;  // Releasing the wrapper causing ReleaseRemoteObject and ObjectHold(false) to be called
@@ -90,7 +90,7 @@ Understand what the test case trying to say, you are not allowed to change:
 - Workflow compiling.
 - Workflow to C++ code generation.
 
-You are highly possibly need to fix implementation of `IRpcLifecycle` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
+You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
 - If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
 - After finishing everything, git commit and git push to the current branch.
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.

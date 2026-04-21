@@ -50,6 +50,11 @@ The correct order to run them is:
   - If it updates any C++ source code, build debug Win32 and x64 again.
 - Run `RuntimeTest` for Win32 and x64.
 - Run `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` for Win32 and x64.
+- When you believe that all test projects should run, call `..\Tools\Tools\Build.ps1 Workflow` to test against everything.
+  - It stops at the first failure.
+  - If all test projects pass, some files in the `Release` could be changed, this is expected.
+  - If you used this script, then you will be required to always run this script after you finishing a complete user instructions given to you.
+    - If the user instruction asks you to do git push, run it before the last git push.
 
 ### Baseline Comparison
 
@@ -65,7 +70,7 @@ The correct order to run them is:
 When generated files are expected to change, baseline comparison will fail. You need to override baseline files with generated files, and run the test projects again.
 ### Workflow Test Samples
 
-`Test/Resources/Index*.txt` is an index of all files in `Test/Resources/*`.
+`Test/Resources/Index*.txt` is an index of all files in `Test/Resources/*/`, here are all important sample categories:
 - `AnalyzerScope`: Compiled in `TestAnalyzer.cpp`, testing against multiple modules.
 - `AnalyzerError`: Compiled in `TestAnalyzer.cpp`, testing against Workflow compile errors.
 - `Runtime`: Compiled in `TestRuntimeCompile.cpp` and loaded in `TestRuntime.cpp`, testing against attribute metadata.
@@ -81,6 +86,15 @@ When generated files are expected to change, baseline comparison will fail. You 
 - Different `CppTest*` compile the same set of source code using different reflection options, source files used by them should be compatible with all reflection options:
   - Avoid using any reflection features.
   - The only exception are type reflection registration files for workflow generated types, they are referenced in `Generated_Reflection(Rpc)?.vcxitems` with preprocessor applied.
+
+### Debugging RuntimeTest Project
+
+The Many test cases load binary files compiled from `CompileTest_LoadAndCompile` and run it with a Workflow virtual machine.
+When you are not confidence about the cause, you could attach a debugger to catch any exception, and you might find your self inside a Workflow virtual machine instructions execution loop.
+To have a big picture of instructions, you can find Test\Generated\Workflow(32|64)\Assembly.CATEGORY.SAMPLE.txt,
+along with the `Printed` section in Test\Generated\Workflow(32|64)\Parsing.CATEGORY.SAMPLE.txt,
+it maps instruction to source code.
+The `Printed` section logs desugar-ed workflow script input.
 
 ### Code Generation Tools
 
