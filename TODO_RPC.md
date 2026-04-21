@@ -36,19 +36,20 @@
 
 # Prompt
 
-Follow job.new-sample.md to add a new Rpc\Dtor.txt
+Follow job.new-sample.md to add a new Rpc\Dtor2.txt
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcDtorTest
+namespace YourFavoriteNamespace // use RpcDtor2Test
 {
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
+    func GetServiceAgain() : IService^;
 	}
 }
 
@@ -56,9 +57,15 @@ var s = "Not Deleted";
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	serviceObj = new (YourFavoriteNamespace::IService^)
+	var serviceObj = new (RpcDtorTest::IService^)
 	{
     delete { s = "Deleted"; }
+    override func GetServiceAgain() : IService^
+    {
+      var obj = lc.RequestService("YourFavoriteNamespace::IService");
+      if ((obj as (IRpcWrapperBase^) is not null)) { throw "IService(obj) should be a local object in serviceMain"; }
+      return obj;
+    }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
 }
@@ -66,9 +73,9 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var obj = lc.RequestService("YourFavoriteNamespace::IService");
-	var clientObj = cast (YourFavoriteNamespace::IService^) obj;
-  // remote object becomes a wrapper, crashing means bug in the RPC framework
-  var wrapperObj = cast (IRpcWrapperBase^) clientObj;
+  if ((obj as (IRpcWrapperBase^) is null)) { throw "IService(obj) should be a wrapper object in clientMain"; }
+  var wrapperObj = obj.GetServiceAgain();
+  if ((wrapperObj as (IRpcWrapperBase^) is null)) { throw "IService(obj) should be a wrapper object in clientMain"; }
   wrapperObj = null;
   var m = $"[$(s)]"; // s should be "Not Deleted"
   clientObj = null;  // Releasing the wrapper causing ReleaseRemoteObject and ObjectHold(false) to be called
