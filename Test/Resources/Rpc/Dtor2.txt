@@ -1,0 +1,58 @@
+module Rpc;
+using system::*;
+using RpcDtor2Test::*;
+
+namespace RpcDtor2Test
+{
+	@rpc:Interface
+	@rpc:Ctor
+	interface IService
+	{
+		func GetServiceAgain() : IService^;
+	}
+}
+
+var s = "Not Deleted";
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	var serviceObj = new (RpcDtor2Test::IService^)
+	{
+		delete
+		{
+			s = "Deleted";
+		}
+
+		override func GetServiceAgain() : IService^
+		{
+			var obj = lc.RequestService("RpcDtor2Test::IService");
+			if ((obj as (system::IRpcWrapperBase^) is not null))
+			{
+					raise "IService(obj) should be a local object in serviceMain";
+			}
+			return cast (RpcDtor2Test::IService^) obj;
+		}
+	};
+	lc.RegisterService("RpcDtor2Test::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+	var obj = lc.RequestService("RpcDtor2Test::IService");
+	var clientObj = cast (RpcDtor2Test::IService^) obj;
+	if ((obj as (system::IRpcWrapperBase^) is null))
+	{
+		raise "IService(obj) should be a wrapper object in clientMain";
+	}
+	var wrapperObj : object = clientObj.GetServiceAgain();
+	if ((wrapperObj as (system::IRpcWrapperBase^) is null))
+	{
+		raise "IService(wrapperObj) should be a wrapper object in clientMain";
+	}
+	wrapperObj = null;
+	var m = $"[$(s)]";
+	clientObj = null;
+	obj = null;
+	m = $"$(m)[$(s)]";
+	return m;
+}

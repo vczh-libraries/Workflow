@@ -3,6 +3,7 @@
 #include "LocalAndWrapperReflection.h"
 #include "ServiceWrapperReflection.h"
 #include "DtorReflection.h"
+#include "Dtor2Reflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 
 using namespace vl;
@@ -20,6 +21,7 @@ void LoadTestCaseRpcTypes()
 	 LoadLocalAndWrapperTypes();
 	 LoadServiceWrapperTypes();
 	 LoadDtorTypes();
+	 LoadDtor2Types();
 }
 
 template<typename TInstance>
@@ -141,6 +143,16 @@ TEST_CASE(L"Rpc:Dtor")
 		[](IDescriptable* obj, const Dictionary<WString, vint>& idMap) -> vint
 		{
 			if (dynamic_cast<::RpcDtorTest::IService*>(obj)) return idMap.Get(L"RpcDtorTest::IService");
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:Dtor2")
+{
+	RunRpcTestCase<::vl_workflow_global::Dtor2>(L"[Not Deleted][Deleted]",
+		[](IDescriptable* obj, const Dictionary<WString, vint>& idMap) -> vint
+		{
+			if (dynamic_cast<::RpcDtor2Test::IService*>(obj)) return idMap.Get(L"RpcDtor2Test::IService");
 			return RpcTypeId_NotFound;
 		});
 });
