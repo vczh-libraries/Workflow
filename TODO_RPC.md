@@ -12,7 +12,6 @@
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
   - It is used to call `RegisterLocalObject`, unfortunately the current implementation can't make a local object tells the lifecycle what it type id is.
 - Other clean up in RpcDualLifecycleMock.
-  - Task: Review all public APIs in `RpcDualLifecycleMock`.
   - Task: Renames wrapperEntries and RpcWrapperEntry to use Properties instead of Entries.
   - Task: `InternalProperty_LocalObjectTracker` and `InternalProperty_WrapperTracker` When it is needed to initialize, verify:
     - For local object, if it is already assigned, always `CHECK_ERROR` to make sure the client id matches, no fallback allowed.
