@@ -63,16 +63,17 @@ namespace
 			globalContext = _globalContext;
 		}
 
-		void SetIdMapWithReflection(const Dictionary<WString, vint>& _idMap)
+		void SetIdMapWithReflection(const Dictionary<WString, vint>& _idMap, IRpcLifeCycle* wrapperFactoryLifecycle)
 		{
 			SetIdMap(_idMap);
 			wrapperCreateFunc = LoadFunction(globalContext, L"rpcwrapper_Create");
 
-			RegisterWrapperFactory([this](vint typeId, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
+			RegisterWrapperFactory([this, wrapperFactoryLifecycle](vint typeId, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
 			{
+				(void)lc;
 				auto argList = IValueList::Create();
 				argList->Add(BoxValue<vint>(typeId));
-				argList->Add(Value::From(dynamic_cast<DescriptableObject*>(lc)));
+				argList->Add(Value::From(dynamic_cast<DescriptableObject*>(wrapperFactoryLifecycle)));
 				auto result = wrapperCreateFunc->Invoke(argList);
 				auto wrapper = Ptr(result.GetRawPtr()->SafeAggregationCast<IRpcWrapperBase>());
 				CHECK_ERROR(wrapper, L"rpcwrapper_Create did not return IRpcWrapperBase.");
@@ -151,10 +152,8 @@ TEST_FILE
 				auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
 				lc1->SetGlobalContext(globalContext);
 				lc2->SetGlobalContext(globalContext);
-				lc1->SetIdMapWithReflection(idMap);
-				lc2->SetIdMapWithReflection(idMap);
-				lc1->SetAdapter(adapter1.Obj());
-				lc2->SetAdapter(adapter2.Obj());
+				lc1->SetIdMapWithReflection(idMap, adapter1.Obj());
+				lc2->SetIdMapWithReflection(idMap, adapter2.Obj());
 
 				// Create list ops default implementations
 				auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));

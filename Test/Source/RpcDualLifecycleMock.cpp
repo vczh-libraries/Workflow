@@ -159,11 +159,6 @@ namespace vl
 			}
 		}
 
-		void RpcDualLifecycleMock::SetAdapter(RpcDualLifeCycleAdapter* _adapter)
-		{
-			adapter = _adapter;
-		}
-
 		void RpcDualLifecycleMock::RegisterWrapperFactory(Func<Ptr<IRpcWrapperBase>(vint, IRpcLifeCycle*)> factory)
 		{
 			universalWrapperFactory = factory;
@@ -329,7 +324,7 @@ namespace vl
 
 		Ptr<IDescriptable> RpcDualLifecycleMock::CreateCallerProxy(RpcObjectReference ref)
 		{
-			auto lc = adapter ? (IRpcLifeCycle*)adapter : (IRpcLifeCycle*)this;
+			IRpcLifeCycle* lc = this;
 			Ptr<IRpcWrapperBase> wrapper;
 
 			// For built-in collection types, use switch-case
@@ -359,9 +354,8 @@ namespace vl
 			default:
 				// Fallback to universal wrapper factory
 				CHECK_ERROR(universalWrapperFactory, L"RpcDualLifecycleMock::CreateCallerProxy: No wrapper factory registered.");
-				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::CreateCallerProxy requires an adapter.");
 				pendingProxyRef = ref;
-				wrapper = universalWrapperFactory(ref.typeId, adapter);
+				wrapper = universalWrapperFactory(ref.typeId, this);
 				pendingProxyRef = {};
 				CHECK_ERROR(wrapper, L"RpcDualLifecycleMock::CreateCallerProxy: wrapper factory returned null.");
 				break;
@@ -480,7 +474,6 @@ namespace vl
 			if (idMap.Keys().Contains(fullName))
 			{
 				auto typeId = idMap.Get(fullName);
-				CHECK_ERROR(adapter != nullptr, L"RpcDualLifecycleMock::RequestService requires an adapter.");
 				CHECK_ERROR(universalWrapperFactory, L"RpcDualLifecycleMock::RequestService: No wrapper factory registered.");
 				auto ref = RpcLifecycleMock::RequestService(typeId);
 				return CreateCallerProxy(ref);

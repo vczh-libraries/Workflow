@@ -51,8 +51,6 @@ void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*)
 	lc2->decideTypeIdCallback = decideTypeId;
 	auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
 	auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
-	lc1->SetAdapter(adapter1.Obj());
-	lc2->SetAdapter(adapter2.Obj());
 
 	auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));
 	auto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));
@@ -68,8 +66,8 @@ void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*)
 
 	lc2->Register(doo1, oeo1, lo1, leo1);
 	lc1->Register(doo2, oeo2, lo2, leo2);
-	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });
-	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });
+	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, adapter1.Obj()); });
+	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, adapter2.Obj()); });
 
 	instance.serviceMain(adapter1.Obj());
 

@@ -69,3 +69,39 @@ DO NOT ASK ME ANY QUESTION, I will not be watching you until finishing.
 	- `CppTest_Metaonly` Win32 and x64: passed.
 	- `CppTest_Reflection` Win32 and x64: passed, each final run reporting `Passed test files: 2/2` and `Passed test cases: 109/109`.
 - The final batched post-regeneration command over `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` exited with code `0` after reaching `OK CppTest_Reflection x64`.
+
+## No.2 Remove dead `SetAdapter(...)` storage and tighten `RpcDualLifecycleMock` internals
+
+### CODE CHANGE
+
+- Removed `RpcDualLifecycleMock::SetAdapter(...)` and deleted the stored `adapter` raw pointer from `Test/Source/RpcDualLifecycleMock.h/.cpp`.
+- Kept `RpcDualLifeCycleAdapter` itself. It is still the object that reflected Workflow RPC wrappers receive as `system::IRpcLifeCycle*`, and it still provides the non-owning destructor boundary that disconnects tracked wrappers before the underlying mock goes away.
+- Simplified `RpcDualLifecycleMock::CreateCallerProxy(...)` so built-in wrappers and universal wrappers use `this` as the lifecycle implementation. This keeps the mock as the runtime owner without storing a second lifecycle pointer.
+- Tightened `RpcDualLifecycleMock` visibility: `clientId`, `nextObjectId`, wrapper-tracking helpers, `pendingProxyRef`, `wrapperEntries`, and the internal property keys moved to `private`; only `localObjectProps`, `idMap`, `DecideTypeId(...)`, and `DisconnectTrackedWrappers()` remain `protected` because derived runtime and generated mocks still use them.
+- Updated the runtime RPC reflection harness and generated RPC test harnesses so wrapper factories capture their local `RpcDualLifeCycleAdapter` explicitly when calling reflected `rpcwrapper_Create(typeId, lc)`. This preserves the required reflected `IRpcLifeCycle*` argument without reintroducing stored adapter state.
+- Regenerated the emitted RPC harness source in `Test/UnitTest/CompilerTest_LoadAndCompile/TestRpcCompile.cpp` and kept the checked-in generated outputs in sync:
+	- `Test/SourceCppGenRpc/TestCasesRpc.cpp`
+	- `Test/Generated/CppRpc32/TestCasesRpc.cpp`
+	- `Test/Generated/CppRpc64/TestCasesRpc.cpp`
+
+### CONFIRMED
+
+- `RpcDualLifecycleMock::SetAdapter(...)` and its stored adapter pointer were dead and are now removed.
+- `RpcDualLifeCycleAdapter` is not dead. A first attempt to replace adapter-boundary wrapper creation with `RpcDualLifecycleMock` directly caused `RuntimeTest/TestRpc.cpp` to fail in reflected `rpcwrapper_Create(...)` with `Argument "thisObject" cannot convert from "system::IRpcController*" to "system::IRpcLifeCycle*".`
+- The root cause is the reflected wrapper-factory boundary, not wrapper lifetime ownership. Reflected Workflow wrappers still need an object whose reflected static type is `IRpcLifeCycle*`, so the local adapter object remains necessary at the call sites even though `RpcDualLifecycleMock` no longer stores it.
+- No source or generated RPC harness still calls `SetAdapter(...)`.
+- Validation completed again in the required order after the stage-2 edits and wrapper-factory fix:
+	- Debug build Win32: passed.
+	- Debug build x64: passed.
+	- `LibraryTest` Win32: passed.
+	- `LibraryTest` x64: passed.
+	- `CompilerTest_GenerateMetadata` Win32: passed.
+	- `CompilerTest_GenerateMetadata` x64: passed.
+	- `CompilerTest_LoadAndCompile` x64: passed.
+	- Post-generation Debug build Win32: passed.
+	- Post-generation Debug build x64: passed.
+	- `RuntimeTest` Win32: passed.
+	- `RuntimeTest` x64: passed with `Passed test files: 4/4` and `Passed test cases: 143/143`.
+	- `CppTest` Win32 and x64: passed.
+	- `CppTest_Metaonly` Win32 and x64: passed.
+	- `CppTest_Reflection` Win32 and x64: passed, with the final x64 run reporting `Passed test files: 2/2` and `Passed test cases: 109/109`.
