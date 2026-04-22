@@ -7,7 +7,7 @@ namespace vl
 {
 	namespace rpc_controller_test
 	{
-		class RpcLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle, public rpc_controller::IRpcController
+		class RpcLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle, public rpc_controller::IRpcController, public reflection::Description<RpcLifecycleMock>
 		{
 		protected:
 			Ptr<IRpcObjectOps>														objectCallback;

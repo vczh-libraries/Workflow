@@ -2,6 +2,7 @@
 #define VCZH_WORKFLOW_UNITTEST_CPPTYPES
 
 #include <Vlpp.h>
+#include "RpcLifecycleMock.h"
 #include "../../Source/Library/WfLibraryCppHelper.h"
 #include "../../Source/Library/WfLibraryReflection.h"
 
@@ -175,6 +176,7 @@ namespace vl
 			F(test::CustomInterfaceProcessor)\
 			F(test::Hinters)\
 			F(test::SyncScheduler)\
+			F(vl::rpc_controller_test::RpcLifecycleMock)\
 
 			UNITTEST_TYPELIST(DECL_TYPE_INFO)
 			UNITTEST_ATTRIBUTE_TYPELIST(DECL_TYPE_INFO)

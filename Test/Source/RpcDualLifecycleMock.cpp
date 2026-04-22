@@ -83,48 +83,6 @@ namespace vl
 		}
 
 /***********************************************************************
-* RpcDualLifeCycleAdapter
-***********************************************************************/
-
-		RpcDualLifeCycleAdapter::RpcDualLifeCycleAdapter(RpcDualLifecycleMock* _mock)
-			: mock(_mock)
-		{
-		}
-
-		RpcDualLifeCycleAdapter::~RpcDualLifeCycleAdapter()
-		{
-			if (mock)
-			{
-				mock->DisconnectTrackedWrappers();
-			}
-		}
-
-		IRpcController* RpcDualLifeCycleAdapter::GetController()
-		{
-			return mock->GetController();
-		}
-
-		Ptr<IDescriptable> RpcDualLifeCycleAdapter::RefToPtr(RpcObjectReference ref)
-		{
-			return mock->RefToPtr(ref);
-		}
-
-		RpcObjectReference RpcDualLifeCycleAdapter::PtrToRef(Ptr<IDescriptable> obj)
-		{
-			return mock->PtrToRef(obj);
-		}
-
-		void RpcDualLifeCycleAdapter::RegisterService(const WString& fullName, Ptr<IDescriptable> service)
-		{
-			mock->RegisterService(fullName, service);
-		}
-
-		Ptr<IDescriptable> RpcDualLifeCycleAdapter::RequestService(const WString& fullName)
-		{
-			return mock->RequestService(fullName);
-		}
-
-/***********************************************************************
 * RpcDualLifecycleMock (Constructor and Setup)
 ***********************************************************************/
 

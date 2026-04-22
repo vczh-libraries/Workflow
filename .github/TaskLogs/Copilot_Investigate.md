@@ -2,86 +2,77 @@
 
 # PROBLEM DESCRIPTION
 
-- Refactor RpcDualLifecycleMock.h to remove `RpcDualLifeCycleAdapter`, it is just a redirection or callings, I don't even know why it exists from the beginning, It should be completedly removed.
-- I don't know why `pendingProxyRef` exists, in `CreateCallerProxy` it is always `{}` therefore `RpcDualLifecycleMock::RequestService` always skip. Try to remove it, and test this idea to see if my statement is true. If my statement is false, bring it back.
-- `RpcLocalObjectProperties` and `localObjectProperties` is good. I would like you to rename `wrapperEntries` and `RpcWrapperEntry` to use the term `Properties`.
-- When an internal property is just about to be assigned using key `InternalProperty_LocalObjectTracker` and `InternalProperty_WrapperTracker`, verify:
-  - For local object, if it is already assigned, always `CHECK_ERROR` to make sure the client id matches, no fallback allowed.
-  - For wrapper object, since it is assigned after wrapper creation, always `CHECK_ERROR` to make sure the value exists before using it, no fallback allowed.
+If `RpcDualLifeCycleAdapter` looks redundant then it is redundant. In `TestCasesRpc.cpp` an adaptor redirects everything to `LocalRpcMock`, and the private `mock` variable does not change.There should be a way to eliminate `RpcDualLifeCycleAdapter` completely.
 
-Run all test projects to make sure your refactor works, git commit and push after finishing, DO NOT ASK ME ASY QUESTION.
+I would like you to find a way to remove the adaptor completely. To do experiment, you can just change `TestCasesRpc.cpp` and run `CppTest` with Debug|x64 directly. Once you find a valid way, update the function generating `TestCasesRpc.cpp` and run all tests. And then change `TestRpc.cpp` to not use the adaptor in the same way. And then remove RpcDualLifeCycleAdapter completely.
+
+Eventually you will need to run all test projects to make sure your change works. git commit and push after finishing.
 
 # UPDATES
 
-# TEST
+## UPDATE
 
-- Validation idea:
-  - Refactor `Test/Source/RpcDualLifecycleMock.h/.cpp` toward property-based wrapper tracking and stricter internal-property invariants.
-  - Try removing `pendingProxyRef`, then validate whether generated `rpcwrapper_Create(...)` still constructs wrappers correctly when it synchronously asks the controller for a proxy reference.
-  - Try removing `RpcDualLifeCycleAdapter`, then validate whether reflected and generated wrapper factories can still pass a concrete object as `system::IRpcLifeCycle*` and whether wrapper teardown still disconnects in a safe order.
-- Existing coverage to confirm the behavior:
-  - `RuntimeTest/TestRpc.cpp` exercises reflected Workflow RPC wrapper creation and teardown through `rpcwrapper_Create(...)` and dual-lifecycle mocks.
-  - `CompilerTest_LoadAndCompile/TestRpcCompile.cpp` regenerates the RPC C++ harness, so any adapter-related harness change or naming change is re-emitted there.
-  - `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` compile and execute the generated RPC harnesses in all reflection modes.
-  - `LibraryTest` covers the shared RPC runtime helpers in `Source/Library/WfLibraryRpc.cpp`, which are involved in proxy creation and wrapper reuse.
-- Early evidence before edits:
-  - `pendingProxyRef` is currently consumed synchronously by generated wrapper factories. For example, `Test/SourceCppGenRpc/RequestService.cpp` shows `rpcwrapper_RpcTest__IService(...)` calling `lc->GetController()->RequestService(typeId)` during `rpcwrapper_Create(...)`, so `pendingProxyRef` is not dead unless that generation/runtime contract is also changed.
-  - `RpcDualLifecycleMock` already implements `IRpcLifeCycle` in C++, so if `RpcDualLifeCycleAdapter` still needs to exist, the reason is the reflected wrapper-factory boundary or teardown ordering, not missing C++ methods.
+I believe there is no reason to add `RpcLifecycleMock` to reflection, because IRpcLifecycle::GetController returns the controller interface. You can cast the object to IRpcLifecycle first and then give it to Workflow.
+
+Contionue to follow #file:investigate.prompt.md  to finish the work
+
+# TEST [CONFIRMED]
+
+- Generated-side probe:
+	- remove `RpcDualLifeCycleAdapter` usage from `Test/SourceCppGenRpc/TestCasesRpc.cpp`
+	- run `CppTest` with `Debug|x64`
+- Generator propagation:
+	- update `Test/UnitTest/CompilerTest_LoadAndCompile/TestRpcCompile.cpp`
+	- regenerate checked-in RPC harness files
+	- rerun generated C++ test projects
+- Reflected runtime validation:
+	- update `Test/UnitTest/RuntimeTest/TestRpc.cpp` to use direct lifecycle objects
+	- run `RuntimeTest` with `Debug|x64`
 - Success criteria:
-  - `wrapperEntries` and `RpcWrapperEntry` are renamed to property-oriented names without changing behavior.
-  - Internal-property assignment sites reject mismatched or missing trackers with `CHECK_ERROR` instead of silent fallback.
-  - If `pendingProxyRef` removal breaks wrapper creation, it is restored and the denial is documented.
-  - If adapter removal breaks reflected wrapper creation or teardown, the failure is documented and the working design is restored.
-  - The full unit-test order from `Project.md` passes after regeneration and any required generated-file updates.
-- Final validation status:
-  - Application Control blocks direct execution for some rebuilt executables, so validation used debugger-hosted execution where possible.
-  - `RuntimeTest` `Debug|Win32` passed under CDB with `Passed test files: 4/4` and `Passed test cases: 143/143`.
-  - `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` `Debug|Win32` each passed under CDB with `Passed test files: 2/2` and `Passed test cases: 109/109`.
-  - `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` `Debug|x64` remained blocked by Application Control in this shell even under CDB startup, so the x64 fallback was a fresh `Release|x64` rebuild followed by repo-script execution; all three passed with `Passed test files: 2/2` and `Passed test cases: 109/109`.
-  - Earlier same-session validations were already sufficient for the unaffected required steps after the final runtime fix: `CompilerTest_LoadAndCompile` `Debug|x64`, `RuntimeTest` `Debug|x64`, `LibraryTest` Win32/x64, and `CompilerTest_GenerateMetadata` Win32/x64.
+	- `RpcDualLifeCycleAdapter` is removed completely from `Test/Source/RpcDualLifecycleMock.h/.cpp`
+	- generated RPC tests still pass after replacing adapter-based teardown with explicit tracked-wrapper disconnect before lifecycle disposal
+	- reflected `RuntimeTest` no longer fails in `RPC binary assemblies` with `Argument "thisObject" cannot convert from "system::IRpcController*" to "system::IRpcLifeCycle*".`
+	- required debug project matrix passes for `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on `Win32` and `x64`
+- Validation results:
+	- `CppTest` `Debug|x64` passed with `Passed test files: 2/2` and `Passed test cases: 109/109`
+	- `RuntimeTest` `Debug|x64` passed with `Passed test files: 4/4` and `Passed test cases: 143/143`
+	- the full required debug test matrix completed successfully through repo wrappers
+	- `Tools/Tools/Build.ps1 Workflow` was also attempted as a stricter repo-wide harness, but release executable launch was blocked by local Application Control policy after `CompilerTest_GenerateMetadata`, so final validation used the repo debug wrapper sequence instead
 
 # PROPOSALS
 
-- No.1 Remove `RpcDualLifeCycleAdapter` completely by using `RpcDualLifecycleMock` directly as the wrapper lifecycle
-- No.2 Remove `pendingProxyRef` because `CreateCallerProxy(...)` already knows the target reference
-- No.3 Rename wrapper tracking to `Properties` and tighten internal-property invariants in `RpcDualLifecycleMock`
+- No.1 Remove `RpcDualLifeCycleAdapter` completely by using `RpcDualLifecycleMock` directly and disconnecting wrappers explicitly [CONFIRMED]
+- No.2 Remove the extra `RpcLifecycleMock` reflection registration and rely on `IRpcLifeCycle*` boxing only [DENIED]
 
-## No.1 Remove `RpcDualLifeCycleAdapter` completely by using `RpcDualLifecycleMock` directly as the wrapper lifecycle
-
-### CODE CHANGE
-
-- Kept `RpcDualLifeCycleAdapter` in place.
-- The current runtime change remains the wrapper-root tracking / invariant tightening work in `RpcDualLifecycleMock`, not adapter removal.
-
-### [DENIED]
-
-- Removing the adapter was disproven at the reflected wrapper-factory boundary.
-- Reflected `rpcwrapper_Create(...)` requires a concrete `thisObject` visible as `system::IRpcLifeCycle*`; passing `RpcDualLifecycleMock` directly caused the reflection boundary to treat it as `system::IRpcController*` and fail the conversion.
-- The adapter therefore remains the required reflection-facing lifecycle object and the teardown boundary for reflected wrapper disconnection.
-
-## No.2 Remove `pendingProxyRef` because `CreateCallerProxy(...)` already knows the target reference
+## No.1 Remove `RpcDualLifeCycleAdapter` completely by using `RpcDualLifecycleMock` directly and disconnecting wrappers explicitly
 
 ### CODE CHANGE
 
-- Tried the removal path conceptually against the generated-wrapper call flow and kept `pendingProxyRef`.
-- `CreateCallerProxy(...)` still sets `pendingProxyRef` around universal wrapper creation, and `RequestService(vint)` still returns it for that synchronous factory call.
-
-### [DENIED]
-
-- Generated wrapper creation still depends on the temporary pending reference bridge.
-- In samples like `RequestService`, generated `rpcwrapper_Create(...)` synchronously asks `lc->GetController()->RequestService(typeId)` while the wrapper is being constructed, so `pendingProxyRef` is the mechanism that returns the already-known target reference instead of re-requesting a service.
-- The `LocalAndWrapper` path and the generated-wrapper / `LocalAndWrapper` lifetime behavior still rely on this `RequestService(vint)` bridge, so removal was correctly rejected.
-
-## No.3 Rename wrapper tracking to `Properties` and tighten internal-property invariants in `RpcDualLifecycleMock`
-
-### CODE CHANGE
-
-- Renamed wrapper tracking data from entry terminology to property terminology: `RpcWrapperProperties` / `wrapperProperties`.
-- Tightened local-object tracker assignment so an existing `InternalProperty_LocalObjectTracker` now requires a matching client id via `CHECK_ERROR`.
-- Tightened wrapper teardown so `InternalProperty_WrapperTracker` must exist and have the expected type before use.
-- Kept the final runtime fix that resolves the aggregated `IRpcWrapperBase` root before wrapper-tracker lookup and preserves the corrected `Properties` naming.
+- `Test/SourceCppGenRpc/TestCasesRpc.cpp`, `Test/UnitTest/CompilerTest_LoadAndCompile/TestRpcCompile.cpp`, and checked-in generated RPC harnesses in `Test/Generated/CppRpc32/TestCasesRpc.cpp` and `Test/Generated/CppRpc64/TestCasesRpc.cpp` now pass `lc1.Obj()` / `lc2.Obj()` directly to list ops, object ops, `serviceMain`, `clientMain`, and `rpcwrapper_Create(...)`.
+- The generated/local mock adds `DisconnectTrackedWrappersBeforeDispose()` and calls it explicitly before disposal to preserve the teardown timing that used to be hidden by the adapter destructor.
+- `Test/UnitTest/RuntimeTest/TestRpc.cpp` now uses direct lifecycle objects in the reflected RPC path and keeps the wrapper factory argument boxed as `BoxValue<IRpcLifeCycle*>(wrapperFactoryLifecycle)`.
+- `Test/Source/RpcDualLifecycleMock.h/.cpp` removes `RpcDualLifeCycleAdapter` completely.
+- `Test/Source/RpcLifecycleMock.h`, `Test/Source/CppTypes.h`, and `Test/Source/CppTypes.cpp` register `RpcLifecycleMock` as a reflected concrete class with `IRpcLifeCycle` and `IRpcController` bases.
+- Reflection metadata and baselines were regenerated for this new reflected type in `Test/Generated/Reflection32.bin`, `Test/Generated/Reflection64.bin`, `Test/Generated/Reflection32.txt`, `Test/Generated/Reflection64.txt`, `Test/Generated/Reflection32[2].txt`, `Test/Generated/Reflection64[2].txt`, `Test/Resources/Baseline/Reflection32.txt`, and `Test/Resources/Baseline/Reflection64.txt`.
 
 ### [CONFIRMED]
 
-- This is the confirmed change set.
-- Validation passed after the final wrapper-root fix and invariant tightening across the required runtime/codegen coverage that was still affected by these edits.
+- The adapter was redundant as a call-forwarder, but its destructor timing had been hiding a real cleanup-order dependency on the generated side.
+- Generated C++ RPC tests work without the adapter once tracked wrappers are disconnected explicitly before lifecycle/global-context teardown.
+- The reflected Workflow path still needs the lifecycle object to cross the reflection boundary as something convertible to `system::IRpcLifeCycle*`. Making `RpcLifecycleMock` a reflected concrete class satisfies that requirement without reintroducing the adapter.
+- With both pieces in place, `RpcDualLifeCycleAdapter` is removed completely and both generated and reflected RPC tests pass.
+
+## No.2 Remove the extra `RpcLifecycleMock` reflection registration and rely on `IRpcLifeCycle*` boxing only
+
+### CODE CHANGE
+
+- Temporarily removed `reflection::Description<RpcLifecycleMock>` and the `RpcLifecycleMock` registration from `Test/Source/CppTypes.h/.cpp`.
+- Kept the direct lifecycle path in `Test/UnitTest/RuntimeTest/TestRpc.cpp` and continued boxing the wrapper factory argument as `BoxValue<IRpcLifeCycle*>(wrapperFactoryLifecycle)`.
+- Reordered `RpcLifecycleMock` base classes to test whether the interface cast alone would make Workflow see `system::IRpcLifeCycle*`.
+
+### [DENIED]
+
+- This experiment reproduced the original reflected failure: `Argument "thisObject" cannot convert from "system::IRpcController*" to "system::IRpcLifeCycle*".`
+- `BoxValue<T*>` for raw pointers ignores the requested interface descriptor and calls `Value::From(object)`, so casting to `IRpcLifeCycle*` before boxing does not change the runtime descriptor Workflow sees.
+- `IRpcLifeCycle::GetController()` cannot help here because the failure happens before Workflow can invoke any member on the receiver; the boxed receiver itself must already be convertible to `system::IRpcLifeCycle*`.
+- The concrete reflection registration was restored immediately after this denial, and `RuntimeTest` `Debug|x64` returned to passing.

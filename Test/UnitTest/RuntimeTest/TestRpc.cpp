@@ -73,7 +73,7 @@ namespace
 				(void)lc;
 				auto argList = IValueList::Create();
 				argList->Add(BoxValue<vint>(typeId));
-				argList->Add(Value::From(dynamic_cast<DescriptableObject*>(wrapperFactoryLifecycle)));
+				argList->Add(BoxValue<IRpcLifeCycle*>(wrapperFactoryLifecycle));
 				auto result = wrapperCreateFunc->Invoke(argList);
 				auto wrapper = Ptr(result.GetRawPtr()->SafeAggregationCast<IRpcWrapperBase>());
 				CHECK_ERROR(wrapper, L"rpcwrapper_Create did not return IRpcWrapperBase.");
@@ -145,29 +145,27 @@ TEST_FILE
 					}
 				}
 
-				// Create two lifecycle mocks with adapters
+				// Create two lifecycle mocks
 				auto lc1 = Ptr(new RpcWorkflowLifecycleMock(1));
 				auto lc2 = Ptr(new RpcWorkflowLifecycleMock(2));
-				auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
-				auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
 				lc1->SetGlobalContext(globalContext);
 				lc2->SetGlobalContext(globalContext);
-				lc1->SetIdMapWithReflection(idMap, adapter1.Obj());
-				lc2->SetIdMapWithReflection(idMap, adapter2.Obj());
+				lc1->SetIdMapWithReflection(idMap, lc1.Obj());
+				lc2->SetIdMapWithReflection(idMap, lc2.Obj());
 
 				// Create list ops default implementations
-				auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));
-				auto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));
-				auto lo2 = Ptr(new RpcCalleeListOps(adapter2.Obj()));
-				auto leo2 = Ptr(new RpcCalleeListEventBridge(adapter2.Obj()));
+				auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj()));
+				auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj()));
+				auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj()));
+				auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
 
 				// Create object ops implementations from the assembly
 				auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectOps");
 				auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectEventOps");
-				auto oo1 = createObjectOps(adapter1.Obj());
-				auto oeo1 = createEventOps(adapter1.Obj());
-				auto oo2 = createObjectOps(adapter2.Obj());
-				auto oeo2 = createEventOps(adapter2.Obj());
+				auto oo1 = createObjectOps(lc1.Obj());
+				auto oeo1 = createEventOps(lc1.Obj());
+				auto oo2 = createObjectOps(lc2.Obj());
+				auto oeo2 = createEventOps(lc2.Obj());
 				auto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));
 				auto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));
 
@@ -177,11 +175,11 @@ TEST_FILE
 
 				// Run serviceMain with lc1
 				auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");
-				serviceMain(adapter1.Obj());
+				serviceMain(lc1.Obj());
 
 				// Run clientMain with lc2 and get the result
 				auto clientMain = LoadFunction<WString(IRpcLifeCycle*)>(globalContext, L"clientMain");
-				auto actual = clientMain(adapter2.Obj());
+				auto actual = clientMain(lc2.Obj());
 
 				TEST_PRINT(L"    expected  : " + itemResult);
 				TEST_PRINT(L"    actual    : " + actual);
@@ -199,8 +197,6 @@ TEST_FILE
 				lo2 = nullptr;
 				leo1 = nullptr;
 				lo1 = nullptr;
-				adapter2 = nullptr;
-				adapter1 = nullptr;
 				globalContext->globalVariables = nullptr;
 				lc2 = nullptr;
 				lc1 = nullptr;

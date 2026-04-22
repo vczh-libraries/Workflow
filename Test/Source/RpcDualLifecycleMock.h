@@ -67,26 +67,10 @@ namespace vl
 			rpc_controller::RpcObjectReference					RequestService(vint typeId)override;
 		};
 
-		class RpcDualLifeCycleAdapter : public Object, public virtual rpc_controller::IRpcLifeCycle
-		{
-		private:
-			class RpcDualLifecycleMock*									mock;
-		public:
-			RpcDualLifeCycleAdapter(class RpcDualLifecycleMock* _mock);
-			~RpcDualLifeCycleAdapter();
-
-			rpc_controller::IRpcController*								GetController()override;
-			Ptr<reflection::IDescriptable>								RefToPtr(rpc_controller::RpcObjectReference ref)override;
-			rpc_controller::RpcObjectReference							PtrToRef(Ptr<reflection::IDescriptable> obj)override;
-			void														RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
-			Ptr<reflection::IDescriptable>								RequestService(const WString& fullName)override;
-		};
-
 		class RpcDualLifecycleMock : public RpcLifecycleMock
 		{
 			friend class RpcDualObjectTracker;
 			friend class RpcDualWrapperTracker;
-			friend class RpcDualLifeCycleAdapter;
 		private:
 			static WString																		InternalProperty_LocalObjectTracker;
 			static WString																		InternalProperty_WrapperTracker;

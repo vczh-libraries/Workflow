@@ -32,6 +32,10 @@ void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*)
 	public:
 		vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
 		using RpcDualLifecycleMock::RpcDualLifecycleMock;
+		void DisconnectTrackedWrappersBeforeDispose()
+		{
+			DisconnectTrackedWrappers();
+		}
 		vint DecideTypeId(IDescriptable* obj)const override
 		{
 			auto result = RpcDualLifecycleMock::DecideTypeId(obj);
@@ -49,33 +53,34 @@ void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*)
 	lc2->SetIdMap(idMap.Ref());
 	lc1->decideTypeIdCallback = decideTypeId;
 	lc2->decideTypeIdCallback = decideTypeId;
-	auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
-	auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
 
-	auto lo1 = Ptr(new RpcCalleeListOps(adapter1.Obj()));
-	auto leo1 = Ptr(new RpcCalleeListEventBridge(adapter1.Obj()));
-	auto lo2 = Ptr(new RpcCalleeListOps(adapter2.Obj()));
-	auto leo2 = Ptr(new RpcCalleeListEventBridge(adapter2.Obj()));
+	auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj()));
+	auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj()));
+	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj()));
+	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
 
-	auto oo1 = instance.rpc_IRpcObjectOps(adapter1.Obj());
-	auto oeo1 = instance.rpc_IRpcObjectEventOps(adapter1.Obj());
-	auto oo2 = instance.rpc_IRpcObjectOps(adapter2.Obj());
-	auto oeo2 = instance.rpc_IRpcObjectEventOps(adapter2.Obj());
+	auto oo1 = instance.rpc_IRpcObjectOps(lc1.Obj());
+	auto oeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());
+	auto oo2 = instance.rpc_IRpcObjectOps(lc2.Obj());
+	auto oeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());
 	auto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));
 	auto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));
 
 	lc2->Register(doo1, oeo1, lo1, leo1);
 	lc1->Register(doo2, oeo2, lo2, leo2);
-	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, adapter1.Obj()); });
-	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, adapter2.Obj()); });
+	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, lc1.Obj()); });
+	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, lc2.Obj()); });
 
-	instance.serviceMain(adapter1.Obj());
+	instance.serviceMain(lc1.Obj());
 
-	auto actual = instance.clientMain(adapter2.Obj());
+	auto actual = instance.clientMain(lc2.Obj());
 
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
+
+	lc2->DisconnectTrackedWrappersBeforeDispose();
+	lc1->DisconnectTrackedWrappersBeforeDispose();
 }
 
 TEST_FILE
