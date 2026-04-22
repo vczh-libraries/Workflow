@@ -14,7 +14,6 @@
 - `RpcLfiecycle` registered in reflection, because `IRpcLifecycle::GetController` returning itself causes problem in `RuntimeTest`
   - Without reflection registration, the metadata doesn't say it implements two interfaces at the same time.
 - Continue to add more test cases until all features are covered.
-  - Destructor calling.
   - Register local object in two lifecycles.
   - Function overloading.
   - Byval and byref collections.
