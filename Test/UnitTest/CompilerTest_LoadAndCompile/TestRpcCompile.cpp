@@ -46,136 +46,6 @@ static WString MangleRpcFullName(const WString& fullName)
 	return mangled;
 }
 
-static bool IsIdentifierChar(wchar_t c)
-{
-	return
-		(c >= L'a' && c <= L'z') ||
-		(c >= L'A' && c <= L'Z') ||
-		(c >= L'0' && c <= L'9') ||
-		c == L'_';
-}
-
-static bool TryReadQuotedString(const WString& text, vint& index, WString& value)
-{
-	if (index >= text.Length() || text[index] != L'"')
-	{
-		return false;
-	}
-
-	value = WString::Empty;
-	index++;
-	while (index < text.Length())
-	{
-		auto c = text[index++];
-		if (c == L'\\')
-		{
-			if (index >= text.Length())
-			{
-				return false;
-			}
-
-			auto escaped = text[index++];
-			switch (escaped)
-			{
-			case L'r': value += WString::FromChar(L'\r'); break;
-			case L'n': value += WString::FromChar(L'\n'); break;
-			case L't': value += WString::FromChar(L'\t'); break;
-			default: value += WString::FromChar(escaped); break;
-			}
-		}
-		else if (c == L'"')
-		{
-			return true;
-		}
-		else
-		{
-			value += WString::FromChar(c);
-		}
-	}
-	return false;
-}
-
-static WfFunctionDeclaration* FindNamedFunctionDeclaration(const List<Ptr<WfDeclaration>>& declarations, const WString& name)
-{
-	for (auto&& declaration : declarations)
-	{
-		if (auto functionDecl = declaration.Cast<WfFunctionDeclaration>())
-		{
-			if (functionDecl->name.value == name)
-			{
-				return functionDecl.Obj();
-			}
-		}
-		else if (auto namespaceDecl = declaration.Cast<WfNamespaceDeclaration>())
-		{
-			if (auto functionDecl = FindNamedFunctionDeclaration(namespaceDecl->declarations, name))
-			{
-				return functionDecl;
-			}
-		}
-	}
-	return nullptr;
-}
-
-static void CollectRegisterServiceTypeFullNames(const WString& text, List<WString>& serviceTypeFullNames)
-{
-	constexpr const wchar_t* registerServiceName = L"RegisterService";
-	constexpr vint registerServiceNameLength = 15;
-
-	for (vint i = 0; i + registerServiceNameLength <= text.Length(); i++)
-	{
-		if (
-			(i > 0 && IsIdentifierChar(text[i - 1])) ||
-			wcsncmp(text.Buffer() + i, registerServiceName, registerServiceNameLength) != 0 ||
-			(i + registerServiceNameLength < text.Length() && IsIdentifierChar(text[i + registerServiceNameLength]))
-			)
-		{
-			continue;
-		}
-
-		auto index = i + registerServiceNameLength;
-		while (index < text.Length() && (text[index] == L' ' || text[index] == L'\r' || text[index] == L'\n' || text[index] == L'\t'))
-		{
-			index++;
-		}
-
-		if (index >= text.Length() || text[index] != L'(')
-		{
-			continue;
-		}
-
-		index++;
-		while (index < text.Length() && (text[index] == L' ' || text[index] == L'\r' || text[index] == L'\n' || text[index] == L'\t'))
-		{
-			index++;
-		}
-
-		WString serviceTypeFullName;
-		if (TryReadQuotedString(text, index, serviceTypeFullName))
-		{
-			serviceTypeFullNames.Add(serviceTypeFullName);
-		}
-	}
-}
-
-static void CollectRpcServiceTypeFullNames(const Ptr<WfModule>& module, List<WString>& serviceTypeFullNames)
-{
-	serviceTypeFullNames.Clear();
-	if (!module)
-	{
-		return;
-	}
-
-	if (auto functionDecl = FindNamedFunctionDeclaration(module->declarations, L"serviceMain"))
-	{
-		auto statementText = GenerateToStream([&](StreamWriter& writer)
-		{
-			WfPrint(functionDecl->statement, L"", writer);
-		});
-		CollectRegisterServiceTypeFullNames(statementText, serviceTypeFullNames);
-	}
-}
-
 static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName)
 {
 	for (auto [decl, index] : indexed(manager.declarationTypes.Keys()))
@@ -245,7 +115,6 @@ TEST_FILE
 		List<WString> rpcNames, reflectableAssemblies;
 		Dictionary<WString, WString> assemblyEntries;
 		Dictionary<WString, Ptr<List<WString>>> rpcTypeFullNamesPerItem;
-		Dictionary<WString, Ptr<List<WString>>> rpcServiceTypeFullNamesPerItem;
 		LoadSampleIndex(L"Rpc", rpcNames);
 
 		TEST_CASE(L"Inherited interfaces are ordered leaf first")
@@ -312,10 +181,6 @@ namespace RpcInheritanceOrderTest
 					auto module = ParseModule(sample, GetWorkflowParser());
 					TEST_ASSERT(module);
 					TEST_ASSERT(manager.errors.Count() == 0);
-
-					auto serviceTypeFullNames = Ptr(new List<WString>());
-					CollectRpcServiceTypeFullNames(module, *serviceTypeFullNames.Obj());
-					rpcServiceTypeFullNamesPerItem.Add(itemName, serviceTypeFullNames);
 
 					manager.AddModule(module);
 					manager.Rebuild(true);
@@ -447,38 +312,13 @@ namespace RpcInheritanceOrderTest
 			// Generate the RunRpcTestCase template function
 			writer.WriteLine(L"");
 			writer.WriteLine(L"template<typename TInstance>");
-			writer.WriteLine(L"void RunRpcTestCase(const WString& expected, void(*registerServiceTypeIds)(const Func<void(vint)>&), vint(*decideTypeId)(IDescriptable*))");
+			writer.WriteLine(L"void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*))");
 			writer.WriteLine(L"{");
 			writer.WriteLine(L"\tclass LocalRpcMock : public RpcDualLifecycleMock");
 			writer.WriteLine(L"\t{");
 			writer.WriteLine(L"\tpublic:");
-			writer.WriteLine(L"\t\tList<vint> serviceTypeIds;");
-			writer.WriteLine(L"\t\tvint nextServiceTypeIdIndex = 0;");
 			writer.WriteLine(L"\t\tvint(*decideTypeIdCallback)(IDescriptable*) = nullptr;");
 			writer.WriteLine(L"\t\tusing RpcDualLifecycleMock::RpcDualLifecycleMock;");
-			writer.WriteLine(L"\t\tvoid AddServiceTypeId(vint typeId)");
-			writer.WriteLine(L"\t\t{");
-			writer.WriteLine(L"\t\t\tserviceTypeIds.Add(typeId);");
-			writer.WriteLine(L"\t\t}");
-			writer.WriteLine(L"\t\tvoid RegisterService(const WString& fullName, Ptr<IDescriptable> service) override");
-			writer.WriteLine(L"\t\t{");
-			writer.WriteLine(L"\t\t\tRpcLifecycleMock::RegisterService(fullName, service);");
-			writer.WriteLine(L"\t\t\tCHECK_ERROR(nextServiceTypeIdIndex < serviceTypeIds.Count(), L\"LocalRpcMock::RegisterService: Missing service type id.\");");
-			writer.WriteLine(L"\t\t\tidMap.Set(fullName, serviceTypeIds[nextServiceTypeIdIndex++]);");
-			writer.WriteLine(L"\t\t}");
-			writer.WriteLine(L"\t\tvoid ValidateServiceTypeIds() const");
-			writer.WriteLine(L"\t\t{");
-			writer.WriteLine(L"\t\t\tCHECK_ERROR(nextServiceTypeIdIndex == serviceTypeIds.Count(), L\"LocalRpcMock::ValidateServiceTypeIds: Unused service type ids.\");");
-			writer.WriteLine(L"\t\t}");
-			writer.WriteLine(L"\t\tvoid CopyPeerServiceTypeIds()");
-			writer.WriteLine(L"\t\t{");
-			writer.WriteLine(L"\t\t\tauto localPeer = dynamic_cast<LocalRpcMock*>(peer);");
-			writer.WriteLine(L"\t\t\tCHECK_ERROR(localPeer != nullptr, L\"LocalRpcMock::CopyPeerServiceTypeIds: Missing peer.\");");
-			writer.WriteLine(L"\t\t\tfor (auto&& [fullName, typeId] : localPeer->idMap)");
-			writer.WriteLine(L"\t\t\t{");
-			writer.WriteLine(L"\t\t\t\tidMap.Set(fullName, typeId);");
-			writer.WriteLine(L"\t\t\t}");
-			writer.WriteLine(L"\t\t}");
 			writer.WriteLine(L"\t\tvint DecideTypeId(IDescriptable* obj)const override");
 			writer.WriteLine(L"\t\t{");
 			writer.WriteLine(L"\t\t\tauto result = RpcDualLifecycleMock::DecideTypeId(obj);");
@@ -491,8 +331,9 @@ namespace RpcInheritanceOrderTest
 			writer.WriteLine(L"");
 			writer.WriteLine(L"\tauto lc1 = Ptr(new LocalRpcMock(1));");
 			writer.WriteLine(L"\tauto lc2 = Ptr(new LocalRpcMock(2));");
-			writer.WriteLine(L"\tauto registerServiceTypeId = Func<void(vint)>([&](vint typeId) { lc1->AddServiceTypeId(typeId); });");
-			writer.WriteLine(L"\tregisterServiceTypeIds(registerServiceTypeId);");
+			writer.WriteLine(L"\tauto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(instance.rpc_GetIds()));");
+			writer.WriteLine(L"\tlc1->SetIdMap(idMap.Ref());");
+			writer.WriteLine(L"\tlc2->SetIdMap(idMap.Ref());");
 			writer.WriteLine(L"\tlc1->decideTypeIdCallback = decideTypeId;");
 			writer.WriteLine(L"\tlc2->decideTypeIdCallback = decideTypeId;");
 			writer.WriteLine(L"\tauto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));");
@@ -518,8 +359,6 @@ namespace RpcInheritanceOrderTest
 			writer.WriteLine(L"\tlc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
 			writer.WriteLine(L"");
 			writer.WriteLine(L"\tinstance.serviceMain(adapter1.Obj());");
-			writer.WriteLine(L"\tlc1->ValidateServiceTypeIds();");
-			writer.WriteLine(L"\tlc2->CopyPeerServiceTypeIds();");
 			writer.WriteLine(L"");
 			writer.WriteLine(L"\tauto actual = instance.clientMain(adapter2.Obj());");
 			writer.WriteLine(L"");
@@ -550,23 +389,6 @@ namespace RpcInheritanceOrderTest
 				writer.WriteString(L">(L\"");
 				writer.WriteString(itemResult);
 				writer.WriteLine(L"\",");
-
-				writer.WriteLine(L"\t\t[](const Func<void(vint)>& registerServiceTypeId)");
-				writer.WriteLine(L"\t\t{");
-				writer.WriteString(L"\t\t\tauto& instance = ::vl_workflow_global::");
-				writer.WriteString(itemName);
-				writer.WriteLine(L"::Instance();");
-				if (rpcServiceTypeFullNamesPerItem.Keys().Contains(itemName))
-				{
-					auto&& typeFullNames = *rpcServiceTypeFullNamesPerItem.Get(itemName).Obj();
-					for (auto&& fullName : typeFullNames)
-					{
-						writer.WriteString(L"\t\t\tregisterServiceTypeId(instance.rpctype_");
-						writer.WriteString(MangleRpcFullName(fullName));
-						writer.WriteLine(L");");
-					}
-				}
-				writer.WriteLine(L"\t\t},");
 
 				writer.WriteLine(L"\t\t[](IDescriptable* obj) -> vint");
 				writer.WriteLine(L"\t\t{");

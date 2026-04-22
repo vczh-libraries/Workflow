@@ -25,38 +25,13 @@ void LoadTestCaseRpcTypes()
 }
 
 template<typename TInstance>
-void RunRpcTestCase(const WString& expected, void(*registerServiceTypeIds)(const Func<void(vint)>&), vint(*decideTypeId)(IDescriptable*))
+void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*))
 {
 	class LocalRpcMock : public RpcDualLifecycleMock
 	{
 	public:
-		List<vint> serviceTypeIds;
-		vint nextServiceTypeIdIndex = 0;
 		vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
 		using RpcDualLifecycleMock::RpcDualLifecycleMock;
-		void AddServiceTypeId(vint typeId)
-		{
-			serviceTypeIds.Add(typeId);
-		}
-		void RegisterService(const WString& fullName, Ptr<IDescriptable> service) override
-		{
-			RpcLifecycleMock::RegisterService(fullName, service);
-			CHECK_ERROR(nextServiceTypeIdIndex < serviceTypeIds.Count(), L"LocalRpcMock::RegisterService: Missing service type id.");
-			idMap.Set(fullName, serviceTypeIds[nextServiceTypeIdIndex++]);
-		}
-		void ValidateServiceTypeIds() const
-		{
-			CHECK_ERROR(nextServiceTypeIdIndex == serviceTypeIds.Count(), L"LocalRpcMock::ValidateServiceTypeIds: Unused service type ids.");
-		}
-		void CopyPeerServiceTypeIds()
-		{
-			auto localPeer = dynamic_cast<LocalRpcMock*>(peer);
-			CHECK_ERROR(localPeer != nullptr, L"LocalRpcMock::CopyPeerServiceTypeIds: Missing peer.");
-			for (auto&& [fullName, typeId] : localPeer->idMap)
-			{
-				idMap.Set(fullName, typeId);
-			}
-		}
 		vint DecideTypeId(IDescriptable* obj)const override
 		{
 			auto result = RpcDualLifecycleMock::DecideTypeId(obj);
@@ -69,8 +44,9 @@ void RunRpcTestCase(const WString& expected, void(*registerServiceTypeIds)(const
 
 	auto lc1 = Ptr(new LocalRpcMock(1));
 	auto lc2 = Ptr(new LocalRpcMock(2));
-	auto registerServiceTypeId = Func<void(vint)>([&](vint typeId) { lc1->AddServiceTypeId(typeId); });
-	registerServiceTypeIds(registerServiceTypeId);
+	auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(instance.rpc_GetIds()));
+	lc1->SetIdMap(idMap.Ref());
+	lc2->SetIdMap(idMap.Ref());
 	lc1->decideTypeIdCallback = decideTypeId;
 	lc2->decideTypeIdCallback = decideTypeId;
 	auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
@@ -96,8 +72,6 @@ void RunRpcTestCase(const WString& expected, void(*registerServiceTypeIds)(const
 	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });
 
 	instance.serviceMain(adapter1.Obj());
-	lc1->ValidateServiceTypeIds();
-	lc2->CopyPeerServiceTypeIds();
 
 	auto actual = instance.clientMain(adapter2.Obj());
 
@@ -112,11 +86,6 @@ TEST_FILE
 TEST_CASE(L"Rpc:RequestService")
 {
 	RunRpcTestCase<::vl_workflow_global::RequestService>(L"Hello",
-		[](const Func<void(vint)>& registerServiceTypeId)
-		{
-			auto& instance = ::vl_workflow_global::RequestService::Instance();
-			registerServiceTypeId(instance.rpctype_RpcTest__IService);
-		},
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::RequestService::Instance();
@@ -128,11 +97,6 @@ TEST_CASE(L"Rpc:RequestService")
 TEST_CASE(L"Rpc:PrimitiveTypes")
 {
 	RunRpcTestCase<::vl_workflow_global::PrimitiveTypes>(L"[6][12][1.75][2.875][Hi!][false][Autumn][13,27]",
-		[](const Func<void(vint)>& registerServiceTypeId)
-		{
-			auto& instance = ::vl_workflow_global::PrimitiveTypes::Instance();
-			registerServiceTypeId(instance.rpctype_RpcPrimitiveTest__IService);
-		},
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::PrimitiveTypes::Instance();
@@ -144,11 +108,6 @@ TEST_CASE(L"Rpc:PrimitiveTypes")
 TEST_CASE(L"Rpc:LocalAndWrapper")
 {
 	RunRpcTestCase<::vl_workflow_global::LocalAndWrapper>(L"[false][true][true][false]",
-		[](const Func<void(vint)>& registerServiceTypeId)
-		{
-			auto& instance = ::vl_workflow_global::LocalAndWrapper::Instance();
-			registerServiceTypeId(instance.rpctype_RpcWrapperTest__IService);
-		},
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::LocalAndWrapper::Instance();
@@ -162,11 +121,6 @@ TEST_CASE(L"Rpc:LocalAndWrapper")
 TEST_CASE(L"Rpc:ServiceWrapper")
 {
 	RunRpcTestCase<::vl_workflow_global::ServiceWrapper>(L"[false][true]",
-		[](const Func<void(vint)>& registerServiceTypeId)
-		{
-			auto& instance = ::vl_workflow_global::ServiceWrapper::Instance();
-			registerServiceTypeId(instance.rpctype_RpcServiceWrapperTest__IService);
-		},
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::ServiceWrapper::Instance();
@@ -178,11 +132,6 @@ TEST_CASE(L"Rpc:ServiceWrapper")
 TEST_CASE(L"Rpc:Dtor")
 {
 	RunRpcTestCase<::vl_workflow_global::Dtor>(L"[Not Deleted][Deleted]",
-		[](const Func<void(vint)>& registerServiceTypeId)
-		{
-			auto& instance = ::vl_workflow_global::Dtor::Instance();
-			registerServiceTypeId(instance.rpctype_RpcDtorTest__IService);
-		},
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Dtor::Instance();
@@ -194,11 +143,6 @@ TEST_CASE(L"Rpc:Dtor")
 TEST_CASE(L"Rpc:Dtor2")
 {
 	RunRpcTestCase<::vl_workflow_global::Dtor2>(L"[Not Deleted][Deleted]",
-		[](const Func<void(vint)>& registerServiceTypeId)
-		{
-			auto& instance = ::vl_workflow_global::Dtor2::Instance();
-			registerServiceTypeId(instance.rpctype_RpcDtor2Test__IService);
-		},
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Dtor2::Instance();
