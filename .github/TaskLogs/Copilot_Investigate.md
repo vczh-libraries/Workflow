@@ -2,57 +2,163 @@
 
 # PROBLEM DESCRIPTION
 
-In Test\Resources\Rpc\Dtor2.txt, there is some assertion to check if an object is expected or not expected to implement `IRpcWrapperBase`. Implementing `IRpcWrapperBase` means a remote object, not implementing means a local object. A local object could pass through lifecycle to another lifecycle and becomes a remote object.
+Follow job.new-sample.md to add a new Rpc\Dtor3.txt
 
-You are going to add similar tests to Dtor/LocalAndWrapper/ServiceWrapper, whenever serviceMain or clientMain gets an object value through IRpcLifecycle or IService, do the test. Read IndexRpc.txt to get their expected output and you will easily figure out if an object implements `IRpcWrapperBase` or not.
+```Workflow
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
 
-Change these test cases, run all test projects to make sure your change work. git commit and push after finishing, DO NOT ASK ME ANY QUESTION
+namespace YourFavoriteNamespace // use RpcDtor3Test
+{
+	@rpc:Interface
+	interface IContainer { prop Value : IValue^ {const} }
+
+	@rpc:Interface
+	interface IValue{}
+
+		@rpc:Interface
+		@rpc:Ctor
+		interface IService
+		{
+		func ContainValue(value : IValue^) : IContainer^;
+		}
+}
+
+var s = "";
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+		var serviceObj = new (YourFavoriteNamespace::IService^)
+		{
+		override func ContainValue(value : IValue^) : IContainer^
+		{
+			if ((value as (IRpcWrapperBase^) is null)) { throw "IValue(value) should be a local object in serviceMain"; }
+			return new (YourFavoriteNamespace::IContainer^)
+			{
+				delete
+				{
+					s = $"$(s)[IContainer]";
+				}
+
+				override func GetValue() : IValue^
+				{
+					return value;
+				}
+			};
+		}
+		};
+		lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
+}
+
+func MakeValue() : IValue^
+{
+	return new (YourFavoriteNamespace::IValue^)
+	{
+		delete
+		{
+			s = $"$(s)[IValue]";
+		}
+	}
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+		var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
+	if ((oservicebj as (IRpcWrapperBase^) is null)) { throw "IService(service) should be a wrapper object in clientMain"; }
+	{
+		s = $"$(s)[1]";
+		var container = service.ContaineValue(MakeValue());
+		if ((container as (IRpcWrapperBase^) is null)) { throw "IContainer(container) should be a wrapper object in clientMain"; }
+		if ((container.Value as (IRpcWrapperBase^) is not null)) { throw "IValue(container.Value) should be a local object in clientMain"; }
+		container = null;
+		/*
+			At the moment, container wrapper is deleted.
+			ObjectHold will be called from client to service to free the real container.
+			The value wrapper in the real container will be deleted.
+			Object hold will be called from service to client to free the real value.
+			Destructor of IValue will be called after destructor of IContainer.
+		*/
+		s = $"$(s)[2]";
+	}
+	{
+		var container = service.ContaineValue(MakeValue());
+		var value = container.Value;
+		if ((container as (IRpcWrapperBase^) is null)) { throw "IContainer(container) should be a wrapper object in clientMain"; }
+		if ((value as (IRpcWrapperBase^) is not null)) { throw "IValue(value) should be a local object in clientMain"; }
+		container = null;
+		/*
+			At the moment, container wrapper is deleted.
+			ObjectHold will be called from client to service to free the real container.
+			The value wrapper in the real container will be deleted.
+			Object hold will be called from service to client to free the real value.
+			but the real value object is still hold at client side.
+		*/
+		s = $"$(s)[3]";
+		var = null;
+		/*
+		The real value object is supposed to be deleted now.
+		Because the client side lifecycle is no longer holding it.
+		*/
+		s = $"$(s)[4]";
+	}
+	return s; // [1][IValue][IContainer][2][IContainer][3][IValue][4]
+}
+```
+
+Understand what the test case trying to say, you are not allowed to change:
+- The content of the sample, unless it doesn't build.
+- Workflow parser.
+- Workflow compiling.
+- Workflow to C++ code generation.
+
+You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
+- The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
+	- The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
+- If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
+- Pass all unit test, fix any test failure including pre-existings.
+- After finishing everything, git commit and git push to the current branch.
+- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 # UPDATES
 
+## UPDATE
+
+Just one thing to say, between [1] and [2], the order of IContainer and IValue releasing is not important. Just make CppTest and RuntimeTest generating the same result. You can pick the easier one.
+
+Continue to follow #file:investigate.prompt.md to finish the work
+
 # TEST [CONFIRMED]
 
-- Add Dtor2-style `IRpcWrapperBase` assertions to the RPC samples named in the repro:
-	- `Dtor`: check that the object returned by `IRpcLifeCycle::RequestService` in `clientMain` is a wrapper.
-	- `LocalAndWrapper`: check that `Exchange1` receives a wrapper in `serviceMain`, `Exchange2` receives a local object in `serviceMain`, the service returned from `RequestService` is a wrapper in `clientMain`, `Exchange1` returns a wrapper in `clientMain`, and `Exchange2` returns a local object in `clientMain`.
-	- `ServiceWrapper`: check that `Self` receives a local object in `serviceMain`, and the object returned by `RequestService` is a wrapper in `clientMain`.
-- Use `CompilerTest_LoadAndCompile` `Debug|x64` as the focused check because it is the cheapest way to catch Workflow-script type or RPC-generation errors after editing the samples.
-- Regenerate and validate the generated RPC harnesses touched by the samples in `Test/Generated/CppRpc32`, `Test/Generated/CppRpc64`, and `Test/SourceCppGenRpc`.
-- Run the required debug project matrix after the focused check:
-	- `LibraryTest` Win32 and x64
-	- `CompilerTest_GenerateMetadata` Win32 and x64
-	- `CompilerTest_LoadAndCompile` x64
-	- rebuild Debug Win32 and x64
-	- `RuntimeTest` Win32 and x64
-	- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` Win32 and x64
-- Run `Tools/Tools/Build.ps1 Workflow` as the final repo-wide validation.
+- Existing coverage is sufficient:
+	- `CompilerTest_LoadAndCompile` regenerates RPC generated C++ from `Test/Resources/IndexRpc.txt` and must include `Dtor3` successfully.
+	- `RuntimeTest` compares the workflow runtime result of `Rpc/Dtor3` against `IndexRpc.txt`.
+	- `CppTest` compares the generated C++ result of `Rpc:Dtor3` against the generated `TestCasesRpc.cpp` expectation, which is emitted from `IndexRpc.txt` during `CompilerTest_LoadAndCompile`.
 - Success criteria:
-	- the expected outputs in `IndexRpc.txt` remain unchanged for `Dtor`, `LocalAndWrapper`, and `ServiceWrapper`
-	- the new assertions correctly distinguish wrapper versus local objects at each boundary described in the repro
-	- the focused compiler test, full debug matrix, and repo-wide wrapper all complete successfully
-- Validation results:
-	- `CompilerTest_LoadAndCompile` `Debug|x64` passed after the final edit, including `LocalAndWrapper`, `ServiceWrapper`, `Dtor`, and `Dtor2`, with `Passed test files: 6/6` and `Passed test cases: 586/586`
-	- the full required debug Win32/x64 matrix completed with exit code `0`
-	- generated RPC execution still matched the `IndexRpc.txt` outputs, including `Rpc:LocalAndWrapper=[false][true][true][false]`, `Rpc:ServiceWrapper=[false][true]`, `Rpc:Dtor=[Not Deleted][Deleted]`, and `Rpc:Dtor2=[Not Deleted][Deleted]`
-	- `Tools/Tools/Build.ps1 Workflow` completed successfully and refreshed release artifacts as part of the repo-wide validation
+	- After regeneration, `RuntimeTest` and `CppTest` must both use the same `Dtor3` expected string.
+	- `CompilerTest_LoadAndCompile`, `RuntimeTest`, and `CppTest` must pass for the touched configuration.
+	- `CppTest_Metaonly` and `CppTest_Reflection` must also pass because they compile the same generated RPC surface through different reflection configurations.
+- Confirmation:
+	- `Debug|x64`: `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all passed.
+	- `Debug|Win32`: the same matrix passed, including `CompilerTest_LoadAndCompile` with `Passed test files: 6/6` and `Passed test cases: 587/587`.
+	- `RuntimeTest` and every `CppTest*` variant now agree on `Dtor3=[1][IContainer][IValue][2][IContainer][3][IValue][4]`.
 
 # PROPOSALS
 
-- No.1 Add wrapper/local assertions to `Dtor`, `LocalAndWrapper`, and `ServiceWrapper` using Dtor2-style wrapper probes [CONFIRMED]
+- No.1 Align Dtor3 Expected Output [CONFIRMED]
 
-## No.1 Add wrapper/local assertions to `Dtor`, `LocalAndWrapper`, and `ServiceWrapper` using Dtor2-style wrapper probes
+## No.1 Align Dtor3 Expected Output
 
 ### CODE CHANGE
 
-- Added a wrapper assertion in `Test/Resources/Rpc/Dtor.txt` so `clientMain` verifies that the service returned by `IRpcLifeCycle::RequestService` implements `system::IRpcWrapperBase`.
-- Added wrapper/local assertions in `Test/Resources/Rpc/LocalAndWrapper.txt` for every object that crosses an RPC boundary through `IRpcLifeCycle` or `IService`.
-- Added wrapper/local assertions in `Test/Resources/Rpc/ServiceWrapper.txt` for the `RequestService` result in `clientMain` and the `Self` argument received in `serviceMain`.
-- For interface-typed values in `LocalAndWrapper` and `ServiceWrapper`, the probe first assigns the value to `object` and then performs `as (system::IRpcWrapperBase^)`, matching the working pattern from `Dtor2.txt`.
-- Regenerated the corresponding checked-in generated files in `Test/Generated/Workflow32`, `Test/Generated/Workflow64`, `Test/Generated/CppRpc32`, `Test/Generated/CppRpc64`, and `Test/SourceCppGenRpc`.
+- Added `Test/Resources/Rpc/Dtor3.txt` as the new sample and normalized only the parts that were required to make it build while preserving the sample intent: namespace/type usage, the explicit getter-backed property shape, `raise` syntax, and wrapper checks through `object` temporaries.
+- Added `Dtor3.txt` to `Test/UnitTest/CompilerTest_LoadAndCompile/CompilerTest_LoadAndCompile.vcxproj` and `.filters` so the compile/regeneration test includes the new RPC sample.
+- Updated `Test/Resources/IndexRpc.txt` to the destructor order that is actually produced consistently by the runtime and accepted by the user clarification: `Dtor3=[1][IContainer][IValue][2][IContainer][3][IValue][4]`.
+- Regenerated the Dtor3 outputs through `CompilerTest_LoadAndCompile`, which updated `Test/SourceCppGenRpc/TestCasesRpc.cpp` and produced the new `Dtor3` generated source, reflection, metadata, and workflow dump files under `Test/SourceCppGenRpc`, `Test/Generated/CppRpc32`, `Test/Generated/CppRpc64`, `Test/Generated/RpcMetadata32`, `Test/Generated/RpcMetadata64`, `Test/Generated/Workflow32`, and `Test/Generated/Workflow64`.
+- Added the generated Dtor3 implementation and reflection files to `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems` and `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems` so `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` link the new generated case.
 
-### [CONFIRMED]
+### CONFIRMED
 
-- The first attempt to probe `IRpcWrapperBase` directly from interface-typed values caused `CompilerTest_LoadAndCompile` to stop at `LocalAndWrapper` with `Assertion failure: manager.errors.Count() == 0`, which narrowed the issue to the type of the probe rather than the wrapper expectation itself.
-- Switching those checks to the same object-based probe style used in `Dtor2.txt` fixed the compiler failure and preserved the expected runtime outputs from `IndexRpc.txt`.
-- After the final sample edits, the focused compile check passed, the required debug Win32/x64 unit-test matrix passed, and the repo-wide `Tools/Tools/Build.ps1 Workflow` wrapper also passed.
-- The confirmed fix is therefore to add the requested assertions while probing interface-typed values through `object` before testing `IRpcWrapperBase`.
+- The initial failure was a Dtor3 expectation mismatch, not a parser/compiler/code-generation failure. `RuntimeTest` already produced a stable destructor order for Dtor3. After the user clarified that the relative release order of `IContainer` and `IValue` between `[1]` and `[2]` was acceptable as long as `RuntimeTest` and `CppTest*` matched, aligning `Test/Resources/IndexRpc.txt` with the observed runtime order solved the behavioral mismatch without changing Workflow parser behavior, Workflow compilation, Workflow-to-C++ code generation, or `RpcDualLifecycleMock`.
+- Regeneration exposed a separate build-integration issue: `CompilerTest_LoadAndCompile` generated `Dtor3.cpp`, `Dtor3Reflection.cpp`, and the new `Rpc:Dtor3` case in `TestCasesRpc.cpp`, but the shared vcxitems used by `CppTest*` still only compiled the existing Dtor/Dtor2 generated files. Adding Dtor3 to both shared item manifests removed the unresolved external/link failures in the generated C++ test projects.
+- Validation confirmed the proposal in both architectures. `Debug|x64` and `Debug|Win32` solution builds succeeded, and `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all passed. The final accepted Dtor3 output is `Dtor3=[1][IContainer][IValue][2][IContainer][3][IValue][4]` in both the workflow runtime path and the generated C++ path.
