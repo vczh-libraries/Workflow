@@ -11,7 +11,8 @@
 
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
   - It is used to call `RegisterLocalObject`, unfortunately the current implementation can't make a local object tells the lifecycle what it type id is.
-- Verify in LocalAndWrapper/ServiceWrapper, case a remote object to IRpcWrapperBase and ensure it is successful (like Rpc\Dtor2.txt)
+- `RpcLfiecycle` registered in reflection, because `IRpcLifecycle::GetController` returning itself causes problem in `RuntimeTest`
+  - Without reflection registration, the metadata doesn't say it implements two interfaces at the same time.
 - Continue to add more test cases until all features are covered.
   - Destructor calling.
   - Register local object in two lifecycles.
