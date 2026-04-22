@@ -49,9 +49,9 @@ namespace
 				}
 			}
 			services.Clear();
-			while (localObjectProps.Count() > 0)
+			while (localObjectProperties.Count() > 0)
 			{
-				auto props = localObjectProps.Values().Get(localObjectProps.Count() - 1);
+				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
 				UnregisterLocalObject(props->ref);
 			}
 			wrapperCreateFunc = nullptr;
