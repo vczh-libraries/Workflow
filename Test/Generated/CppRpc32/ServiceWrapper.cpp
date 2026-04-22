@@ -60,6 +60,10 @@ Global Functions
 	::vl::WString ServiceWrapper::clientMain(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto obj = ::vl::__vwsn::This(lc)->RequestService(::vl::WString::Unmanaged(L"RpcServiceWrapperTest::IService"));
+		if ((! static_cast<bool>(::vl::__vwsn::SharedPtrCast<::vl::rpc_controller::IRpcWrapperBase>(obj.Obj()))))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"IService(obj) should be a wrapper object in clientMain"));
+		}
 		auto clientObj = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcServiceWrapperTest::IService>(obj.Obj()));
 		return (((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString((clientObj.Obj() == GLOBAL_NAME serviceObj.Obj()))) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(clientObj.Obj())->Self(clientObj))) + ::vl::WString::Unmanaged(L"]")));
 	}
@@ -119,6 +123,11 @@ Closures
 
 	bool __vwsnc1_ServiceWrapper_serviceMain__RpcServiceWrapperTest_IService::Self(::vl::Ptr<::RpcServiceWrapperTest::IService> obj)
 	{
+		auto wrapperObj = ::vl::__vwsn::Box(obj);
+		if (static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(wrapperObj)))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"IService(obj) should be a local object in serviceMain"));
+		}
 		return (obj.Obj() == GLOBAL_NAME serviceObj.Obj());
 	}
 

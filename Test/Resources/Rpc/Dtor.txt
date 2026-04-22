@@ -28,8 +28,11 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var obj = lc.RequestService("RpcDtorTest::IService");
+	if ((obj as (system::IRpcWrapperBase^) is null))
+	{
+		raise "IService(obj) should be a wrapper object in clientMain";
+	}
 	var clientObj = cast (RpcDtorTest::IService^) obj;
-	/* remote object becomes a wrapper, crashing means bug in the RPC framework */
 	var wrapperObj = cast (system::IRpcWrapperBase^) obj;
 	wrapperObj = null;
 	var m = $"[$(s)]"; /* s should be "Not Deleted" */

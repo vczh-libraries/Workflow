@@ -33,12 +33,22 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	{
 		override func Exchange1(o : IObj1^) : IObj2^
 		{
+			var wrapperObj : object = o;
+			if ((wrapperObj as (system::IRpcWrapperBase^) is null))
+			{
+				raise "IObj1(o) should be a wrapper object in serviceMain";
+			}
 			serviceReceived_Obj1 = o;
 			return serviceObj2;
 		}
 
 		override func Exchange2(o : IObj2^) : IObj1^
 		{
+			var wrapperObj : object = o;
+			if ((wrapperObj as (system::IRpcWrapperBase^) is not null))
+			{
+				raise "IObj2(o) should be a local object in serviceMain";
+			}
 			serviceReceived_Obj2 = o;
 			return serviceReceived_Obj1;
 		}
@@ -49,10 +59,24 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var obj = lc.RequestService("RpcWrapperTest::IService");
+	if ((obj as (system::IRpcWrapperBase^) is null))
+	{
+		raise "IService(obj) should be a wrapper object in clientMain";
+	}
 	var service = cast (RpcWrapperTest::IService^) obj;
 
 	clientReceived_Obj2 = service.Exchange1(clientObj1);
+	var wrapperObj : object = clientReceived_Obj2;
+	if ((wrapperObj as (system::IRpcWrapperBase^) is null))
+	{
+		raise "IObj2(clientReceived_Obj2) should be a wrapper object in clientMain";
+	}
 	clientReceived_Obj1 = service.Exchange2(clientReceived_Obj2);
+	wrapperObj = clientReceived_Obj1;
+	if ((wrapperObj as (system::IRpcWrapperBase^) is not null))
+	{
+		raise "IObj1(clientReceived_Obj1) should be a local object in clientMain";
+	}
 
 	return
 		$"[$(serviceReceived_Obj1 == clientObj1)]" &

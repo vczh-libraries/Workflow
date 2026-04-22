@@ -59,6 +59,10 @@ Global Functions
 	::vl::WString Dtor::clientMain(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto obj = ::vl::__vwsn::This(lc)->RequestService(::vl::WString::Unmanaged(L"RpcDtorTest::IService"));
+		if ((! static_cast<bool>(::vl::__vwsn::SharedPtrCast<::vl::rpc_controller::IRpcWrapperBase>(obj.Obj()))))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"IService(obj) should be a wrapper object in clientMain"));
+		}
 		auto clientObj = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(obj.Obj()));
 		auto wrapperObj = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::rpc_controller::IRpcWrapperBase>(obj.Obj()));
 		(wrapperObj = ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>());
