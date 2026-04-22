@@ -94,7 +94,7 @@ namespace vl
 			vint																				nextObjectId = 1;
 			Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)>	universalWrapperFactory;
 			rpc_controller::RpcObjectReference													pendingProxyRef;
-            collections::List<RpcWrapperProperties>												wrapperProperties;
+			collections::List<RpcWrapperProperties>													wrapperProperties;
 			void																				TrackWrapper(reflection::DescriptableObject* root, rpc_controller::IRpcWrapperBase* proxy, rpc_controller::RpcObjectReference ref);
 			void																				UntrackWrapper(rpc_controller::IRpcWrapperBase* proxy);
 			bool																				TryGetTrackedWrapperRef(reflection::DescriptableObject* obj, rpc_controller::RpcObjectReference& ref)const;
@@ -103,7 +103,7 @@ namespace vl
 			bool																				IsTracked(vint objectId)const;
 			Ptr<reflection::IDescriptable>														CreateCallerProxy(rpc_controller::RpcObjectReference ref);
 		protected:
-			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>				localObjectProperties;
+			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>						localObjectProperties;
 			collections::Dictionary<WString, vint>												idMap;
 
 			virtual vint																		DecideTypeId(reflection::IDescriptable* obj)const;
