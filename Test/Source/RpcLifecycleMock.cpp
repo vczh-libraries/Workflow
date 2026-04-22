@@ -15,26 +15,26 @@ namespace vl
 
 		IRpcObjectOps* RpcLifecycleMock::RequireObjectCallback()const
 		{
-			CHECK_ERROR(objectCallback != nullptr, L"RpcLifecycleMock requires an object callback.");
-			return objectCallback;
+			CHECK_ERROR(objectCallback, L"RpcLifecycleMock requires an object callback.");
+			return objectCallback.Obj();
 		}
 
 		IRpcObjectEventOps* RpcLifecycleMock::RequireEventCallback()const
 		{
-			CHECK_ERROR(eventCallback != nullptr, L"RpcLifecycleMock requires an event callback.");
-			return eventCallback;
+			CHECK_ERROR(eventCallback, L"RpcLifecycleMock requires an event callback.");
+			return eventCallback.Obj();
 		}
 
 		IRpcListOps* RpcLifecycleMock::RequireListCallback()const
 		{
-			CHECK_ERROR(listCallback != nullptr, L"RpcLifecycleMock requires a list callback.");
-			return listCallback;
+			CHECK_ERROR(listCallback, L"RpcLifecycleMock requires a list callback.");
+			return listCallback.Obj();
 		}
 
 		IRpcListEventOps* RpcLifecycleMock::RequireListEventCallback()const
 		{
-			CHECK_ERROR(listEventCallback != nullptr, L"RpcLifecycleMock requires a list event callback.");
-			return listEventCallback;
+			CHECK_ERROR(listEventCallback, L"RpcLifecycleMock requires a list event callback.");
+			return listEventCallback.Obj();
 		}
 
 		RpcLifecycleMock::RpcLifecycleMock()
@@ -59,10 +59,10 @@ namespace vl
 
 		void RpcLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
 		{
-			objectCallback = _objectCallback.Obj();
-			eventCallback = _eventCallback.Obj();
-			listCallback = _listCallback.Obj();
-			listEventCallback = _listEventCallback.Obj();
+			objectCallback = _objectCallback;
+			eventCallback = _eventCallback;
+			listCallback = _listCallback;
+			listEventCallback = _listEventCallback;
 		}
 
 /***********************************************************************
@@ -102,9 +102,9 @@ namespace vl
 			return RequireObjectCallback()->InvokeMethodAsync(ref, methodId, arguments);
 		}
 
-		void RpcLifecycleMock::ObjectHold(RpcObjectReference ref, bool hold)
+		void RpcLifecycleMock::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
 		{
-			RequireObjectCallback()->ObjectHold(ref, hold);
+			RequireObjectCallback()->ObjectHold(ref, remoteClientId, hold);
 		}
 
 		RpcObjectReference RpcLifecycleMock::RequestService(vint typeId)

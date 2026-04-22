@@ -193,9 +193,9 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY(InvokeMethodAsync, ref, methodId, arguments);
 				}
 
-				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, bool hold)override
+				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, vl::vint remoteClientId, bool hold)override
 				{
-					INVOKE_INTERFACE_PROXY(ObjectHold, ref, hold);
+					INVOKE_INTERFACE_PROXY(ObjectHold, ref, remoteClientId, hold);
 				}
 
 				vl::rpc_controller::RpcObjectReference RequestService(vl::vint typeId)override

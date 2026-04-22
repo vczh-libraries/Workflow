@@ -128,6 +128,7 @@ rpcwrapper_Create (487 .. 522)
 <method:ObjectHold<system::IRpcObjectOps>(14)> in rpc_IRpcObjectOps (222 .. 238)
     Arguments:
         ref
+        remoteClientId
         hold
     Captured Variables:
         <captured>_lc
@@ -539,7 +540,7 @@ Instructions:
 155  :     LoadFunction  : func = 13(<method:InvokeMethodAsync<system::IRpcObjectOps>(13)> in rpc_IRpcObjectOps)
 //  new (system::IRpcObjectOps^)
 156  :     LoadMethodInfo: methodInfo = ObjectHold<system::IRpcObjectOps>
-//  func ObjectHold(ref : system::RpcObjectReference, hold : bool) : (void)
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
 157  :     LoadFunction  : func = 14(<method:ObjectHold<system::IRpcObjectOps>(14)> in rpc_IRpcObjectOps)
 //  new (system::IRpcObjectOps^)
 158  :     LoadMethodInfo: methodInfo = RequestService<system::IRpcObjectOps>
@@ -670,7 +671,7 @@ Instructions:
 //  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
 221  :     Return        
 //  hold
-222  :     LoadLocalVar  : var = 1(hold)
+222  :     LoadLocalVar  : var = 2(hold)
 //  if (hold)
 223  :     OpNot         : type = Bool
 //  if (hold)
@@ -699,9 +700,9 @@ Instructions:
 235  :     InvokeMethod  : methodInfo = Remove<system::Dictionary>, stackPatternCount = 1
 //  _holds.Remove(ref);
 236  :     Pop           
-//  func ObjectHold(ref : system::RpcObjectReference, hold : bool) : (void)
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
 237  :     LoadValue     : value = <null>
-//  func ObjectHold(ref : system::RpcObjectReference, hold : bool) : (void)
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
 238  :     Return        
 //  typeId
 239  :     LoadLocalVar  : var = 0(typeId)

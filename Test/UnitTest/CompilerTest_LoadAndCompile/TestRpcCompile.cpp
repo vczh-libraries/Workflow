@@ -338,8 +338,6 @@ namespace RpcInheritanceOrderTest
 			writer.WriteLine(L"\tlc2->decideTypeIdCallback = decideTypeId;");
 			writer.WriteLine(L"\tauto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));");
 			writer.WriteLine(L"\tauto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));");
-			writer.WriteLine(L"\tlc1->SetPeer(lc2.Obj());");
-			writer.WriteLine(L"\tlc2->SetPeer(lc1.Obj());");
 			writer.WriteLine(L"\tlc1->SetAdapter(adapter1.Obj());");
 			writer.WriteLine(L"\tlc2->SetAdapter(adapter2.Obj());");
 			writer.WriteLine(L"");
@@ -352,9 +350,11 @@ namespace RpcInheritanceOrderTest
 			writer.WriteLine(L"\tauto oeo1 = instance.rpc_IRpcObjectEventOps(adapter1.Obj());");
 			writer.WriteLine(L"\tauto oo2 = instance.rpc_IRpcObjectOps(adapter2.Obj());");
 			writer.WriteLine(L"\tauto oeo2 = instance.rpc_IRpcObjectEventOps(adapter2.Obj());");
+			writer.WriteLine(L"\tauto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));");
+			writer.WriteLine(L"\tauto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));");
 			writer.WriteLine(L"");
-			writer.WriteLine(L"\tlc2->Register(oo1, oeo1, lo1, leo1);");
-			writer.WriteLine(L"\tlc1->Register(oo2, oeo2, lo2, leo2);");
+			writer.WriteLine(L"\tlc2->Register(doo1, oeo1, lo1, leo1);");
+			writer.WriteLine(L"\tlc1->Register(doo2, oeo2, lo2, leo2);");
 			writer.WriteLine(L"\tlc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
 			writer.WriteLine(L"\tlc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(typeId, lc); });");
 			writer.WriteLine(L"");

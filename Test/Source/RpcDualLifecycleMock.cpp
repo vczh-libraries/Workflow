@@ -45,6 +45,44 @@ namespace vl
 		}
 
 /***********************************************************************
+* RpcDualObjectOps
+***********************************************************************/
+
+		RpcDualObjectOps::RpcDualObjectOps(RpcDualLifecycleMock* _owner, Ptr<IRpcObjectOps> _callback)
+			: owner(_owner)
+			, callback(_callback)
+		{
+		}
+
+		Value RpcDualObjectOps::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+			return callback->InvokeMethod(ref, methodId, arguments);
+		}
+
+		Ptr<IAsync> RpcDualObjectOps::InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+			return callback->InvokeMethodAsync(ref, methodId, arguments);
+		}
+
+		void RpcDualObjectOps::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
+		{
+			(void)remoteClientId;
+			if (hold)
+			{
+				owner->AcquireRemoteObject(ref);
+			}
+			else
+			{
+				owner->ReleaseRemoteObject(ref);
+			}
+		}
+
+		RpcObjectReference RpcDualObjectOps::RequestService(vint typeId)
+		{
+			return callback->RequestService(typeId);
+		}
+
+/***********************************************************************
 * RpcDualLifeCycleAdapter
 ***********************************************************************/
 
@@ -111,11 +149,6 @@ namespace vl
 				UnregisterLocalObject(props->ref);
 			}
 			services.Clear();
-		}
-
-		void RpcDualLifecycleMock::SetPeer(RpcDualLifecycleMock* _peer)
-		{
-			peer = _peer;
 		}
 
 		void RpcDualLifecycleMock::SetIdMap(const Dictionary<WString, vint>& _idMap)
@@ -238,6 +271,7 @@ namespace vl
 			entry.proxy = proxy;
 			entry.ref = ref;
 			wrapperEntries.Add(entry);
+			AcquireRemoteObject(ref);
 		}
 
 		void RpcDualLifecycleMock::UntrackWrapper(IRpcWrapperBase* proxy)
@@ -258,6 +292,7 @@ namespace vl
 			{
 				auto entry = wrapperEntries[wrapperEntries.Count() - 1];
 				wrapperEntries.RemoveAt(wrapperEntries.Count() - 1);
+				ReleaseRemoteObject(entry.ref);
 
 				if (entry.root)
 				{
@@ -345,10 +380,10 @@ namespace vl
 
 		void RpcDualLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
 		{
-			objectCallback = _objectCallback.Obj();
-			eventCallback = _eventCallback.Obj();
-			listCallback = _listCallback.Obj();
-			listEventCallback = _listEventCallback.Obj();
+			objectCallback = _objectCallback;
+			eventCallback = _eventCallback;
+			listCallback = _listCallback;
+			listEventCallback = _listEventCallback;
 
 			// Do not call SyncIds on Workflow proxy objects.
 			// The Workflow proxy's SyncIds cannot convert Dictionary<WString,vint> through reflection.
@@ -361,7 +396,6 @@ namespace vl
 			CHECK_ERROR(!localObjectProps.Keys().Contains(ref.objectId), L"RpcDualLifecycleMock::RegisterLocalObject: Object ID already registered.");
 			auto props = Ptr(new RpcLocalObjectProperties());
 			props->ref = ref;
-			props->refCount = 1;
 			localObjectProps.Set(ref.objectId, props);
 			return ref;
 		}
@@ -394,8 +428,7 @@ namespace vl
 			}
 			else
 			{
-				CHECK_ERROR(peer != nullptr, L"RpcDualLifecycleMock::AcquireRemoteObject: No peer configured.");
-				peer->AcquireRemoteObject(ref);
+				RpcLifecycleMock::ObjectHold(ref, clientId, true);
 			}
 		}
 
@@ -414,8 +447,7 @@ namespace vl
 			}
 			else
 			{
-				CHECK_ERROR(peer != nullptr, L"RpcDualLifecycleMock::ReleaseRemoteObject: No peer configured.");
-				peer->ReleaseRemoteObject(ref);
+				RpcLifecycleMock::ObjectHold(ref, clientId, false);
 			}
 		}
 
@@ -509,9 +541,6 @@ namespace vl
 					CHECK_ERROR(tracker, L"RpcDualLifecycleMock::PtrToRef: Invalid internal property type.");
 					CHECK_ERROR(tracker->GetMock() == this, L"RpcDualLifecycleMock::PtrToRef: Object registered to a different lifecycle.");
 					auto trackerRef = tracker->GetRef();
-					auto index = localObjectProps.Keys().IndexOf(trackerRef.objectId);
-					CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::PtrToRef: Tracked object not registered.");
-					localObjectProps.Values().Get(index)->refCount++;
 					return trackerRef;
 				}
 			}

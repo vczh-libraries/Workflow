@@ -15,7 +15,7 @@ namespace
 	public:
 		Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return {}; }
 		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return nullptr; }
-		void ObjectHold(RpcObjectReference ref, bool hold)override { (void)ref; (void)hold; CHECK_FAIL(L"Not Supported!"); }
+		void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override { (void)ref; (void)remoteClientId; (void)hold; CHECK_FAIL(L"Not Supported!"); }
 		RpcObjectReference RequestService(vint typeId)override { (void)typeId; CHECK_FAIL(L"Not Supported!"); return {}; }
 	};
 

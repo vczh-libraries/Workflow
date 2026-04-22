@@ -98,7 +98,7 @@ Closures
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> _holds;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
-		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, bool hold) override;
+		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold) override;
 		::vl::rpc_controller::RpcObjectReference RequestService(::vl::vint64_t typeId) override;
 	};
 

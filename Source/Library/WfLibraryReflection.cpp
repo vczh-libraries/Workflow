@@ -139,7 +139,7 @@ WfLoadLibraryTypes
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 				CLASS_MEMBER_METHOD(InvokeMethod, { L"ref" _ L"methodId" _ L"arguments" })
 				CLASS_MEMBER_METHOD(InvokeMethodAsync, { L"ref" _ L"methodId" _ L"arguments" })
-				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"hold" })
+				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"remoteClientId" _ L"hold" })
 				CLASS_MEMBER_METHOD(RequestService, { L"typeId" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 

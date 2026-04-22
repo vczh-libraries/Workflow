@@ -10,10 +10,10 @@ namespace vl
 		class RpcLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle, public rpc_controller::IRpcController
 		{
 		protected:
-			IRpcObjectOps*																	objectCallback = nullptr;
-			IRpcObjectEventOps*																eventCallback = nullptr;
-			IRpcListOps*																	listCallback = nullptr;
-			IRpcListEventOps*																listEventCallback = nullptr;
+			Ptr<IRpcObjectOps>														objectCallback;
+			Ptr<IRpcObjectEventOps>												eventCallback;
+			Ptr<IRpcListOps>														listCallback;
+			Ptr<IRpcListEventOps>												listEventCallback;
 			collections::Dictionary<WString, Ptr<reflection::IDescriptable>>				services;
 
 			IRpcObjectOps*																	RequireObjectCallback()const;
@@ -39,7 +39,7 @@ namespace vl
 
 			reflection::description::Value													InvokeMethod(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
 			Ptr<reflection::description::IAsync>											InvokeMethodAsync(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
-			void																			ObjectHold(rpc_controller::RpcObjectReference ref, bool hold)override;
+			void																			ObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId, bool hold)override;
 			rpc_controller::RpcObjectReference												RequestService(vint typeId)override;
 
 			// IRpcObjectEventOps

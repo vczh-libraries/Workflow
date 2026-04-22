@@ -72,7 +72,7 @@ namespace vl
 		public:
 			virtual vl::reflection::description::Value					InvokeMethod(RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
 			virtual vl::Ptr<vl::reflection::description::IAsync>		InvokeMethodAsync(RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
-			virtual void												ObjectHold(RpcObjectReference ref, bool hold) = 0;
+			virtual void												ObjectHold(RpcObjectReference ref, vl::vint remoteClientId, bool hold) = 0;
 			virtual RpcObjectReference									RequestService(vl::vint typeId) = 0;
 		};
 

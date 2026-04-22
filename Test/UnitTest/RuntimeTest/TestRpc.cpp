@@ -149,8 +149,6 @@ TEST_FILE
 				auto lc2 = Ptr(new RpcWorkflowLifecycleMock(2));
 				auto adapter1 = Ptr(new RpcDualLifeCycleAdapter(lc1.Obj()));
 				auto adapter2 = Ptr(new RpcDualLifeCycleAdapter(lc2.Obj()));
-				lc1->SetPeer(lc2.Obj());
-				lc2->SetPeer(lc1.Obj());
 				lc1->SetGlobalContext(globalContext);
 				lc2->SetGlobalContext(globalContext);
 				lc1->SetIdMapWithReflection(idMap);
@@ -171,10 +169,12 @@ TEST_FILE
 				auto oeo1 = createEventOps(adapter1.Obj());
 				auto oo2 = createObjectOps(adapter2.Obj());
 				auto oeo2 = createEventOps(adapter2.Obj());
+				auto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));
+				auto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));
 
 				// Register cross: ops from lc1 go to lc2, and vice versa
-				lc2->Register(oo1, oeo1, lo1, leo1);
-				lc1->Register(oo2, oeo2, lo2, leo2);
+				lc2->Register(doo1, oeo1, lo1, leo1);
+				lc1->Register(doo2, oeo2, lo2, leo2);
 
 				// Run serviceMain with lc1
 				auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");
@@ -194,6 +194,8 @@ TEST_FILE
 				oo2 = nullptr;
 				oeo1 = nullptr;
 				oo1 = nullptr;
+				doo2 = nullptr;
+				doo1 = nullptr;
 				leo2 = nullptr;
 				lo2 = nullptr;
 				leo1 = nullptr;

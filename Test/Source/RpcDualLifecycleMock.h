@@ -53,6 +53,20 @@ namespace vl
 			rpc_controller::RpcObjectReference							ref;
 		};
 
+		class RpcDualObjectOps : public Object, public virtual rpc_controller::IRpcObjectOps
+		{
+		private:
+			class RpcDualLifecycleMock*								owner = nullptr;
+			Ptr<rpc_controller::IRpcObjectOps>					callback;
+		public:
+			RpcDualObjectOps(class RpcDualLifecycleMock* _owner, Ptr<rpc_controller::IRpcObjectOps> _callback);
+
+			reflection::description::Value						InvokeMethod(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
+			Ptr<reflection::description::IAsync>				InvokeMethodAsync(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
+			void												ObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId, bool hold)override;
+			rpc_controller::RpcObjectReference					RequestService(vint typeId)override;
+		};
+
 		class RpcDualLifeCycleAdapter : public Object, public virtual rpc_controller::IRpcLifeCycle
 		{
 		private:
@@ -78,7 +92,6 @@ namespace vl
 			static WString																				InternalProperty_WrapperTracker;
 			vint																						clientId = 1;
 			vint																						nextObjectId = 1;
-			RpcDualLifecycleMock*																		peer = nullptr;
 			RpcDualLifeCycleAdapter*																	adapter = nullptr;
 			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>								localObjectProps;
 			collections::Dictionary<WString, vint>														idMap;
@@ -99,7 +112,6 @@ namespace vl
 			RpcDualLifecycleMock(vint _clientId);
 			~RpcDualLifecycleMock();
 
-			void																	SetPeer(RpcDualLifecycleMock* _peer);
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	SetAdapter(RpcDualLifeCycleAdapter* _adapter);
 			void																	RegisterWrapperFactory(Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)> factory);
