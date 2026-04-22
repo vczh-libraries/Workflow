@@ -961,7 +961,7 @@ namespace vl
 		public:
 			virtual vl::reflection::description::Value					InvokeMethod(RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
 			virtual vl::Ptr<vl::reflection::description::IAsync>		InvokeMethodAsync(RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
-			virtual void												ObjectHold(RpcObjectReference ref, bool hold) = 0;
+			virtual void												ObjectHold(RpcObjectReference ref, vl::vint remoteClientId, bool hold) = 0;
 			virtual RpcObjectReference									RequestService(vl::vint typeId) = 0;
 		};
 
@@ -1409,9 +1409,9 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY(InvokeMethodAsync, ref, methodId, arguments);
 				}
 
-				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, bool hold)override
+				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, vl::vint remoteClientId, bool hold)override
 				{
-					INVOKE_INTERFACE_PROXY(ObjectHold, ref, hold);
+					INVOKE_INTERFACE_PROXY(ObjectHold, ref, remoteClientId, hold);
 				}
 
 				vl::rpc_controller::RpcObjectReference RequestService(vl::vint typeId)override

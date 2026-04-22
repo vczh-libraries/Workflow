@@ -1136,7 +1136,7 @@ WfLoadLibraryTypes
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 				CLASS_MEMBER_METHOD(InvokeMethod, { L"ref" _ L"methodId" _ L"arguments" })
 				CLASS_MEMBER_METHOD(InvokeMethodAsync, { L"ref" _ L"methodId" _ L"arguments" })
-				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"hold" })
+				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"remoteClientId" _ L"hold" })
 				CLASS_MEMBER_METHOD(RequestService, { L"typeId" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 
@@ -1435,6 +1435,20 @@ namespace vl
 			{
 				return xs.Keys().Contains(key);
 			}
+
+			template<typename TWrapper, typename TInterface>
+			Ptr<TInterface> CreateTrackedProxy(IRpcLifeCycle* lc, RpcObjectReference ref)
+			{
+				auto obj = lc->RefToPtr(ref);
+				CHECK_ERROR(obj, L"RPC proxy creation returned null.");
+				if (auto wrapper = Ptr(obj.Obj()->SafeAggregationCast<IRpcWrapperBase>()))
+				{
+					auto proxy = Ptr(obj.Obj()->SafeAggregationCast<TInterface>());
+					CHECK_ERROR(proxy, L"RPC proxy creation returned an unexpected type.");
+					return proxy;
+				}
+				return Ptr(new TWrapper(lc, ref));
+			}
 		}
 		
 /***********************************************************************
@@ -1501,7 +1515,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefEnumerable::CreateEnumerator()
 		{
-			return Ptr(new RpcByrefEnumerator(lifeCycle, controller->EnumCreate(ref)));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
 		}
 		
 /***********************************************************************
@@ -1529,7 +1543,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefReadonlyList::CreateEnumerator()
 		{
-			return Ptr(new RpcByrefEnumerator(lifeCycle, controller->EnumCreate(ref)));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
 		}
 
 		vint RpcByrefReadonlyList::GetCount()
@@ -1646,7 +1660,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefArray::CreateEnumerator()
 		{
-			return Ptr(new RpcByrefEnumerator(lifeCycle, controller->EnumCreate(ref)));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
 		}
 
 		vint RpcByrefArray::GetCount()
@@ -1709,7 +1723,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefObservableList::CreateEnumerator()
 		{
-			return Ptr(new RpcByrefEnumerator(lifeCycle, controller->EnumCreate(ref)));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
 		}
 
 		vint RpcByrefObservableList::GetCount()
@@ -1788,12 +1802,12 @@ namespace vl
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetKeys()
 		{
-			return Ptr(new RpcByrefReadonlyList(lifeCycle, controller->DictGetKeys(ref)));
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifeCycle, controller->DictGetKeys(ref));
 		}
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetValues()
 		{
-			return Ptr(new RpcByrefReadonlyList(lifeCycle, controller->DictGetValues(ref)));
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifeCycle, controller->DictGetValues(ref));
 		}
 
 		vint RpcByrefDictionary::GetCount()
