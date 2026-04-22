@@ -11,7 +11,6 @@
 
 - Figure out what `decideTypeId` in `RunRpcTestCase` does and see if there is a better way.
   - It is used to call `RegisterLocalObject`, unfortunately the current implementation can't make a local object tells the lifecycle what it type id is.
-  - `idMap.Set(fullName, serviceTypeIds[nextServiceTypeIdIndex++]);` in `LocalRpcMock` in `TestCasesRpc.cpp` is incorrect. `rpc_GetIds` needs to be used here to translate id to string. But `rpc_GetIds` cannot be used anywhere else. `SetIdMap` might be able to use.
 - Other clean up in RpcDualLifecycleMock.
   - Task: Review all public APIs in `RpcDualLifecycleMock`.
   - Task: Review all public APIs in `LocalRpcMock`.
