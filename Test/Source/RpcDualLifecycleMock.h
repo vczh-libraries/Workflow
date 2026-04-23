@@ -22,6 +22,15 @@ namespace vl
 			class RpcDualLifecycleMock*							GetMock() const { return mock; }
 		};
 
+		class RpcDualObjectOwner : public Object
+		{
+		private:
+			vint												clientId = 0;
+		public:
+			RpcDualObjectOwner(vint c);
+			vint												GetClientId() const { return clientId; }
+		};
+
 		class RpcDualWrapperTracker : public Object
 		{
 			friend class RpcDualLifecycleMock;
@@ -75,6 +84,7 @@ namespace vl
 			static WString																		InternalProperty_LocalObjectTracker;
 			static WString																		InternalProperty_WrapperTracker;
 			vint																				clientId = 1;
+				static WString															InternalProperty_LocalObjectOwner;
 			vint																				nextObjectId = 1;
 			Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)>	universalWrapperFactory;
 			rpc_controller::RpcObjectReference													pendingProxyRef;

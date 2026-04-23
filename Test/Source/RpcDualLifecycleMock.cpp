@@ -9,6 +9,7 @@ namespace vl
 		using namespace rpc_controller;
 		using namespace collections;
 
+		WString RpcDualLifecycleMock::InternalProperty_LocalObjectOwner = WString::Unmanaged(L"RpcLocalObjectOwner");
 		WString RpcDualLifecycleMock::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
 		WString RpcDualLifecycleMock::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
 
@@ -23,6 +24,11 @@ namespace vl
 			{
 				mock->UntrackLocalObject(ref);
 			}
+		}
+
+		RpcDualObjectOwner::RpcDualObjectOwner(vint c)
+			: clientId(c)
+		{
 		}
 
 		RpcDualWrapperTracker::RpcDualWrapperTracker(RpcDualLifecycleMock* m, IRpcWrapperBase* p, RpcObjectReference r)
@@ -168,11 +174,28 @@ namespace vl
 
 			if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
 			{
+				if (auto ownerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectOwner))
+				{
+					auto owner = ownerObj.Cast<RpcDualObjectOwner>();
+					CHECK_ERROR(owner, L"RpcDualLifecycleMock::TrackLocalObject: Invalid local object owner type.");
+					if (owner->GetClientId() != ref.clientId)
+					{
+						throw Exception(L"RpcDualLifecycleMock::TrackLocalObject: Object already tracked by a different client.");
+					}
+				}
+				else
+				{
+					descriptable->SetInternalProperty(InternalProperty_LocalObjectOwner, Ptr(new RpcDualObjectOwner(ref.clientId)));
+				}
+
 				if (auto trackerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectTracker))
 				{
 					auto tracker = trackerObj.Cast<RpcDualObjectTracker>();
 					CHECK_ERROR(tracker, L"RpcDualLifecycleMock::TrackLocalObject: Invalid local object tracker type.");
-					CHECK_ERROR(tracker->GetRef().clientId == ref.clientId, L"RpcDualLifecycleMock::TrackLocalObject: Object already tracked by a different client.");
+					if (tracker->GetRef().clientId != ref.clientId)
+					{
+						throw Exception(L"RpcDualLifecycleMock::TrackLocalObject: Object already tracked by a different client.");
+					}
 				}
 
 				auto tracker = Ptr(new RpcDualObjectTracker(this, ref));
@@ -499,9 +522,22 @@ namespace vl
 				{
 					auto tracker = trackerObj.Cast<RpcDualObjectTracker>();
 					CHECK_ERROR(tracker, L"RpcDualLifecycleMock::PtrToRef: Invalid internal property type.");
-					CHECK_ERROR(tracker->GetMock() == this, L"RpcDualLifecycleMock::PtrToRef: Object registered to a different lifecycle.");
+					if (tracker->GetMock() != this)
+					{
+						throw Exception(L"RpcDualLifecycleMock::PtrToRef: Object registered to a different lifecycle.");
+					}
 					auto trackerRef = tracker->GetRef();
 					return trackerRef;
+				}
+
+				if (auto ownerObj = descObj->GetInternalProperty(InternalProperty_LocalObjectOwner))
+				{
+					auto owner = ownerObj.Cast<RpcDualObjectOwner>();
+					CHECK_ERROR(owner, L"RpcDualLifecycleMock::PtrToRef: Invalid local object owner type.");
+					if (owner->GetClientId() != clientId)
+					{
+						throw Exception(L"RpcDualLifecycleMock::PtrToRef: Object registered to a different lifecycle.");
+					}
 				}
 			}
 

@@ -5,6 +5,7 @@
 #include "DtorReflection.h"
 #include "Dtor2Reflection.h"
 #include "Dtor3Reflection.h"
+#include "FailDoubleRegistrationReflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 
 using namespace vl;
@@ -24,6 +25,7 @@ void LoadTestCaseRpcTypes()
 	 LoadDtorTypes();
 	 LoadDtor2Types();
 	 LoadDtor3Types();
+	 LoadFailDoubleRegistrationTypes();
 }
 
 template<typename TInstance>
@@ -165,6 +167,18 @@ TEST_CASE(L"Rpc:Dtor3")
 			if (dynamic_cast<::RpcDtor3Test::IContainer*>(obj)) return instance.rpctype_RpcDtor3Test__IContainer;
 			if (dynamic_cast<::RpcDtor3Test::IValue*>(obj)) return instance.rpctype_RpcDtor3Test__IValue;
 			if (dynamic_cast<::RpcDtor3Test::IService*>(obj)) return instance.rpctype_RpcDtor3Test__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:FailDoubleRegistration")
+{
+	RunRpcTestCase<::vl_workflow_global::FailDoubleRegistration>(L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::FailDoubleRegistration::Instance();
+			if (dynamic_cast<::RpcFailDoubleRegistrationTest::IObject*>(obj)) return instance.rpctype_RpcFailDoubleRegistrationTest__IObject;
+			if (dynamic_cast<::RpcFailDoubleRegistrationTest::IService*>(obj)) return instance.rpctype_RpcFailDoubleRegistrationTest__IService;
 			return RpcTypeId_NotFound;
 		});
 });
