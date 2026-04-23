@@ -96,6 +96,8 @@ Understand what the test case trying to say, you are not allowed to change:
 - Workflow compiling.
 - Workflow to C++ code generation.
 
+`RpcDual(LocalObject|Wrapper)Tracker` and `RpcDual(LocalObject|Wrapper)Properties` are used to track extra informations per object or per object id. Precisely reuse or add information if necessary.
+
 You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
 - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
   - The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
