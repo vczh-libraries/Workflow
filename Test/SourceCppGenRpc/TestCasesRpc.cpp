@@ -10,6 +10,7 @@
 #include "Collection_InByval_OutByvalReflection.h"
 #include "Collection_InByval_OutByrefReflection.h"
 #include "Collection_InByref_OutByvalReflection.h"
+#include "Collection_InByref_OutByrefReflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 
 using namespace vl;
@@ -34,6 +35,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_Collection_InByval_OutByvalTypes();
 	 LoadRpc_Collection_InByval_OutByrefTypes();
 	 LoadRpc_Collection_InByref_OutByvalTypes();
+	 LoadRpc_Collection_InByref_OutByrefTypes();
 }
 
 template<typename TInstance>
@@ -232,6 +234,17 @@ TEST_CASE(L"Rpc:Collection_InByref_OutByval")
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_InByref_OutByval::Instance();
 			if (dynamic_cast<::RpcCollection::InByref::OutByval::IService*>(obj)) return instance.rpctype_RpcCollection__InByref__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:Collection_InByref_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByref_OutByref>(L"[12345][12345][12345]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Collection_InByref_OutByref::Instance();
+			if (dynamic_cast<::RpcCollection::InByref::OutByref::IService*>(obj)) return instance.rpctype_RpcCollection__InByref__OutByref__IService;
 			return RpcTypeId_NotFound;
 		});
 });
