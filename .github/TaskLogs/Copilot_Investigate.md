@@ -2,99 +2,22 @@
 
 # PROBLEM DESCRIPTION
 
-# Prompt
-
 Follow job.new-sample.md to add:
-- Rpc\Collection_InByval_OutByval.txt
-- Rpc\Collection_InByval_OutByref.txt
-- Rpc\Collection_InByref_OutByval.txt
-- Rpc\Collection_InByref_OutByref.txt
+- Rpc\CollectionDict_InByval_OutByval.txt
+- Rpc\CollectionDict_InByval_OutByref.txt
+- Rpc\CollectionDict_InByref_OutByval.txt
+- Rpc\CollectionDict_InByref_OutByref.txt
 
-Some comments in the sample will tell you how to write different test cases for them.
-You need to delete these guiding comments in generated output.
+Just like Rpc\Collection_*.txt but all `int[]` will be replaced with `string[int]`, and the main namespace `RpcCollection` becomes `RpcCollectionDict`.
+The original Copilot_Investigate.md has the log of 4 Rpc\Collection_*.txt cases you just done.
+They tested against list, now we are doing dictionaries, good news is that most challenges should have already been solved during testing against lists.
+So keep new test cases identical to old test cases, only changing from list to dictionary, as well as some related data.
 
-```Workflow
-module Rpc;
-using system::*;
-using RpcWrapperTest::*;
-
-namespace YourFavoriteNamespace // use RpcCollection::InBy(val|ref)::OutBy(val|ref)
-{
-    @rpc:Interface
-    @rpc:Ctor
-    interface IService
-    {
-    @rpc:Byval or @rpc:Byref // this is controlled by OutBy(val|ref)
-    func DoList(
-      @rpc:Byval or @rpc:Byref // this is controlled by InBy(val|ref)
-      xs : int[]
-      ) : int[];
-    }
-}
-
-var xsOrigin : int[] = {1; 2; 3};
-var xsService : int[] = null;
-var xsClient : int[] = null;
-var s = "";
-
-func serviceMain(lc : IRpcLifeCycle*) : void
-{
-    var serviceObj = new (YourFavoriteNamespace::IService^)
-    {
-    func DoList(xs : int[]) : int[]
-    {
-      // when InByval
-      if ((xs as (system::IRpcWrapperBase^) is not null)) { raise "Parameter xs should be a copied local object in serviceMain"; }
-      // when InByref
-      if ((xs as (system::IRpcWrapperBase^) is null)) { raise "Parameter xs should be a wrapper object in serviceMain"; }
-
-      xsService = xs;
-      xs.Add(4);
-      return xs;
-    }
-    };
-    lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
-}
-
-func Print(xs : int[]) : string
-{
-  var s = "";
-  for (var x in xs)
-  {
-    s = $"$(s)$(x)";
-  }
-  return s;
-}
-
-func clientMain(lc : IRpcLifeCycle*) : string
-{
-    var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  var xs = service.DoList(xsOrigin);
-
-  // when OutByval
-  if ((xs as (system::IRpcWrapperBase^) is not null)) { raise "Return value xs should be a copied local object in clientMain"; }
-  // when InByval and OutByref
-  if ((xs as (system::IRpcWrapperBase^) is null)) { raise "Return value xs should be a wrapper object in clientMain"; }
-  // when InByref and OutByref
-  if (xs != xsOrigin) { raise "Return value xs should be the original parameter object in clientMain"; }
-
-  xsClient = xs;
-  xs.Add(5);
-
-  s = $"$(s)[$(Print(xsOrigin))]";
-  s = $"$(s)[$(Print(xsService))]";
-  s = $"$(s)[$(Print(xsClient))]";
-
-  // If InByref, then xsService will be connecting to xsOrigin
-  // If OutByref, then xsClient will be connecting to xsService
-  // Therefore we have these expected results:
-  // InByval_OutByval: [123][1234][12345]
-  // InByval_OutByref: [123][12345][12345]
-  // InByref_OutByval: [1234][1234][12345]
-  // InByref_OutByref: [12345][12345][12345]
-  return s;
-}
-```
+Treat list elements as keys, and treat values as key-th letters.
+Codes like `xs.Add(4)` becomes `xs.Add(4, "D")`.
+An original list printing "123" becomes "1A2B3C".
+All list items are literals, not dynamically constructed, so it should be easy to do.
+No fancy trick is needed in these samples written in Workflow.
 
 Processing containers are a little bit more complex comparing to interfaces.
 When byref is specified, an wrapper will be created to connect to the original container.
@@ -107,9 +30,6 @@ Understand what the test case trying to say, you are not allowed to change:
 - Workflow compiling.
 - Workflow to C++ code generation.
 
-Create 4 samples first, add one single case to `IndexRpc.txt` once a time, therefore to execute the following instructions one after another.
-So you should commit and push 4 times, and in the first commit, 4 samples will be added but only one is in used.
-Do them in the order as listed at the beginning.
 `Rpc(B|Unb)oxBy(val|ref)` should be in the highest priority attemp to fix, as these 4 C++ functions are directly called in generated wrapper classes written Workflow script.
 
 You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
@@ -122,35 +42,39 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
 
 # UPDATES
 
-- Added four new RPC samples in `Test/Resources/Rpc`:
-  - `Collection_InByval_OutByval.txt`
-  - `Collection_InByval_OutByref.txt`
-  - `Collection_InByref_OutByval.txt`
-  - `Collection_InByref_OutByref.txt`
-- Activated the four cases in `Test/Resources/IndexRpc.txt` with expected values:
-  - `Collection_InByval_OutByval=[123][1234][12345]`
-  - `Collection_InByval_OutByref=[123][12345][12345]`
-  - `Collection_InByref_OutByval=[1234][1234][12345]`
-  - `Collection_InByref_OutByref=[12345][12345][12345]`
-- Added the new generated RPC source entries to:
+- Added four new RPC dictionary samples in `Test/Resources/Rpc`:
+  - `CollectionDict_InByval_OutByval.txt`
+  - `CollectionDict_InByval_OutByref.txt`
+  - `CollectionDict_InByref_OutByval.txt`
+  - `CollectionDict_InByref_OutByref.txt`
+- Activated the four dictionary cases in `Test/Resources/IndexRpc.txt` with expected values:
+  - `CollectionDict_InByval_OutByval=[1A2B3C][1A2B3C4D][1A2B3C4D5E]`
+  - `CollectionDict_InByval_OutByref=[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]`
+  - `CollectionDict_InByref_OutByval=[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]`
+  - `CollectionDict_InByref_OutByref=[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]`
+- Added the new sample files to `Test/UnitTest/CompilerTest_LoadAndCompile/CompilerTest_LoadAndCompile.vcxproj` and `.filters`.
+- Added the generated dictionary RPC source entries to:
   - `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems`
   - `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems`
-- Added the sample files to `Test/UnitTest/CompilerTest_LoadAndCompile/CompilerTest_LoadAndCompile.vcxproj` and `.filters`.
-- Fixed RPC byref container unboxing in `Source/Library/WfLibraryRpc.cpp` by adding `BoxRpcObject(...)` and using it from:
-  - `RpcUnboxByref(...)`
-  - `RpcUnboxByvalInternal(...)`
-- Preserved `RpcBoxByref(...)` behavior after testing and reverting a failed probe change there.
-- Sample-level adjustments were kept limited to cases that otherwise failed to build or run:
-  - Replaced fragile `IRpcWrapperBase` assertions on interface-typed collection values where Workflow runtime behavior was not reliable.
-  - Replaced `foreach`-based printing with direct-index helper functions in the new collection samples because `foreach` over byref collection wrappers hit runtime conversion failures.
-- Investigated the request to remove guiding comments from generated output:
-  - The sample-guiding comments from the prompt are not present in the final generated RPC outputs.
-  - The remaining top-of-file `DO NOT MODIFY` banner comes from `Source/Cpp/WfCpp_GenerateCppFiles.cpp`, but changing it would violate the task constraint that disallowed changing Workflow to C++ code generation, so it was left unchanged.
+- Regenerated the corresponding outputs in:
+  - `Test/Generated/CppRpc32`
+  - `Test/Generated/CppRpc64`
+  - `Test/Generated/RpcMetadata32`
+  - `Test/Generated/RpcMetadata64`
+  - `Test/Generated/Workflow32`
+  - `Test/Generated/Workflow64`
+  - `Test/SourceCppGenRpc`
 
-# TEST
+# TEST [CONFIRMED]
 
-- Rebuilt `Test/UnitTest/UnitTest.sln` in `Debug|Win32`: `Build succeeded. 0 Warning(s). 0 Error(s).`
-- Rebuilt `Test/UnitTest/UnitTest.sln` in `Debug|x64`: `Build succeeded. 0 Warning(s). 0 Error(s).`
+- Criteria:
+  - All four new dictionary RPC samples must compile in `CompilerTest_LoadAndCompile`.
+  - `RuntimeTest` must produce the expected values for all four dictionary cases on Win32 and x64.
+  - `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` must also produce the expected values for all four dictionary cases on Win32 and x64.
+  - The required repo-wide `Tools\Tools\Build.ps1 Workflow` wrapper must complete without surfacing a failure.
+- Rebuilt `Test/UnitTest/UnitTest.sln`:
+  - `Debug|Win32`: `Build succeeded. 0 Warning(s). 0 Error(s).`
+  - `Debug|x64`: `Build succeeded. 0 Warning(s). 0 Error(s).`
 - Ran `LibraryTest`:
   - `Win32`: `Passed test files: 2/2`, `Passed test cases: 14/14`
   - `x64`: `Passed test files: 2/2`, `Passed test cases: 14/14`
@@ -158,30 +82,42 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
   - `Win32`: `Passed test files: 1/1`, `Passed test cases: 2/2`
   - `x64`: `Passed test files: 1/1`, `Passed test cases: 2/2`
 - Ran `CompilerTest_LoadAndCompile` on `x64`:
-  - `Passed test files: 6/6`, `Passed test cases: 593/593`
-  - Confirmed merged outputs include all four new RPC cases.
+  - `Passed test files: 6/6`, `Passed test cases: 597/597`
+  - Confirmed the generated merge includes all four new dictionary RPC cases.
 - Ran `RuntimeTest`:
-  - `Win32`: `Passed test files: 4/4`, `Passed test cases: 150/150`
-  - `x64`: `Passed test files: 4/4`, `Passed test cases: 150/150`
+  - `Win32`: `Passed test files: 4/4`, `Passed test cases: 154/154`
+  - `x64`: `Passed test files: 4/4`, `Passed test cases: 154/154`
 - Verified new runtime RPC expectations in both architectures:
-  - `Collection_InByval_OutByval` => `[123][1234][12345]`
-  - `Collection_InByval_OutByref` => `[123][12345][12345]`
-  - `Collection_InByref_OutByval` => `[1234][1234][12345]`
-  - `Collection_InByref_OutByref` => `[12345][12345][12345]`
+  - `CollectionDict_InByval_OutByval` => `[1A2B3C][1A2B3C4D][1A2B3C4D5E]`
+  - `CollectionDict_InByval_OutByref` => `[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]`
+  - `CollectionDict_InByref_OutByval` => `[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]`
+  - `CollectionDict_InByref_OutByref` => `[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]`
 - Ran `CppTest`:
-  - `Win32`: `Passed test files: 2/2`, `Passed test cases: 116/116`
-  - `x64`: `Passed test files: 2/2`, `Passed test cases: 116/116`
+  - `Win32`: `Passed test files: 2/2`, `Passed test cases: 120/120`
+  - `x64`: `Passed test files: 2/2`, `Passed test cases: 120/120`
 - Ran `CppTest_Metaonly`:
-  - `Win32`: `Passed test files: 2/2`, `Passed test cases: 116/116`
-  - `x64`: `Passed test files: 2/2`, `Passed test cases: 116/116`
+  - `Win32`: `Passed test files: 2/2`, `Passed test cases: 120/120`
+  - `x64`: `Passed test files: 2/2`, `Passed test cases: 120/120`
 - Ran `CppTest_Reflection`:
-  - `Win32`: `Passed test files: 2/2`, `Passed test cases: 116/116`
-  - `x64`: `Passed test files: 2/2`, `Passed test cases: 116/116`
+  - `Win32`: `Passed test files: 2/2`, `Passed test cases: 120/120`
+  - `x64`: `Passed test files: 2/2`, `Passed test cases: 120/120`
+- Ran `C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow`:
+  - The wrapper rebuilt and executed the required release Workflow pipeline, including the release unit test projects and release packaging steps, and it returned without surfacing a failure.
 
 # PROPOSALS
 
-- Root cause: RPC container references were unboxed without restoring the specific built-in collection interface type, so later Workflow/runtime paths could observe the wrong surface for byref collection values.
-- Confirmed fix: restoring the concrete built-in interface box in `RpcUnboxByref(...)` and recursive byval unboxing was sufficient for the runtime and generated-C++ paths.
-- Rejected hypothesis: adding reflection registrations for `RpcByref*` wrapper classes. This led to compile issues and did not address the core transport problem, so the experiment was reverted.
-- Rejected hypothesis: changing Workflow to C++ code generation to remove the standard generated file banner. The task only required removing guiding comments originating from samples, and the remaining banner is part of the generator's standard output.
-- Follow-up execution still required after this investigation entry: create the requested ordered commits and push them after the final repo-wide build script check.
+- No.1 Add dictionary samples and generated RPC wiring [CONFIRMED]
+
+## No.1 Add dictionary samples and generated RPC wiring
+
+### CODE CHANGE
+
+- Added the four new dictionary RPC samples in `Test/Resources/Rpc`.
+- Added expected outputs to `Test/Resources/IndexRpc.txt`.
+- Added the new sample files to `CompilerTest_LoadAndCompile.vcxproj` and `.filters`.
+- Regenerated and included the new C++ RPC outputs in `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems`.
+- Regenerated the related files under `Test/Generated/*` and `Test/SourceCppGenRpc`.
+
+### CONFIRMED
+
+The new dictionary cases compiled and passed in `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both Win32 and x64 without any additional changes to `RpcBoxByval`, `RpcBoxByref`, `RpcUnboxByval`, `RpcUnboxByref`, or `RpcDualLifecycleMock`. This confirms that the earlier list-stage fixes already generalized to strong dictionary containers, and the remaining work for this task was limited to adding the new samples, wiring them into the test projects, and committing the generated outputs.

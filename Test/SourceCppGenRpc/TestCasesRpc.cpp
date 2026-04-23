@@ -11,6 +11,10 @@
 #include "Collection_InByval_OutByrefReflection.h"
 #include "Collection_InByref_OutByvalReflection.h"
 #include "Collection_InByref_OutByrefReflection.h"
+#include "CollectionDict_InByval_OutByvalReflection.h"
+#include "CollectionDict_InByval_OutByrefReflection.h"
+#include "CollectionDict_InByref_OutByvalReflection.h"
+#include "CollectionDict_InByref_OutByrefReflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 
 using namespace vl;
@@ -36,6 +40,10 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_Collection_InByval_OutByrefTypes();
 	 LoadRpc_Collection_InByref_OutByvalTypes();
 	 LoadRpc_Collection_InByref_OutByrefTypes();
+	 LoadRpc_CollectionDict_InByval_OutByvalTypes();
+	 LoadRpc_CollectionDict_InByval_OutByrefTypes();
+	 LoadRpc_CollectionDict_InByref_OutByvalTypes();
+	 LoadRpc_CollectionDict_InByref_OutByrefTypes();
 }
 
 template<typename TInstance>
@@ -245,6 +253,50 @@ TEST_CASE(L"Rpc:Collection_InByref_OutByref")
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_InByref_OutByref::Instance();
 			if (dynamic_cast<::RpcCollection::InByref::OutByref::IService*>(obj)) return instance.rpctype_RpcCollection__InByref__OutByref__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_InByval_OutByval")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByval_OutByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByval_OutByval::Instance();
+			if (dynamic_cast<::RpcCollectionDict::InByval::OutByval::IService*>(obj)) return instance.rpctype_RpcCollectionDict__InByval__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_InByval_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByval_OutByref>(L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByval_OutByref::Instance();
+			if (dynamic_cast<::RpcCollectionDict::InByval::OutByref::IService*>(obj)) return instance.rpctype_RpcCollectionDict__InByval__OutByref__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_InByref_OutByval")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByref_OutByval>(L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByref_OutByval::Instance();
+			if (dynamic_cast<::RpcCollectionDict::InByref::OutByval::IService*>(obj)) return instance.rpctype_RpcCollectionDict__InByref__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_InByref_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByref_OutByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByref_OutByref::Instance();
+			if (dynamic_cast<::RpcCollectionDict::InByref::OutByref::IService*>(obj)) return instance.rpctype_RpcCollectionDict__InByref__OutByref__IService;
 			return RpcTypeId_NotFound;
 		});
 });
