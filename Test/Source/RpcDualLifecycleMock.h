@@ -9,26 +9,21 @@ namespace vl
 	{
 		static constexpr vint RpcTypeId_NotFound = -100;
 
-		class RpcDualObjectTracker : public Object
+		class RpcDualLocalObjectTracker : public Object
 		{
 			friend class RpcDualLifecycleMock;
 		private:
-			class RpcDualLifecycleMock*							mock;
+			class RpcDualLifecycleMock* 							mock = nullptr;
 			rpc_controller::RpcObjectReference					ref;
 		public:
-			RpcDualObjectTracker(class RpcDualLifecycleMock* m, rpc_controller::RpcObjectReference r);
-			~RpcDualObjectTracker();
+			RpcDualLocalObjectTracker(class RpcDualLifecycleMock* m, rpc_controller::RpcObjectReference r);
+			~RpcDualLocalObjectTracker();
+			void											Attach(class RpcDualLifecycleMock* m, rpc_controller::RpcObjectReference r);
+			void											Detach();
 			rpc_controller::RpcObjectReference					GetRef() const { return ref; }
+			vint											GetClientId() const { return ref.clientId; }
 			class RpcDualLifecycleMock*							GetMock() const { return mock; }
-		};
-
-		class RpcDualObjectOwner : public Object
-		{
-		private:
-			vint												clientId = 0;
-		public:
-			RpcDualObjectOwner(vint c);
-			vint												GetClientId() const { return clientId; }
+			bool											IsTracked() const { return mock != nullptr; }
 		};
 
 		class RpcDualWrapperTracker : public Object
@@ -78,13 +73,12 @@ namespace vl
 
 		class RpcDualLifecycleMock : public RpcLifecycleMock
 		{
-			friend class RpcDualObjectTracker;
+			friend class RpcDualLocalObjectTracker;
 			friend class RpcDualWrapperTracker;
 		private:
 			static WString																		InternalProperty_LocalObjectTracker;
 			static WString																		InternalProperty_WrapperTracker;
 			vint																				clientId = 1;
-				static WString															InternalProperty_LocalObjectOwner;
 			vint																				nextObjectId = 1;
 			Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)>	universalWrapperFactory;
 			rpc_controller::RpcObjectReference													pendingProxyRef;
