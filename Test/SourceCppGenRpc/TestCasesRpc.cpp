@@ -8,6 +8,7 @@
 #include "FailDoubleRegistrationReflection.h"
 #include "OverloadingReflection.h"
 #include "Collection_InByval_OutByvalReflection.h"
+#include "Collection_InByval_OutByrefReflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 
 using namespace vl;
@@ -30,6 +31,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_OverloadingTypes();
 	 LoadRpc_Collection_InByval_OutByvalTypes();
+	 LoadRpc_Collection_InByval_OutByrefTypes();
 }
 
 template<typename TInstance>
@@ -206,6 +208,17 @@ TEST_CASE(L"Rpc:Collection_InByval_OutByval")
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_InByval_OutByval::Instance();
 			if (dynamic_cast<::RpcCollection::InByval::OutByval::IService*>(obj)) return instance.rpctype_RpcCollection__InByval__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:Collection_InByval_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByval_OutByref>(L"[123][12345][12345]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Collection_InByval_OutByref::Instance();
+			if (dynamic_cast<::RpcCollection::InByval::OutByref::IService*>(obj)) return instance.rpctype_RpcCollection__InByval__OutByref__IService;
 			return RpcTypeId_NotFound;
 		});
 });

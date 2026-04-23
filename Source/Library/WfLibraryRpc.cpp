@@ -30,6 +30,30 @@ namespace vl
 				return xs.Keys().Contains(key);
 			}
 
+			Value BoxRpcObject(Ptr<IDescriptable> obj, vint typeId)
+			{
+				auto raw = obj.Obj();
+				switch (typeId)
+				{
+				case RpcTypeId_IValueObservableList:
+					return BoxValue(Ptr(dynamic_cast<IValueObservableList*>(raw)));
+				case RpcTypeId_IValueDictionary:
+					return BoxValue(Ptr(dynamic_cast<IValueDictionary*>(raw)));
+				case RpcTypeId_IValueArray:
+					return BoxValue(Ptr(dynamic_cast<IValueArray*>(raw)));
+				case RpcTypeId_IValueList:
+					return BoxValue(Ptr(dynamic_cast<IValueList*>(raw)));
+				case RpcTypeId_IValueReadonlyList:
+					return BoxValue(Ptr(dynamic_cast<IValueReadonlyList*>(raw)));
+				case RpcTypeId_IValueEnumerator:
+					return BoxValue(Ptr(dynamic_cast<IValueEnumerator*>(raw)));
+				case RpcTypeId_IValueEnumerable:
+					return BoxValue(Ptr(dynamic_cast<IValueEnumerable*>(raw)));
+				default:
+					return BoxValue(obj);
+				}
+			}
+
 			template<typename TWrapper, typename TInterface>
 			Ptr<TInterface> CreateTrackedProxy(IRpcLifeCycle* lc, RpcObjectReference ref)
 			{
@@ -687,7 +711,8 @@ namespace vl
 
 			if (IsRpcObjectReferenceValue(serializable))
 			{
-				return BoxValue(lc->RefToPtr(GetRpcObjectReference(serializable)));
+				auto ref = GetRpcObjectReference(serializable);
+				return BoxRpcObject(lc->RefToPtr(ref), ref.typeId);
 			}
 
 			return serializable;
@@ -757,7 +782,8 @@ namespace vl
 
 			if (IsRpcObjectReferenceValue(serializable))
 			{
-				return BoxValue(lc->RefToPtr(GetRpcObjectReference(serializable)));
+				auto ref = GetRpcObjectReference(serializable);
+				return BoxRpcObject(lc->RefToPtr(ref), ref.typeId);
 			}
 
 			if (serializable.GetValueType() == Value::SharedPtr)
