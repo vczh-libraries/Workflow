@@ -46,6 +46,11 @@ static WString MangleRpcFullName(const WString& fullName)
 	return mangled;
 }
 
+static WString MakeRpcCppAssemblyName(const WString& itemName)
+{
+	return L"Rpc_" + itemName;
+}
+
 static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName)
 {
 	for (auto [decl, index] : indexed(manager.declarationTypes.Keys()))
@@ -113,6 +118,7 @@ TEST_FILE
 	TEST_CATEGORY(L"RPC compilation")
 	{
 		List<WString> rpcNames, reflectableAssemblies;
+		Dictionary<WString, WString> assemblyNames;
 		Dictionary<WString, WString> assemblyEntries;
 		Dictionary<WString, Ptr<List<WString>>> rpcTypeFullNamesPerItem;
 		LoadSampleIndex(L"Rpc", rpcNames);
@@ -237,25 +243,29 @@ namespace RpcInheritanceOrderTest
 
 #ifdef VCZH_MSVC
 				{
-					auto input = Ptr(new WfCppInput(itemName));
+					auto input = Ptr(new WfCppInput(MakeRpcCppAssemblyName(itemName)));
 					input->multiFile = WfCppFileSwitch::OnDemand;
 					input->reflection = WfCppFileSwitch::OnDemand;
 					input->comment = L"Source: ../Resources/Rpc/" + itemName + L".txt";
+					input->includeFileName = itemName + L"Includes";
+					input->reflectionFileName = itemName + L"Reflection";
+					input->defaultFileName = itemName;
 					input->normalIncludes.Add(L"../Source/CppTypes.h");
 
 					auto output = GenerateCppFiles(input, &manager);
 					TEST_ASSERT(manager.errors.Count() == 0);
+					assemblyNames.Add(itemName, input->assemblyName);
 					if (output->containsReflectionInfo)
 					{
 						reflectableAssemblies.Add(input->assemblyName);
 					}
 					if (output->reflection)
 					{
-						assemblyEntries.Add(input->assemblyName, input->reflectionFileName);
+						assemblyEntries.Add(itemName, input->reflectionFileName);
 					}
 					else
 					{
-						assemblyEntries.Add(input->assemblyName, output->entryFileName);
+						assemblyEntries.Add(itemName, output->entryFileName);
 					}
 
 					for (auto [fileName, index] : indexed(output->cppFiles.Keys()))
@@ -388,7 +398,7 @@ namespace RpcInheritanceOrderTest
 
 				// Generate RunRpcTestCase call with DecideTypeId lambda
 				writer.WriteString(L"\tRunRpcTestCase<::vl_workflow_global::");
-				writer.WriteString(itemName);
+				writer.WriteString(assemblyNames[itemName]);
 				writer.WriteString(L">(L\"");
 				writer.WriteString(itemResult);
 				writer.WriteLine(L"\",");
@@ -396,7 +406,7 @@ namespace RpcInheritanceOrderTest
 				writer.WriteLine(L"\t\t[](IDescriptable* obj) -> vint");
 				writer.WriteLine(L"\t\t{");
 				writer.WriteString(L"\t\t\tauto& instance = ::vl_workflow_global::");
-				writer.WriteString(itemName);
+				writer.WriteString(assemblyNames[itemName]);
 				writer.WriteLine(L"::Instance();");
 				if (rpcTypeFullNamesPerItem.Keys().Contains(itemName))
 				{

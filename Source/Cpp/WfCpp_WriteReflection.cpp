@@ -119,6 +119,94 @@ namespace vl
 							writer.WriteLine(L")");
 						}
 
+						auto WriteInterfaceProxyInvoke = [&](IMethodInfo* methodInfo, ITypeDescriptor* td, vint methodCount)
+						{
+							auto methodName = ConvertName(methodInfo->GetName());
+							auto parameterCount = methodInfo->GetParameterCount();
+							if (methodCount == 1)
+							{
+								if (methodInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+								{
+									writer.WriteString(L"\t\t\t\t\tINVOKE_INTERFACE_PROXY");
+								}
+								else
+								{
+									writer.WriteString(L"\t\t\t\t\tINVOKEGET_INTERFACE_PROXY");
+								}
+
+								if (parameterCount > 0)
+								{
+									writer.WriteString(L"(");
+									writer.WriteString(methodName);
+									for (vint k = 0; k < parameterCount; k++)
+									{
+										writer.WriteString(L", ");
+										writer.WriteString(ConvertName(methodInfo->GetParameter(k)->GetName()));
+									}
+									writer.WriteLine(L");");
+								}
+								else
+								{
+									writer.WriteString(L"_NOPARAMS(");
+									writer.WriteString(methodName);
+									writer.WriteLine(L");");
+								}
+								return;
+							}
+
+							writer.WriteLine(L"\t\t\t\t\tstatic ITypeDescriptor* _interface_proxy_typeDescriptor = nullptr;");
+							writer.WriteLine(L"\t\t\t\t\tstatic IMethodInfo* _interface_proxy_methodInfo = nullptr;");
+							writer.WriteLine(L"\t\t\t\t\tif (_interface_proxy_typeDescriptor != static_cast<DescriptableObject*>(this)->GetTypeDescriptor())");
+							writer.WriteLine(L"\t\t\t\t\t{");
+							writer.WriteLine(L"\t\t\t\t\t\t_interface_proxy_typeDescriptor = static_cast<DescriptableObject*>(this)->GetTypeDescriptor();");
+							writer.WriteLine(L"\t\t\t\t\t\tCHECK_ERROR(_interface_proxy_typeDescriptor != nullptr, L\"Internal error: The type of this interface has not been registered.\");");
+							writer.WriteLine(L"\t\t\t\t\t\tauto impl = dynamic_cast<MethodPointerBinaryData::IIndexer*>(_interface_proxy_typeDescriptor);");
+							writer.WriteLine(L"\t\t\t\t\t\tCHECK_ERROR(impl != nullptr, L\"Internal error: BEGIN_INTERFACE_PROXY is the only correct way to register an interface with a proxy.\");");
+							writer.WriteString(L"\t\t\t\t\t\tauto _interface_proxy_method = (");
+							writer.WriteString(ConvertFunctionType(methodInfo, L"(_interface_proxy_InterfaceType::*)"));
+							writer.WriteString(L") &_interface_proxy_InterfaceType::");
+							writer.WriteString(methodName);
+							writer.WriteLine(L";");
+							writer.WriteLine(L"\t\t\t\t\t\tMethodPointerBinaryDataRetriver<decltype(_interface_proxy_method)> binaryData(_interface_proxy_method);");
+							writer.WriteLine(L"\t\t\t\t\t\t_interface_proxy_methodInfo = impl->GetIndexedMethodInfo(binaryData.GetBinaryData());");
+							writer.WriteLine(L"\t\t\t\t\t}");
+
+							if (methodInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+							{
+								writer.WriteString(L"\t\t\t\t\tproxy->Invoke(_interface_proxy_methodInfo, ");
+							}
+							else
+							{
+								writer.WriteString(L"\t\t\t\t\treturn UnboxParameter<");
+								writer.WriteString(ConvertType(methodInfo->GetReturn()));
+								writer.WriteString(L">(proxy->Invoke(_interface_proxy_methodInfo, ");
+							}
+
+							if (parameterCount > 0)
+							{
+								writer.WriteString(L"IValueList::Create(collections::From((collections::Array<Value>&)(Value_xs()");
+								for (vint k = 0; k < parameterCount; k++)
+								{
+									writer.WriteString(L", ");
+									writer.WriteString(ConvertName(methodInfo->GetParameter(k)->GetName()));
+								}
+								writer.WriteString(L")))");
+							}
+							else
+							{
+								writer.WriteString(L"IValueList::Create()");
+							}
+
+							if (methodInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
+							{
+								writer.WriteLine(L");");
+							}
+							else
+							{
+								writer.WriteLine(L")).Ref();");
+							}
+						};
+
 						vint methodGroupCount = td->GetMethodGroupCount();
 						for (vint i = 0; i < methodGroupCount; i++)
 						{
@@ -133,34 +221,7 @@ namespace vl
 									WriteFunctionHeader(writer, methodInfo, ConvertName(methodInfo->GetName()), true);
 									writer.WriteLine(L" override");
 									writer.WriteLine(L"\t\t\t\t{");
-
-									if (methodInfo->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<void>())
-									{
-										writer.WriteString(L"\t\t\t\t\tINVOKE_INTERFACE_PROXY");
-									}
-									else
-									{
-										writer.WriteString(L"\t\t\t\t\tINVOKEGET_INTERFACE_PROXY");
-									}
-
-									if (methodInfo->GetParameterCount() > 0)
-									{
-										writer.WriteString(L"(");
-										writer.WriteString(ConvertName(methodInfo->GetName()));
-										vint parameterCount = methodInfo->GetParameterCount();
-										for (vint k = 0; k < parameterCount; k++)
-										{
-											writer.WriteString(L", ");
-											writer.WriteString(ConvertName(methodInfo->GetParameter(k)->GetName()));
-										}
-										writer.WriteLine(L");");
-									}
-									else
-									{
-										writer.WriteString(L"_NOPARAMS(");
-										writer.WriteString(ConvertName(methodInfo->GetName()));
-										writer.WriteLine(L");");
-									}
+									WriteInterfaceProxyInvoke(methodInfo, td, methodCount);
 
 									writer.WriteLine(L"\t\t\t\t}");
 								}

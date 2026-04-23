@@ -25,16 +25,16 @@ https://github.com/vczh-libraries
 #pragma GCC diagnostic push
 #endif
 
-#define GLOBAL_SYMBOL ::vl_workflow_global::PrimitiveTypes::
-#define GLOBAL_NAME ::vl_workflow_global::PrimitiveTypes::Instance().
-#define GLOBAL_OBJ &::vl_workflow_global::PrimitiveTypes::Instance()
+#define GLOBAL_SYMBOL ::vl_workflow_global::Rpc_PrimitiveTypes::
+#define GLOBAL_NAME ::vl_workflow_global::Rpc_PrimitiveTypes::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::Rpc_PrimitiveTypes::Instance()
 
 /***********************************************************************
 Global Variables
 ***********************************************************************/
 
-BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_PrimitiveTypes)
-	vl_workflow_global::PrimitiveTypes instance;
+BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_PrimitiveTypes)
+	vl_workflow_global::Rpc_PrimitiveTypes instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.rpctype_RpcPrimitiveTest__IService = static_cast<::vl::vint64_t>(0L);
@@ -48,7 +48,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_PrimitiveTypes)
 		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessStruct = static_cast<::vl::vint64_t>(8L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-END_GLOBAL_STORAGE_CLASS(vl_workflow_global_PrimitiveTypes)
+END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_PrimitiveTypes)
 
 namespace vl_workflow_global
 {
@@ -56,13 +56,13 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	void PrimitiveTypes::serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc)
+	void Rpc_PrimitiveTypes::serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
-		auto service = ::vl::Ptr<::RpcPrimitiveTest::IService>(new ::vl_workflow_global::__vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService());
+		auto service = ::vl::Ptr<::RpcPrimitiveTest::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService());
 		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(service));
 	}
 
-	::vl::WString PrimitiveTypes::clientMain(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::WString Rpc_PrimitiveTypes::clientMain(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto obj = ::vl::__vwsn::This(lc)->RequestService(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService"));
 		auto service = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(obj.Obj()));
@@ -80,7 +80,7 @@ Global Functions
 		return result;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueDictionary> PrimitiveTypes::rpc_GetIds()
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_PrimitiveTypes::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
@@ -95,24 +95,24 @@ Global Functions
 		return result;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> PrimitiveTypes::rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> Rpc_PrimitiveTypes::rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
-		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(lc));
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(lc));
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> PrimitiveTypes::rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> Rpc_PrimitiveTypes::rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
-		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> PrimitiveTypes::rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> Rpc_PrimitiveTypes::rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcPrimitiveTest__IService);
-		auto proxy = ::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(lc, proxyRef));
+		auto proxy = ::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> PrimitiveTypes::rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_PrimitiveTypes::rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
 			auto __vwsn_switch_3 = typeId;
@@ -125,9 +125,9 @@ Global Functions
 		}
 	}
 
-	PrimitiveTypes& PrimitiveTypes::Instance()
+	Rpc_PrimitiveTypes& Rpc_PrimitiveTypes::Instance()
 	{
-		return Getvl_workflow_global_PrimitiveTypes().instance;
+		return Getvl_workflow_global_Rpc_PrimitiveTypes().instance;
 	}
 
 /***********************************************************************
@@ -136,46 +136,46 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::__vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService()
+	__vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::__vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService()
 	{
 	}
 
-	::vl::vint64_t __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessInt(::vl::vint64_t value)
+	::vl::vint64_t __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessInt(::vl::vint64_t value)
 	{
 		return (value + static_cast<::vl::vint64_t>(1L));
 	}
 
-	::vl::vuint64_t __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessUInt(::vl::vuint64_t value)
+	::vl::vuint64_t __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessUInt(::vl::vuint64_t value)
 	{
 		return (value + static_cast<::vl::vuint64_t>(static_cast<::vl::vint64_t>(2L)));
 	}
 
-	float __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessFloat(float value)
+	float __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessFloat(float value)
 	{
 		return (value + static_cast<float>(static_cast<double>(0.25)));
 	}
 
-	double __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessDouble(double value)
+	double __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessDouble(double value)
 	{
 		return (value + static_cast<double>(0.125));
 	}
 
-	::vl::WString __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessString(const ::vl::WString& value)
+	::vl::WString __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessString(const ::vl::WString& value)
 	{
 		return (value + ::vl::WString::Unmanaged(L"!"));
 	}
 
-	bool __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessBool(bool value)
+	bool __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessBool(bool value)
 	{
 		return (! value);
 	}
 
-	::RpcPrimitiveTest::Season __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessEnum(::RpcPrimitiveTest::Season value)
+	::RpcPrimitiveTest::Season __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessEnum(::RpcPrimitiveTest::Season value)
 	{
 		return value;
 	}
 
-	::RpcPrimitiveTest::Point __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
+	::RpcPrimitiveTest::Point __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
 	{
 		auto result = [&](){ ::RpcPrimitiveTest::Point __vwsn_temp__; __vwsn_temp__.x = (value.x + static_cast<::vl::vint64_t>(10L)); __vwsn_temp__.y = (value.y + static_cast<::vl::vint64_t>(20L)); return __vwsn_temp__; }();
 		return result;
@@ -183,13 +183,13 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
+	__vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_holds = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
-	::vl::reflection::description::Value __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::reflection::description::Value __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
 			auto __vwsn_switch_0 = methodId;
@@ -238,12 +238,12 @@ Closures
 		}
 	}
 
-	::vl::Ptr<::vl::reflection::description::IAsync> __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::Ptr<::vl::reflection::description::IAsync> __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		throw ::vl::Exception(::vl::WString::Unmanaged(L"InvokeMethodAsync is not supported."));
 	}
 
-	void __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold)
+	void __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold)
 	{
 		if (hold)
 		{
@@ -255,7 +255,7 @@ Closures
 		}
 	}
 
-	::vl::rpc_controller::RpcObjectReference __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint64_t typeId)
+	::vl::rpc_controller::RpcObjectReference __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint64_t typeId)
 	{
 		{
 			auto __vwsn_switch_1 = typeId;
@@ -270,12 +270,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
+	__vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
 	}
 
-	void __vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	void __vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
 			auto __vwsn_switch_2 = eventId;
@@ -285,18 +285,18 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
 	}
 
-	void __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifeCycle*>(nullptr));
 	}
 
-	__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::~__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService()
+	__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::~__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService()
 	{
 		if ((_lc != nullptr))
 		{
@@ -304,7 +304,7 @@ Closures
 		}
 	}
 
-	bool __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessBool(bool value)
+	bool __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessBool(bool value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -314,7 +314,7 @@ Closures
 		return ::vl::__vwsn::Unbox<bool>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments), _lc));
 	}
 
-	double __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessDouble(double value)
+	double __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessDouble(double value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -324,7 +324,7 @@ Closures
 		return ::vl::__vwsn::Unbox<double>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments), _lc));
 	}
 
-	::RpcPrimitiveTest::Season __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessEnum(::RpcPrimitiveTest::Season value)
+	::RpcPrimitiveTest::Season __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessEnum(::RpcPrimitiveTest::Season value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -334,7 +334,7 @@ Closures
 		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Season>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments), _lc));
 	}
 
-	float __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessFloat(float value)
+	float __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessFloat(float value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -344,7 +344,7 @@ Closures
 		return ::vl::__vwsn::Unbox<float>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments), _lc));
 	}
 
-	::vl::vint64_t __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessInt(::vl::vint64_t value)
+	::vl::vint64_t __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessInt(::vl::vint64_t value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -354,7 +354,7 @@ Closures
 		return ::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments), _lc));
 	}
 
-	::vl::WString __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessString(const ::vl::WString& value)
+	::vl::WString __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessString(const ::vl::WString& value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -364,7 +364,7 @@ Closures
 		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments), _lc));
 	}
 
-	::RpcPrimitiveTest::Point __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
+	::RpcPrimitiveTest::Point __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -374,7 +374,7 @@ Closures
 		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Point>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments), _lc));
 	}
 
-	::vl::vuint64_t __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessUInt(::vl::vuint64_t value)
+	::vl::vuint64_t __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessUInt(::vl::vuint64_t value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));

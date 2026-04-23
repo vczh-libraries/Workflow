@@ -47,7 +47,7 @@ namespace vl
 			END_INTERFACE_MEMBER(::RpcDtorTest::IService)
 
 #undef _
-			class DtorTypeLoader : public Object, public ITypeLoader
+			class Rpc_DtorTypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
@@ -63,12 +63,12 @@ namespace vl
 #endif
 #endif
 
-			bool LoadDtorTypes()
+			bool LoadRpc_DtorTypes()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(Ptr(new DtorTypeLoader));
+					return manager->AddTypeLoader(Ptr(new Rpc_DtorTypeLoader));
 				}
 #endif
 				return false;

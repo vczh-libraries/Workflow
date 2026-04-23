@@ -62,7 +62,7 @@ namespace vl
 			END_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IService)
 
 #undef _
-			class FailDoubleRegistrationTypeLoader : public Object, public ITypeLoader
+			class Rpc_FailDoubleRegistrationTypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
@@ -80,12 +80,12 @@ namespace vl
 #endif
 #endif
 
-			bool LoadFailDoubleRegistrationTypes()
+			bool LoadRpc_FailDoubleRegistrationTypes()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(Ptr(new FailDoubleRegistrationTypeLoader));
+					return manager->AddTypeLoader(Ptr(new Rpc_FailDoubleRegistrationTypeLoader));
 				}
 #endif
 				return false;

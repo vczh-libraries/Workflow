@@ -48,7 +48,7 @@ namespace vl
 			END_INTERFACE_MEMBER(::RpcTest::IService)
 
 #undef _
-			class RequestServiceTypeLoader : public Object, public ITypeLoader
+			class Rpc_RequestServiceTypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
@@ -64,12 +64,12 @@ namespace vl
 #endif
 #endif
 
-			bool LoadRequestServiceTypes()
+			bool LoadRpc_RequestServiceTypes()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(Ptr(new RequestServiceTypeLoader));
+					return manager->AddTypeLoader(Ptr(new Rpc_RequestServiceTypeLoader));
 				}
 #endif
 				return false;

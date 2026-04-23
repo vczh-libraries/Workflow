@@ -80,7 +80,7 @@ namespace vl
 #endif
 #endif
 
-			extern bool LoadPrimitiveTypesTypes();
+			extern bool LoadRpc_PrimitiveTypesTypes();
 		}
 	}
 }

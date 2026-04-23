@@ -62,7 +62,7 @@ namespace vl
 #endif
 #endif
 
-			extern bool LoadFailDoubleRegistrationTypes();
+			extern bool LoadRpc_FailDoubleRegistrationTypes();
 		}
 	}
 }

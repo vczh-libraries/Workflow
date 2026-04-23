@@ -70,7 +70,7 @@ namespace vl
 #endif
 #endif
 
-			extern bool LoadLocalAndWrapperTypes();
+			extern bool LoadRpc_LocalAndWrapperTypes();
 		}
 	}
 }

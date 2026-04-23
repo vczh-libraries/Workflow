@@ -6,6 +6,7 @@
 #include "Dtor2Reflection.h"
 #include "Dtor3Reflection.h"
 #include "FailDoubleRegistrationReflection.h"
+#include "OverloadingReflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 
 using namespace vl;
@@ -18,14 +19,15 @@ using namespace vl::rpc_controller_test;
 
 void LoadTestCaseRpcTypes()
 {
-	 LoadRequestServiceTypes();
-	 LoadPrimitiveTypesTypes();
-	 LoadLocalAndWrapperTypes();
-	 LoadServiceWrapperTypes();
-	 LoadDtorTypes();
-	 LoadDtor2Types();
-	 LoadDtor3Types();
-	 LoadFailDoubleRegistrationTypes();
+	 LoadRpc_RequestServiceTypes();
+	 LoadRpc_PrimitiveTypesTypes();
+	 LoadRpc_LocalAndWrapperTypes();
+	 LoadRpc_ServiceWrapperTypes();
+	 LoadRpc_DtorTypes();
+	 LoadRpc_Dtor2Types();
+	 LoadRpc_Dtor3Types();
+	 LoadRpc_FailDoubleRegistrationTypes();
+	 LoadRpc_OverloadingTypes();
 }
 
 template<typename TInstance>
@@ -92,10 +94,10 @@ TEST_FILE
 
 TEST_CASE(L"Rpc:RequestService")
 {
-	RunRpcTestCase<::vl_workflow_global::RequestService>(L"Hello",
+	RunRpcTestCase<::vl_workflow_global::Rpc_RequestService>(L"Hello",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::RequestService::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_RequestService::Instance();
 			if (dynamic_cast<::RpcTest::IService*>(obj)) return instance.rpctype_RpcTest__IService;
 			return RpcTypeId_NotFound;
 		});
@@ -103,10 +105,10 @@ TEST_CASE(L"Rpc:RequestService")
 
 TEST_CASE(L"Rpc:PrimitiveTypes")
 {
-	RunRpcTestCase<::vl_workflow_global::PrimitiveTypes>(L"[6][12][1.75][2.875][Hi!][false][Autumn][13,27]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PrimitiveTypes>(L"[6][12][1.75][2.875][Hi!][false][Autumn][13,27]",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::PrimitiveTypes::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_PrimitiveTypes::Instance();
 			if (dynamic_cast<::RpcPrimitiveTest::IService*>(obj)) return instance.rpctype_RpcPrimitiveTest__IService;
 			return RpcTypeId_NotFound;
 		});
@@ -114,10 +116,10 @@ TEST_CASE(L"Rpc:PrimitiveTypes")
 
 TEST_CASE(L"Rpc:LocalAndWrapper")
 {
-	RunRpcTestCase<::vl_workflow_global::LocalAndWrapper>(L"[false][true][true][false]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_LocalAndWrapper>(L"[false][true][true][false]",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::LocalAndWrapper::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_LocalAndWrapper::Instance();
 			if (dynamic_cast<::RpcWrapperTest::IObj1*>(obj)) return instance.rpctype_RpcWrapperTest__IObj1;
 			if (dynamic_cast<::RpcWrapperTest::IObj2*>(obj)) return instance.rpctype_RpcWrapperTest__IObj2;
 			if (dynamic_cast<::RpcWrapperTest::IService*>(obj)) return instance.rpctype_RpcWrapperTest__IService;
@@ -127,10 +129,10 @@ TEST_CASE(L"Rpc:LocalAndWrapper")
 
 TEST_CASE(L"Rpc:ServiceWrapper")
 {
-	RunRpcTestCase<::vl_workflow_global::ServiceWrapper>(L"[false][true]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_ServiceWrapper>(L"[false][true]",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::ServiceWrapper::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_ServiceWrapper::Instance();
 			if (dynamic_cast<::RpcServiceWrapperTest::IService*>(obj)) return instance.rpctype_RpcServiceWrapperTest__IService;
 			return RpcTypeId_NotFound;
 		});
@@ -138,10 +140,10 @@ TEST_CASE(L"Rpc:ServiceWrapper")
 
 TEST_CASE(L"Rpc:Dtor")
 {
-	RunRpcTestCase<::vl_workflow_global::Dtor>(L"[Not Deleted][Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor>(L"[Not Deleted][Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::Dtor::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_Dtor::Instance();
 			if (dynamic_cast<::RpcDtorTest::IService*>(obj)) return instance.rpctype_RpcDtorTest__IService;
 			return RpcTypeId_NotFound;
 		});
@@ -149,10 +151,10 @@ TEST_CASE(L"Rpc:Dtor")
 
 TEST_CASE(L"Rpc:Dtor2")
 {
-	RunRpcTestCase<::vl_workflow_global::Dtor2>(L"[Not Deleted][Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor2>(L"[Not Deleted][Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::Dtor2::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_Dtor2::Instance();
 			if (dynamic_cast<::RpcDtor2Test::IService*>(obj)) return instance.rpctype_RpcDtor2Test__IService;
 			return RpcTypeId_NotFound;
 		});
@@ -160,10 +162,10 @@ TEST_CASE(L"Rpc:Dtor2")
 
 TEST_CASE(L"Rpc:Dtor3")
 {
-	RunRpcTestCase<::vl_workflow_global::Dtor3>(L"[1][IContainer][IValue][2][IContainer][3][IValue][4]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor3>(L"[1][IContainer][IValue][2][IContainer][3][IValue][4]",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::Dtor3::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_Dtor3::Instance();
 			if (dynamic_cast<::RpcDtor3Test::IContainer*>(obj)) return instance.rpctype_RpcDtor3Test__IContainer;
 			if (dynamic_cast<::RpcDtor3Test::IValue*>(obj)) return instance.rpctype_RpcDtor3Test__IValue;
 			if (dynamic_cast<::RpcDtor3Test::IService*>(obj)) return instance.rpctype_RpcDtor3Test__IService;
@@ -173,12 +175,24 @@ TEST_CASE(L"Rpc:Dtor3")
 
 TEST_CASE(L"Rpc:FailDoubleRegistration")
 {
-	RunRpcTestCase<::vl_workflow_global::FailDoubleRegistration>(L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration>(L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]",
 		[](IDescriptable* obj) -> vint
 		{
-			auto& instance = ::vl_workflow_global::FailDoubleRegistration::Instance();
+			auto& instance = ::vl_workflow_global::Rpc_FailDoubleRegistration::Instance();
 			if (dynamic_cast<::RpcFailDoubleRegistrationTest::IObject*>(obj)) return instance.rpctype_RpcFailDoubleRegistrationTest__IObject;
 			if (dynamic_cast<::RpcFailDoubleRegistrationTest::IService*>(obj)) return instance.rpctype_RpcFailDoubleRegistrationTest__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:Overloading")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Overloading>(L"[123][true][abc][xyz][123,true,abc,xyz]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Overloading::Instance();
+			if (dynamic_cast<::RpcOverloadingTest::IStringRepresentable*>(obj)) return instance.rpctype_RpcOverloadingTest__IStringRepresentable;
+			if (dynamic_cast<::RpcOverloadingTest::IService*>(obj)) return instance.rpctype_RpcOverloadingTest__IService;
 			return RpcTypeId_NotFound;
 		});
 });

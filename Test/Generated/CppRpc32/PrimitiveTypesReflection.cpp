@@ -69,7 +69,7 @@ namespace vl
 			END_ENUM_ITEM(::RpcPrimitiveTest::Season)
 
 #undef _
-			class PrimitiveTypesTypeLoader : public Object, public ITypeLoader
+			class Rpc_PrimitiveTypesTypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
@@ -87,12 +87,12 @@ namespace vl
 #endif
 #endif
 
-			bool LoadPrimitiveTypesTypes()
+			bool LoadRpc_PrimitiveTypesTypes()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(Ptr(new PrimitiveTypesTypeLoader));
+					return manager->AddTypeLoader(Ptr(new Rpc_PrimitiveTypesTypeLoader));
 				}
 #endif
 				return false;

@@ -70,7 +70,7 @@ namespace vl
 #endif
 #endif
 
-			extern bool LoadDtor3Types();
+			extern bool LoadRpc_Dtor3Types();
 		}
 	}
 }

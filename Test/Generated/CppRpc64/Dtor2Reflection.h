@@ -50,7 +50,7 @@ namespace vl
 #endif
 #endif
 
-			extern bool LoadDtor2Types();
+			extern bool LoadRpc_Dtor2Types();
 		}
 	}
 }

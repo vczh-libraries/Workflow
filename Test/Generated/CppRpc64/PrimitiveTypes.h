@@ -24,10 +24,10 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	class __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService;
-	class __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
-	class __vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService;
+	class __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService;
+	class __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService;
 }
 
 namespace __vwsn_enums
@@ -96,7 +96,7 @@ Global Variables and Functions
 
 namespace vl_workflow_global
 {
-	class PrimitiveTypes
+	class Rpc_PrimitiveTypes
 	{
 	public:
 
@@ -118,17 +118,17 @@ namespace vl_workflow_global
 		::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc);
 
-		static PrimitiveTypes& Instance();
+		static Rpc_PrimitiveTypes& Instance();
 	};
 
 /***********************************************************************
 Closures
 ***********************************************************************/
 
-	class __vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService : public ::vl::Object, public virtual ::RpcPrimitiveTest::IService
+	class __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService : public ::vl::Object, public virtual ::RpcPrimitiveTest::IService
 	{
 	public:
-		__vwsnc1_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService();
+		__vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService();
 
 		::vl::vint64_t ProcessInt(::vl::vint64_t value) override;
 		::vl::vuint64_t ProcessUInt(::vl::vuint64_t value) override;
@@ -140,10 +140,10 @@ Closures
 		::RpcPrimitiveTest::Point ProcessStruct(::RpcPrimitiveTest::Point value) override;
 	};
 
-	class __vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	class __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc2_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> _holds;
@@ -153,24 +153,24 @@ Closures
 		::vl::rpc_controller::RpcObjectReference RequestService(::vl::vint64_t typeId) override;
 	};
 
-	class __vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	class __vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc3_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPrimitiveTest::IRpcWrapper_IService
+	class __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPrimitiveTest::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc4_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService();
+		~__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService();
 		bool ProcessBool(bool value) override;
 		double ProcessDouble(double value) override;
 		::RpcPrimitiveTest::Season ProcessEnum(::RpcPrimitiveTest::Season value) override;

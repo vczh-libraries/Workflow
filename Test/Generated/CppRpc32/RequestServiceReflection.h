@@ -50,7 +50,7 @@ namespace vl
 #endif
 #endif
 
-			extern bool LoadRequestServiceTypes();
+			extern bool LoadRpc_RequestServiceTypes();
 		}
 	}
 }

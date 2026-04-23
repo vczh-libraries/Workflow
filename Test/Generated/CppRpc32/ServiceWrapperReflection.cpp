@@ -48,7 +48,7 @@ namespace vl
 			END_INTERFACE_MEMBER(::RpcServiceWrapperTest::IService)
 
 #undef _
-			class ServiceWrapperTypeLoader : public Object, public ITypeLoader
+			class Rpc_ServiceWrapperTypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
@@ -64,12 +64,12 @@ namespace vl
 #endif
 #endif
 
-			bool LoadServiceWrapperTypes()
+			bool LoadRpc_ServiceWrapperTypes()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					return manager->AddTypeLoader(Ptr(new ServiceWrapperTypeLoader));
+					return manager->AddTypeLoader(Ptr(new Rpc_ServiceWrapperTypeLoader));
 				}
 #endif
 				return false;

@@ -121,7 +121,7 @@ namespace vl
 							mangled += L"__";
 							i++;
 						}
-						else if (fullName[i] == L'.')
+						else if (fullName[i] == L'.' || fullName[i] == L'(' || fullName[i] == L')' || fullName[i] == L',')
 						{
 							mangled += L"_";
 						}

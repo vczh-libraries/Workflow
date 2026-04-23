@@ -46,7 +46,7 @@ namespace vl
 #endif
 #endif
 
-			extern bool LoadDtorTypes();
+			extern bool LoadRpc_DtorTypes();
 		}
 	}
 }
