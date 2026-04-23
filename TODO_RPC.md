@@ -11,6 +11,8 @@
 - `RpcLfiecycle` registered in reflection, because `IRpcLifecycle::GetController` returning itself causes problem in `RuntimeTest`
   - Without reflection registration, the metadata doesn't say it implements two interfaces at the same time.
 - Verify `WfErrors::Cpp*`, probably not needed as errors should have been catched in eariler phases.
+- `WfCpp_WriteReflection.cpp` is changed because `INVOKE(GET?)_INTERFACE_PROXY` does not handle overloading property. This should be a VlppParser bug. Fix the bug and revert this file.
+  - https://github.com/vczh-libraries/Workflow/commit/7b0e54a1964774cbb011ea1e675aa8c72a3fbec4
 - Continue to add more test cases until all features are covered.
   - Byval and byref collections.
     - A function accepts a byval or byref arguments, add one element, return it back as byval or byref arguments.

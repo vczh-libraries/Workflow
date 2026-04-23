@@ -1,77 +1,101 @@
 # Prompt
 
-Follow job.new-sample.md to add a new Rpc\Overloading.txt
+Follow job.new-sample.md to add:
+- Rpc\Collection_InByval_OutByval.txt
+- Rpc\Collection_InByval_OutByref.txt
+- Rpc\Collection_InByref_OutByval.txt
+- Rpc\Collection_InByref_OutByref.txt
+
+Some comments in the sample will tell you how to write different test cases for them.
+You need to delete these guiding comments in generated output.
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcOverloadingTest
+namespace YourFavoriteNamespace // use RpcCollection::InBy(val|ref)::OutBy(val|ref)
 {
-  @rpc:Interface
-  interface IStringRepresentable
-  {
-    func StringValue : string;
-  }
-
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    func ToStringInt(value : int) : string;
-    func ToString(value : bool) : string;
-    func ToString(value : string) : string;
-    func ToString(value : IStringRepresentable^) : string;
-    func ToString(value1 : int, value2 : bool, value3 : string, value 4 : IStringRepresentable^) : string;
+    @rpc:Byval or @rpc:Byref // this is controlled by OutBy(val|ref)
+    func DoList(
+      @rpc:Byval or @rpc:Byref // this is controlled by InBy(val|ref)
+      xs : int[]
+      ) : int[];
 	}
 }
 
+var xsOrigin : int[] = {1; 2; 3};
+var xsService : int[] = null;
+var xsClient : int[] = null;
 var s = "";
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    /*
-    Implement those functions by returning either $"$(value)" or value.StringValue.
-    For the last function concat them using ",".
-    */
+    func DoList(xs : int[]) : int[]
+    {
+      // when InByval
+      if ((xs as (system::IRpcWrapperBase^) is not null)) { raise "Parameter xs should be a copied local object in serviceMain"; }
+      // when InByref
+      if ((xs as (system::IRpcWrapperBase^) is null)) { raise "Parameter xs should be a wrapper object in serviceMain"; }
+
+      xsService = xs;
+      xs.Add(4);
+      return xs;
+    }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
+}
+
+func Print(xs : int[]) : string
+{
+  var s = "";
+  for (var x in xs)
+  {
+    s = $"$(s)$(x)";
+  }
+  return s;
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  var value1 = 123;
-  var value2 = true;
-  var value3 = "abc";
-  var value4 = new YourFavoriteNamespace::IStringRepresentable^ { override func GetStringValue() { return "xyz"; } };
+  var xs = service.DoList(xsOrigin);
+  
+  // when OutByval
+  if ((xs as (system::IRpcWrapperBase^) is not null)) { raise "Return value xs should be a copied local object in clientMain"; }
+  // when InByval and OutByref
+  if ((xs as (system::IRpcWrapperBase^) is null)) { raise "Return value xs should be a wrapper object in clientMain"; }
+  // when InByref and OutByref
+  if (xs != xsOrigin) { raise "Return value xs should be the original parameter object in clientMain"; }
 
-  s = $"[$(service.ToStringInt(value1))]";
-  s = $"[$(service.ToString(value2))]";
-  s = $"[$(service.ToString(value3))]";
-  s = $"[$(service.ToString(value4))]";
-  s = $"[$(service.ToString(value1, value2, value3, value4))]";
+  xsClient = xs;
+  xs.Add(5);
+
+  s = $"$(s)[$(Print(xsOrigin))]";
+  s = $"$(s)[$(Print(xsService))]";
+  s = $"$(s)[$(Print(xsClient))]";
+
+  // If InByref, then xsService will be connecting to xsOrigin
+  // If OutByref, then xsClient will be connecting to xsService
+  // Therefore we have these expected results:
+  // InByval_OutByval: [123][1234][12345]
+  // InByval_OutByref: [123][12345][12345]
+  // InByref_OutByval: [1234][1234][12345]
+  // InByref_OutByref: [12345][12345][12345]
   return s;
 }
 ```
 
-This test varify if the RPC compiler is able to handle overloading.
-The RPC method name is by default YourFavoriteNamespace::IService.GetValue.
-But in this case we need identical name to differentiate overloading functions, and they become:
-- XXX.ToStringInt
-- XXX.ToString(value).1
-- XXX.ToString(value).2
-- XXX.ToString(value).3
-- XXX.ToString(value1,value2,value3,value4)
-Method id constants will "(),." replaced with "_", e.g., `XXX_ToString_value__1` and `XXX_ToString_value1_value2_value3_value4_`.
-You need to handle the case that mangled constant names conflict by reporting an error.
-Review `RpcGeneratedNameConflict` and `RpcMangledNameConflict` error for details.
-You are able to verify if generated names and mangled names are correct by reading Test\Generated\RpcMetadata(32|64)\Wrapper_Overloading.txt.
-Generated names are for string-form ids.
-Mangled names are for constant variable names.
+Processing containers are a little bit more complex comparing to interfaces.
+When byref is specified, an wrapper will be created to connect to the original container.
+When byval is specified, a copy will be created.
+Therefore according to Byref or Byval, the object retrieved from lifecycle may be an IRpcWrapperBase^ or may not, unlike interfaces all remote objects are wrappers.
 
 Understand what the test case trying to say, you are not allowed to change:
 - The content of the sample, unless it doesn't build.
@@ -79,7 +103,10 @@ Understand what the test case trying to say, you are not allowed to change:
 - Workflow compiling.
 - Workflow to C++ code generation.
 
-`RpcDual(LocalObject|Wrapper)Tracker` and `RpcDual(LocalObject|Wrapper)Properties` are used to track extra informations per object or per object id. Precisely reuse or add information if necessary.
+Create 4 samples first, add one single case to `IndexRpc.txt` once a time, therefore to execute the following instructions one after another.
+So you should commit and push 4 times, and in the first commit, 4 samples will be added but only one is in used.
+Do them in the order as listed at the beginning.
+`Rpc(B|Unb)oxBy(val|ref)` should be in the highest priority attemp to fix, as these 4 C++ functions are directly called in generated wrapper classes written Workflow script.
 
 You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
 - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
