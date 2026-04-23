@@ -57,8 +57,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var obj = lc.RequestService("YourFavoriteNamespace::IService");
-	var service = cast (YourFavoriteNamespace::IService^) obj;
+	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
 	return "Test Result";
 }
 ```
