@@ -1,94 +1,77 @@
 # Prompt
 
-Follow job.new-sample.md to add a new Rpc\FailDoubleRegistration.txt
+Follow job.new-sample.md to add a new Rpc\Overloading.txt
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcFailDoubleRegistrationTest
+namespace YourFavoriteNamespace // use RpcOverloadingTest
 {
   @rpc:Interface
-  interface IObject
+  interface IStringRepresentable
   {
-    prop Name : string {get}
+    func StringValue : string;
   }
 
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    func SetObject(obj : IObject^, index : int) : IObject^;
+    func ToStringInt(value : int) : string;
+    func ToString(value : bool) : string;
+    func ToString(value : string) : string;
+    func ToString(value : IStringRepresentable^) : string;
+    func ToString(value1 : int, value2 : bool, value3 : string, value 4 : IStringRepresentable^) : string;
 	}
 }
 
-func MakeObject(name : string) : IObject^
-{
-  return new IObject^
-  {
-    override func GetName() { return name; }
-  }
-}
-
-var objs : IObject^[] = { MakeObject("1st"); MakeObject("2nd"); };
 var s = "";
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    override func SetObject(obj : IObject^, index : int) : IObject^
-    {
-      s = $"$(s)[service:Received $(obj.Name)]";
-      return objs[index];
-    }
+    /*
+    Implement those functions by returning either $"$(value)" or value.StringValue.
+    For the last function concat them using ",".
+    */
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
-}
-
-func CallService(service : YourFavoriteNamespace::IService^, indexParameter : int, indexReturn : int) : void
-{
-  s = $"$(s)[call]";
-  try
-  {
-    var obj = service.SetObject(objs[indexParameter], indexReturn);
-    s = $"$(s)[client:Received $(obj.Name)]";
-  }
-  catch (ex)
-  {
-    s = $"$(s)[exception]";
-  }
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
+  var value1 = 123;
+  var value2 = true;
+  var value3 = "abc";
+  var value4 = new YourFavoriteNamespace::IStringRepresentable^ { override func GetStringValue() { return "xyz"; } };
 
-  /*
-  A call to make client owns 1st and service owns 2nd.
-  Because which lifecycle owning an object depends on which lifecycle touching it eariler.
-  */
-  CallService(service, 0, 1);
-
-  /*
-  serviceMain returning objs[0] triggers error.
-  */
-  CallService(service, 0, 0);
-
-  /*
-  clientMain passing objs[1] triggers error.
-  */
-  CallService(service, 1, 0);
-  CallService(service, 1, 1);
-
-  /*
-  Return the log which could tell the timing of exception.
-  The actual message of the exception does not matter.
-  */
-  return s; // [call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]
+  s = $"[$(service.ToStringInt(value1))]";
+  s = $"[$(service.ToString(value2))]";
+  s = $"[$(service.ToString(value3))]";
+  s = $"[$(service.ToString(value4))]";
+  s = $"[$(service.ToString(value1, value2, value3, value4))]";
+  return s;
 }
 ```
+
+This test varify if the RPC compiler is able to handle overloading.
+The RPC method name is by default YourFavoriteNamespace::IService.GetValue.
+But in this case we need identical name to differentiate overloading functions, and they become:
+- XXX.ToStringInt
+- XXX.ToString(value).1
+- XXX.ToString(value).2
+- XXX.ToString(value).3
+- XXX.ToString(value1,value2,value3,value4)
+Method id constants will "(),." replaced with "_", e.g., `XXX_ToString_value__1` and `XXX_ToString_value1_value2_value3_value4_`.
+You need to handle the case that mangled constant names conflict by reporting an error.
+Review `RpcGeneratedNameConflict` and `RpcMangledNameConflict` error for details.
+You are able to verify if generated names and mangled names are correct by reading Test\Generated\RpcMetadata(32|64)\Wrapper_Overloading.txt.
+Generated names are for string-form ids.
+Mangled names are for constant variable names.
 
 Understand what the test case trying to say, you are not allowed to change:
 - The content of the sample, unless it doesn't build.

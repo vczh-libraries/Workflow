@@ -10,9 +10,8 @@
   - It is used to call `RegisterLocalObject`, unfortunately the current implementation can't make a local object tells the lifecycle what it type id is.
 - `RpcLfiecycle` registered in reflection, because `IRpcLifecycle::GetController` returning itself causes problem in `RuntimeTest`
   - Without reflection registration, the metadata doesn't say it implements two interfaces at the same time.
+- Verify `WfErrors::Cpp*`, probably not needed as errors should have been catched in eariler phases.
 - Continue to add more test cases until all features are covered.
-  - Register local object in two lifecycles.
-  - Function overloading.
   - Byval and byref collections.
     - A function accepts a byval or byref arguments, add one element, return it back as byval or byref arguments.
       - Byval -> byval.
