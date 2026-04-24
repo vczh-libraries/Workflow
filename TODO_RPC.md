@@ -16,15 +16,28 @@
 
 ## ToDo
 
+- Prompt: only when building fails due to binary occupation, kill cdb and kill the test process.
+- RPC workflow metadata should have all attributes attached.
+  - Compiler set omitted attributes.
+  - Wrapper builder fail if any attribute omitted.
 - Continue to add more test cases until all features are covered.
   - Simpler collection cases using property, testing if property attributes applied to both getter return values and setter arguments.
+    - Use dynamic properties, ignore the fact that caching is not implemented.
   - Collections of interfaces.
+    - Collections of interfaces should by default `@rpc:Byval`
+    - Observable list should by default `@rpc:Byval`
     - Regardless of the attributes, interfaces should always be passed using wrappers.
   - Collections of collections of interfaces.
-- C++ codegen for rpc data type JSON serialization.
+  - Observable list.
+  - Cached properties (by default)
+  - Dynamic properties
+  - Sending cached property values proactively from remote to wrapper.
+  - Events
+- Generate JSON from "RPC metadata in Workflow syntax".
+  - Generate with wrappers.
 - Solve interface inheritance and casting.
+- C++ codegen for rpc data type JSON serialization.
 - Delete Runtime test category.
 - Update `TestLibraryRpcByval.cpp` in `LibraryTest` to use `RpcDualLifecycleMock`, remove `RpcByvalLifecycleMock`.
   - Refactor `RpcDualLifecycleMock` to make it a common implementation for `GacUI`.
   - May need to refactor how to retrieve ops interfaces.
-- Generate JSON from "RPC metadata in Workflow syntax".
