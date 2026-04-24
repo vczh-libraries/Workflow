@@ -79,6 +79,10 @@ Global Functions
 		auto xsOrigin = (::vl::__vwsn::CreateList().Add((::vl::__vwsn::CreateList().Add(static_cast<::vl::vint32_t>(1)).Add(static_cast<::vl::vint32_t>(2)).Add(static_cast<::vl::vint32_t>(3))).list)).list;
 		auto service = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollection::Nested::InByval::OutByval::IService>(::vl::__vwsn::This(lc)->RequestService(::vl::WString::Unmanaged(L"RpcCollection::Nested::InByval::OutByval::IService")).Obj()));
 		auto xs = ::vl::__vwsn::This(service.Obj())->DoList(xsOrigin);
+		if ((xs.Obj() == xsOrigin.Obj()))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Return value xs should be a copied local object in clientMain"));
+		}
 		auto xsObj = ::vl::__vwsn::Box(xs);
 		if (static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(xsObj)))
 		{

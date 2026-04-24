@@ -30,6 +30,12 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	{
 		override func DoList(xs : (string[int])[]) : (string[int])[]
 		{
+			var xsObj : object = xs;
+			if ((xsObj as (system::IRpcWrapperBase^) is null))
+			{
+				raise "Parameter xs should be a wrapper object in serviceMain";
+			}
+
 			xsService = xs;
 			var ys = xs[0];
 			ys.Set(4, "D");
@@ -59,6 +65,12 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	if (xs == xsOrigin)
 	{
 		raise "Return value xs should be a copied local object in clientMain";
+	}
+
+	var xsObj : object = xs;
+	if ((xsObj as (system::IRpcWrapperBase^) is not null))
+	{
+		raise "Return value xs should not be a wrapper object in clientMain";
 	}
 
 	var xsClient = xs;

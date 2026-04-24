@@ -61,6 +61,12 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	var xsOrigin = {{1:"A" 2:"B" 3:"C"}};
 	var service = cast (RpcCollectionDict::Nested::InByval::OutByref::IService^) lc.RequestService("RpcCollectionDict::Nested::InByval::OutByref::IService");
 	var xs = service.DoList(xsOrigin);
+	var xsObj : object = xs;
+
+	if ((xsObj as (system::IRpcWrapperBase^) is null))
+	{
+		raise "Return value xs should be a wrapper object in clientMain";
+	}
 
 	var xsClient = xs;
 	var ys = xs[0];

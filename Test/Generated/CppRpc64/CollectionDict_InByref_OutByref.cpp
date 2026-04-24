@@ -144,6 +144,11 @@ Closures
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc1_Rpc_CollectionDict_InByref_OutByref_serviceMain__RpcCollectionDict_InByref_OutByref_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
 	{
+		auto xsObj = ::vl::__vwsn::Box(xs);
+		if ((! static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(xsObj))))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
+		}
 		(GLOBAL_NAME xsService = xs);
 		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"D")));
 		return xs;

@@ -85,6 +85,11 @@ Global Functions
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Return value xs should be a copied local object in clientMain"));
 		}
+		auto xsObj = ::vl::__vwsn::Box(xs);
+		if (static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(xsObj)))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Return value xs should not be a wrapper object in clientMain"));
+		}
 		auto xsClient = xs;
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(xs.Obj())->Get(static_cast<::vl::vint>(0)));
 		::vl::__vwsn::This(ys.Obj())->Set(::vl::__vwsn::Box(static_cast<::vl::vint>(5)), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"E")));
@@ -146,6 +151,11 @@ Closures
 
 	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc1_Rpc_CollectionDict_Nested_InByref_OutByval_serviceMain__RpcCollectionDict_Nested_InByref_OutByval_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs)
 	{
+		auto xsObj = ::vl::__vwsn::Box(xs);
+		if ((! static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(xsObj))))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
+		}
 		(GLOBAL_NAME xsService = xs);
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(xs.Obj())->Get(static_cast<::vl::vint>(0)));
 		::vl::__vwsn::This(ys.Obj())->Set(::vl::__vwsn::Box(static_cast<::vl::vint>(4)), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"D")));

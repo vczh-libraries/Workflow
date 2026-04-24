@@ -79,6 +79,11 @@ Global Functions
 		auto xsOrigin = (::vl::__vwsn::CreateList().Add((::vl::__vwsn::CreateList().Add(static_cast<::vl::vint>(1)).Add(static_cast<::vl::vint>(2)).Add(static_cast<::vl::vint>(3))).list)).list;
 		auto service = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollection::Nested::InByval::OutByref::IService>(::vl::__vwsn::This(lc)->RequestService(::vl::WString::Unmanaged(L"RpcCollection::Nested::InByval::OutByref::IService")).Obj()));
 		auto xs = ::vl::__vwsn::This(service.Obj())->DoList(xsOrigin);
+		auto xsObj = ::vl::__vwsn::Box(xs);
+		if ((! static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(xsObj))))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Return value xs should be a wrapper object in clientMain"));
+		}
 		auto xsClient = xs;
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueList>>(::vl::__vwsn::This(xs.Obj())->Get(static_cast<::vl::vint>(0)));
 		::vl::__vwsn::This(ys.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint>(5)));

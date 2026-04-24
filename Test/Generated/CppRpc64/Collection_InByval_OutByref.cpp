@@ -72,6 +72,11 @@ Global Functions
 		auto xsOrigin = (::vl::__vwsn::CreateList().Add(static_cast<::vl::vint64_t>(1L)).Add(static_cast<::vl::vint64_t>(2L)).Add(static_cast<::vl::vint64_t>(3L))).list;
 		auto service = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollection::InByval::OutByref::IService>(::vl::__vwsn::This(lc)->RequestService(::vl::WString::Unmanaged(L"RpcCollection::InByval::OutByref::IService")).Obj()));
 		auto xs = ::vl::__vwsn::This(service.Obj())->DoList(xsOrigin);
+		auto xsObj = ::vl::__vwsn::Box(xs);
+		if ((! static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(xsObj))))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Return value xs should be a wrapper object in clientMain"));
+		}
 		auto xsClient = xs;
 		::vl::__vwsn::This(xs.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)));
 		return ((((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print3(xsOrigin)) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print5(GLOBAL_NAME xsService)) + ::vl::WString::Unmanaged(L"]"))) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print5(xsClient)) + ::vl::WString::Unmanaged(L"]")));
