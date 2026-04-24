@@ -57,14 +57,22 @@ Global Functions
 		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcCollectionDict::InByval::OutByref::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
-	::vl::WString Rpc_CollectionDict_InByval_OutByref::Print3(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	::vl::WString Rpc_CollectionDict_InByval_OutByref::Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
 	{
-		return (((((::vl::WString::Unmanaged(L"1") + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(1))))) + ::vl::WString::Unmanaged(L"2")) + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"3")) + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(3)))));
-	}
-
-	::vl::WString Rpc_CollectionDict_InByval_OutByref::Print5(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
-	{
-		return (((((((((::vl::WString::Unmanaged(L"1") + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(1))))) + ::vl::WString::Unmanaged(L"2")) + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(2))))) + ::vl::WString::Unmanaged(L"3")) + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(3))))) + ::vl::WString::Unmanaged(L"4")) + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(4))))) + ::vl::WString::Unmanaged(L"5")) + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(5)))));
+		auto result = ::vl::WString::Unmanaged(L"");
+		{
+			auto __vwsn_for_begin_key = static_cast<::vl::vint>(1);
+			auto __vwsn_for_end_key = ::vl::__vwsn::This(xs.Obj())->GetCount();
+			auto key = __vwsn_for_begin_key;
+			while ((key <= __vwsn_for_end_key))
+			{
+				{
+					(result = (((((::vl::WString::Unmanaged(L"") + result) + ::vl::WString::Unmanaged(L"")) + ::vl::__vwsn::ToString(key)) + ::vl::WString::Unmanaged(L"")) + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(key)))));
+				}
+				(key = (key + static_cast<::vl::vint>(1)));
+			}
+		}
+		return result;
 	}
 
 	::vl::WString Rpc_CollectionDict_InByval_OutByref::clientMain(::vl::rpc_controller::IRpcLifeCycle* lc)
@@ -74,7 +82,7 @@ Global Functions
 		auto xs = ::vl::__vwsn::This(service.Obj())->DoList(xsOrigin);
 		auto xsClient = xs;
 		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(static_cast<::vl::vint>(5)), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"E")));
-		return ((((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print3(xsOrigin)) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print5(GLOBAL_NAME xsService)) + ::vl::WString::Unmanaged(L"]"))) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print5(xsClient)) + ::vl::WString::Unmanaged(L"]")));
+		return ((((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(xsOrigin)) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(GLOBAL_NAME xsService)) + ::vl::WString::Unmanaged(L"]"))) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(xsClient)) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_CollectionDict_InByval_OutByref::rpc_GetIds()

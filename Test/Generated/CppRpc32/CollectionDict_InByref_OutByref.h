@@ -73,7 +73,7 @@ namespace vl_workflow_global
 		::vl::vint32_t rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::WString Print5(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
+		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
