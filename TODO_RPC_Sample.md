@@ -1,32 +1,29 @@
 # Prompt
 
 Follow job.new-sample.md to:
-- fix Rpc\CollectionDist_*.txt
-- add Rpc\Collection(Dict)?_Nested_InBy(val|ref)_OutBy(val|ref).txt
+- fix `Rpc\Collection(Dist)?(_Nested)?_*.txt`
 
-Firstly fix the non nested version of all 4 CollectionDict_*.
-You will find there are Print3/Print4/Print5, you can make it into one single Print, by:
-- First check the Count property.
-- Secondly use key from 1 to Count to get the value.
-- Thirdly rewrite it as how Collection_* implementa the Print function, using a for each loop, but you can say
-  - `for (var key in range [1..xs.Count])`
+Consider the same prefix, each group should contain 4 samples:
+- InByref_OutByref:
+  - serviceMain should ensure xs is a wrapper
+  - clientMain should ensure xs is xsOrigin
+- InByref_OutByval
+  - serviceMain should ensure xs is a wrapper
+  - clientMain should ensure xs is not xsOrigin and xs is not a wrapper
+- InByval_OutByref
+  - serviceMain should ensure xs is not a wrapper
+  - clientMain should ensure xs is a wrapper
+- InByval_OutByval
+  - serviceMain should ensure xs is not a wrapper
+  - clientMain should ensure xs is not xsOrigin and xs is not a wrapper
 
-After finishing the fix, git commit and git push to the current branch.
-DO NOT ASK ME ANY QUESTION
+A few checks were already done but most were not.
+Testing if something is or is not a wrapper is very common across samples, check out how others perform the check.
 
-Secondly, write nested version of all existing 8 collection samples:
-- int[] becomes int[][] or (int[])[], use the second one if the first one doesn't compile.
-- string[int] becomes string[int] or (string[int])[int].
-- Do everything that was done as non nested samples, but:
-  - In nested version, xs[0] will be the container to check.
-  - in clientMain, the container must be initialized using:
-    - {{1 2 3}} or {{1 2 3} as int[]}
-    - {{...}} or {{...} as string[int]}
-    - pick the shorter one if possible.
-  - when test again object equality or if it implements the wrapper interface, check the outer container
-  - when adding extra element or printing, check the jnner container.
-
-This test is to ensure that, when byval or byref is applied to a nested container, all levels of container applies.
+This test is to ensure that:
+- when a container is transferred with byref, a wrapper is created.
+- when a container is transferred with byval, a copy (non wrapper) is created.
+- when byval or byref is applied to a nested container, all levels of container applies.
 
 Processing containers are a little bit more complex comparing to interfaces.
 When byref is specified, an wrapper will be created to connect to the original container.
@@ -49,5 +46,3 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
 - After finishing everything, git commit and git push to the current branch.
   - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
-
-So in the whole work you will make 3 commits and push twice. Do the second task after pushing the first one.

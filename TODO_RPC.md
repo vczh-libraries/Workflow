@@ -17,10 +17,9 @@
 ## ToDo
 
 - Continue to add more test cases until all features are covered.
-  - Rewrite CollectionDist samples print functions.
   - Simpler collection cases using property, testing if property attributes applied to both getter return values and setter arguments.
   - Collections of interfaces.
-  - Collections of collections of primitive types.
+    - Regardless of the attributes, interfaces should always be passed using wrappers.
   - Collections of collections of interfaces.
 - C++ codegen for rpc data type JSON serialization.
 - Solve interface inheritance and casting.
