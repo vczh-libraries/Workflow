@@ -64,6 +64,22 @@ So in the whole work you will make 3 commits and push twice. Do the second task 
 - Confirmed the updated non-nested samples compile and still produce the same runtime outputs.
 - Next step after the first push: add the eight nested collection RPC samples, then run the full required test matrix and fix any lifecycle or boxing regressions.
 
+## UPDATE
+
+- Added the eight nested RPC samples under `Test\Resources\Rpc` for list and dictionary inputs across all four `InBy(val|ref)_OutBy(val|ref)` combinations.
+- Updated `Test\Resources\IndexRpc.txt` with the expected outputs for all eight nested samples.
+- Wired the nested samples into `CompilerTest_LoadAndCompile.vcxproj` and `.filters` so they are compiled and generated with the existing RPC sample set.
+- `CompilerTest_LoadAndCompile` `Debug|x64` then passed with the nested samples included, confirming the sample syntax and expected outputs were valid.
+- The first runtime regression appeared in `RuntimeTest` `Debug|x64` at `Collection_Nested_InByval_OutByref`, where nested byref collection access failed with: `Argument "thisObject" cannot convert from "Ptr<system::IRpcWrapperBase>" to "system::Enumerator*".`
+- A first attempt changed `BoxRpcObject` to attach explicit interface descriptors when boxing collection wrappers. That did not fix the failure after a real rebuild because `Value::GetTypeDescriptor()` for `RawPtr` and `SharedPtr` still reports the underlying object's own reflected descriptor.
+- The actual fix was to make the concrete RPC byref collection wrappers themselves reflected classes:
+  - add `Description<...>` inheritance to the `RpcByref*` wrapper classes in `Source\Library\WfLibraryRpc.h`
+  - add the wrapper classes to `WORKFLOW_LIBRARY_TYPES` in `Source\Library\WfLibraryReflection.h`
+  - register type info and collection-interface base classes for those wrappers in `Source\Library\WfLibraryReflection.cpp`
+- That change makes nested byref wrapper objects surface as collection wrapper types instead of only `system::IRpcWrapperBase`, which restores nested element access, iteration, and conversion.
+- Updated `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems` to include the newly generated nested RPC files so `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` link correctly.
+- Removed the earlier experimental `BoxRpcObject` boxing tweak after confirming it was not causal, keeping the final patch set limited to the reflected-wrapper fix and sample/project wiring.
+
 # TEST
 
 - Stage 1 confirmation:
@@ -74,13 +90,22 @@ So in the whole work you will make 3 commits and push twice. Do the second task 
   - Run the required unit test flow for the changed source and generated outputs.
   - If failures appear, check `RpcBoxByval`, `RpcBoxByref`, `RpcUnboxByval`, `RpcUnboxByref`, and `RpcDualLifecycleMock` first.
 - Current results:
-  - `CompilerTest_LoadAndCompile` `Debug|x64`: `Passed test files: 6/6`, `Passed test cases: 597/597`.
-  - `RuntimeTest` `Debug|x64`: `Passed test files: 4/4`, `Passed test cases: 154/154`.
-  - Verified runtime outputs:
-    - `CollectionDict_InByval_OutByval` => `[1A2B3C][1A2B3C4D][1A2B3C4D5E]`
-    - `CollectionDict_InByval_OutByref` => `[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]`
-    - `CollectionDict_InByref_OutByval` => `[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]`
-    - `CollectionDict_InByref_OutByref` => `[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]`
+  - Stage 1 completion before the first push:
+    - `CompilerTest_LoadAndCompile` `Debug|x64`: `Passed test files: 6/6`, `Passed test cases: 597/597`.
+    - `RuntimeTest` `Debug|x64`: `Passed test files: 4/4`, `Passed test cases: 154/154`.
+  - Stage 2 final validation:
+    - `CompilerTest_LoadAndCompile` `Debug|x64`: `Passed test files: 6/6`, `Passed test cases: 605/605`.
+    - `UnitTest.sln` build `Debug|x64`: `Build succeeded`, `0 Error(s)`.
+    - `UnitTest.sln` build `Debug|Win32`: `Build succeeded`, `0 Error(s)`.
+    - `RuntimeTest` `Debug|x64`: `Passed test files: 4/4`, `Passed test cases: 162/162`.
+    - `RuntimeTest` `Debug|Win32`: `Passed test files: 4/4`, `Passed test cases: 162/162`.
+    - `CppTest` `Debug|x64`: `Passed test files: 2/2`, `Passed test cases: 128/128`.
+    - `CppTest` `Debug|Win32`: `Passed test files: 2/2`, `Passed test cases: 128/128`.
+    - `CppTest_Metaonly` `Debug|x64`: `Passed test files: 2/2`, `Passed test cases: 128/128`.
+    - `CppTest_Metaonly` `Debug|Win32`: `Passed test files: 2/2`, `Passed test cases: 128/128`.
+    - `CppTest_Reflection` `Debug|x64`: `Passed test files: 2/2`, `Passed test cases: 128/128`.
+    - `CppTest_Reflection` `Debug|Win32`: `Passed test files: 2/2`, `Passed test cases: 128/128`.
+    - All eight nested collection and dictionary RPC cases matched the expected outputs in both `RuntimeTest` and `CppTest*`.
 
 # PROPOSALS
 
@@ -97,3 +122,30 @@ So in the whole work you will make 3 commits and push twice. Do the second task 
 ### CONFIRMED
 
 The stage-1 failure was entirely inside the sample scripts. After replacing the fixed-width dictionary print helpers with a single count-driven `Print` function, `CompilerTest_LoadAndCompile` and `RuntimeTest` both passed on `Debug|x64`, and the expected dictionary RPC outputs stayed unchanged. No runtime lifecycle or RPC boxing changes were required for this slice.
+
+- No.2 Force interface descriptors during RPC boxing [REJECTED]
+
+## No.2 Force interface descriptors during RPC boxing
+
+### CODE CHANGE
+
+- A temporary experiment changed `BoxRpcObject` in `Source\Library\WfLibraryRpc.cpp` to box collection wrappers through explicit interface descriptors.
+- The intent was to make nested byref wrappers appear as `IValueList` / `IValueDictionary` instead of `IRpcWrapperBase` when they re-entered Workflow runtime code.
+
+### REJECTED
+
+This did not survive validation. For reflected pointer values in this codebase, `Value::GetTypeDescriptor()` ignores the explicit descriptor passed to `BoxValue` and reports the underlying object's own reflected type. After a real rebuild, `RuntimeTest` still failed in the same place. The experiment was removed from the final patch set.
+
+- No.3 Reflect concrete byref collection wrappers [CONFIRMED]
+
+## No.3 Reflect concrete byref collection wrappers
+
+### CODE CHANGE
+
+- Added `Description<...>` inheritance to the `RpcByrefEnumerator`, `RpcByrefEnumerable`, `RpcByrefReadonlyList`, `RpcByrefList`, `RpcByrefArray`, `RpcByrefObservableList`, and `RpcByrefDictionary` classes in `Source\Library\WfLibraryRpc.h`.
+- Registered those wrapper classes in `Source\Library\WfLibraryReflection.h` and `Source\Library\WfLibraryReflection.cpp`, including their collection-interface base classes and `IRpcWrapperBase` where applicable.
+- Updated the shared RPC generated-project item lists so the newly generated nested RPC sources are compiled and linked in all `CppTest*` variants.
+
+### CONFIRMED
+
+The nested runtime failure was caused by concrete byref collection wrapper instances only surfacing as `system::IRpcWrapperBase` at runtime. Once the wrapper classes themselves became reflected collection types, nested values such as `xs[0]` converted and iterated correctly. The final validation matrix passed on both `Debug|x64` and `Debug|Win32` for `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.

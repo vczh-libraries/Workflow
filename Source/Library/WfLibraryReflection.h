@@ -65,6 +65,13 @@ Predefined Types
 			F(vl::rpc_controller::IRpcController)\
 			F(vl::rpc_controller::IRpcLifeCycle)\
 			F(vl::rpc_controller::IRpcWrapperBase)\
+			F(vl::rpc_controller::RpcByrefEnumerator)\
+			F(vl::rpc_controller::RpcByrefEnumerable)\
+			F(vl::rpc_controller::RpcByrefReadonlyList)\
+			F(vl::rpc_controller::RpcByrefList)\
+			F(vl::rpc_controller::RpcByrefArray)\
+			F(vl::rpc_controller::RpcByrefObservableList)\
+			F(vl::rpc_controller::RpcByrefDictionary)\
 			WORKFLOW_LIBRARY_ATTRIBUTE_TYPES(F)\
 
 			WORKFLOW_LIBRARY_TYPES(DECL_TYPE_INFO)
