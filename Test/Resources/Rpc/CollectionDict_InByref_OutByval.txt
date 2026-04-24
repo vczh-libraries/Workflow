@@ -36,14 +36,14 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	lc.RegisterService("RpcCollectionDict::InByref::OutByval::IService", serviceObj);
 }
 
-func Print4(xs : string[int]) : string
+func Print(xs : string[int]) : string
 {
-	return $"1$(xs[1])2$(xs[2])3$(xs[3])4$(xs[4])";
-}
-
-func Print5(xs : string[int]) : string
-{
-	return $"1$(xs[1])2$(xs[2])3$(xs[3])4$(xs[4])5$(xs[5])";
+	var result = "";
+	for (key in range [1, xs.Count])
+	{
+		result = $"$(result)$(key)$(xs[key])";
+	}
+	return result;
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
@@ -61,7 +61,7 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	xs.Set(5, "E");
 
 	return
-		$"[$(Print4(xsOrigin))]" &
-		$"[$(Print4(xsService))]" &
-		$"[$(Print5(xsClient))]";
+		$"[$(Print(xsOrigin))]" &
+		$"[$(Print(xsService))]" &
+		$"[$(Print(xsClient))]";
 }
