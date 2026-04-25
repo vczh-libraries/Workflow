@@ -1,12 +1,16 @@
 # Prompt
 
-Follow job.new-sample.md to:
-- convert `Rpc\Collection(Dist)?_*.txt` to `Rpc\Collection(Dist)?_Interface_*.txt`
-- not including `_Nested` samples, so in total there willbe 8 samples.
+Follow job.new-sample.md and add 8 new cases:
+- Read `Rpc\Collection(Dist)?_*.txt`
+- Carefully understand how they get modified to `Rpc\Collection(Dist)?_Nested*.txt`
+- Carefully understand how they get modified to `Rpc\Collection(Dist)?_Interface*.txt`
+- You are going to combine them and produce 8 samples: `Rpc\Collection(Dist)?_Interface_Nested*.txt`
 
-New samples perform exactly the same check, but there are two places to modify.
+Basically here are the 2 things to do:
 
-1) `int[]` and `string[int]` will be changed to `IValue^[]` and `IValue^[int]`.
+1) For a list, change its element from `int` to `IValue^`. For a dictionary, change its value from `string` to `IValue^`.
+Since new samples are about a container of a container of an interface, they become `IValue^[][]` and `IValue^[int][int].
+The outer containers always have one record, which are inner containers that storing actual data under testing.
 ```
 @rpc:Interface
 interface IValue
@@ -24,6 +28,7 @@ Because:
 So you need to check every item in xsService and xsClient that:
 - Only item 4 in xsService is not a wrapper but all others are.
 - Only item 4 in xsClient is a wrapper but all others are not.
+`Rpc\Collection(Dist)?_Interface*.txt` already have the check, you will need to follow the same pattern.
 
 This test is to ensure that:
 - when a container is transferred with byref, a wrapper is created.

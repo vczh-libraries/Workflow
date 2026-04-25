@@ -84,19 +84,34 @@ Global Functions
 
 	void Rpc_CollectionDict_Interface_InByref_OutByref::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
 	{
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(1)))), true, ::vl::WString::Unmanaged(L"xsService[1]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(2)))), true, ::vl::WString::Unmanaged(L"xsService[2]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(3)))), true, ::vl::WString::Unmanaged(L"xsService[3]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(4)))), false, ::vl::WString::Unmanaged(L"xsService[4]"));
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint>(1);
+			auto __vwsn_for_end_i = ::vl::__vwsn::This(xs.Obj())->GetCount();
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(i))), (i != static_cast<::vl::vint>(4)), ((::vl::WString::Unmanaged(L"xsService[") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
+				}
+				(i = (i + static_cast<::vl::vint>(1)));
+			}
+		}
 	}
 
 	void Rpc_CollectionDict_Interface_InByref_OutByref::CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
 	{
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(1)))), false, ::vl::WString::Unmanaged(L"xsClient[1]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(2)))), false, ::vl::WString::Unmanaged(L"xsClient[2]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(3)))), false, ::vl::WString::Unmanaged(L"xsClient[3]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(4)))), true, ::vl::WString::Unmanaged(L"xsClient[4]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint>(5)))), false, ::vl::WString::Unmanaged(L"xsClient[5]"));
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint>(1);
+			auto __vwsn_for_end_i = ::vl::__vwsn::This(xs.Obj())->GetCount();
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByref::OutByref::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(i))), (i == static_cast<::vl::vint>(4)), ((::vl::WString::Unmanaged(L"xsService[") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
+				}
+				(i = (i + static_cast<::vl::vint>(1)));
+			}
+		}
 	}
 
 	void Rpc_CollectionDict_Interface_InByref_OutByref::serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc)

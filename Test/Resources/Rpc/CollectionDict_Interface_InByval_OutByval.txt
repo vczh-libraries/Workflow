@@ -69,19 +69,18 @@ func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
 
 func CheckServiceItems(xs : IValue^[int]) : void
 {
-	CheckValue(xs[1], true, "xsService[1]");
-	CheckValue(xs[2], true, "xsService[2]");
-	CheckValue(xs[3], true, "xsService[3]");
-	CheckValue(xs[4], false, "xsService[4]");
+	for (i in range [1, xs.Count])
+	{
+	  CheckValue(xs[i], i != 4, $"xsService[$(i)]");
+	}
 }
 
 func CheckClientItems(xs : IValue^[int]) : void
 {
-	CheckValue(xs[1], false, "xsClient[1]");
-	CheckValue(xs[2], false, "xsClient[2]");
-	CheckValue(xs[3], false, "xsClient[3]");
-	CheckValue(xs[4], true, "xsClient[4]");
-	CheckValue(xs[5], false, "xsClient[5]");
+	for (i in range [1, xs.Count])
+	{
+	  CheckValue(xs[i], i == 4, $"xsService[$(i)]");
+	}
 }
 
 func serviceMain(lc : IRpcLifeCycle*) : void

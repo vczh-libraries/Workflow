@@ -84,19 +84,34 @@ Global Functions
 
 	void Rpc_CollectionDict_Interface_InByval_OutByval::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
 	{
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)))), true, ::vl::WString::Unmanaged(L"xsService[1]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)))), true, ::vl::WString::Unmanaged(L"xsService[2]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)))), true, ::vl::WString::Unmanaged(L"xsService[3]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)))), false, ::vl::WString::Unmanaged(L"xsService[4]"));
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(1L);
+			auto __vwsn_for_end_i = ::vl::__vwsn::This(xs.Obj())->GetCount();
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(i))), (i != static_cast<::vl::vint64_t>(4L)), ((::vl::WString::Unmanaged(L"xsService[") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
+				}
+				(i = (i + static_cast<::vl::vint64_t>(1L)));
+			}
+		}
 	}
 
 	void Rpc_CollectionDict_Interface_InByval_OutByval::CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
 	{
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)))), false, ::vl::WString::Unmanaged(L"xsClient[1]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)))), false, ::vl::WString::Unmanaged(L"xsClient[2]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)))), false, ::vl::WString::Unmanaged(L"xsClient[3]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)))), true, ::vl::WString::Unmanaged(L"xsClient[4]"));
-		GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)))), false, ::vl::WString::Unmanaged(L"xsClient[5]"));
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(1L);
+			auto __vwsn_for_end_i = ::vl::__vwsn::This(xs.Obj())->GetCount();
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::OutByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(i))), (i == static_cast<::vl::vint64_t>(4L)), ((::vl::WString::Unmanaged(L"xsService[") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
+				}
+				(i = (i + static_cast<::vl::vint64_t>(1L)));
+			}
+		}
 	}
 
 	void Rpc_CollectionDict_Interface_InByval_OutByval::serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc)
