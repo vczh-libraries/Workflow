@@ -2210,7 +2210,12 @@ namespace vl
 				{
 					if (auto obj = dynamic_cast<IDescriptable*>(raw))
 					{
-						return BoxValue(lc->PtrToRef(Ptr<IDescriptable>(obj)));
+						auto ref = lc->PtrToRef(Ptr<IDescriptable>(obj));
+						if (obj->SafeAggregationCast<IRpcWrapperBase>())
+						{
+							lc->GetController()->AcquireRemoteObject(ref);
+						}
+						return BoxValue(ref);
 					}
 				}
 			}
@@ -2231,7 +2236,12 @@ namespace vl
 			if (IsRpcObjectReferenceValue(serializable))
 			{
 				auto ref = GetRpcObjectReference(serializable);
-				return BoxRpcObject(lc->RefToPtr(ref), ref.typeId);
+				auto obj = lc->RefToPtr(ref);
+				if (!obj || !obj->SafeAggregationCast<IRpcWrapperBase>())
+				{
+					lc->GetController()->ReleaseRemoteObject(ref);
+				}
+				return BoxRpcObject(obj, ref.typeId);
 			}
 
 			if (serializable.GetValueType() == Value::SharedPtr)
