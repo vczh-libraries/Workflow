@@ -1,0 +1,205 @@
+﻿module RpcMetadata;
+
+var rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IValue : int = 0;
+
+var rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IService : int = 1;
+
+var rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IValue_GetValue : int = 2;
+
+var rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IService_DoList : int = 3;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("RpcCollectionOblist::Interface::InByref::OutByref::IValue", 0);
+    result.Set("RpcCollectionOblist::Interface::InByref::OutByref::IService", 1);
+    result.Set("RpcCollectionOblist::Interface::InByref::OutByref::IValue.GetValue", 2);
+    result.Set("RpcCollectionOblist::Interface::InByref::OutByref::IService.DoList", 3);
+    return result;
+}
+
+func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _holds : object[system::RpcObjectReference] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            switch (methodId)
+            {
+                case rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IValue_GetValue:
+                {
+                    var target : RpcCollectionOblist::Interface::InByref::OutByref::IValue^ = (cast (RpcCollectionOblist::Interface::InByref::OutByref::IValue^) _lc.RefToPtr(ref));
+                    return system::IRpcLifeCycle::RpcBoxByval(target.GetValue(), _lc);
+                }
+                case rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IService_DoList:
+                {
+                    var target : RpcCollectionOblist::Interface::InByref::OutByref::IService^ = (cast (RpcCollectionOblist::Interface::InByref::OutByref::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (observe ::RpcCollectionOblist::Interface::InByref::OutByref::IValue^[]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc);
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+        }
+
+        override func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+        {
+            raise "InvokeMethodAsync is not supported.";
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _holds.Set(ref, _lc.RefToPtr(ref));
+            }
+            else
+            {
+                _holds.Remove(ref);
+            }
+        }
+
+        override func RequestService(typeId : int) : (system::RpcObjectReference)
+        {
+            switch (typeId)
+            {
+                case rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IValue:
+                {
+                    return _lc.PtrToRef(_lc.RequestService("RpcCollectionOblist::Interface::InByref::OutByref::IValue"));
+                }
+                case rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IService:
+                {
+                    return _lc.PtrToRef(_lc.RequestService("RpcCollectionOblist::Interface::InByref::OutByref::IService"));
+                }
+                default:
+                raise "Unknown RPC type id.";
+            }
+        }
+    };
+}
+
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            switch (eventId)
+            {
+                default:
+                raise "Unknown RPC event id.";
+            }
+        }
+    };
+}
+
+namespace RpcCollectionOblist
+{
+    namespace Interface
+    {
+        namespace InByref
+        {
+            namespace OutByref
+            {
+                interface IRpcWrapper_IValue : RpcCollectionOblist::Interface::InByref::OutByref::IValue, system::IRpcWrapperBase
+                {
+                }
+
+                interface IRpcWrapper_IService : RpcCollectionOblist::Interface::InByref::OutByref::IService, system::IRpcWrapperBase
+                {
+                }
+            }
+        }
+    }
+}
+
+func rpcwrapper_RpcCollectionOblist__Interface__InByref__OutByref__IValue(lc : system::IRpcLifeCycle*) : (RpcCollectionOblist::Interface::InByref::OutByref::IRpcWrapper_IValue^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IValue);
+    var proxy : RpcCollectionOblist::Interface::InByref::OutByref::IRpcWrapper_IValue^ = new (RpcCollectionOblist::Interface::InByref::OutByref::IRpcWrapper_IValue^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+
+        override func GetValue() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IValue_GetValue, arguments), _lc));
+        }
+    };
+    return proxy;
+}
+
+func rpcwrapper_RpcCollectionOblist__Interface__InByref__OutByref__IService(lc : system::IRpcLifeCycle*) : (RpcCollectionOblist::Interface::InByref::OutByref::IRpcWrapper_IService^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IService);
+    var proxy : RpcCollectionOblist::Interface::InByref::OutByref::IRpcWrapper_IService^ = new (RpcCollectionOblist::Interface::InByref::OutByref::IRpcWrapper_IService^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+
+        override func DoList(xs : observe ::RpcCollectionOblist::Interface::InByref::OutByref::IValue^[]) : (observe ::RpcCollectionOblist::Interface::InByref::OutByref::IValue^[])
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(xs, _lc));
+            return (cast (observe ::RpcCollectionOblist::Interface::InByref::OutByref::IValue^[]) system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IService_DoList, arguments), _lc));
+        }
+    };
+    return proxy;
+}
+
+func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IValue:
+        {
+            return rpcwrapper_RpcCollectionOblist__Interface__InByref__OutByref__IValue(lc);
+        }
+        case rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IService:
+        {
+            return rpcwrapper_RpcCollectionOblist__Interface__InByref__OutByref__IService(lc);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}
