@@ -1,26 +1,54 @@
 # Repro
 
-## Task 1
+Follow job.new-sample.md and add 24 new samples:
+- Copy `Rpc\Collection*_Default.txt` to `Rpc\Collection*_PropDefault.txt`
+- Copy `Rpc\Collection*_InByval_OutByval.txt` to `Rpc\Collection*_PropByval.txt`
+- Copy `Rpc\Collection*_InByref_OutByref.txt` to `Rpc\Collection*_PropByref.txt`
+- Remember to change the namespaces for interfaces, because types could not conflict across samples.
 
-- `Collection_Nested_*` tests `int[][]`.
-- `CollectionDist_Nested_*` tests `string[int][]`.
-- `CollectionDist_Interface_Nested_*` tests `IValue^[int][int]`.
-But:
-- `Collection_Interface_Nested_*` tests `IValue^[][]`. You are going to change it to `IValue^[][int]`. The new types means a dictionary of key `int` and value `IValue^[]`. So we are able to test if the outer container is dictionary and the inner container is list, which is not currently covered.
+## Extra Modification
 
-## Task 2
+These new samples are for testing collection properties in interfaces. So extra modification should apply during copying.
 
-Follow job.new-sample.md and add 8 new samples:
-- Read `Rpc\Collection(Dist)?(_Interface)?(_Nested)?_*.txt`
-- Copy them to `Rpc\Collection(Dist)?(_Interface)?(_Nested)?_Default.txt`
-  - When `_Interface`, copy from `_InByref_OutByref`.
-  - When not `_Interface`, copy from `_InByval_OutByval`.
-  - Remove all `@rpc:Byval` and `@rpc:Byref` from samples, according to `TODO_RPC_Definition.md`, following the above two rules should just pass all unit test projects. This is the purpose of these tests.
-  - Remember to change the namespaces for interfaces, because types could not conflict across samples.
+In `IService` change `func DoList(xs : T) : T` to `prop T List {not observe}`.
 
-## General Instructions
+The original `IService::DoList` implementation looks like:
+```
+override func DoList(xs : T) : T
+{
+  ANYCODE(xs);
+	return xs;
+}
+```
+
+Now it becomes
+```
+var _List : T = null;
+
+override func GetList() : T
+{
+  return _List;
+}
+
+override func SetList(xs : T) : void
+{
+  ANYCODE(xs); // should be just simple copy
+  _List = xs;
+}
+```
+
+In `clientMain` change `var xs = service.DoList(xsOrigin);` to
+```
+service.List = xsOrigin;
+var xs = service.List;
+```
+
+Keep all others exactly identical. According to `TODO_RPC_Definition.md`, following the above rules should just pass all unit test projects. This is the purpose of these tests.
+
+## General Instruction
 
 This test is to ensure that:
+- `@rpc:Byref` or `@rpc:Byval` attributes on properties, including absense, will be transferred to getter's return value and setter's parameter, if the property type is a collection. Property in interfaces are implemented by a pair of override functions.
 - when a container is transferred with byref, a wrapper is created.
 - when a container is transferred with byval, a copy (non wrapper) is created.
 - when byval or byref is not explicitly written, the correct default option will be selected and applied to these containers. It depends on the actual type.
@@ -44,8 +72,7 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
 - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
   - The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
 - If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
-- **PER EACH TASK**
-  - Pass all unit test, fix any test failure including pre-existings.
-  - After finishing everything, git commit and git push to the current branch.
-    - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
-  - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+- Pass all unit test, fix any test failure including pre-existings.
+- After finishing everything, git commit and git push to the current branch.
+  - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
+- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
