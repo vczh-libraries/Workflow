@@ -2,13 +2,17 @@
 
 # PROBLEM DESCRIPTION
 
-Follow job.new-sample.md to:
-- convert `Rpc\Collection(Dist)?_*.txt` to `Rpc\Collection(Dist)?_Interface_*.txt`
-- not including `_Nested` samples, so in total there willbe 8 samples.
+Follow job.new-sample.md and add 8 new cases:
+- Read `Rpc\Collection(Dist)?_*.txt`
+- Carefully understand how they get modified to `Rpc\Collection(Dist)?_Nested*.txt`
+- Carefully understand how they get modified to `Rpc\Collection(Dist)?_Interface*.txt`
+- You are going to combine them and produce 8 samples: `Rpc\Collection(Dist)?_Interface_Nested*.txt`
 
-New samples perform exactly the same check, but there are two places to modify.
+Basically here are the 2 things to do:
 
-1) `int[]` and `string[int]` will be changed to `IValue^[]` and `IValue^[int]`.
+1) For a list, change its element from `int` to `IValue^`. For a dictionary, change its value from `string` to `IValue^`.
+Since new samples are about a container of a container of an interface, they become `IValue^[][]` and `IValue^[int][int]`.
+The outer containers always have one record, which are inner containers that storing actual data under testing.
 ```
 @rpc:Interface
 interface IValue
@@ -26,6 +30,7 @@ Because:
 So you need to check every item in xsService and xsClient that:
 - Only item 4 in xsService is not a wrapper but all others are.
 - Only item 4 in xsClient is a wrapper but all others are not.
+`Rpc\Collection(Dist)?_Interface*.txt` already have the check, you will need to follow the same pattern.
 
 This test is to ensure that:
 - when a container is transferred with byref, a wrapper is created.
@@ -57,11 +62,18 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
 
 # UPDATES
 
+- Added eight RPC nested-interface collection samples and indexed their expected results.
+- Generated and wired the matching C++/reflection RPC outputs into the generated project item manifests.
+- Validation completed successfully:
+  - Debug Win32/x64 matrix passed through `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+  - Final umbrella validation `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` completed with exit code 0.
+
 # TEST
 
-- Add 8 new non-nested RPC samples: `Collection_Interface_*` and `CollectionDict_Interface_*`, mirroring the existing collection byval/byref matrix.
-- Each new sample replaces primitive list or dictionary element values with `IValue^`, creates all items through `MakeValue(value : int or string)`, and keeps the original container-level wrapper or copy assertions.
-- Each new sample adds pre-return ownership assertions in `clientMain` so that `xsService` contains wrapper items except the service-owned item 4, and `xsClient` contains local items except the service-owned item 4.
+- Add 8 new RPC samples: `Collection_Interface_Nested_*` and `CollectionDict_Interface_Nested_*`, mirroring the existing nested collection byval/byref matrix.
+- Each list sample stores one inner `IValue^[]` inside an outer list, creates every value through `MakeValue`, and prints the values from the inner list.
+- Each dictionary sample stores one inner `IValue^[int]` inside an outer dictionary, creates every value through `MakeValue`, and prints the values from the inner dictionary.
+- Each sample preserves the original byval/byref container-level checks and adds the interface item-wrapper checks before returning from `clientMain`.
 - Success criteria:
   - `CompilerTest_LoadAndCompile` compiles the new samples and generates C++ output for them.
   - `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` pass the new samples for both Win32 and x64.
@@ -69,18 +81,3 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
   - The full required debug Win32/x64 unit-test matrix, followed by `..\Tools\Tools\Build.ps1 Workflow`, passes.
 
 # PROPOSALS
-
-- Added 8 new non-nested interface-valued RPC samples under `Test/Resources/Rpc`: `Collection_Interface_*` and `CollectionDict_Interface_*`.
-- Updated `Test/Resources/IndexRpc.txt`, `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems`, and `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems` so the new samples participate in the expected-output and generated-source test matrix.
-- Fixed the internal Workflow namespace and RPC service names for the new samples by inserting the `Interface` namespace segment, avoiding collisions with the existing non-interface collection samples during generated C++ compilation.
-- Fixed the failing byref-to-byval interface-container roundtrip in `Source/Library/WfLibraryRpc.cpp` by adding a temporary remote-object hold when boxing an existing RPC wrapper byval, then releasing that temporary hold after owner-side byval unboxing resolves the reference back to a local object.
-- Kept the lifetime fix local to `RpcBoxByval` / `RpcUnboxByval`; the broader `RpcDualLifecycleMock` retention experiment was backed out after it proved unsafe during tracker teardown.
-- Regenerated the RPC workflow / metadata / C++ outputs and validated the debug matrix for both `x64` and `Win32`:
-  - `LibraryTest`
-  - `CompilerTest_GenerateMetadata`
-  - `CompilerTest_LoadAndCompile`
-  - `RuntimeTest`
-  - `CppTest`
-  - `CppTest_Metaonly`
-  - `CppTest_Reflection`
-- Passed the repo-wide release umbrella validation with `Tools\Tools\Build.ps1 Workflow` (exit code `0`), covering `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, and `RuntimeTest` for `Win32` and `x64`, followed by release packaging and the `CppMerge` release rebuild.

@@ -1,0 +1,144 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollection::Interface::Nested::InByref::OutByref::*;
+
+namespace RpcCollection
+{
+	namespace Interface
+	{
+		namespace Nested
+		{
+			namespace InByref
+			{
+				namespace OutByref
+				{
+					@rpc:Interface
+					interface IValue
+					{
+						func GetValue() : int;
+						prop Value : int {GetValue}
+					}
+
+					@rpc:Interface
+					@rpc:Ctor
+					interface IService
+					{
+						@rpc:Byref
+						func DoList(@rpc:Byref xs : IValue^[][]) : IValue^[][];
+					}
+				}
+			}
+		}
+	}
+}
+
+var xsService : IValue^[][] = {};
+
+func MakeValue(value : int) : IValue^
+{
+	return new (IValue^)
+	{
+		override func GetValue() : int
+		{
+			return value;
+		}
+	};
+}
+
+func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
+{
+	var valueObj : object = value;
+	if (shouldBeWrapper)
+	{
+		if ((valueObj as (system::IRpcWrapperBase^) is null))
+		{
+			raise $"$(name) should be a wrapper object";
+		}
+	}
+	else
+	{
+		if ((valueObj as (system::IRpcWrapperBase^) is not null))
+		{
+			raise $"$(name) should be a local object";
+		}
+	}
+}
+
+func CheckServiceItems(xs : IValue^[][]) : void
+{
+	var ys = xs[0];
+	for (i in range [0, ys.Count))
+	{
+		CheckValue(ys[i], i != 3, $"xsService[0][$(i)]");
+	}
+}
+
+func CheckClientItems(xs : IValue^[][]) : void
+{
+	var ys = xs[0];
+	for (i in range [0, ys.Count))
+	{
+		CheckValue(ys[i], i == 3, $"xsClient[0][$(i)]");
+	}
+}
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	var serviceObj = new (IService^)
+	{
+		override func DoList(xs : IValue^[][]) : IValue^[][]
+		{
+			var xsObj : object = xs;
+			if ((xsObj as (system::IRpcWrapperBase^) is null))
+			{
+				raise "Parameter xs should be a wrapper object in serviceMain";
+			}
+
+			xsService = xs;
+			var ys = xs[0];
+			ys.Add(MakeValue(4));
+			return xs;
+		}
+	};
+	lc.RegisterService("RpcCollection::Interface::Nested::InByref::OutByref::IService", serviceObj);
+}
+
+func Print(xs : IValue^[][]) : string
+{
+	var result = "";
+	for (x in xs[0])
+	{
+		result = $"$(result)$(x.Value)";
+	}
+	return result;
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+	var ysOrigin : IValue^[] = {};
+	ysOrigin.Add(MakeValue(1));
+	ysOrigin.Add(MakeValue(2));
+	ysOrigin.Add(MakeValue(3));
+	var xsOrigin : IValue^[][] = {};
+	xsOrigin.Add(ysOrigin);
+	var service = cast (IService^) lc.RequestService("RpcCollection::Interface::Nested::InByref::OutByref::IService");
+	var xs = service.DoList(xsOrigin);
+
+	if (xs != xsOrigin)
+	{
+		raise "Return value xs should be the original parameter object in clientMain";
+	}
+
+	var xsClient = xs;
+	var ys = xs[0];
+	ys.Add(MakeValue(5));
+
+	CheckServiceItems(xsService);
+	CheckClientItems(xsClient);
+
+	return
+		$"[$(Print(xsOrigin))]" &
+		$"[$(Print(xsService))]" &
+		$"[$(Print(xsClient))]";
+}
