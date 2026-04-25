@@ -10125,6 +10125,16 @@ namespace vl
 					{
 						return predefined->name == WfPredefinedTypeName::Void;
 					}
+					if (auto child = dynamic_cast<WfChildType*>(type))
+					{
+						if (child->name.value == L"Void")
+						{
+							if (auto top = dynamic_cast<WfTopQualifiedType*>(child->parent.Obj()))
+							{
+								return top->name.value == L"system";
+							}
+						}
+					}
 					return false;
 				}
 
@@ -13762,9 +13772,9 @@ ValidateModuleRPC_GenerateMetadata
 							Dictionary<WString, vint> methodNameCounters;
 							Dictionary<WString, vint> eventNameCounters;
 
-							for (auto memberDecl : sourceDecl->declarations)
+							auto collectSourceMember = [&](WfDeclaration* memberDecl)
 							{
-								if (auto methodDecl = memberDecl.Cast<WfFunctionDeclaration>())
+								if (auto methodDecl = dynamic_cast<WfFunctionDeclaration*>(memberDecl))
 								{
 									auto name = methodDecl->name.value;
 									auto nameIndex = methodNameCounters.Keys().IndexOf(name);
@@ -13772,7 +13782,7 @@ ValidateModuleRPC_GenerateMetadata
 									auto generatedMethod = GetGeneratedMethodByOccurrence(decl.Obj(), name, occurrence);
 									if (generatedMethod)
 									{
-										orderedMethods.Add(methodDecl.Obj());
+										orderedMethods.Add(methodDecl);
 										generatedMethods.Add(generatedMethod);
 									}
 
@@ -13785,7 +13795,7 @@ ValidateModuleRPC_GenerateMetadata
 										methodNameCounters.Set(name, occurrence + 1);
 									}
 								}
-								else if (auto eventDecl = memberDecl.Cast<WfEventDeclaration>())
+								else if (auto eventDecl = dynamic_cast<WfEventDeclaration*>(memberDecl))
 								{
 									auto name = eventDecl->name.value;
 									auto nameIndex = eventNameCounters.Keys().IndexOf(name);
@@ -13793,7 +13803,7 @@ ValidateModuleRPC_GenerateMetadata
 									auto generatedEvent = GetGeneratedEventByOccurrence(decl.Obj(), name, occurrence);
 									if (generatedEvent)
 									{
-										orderedEvents.Add(eventDecl.Obj());
+										orderedEvents.Add(eventDecl);
 										generatedEvents.Add(generatedEvent);
 									}
 
@@ -13804,6 +13814,18 @@ ValidateModuleRPC_GenerateMetadata
 									else
 									{
 										eventNameCounters.Set(name, occurrence + 1);
+									}
+								}
+							};
+
+							for (auto memberDecl : sourceDecl->declarations)
+							{
+								collectSourceMember(memberDecl.Obj());
+								if (auto virtualCfeDecl = memberDecl.Cast<WfVirtualCfeDeclaration>())
+								{
+									for (auto expandedDecl : virtualCfeDecl->expandedDeclarations)
+									{
+										collectSourceMember(expandedDecl.Obj());
 									}
 								}
 							}

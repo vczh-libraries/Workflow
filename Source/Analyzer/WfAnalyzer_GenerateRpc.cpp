@@ -496,6 +496,16 @@ namespace vl
 					{
 						return predefined->name == WfPredefinedTypeName::Void;
 					}
+					if (auto child = dynamic_cast<WfChildType*>(type))
+					{
+						if (child->name.value == L"Void")
+						{
+							if (auto top = dynamic_cast<WfTopQualifiedType*>(child->parent.Obj()))
+							{
+								return top->name.value == L"system";
+							}
+						}
+					}
 					return false;
 				}
 

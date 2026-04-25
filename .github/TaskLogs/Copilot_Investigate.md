@@ -2,27 +2,55 @@
 
 # PROBLEM DESCRIPTION
 
-## Task 1
+Follow job.new-sample.md and add 24 new samples:
+- Copy `Rpc\Collection*_Default.txt` to `Rpc\Collection*_PropDefault.txt`
+- Copy `Rpc\Collection*_InByval_OutByval.txt` to `Rpc\Collection*_PropByval.txt`
+- Copy `Rpc\Collection*_InByref_OutByref.txt` to `Rpc\Collection*_PropByref.txt`
+- Remember to change the namespaces for interfaces, because types could not conflict across samples.
 
-- `Collection_Nested_*` tests `int[][]`.
-- `CollectionDist_Nested_*` tests `string[int][]`.
-- `CollectionDist_Interface_Nested_*` tests `IValue^[int][int]`.
-But:
-- `Collection_Interface_Nested_*` tests `IValue^[][]`. You are going to change it to `IValue^[][int]`. The new types means a dictionary of key `int` and value `IValue^[]`. So we are able to test if the outer container is dictionary and the inner container is list, which is not currently covered.
+## Extra Modification
 
-## Task 2
+These new samples are for testing collection properties in interfaces. So extra modification should apply during copying.
 
-Follow job.new-sample.md and add 8 new samples:
-- Read `Rpc\Collection(Dist)?(_Interface)?(_Nested)?_*.txt`
-- Copy them to `Rpc\Collection(Dist)?(_Interface)?(_Nested)?_Default.txt`
-  - When `_Interface`, copy from `_InByref_OutByref`.
-  - When not `_Interface`, copy from `_InByval_OutByval`.
-  - Remove all `@rpc:Byval` and `@rpc:Byref` from samples, according to `TODO_RPC_Definition.md`, following the above two rules should just pass all unit test projects. This is the purpose of these tests.
-  - Remember to change the namespaces for interfaces, because types could not conflict across samples.
+In `IService` change `func DoList(xs : T) : T` to `prop T List {not observe}`.
 
-## General Instructions
+The original `IService::DoList` implementation looks like:
+```
+override func DoList(xs : T) : T
+{
+  ANYCODE(xs);
+    return xs;
+}
+```
+
+Now it becomes
+```
+var _List : T = null;
+
+override func GetList() : T
+{
+  return _List;
+}
+
+override func SetList(xs : T) : void
+{
+  ANYCODE(xs); // should be just simple copy
+  _List = xs;
+}
+```
+
+In `clientMain` change `var xs = service.DoList(xsOrigin);` to
+```
+service.List = xsOrigin;
+var xs = service.List;
+```
+
+Keep all others exactly identical. According to `TODO_RPC_Definition.md`, following the above rules should just pass all unit test projects. This is the purpose of these tests.
+
+## General Instruction
 
 This test is to ensure that:
+- `@rpc:Byref` or `@rpc:Byval` attributes on properties, including absense, will be transferred to getter's return value and setter's parameter, if the property type is a collection. Property in interfaces are implemented by a pair of override functions.
 - when a container is transferred with byref, a wrapper is created.
 - when a container is transferred with byval, a copy (non wrapper) is created.
 - when byval or byref is not explicitly written, the correct default option will be selected and applied to these containers. It depends on the actual type.
@@ -46,42 +74,56 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
 - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
   - The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
 - If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
-- **PER EACH TASK**
-  - Pass all unit test, fix any test failure including pre-existings.
-  - After finishing everything, git commit and git push to the current branch.
-    - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
-  - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+- Pass all unit test, fix any test failure including pre-existings.
+- After finishing everything, git commit and git push to the current branch.
+  - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
+- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 # UPDATES
 
+## UPDATE
+
+You accidentally stopped due to vscode crashing. I have checked your generated samples but found a problem. In *_PropByref.txt and *_PropByval.txt samples, you are supposed to mark the property with `@rpc:Byref` or `@rpc:Byval`, while *_PropDefault.txt there will be no such attirbute on the property. Otherwise exactly 1/3 samples will fail.
+
+Continue to follow #file:investigate.prompt.md to finish the work.
+
 # TEST [CONFIRMED]
 
-- Modify `Collection_Interface_Nested_*` samples from `IValue^[][]` to `IValue^[][int]` so they exercise dictionary outside and list inside while preserving the existing byval/byref behavior matrix.
-- Add eight `_Default` RPC samples for collection, nested collection, interface collection, and nested interface collection in list and dictionary forms.
-- For non-interface containers, the default samples copy the `_InByval_OutByval` behavior and assert copied local containers.
-- For interface containers, the default samples copy the `_InByref_OutByref` behavior and assert wrapper containers and cross-lifecycle interface value ownership.
+- Add 24 RPC samples by copying the existing eight `Collection*` sample families into property variants:
+  - `_Default` to `_PropDefault`.
+  - `_InByval_OutByval` to `_PropByval`.
+  - `_InByref_OutByref` to `_PropByref`.
+- In each property variant, replace `IService.DoList(xs)` with an auto property `List` using `{not observe}`, implemented by `GetList` and `SetList` override functions in the service object.
+- In `clientMain`, assign through `service.List` and read back through `service.List`, while keeping all existing wrapper/copy assertions and expected output unchanged from the copied source sample.
 - Success criteria:
-  - `CompilerTest_LoadAndCompile` accepts the modified and new RPC samples and generates the C++ RPC outputs.
-  - `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` pass the default samples and the modified nested interface samples for Win32 and x64.
-  - The full required debug Win32/x64 unit-test matrix passes, followed by the final umbrella `Build.ps1 Workflow` validation.
+  - `CompilerTest_LoadAndCompile` accepts all 24 property samples, generates Workflow binaries, RPC metadata, and generated C++ outputs.
+  - `RuntimeTest` passes these samples for Debug Win32 and Debug x64.
+  - `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` pass these samples for Debug Win32 and Debug x64 after generated C++ files are included.
+  - The final umbrella validation `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` passes before the final push.
+
+The test currently repros in `CompilerTest_LoadAndCompile` Debug x64 at `Collection_PropDefault`. The original sample parses and rebuilds, but rebuilding with the generated RPC wrapper module fails with D3 errors because the wrapper interface implementation does not override `GetList` and `SetList`.
 
 # PROPOSALS
 
-- No.1 Apply default RPC container tests and fix default transfer behavior as needed
+- No.1 Register auto-property expanded accessors as RPC methods [CONFIRMED]
 
-## No.1 Apply default RPC container tests and fix default transfer behavior as needed
+## No.1 Register auto-property expanded accessors as RPC methods
 
 ### CODE CHANGE
 
-- Updated `Collection_Interface_Nested_InByval_OutByval`, `Collection_Interface_Nested_InByval_OutByref`, `Collection_Interface_Nested_InByref_OutByval`, and `Collection_Interface_Nested_InByref_OutByref` from `IValue^[][]` to `IValue^[][int]`, including dictionary construction and indexing in the sample body.
-- Added the eight `_Default` RPC samples and registered their expected outputs in `Test/Resources/IndexRpc.txt`.
-- Added the generated C++ and reflection RPC files for the eight default samples to the shared item manifests consumed by `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
-- Fixed default RPC transfer selection in `Source/Analyzer/WfAnalyzer_ValidateRPC.cpp` so strong typed collections default to `@rpc:Byref` when their element or dictionary value is, or recursively contains, an RPC interface.
-- Updated `TODO_RPC_Definition.md` to describe the interface-containing collection default rule.
+- Added 24 `Test/Resources/Rpc/*Prop*.txt` samples and registered them in `CompilerTest_LoadAndCompile.vcxproj` and `.filters`.
+- Verified `*_PropByval.txt` and `*_PropByref.txt` samples put `@rpc:Byval` or `@rpc:Byref` directly on `prop List`; verified `*_PropDefault.txt` samples have no property transfer attribute.
+- Updated `Test/Resources/IndexRpc.txt` with expected outputs copied from the corresponding source samples.
+- Updated RPC metadata generation in `WfAnalyzer_ValidateRPC.cpp` to collect `WfVirtualCfeDeclaration::expandedDeclarations` from source RPC interfaces when assigning generated method and event names. This includes getter/setter methods expanded from auto properties, so generated RPC wrappers receive IDs for `GetList` and `SetList`.
+- Updated RPC wrapper generation in `WfAnalyzer_GenerateRpc.cpp` so reflected `::system::Void` is recognized as void, preventing generated setter wrappers from emitting `return <void-expression>;`.
+- Included newly generated RPC C++ and reflection source/header items in `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems`.
 
 ### CONFIRMED
 
-- Debug Win32/x64 builds passed after source and generated RPC updates.
-- `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all passed for Debug Win32 and Debug x64.
-- The previous `Collection_Interface_Nested_Default` runtime failure was fixed; `RuntimeTest` passed for both platforms.
-- Final umbrella validation passed: `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` returned exit code 0.
+- Sample attribute check passed: 24 property samples checked, 0 bad placements.
+- Debug x64 build passed with 0 warnings and 0 errors.
+- Debug Win32 build passed with 0 warnings and 0 errors.
+- Full Debug x64 and Win32 unit-test matrix passed with exit code 0 for `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+- `CompilerTest_LoadAndCompile` passed 6/6 test files and 656/656 test cases on both platforms, including all 24 new property samples.
+- Generated C++ RPC tests passed 176/176 test cases, including all 24 new property samples.
+- Final umbrella validation `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` passed with exit code 0.
