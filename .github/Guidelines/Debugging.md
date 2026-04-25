@@ -15,6 +15,8 @@ cd SOLUTION-ROOT
 start powershell {& REPO-ROOT\.github\Scripts\copilotDebug_Start.ps1 -Executable PROJECT-NAME}
 ```
 
+If the debugger is already started, this script will fail because the pipe name is occupied. That probably means the last time you forgot to stop the debugger. You can kill `cdb` and the process being debugged, before starting a new debugger.
+
 The `start powershell {}` is necessary; otherwise the script will block the execution forever causing you to wait infinitely.
 The script will finish immediately, leaving a debugger running in the background. You can send commands to the debugger.
 The process being debugged is paused at the beginning, you are given a chance to set breakpoints.
@@ -31,6 +33,14 @@ This script is also required to run before compiling only when Visual Studio Cod
 ```
 
 If there is any error message, it means the debugger is not alive, it is good.
+
+#### Warning
+
+You should never combine `copilotDebug_Stop.ps1` with others in one single powershell call.
+It could block you forever if some system thing went wrong.
+You should run this script separately, and do not just wait for its input.
+The script is supposed to be done very fast, you should keep reading the terminal output parallelly.
+And when it seems to never finish, kill the terminal and cdb directly.
 
 ### Sending Commands to Debugger
 

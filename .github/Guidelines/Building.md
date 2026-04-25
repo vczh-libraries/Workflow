@@ -6,19 +6,19 @@
 
 ## Executing copilotBuild.ps1
 
-Before building, ensure the debugger has stopped.
-If there is any error message, it means the debugger is not alive, it is good.
-
-```
-& REPO-ROOT\.github\Scripts\copilotDebug_Stop.ps1
-```
-
-And then run this script to build the solution:
+Run this script to build the solution:
 
 ```
 cd SOLUTION-ROOT
 & REPO-ROOT\.github\Scripts\copilotBuild.ps1
 ```
+
+It is possible that, before running `copilotBuild.ps1`, the binary to compile is still running or still being debugged. This could cause the linking to fail. You need to check the error message, and in case when it happens:
+- Kill `cdb` process first, if there is any.
+  - The cdb path is stored in `$env:CDBPATH`.
+  - Avoid running `copilotDebug_Stop.ps1` directly.
+- Kill the binary process that is blocked.
+- Rebuild, and this issue should gone.
 
 ## Ensure Target Configuration
 

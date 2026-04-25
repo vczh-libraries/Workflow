@@ -6,15 +6,7 @@
 ## Executing copilotExecute.ps1
 
 `PROJECT-NAME` is the name of the project.
-
-Before testing, ensure the debugger has stopped.
-If there is any error message, it means the debugger is not alive, it is good.
-
-```
-& REPO-ROOT\.github\Scripts\copilotDebug_Stop.ps1
-```
-
-And then run test cases in `SOLUTION-ROOT\PROJECT-NAME\PROJECT-NAME.vcxproj`:
+Run test cases in `SOLUTION-ROOT\PROJECT-NAME\PROJECT-NAME.vcxproj`:
 
 ```
 cd SOLUTION-ROOT
