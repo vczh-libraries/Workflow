@@ -18,11 +18,11 @@
 
 - Prompt: only when building fails due to binary occupation, kill cdb and kill the test process.
 - Continue to add more test cases until all features are covered.
-  - Collection default options: Observable list should by default `@rpc:Byref`.
+  - Observable list.
+  - Observable list should by default `@rpc:Byref`.
   - Simpler collection cases using property, testing if property attributes applied to both getter return values and setter arguments.
     - Use dynamic properties, ignore the fact that caching is not implemented.
   - Destructors in collection elements.
-  - Observable list.
   - Cached properties (by default)
   - Dynamic properties
   - Sending cached property values proactively from remote to wrapper.
