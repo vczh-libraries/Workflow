@@ -2,51 +2,32 @@
 
 # PROBLEM DESCRIPTION
 
-ollow job.new-sample.md to:
-- fix `Rpc\Collection(Dist)?(_Nested)?_*.txt`
+I would like you to update a the Workflow compiler.
 
-Consider the same prefix, each group should contain 4 samples:
-- InByref_OutByref:
-  - serviceMain should ensure xs is a wrapper
-  - clientMain should ensure xs is xsOrigin
-- InByref_OutByval
-  - serviceMain should ensure xs is a wrapper
-  - clientMain should ensure xs is not xsOrigin and xs is not a wrapper
-- InByval_OutByref
-  - serviceMain should ensure xs is not a wrapper
-  - clientMain should ensure xs is a wrapper
-- InByval_OutByval
-  - serviceMain should ensure xs is not a wrapper
-  - clientMain should ensure xs is not xsOrigin and xs is not a wrapper
+During compilation, if any RPC attributes appear in the input, `ValidateModuleRPC_GenerateMetadata` in `WfAnalyzer_ValidateRPC.cpp` will be called to collect all RPC related information and prepare a RPC interfaces definition also in Workflow, representing as a WfModule, in `WfLexicalScopeManager->rpcMetadata->metadataModule`.
 
-A few checks were already done but most were not.
-Testing if something is or is not a wrapper is very common across samples, check out how others perform the check.
+And there is an optional process that will be involved separately, not in the default compiling process, which is `GenerateModuleRpc` in `WfAnalyzer_GenerateRpc.cpp`.
 
-This test is to ensure that:
-- when a container is transferred with byref, a wrapper is created.
-- when a container is transferred with byval, a copy (non wrapper) is created.
-- when byval or byref is applied to a nested container, all levels of container applies.
+We allow `@rpc:Byval` and `@rpc:Byref` to no appear on collection types properties/return values/parameters, and the default option will be decided. It is implemented in `GenerateModuleRpc`. I would like you to do such change:
+- Move the decision to `ValidateModuleRPC_GenerateMetadata`, that's said, when generating the RPC Workflow Metadata, all missing default option between `@rpc:Byval` and `@rpc:Byref` on collection types return values/parameters, should be filled. Also for picking `@rpc:Dynamic` or `@rpc:Cached` for properties default options.
+  - The RPC Workflow metadata contains expanded property syntax, that's said, properties like `prop Name:Type{...}` will generates getter and setter functions in an interface.
+  - If no `@rpc:Byval` or `@rpc:Byref` is on the property of collection type, the getter and setter should have the default option attached.
+  - If yes, the getter and setter will have them attached. But there is no need to remove them from the property.
+  - You need to update Test\Resource\Runtime\AttributesRpc.txt to make it contains enough cases (different situation) to verify if you have done it correctly.
+    - Test\Generated\RpcMetadata(32|64)\AttributesRpc.txt will reflect the change.
+- `GenerateModuleRpc` would just use all explicitly attached attributes, instead of judging by itself, to decide the bahavior of wrappers.
+  - Wrapper behavior around `@rpc:Dynamic` and `@rpc:Cached` is not implemented yet, it is fine, we will do this part in the future.
+  - New errors should be created when any attribute is missing. That's said, no byref/byval on collections type return value/parameters, no dynamic/cached on properties.
+  - All `GenerateModuleRpc` specific errors should begin with `I` instead of `H`. Apply this to existing errors if anything need to fix.
 
-Processing containers are a little bit more complex comparing to interfaces.
-When byref is specified, an wrapper will be created to connect to the original container.
-When byval is specified, a copy will be created.
-Therefore according to Byref or Byval, the object retrieved from lifecycle may be an IRpcWrapperBase^ or may not, unlike interfaces all remote objects are wrappers.
+RPC definitions and rules is in `TODO_RPC_Definition.md`, check it out.
+Pay attention to the `Default options between @rpc:Byval and @rpc:Byref` section, because this is an updated rule and it does not match the current implementation.
 
-Understand what the test case trying to say, you are not allowed to change:
-- The content of the sample, unless it doesn't build.
-- Workflow parser.
-- Workflow compiling.
-- Workflow to C++ code generation.
-
-`Rpc(B|Unb)oxBy(val|ref)` should be in the highest priority attemp to fix, as these 4 C++ functions are directly called in generated wrapper classes written Workflow script.
-
-You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
-- The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
-  - The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
-- If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
+You should run all unit test projects with debug and both Win32/x64 to ensure your change works.
+In `Rpc` test samples, all collection objects currently have explicit `@rpc:Byref` or `@rpc:Byval` attached, so your change should not affect them.
 - Pass all unit test, fix any test failure including pre-existings.
+- If `CompilerTest_LoadAndCompile` passed but follow up test fails, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
 - After finishing everything, git commit and git push to the current branch.
-  - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 # UPDATES

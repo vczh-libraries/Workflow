@@ -1,29 +1,35 @@
 # Prompt
 
 Follow job.new-sample.md to:
-- fix `Rpc\Collection(Dist)?(_Nested)?_*.txt`
+- convert `Rpc\Collection(Dist)?_*.txt` to `Rpc\Collection(Dist)?_Interface_*.txt`
+- not including `_Nested` samples, so in total there willbe 8 samples.
 
-Consider the same prefix, each group should contain 4 samples:
-- InByref_OutByref:
-  - serviceMain should ensure xs is a wrapper
-  - clientMain should ensure xs is xsOrigin
-- InByref_OutByval
-  - serviceMain should ensure xs is a wrapper
-  - clientMain should ensure xs is not xsOrigin and xs is not a wrapper
-- InByval_OutByref
-  - serviceMain should ensure xs is not a wrapper
-  - clientMain should ensure xs is a wrapper
-- InByval_OutByval
-  - serviceMain should ensure xs is not a wrapper
-  - clientMain should ensure xs is not xsOrigin and xs is not a wrapper
+New samples perform exactly the same check, but there are two places to modify.
 
-A few checks were already done but most were not.
-Testing if something is or is not a wrapper is very common across samples, check out how others perform the check.
+1) `int[]` and `string[int]` will be changed to `IValue^[]` and `IValue^[int]`.
+```
+@rpc:Interface
+interface IValue
+{
+  int or string Value {const}
+}
+```
+
+In each sample there will be a `func MakeValue(value : int or string) : IValue^`. All list items or dictionary values will be created using `MakeValue`.
+
+2) Extra tests before `return` statement in `clientMain`.
+Because:
+- item 4 is added to serviceMain owned xsService.
+- item 5 is added to clientMain owned xsClient.
+So you need to check every item in xsService and xsClient that:
+- Only item 4 in xsService is not a wrapper but all others are.
+- Only item 4 in xsClient is a wrapper but all others are not.
 
 This test is to ensure that:
 - when a container is transferred with byref, a wrapper is created.
 - when a container is transferred with byval, a copy (non wrapper) is created.
 - when byval or byref is applied to a nested container, all levels of container applies.
+- when a container contain interfaces, these interfaces are passed between lifecycles as expected, just like normal interface value.
 
 Processing containers are a little bit more complex comparing to interfaces.
 When byref is specified, an wrapper will be created to connect to the original container.

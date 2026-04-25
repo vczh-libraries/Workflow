@@ -18,13 +18,13 @@
 
 - Prompt: only when building fails due to binary occupation, kill cdb and kill the test process.
 - Continue to add more test cases until all features are covered.
+  - Collections of collections of interfaces.
+  - Collection default options.
+    - Collections of interfaces should by default `@rpc:Byref`.
+    - Observable list should by default `@rpc:Byref`.
   - Simpler collection cases using property, testing if property attributes applied to both getter return values and setter arguments.
     - Use dynamic properties, ignore the fact that caching is not implemented.
-  - Collections of interfaces.
-    - Collections of interfaces should by default `@rpc:Byref`
-    - Observable list should by default `@rpc:Byref`
-    - Regardless of the attributes, interfaces should always be passed using wrappers.
-  - Collections of collections of interfaces.
+  - Destructors in collection elements.
   - Observable list.
   - Cached properties (by default)
   - Dynamic properties
