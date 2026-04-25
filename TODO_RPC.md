@@ -18,8 +18,6 @@
 
 - Prompt: only when building fails due to binary occupation, kill cdb and kill the test process.
 - Continue to add more test cases until all features are covered.
-  - Observable list.
-  - Observable list should by default `@rpc:Byref`.
   - Destructors in collection elements.
   - Cached properties (by default)
   - Dynamic properties
