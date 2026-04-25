@@ -17,6 +17,7 @@ namespace RpcCollectionOblist
 					interface IValue
 					{
 						func GetValue() : int;
+						@rpc:Dynamic
 						prop Value : int {GetValue}
 					}
 
@@ -25,6 +26,7 @@ namespace RpcCollectionOblist
 					interface IService
 					{
 						@rpc:Byval
+						@rpc:Dynamic
 						prop List : (observe IValue^[])[int] {not observe}
 					}
 				}
