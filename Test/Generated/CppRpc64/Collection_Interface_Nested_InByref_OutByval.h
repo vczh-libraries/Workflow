@@ -53,7 +53,7 @@ namespace RpcCollection
 						friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 					public:
-						virtual ::vl::Ptr<::vl::reflection::description::IValueList> DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs) = 0;
+						virtual ::vl::Ptr<::vl::reflection::description::IValueDictionary> DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs) = 0;
 					};
 
 					class IRpcWrapper_IService : public virtual ::RpcCollection::Interface::Nested::InByref::OutByval::IService, public virtual ::vl::rpc_controller::IRpcWrapperBase, public ::vl::reflection::Description<IRpcWrapper_IService>
@@ -94,7 +94,7 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Ptr<::vl::reflection::description::IValueList> xsService;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> xsService;
 		::vl::vint64_t rpctype_RpcCollection__Interface__Nested__InByref__OutByval__IValue = 0;
 		::vl::vint64_t rpctype_RpcCollection__Interface__Nested__InByref__OutByval__IService = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Interface__Nested__InByref__OutByval__IValue_GetValue = 0;
@@ -102,10 +102,10 @@ namespace vl_workflow_global
 
 		::vl::Ptr<::RpcCollection::Interface::Nested::InByref::OutByval::IValue> MakeValue(::vl::vint64_t value);
 		void CheckValue(::vl::Ptr<::RpcCollection::Interface::Nested::InByref::OutByval::IValue> value, bool shouldBeWrapper, const ::vl::WString& name);
-		void CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueList> xs);
-		void CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueList> xs);
+		void CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
+		void CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueList> xs);
+		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
@@ -136,7 +136,7 @@ Closures
 	public:
 		__vwsnc2_Rpc_Collection_Interface_Nested_InByref_OutByval_serviceMain__RpcCollection_Interface_Nested_InByref_OutByval_IService();
 
-		::vl::Ptr<::vl::reflection::description::IValueList> DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs) override;
 	};
 
 	class __vwsnc3_Rpc_Collection_Interface_Nested_InByref_OutByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
@@ -182,7 +182,7 @@ Closures
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc6_Rpc_Collection_Interface_Nested_InByref_OutByval_rpcwrapper_RpcCollection__Interface__Nested__InByref__OutByval__IService__RpcCollection_Interface_Nested_InByref_OutByval_IRpcWrapper_IService();
-		::vl::Ptr<::vl::reflection::description::IValueList> DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs) override;
 	};
 }
 

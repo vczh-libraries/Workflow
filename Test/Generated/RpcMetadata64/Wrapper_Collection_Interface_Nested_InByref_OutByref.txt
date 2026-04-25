@@ -38,7 +38,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcCollection__Interface__Nested__InByref__OutByref__IService_DoList:
                 {
                     var target : RpcCollection::Interface::Nested::InByref::OutByref::IService^ = (cast (RpcCollection::Interface::Nested::InByref::OutByref::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc);
+                    return system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][::system::Int64]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -177,14 +177,14 @@ func rpcwrapper_RpcCollection__Interface__Nested__InByref__OutByref__IService(lc
             }
         }
 
-        override func DoList(xs : ::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][]) : (::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][])
+        override func DoList(xs : ::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][::system::Int64]) : (::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][::system::Int64])
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(xs, _lc));
-            return (cast (::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][]) system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollection__Interface__Nested__InByref__OutByref__IService_DoList, arguments), _lc));
+            return (cast (::RpcCollection::Interface::Nested::InByref::OutByref::IValue^[][::system::Int64]) system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollection__Interface__Nested__InByref__OutByref__IService_DoList, arguments), _lc));
         }
     };
     return proxy;
