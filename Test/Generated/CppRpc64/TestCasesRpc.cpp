@@ -15,6 +15,10 @@
 #include "Collection_Interface_InByval_OutByrefReflection.h"
 #include "Collection_Interface_InByref_OutByvalReflection.h"
 #include "Collection_Interface_InByref_OutByrefReflection.h"
+#include "Collection_Interface_Nested_InByval_OutByvalReflection.h"
+#include "Collection_Interface_Nested_InByval_OutByrefReflection.h"
+#include "Collection_Interface_Nested_InByref_OutByvalReflection.h"
+#include "Collection_Interface_Nested_InByref_OutByrefReflection.h"
 #include "Collection_Nested_InByval_OutByvalReflection.h"
 #include "Collection_Nested_InByval_OutByrefReflection.h"
 #include "Collection_Nested_InByref_OutByvalReflection.h"
@@ -27,6 +31,10 @@
 #include "CollectionDict_Interface_InByval_OutByrefReflection.h"
 #include "CollectionDict_Interface_InByref_OutByvalReflection.h"
 #include "CollectionDict_Interface_InByref_OutByrefReflection.h"
+#include "CollectionDict_Interface_Nested_InByval_OutByvalReflection.h"
+#include "CollectionDict_Interface_Nested_InByval_OutByrefReflection.h"
+#include "CollectionDict_Interface_Nested_InByref_OutByvalReflection.h"
+#include "CollectionDict_Interface_Nested_InByref_OutByrefReflection.h"
 #include "CollectionDict_Nested_InByval_OutByvalReflection.h"
 #include "CollectionDict_Nested_InByval_OutByrefReflection.h"
 #include "CollectionDict_Nested_InByref_OutByvalReflection.h"
@@ -60,6 +68,10 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_Collection_Interface_InByval_OutByrefTypes();
 	 LoadRpc_Collection_Interface_InByref_OutByvalTypes();
 	 LoadRpc_Collection_Interface_InByref_OutByrefTypes();
+	 LoadRpc_Collection_Interface_Nested_InByval_OutByvalTypes();
+	 LoadRpc_Collection_Interface_Nested_InByval_OutByrefTypes();
+	 LoadRpc_Collection_Interface_Nested_InByref_OutByvalTypes();
+	 LoadRpc_Collection_Interface_Nested_InByref_OutByrefTypes();
 	 LoadRpc_Collection_Nested_InByval_OutByvalTypes();
 	 LoadRpc_Collection_Nested_InByval_OutByrefTypes();
 	 LoadRpc_Collection_Nested_InByref_OutByvalTypes();
@@ -72,6 +84,10 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_CollectionDict_Interface_InByval_OutByrefTypes();
 	 LoadRpc_CollectionDict_Interface_InByref_OutByvalTypes();
 	 LoadRpc_CollectionDict_Interface_InByref_OutByrefTypes();
+	 LoadRpc_CollectionDict_Interface_Nested_InByval_OutByvalTypes();
+	 LoadRpc_CollectionDict_Interface_Nested_InByval_OutByrefTypes();
+	 LoadRpc_CollectionDict_Interface_Nested_InByref_OutByvalTypes();
+	 LoadRpc_CollectionDict_Interface_Nested_InByref_OutByrefTypes();
 	 LoadRpc_CollectionDict_Nested_InByval_OutByvalTypes();
 	 LoadRpc_CollectionDict_Nested_InByval_OutByrefTypes();
 	 LoadRpc_CollectionDict_Nested_InByref_OutByvalTypes();
@@ -337,6 +353,54 @@ TEST_CASE(L"Rpc:Collection_Interface_InByref_OutByref")
 		});
 });
 
+TEST_CASE(L"Rpc:Collection_Interface_Nested_InByval_OutByval")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByval>(L"[123][1234][12345]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByval::Instance();
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByval::OutByval::IValue*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByval__OutByval__IValue;
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByval::OutByval::IService*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByval__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:Collection_Interface_Nested_InByval_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByref>(L"[123][12345][12345]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByref::Instance();
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByval::OutByref::IValue*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByval__OutByref__IValue;
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByval::OutByref::IService*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByval__OutByref__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:Collection_Interface_Nested_InByref_OutByval")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByval>(L"[1234][1234][12345]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByval::Instance();
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByref::OutByval::IValue*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByref__OutByval__IValue;
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByref::OutByval::IService*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByref__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:Collection_Interface_Nested_InByref_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByref>(L"[12345][12345][12345]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByref::Instance();
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByref::OutByref::IValue*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByref__OutByref__IValue;
+			if (dynamic_cast<::RpcCollection::Interface::Nested::InByref::OutByref::IService*>(obj)) return instance.rpctype_RpcCollection__Interface__Nested__InByref__OutByref__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
 TEST_CASE(L"Rpc:Collection_Nested_InByval_OutByval")
 {
 	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByval_OutByval>(L"[123][1234][12345]",
@@ -469,6 +533,54 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_InByref_OutByref")
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_InByref_OutByref::Instance();
 			if (dynamic_cast<::RpcCollectionDict::Interface::InByref::OutByref::IValue*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__InByref__OutByref__IValue;
 			if (dynamic_cast<::RpcCollectionDict::Interface::InByref::OutByref::IService*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__InByref__OutByref__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByval_OutByval")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByval::Instance();
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByval::OutByval::IValue*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByval__OutByval__IValue;
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByval::OutByval::IService*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByval_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByref>(L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByref::Instance();
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByval::OutByref::IValue*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByval__OutByref__IValue;
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByval::OutByref::IService*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByval__OutByref__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByref_OutByval")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByval>(L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByval::Instance();
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByref::OutByval::IValue*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByref__OutByval__IValue;
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByref::OutByval::IService*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByref__OutByval__IService;
+			return RpcTypeId_NotFound;
+		});
+});
+
+TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByref_OutByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByref::Instance();
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByref::OutByref::IValue*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByref__OutByref__IValue;
+			if (dynamic_cast<::RpcCollectionDict::Interface::Nested::InByref::OutByref::IService*>(obj)) return instance.rpctype_RpcCollectionDict__Interface__Nested__InByref__OutByref__IService;
 			return RpcTypeId_NotFound;
 		});
 });
