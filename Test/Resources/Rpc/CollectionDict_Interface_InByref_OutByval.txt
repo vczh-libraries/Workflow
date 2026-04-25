@@ -1,0 +1,147 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollectionDict::Interface::InByref::OutByval::*;
+
+namespace RpcCollectionDict
+{
+	namespace Interface
+	{
+		namespace InByref
+		{
+			namespace OutByval
+			{
+				@rpc:Interface
+				interface IValue
+				{
+					func GetValue() : string;
+					prop Value : string {GetValue}
+				}
+
+				@rpc:Interface
+				@rpc:Ctor
+				interface IService
+				{
+					@rpc:Byval
+					func DoList(@rpc:Byref xs : IValue^[int]) : IValue^[int];
+				}
+			}
+		}
+	}
+}
+
+var xsService : IValue^[int] = {};
+
+func MakeValue(value : int) : IValue^
+{
+	return MakeValue($"$(value)");
+}
+
+func MakeValue(value : string) : IValue^
+{
+	return new (IValue^)
+	{
+		override func GetValue() : string
+		{
+			return value;
+		}
+	};
+}
+
+func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
+{
+	var valueObj : object = value;
+	if (shouldBeWrapper)
+	{
+		if ((valueObj as (system::IRpcWrapperBase^) is null))
+		{
+			raise $"$(name) should be a wrapper object";
+		}
+	}
+	else
+	{
+		if ((valueObj as (system::IRpcWrapperBase^) is not null))
+		{
+			raise $"$(name) should be a local object";
+		}
+	}
+}
+
+func CheckServiceItems(xs : IValue^[int]) : void
+{
+	CheckValue(xs[1], true, "xsService[1]");
+	CheckValue(xs[2], true, "xsService[2]");
+	CheckValue(xs[3], true, "xsService[3]");
+	CheckValue(xs[4], false, "xsService[4]");
+}
+
+func CheckClientItems(xs : IValue^[int]) : void
+{
+	CheckValue(xs[1], false, "xsClient[1]");
+	CheckValue(xs[2], false, "xsClient[2]");
+	CheckValue(xs[3], false, "xsClient[3]");
+	CheckValue(xs[4], true, "xsClient[4]");
+	CheckValue(xs[5], false, "xsClient[5]");
+}
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	var serviceObj = new (IService^)
+	{
+		override func DoList(xs : IValue^[int]) : IValue^[int]
+		{
+			var xsObj : object = xs;
+			if ((xsObj as (system::IRpcWrapperBase^) is null))
+			{
+				raise "Parameter xs should be a wrapper object in serviceMain";
+			}
+
+			xsService = xs;
+			xs.Set(4, MakeValue("D"));
+			return xs;
+		}
+	};
+	lc.RegisterService("RpcCollectionDict::Interface::InByref::OutByval::IService", serviceObj);
+}
+
+func Print(xs : IValue^[int]) : string
+{
+	var result = "";
+	for (key in range [1, xs.Count])
+	{
+		result = $"$(result)$(key)$(xs[key].Value)";
+	}
+	return result;
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+	var xsOrigin : IValue^[int] = {};
+	xsOrigin.Set(1, MakeValue("A"));
+	xsOrigin.Set(2, MakeValue("B"));
+	xsOrigin.Set(3, MakeValue("C"));
+	var service = cast (IService^) lc.RequestService("RpcCollectionDict::Interface::InByref::OutByval::IService");
+	var xs = service.DoList(xsOrigin);
+
+	if (xs == xsOrigin)
+	{
+		raise "Return value xs should be a copied local object in clientMain";
+	}
+
+	var xsObj : object = xs;
+	if ((xsObj as (system::IRpcWrapperBase^) is not null))
+	{
+		raise "Return value xs should not be a wrapper object in clientMain";
+	}
+
+	var xsClient = xs;
+	xs.Set(5, MakeValue("E"));
+
+	CheckServiceItems(xsService);
+	CheckClientItems(xsClient);
+
+	return
+		$"[$(Print(xsOrigin))]" &
+		$"[$(Print(xsService))]" &
+		$"[$(Print(xsClient))]";
+}
