@@ -54,6 +54,9 @@ We allow `@rpc:Byval` and `@rpc:Byref` to no appear on collection types properti
   - New errors should be created when any attribute is missing.
   - All `GenerateModuleRpc` specific errors should begin with `I` instead of `H`. Apply this to existing errors.
 
+RPC definitions and rules is in `TODO_RPC_Definition.md`, check it out.
+Pay attention to the `Default options between @rpc:Byval and @rpc:Byref` section, because this is an updated rule and it does not match the current implementation.
+
 You should run all unit test projects with debug and both Win32/x64 to ensure your change works.
 In `Rpc` test samples, all collection objects currently have explicit `@rpc:Byref` or `@rpc:Byval` attached, so your change should not affect them.
 - Pass all unit test, fix any test failure including pre-existings.

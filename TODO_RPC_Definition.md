@@ -11,6 +11,7 @@ All attributes here do not have argument.
 - `@rpc:Byval` and `@rpc:Byref` on a property, method, parameter.
 - `@rpc:Cached` and `@rpc:Dynamic` on a property.
 - `@rpc:Id` on types, events and methods. This attribute will be generated in RPC Workflow metadata.
+  - This will be implemented in the future.
 
 ## Serializable Types
 
