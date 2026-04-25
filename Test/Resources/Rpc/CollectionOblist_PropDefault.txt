@@ -2,7 +2,7 @@ module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace RpcCollection
+namespace RpcCollectionOblist
 {
 	namespace PropDefault
 	{
@@ -19,7 +19,7 @@ var xsService : int[] = {};
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (RpcCollection::PropDefault::IService^)
+	var serviceObj = new (RpcCollectionOblist::PropDefault::IService^)
 	{
 		var _List : int[] = null;
 
@@ -41,7 +41,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 			_List = xs;
 		}
 	};
-	lc.RegisterService("RpcCollection::PropDefault::IService", serviceObj);
+	lc.RegisterService("RpcCollectionOblist::PropDefault::IService", serviceObj);
 }
 
 func Print(xs : int[]) : string
@@ -57,7 +57,7 @@ func Print(xs : int[]) : string
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var xsOrigin = {1 2 3};
-	var service = cast (RpcCollection::PropDefault::IService^) lc.RequestService("RpcCollection::PropDefault::IService");
+	var service = cast (RpcCollectionOblist::PropDefault::IService^) lc.RequestService("RpcCollectionOblist::PropDefault::IService");
 	service.List = xsOrigin;
 	var xs = service.List;
 	var xsObj : object = xs;

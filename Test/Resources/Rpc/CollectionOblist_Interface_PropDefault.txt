@@ -1,9 +1,9 @@
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
-using RpcCollection::Interface::PropDefault::*;
+using RpcCollectionOblist::Interface::PropDefault::*;
 
-namespace RpcCollection
+namespace RpcCollectionOblist
 {
 	namespace Interface
 	{
@@ -103,7 +103,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 			_List = xs;
 		}
 	};
-	lc.RegisterService("RpcCollection::Interface::PropDefault::IService", serviceObj);
+	lc.RegisterService("RpcCollectionOblist::Interface::PropDefault::IService", serviceObj);
 }
 
 func Print(xs : IValue^[]) : string
@@ -122,7 +122,7 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	xsOrigin.Add(MakeValue(1));
 	xsOrigin.Add(MakeValue(2));
 	xsOrigin.Add(MakeValue(3));
-	var service = cast (IService^) lc.RequestService("RpcCollection::Interface::PropDefault::IService");
+	var service = cast (IService^) lc.RequestService("RpcCollectionOblist::Interface::PropDefault::IService");
 	service.List = xsOrigin;
 	var xs = service.List;
 

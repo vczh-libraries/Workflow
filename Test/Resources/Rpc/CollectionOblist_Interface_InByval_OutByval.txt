@@ -1,9 +1,9 @@
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
-using RpcCollection::Interface::InByval::OutByval::*;
+using RpcCollectionOblist::Interface::InByval::OutByval::*;
 
-namespace RpcCollection
+namespace RpcCollectionOblist
 {
 	namespace Interface
 	{
@@ -100,7 +100,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 			return xs;
 		}
 	};
-	lc.RegisterService("RpcCollection::Interface::InByval::OutByval::IService", serviceObj);
+	lc.RegisterService("RpcCollectionOblist::Interface::InByval::OutByval::IService", serviceObj);
 }
 
 func Print(xs : IValue^[]) : string
@@ -119,7 +119,7 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	xsOrigin.Add(MakeValue(1));
 	xsOrigin.Add(MakeValue(2));
 	xsOrigin.Add(MakeValue(3));
-	var service = cast (IService^) lc.RequestService("RpcCollection::Interface::InByval::OutByval::IService");
+	var service = cast (IService^) lc.RequestService("RpcCollectionOblist::Interface::InByval::OutByval::IService");
 	var xs = service.DoList(xsOrigin);
 	var xsObj : object = xs;
 

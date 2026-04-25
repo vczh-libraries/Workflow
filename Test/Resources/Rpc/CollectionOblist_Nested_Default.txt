@@ -2,7 +2,7 @@ module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace RpcCollection
+namespace RpcCollectionOblist
 {
 	namespace Nested
 	{
@@ -22,7 +22,7 @@ var xsService : (int[])[] = {};
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (RpcCollection::Nested::Default::IService^)
+	var serviceObj = new (RpcCollectionOblist::Nested::Default::IService^)
 	{
 		override func DoList(xs : (int[])[]) : (int[])[]
 		{
@@ -38,7 +38,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 			return xs;
 		}
 	};
-	lc.RegisterService("RpcCollection::Nested::Default::IService", serviceObj);
+	lc.RegisterService("RpcCollectionOblist::Nested::Default::IService", serviceObj);
 }
 
 func Print(xs : (int[])[]) : string
@@ -54,7 +54,7 @@ func Print(xs : (int[])[]) : string
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var xsOrigin = {{1 2 3}};
-	var service = cast (RpcCollection::Nested::Default::IService^) lc.RequestService("RpcCollection::Nested::Default::IService");
+	var service = cast (RpcCollectionOblist::Nested::Default::IService^) lc.RequestService("RpcCollectionOblist::Nested::Default::IService");
 	var xs = service.DoList(xsOrigin);
 
 	if (xs == xsOrigin)
