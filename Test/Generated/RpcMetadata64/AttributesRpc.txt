@@ -32,6 +32,7 @@ struct Line
 @rpc:Interface
 interface ISimple
 {
+    @rpc:Cached
     prop Name : ::system::String{GetName, SetName : NameChanged}
 
     event NameChanged();
@@ -88,24 +89,70 @@ interface IUsingStruct
 interface ICollections
 {
     @rpc:Byref
+    @rpc:Cached
     prop ByrefProp : ::system::Int64[]{GetScores}
 
+    @rpc:Byref
+    @rpc:Cached
+    prop ByrefRw : ::system::Int64[]{GetScores2, SetScores2}
+
     @rpc:Byval
+    @rpc:Cached
     prop ByvalProp : ::system::String[]{GetNames}
 
+    @rpc:Byval
+    @rpc:Cached
+    prop ByvalRw : ::system::String[]{GetNames2, SetNames2}
+
+    @rpc:Cached
     prop Items : ::system::Int64[]{GetItems}
+
+    @rpc:Cached
+    prop Observed : observe ::system::Int64[]{GetObserved, SetObserved}
+
+    @rpc:Cached
+    prop Services : ::ISimple^[]{GetServices, SetServices}
+
+    @rpc:Cached
+    prop Writable : ::system::Int64[]{GetWritable, SetWritable}
 
     event ItemsChanged(::system::Int64[]);
 
+    @rpc:Byval
     func GetItems() : (::system::Int64[]);
 
     @rpc:Byval
     func GetNames() : (::system::String[]);
 
+    @rpc:Byval
+    func GetNames2() : (::system::String[]);
+
+    @rpc:Byref
+    func GetObserved() : (observe ::system::Int64[]);
+
     @rpc:Byref
     func GetScores() : (::system::Int64[]);
 
-    func SetMapping(m : ::system::String[::system::Int64]) : (::system::Void);
+    @rpc:Byref
+    func GetScores2() : (::system::Int64[]);
+
+    @rpc:Byref
+    func GetServices() : (::ISimple^[]);
+
+    @rpc:Byval
+    func GetWritable() : (::system::Int64[]);
+
+    func SetMapping(@rpc:Byval m : ::system::String[::system::Int64]) : (::system::Void);
+
+    func SetNames2(@rpc:Byval value : ::system::String[]) : (::system::Void);
+
+    func SetObserved(@rpc:Byref value : observe ::system::Int64[]) : (::system::Void);
+
+    func SetScores2(@rpc:Byref value : ::system::Int64[]) : (::system::Void);
+
+    func SetServices(@rpc:Byref value : ::ISimple^[]) : (::system::Void);
+
+    func SetWritable(@rpc:Byval value : ::system::Int64[]) : (::system::Void);
 }
 
 @rpc:Interface
@@ -123,6 +170,7 @@ interface ICaching
     @rpc:Dynamic
     prop DynamicProp : ::system::String{GetDynamicProp}
 
+    @rpc:Cached
     prop Value : ::system::Int64{GetValue : ValueChanged}
 
     event ValueChanged();
@@ -145,6 +193,7 @@ interface IVoidReturn
 @rpc:Interface
 interface INested
 {
+    @rpc:Cached
     prop Ref : ::ISimple^{GetSimple, SetSimple}
 
     func GetSimple() : (::ISimple^);
@@ -163,12 +212,16 @@ interface IEventArgs
 @rpc:Interface
 interface IAutoProps
 {
+    @rpc:Cached
     prop ConstNoObserve : ::system::Int64{GetConstNoObserve}
 
+    @rpc:Cached
     prop NoObserve : ::system::String{GetNoObserve, SetNoObserve}
 
+    @rpc:Cached
     prop ReadOnly : ::system::Int64{GetReadOnly : ReadOnlyChanged}
 
+    @rpc:Cached
     prop ReadWrite : ::system::String{GetReadWrite, SetReadWrite : ReadWriteChanged}
 
     event ReadOnlyChanged();

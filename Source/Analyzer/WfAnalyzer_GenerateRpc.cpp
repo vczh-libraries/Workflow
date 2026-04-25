@@ -86,6 +86,13 @@ namespace vl
 					return false;
 				}
 
+				bool IsStrongTypedCollectionType(WfType* type)
+				{
+					return dynamic_cast<WfEnumerableType*>(type) != nullptr
+						|| dynamic_cast<WfMapType*>(type) != nullptr
+						|| dynamic_cast<WfObservableListType*>(type) != nullptr;
+				}
+
 				void SplitTypeFullName(const WString& typeFullName, List<WString>& fragments)
 				{
 					vint start = 0;
@@ -588,6 +595,10 @@ namespace vl
 								propertyModel.byref = HasRpcAttribute(propertyDecl->attributes, L"Byref");
 								propertyModel.getterName = propertyDecl->getter.value;
 								propertyModel.setterName = propertyDecl->setter.value;
+								if (!HasRpcAttribute(propertyDecl->attributes, L"Cached") && !HasRpcAttribute(propertyDecl->attributes, L"Dynamic"))
+								{
+									manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresPropertyMode(propertyDecl.Obj(), typeFullName + L"." + propertyDecl->name.value));
+								}
 								interfaceModel.properties.Add(std::move(propertyModel));
 
 								auto propertyIndex = interfaceModel.properties.Count() - 1;
@@ -618,17 +629,21 @@ namespace vl
 								methodModel.methodId = typeCount + manager->rpcMetadata->methodFullNames.IndexOf(methodFullName);
 								methodModel.returnType = CopyType(methodDecl->returnType.Obj());
 								methodModel.returnByref = HasRpcAttribute(methodDecl->attributes, L"Byref");
+								if (IsStrongTypedCollectionType(methodModel.returnType.Obj())
+									&& !methodModel.returnByref
+									&& !HasRpcAttribute(methodDecl->attributes, L"Byval"))
+								{
+									manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresCollectionReturnTransfer(methodDecl.Obj(), typeFullName + L"." + methodDecl->name.value));
+								}
 
 								if (auto getterIndex = getterPropertyIndexes.Keys().IndexOf(methodModel.name); getterIndex != -1)
 								{
 									auto&& property = interfaceModel.properties[getterPropertyIndexes.Values()[getterIndex]];
 									methodModel.kind = RpcMethodKind::PropertyGetter;
 									methodModel.returnType = CopyType(property.type.Obj());
-									methodModel.returnByref = property.byref;
 								}
 								else if (auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name); setterIndex != -1)
 								{
-									auto&& property = interfaceModel.properties[setterPropertyIndexes.Values()[setterIndex]];
 									methodModel.kind = RpcMethodKind::PropertySetter;
 									methodModel.returnByref = false;
 								}
@@ -640,13 +655,18 @@ namespace vl
 									paramModel.name = argumentDecl->name.value;
 									paramModel.type = CopyType(argumentDecl->type.Obj());
 									paramModel.byref = HasRpcAttribute(argumentDecl->attributes, L"Byref");
+									if (IsStrongTypedCollectionType(paramModel.type.Obj())
+										&& !paramModel.byref
+										&& !HasRpcAttribute(argumentDecl->attributes, L"Byval"))
+									{
+										manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresCollectionParameterTransfer(argumentDecl.Obj(), typeFullName + L"." + methodDecl->name.value + L"(" + argumentDecl->name.value + L")"));
+									}
 
 									if (methodModel.kind == RpcMethodKind::PropertySetter && i == 0)
 									{
 										auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name);
 										auto&& property = interfaceModel.properties[setterPropertyIndexes.Values()[setterIndex]];
 										paramModel.type = CopyType(property.type.Obj());
-										paramModel.byref = property.byref;
 									}
 
 									methodModel.params.Add(std::move(paramModel));
@@ -1067,6 +1087,10 @@ namespace vl
 				}
 
 				auto interfaces = BuildInterfaceModels(manager);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
 				auto module = Ptr(new WfModule);
 				module->moduleType = WfModuleType::Module;
 				module->name.value = L"RpcMetadata";

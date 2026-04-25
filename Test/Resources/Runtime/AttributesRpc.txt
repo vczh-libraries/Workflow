@@ -84,11 +84,28 @@ interface ICollections
 	@rpc:Byref
 	func GetScores() : int[];
 	func SetMapping(m : string[int]) : void;
+	func GetWritable() : int[];
+	func SetWritable(value : int[]) : void;
+	func GetServices() : ISimple^[];
+	func SetServices(value : ISimple^[]) : void;
+	func GetObserved() : observe int[];
+	func SetObserved(value : observe int[]) : void;
+	func GetNames2() : string[];
+	func SetNames2(value : string[]) : void;
+	func GetScores2() : int[];
+	func SetScores2(value : int[]) : void;
 	prop Items : int[] {GetItems}
 	@rpc:Byval
 	prop ByvalProp : string[] {GetNames}
 	@rpc:Byref
 	prop ByrefProp : int[] {GetScores}
+	prop Writable : int[] {GetWritable, SetWritable}
+	prop Services : ISimple^[] {GetServices, SetServices}
+	prop Observed : observe int[] {GetObserved, SetObserved}
+	@rpc:Byval
+	prop ByvalRw : string[] {GetNames2, SetNames2}
+	@rpc:Byref
+	prop ByrefRw : int[] {GetScores2, SetScores2}
 	event ItemsChanged(int[]);
 }
 

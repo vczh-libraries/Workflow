@@ -111,6 +111,48 @@ static void SortRpcTypeFullNamesLeafFirst(WfLexicalScopeManager& manager, const 
 	}
 }
 
+static WfPropertyDeclaration* FindRpcProperty(WfClassDeclaration* interfaceDecl, const WString& name)
+{
+	for (auto declaration : interfaceDecl->declarations)
+	{
+		if (auto propertyDecl = declaration.Cast<WfPropertyDeclaration>())
+		{
+			if (propertyDecl->name.value == name)
+			{
+				return propertyDecl.Obj();
+			}
+		}
+	}
+	return nullptr;
+}
+
+static WfFunctionDeclaration* FindRpcMethod(WfClassDeclaration* interfaceDecl, const WString& name)
+{
+	for (auto declaration : interfaceDecl->declarations)
+	{
+		if (auto methodDecl = declaration.Cast<WfFunctionDeclaration>())
+		{
+			if (methodDecl->name.value == name)
+			{
+				return methodDecl.Obj();
+			}
+		}
+	}
+	return nullptr;
+}
+
+static void RemoveRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
+{
+	for (vint i = attributes.Count() - 1; i >= 0; i--)
+	{
+		auto attribute = attributes[i];
+		if (attribute->category.value == L"rpc" && attribute->name.value == name)
+		{
+			attributes.RemoveAt(i);
+		}
+	}
+}
+
 TEST_FILE
 {
 	WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
@@ -169,6 +211,123 @@ namespace RpcInheritanceOrderTest
 			TEST_ASSERT(leafIndex != -1);
 			TEST_ASSERT(leafIndex < derivedIndex);
 			TEST_ASSERT(derivedIndex < baseIndex);
+		});
+
+		TEST_CASE(L"Wrapper generation requires property mode")
+		{
+			manager.Clear(true, true);
+
+			auto sample = WString::Unmanaged(LR"WORKFLOW(module Rpc;
+using system::*;
+
+namespace RpcWrapperValidation
+{
+	@rpc:Interface
+	interface IService
+	{
+		prop Items : int[] {GetItems, SetItems}
+		func GetItems() : int[];
+		func SetItems(value : int[]) : void;
+	}
+}
+)WORKFLOW");
+
+			auto module = ParseModule(sample, GetWorkflowParser());
+			TEST_ASSERT(module);
+			TEST_ASSERT(manager.errors.Count() == 0);
+
+			manager.AddModule(module);
+			manager.Rebuild(true);
+			TEST_ASSERT(manager.errors.Count() == 0);
+			TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
+
+			auto interfaceDecl = manager.rpcMetadata->typeNames[L"RpcWrapperValidation::IService"];
+			auto propertyDecl = FindRpcProperty(interfaceDecl, L"Items");
+			TEST_ASSERT(propertyDecl);
+			RemoveRpcAttribute(propertyDecl->attributes, L"Cached");
+			RemoveRpcAttribute(propertyDecl->attributes, L"Dynamic");
+
+			auto wrapperModule = GenerateModuleRpc(&manager);
+			TEST_ASSERT(!wrapperModule);
+			TEST_ASSERT(manager.errors.Count() > 0);
+			TEST_ASSERT(manager.errors[0].message.Left(3) == L"I0:");
+		});
+
+		TEST_CASE(L"Wrapper generation requires collection return transfer")
+		{
+			manager.Clear(true, true);
+
+			auto sample = WString::Unmanaged(LR"WORKFLOW(module Rpc;
+using system::*;
+
+namespace RpcWrapperValidation
+{
+	@rpc:Interface
+	interface IService
+	{
+		func GetItems() : int[];
+	}
+}
+)WORKFLOW");
+
+			auto module = ParseModule(sample, GetWorkflowParser());
+			TEST_ASSERT(module);
+			TEST_ASSERT(manager.errors.Count() == 0);
+
+			manager.AddModule(module);
+			manager.Rebuild(true);
+			TEST_ASSERT(manager.errors.Count() == 0);
+			TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
+
+			auto interfaceDecl = manager.rpcMetadata->typeNames[L"RpcWrapperValidation::IService"];
+			auto methodDecl = FindRpcMethod(interfaceDecl, L"GetItems");
+			TEST_ASSERT(methodDecl);
+			RemoveRpcAttribute(methodDecl->attributes, L"Byval");
+			RemoveRpcAttribute(methodDecl->attributes, L"Byref");
+
+			auto wrapperModule = GenerateModuleRpc(&manager);
+			TEST_ASSERT(!wrapperModule);
+			TEST_ASSERT(manager.errors.Count() > 0);
+			TEST_ASSERT(manager.errors[0].message.Left(3) == L"I1:");
+		});
+
+		TEST_CASE(L"Wrapper generation requires collection parameter transfer")
+		{
+			manager.Clear(true, true);
+
+			auto sample = WString::Unmanaged(LR"WORKFLOW(module Rpc;
+using system::*;
+
+namespace RpcWrapperValidation
+{
+	@rpc:Interface
+	interface IService
+	{
+		func SetItems(value : int[]) : void;
+	}
+}
+)WORKFLOW");
+
+			auto module = ParseModule(sample, GetWorkflowParser());
+			TEST_ASSERT(module);
+			TEST_ASSERT(manager.errors.Count() == 0);
+
+			manager.AddModule(module);
+			manager.Rebuild(true);
+			TEST_ASSERT(manager.errors.Count() == 0);
+			TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
+
+			auto interfaceDecl = manager.rpcMetadata->typeNames[L"RpcWrapperValidation::IService"];
+			auto methodDecl = FindRpcMethod(interfaceDecl, L"SetItems");
+			TEST_ASSERT(methodDecl);
+			TEST_ASSERT(methodDecl->arguments.Count() == 1);
+			RemoveRpcAttribute(methodDecl->arguments[0]->attributes, L"Byval");
+			RemoveRpcAttribute(methodDecl->arguments[0]->attributes, L"Byref");
+
+			auto wrapperModule = GenerateModuleRpc(&manager);
+			TEST_ASSERT(!wrapperModule);
+			TEST_ASSERT(manager.errors.Count() > 0);
+			TEST_ASSERT(manager.errors[0].message.Left(3) == L"I2:");
 		});
 
 		for (auto rpcLine : rpcNames)

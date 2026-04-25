@@ -322,6 +322,100 @@ ValidateModuleRPC_Ast
 					}
 				}
 
+				Ptr<WfAttribute> CreateRpcAttribute(const WString& name)
+				{
+					auto attribute = Ptr(new WfAttribute);
+					attribute->category.value = L"rpc";
+					attribute->name.value = name;
+					return attribute;
+				}
+
+				void EnsureRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
+				{
+					if (!HasRpcAttribute(attributes, name.Buffer()))
+					{
+						attributes.Add(CreateRpcAttribute(name));
+					}
+				}
+
+				ITypeInfo* GetStrongTypedCollectionElementType(ITypeInfo* type)
+				{
+					if (!IsStrongTypedCollection(type)) return nullptr;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return nullptr;
+					if (genericType->GetGenericArgumentCount() != 1) return nullptr;
+					return genericType->GetGenericArgument(0);
+				}
+
+				bool IsObservableStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!IsStrongTypedCollection(type)) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+					auto collectionType = genericType->GetElementType();
+					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					return collectionType->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>();
+				}
+
+				bool IsArrayLikeStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!IsStrongTypedCollection(type)) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+					if (genericType->GetGenericArgumentCount() != 1) return false;
+
+					auto collectionType = genericType->GetElementType();
+					if (collectionType && collectionType->GetDecorator() == ITypeInfo::TypeDescriptor)
+					{
+						auto collectionTd = collectionType->GetTypeDescriptor();
+						if (collectionTd == GetTypeDescriptor<IValueReadonlyList>()
+							|| collectionTd == GetTypeDescriptor<IValueList>())
+						{
+							return true;
+						}
+					}
+
+					switch (type->GetHint())
+					{
+					case TypeInfoHint::Array:
+					case TypeInfoHint::List:
+						return true;
+					default:
+						return false;
+					}
+				}
+
+				bool IsRpcInterfaceSharedType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto elementType = type->GetElementType();
+					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					auto td = elementType->GetTypeDescriptor();
+					return td
+						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
+						&& IsRpcInterfaceTd(td, rpcInterfaceAttrTd, rpcInterfaceTds);
+				}
+
+				bool IsNestedArrayLikeCollectionOfRpcInterface(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!IsArrayLikeStrongTypedCollection(type)) return false;
+					auto elementType = GetStrongTypedCollectionElementType(type);
+					if (!elementType) return false;
+					return IsRpcInterfaceSharedType(elementType, rpcInterfaceAttrTd, rpcInterfaceTds)
+						|| IsNestedArrayLikeCollectionOfRpcInterface(elementType, rpcInterfaceAttrTd, rpcInterfaceTds);
+				}
+
+				WString GetDefaultRpcTransferAttribute(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!IsStrongTypedCollection(type)) return L"";
+					if (IsObservableStrongTypedCollection(type)
+						|| IsNestedArrayLikeCollectionOfRpcInterface(type, rpcInterfaceAttrTd, rpcInterfaceTds))
+					{
+						return L"Byref";
+					}
+					return L"Byval";
+				}
+
 				bool IsSerializableType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
 				{
 					if (!type) return false;
@@ -1056,6 +1150,8 @@ ValidateModuleRPC_GenerateMetadata
 				Ptr<WfClassDeclaration> GenerateInterfaceDecl(ITypeDescriptor* td, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
 				{
 					auto decl = Ptr(new WfClassDeclaration);
+					Dictionary<WString, WString> getterTransferAttributes;
+					Dictionary<WString, WString> setterTransferAttributes;
 					List<WString> fragments;
 					GetTypeFragments(td, fragments);
 					decl->name.value = fragments[fragments.Count() - 1];
@@ -1137,6 +1233,49 @@ ValidateModuleRPC_GenerateMetadata
 						}
 
 						GenerateAttributesFromBag(propertyInfo, propDecl->attributes);
+						if (!HasRpcAttribute(propDecl->attributes, L"Cached") && !HasRpcAttribute(propDecl->attributes, L"Dynamic"))
+						{
+							EnsureRpcAttribute(propDecl->attributes, L"Cached");
+						}
+
+						auto transferAttribute = GetDefaultRpcTransferAttribute(propertyInfo->GetReturn(), rpcInterfaceAttrTd, rpcInterfaceTds);
+						if (transferAttribute != L"")
+						{
+							if (HasRpcAttribute(propDecl->attributes, L"Byref"))
+							{
+								transferAttribute = L"Byref";
+							}
+							else if (HasRpcAttribute(propDecl->attributes, L"Byval"))
+							{
+								transferAttribute = L"Byval";
+							}
+
+							if (propDecl->getter.value != L"")
+							{
+								auto getterIndex = getterTransferAttributes.Keys().IndexOf(propDecl->getter.value);
+								if (getterIndex == -1)
+								{
+									getterTransferAttributes.Add(propDecl->getter.value, transferAttribute);
+								}
+								else
+								{
+									getterTransferAttributes.Set(propDecl->getter.value, transferAttribute);
+								}
+							}
+
+							if (propDecl->setter.value != L"")
+							{
+								auto setterIndex = setterTransferAttributes.Keys().IndexOf(propDecl->setter.value);
+								if (setterIndex == -1)
+								{
+									setterTransferAttributes.Add(propDecl->setter.value, transferAttribute);
+								}
+								else
+								{
+									setterTransferAttributes.Set(propDecl->setter.value, transferAttribute);
+								}
+							}
+						}
 						decl->declarations.Add(propDecl);
 					}
 
@@ -1195,10 +1334,47 @@ ValidateModuleRPC_GenerateMetadata
 								argument->name.value = parameterInfo->GetName();
 								argument->type = GetTypeFromTypeInfo(parameterInfo->GetType());
 								GenerateAttributesFromBag(parameterInfo, argument->attributes);
+								if (!HasRpcAttribute(argument->attributes, L"Byref") && !HasRpcAttribute(argument->attributes, L"Byval"))
+								{
+									WString transferAttribute;
+									if (k == 0)
+									{
+										auto setterIndex = setterTransferAttributes.Keys().IndexOf(methodInfo->GetName());
+										if (setterIndex != -1)
+										{
+											transferAttribute = setterTransferAttributes.Values()[setterIndex];
+										}
+									}
+									if (transferAttribute == L"")
+									{
+										transferAttribute = GetDefaultRpcTransferAttribute(parameterInfo->GetType(), rpcInterfaceAttrTd, rpcInterfaceTds);
+									}
+									if (transferAttribute != L"")
+									{
+										EnsureRpcAttribute(argument->attributes, transferAttribute);
+									}
+								}
 								funcDecl->arguments.Add(argument);
 							}
 
 							GenerateAttributesFromBag(methodInfo, funcDecl->attributes);
+							if (!HasRpcAttribute(funcDecl->attributes, L"Byref") && !HasRpcAttribute(funcDecl->attributes, L"Byval"))
+							{
+								WString transferAttribute;
+								auto getterIndex = getterTransferAttributes.Keys().IndexOf(methodInfo->GetName());
+								if (getterIndex != -1)
+								{
+									transferAttribute = getterTransferAttributes.Values()[getterIndex];
+								}
+								if (transferAttribute == L"")
+								{
+									transferAttribute = GetDefaultRpcTransferAttribute(methodInfo->GetReturn(), rpcInterfaceAttrTd, rpcInterfaceTds);
+								}
+								if (transferAttribute != L"")
+								{
+									EnsureRpcAttribute(funcDecl->attributes, transferAttribute);
+								}
+							}
 							decl->declarations.Add(funcDecl);
 						}
 					}
