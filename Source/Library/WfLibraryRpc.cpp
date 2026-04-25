@@ -743,6 +743,37 @@ namespace vl
 					return BoxValue(dict);
 				}
 
+				if (auto obsList = trivial.GetRawPtr() ? Ptr(trivial.GetRawPtr()->SafeAggregationCast<IValueObservableList>()) : nullptr)
+				{
+					auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
+					visited.Add(key, true);
+
+					auto list = IValueObservableList::Create();
+					for (vint i = 0; i < obsList->GetCount(); i++)
+					{
+						list->Add(RpcBoxByvalInternal(obsList->Get(i), lc, visited));
+					}
+					visited.Remove(key);
+					return BoxValue(list);
+				}
+
+				if (auto array = trivial.GetRawPtr() ? Ptr(trivial.GetRawPtr()->SafeAggregationCast<IValueArray>()) : nullptr)
+				{
+					auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
+					visited.Add(key, true);
+
+					auto list = IValueArray::Create();
+					list->Resize(array->GetCount());
+					for (vint i = 0; i < array->GetCount(); i++)
+					{
+						list->Set(i, RpcBoxByvalInternal(array->Get(i), lc, visited));
+					}
+					visited.Remove(key);
+					return BoxValue(list);
+				}
+
 				if (auto roList = trivial.GetRawPtr() ? Ptr(trivial.GetRawPtr()->SafeAggregationCast<IValueReadonlyList>()) : nullptr)
 				{
 					auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
@@ -816,6 +847,37 @@ namespace vl
 					}
 					visited.Remove(key);
 					return BoxValue(dict);
+				}
+
+				if (auto obsList = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueObservableList>()) : nullptr)
+				{
+					auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
+					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
+					visited.Add(key, true);
+
+					auto list = IValueObservableList::Create();
+					for (vint i = 0; i < obsList->GetCount(); i++)
+					{
+						list->Add(RpcUnboxByvalInternal(obsList->Get(i), lc, visited));
+					}
+					visited.Remove(key);
+					return BoxValue(list);
+				}
+
+				if (auto array = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueArray>()) : nullptr)
+				{
+					auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
+					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
+					visited.Add(key, true);
+
+					auto list = IValueArray::Create();
+					list->Resize(array->GetCount());
+					for (vint i = 0; i < array->GetCount(); i++)
+					{
+						list->Set(i, RpcUnboxByvalInternal(array->Get(i), lc, visited));
+					}
+					visited.Remove(key);
+					return BoxValue(list);
 				}
 
 				if (auto roList = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueReadonlyList>()) : nullptr)

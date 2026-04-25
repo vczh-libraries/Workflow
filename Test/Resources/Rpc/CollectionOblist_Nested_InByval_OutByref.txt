@@ -57,7 +57,7 @@ func Print(xs : observe (observe int[])[]) : string
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var xsOrigin = {{1 2 3}};
+	var xsOrigin : observe (observe int[])[] = {{1 2 3}};
 	var service = cast (RpcCollectionOblist::Nested::InByval::OutByref::IService^) lc.RequestService("RpcCollectionOblist::Nested::InByval::OutByref::IService");
 	var xs = service.DoList(xsOrigin);
 	var xsObj : object = xs;
