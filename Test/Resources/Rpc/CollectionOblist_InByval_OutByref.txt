@@ -14,19 +14,19 @@ namespace RpcCollectionOblist
 			interface IService
 			{
 				@rpc:Byref
-				func DoList(@rpc:Byval xs : int[]) : int[];
+				func DoList(@rpc:Byval xs : observe int[]) : observe int[];
 			}
 		}
 	}
 }
 
-var xsService : int[] = {};
+var xsService : observe int[] = {};
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (IService^)
 	{
-		override func DoList(xs : int[]) : int[]
+		override func DoList(xs : observe int[]) : observe int[]
 		{
 			var xsObj : object = xs;
 			if ((xsObj as (system::IRpcWrapperBase^) is not null))
@@ -42,12 +42,12 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	lc.RegisterService("RpcCollectionOblist::InByval::OutByref::IService", serviceObj);
 }
 
-func Print3(xs : int[]) : string
+func Print3(xs : observe int[]) : string
 {
 	return $"$(xs[0])$(xs[1])$(xs[2])";
 }
 
-func Print5(xs : int[]) : string
+func Print5(xs : observe int[]) : string
 {
 	return $"$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])";
 }

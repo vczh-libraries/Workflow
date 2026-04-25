@@ -23,14 +23,14 @@ namespace RpcCollectionOblist
 				interface IService
 				{
 					@rpc:Byref
-					func DoList(@rpc:Byref xs : IValue^[]) : IValue^[];
+					func DoList(@rpc:Byref xs : observe IValue^[]) : observe IValue^[];
 				}
 			}
 		}
 	}
 }
 
-var xsService : IValue^[] = {};
+var xsService : observe IValue^[] = {};
 
 func MakeValue(value : int) : IValue^
 {
@@ -67,7 +67,7 @@ func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
 	}
 }
 
-func CheckServiceItems(xs : IValue^[]) : void
+func CheckServiceItems(xs : observe IValue^[]) : void
 {
 	for (i in range [0, xs.Count))
 	{
@@ -75,7 +75,7 @@ func CheckServiceItems(xs : IValue^[]) : void
 	}
 }
 
-func CheckClientItems(xs : IValue^[]) : void
+func CheckClientItems(xs : observe IValue^[]) : void
 {
 	for (i in range [0, xs.Count))
 	{
@@ -87,7 +87,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (IService^)
 	{
-		override func DoList(xs : IValue^[]) : IValue^[]
+		override func DoList(xs : observe IValue^[]) : observe IValue^[]
 		{
 			var xsObj : object = xs;
 			if ((xsObj as (system::IRpcWrapperBase^) is null))
@@ -103,7 +103,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	lc.RegisterService("RpcCollectionOblist::Interface::InByref::OutByref::IService", serviceObj);
 }
 
-func Print(xs : IValue^[]) : string
+func Print(xs : observe IValue^[]) : string
 {
 	var result = "";
 	for (x in xs)
@@ -115,7 +115,7 @@ func Print(xs : IValue^[]) : string
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var xsOrigin : IValue^[] = {};
+	var xsOrigin : observe IValue^[] = {};
 	xsOrigin.Add(MakeValue(1));
 	xsOrigin.Add(MakeValue(2));
 	xsOrigin.Add(MakeValue(3));

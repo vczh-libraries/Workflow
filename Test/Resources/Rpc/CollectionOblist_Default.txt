@@ -10,18 +10,18 @@ namespace RpcCollectionOblist
 		@rpc:Ctor
 		interface IService
 		{
-			func DoList(xs : int[]) : int[];
+			func DoList(xs : observe int[]) : observe int[];
 		}
 	}
 }
 
-var xsService : int[] = {};
+var xsService : observe int[] = {};
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (RpcCollectionOblist::Default::IService^)
 	{
-		override func DoList(xs : int[]) : int[]
+		override func DoList(xs : observe int[]) : observe int[]
 		{
 			var xsObj : object = xs;
 			if ((xsObj as (system::IRpcWrapperBase^) is null))
@@ -37,7 +37,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	lc.RegisterService("RpcCollectionOblist::Default::IService", serviceObj);
 }
 
-func Print(xs : int[]) : string
+func Print(xs : observe int[]) : string
 {
 	var result = "";
 	for (x in xs)

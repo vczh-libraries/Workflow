@@ -15,27 +15,27 @@ namespace RpcCollectionOblist
 				interface IService
 				{
 					@rpc:Byref
-					prop List : (int[])[] {not observe}
+					prop List : observe (observe int[])[] {not observe}
 				}
 			}
 		}
 	}
 }
 
-var xsService : (int[])[] = {};
+var xsService : observe (observe int[])[] = {};
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (RpcCollectionOblist::Nested::InByref::PropByref::IService^)
 	{
-		var _List : (int[])[] = null;
+		var _List : observe (observe int[])[] = null;
 
-		override func GetList() : (int[])[]
+		override func GetList() : observe (observe int[])[]
 		{
 			return _List;
 		}
 
-		override func SetList(xs : (int[])[]) : void
+		override func SetList(xs : observe (observe int[])[]) : void
 		{
 			var xsObj : object = xs;
 			if ((xsObj as (system::IRpcWrapperBase^) is null))
@@ -52,7 +52,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	lc.RegisterService("RpcCollectionOblist::Nested::InByref::PropByref::IService", serviceObj);
 }
 
-func Print(xs : (int[])[]) : string
+func Print(xs : observe (observe int[])[]) : string
 {
 	var result = "";
 	for (x in xs[0])

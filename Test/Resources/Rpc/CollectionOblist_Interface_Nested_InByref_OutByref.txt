@@ -25,7 +25,7 @@ namespace RpcCollectionOblist
 					interface IService
 					{
 						@rpc:Byref
-						func DoList(@rpc:Byref xs : IValue^[][int]) : IValue^[][int];
+						func DoList(@rpc:Byref xs : (observe IValue^[])[int]) : (observe IValue^[])[int];
 					}
 				}
 			}
@@ -33,7 +33,7 @@ namespace RpcCollectionOblist
 	}
 }
 
-var xsService : IValue^[][int] = {};
+var xsService : (observe IValue^[])[int] = {};
 
 func MakeValue(value : int) : IValue^
 {
@@ -65,7 +65,7 @@ func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
 	}
 }
 
-func CheckServiceItems(xs : IValue^[][int]) : void
+func CheckServiceItems(xs : (observe IValue^[])[int]) : void
 {
 	var ys = xs[0];
 	for (i in range [0, ys.Count))
@@ -74,7 +74,7 @@ func CheckServiceItems(xs : IValue^[][int]) : void
 	}
 }
 
-func CheckClientItems(xs : IValue^[][int]) : void
+func CheckClientItems(xs : (observe IValue^[])[int]) : void
 {
 	var ys = xs[0];
 	for (i in range [0, ys.Count))
@@ -87,7 +87,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (IService^)
 	{
-		override func DoList(xs : IValue^[][int]) : IValue^[][int]
+		override func DoList(xs : (observe IValue^[])[int]) : (observe IValue^[])[int]
 		{
 			var xsObj : object = xs;
 			if ((xsObj as (system::IRpcWrapperBase^) is null))
@@ -104,7 +104,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	lc.RegisterService("RpcCollectionOblist::Interface::Nested::InByref::OutByref::IService", serviceObj);
 }
 
-func Print(xs : IValue^[][int]) : string
+func Print(xs : (observe IValue^[])[int]) : string
 {
 	var result = "";
 	for (x in xs[0])
@@ -116,11 +116,11 @@ func Print(xs : IValue^[][int]) : string
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var ysOrigin : IValue^[] = {};
+	var ysOrigin : observe IValue^[] = {};
 	ysOrigin.Add(MakeValue(1));
 	ysOrigin.Add(MakeValue(2));
 	ysOrigin.Add(MakeValue(3));
-	var xsOrigin : IValue^[][int] = {};
+	var xsOrigin : (observe IValue^[])[int] = {};
 	xsOrigin.Set(0, ysOrigin);
 	var service = cast (IService^) lc.RequestService("RpcCollectionOblist::Interface::Nested::InByref::OutByref::IService");
 	var xs = service.DoList(xsOrigin);
