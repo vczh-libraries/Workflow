@@ -21,6 +21,7 @@
   - Destructors in collection elements.
   - Cached properties (by default)
   - Dynamic properties
+  - Double read byval collections with property attributes.
   - Sending cached property values proactively from remote to wrapper.
   - Events
 - Generate JSON from "RPC metadata in Workflow syntax".
