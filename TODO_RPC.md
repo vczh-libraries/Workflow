@@ -49,6 +49,9 @@ And there is an optional process that will be involved separately, not in the de
 
 We allow `@rpc:Byval` and `@rpc:Byref` to no appear on collection types properties/return values/parameters, and the default option will be decided. It is implemented in `GenerateModuleRpc`. I would like you to do such change:
 - Move the decision to `ValidateModuleRPC_GenerateMetadata`, that's said, when generating the RPC Workflow Metadata, all missing default option between `@rpc:Byval` and `@rpc:Byref` on collection types return values/parameters, should be filled. Also for picking `@rpc:Dynamic` or `@rpc:Cached` for properties default options.
+  - The RPC Workflow metadata contains expanded property syntax, that's said, properties like `prop Name:Type{...}` will generates getter and setter functions in an interface.
+  - If no `@rpc:Byval` or `@rpc:Byref` is on the property of collection type, the getter and setter should have the default option attached.
+  - If yes, the getter and setter will have them attached. But there is no need to remove them from the property.
 - `GenerateModuleRpc` would just use them, instead of judging by itself, to decide the bahavior of wrappers.
   - Wrapper behavior around `@rpc:Dynamic` and `@rpc:Cached` is not implemented yet, it is fine, we will do this part in the future.
   - New errors should be created when any attribute is missing.
