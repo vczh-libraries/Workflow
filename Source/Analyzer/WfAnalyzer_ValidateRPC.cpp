@@ -343,8 +343,15 @@ ValidateModuleRPC_Ast
 					if (!IsStrongTypedCollection(type)) return nullptr;
 					auto genericType = type->GetElementType();
 					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return nullptr;
-					if (genericType->GetGenericArgumentCount() != 1) return nullptr;
-					return genericType->GetGenericArgument(0);
+					switch (genericType->GetGenericArgumentCount())
+					{
+					case 1:
+						return genericType->GetGenericArgument(0);
+					case 2:
+						return genericType->GetGenericArgument(1);
+					default:
+						return nullptr;
+					}
 				}
 
 				bool IsObservableStrongTypedCollection(ITypeInfo* type)
@@ -355,34 +362,6 @@ ValidateModuleRPC_Ast
 					auto collectionType = genericType->GetElementType();
 					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
 					return collectionType->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>();
-				}
-
-				bool IsArrayLikeStrongTypedCollection(ITypeInfo* type)
-				{
-					if (!IsStrongTypedCollection(type)) return false;
-					auto genericType = type->GetElementType();
-					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
-					if (genericType->GetGenericArgumentCount() != 1) return false;
-
-					auto collectionType = genericType->GetElementType();
-					if (collectionType && collectionType->GetDecorator() == ITypeInfo::TypeDescriptor)
-					{
-						auto collectionTd = collectionType->GetTypeDescriptor();
-						if (collectionTd == GetTypeDescriptor<IValueReadonlyList>()
-							|| collectionTd == GetTypeDescriptor<IValueList>())
-						{
-							return true;
-						}
-					}
-
-					switch (type->GetHint())
-					{
-					case TypeInfoHint::Array:
-					case TypeInfoHint::List:
-						return true;
-					default:
-						return false;
-					}
 				}
 
 				bool IsRpcInterfaceSharedType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
@@ -396,20 +375,19 @@ ValidateModuleRPC_Ast
 						&& IsRpcInterfaceTd(td, rpcInterfaceAttrTd, rpcInterfaceTds);
 				}
 
-				bool IsNestedArrayLikeCollectionOfRpcInterface(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				bool IsStrongTypedCollectionContainingRpcInterface(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
 				{
-					if (!IsArrayLikeStrongTypedCollection(type)) return false;
 					auto elementType = GetStrongTypedCollectionElementType(type);
 					if (!elementType) return false;
 					return IsRpcInterfaceSharedType(elementType, rpcInterfaceAttrTd, rpcInterfaceTds)
-						|| IsNestedArrayLikeCollectionOfRpcInterface(elementType, rpcInterfaceAttrTd, rpcInterfaceTds);
+						|| IsStrongTypedCollectionContainingRpcInterface(elementType, rpcInterfaceAttrTd, rpcInterfaceTds);
 				}
 
 				WString GetDefaultRpcTransferAttribute(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
 				{
 					if (!IsStrongTypedCollection(type)) return L"";
 					if (IsObservableStrongTypedCollection(type)
-						|| IsNestedArrayLikeCollectionOfRpcInterface(type, rpcInterfaceAttrTd, rpcInterfaceTds))
+						|| IsStrongTypedCollectionContainingRpcInterface(type, rpcInterfaceAttrTd, rpcInterfaceTds))
 					{
 						return L"Byref";
 					}

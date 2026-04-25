@@ -2,39 +2,30 @@
 
 # PROBLEM DESCRIPTION
 
-Follow job.new-sample.md and add 8 new cases:
-- Read `Rpc\Collection(Dist)?_*.txt`
-- Carefully understand how they get modified to `Rpc\Collection(Dist)?_Nested*.txt`
-- Carefully understand how they get modified to `Rpc\Collection(Dist)?_Interface*.txt`
-- You are going to combine them and produce 8 samples: `Rpc\Collection(Dist)?_Interface_Nested*.txt`
+## Task 1
 
-Basically here are the 2 things to do:
+- `Collection_Nested_*` tests `int[][]`.
+- `CollectionDist_Nested_*` tests `string[int][]`.
+- `CollectionDist_Interface_Nested_*` tests `IValue^[int][int]`.
+But:
+- `Collection_Interface_Nested_*` tests `IValue^[][]`. You are going to change it to `IValue^[][int]`. The new types means a dictionary of key `int` and value `IValue^[]`. So we are able to test if the outer container is dictionary and the inner container is list, which is not currently covered.
 
-1) For a list, change its element from `int` to `IValue^`. For a dictionary, change its value from `string` to `IValue^`.
-Since new samples are about a container of a container of an interface, they become `IValue^[][]` and `IValue^[int][int]`.
-The outer containers always have one record, which are inner containers that storing actual data under testing.
-```
-@rpc:Interface
-interface IValue
-{
-  int or string Value {const}
-}
-```
+## Task 2
 
-In each sample there will be a `func MakeValue(value : int or string) : IValue^`. All list items or dictionary values will be created using `MakeValue`.
+Follow job.new-sample.md and add 8 new samples:
+- Read `Rpc\Collection(Dist)?(_Interface)?(_Nested)?_*.txt`
+- Copy them to `Rpc\Collection(Dist)?(_Interface)?(_Nested)?_Default.txt`
+  - When `_Interface`, copy from `_InByref_OutByref`.
+  - When not `_Interface`, copy from `_InByval_OutByval`.
+  - Remove all `@rpc:Byval` and `@rpc:Byref` from samples, according to `TODO_RPC_Definition.md`, following the above two rules should just pass all unit test projects. This is the purpose of these tests.
+  - Remember to change the namespaces for interfaces, because types could not conflict across samples.
 
-2) Extra tests before `return` statement in `clientMain`.
-Because:
-- item 4 is added to serviceMain owned xsService.
-- item 5 is added to clientMain owned xsClient.
-So you need to check every item in xsService and xsClient that:
-- Only item 4 in xsService is not a wrapper but all others are.
-- Only item 4 in xsClient is a wrapper but all others are not.
-`Rpc\Collection(Dist)?_Interface*.txt` already have the check, you will need to follow the same pattern.
+## General Instructions
 
 This test is to ensure that:
 - when a container is transferred with byref, a wrapper is created.
 - when a container is transferred with byval, a copy (non wrapper) is created.
+- when byval or byref is not explicitly written, the correct default option will be selected and applied to these containers. It depends on the actual type.
 - when byval or byref is applied to a nested container, all levels of container applies.
 - when a container contain interfaces, these interfaces are passed between lifecycles as expected, just like normal interface value.
 
@@ -55,29 +46,42 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
 - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
   - The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
 - If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
-- Pass all unit test, fix any test failure including pre-existings.
-- After finishing everything, git commit and git push to the current branch.
-  - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
-- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+- **PER EACH TASK**
+  - Pass all unit test, fix any test failure including pre-existings.
+  - After finishing everything, git commit and git push to the current branch.
+    - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
+  - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 # UPDATES
 
-- Added eight RPC nested-interface collection samples and indexed their expected results.
-- Generated and wired the matching C++/reflection RPC outputs into the generated project item manifests.
-- Validation completed successfully:
-  - Debug Win32/x64 matrix passed through `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
-  - Final umbrella validation `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` completed with exit code 0.
+# TEST [CONFIRMED]
 
-# TEST
-
-- Add 8 new RPC samples: `Collection_Interface_Nested_*` and `CollectionDict_Interface_Nested_*`, mirroring the existing nested collection byval/byref matrix.
-- Each list sample stores one inner `IValue^[]` inside an outer list, creates every value through `MakeValue`, and prints the values from the inner list.
-- Each dictionary sample stores one inner `IValue^[int]` inside an outer dictionary, creates every value through `MakeValue`, and prints the values from the inner dictionary.
-- Each sample preserves the original byval/byref container-level checks and adds the interface item-wrapper checks before returning from `clientMain`.
+- Modify `Collection_Interface_Nested_*` samples from `IValue^[][]` to `IValue^[][int]` so they exercise dictionary outside and list inside while preserving the existing byval/byref behavior matrix.
+- Add eight `_Default` RPC samples for collection, nested collection, interface collection, and nested interface collection in list and dictionary forms.
+- For non-interface containers, the default samples copy the `_InByval_OutByval` behavior and assert copied local containers.
+- For interface containers, the default samples copy the `_InByref_OutByref` behavior and assert wrapper containers and cross-lifecycle interface value ownership.
 - Success criteria:
-  - `CompilerTest_LoadAndCompile` compiles the new samples and generates C++ output for them.
-  - `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` pass the new samples for both Win32 and x64.
-  - The new samples keep the original serialized result strings for each byval/byref combination.
-  - The full required debug Win32/x64 unit-test matrix, followed by `..\Tools\Tools\Build.ps1 Workflow`, passes.
+  - `CompilerTest_LoadAndCompile` accepts the modified and new RPC samples and generates the C++ RPC outputs.
+  - `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` pass the default samples and the modified nested interface samples for Win32 and x64.
+  - The full required debug Win32/x64 unit-test matrix passes, followed by the final umbrella `Build.ps1 Workflow` validation.
 
 # PROPOSALS
+
+- No.1 Apply default RPC container tests and fix default transfer behavior as needed
+
+## No.1 Apply default RPC container tests and fix default transfer behavior as needed
+
+### CODE CHANGE
+
+- Updated `Collection_Interface_Nested_InByval_OutByval`, `Collection_Interface_Nested_InByval_OutByref`, `Collection_Interface_Nested_InByref_OutByval`, and `Collection_Interface_Nested_InByref_OutByref` from `IValue^[][]` to `IValue^[][int]`, including dictionary construction and indexing in the sample body.
+- Added the eight `_Default` RPC samples and registered their expected outputs in `Test/Resources/IndexRpc.txt`.
+- Added the generated C++ and reflection RPC files for the eight default samples to the shared item manifests consumed by `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+- Fixed default RPC transfer selection in `Source/Analyzer/WfAnalyzer_ValidateRPC.cpp` so strong typed collections default to `@rpc:Byref` when their element or dictionary value is, or recursively contains, an RPC interface.
+- Updated `TODO_RPC_Definition.md` to describe the interface-containing collection default rule.
+
+### CONFIRMED
+
+- Debug Win32/x64 builds passed after source and generated RPC updates.
+- `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all passed for Debug Win32 and Debug x64.
+- The previous `Collection_Interface_Nested_Default` runtime failure was fixed; `RuntimeTest` passed for both platforms.
+- Final umbrella validation passed: `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` returned exit code 0.

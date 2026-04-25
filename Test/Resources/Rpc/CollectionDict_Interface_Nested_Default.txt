@@ -1,45 +1,41 @@
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
-using RpcCollection::Interface::Nested::InByref::OutByref::*;
+using RpcCollectionDict::Interface::Nested::Default::*;
 
-namespace RpcCollection
+namespace RpcCollectionDict
 {
 	namespace Interface
 	{
 		namespace Nested
 		{
-			namespace InByref
+			namespace Default
 			{
-				namespace OutByref
+				@rpc:Interface
+				interface IValue
 				{
-					@rpc:Interface
-					interface IValue
-					{
-						func GetValue() : int;
-						prop Value : int {GetValue}
-					}
+					func GetValue() : string;
+					prop Value : string {GetValue}
+				}
 
-					@rpc:Interface
-					@rpc:Ctor
-					interface IService
-					{
-						@rpc:Byref
-						func DoList(@rpc:Byref xs : IValue^[][int]) : IValue^[][int];
-					}
+				@rpc:Interface
+				@rpc:Ctor
+				interface IService
+				{
+					func DoList(xs : IValue^[int][int]) : IValue^[int][int];
 				}
 			}
 		}
 	}
 }
 
-var xsService : IValue^[][int] = {};
+var xsService : IValue^[int][int] = {};
 
-func MakeValue(value : int) : IValue^
+func MakeValue(value : string) : IValue^
 {
 	return new (IValue^)
 	{
-		override func GetValue() : int
+		override func GetValue() : string
 		{
 			return value;
 		}
@@ -65,21 +61,21 @@ func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
 	}
 }
 
-func CheckServiceItems(xs : IValue^[][int]) : void
+func CheckServiceItems(xs : IValue^[int][int]) : void
 {
 	var ys = xs[0];
-	for (i in range [0, ys.Count))
+	for (i in range [1, ys.Count])
 	{
-		CheckValue(ys[i], i != 3, $"xsService[0][$(i)]");
+		CheckValue(ys[i], i != 4, $"xsService[0][$(i)]");
 	}
 }
 
-func CheckClientItems(xs : IValue^[][int]) : void
+func CheckClientItems(xs : IValue^[int][int]) : void
 {
 	var ys = xs[0];
-	for (i in range [0, ys.Count))
+	for (i in range [1, ys.Count])
 	{
-		CheckValue(ys[i], i == 3, $"xsClient[0][$(i)]");
+		CheckValue(ys[i], i == 4, $"xsClient[0][$(i)]");
 	}
 }
 
@@ -87,7 +83,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (IService^)
 	{
-		override func DoList(xs : IValue^[][int]) : IValue^[][int]
+		override func DoList(xs : IValue^[int][int]) : IValue^[int][int]
 		{
 			var xsObj : object = xs;
 			if ((xsObj as (system::IRpcWrapperBase^) is null))
@@ -97,32 +93,33 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 
 			xsService = xs;
 			var ys = xs[0];
-			ys.Add(MakeValue(4));
+			ys.Set(4, MakeValue("D"));
 			return xs;
 		}
 	};
-	lc.RegisterService("RpcCollection::Interface::Nested::InByref::OutByref::IService", serviceObj);
+	lc.RegisterService("RpcCollectionDict::Interface::Nested::Default::IService", serviceObj);
 }
 
-func Print(xs : IValue^[][int]) : string
+func Print(xs : IValue^[int][int]) : string
 {
+	var ys = xs[0];
 	var result = "";
-	for (x in xs[0])
+	for (key in range [1, ys.Count])
 	{
-		result = $"$(result)$(x.Value)";
+		result = $"$(result)$(key)$(ys[key].Value)";
 	}
 	return result;
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var ysOrigin : IValue^[] = {};
-	ysOrigin.Add(MakeValue(1));
-	ysOrigin.Add(MakeValue(2));
-	ysOrigin.Add(MakeValue(3));
-	var xsOrigin : IValue^[][int] = {};
+	var ysOrigin : IValue^[int] = {};
+	ysOrigin.Set(1, MakeValue("A"));
+	ysOrigin.Set(2, MakeValue("B"));
+	ysOrigin.Set(3, MakeValue("C"));
+	var xsOrigin : IValue^[int][int] = {};
 	xsOrigin.Set(0, ysOrigin);
-	var service = cast (IService^) lc.RequestService("RpcCollection::Interface::Nested::InByref::OutByref::IService");
+	var service = cast (IService^) lc.RequestService("RpcCollectionDict::Interface::Nested::Default::IService");
 	var xs = service.DoList(xsOrigin);
 
 	if (xs != xsOrigin)
@@ -132,7 +129,7 @@ func clientMain(lc : IRpcLifeCycle*) : string
 
 	var xsClient = xs;
 	var ys = xs[0];
-	ys.Add(MakeValue(5));
+	ys.Set(5, MakeValue("E"));
 
 	CheckServiceItems(xsService);
 	CheckClientItems(xsClient);

@@ -119,9 +119,9 @@ All types below count as serializable types, but serialization itself is optiona
 ## Default options between @rpc:Byval and @rpc:Byref
 
 - `Compile Errors` already limit these attributes on properties / return values / parameters of strong typed collection.
-- If non is offered, the following collection types will by default `@rpc:Byref`, others will by default `@rpc:Byval`:
+- If none is offered, the following collection types will by default `@rpc:Byref`, others will by default `@rpc:Byval`:
   - `observe T[]`.
-  - `T[]`, or `T[]...[]` when `T` is an interface.
+  - Strong typed collections whose element or value is an interface, directly or through nested strong typed collections.
 - During generating RPC Workflow metadata, `@rpc:Byval` and `@rpc:Byref` from the property will be copied to getter's return value and setter's parameter.
 - Event arguments will pick the default value, and no customization could apply (because there is no syntax for putting attributes on event arguments).
 
