@@ -61,6 +61,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(GetValue, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Value, GetValue)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcCollection::Interface::Nested::InByref::PropByref::IValue)
 
 #undef _
