@@ -18,7 +18,6 @@
 
 - Prompt: only when building fails due to binary occupation, kill cdb and kill the test process.
 - Continue to add more test cases until all features are covered.
-  - Collections of collections of interfaces.
   - Collection default options.
     - Collections of interfaces should by default `@rpc:Byref`.
     - Observable list should by default `@rpc:Byref`.
