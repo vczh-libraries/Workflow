@@ -1,51 +1,56 @@
 # Repro
 
-Follow job.new-sample.md and add 24 new samples:
-- Copy `Rpc\Collection*_Default.txt` to `Rpc\Collection*_PropDefault.txt`
-- Copy `Rpc\Collection*_InByval_OutByval.txt` to `Rpc\Collection*_PropByval.txt`
-- Copy `Rpc\Collection*_InByref_OutByref.txt` to `Rpc\Collection*_PropByref.txt`
-- Remember to change the namespaces for interfaces, because types could not conflict across samples.
+There are multiple tasks in this instruction.
+You should finish them one by one.
+At the end of these tasks, I will instruct you to git commit and push.
+You should always git commit and push before execution the next ask.
+The above instructions are extremely important. You must obey.
 
-## Extra Modification
+All mentioned sample files are in Test\Resources\Rpc
 
-These new samples are for testing collection properties in interfaces. So extra modification should apply during copying.
+## Task 1
 
-In `IService` change `func DoList(xs : T) : T` to `prop T List {not observe}`.
+Use powershell to copy `Collection_*.txt` to `CollectionOblist_*.txt`.
+No building or testing is required for this task.
+git commit and push. DO NOT ASK ME ANY QUESTION, just finish the task at your own judgement.
 
-The original `IService::DoList` implementation looks like:
-```
-override func DoList(xs : T) : T
-{
-  ANYCODE(xs);
-	return xs;
-}
-```
+## Task 2
 
-Now it becomes
-```
-var _List : T = null;
+All `CollectionOblist_*.txt` has the top level namespace for rpc interfaces, called `RpcCollection`.
+Change them to `RpcCollectionOblist`.
+Including all other code in these files that reference to `RpcCollection`.
+Add these cases to `IndexRpc.txt`. You could just copy everything from `Collection_*` samples.
+No building or testing is required for this task.
+git commit and push. DO NOT ASK ME ANY QUESTION, just finish the task at your own judgement.
 
-override func GetList() : T
-{
-  return _List;
-}
+## Task 3
 
-override func SetList(xs : T) : void
-{
-  ANYCODE(xs); // should be just simple copy
-  _List = xs;
-}
-```
+Override all `CollectionOblist_*_Default.txt` with `CollectionOblist_*_InByref_OutByref.txt`.
+Override all `CollectionOblist_*_PropDefault.txt` with `CollectionOblist_*_PropByref.txt`.
+Now for all overrided files, you will see both namespace changes and verification changes, only keep the verification changes, revert the namespace changes.
+Notice the above overriding works I just ask you to do, override expected test case results in `IndexRpc.txt` for these overrided `CollectionOblist_*` cases.
+No building or testing is required for this task.
+git commit and push. DO NOT ASK ME ANY QUESTION, just finish the task at your own judgement.
 
-In `clientMain` change `var xs = service.DoList(xsOrigin);` to
-```
-service.List = xsOrigin;
-var xs = service.List;
-```
+## Task 4
 
-Keep all others exactly identical. According to `TODO_RPC_Definition.md`, following the above rules should just pass all unit test projects. This is the purpose of these tests.
+For all `CollectionOblist_*` files, change every `T[]` to `observe T[]`. Containers could be nested, therefore:
+- `T[]` -> `observe T[]`.
+- `T[][]` -> `observe (observe T[])[]`.
+- `T[U][]` -> `observe (T[U])[]`.
+- `T[][U]` -> `(observe T[])[U]`.
+Notice that the container syntax is left associated.
+No building or testing is required for this task.
+git commit and push. DO NOT ASK ME ANY QUESTION, just finish the task at your own judgement.
 
-## General Instruction
+## Task 5
+
+In this task you are going to build and run test cases to verify if these cases are working.
+According to `TODO_RPC_Definition.md`, following the above tasks should just pass all unit test projects.
+Processing `observe T[]` is just like `T[]`, but the only difference is that:
+- For `T[]`, the default option will be `@rpc:Byval` when T is non-interface or containers of non-interfaces, recursively.
+- For `observe T[]`, the default option will always be `@rpc:Byref`. That why in `Task 3` those overriding works exist.
+This is the purpose of these tests.
 
 This test is to ensure that:
 - `@rpc:Byref` or `@rpc:Byval` attributes on properties, including absense, will be transferred to getter's return value and setter's parameter, if the property type is a collection. Property in interfaces are implemented by a pair of override functions.
@@ -76,3 +81,12 @@ You are highly possibly need to fix implementation of `RpcDualLifecycleMock` and
 - After finishing everything, git commit and git push to the current branch.
   - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+
+## Task 6.
+
+For all existing `Collection_*_Prop*.txt`, `CollectioDist_*_Prop*.txt`, `CollectionOblist_*_Prop*.txt` tests,
+attach `@rpc:Dynamic` to all properties in the rpc interface,
+run `..\Tools\Tools\Build.ps1 Workflow`.
+Maybe some log files will change, but the test should just pass.
+- Pass all unit test, fix any test failure including pre-existings.
+- git commit and push. DO NOT ASK ME ANY QUESTION, just finish the task at your own judgement.
