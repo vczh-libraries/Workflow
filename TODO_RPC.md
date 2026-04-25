@@ -52,10 +52,12 @@ We allow `@rpc:Byval` and `@rpc:Byref` to no appear on collection types properti
   - The RPC Workflow metadata contains expanded property syntax, that's said, properties like `prop Name:Type{...}` will generates getter and setter functions in an interface.
   - If no `@rpc:Byval` or `@rpc:Byref` is on the property of collection type, the getter and setter should have the default option attached.
   - If yes, the getter and setter will have them attached. But there is no need to remove them from the property.
-- `GenerateModuleRpc` would just use them, instead of judging by itself, to decide the bahavior of wrappers.
+  - You need to update Test\Resource\Runtime\AttributesRpc.txt to make it contains enough cases (different situation) to verify if you have done it correctly.
+    - Test\Generated\RpcMetadata(32|64)\AttributesRpc.txt will reflect the change.
+- `GenerateModuleRpc` would just use all explicitly attached attributes, instead of judging by itself, to decide the bahavior of wrappers.
   - Wrapper behavior around `@rpc:Dynamic` and `@rpc:Cached` is not implemented yet, it is fine, we will do this part in the future.
-  - New errors should be created when any attribute is missing.
-  - All `GenerateModuleRpc` specific errors should begin with `I` instead of `H`. Apply this to existing errors.
+  - New errors should be created when any attribute is missing. That's said, no byref/byval on collections type return value/parameters, no dynamic/cached on properties.
+  - All `GenerateModuleRpc` specific errors should begin with `I` instead of `H`. Apply this to existing errors if anything need to fix.
 
 RPC definitions and rules is in `TODO_RPC_Definition.md`, check it out.
 Pay attention to the `Default options between @rpc:Byval and @rpc:Byref` section, because this is an updated rule and it does not match the current implementation.
