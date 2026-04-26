@@ -75,50 +75,25 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             switch (typeId)
             {
-                case rpctype_RpcCollection__Interface__Nested__InByref__PropByref__IValue:
-                {
-                    if (service is null)
-                    {
-                        _services.Remove(typeId);
-                    }
-                    else
-                    {
-                        _services.Set(typeId, service);
-                    }
-                    return;
-                }
                 case rpctype_RpcCollection__Interface__Nested__InByref__PropByref__IService:
                 {
-                    if (service is null)
-                    {
-                        _services.Remove(typeId);
-                    }
-                    else
-                    {
-                        _services.Set(typeId, service);
-                    }
-                    return;
                 }
                 default:
                 raise "Unknown RPC type id.";
+            }
+            if (service is null)
+            {
+                _services.Remove(typeId);
+            }
+            else
+            {
+                _services.Set(typeId, service);
             }
         }
 
         override func RequestService(typeId : int) : (system::RpcObjectReference)
         {
-            switch (typeId)
-            {
-                case rpctype_RpcCollection__Interface__Nested__InByref__PropByref__IValue:
-                {
-                    return _lc.PtrToRef(_services[typeId]);
-                }
-                case rpctype_RpcCollection__Interface__Nested__InByref__PropByref__IService:
-                {
-                    return _lc.PtrToRef(_services[typeId]);
-                }
-                default:
-                raise "Unknown RPC type id.";
-            }
+            return _lc.PtrToRef(_services[typeId]);
         }
     };
 }
