@@ -8,6 +8,7 @@
 #include "FailDoubleRegistrationReflection.h"
 #include "OverloadingReflection.h"
 #include "EventReflection.h"
+#include "EventOblistReflection.h"
 #include "Collection_DefaultReflection.h"
 #include "Collection_PropDefaultReflection.h"
 #include "Collection_InByval_OutByvalReflection.h"
@@ -127,6 +128,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_OverloadingTypes();
 	 LoadRpc_EventTypes();
+	 LoadRpc_EventOblistTypes();
 	 LoadRpc_Collection_DefaultTypes();
 	 LoadRpc_Collection_PropDefaultTypes();
 	 LoadRpc_Collection_InByval_OutByvalTypes();
@@ -365,6 +367,19 @@ TEST_CASE(L"Rpc:Event")
 			(void)detachments;
 			::vl_workflow_global::Rpc_Event::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
 		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:EventOblist")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_EventOblist>(L"[clientMain:0,0,1][clientMain:1,0,1][clientMain:0,1,1][clientMain:1,1,0][clientMain:0,1,0][serviceMain:0,0,1][serviceMain:1,0,1][serviceMain:0,1,1][serviceMain:1,1,0][serviceMain:0,1,0]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_EventOblist::Instance();
+			if (dynamic_cast<::RpcEventOblist::IService*>(obj)) return instance.rpctype_RpcEventOblist__IService;
+			return RpcTypeId_NotFound;
+		},
+		nullptr,
 		nullptr);
 });
 

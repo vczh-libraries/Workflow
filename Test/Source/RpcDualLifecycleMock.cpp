@@ -652,7 +652,7 @@ namespace vl
 			for (vint i = 0; i < wrapperProperties.Count(); i++)
 			{
 				auto&& properties = wrapperProperties[i];
-				if (properties.ref.objectId == ref.objectId)
+				if (properties.ref == ref)
 				{
 					if (auto observable = dynamic_cast<IValueObservableList*>(properties.proxy))
 					{
@@ -660,6 +660,11 @@ namespace vl
 						return;
 					}
 				}
+			}
+
+			if (listEventCallback)
+			{
+				RpcLifecycleMock::OnItemChanged(ref, index, oldCount, newCount);
 			}
 		}
 	}
