@@ -11,6 +11,69 @@ namespace vl
 
 		WString RpcDualLifecycleMock::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
 		WString RpcDualLifecycleMock::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
+		List<RpcDualEventDispatch> RpcDualLifecycleMock::forwardingEvents;
+
+		bool RpcDualLifecycleMock::IsSameEvent(const RpcDualEventDispatch& event, RpcObjectReference ref, vint eventId)
+		{
+			return event.ref == ref && event.eventId == eventId;
+		}
+
+		bool RpcDualLifecycleMock::IsForwardingEvent(RpcObjectReference ref, vint eventId)
+		{
+			for (vint i = forwardingEvents.Count() - 1; i >= 0; i--)
+			{
+				if (IsSameEvent(forwardingEvents[i], ref, eventId))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool RpcDualLifecycleMock::TryGetForwardingEventId(RpcObjectReference ref, vint& eventId)
+		{
+			for (vint i = forwardingEvents.Count() - 1; i >= 0; i--)
+			{
+				auto&& event = forwardingEvents[i];
+				if (event.ref == ref)
+				{
+					eventId = event.eventId;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		void RpcDualLifecycleMock::PushForwardingEvent(RpcObjectReference ref, vint eventId)
+		{
+			forwardingEvents.Add({ ref,eventId });
+		}
+
+		void RpcDualLifecycleMock::PopForwardingEvent(RpcObjectReference ref, vint eventId)
+		{
+			CHECK_ERROR(forwardingEvents.Count() > 0, L"RpcDualLifecycleMock::PopForwardingEvent: Event stack is empty.");
+			auto event = forwardingEvents[forwardingEvents.Count() - 1];
+			CHECK_ERROR(IsSameEvent(event, ref, eventId), L"RpcDualLifecycleMock::PopForwardingEvent: Event stack mismatch.");
+			forwardingEvents.RemoveAt(forwardingEvents.Count() - 1);
+		}
+
+		void RpcDualLifecycleMock::SuppressForwardedEvent(RpcObjectReference ref, vint eventId)
+		{
+			suppressedEvents.Add({ ref,eventId });
+		}
+
+		bool RpcDualLifecycleMock::TryConsumeSuppressedEvent(RpcObjectReference ref, vint eventId)
+		{
+			for (vint i = suppressedEvents.Count() - 1; i >= 0; i--)
+			{
+				if (IsSameEvent(suppressedEvents[i], ref, eventId))
+				{
+					suppressedEvents.RemoveAt(i);
+					return true;
+				}
+			}
+			return false;
+		}
 
 			RpcDualLocalObjectTracker::RpcDualLocalObjectTracker(RpcDualLifecycleMock* m, RpcObjectReference r)
 			: mock(m), ref(r)
@@ -94,6 +157,61 @@ namespace vl
 		}
 
 /***********************************************************************
+* RpcDualObjectEventOps
+***********************************************************************/
+
+		RpcDualObjectEventOps::RpcDualObjectEventOps(RpcDualLifecycleMock* _owner, Ptr<IRpcObjectEventOps> _callback)
+			: owner(_owner)
+			, callback(_callback)
+		{
+		}
+
+		void RpcDualObjectEventOps::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		{
+			CHECK_ERROR(owner, L"RpcDualObjectEventOps::InvokeEvent requires an owner.");
+			CHECK_ERROR(callback, L"RpcDualObjectEventOps::InvokeEvent requires a callback.");
+			RpcDualLifecycleMock::PushForwardingEvent(ref, eventId);
+			try
+			{
+				callback->InvokeEvent(ref, eventId, arguments);
+			}
+			catch (...)
+			{
+				RpcDualLifecycleMock::PopForwardingEvent(ref, eventId);
+				throw;
+			}
+			RpcDualLifecycleMock::PopForwardingEvent(ref, eventId);
+		}
+
+/***********************************************************************
+* RpcDualEventForwarder
+***********************************************************************/
+
+		RpcDualEventForwarder::RpcDualEventForwarder(RpcDualLifecycleMock* _owner, RpcObjectReference _ref, vint _eventId)
+			: owner(_owner)
+			, ref(_ref)
+			, eventId(_eventId)
+		{
+		}
+
+		Value RpcDualEventForwarder::Invoke(Ptr<IValueReadonlyList> arguments)
+		{
+			CHECK_ERROR(owner, L"RpcDualEventForwarder::Invoke requires an owner.");
+			if (!RpcDualLifecycleMock::IsForwardingEvent(ref, eventId))
+			{
+				auto rpcArguments = IValueArray::Create();
+				auto count = arguments ? arguments->GetCount() : 0;
+				rpcArguments->Resize(count);
+				for (vint i = 0; i < count; i++)
+				{
+					rpcArguments->Set(i, RpcBoxByval(arguments->Get(i), owner));
+				}
+				owner->InvokeEvent(ref, eventId, rpcArguments);
+			}
+			return Value();
+		}
+
+/***********************************************************************
 * RpcDualLifecycleMock (Constructor and Setup)
 ***********************************************************************/
 
@@ -159,6 +277,11 @@ namespace vl
 			return RpcTypeId_NotFound;
 		}
 
+		bool RpcDualLifecycleMock::AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			return false;
+		}
+
 		void RpcDualLifecycleMock::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
 		{
 			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
@@ -176,6 +299,8 @@ namespace vl
 				});
 				props->eventHandler = handler;
 			}
+
+			auto nativeEventsAttached = AttachLocalObjectEvents(ref, obj, props->nativeEventDetachments);
 
 			if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
 			{
@@ -197,6 +322,45 @@ namespace vl
 				}
 
 					tracker->Attach(this, ref);
+
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				if (!nativeEventsAttached)
+				{
+					auto td = descriptable->GetTypeDescriptor();
+					if (td)
+					{
+						auto thisValue = Value::From(descriptable);
+						for (auto&& [fullName, eventId] : idMap)
+						{
+							vint delimiter = -1;
+							auto buffer = fullName.Buffer();
+							for (vint i = 0; i < fullName.Length(); i++)
+							{
+								if (buffer[i] == L'.')
+								{
+									delimiter = i;
+								}
+							}
+
+							if (delimiter == -1 || delimiter == fullName.Length() - 1) continue;
+							auto typeName = fullName.Sub(0, delimiter);
+							auto eventName = fullName.Sub(delimiter + 1, fullName.Length() - delimiter - 1);
+							auto eventOwner = ::vl::reflection::description::GetTypeDescriptor(typeName);
+							if (!eventOwner || !td->CanConvertTo(eventOwner)) continue;
+							if (auto eventInfo = eventOwner->GetEventByName(eventName, true))
+							{
+								Ptr<IValueFunctionProxy> forwarder = Ptr(new RpcDualEventForwarder(this, ref, eventId));
+								auto handler = eventInfo->Attach(thisValue, forwarder);
+								if (handler)
+								{
+									props->eventHandlers.Add({ eventInfo,handler });
+								}
+							}
+						}
+					}
+				}
+#endif
 			}
 		}
 
@@ -213,6 +377,25 @@ namespace vl
 					observable->ItemChanged.Remove(props->eventHandler);
 				}
 				props->eventHandler = nullptr;
+			}
+
+			for (auto&& detach : props->nativeEventDetachments)
+			{
+				detach();
+			}
+			props->nativeEventDetachments.Clear();
+
+			if (props->eventHandlers.Count() > 0)
+			{
+				if (auto descriptable = dynamic_cast<DescriptableObject*>(props->rawPtr))
+				{
+					auto thisValue = Value::From(descriptable);
+					for (auto&& handler : props->eventHandlers)
+					{
+						handler.eventInfo->Detach(thisValue, handler.handler);
+					}
+				}
+				props->eventHandlers.Clear();
 			}
 
 			// Clear rawPtr first so IsTracked returns false, preventing re-entrant cleanup
@@ -371,7 +554,7 @@ namespace vl
 		void RpcDualLifecycleMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
 		{
 			objectCallback = _objectCallback;
-			eventCallback = _eventCallback;
+			eventCallback = _eventCallback ? Ptr<IRpcObjectEventOps>(new RpcDualObjectEventOps(this, _eventCallback)) : nullptr;
 			listCallback = _listCallback;
 			listEventCallback = _listEventCallback;
 
@@ -441,6 +624,15 @@ namespace vl
 			}
 		}
 
+		void RpcDualLifecycleMock::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		{
+			if (TryConsumeSuppressedEvent(ref, eventId))
+			{
+				return;
+			}
+			RpcLifecycleMock::InvokeEvent(ref, eventId, arguments);
+		}
+
 /***********************************************************************
 * RpcDualLifecycleMock (IRpcObjectOps)
 ***********************************************************************/
@@ -491,7 +683,26 @@ namespace vl
 			}
 			else
 			{
-				// Remote object - create a wrapper proxy
+				vint forwardingEventId = 0;
+				auto forwardingEvent = TryGetForwardingEventId(ref, forwardingEventId);
+				for (auto&& properties : wrapperProperties)
+				{
+					if (properties.ref == ref)
+					{
+						if (forwardingEvent)
+						{
+							SuppressForwardedEvent(ref, forwardingEventId);
+						}
+						auto descriptable = dynamic_cast<IDescriptable*>(properties.proxy);
+						CHECK_ERROR(descriptable, L"RpcDualLifecycleMock::RefToPtr: Wrapper does not implement IDescriptable.");
+						return Ptr(descriptable);
+					}
+				}
+
+				if (forwardingEvent)
+				{
+					SuppressForwardedEvent(ref, forwardingEventId);
+				}
 				return CreateCallerProxy(ref);
 			}
 		}

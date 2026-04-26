@@ -51,6 +51,60 @@ static WString MakeRpcCppAssemblyName(const WString& itemName)
 	return L"Rpc_" + itemName;
 }
 
+struct RpcEventBridgeInfo : Object
+{
+	WString				interfaceFullName;
+	WString				eventName;
+	WString				eventIdName;
+	WString				handlerType;
+	List<WString>		argumentTypes;
+	List<WString>		argumentValueTypes;
+};
+
+static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName);
+
+static Ptr<List<Ptr<RpcEventBridgeInfo>>> CollectRpcEventBridgeInfos(WfLexicalScopeManager& manager, const WString& itemName)
+{
+	auto eventInfos = Ptr(new List<Ptr<RpcEventBridgeInfo>>());
+	WfCppConfig cppConfig(&manager, MakeRpcCppAssemblyName(itemName), L"vl_workflow_global");
+
+	for (auto eventFullName : manager.rpcMetadata->eventFullNames)
+	{
+		vint delimiter = -1;
+		for (vint i = 0; i < eventFullName.Length(); i++)
+		{
+			if (eventFullName[i] == L'.')
+			{
+				delimiter = i;
+			}
+		}
+		CHECK_ERROR(delimiter != -1 && delimiter < eventFullName.Length() - 1, L"CollectRpcEventBridgeInfos: Invalid RPC event full name.");
+
+		auto bridgeInfo = Ptr(new RpcEventBridgeInfo);
+		bridgeInfo->interfaceFullName = eventFullName.Sub(0, delimiter);
+		bridgeInfo->eventName = eventFullName.Sub(delimiter + 1, eventFullName.Length() - delimiter - 1);
+		bridgeInfo->eventIdName = MangleRpcFullName(eventFullName);
+
+		auto td = FindRpcTypeDescriptor(manager, bridgeInfo->interfaceFullName);
+		CHECK_ERROR(td, L"CollectRpcEventBridgeInfos: Failed to find RPC interface type descriptor.");
+		auto eventInfo = td->GetEventByName(bridgeInfo->eventName, false);
+		CHECK_ERROR(eventInfo, L"CollectRpcEventBridgeInfos: Failed to find event metadata.");
+
+		auto handlerType = eventInfo->GetHandlerType();
+		bridgeInfo->handlerType = cppConfig.ConvertType(handlerType);
+		auto functionType = handlerType->GetElementType();
+		for (vint i = 1; i < functionType->GetGenericArgumentCount(); i++)
+		{
+			auto argumentType = functionType->GetGenericArgument(i);
+			bridgeInfo->argumentTypes.Add(cppConfig.ConvertArgumentType(argumentType));
+			bridgeInfo->argumentValueTypes.Add(cppConfig.ConvertType(argumentType));
+		}
+		eventInfos->Add(bridgeInfo);
+	}
+
+	return eventInfos;
+}
+
 static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName)
 {
 	for (auto [decl, index] : indexed(manager.declarationTypes.Keys()))
@@ -163,6 +217,7 @@ TEST_FILE
 		Dictionary<WString, WString> assemblyNames;
 		Dictionary<WString, WString> assemblyEntries;
 		Dictionary<WString, Ptr<List<WString>>> rpcTypeFullNamesPerItem;
+		Dictionary<WString, Ptr<List<Ptr<RpcEventBridgeInfo>>>> rpcEventBridgeInfosPerItem;
 		LoadSampleIndex(L"Rpc", rpcNames);
 
 		TEST_CASE(L"Inherited interfaces are ordered leaf first")
@@ -362,6 +417,7 @@ namespace RpcWrapperValidation
 						manager.rpcMetadata->typeFullNames,
 						*typeFullNames.Obj());
 					rpcTypeFullNamesPerItem.Add(itemName, typeFullNames);
+					rpcEventBridgeInfosPerItem.Add(itemName, CollectRpcEventBridgeInfos(manager, itemName));
 
 					auto bits = GetBitsFromArchitecture();
 					auto wrapperString = GenerateToStream([&](StreamWriter& writer)
@@ -481,12 +537,13 @@ namespace RpcWrapperValidation
 			// Generate the RunRpcTestCase template function
 			writer.WriteLine(L"");
 			writer.WriteLine(L"template<typename TInstance>");
-			writer.WriteLine(L"void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*))");
+			writer.WriteLine(L"void RunRpcTestCase(const WString& expected, vint(*decideTypeId)(IDescriptable*), void(*attachLocalEvents)(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*, List<Func<void()>>&), bool(*invokeLocalEvents)(RpcDualLifecycleMock*, RpcObjectReference, vint, Ptr<IValueArray>))");
 			writer.WriteLine(L"{");
 			writer.WriteLine(L"\tclass LocalRpcMock : public RpcDualLifecycleMock");
 			writer.WriteLine(L"\t{");
 			writer.WriteLine(L"\tpublic:");
 			writer.WriteLine(L"\t\tvint(*decideTypeIdCallback)(IDescriptable*) = nullptr;");
+			writer.WriteLine(L"\t\tvoid(*attachLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*, List<Func<void()>>&) = nullptr;");
 			writer.WriteLine(L"\t\tusing RpcDualLifecycleMock::RpcDualLifecycleMock;");
 			writer.WriteLine(L"\t\tvoid DisconnectTrackedWrappersBeforeDispose()");
 			writer.WriteLine(L"\t\t{");
@@ -497,6 +554,30 @@ namespace RpcWrapperValidation
 			writer.WriteLine(L"\t\t\tauto result = RpcDualLifecycleMock::DecideTypeId(obj);");
 			writer.WriteLine(L"\t\t\tif (result != RpcTypeId_NotFound) return result;");
 			writer.WriteLine(L"\t\t\treturn decideTypeIdCallback(obj);");
+			writer.WriteLine(L"\t\t}");
+			writer.WriteLine(L"\t\tbool AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments) override");
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\t\tif (!attachLocalEventsCallback) return false;");
+			writer.WriteLine(L"\t\t\tattachLocalEventsCallback(this, ref, obj, detachments);");
+			writer.WriteLine(L"\t\t\treturn true;");
+			writer.WriteLine(L"\t\t}");
+			writer.WriteLine(L"\t};");
+			writer.WriteLine(L"\tclass LocalRpcObjectEventOps : public Object, public virtual IRpcObjectEventOps");
+			writer.WriteLine(L"\t{");
+			writer.WriteLine(L"\tpublic:");
+			writer.WriteLine(L"\t\tRpcDualLifecycleMock* mock = nullptr;");
+			writer.WriteLine(L"\t\tPtr<IRpcObjectEventOps> fallback;");
+			writer.WriteLine(L"\t\tbool(*invokeLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, vint, Ptr<IValueArray>) = nullptr;");
+			writer.WriteLine(L"\t\tLocalRpcObjectEventOps(RpcDualLifecycleMock* _mock, Ptr<IRpcObjectEventOps> _fallback, bool(*_invokeLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, vint, Ptr<IValueArray>))");
+			writer.WriteLine(L"\t\t\t: mock(_mock)");
+			writer.WriteLine(L"\t\t\t, fallback(_fallback)");
+			writer.WriteLine(L"\t\t\t, invokeLocalEventsCallback(_invokeLocalEventsCallback)");
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\t}");
+			writer.WriteLine(L"\t\tvoid InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override");
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\t\tif (invokeLocalEventsCallback && invokeLocalEventsCallback(mock, ref, eventId, arguments)) return;");
+			writer.WriteLine(L"\t\t\tfallback->InvokeEvent(ref, eventId, arguments);");
 			writer.WriteLine(L"\t\t}");
 			writer.WriteLine(L"\t};");
 			writer.WriteLine(L"");
@@ -509,6 +590,8 @@ namespace RpcWrapperValidation
 			writer.WriteLine(L"\tlc2->SetIdMap(idMap.Ref());");
 			writer.WriteLine(L"\tlc1->decideTypeIdCallback = decideTypeId;");
 			writer.WriteLine(L"\tlc2->decideTypeIdCallback = decideTypeId;");
+			writer.WriteLine(L"\tlc1->attachLocalEventsCallback = attachLocalEvents;");
+			writer.WriteLine(L"\tlc2->attachLocalEventsCallback = attachLocalEvents;");
 			writer.WriteLine(L"");
 			writer.WriteLine(L"\tauto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj()));");
 			writer.WriteLine(L"\tauto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj()));");
@@ -516,9 +599,11 @@ namespace RpcWrapperValidation
 			writer.WriteLine(L"\tauto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));");
 			writer.WriteLine(L"");
 			writer.WriteLine(L"\tauto oo1 = instance.rpc_IRpcObjectOps(lc1.Obj());");
-			writer.WriteLine(L"\tauto oeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());");
+			writer.WriteLine(L"\tauto rawOeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());");
 			writer.WriteLine(L"\tauto oo2 = instance.rpc_IRpcObjectOps(lc2.Obj());");
-			writer.WriteLine(L"\tauto oeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());");
+			writer.WriteLine(L"\tauto rawOeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());");
+			writer.WriteLine(L"\tauto oeo1 = Ptr(new LocalRpcObjectEventOps(lc1.Obj(), rawOeo1, invokeLocalEvents));");
+			writer.WriteLine(L"\tauto oeo2 = Ptr(new LocalRpcObjectEventOps(lc2.Obj(), rawOeo2, invokeLocalEvents));");
 			writer.WriteLine(L"\tauto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));");
 			writer.WriteLine(L"\tauto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));");
 			writer.WriteLine(L"");
@@ -580,7 +665,112 @@ namespace RpcWrapperValidation
 					}
 				}
 				writer.WriteLine(L"\t\t\treturn RpcTypeId_NotFound;");
-				writer.WriteLine(L"\t\t});");
+				writer.WriteLine(L"\t\t},");
+
+				if (rpcEventBridgeInfosPerItem.Keys().Contains(itemName) && rpcEventBridgeInfosPerItem.Get(itemName)->Count() > 0)
+				{
+					auto&& eventInfos = *rpcEventBridgeInfosPerItem.Get(itemName).Obj();
+					writer.WriteLine(L"\t\t[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)");
+					writer.WriteLine(L"\t\t{");
+					for (auto&& eventInfo : eventInfos)
+					{
+						writer.WriteString(L"\t\t\tif (auto target = dynamic_cast<::");
+						writer.WriteString(eventInfo->interfaceFullName);
+						writer.WriteLine(L"*>(obj))");
+						writer.WriteLine(L"\t\t\t{");
+						writer.WriteString(L"\t\t\t\tauto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->");
+						writer.WriteString(eventInfo->eventName);
+						writer.WriteString(L", ");
+						writer.WriteString(eventInfo->handlerType);
+						writer.WriteString(L"([=](");
+						for (auto [argumentType, argumentIndex] : indexed(eventInfo->argumentTypes))
+						{
+							if (argumentIndex > 0)
+							{
+								writer.WriteString(L", ");
+							}
+							writer.WriteString(argumentType);
+							writer.WriteString(L" arg");
+							writer.WriteString(itow(argumentIndex));
+						}
+						writer.WriteLine(L")");
+						writer.WriteLine(L"\t\t\t\t{");
+						writer.WriteLine(L"\t\t\t\t\tauto arguments = ::vl::reflection::description::IValueArray::Create();");
+						writer.WriteString(L"\t\t\t\t\t::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(");
+						writer.WriteString(itow(eventInfo->argumentTypes.Count()));
+						writer.WriteLine(L"));");
+						for (auto [argumentType, argumentIndex] : indexed(eventInfo->argumentTypes))
+						{
+							writer.WriteString(L"\t\t\t\t\t::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(");
+							writer.WriteString(itow(argumentIndex));
+							writer.WriteString(L"), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg");
+							writer.WriteString(itow(argumentIndex));
+							writer.WriteLine(L"), mock));");
+						}
+						writer.WriteString(L"\t\t\t\t\t::vl::__vwsn::This(mock)->InvokeEvent(ref, ::vl_workflow_global::");
+						writer.WriteString(assemblyNames[itemName]);
+						writer.WriteString(L"::Instance().rpcevent_");
+						writer.WriteString(eventInfo->eventIdName);
+						writer.WriteLine(L", arguments);");
+						writer.WriteLine(L"\t\t\t\t}));");
+						writer.WriteLine(L"\t\t\t\tdetachments.Add(::vl::Func<void()>([target, handler]()");
+						writer.WriteLine(L"\t\t\t\t{");
+						writer.WriteString(L"\t\t\t\t\t::vl::__vwsn::EventDetach(::vl::__vwsn::This(target)->");
+						writer.WriteString(eventInfo->eventName);
+						writer.WriteLine(L", handler);");
+						writer.WriteLine(L"\t\t\t\t}));");
+						writer.WriteLine(L"\t\t\t}");
+					}
+					writer.WriteLine(L"\t\t},");
+					writer.WriteLine(L"\t\t[](RpcDualLifecycleMock* mock, RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments) -> bool");
+					writer.WriteLine(L"\t\t{");
+					writer.WriteString(L"\t\t\tauto& instance = ::vl_workflow_global::");
+					writer.WriteString(assemblyNames[itemName]);
+					writer.WriteLine(L"::Instance();");
+					for (auto&& eventInfo : eventInfos)
+					{
+						writer.WriteString(L"\t\t\tif (eventId == instance.rpcevent_");
+						writer.WriteString(eventInfo->eventIdName);
+						writer.WriteLine(L")");
+						writer.WriteLine(L"\t\t\t{");
+						writer.WriteString(L"\t\t\t\tauto target = ::vl::__vwsn::SharedPtrCast<::");
+						writer.WriteString(eventInfo->interfaceFullName);
+						writer.WriteLine(L">(::vl::__vwsn::This(mock)->RefToPtr(ref).Obj());");
+						writer.WriteLine(L"\t\t\t\tif (!target) return false;");
+						for (auto [argumentValueType, argumentIndex] : indexed(eventInfo->argumentValueTypes))
+						{
+							writer.WriteString(L"\t\t\t\tauto arg");
+							writer.WriteString(itow(argumentIndex));
+							writer.WriteString(L" = ::vl::__vwsn::Unbox<");
+							writer.WriteString(argumentValueType);
+							writer.WriteString(L">(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(");
+							writer.WriteString(itow(argumentIndex));
+							writer.WriteLine(L"))), mock));");
+						}
+						writer.WriteString(L"\t\t\t\t::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->");
+						writer.WriteString(eventInfo->eventName);
+						writer.WriteString(L")(");
+						for (auto [argumentValueType, argumentIndex] : indexed(eventInfo->argumentValueTypes))
+						{
+							if (argumentIndex > 0)
+							{
+								writer.WriteString(L", ");
+							}
+							writer.WriteString(L"arg");
+							writer.WriteString(itow(argumentIndex));
+						}
+						writer.WriteLine(L");");
+						writer.WriteLine(L"\t\t\t\treturn true;");
+						writer.WriteLine(L"\t\t\t}");
+					}
+					writer.WriteLine(L"\t\t\treturn false;");
+					writer.WriteLine(L"\t\t});");
+				}
+				else
+				{
+					writer.WriteLine(L"\t\tnullptr,");
+					writer.WriteLine(L"\t\tnullptr);");
+				}
 
 				writer.WriteLine(L"});");
 			}

@@ -14,6 +14,7 @@ void LoadTypes()
 	LoadParsing2Types();
 	XmlAstLoadTypes();
 	JsonAstLoadTypes();
+	WfLoadLibraryTypes();
 	LoadCppTypes();
 	LoadTestCaseTypes();
 	LoadTestCaseRpcTypes();
