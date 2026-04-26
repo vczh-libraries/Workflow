@@ -32,13 +32,6 @@
 - Update `TestLibraryRpcByval.cpp` in `LibraryTest` to use `RpcDualLifecycleMock`, remove `RpcByvalLifecycleMock`.
   - Refactor `RpcDualLifecycleMock` to make it a common implementation for `GacUI`.
   - May need to refactor how to retrieve ops interfaces.
-
-## Next Repro
-
-- In generated `rpc_IRpcObjectOps`, `RequestService` and `RegisterService` is doing switch-case on type ids.
-  - This approach would make too many duplicated code.
-  - A switch-cast should be generated at the beginning of the `RegisterService` function to crash if the type id does not exist or the type id is not `@rpc:Ctor` decorated. The rest of the `RegisterService` is just binding an object with the type id into the map. And `RequestService` doesn't need to care about the type id at all, because illegal type id cannot register.
-
 # Repro
 
 You should complete tasks one by one.
@@ -48,44 +41,7 @@ You should complete tasks one by one.
 
 ## Task 1
 
-In `TestCasesRpc.cpp` there is a `RunRpcTestCase` function. This file is generated, but this function never changes.
-So I believe it could be just moved to `Test\Source\TestCasesRpc.h`.
-You can then make `TestRpcCompile.cpp` in `CompilerTest_LoadAndCompile` much more clean.
-This file should be also added to all 3 `CppTest*` project in the same solution explorer folder with `TestCasesRpc.cpp`.
-
-## Task 2
-
-Add `IRpcObjectOps::RegisterService` so that lifecycle calls `IRpcObjectOps` instead of opposite.
-Currently in the generated wrapper, the `RequestService` function looks like this:
-```
-override func RequestService(typeId : int) : (system::RpcObjectReference)
-{
-    switch (typeId)
-    {
-        case rpctype_RpcEvent__IService:
-        {
-            return _lc.PtrToRef(_lc.RequestService("RpcEvent::IService"));
-        }
-        default:
-        raise "Unknown RPC type id.";
-    }
-}
-```
-I believe by adding `IRpcObjectOps::RegisterService`, you can maintain the type id to service map in this generated `IRpcObjectOps` implementation.
-And then the lifecycle implementation, in `RpcDualLifecycleMock.cpp`, could instead redirect the call to here, instead of the opposite way which is currently implemented.
-In `RpcDualLifecycleMock.cpp`, there is already a string to id mapping. And the `RegisterService` and `RequestService` in `RpcDualLifecycleMock.cpp` takes a string, so it could be directly used, and inject the same error.
-
-## Task 3
-
-`RpcDualObjectOps` looks redundant. In `TestCasesRpc.cpp`:
-- lifecycleA and objectOpsA manages local objects and wrappers for remote objects.
-- objectOpsA is generated in Workflow.
-- lifecycleA talks to objectOpsB to simulate how clientA talks to clientB.
-- `RpcDualObjectOps` looks like just a redirection doing nothing to a objectOpsA/B.
-- I believe `RpcDualObjectOps` could just be removed, and replaced by the actual objectOpsA/B.
-- By saying removing, you should not introduce any other new classes doing pure redirection. You should find a solution to avoid any unnecessary redirection.
-
-## Task 4
+This task is half way done. I have committed what was already done, you can checkout the latest "[HALF WAY DONE]" commit for more information, as well as the remaining content in `Copilot_Investigate.md`. I run CI myself and `CppTest` does not pass the test. It means at least generated C++ doesn't work as expected. You may want to run `RuntimeTest` as well, to start with a better guess about the root cause.
 
 `RpcDualObjectEventOps` and `RpcDualEventForwarder` look like never being used outside of `RpcDualObjectOps`. Remove them.
 I believe a better implementation would be:
@@ -106,6 +62,12 @@ I believe a better implementation would be:
   - The first lambda should be replaced by `rpclistener_*` functions.
   - The second lambda is handling event ids, there is already a generated `rpc_IRpcObjectEventOps` functions in each wrapper Workflow script, I believe you should just use that instead.
 - Since `TestRpc.cpp` in `RuntimeTest` basically doing the same thing, new generated functions should just be able to use, instead of generating unnecessary reflection code, maybe this is what the `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA` protected code is doing, anyway this should not be necessary. And such code should be in `TestRpc.cpp` instead of in `RpcDualLifecycleMock`. `RpcDualLifecycleMock` is working for both Workflow VM and generated C++ code, so such option doesn't taste good. If any code is only used in `RuntimeTest`, it should be in `TestRpc.cpp`.
+
+## Task 2
+
+- In generated `rpc_IRpcObjectOps`, `RequestService` and `RegisterService` is doing switch-case on type ids.
+  - This approach would make too many duplicated code.
+  - A switch-cast should be generated at the beginning of the `RegisterService` function to crash if the type id does not exist or the type id is not `@rpc:Ctor` decorated. The rest of the `RegisterService` is just binding an object with the type id into the map. And `RequestService` doesn't need to care about the type id at all, because illegal type id cannot register.
 
 ## General Instruction
 
