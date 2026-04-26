@@ -7,13 +7,14 @@ You should complete tasks one by one.
 
 ## Task 1
 
-- In generated `rpc_IRpcObjectOps`, `RequestService` and `RegisterService` is doing switch-case on type ids.
-  - A switch-cast should be generated at the beginning of the `RegisterService` function to crash if the type id does not exist or the type id is not `@rpc:Ctor` decorated. The rest of the `RegisterService` is just binding an object with the type id into the map. And `RequestService` doesn't need to care about the type id at all, because illegal type id cannot register.
-  - In `RegisterService`, two kinds of errors are expected: type id is not an interface with `@rpc:Ctor`; type id does not exists.
-    - You are going to use your own words for them.
-    - Two helper functions could be created: `if it is ctor type do the work; if it is valid type id raise error 1 otherwise raise error 2;`.
-  - In `RequestService`, you should check first if the type id exists, checkout reflection code for `IValueDictionary` for details.
-    - If a type id is not registered, raise an error, don't need to care if the type id is valid or not.
+In generated wrapper Workflow scripts:
+- Rename `rpcsvc_RaiseInvalidServiceTypeId` to `rpcwrapper_IsInterfaceTypeId`.
+  - It returns `bool` instead of raising an exception, the exception should be raised at the caller side.
+  - The case from -1 to -7 could becomes an if statement before the switch case says `if (typeId in range [-7, -1]) ...`.
+- Rename `rpcsvc_EnsureCtorServiceTypeId` to `rpcwrapper_IsCtorInterfaceTypeId`.
+  - It returns `bool` instead of raising an exception, the exception should be raised at the caller side.
+- Therefore in `RegisterService` it could says `if rpcwrapper_IsCtorInterfaceTypeId do the work else if rpcwrapper_IsInterfaceTypeId raise not a ctor interface otherwise raise invalid type id`.
+- You would also need to fix other codegen places that affected by this change.
 
 ## General Instruction
 
