@@ -176,6 +176,47 @@ Global Functions
 		return result;
 	}
 
+	void Rpc_CollectionDict_Interface_Nested_PropByval::rpcsvc_RaiseInvalidServiceTypeId(::vl::vint typeId)
+	{
+		{
+			auto __vwsn_switch_0 = typeId;
+			if ((__vwsn_switch_0 == static_cast<::vl::vint>(-1)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(-2)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(-3)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(-4)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(-5)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(-6)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(-7)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IValue))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+		}
+	}
+
+	void Rpc_CollectionDict_Interface_Nested_PropByval::rpcsvc_EnsureCtorServiceTypeId(::vl::vint typeId)
+	{
+		{
+			auto __vwsn_switch_1 = typeId;
+			if ((__vwsn_switch_1 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService))
+			{
+			}
+			else
+			{
+				GLOBAL_NAME rpcsvc_RaiseInvalidServiceTypeId(typeId);
+			}
+		}
+	}
+
 	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> Rpc_CollectionDict_Interface_Nested_PropByval::rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc3_Rpc_CollectionDict_Interface_Nested_PropByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(lc));
@@ -203,12 +244,12 @@ Global Functions
 	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_CollectionDict_Interface_Nested_PropByval::rpcwrapper_Create(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
-			auto __vwsn_switch_3 = typeId;
-			if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IValue))
+			auto __vwsn_switch_4 = typeId;
+			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IValue))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollectionDict__Interface__Nested__InByval__PropByval__IValue(lc));
 			}
-			else if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService))
+			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService(lc));
 			}
@@ -274,18 +315,18 @@ Closures
 	::vl::reflection::description::Value __vwsnc3_Rpc_CollectionDict_Interface_Nested_PropByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
-			auto __vwsn_switch_0 = methodId;
-			if ((__vwsn_switch_0 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__PropByval__IValue_GetValue))
+			auto __vwsn_switch_2 = methodId;
+			if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__PropByval__IValue_GetValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionDict::Interface::Nested::InByval::PropByval::IValue>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetValue()), _lc);
 			}
-			else if ((__vwsn_switch_0 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService_GetList))
+			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService_GetList))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionDict::Interface::Nested::InByval::PropByval::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetList()), _lc);
 			}
-			else if ((__vwsn_switch_0 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService_SetList))
+			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService_SetList))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionDict::Interface::Nested::InByval::PropByval::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				::vl::__vwsn::This(target.Obj())->SetList(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))), _lc)));
@@ -315,14 +356,7 @@ Closures
 
 	void __vwsnc3_Rpc_CollectionDict_Interface_Nested_PropByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
 	{
-		{
-			auto __vwsn_switch_1 = typeId;
-			if ((__vwsn_switch_1 == GLOBAL_NAME rpctype_RpcCollectionDict__Interface__Nested__InByval__PropByval__IService))
-			{
-			}
-			else
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id."));
-		}
+		GLOBAL_NAME rpcsvc_EnsureCtorServiceTypeId(typeId);
 		if ((! static_cast<bool>(service)))
 		{
 			::vl::__vwsn::This(_services.Obj())->Remove(::vl::__vwsn::Box(typeId));
@@ -335,7 +369,13 @@ Closures
 
 	::vl::rpc_controller::RpcObjectReference __vwsnc3_Rpc_CollectionDict_Interface_Nested_PropByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint typeId)
 	{
-		return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
+		{
+			if (::vl::__vwsn::This(::vl::__vwsn::This(_services.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(typeId)))
+			{
+				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
+			}
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service is not registered."));
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -348,7 +388,7 @@ Closures
 	void __vwsnc4_Rpc_CollectionDict_Interface_Nested_PropByval_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
-			auto __vwsn_switch_2 = eventId;
+			auto __vwsn_switch_3 = eventId;
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
 		}
 	}

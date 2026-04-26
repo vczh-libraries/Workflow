@@ -315,6 +315,62 @@ namespace RpcInheritedEventTest
 			TEST_ASSERT(wcsstr(wrapperString.Buffer(), L"case rpctype_RpcInheritedEventTest__IDerived") != nullptr);
 		});
 
+		TEST_CASE(L"Service generation validates ctor ids and registration state")
+		{
+			manager.Clear(true, true);
+
+			auto sample = WString::Unmanaged(LR"WORKFLOW(module Rpc;
+using system::*;
+
+namespace RpcServiceValidationTest
+{
+	@rpc:Interface
+	interface INonCtor
+	{
+		func Ping() : void;
+	}
+
+	@rpc:Interface
+	@rpc:Ctor
+	interface ICtor
+	{
+		func Ping() : void;
+	}
+}
+)WORKFLOW");
+
+			auto module = ParseModule(sample, GetWorkflowParser());
+			TEST_ASSERT(module);
+			TEST_ASSERT(manager.errors.Count() == 0);
+
+			manager.AddModule(module);
+			manager.Rebuild(true);
+			TEST_ASSERT(manager.errors.Count() == 0);
+			TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
+
+			auto wrapperModule = GenerateModuleRpc(&manager);
+			TEST_ASSERT(wrapperModule);
+			TEST_ASSERT(manager.errors.Count() == 0);
+
+			auto wrapperString = GenerateToStream([&](StreamWriter& writer)
+			{
+				WfPrint(wrapperModule, L"", writer);
+			});
+
+			auto ensureCtor = wcsstr(wrapperString.Buffer(), L"func rpcsvc_EnsureCtorServiceTypeId(typeId : int)");
+			auto raiseInvalid = wcsstr(wrapperString.Buffer(), L"func rpcsvc_RaiseInvalidServiceTypeId(typeId : int)");
+			auto requestService = wcsstr(wrapperString.Buffer(), L"override func RequestService(typeId : int)");
+			TEST_ASSERT(ensureCtor != nullptr);
+			TEST_ASSERT(raiseInvalid != nullptr);
+			TEST_ASSERT(requestService != nullptr);
+			TEST_ASSERT(wcsstr(ensureCtor, L"case rpctype_RpcServiceValidationTest__ICtor") != nullptr);
+			TEST_ASSERT(wcsstr(raiseInvalid, L"case rpctype_RpcServiceValidationTest__INonCtor") != nullptr);
+			TEST_ASSERT(wcsstr(raiseInvalid, L"raise \"RPC service type id is not an @rpc:Ctor interface.\";") != nullptr);
+			TEST_ASSERT(wcsstr(raiseInvalid, L"raise \"RPC service type id does not exist.\";") != nullptr);
+			TEST_ASSERT(wcsstr(requestService, L"_services.Keys.Contains(typeId)") != nullptr);
+			TEST_ASSERT(wcsstr(requestService, L"raise \"RPC service is not registered.\";") != nullptr);
+		});
+
 		TEST_CASE(L"Wrapper generation requires property mode")
 		{
 			manager.Clear(true, true);

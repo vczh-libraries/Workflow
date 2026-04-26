@@ -76,6 +76,45 @@ Global Functions
 		return result;
 	}
 
+	void Rpc_ServiceWrapper::rpcsvc_RaiseInvalidServiceTypeId(::vl::vint64_t typeId)
+	{
+		{
+			auto __vwsn_switch_0 = typeId;
+			if ((__vwsn_switch_0 == static_cast<::vl::vint64_t>(-1L)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint64_t>(-2L)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint64_t>(-3L)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint64_t>(-4L)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint64_t>(-5L)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint64_t>(-6L)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == static_cast<::vl::vint64_t>(-7L)))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcServiceWrapperTest__IService))
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+		}
+	}
+
+	void Rpc_ServiceWrapper::rpcsvc_EnsureCtorServiceTypeId(::vl::vint64_t typeId)
+	{
+		{
+			auto __vwsn_switch_1 = typeId;
+			if ((__vwsn_switch_1 == GLOBAL_NAME rpctype_RpcServiceWrapperTest__IService))
+			{
+			}
+			else
+			{
+				GLOBAL_NAME rpcsvc_RaiseInvalidServiceTypeId(typeId);
+			}
+		}
+	}
+
 	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> Rpc_ServiceWrapper::rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc2_Rpc_ServiceWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(lc));
@@ -96,8 +135,8 @@ Global Functions
 	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_ServiceWrapper::rpcwrapper_Create(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
-			auto __vwsn_switch_3 = typeId;
-			if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcServiceWrapperTest__IService))
+			auto __vwsn_switch_4 = typeId;
+			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcServiceWrapperTest__IService))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcServiceWrapperTest__IService(lc));
 			}
@@ -142,8 +181,8 @@ Closures
 	::vl::reflection::description::Value __vwsnc2_Rpc_ServiceWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
-			auto __vwsn_switch_0 = methodId;
-			if ((__vwsn_switch_0 == GLOBAL_NAME rpcmethod_RpcServiceWrapperTest__IService_Self))
+			auto __vwsn_switch_2 = methodId;
+			if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcServiceWrapperTest__IService_Self))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcServiceWrapperTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->Self(::vl::__vwsn::Unbox<::vl::Ptr<::RpcServiceWrapperTest::IService>>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))), _lc)))), _lc);
@@ -172,14 +211,7 @@ Closures
 
 	void __vwsnc2_Rpc_ServiceWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
 	{
-		{
-			auto __vwsn_switch_1 = typeId;
-			if ((__vwsn_switch_1 == GLOBAL_NAME rpctype_RpcServiceWrapperTest__IService))
-			{
-			}
-			else
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id."));
-		}
+		GLOBAL_NAME rpcsvc_EnsureCtorServiceTypeId(typeId);
 		if ((! static_cast<bool>(service)))
 		{
 			::vl::__vwsn::This(_services.Obj())->Remove(::vl::__vwsn::Box(typeId));
@@ -192,7 +224,13 @@ Closures
 
 	::vl::rpc_controller::RpcObjectReference __vwsnc2_Rpc_ServiceWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint64_t typeId)
 	{
-		return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
+		{
+			if (::vl::__vwsn::This(::vl::__vwsn::This(_services.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(typeId)))
+			{
+				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
+			}
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service is not registered."));
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -205,7 +243,7 @@ Closures
 	void __vwsnc3_Rpc_ServiceWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
-			auto __vwsn_switch_2 = eventId;
+			auto __vwsn_switch_3 = eventId;
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
 		}
 	}

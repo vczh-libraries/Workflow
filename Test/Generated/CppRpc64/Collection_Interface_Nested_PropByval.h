@@ -110,6 +110,8 @@ namespace vl_workflow_global
 		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
+		void rpcsvc_RaiseInvalidServiceTypeId(::vl::vint64_t typeId);
+		void rpcsvc_EnsureCtorServiceTypeId(::vl::vint64_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IValue> rpcwrapper_RpcCollection__Interface__Nested__InByval__PropByval__IValue(::vl::rpc_controller::IRpcLifeCycle* lc);

@@ -18,6 +18,47 @@ func rpc_GetIds() : (int[string])
     return result;
 }
 
+func rpcsvc_RaiseInvalidServiceTypeId(typeId : int) : (void)
+{
+    switch (typeId)
+    {
+        case -1:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case -2:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case -3:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case -4:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case -5:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case -6:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case -7:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case rpctype_RpcCollectionOblist__Interface__InByval__OutByref__IValue:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        case rpctype_RpcCollectionOblist__Interface__InByval__OutByref__IService:
+        raise "RPC service type id is not an @rpc:Ctor interface.";
+        default:
+        raise "RPC service type id does not exist.";
+    }
+}
+
+func rpcsvc_EnsureCtorServiceTypeId(typeId : int) : (void)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcCollectionOblist__Interface__InByval__OutByref__IService:
+        {
+        }
+        default:
+        {
+            rpcsvc_RaiseInvalidServiceTypeId(typeId);
+        }
+    }
+}
+
 func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
@@ -64,14 +105,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 
         override func RegisterService(typeId : int, service : system::Interface^) : (void)
         {
-            switch (typeId)
-            {
-                case rpctype_RpcCollectionOblist__Interface__InByval__OutByref__IService:
-                {
-                }
-                default:
-                raise "Unknown RPC type id.";
-            }
+            rpcsvc_EnsureCtorServiceTypeId(typeId);
             if (service is null)
             {
                 _services.Remove(typeId);
@@ -84,7 +118,13 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 
         override func RequestService(typeId : int) : (system::RpcObjectReference)
         {
-            return _lc.PtrToRef(_services[typeId]);
+            {
+                if (_services.Keys.Contains(typeId))
+                {
+                    return _lc.PtrToRef(_services[typeId]);
+                }
+                raise "RPC service is not registered.";
+            }
         }
     };
 }
