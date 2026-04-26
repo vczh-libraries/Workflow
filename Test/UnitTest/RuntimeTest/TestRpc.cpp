@@ -169,12 +169,10 @@ TEST_FILE
 				auto oeo2 = createEventOps(lc2.Obj());
 				lc1->RegisterLocalObjectOps(oo1);
 				lc2->RegisterLocalObjectOps(oo2);
-				auto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));
-				auto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));
 
 				// Register cross: ops from lc1 go to lc2, and vice versa
-				lc2->Register(doo1, oeo1, lo1, leo1);
-				lc1->Register(doo2, oeo2, lo2, leo2);
+				lc2->Register(oo1, oeo1, lo1, leo1);
+				lc1->Register(oo2, oeo2, lo2, leo2);
 
 				// Run serviceMain with lc1
 				auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");
@@ -196,8 +194,6 @@ TEST_FILE
 				oo2 = nullptr;
 				oeo1 = nullptr;
 				oo1 = nullptr;
-				doo2 = nullptr;
-				doo1 = nullptr;
 				leo2 = nullptr;
 				lo2 = nullptr;
 				leo1 = nullptr;

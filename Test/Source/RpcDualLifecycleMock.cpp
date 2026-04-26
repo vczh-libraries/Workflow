@@ -119,49 +119,6 @@ namespace vl
 		}
 
 /***********************************************************************
-* RpcDualObjectOps
-***********************************************************************/
-
-		RpcDualObjectOps::RpcDualObjectOps(RpcDualLifecycleMock* _owner, Ptr<IRpcObjectOps> _callback)
-			: owner(_owner)
-			, callback(_callback)
-		{
-		}
-
-		Value RpcDualObjectOps::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
-		{
-			return callback->InvokeMethod(ref, methodId, arguments);
-		}
-
-		Ptr<IAsync> RpcDualObjectOps::InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
-		{
-			return callback->InvokeMethodAsync(ref, methodId, arguments);
-		}
-
-		void RpcDualObjectOps::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
-		{
-			(void)remoteClientId;
-			if (hold)
-			{
-				owner->AcquireRemoteObject(ref);
-			}
-			else
-			{
-				owner->ReleaseRemoteObject(ref);
-			}
-		}
-
-		void RpcDualObjectOps::RegisterService(vint typeId, Ptr<IDescriptable> service)
-		{
-			callback->RegisterService(typeId, service);
-		}
-
-		RpcObjectReference RpcDualObjectOps::RequestService(vint typeId)
-		{
-			return callback->RequestService(typeId);
-		}
-
-/***********************************************************************
 * RpcDualObjectEventOps
 ***********************************************************************/
 

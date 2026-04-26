@@ -86,11 +86,9 @@ void RunRpcTestCase(
 	auto oeo2 = Ptr(new LocalRpcObjectEventOps(lc2.Obj(), rawOeo2, invokeLocalEvents));
 	lc1->RegisterLocalObjectOps(oo1);
 	lc2->RegisterLocalObjectOps(oo2);
-	auto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));
-	auto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));
 
-	lc2->Register(doo1, oeo1, lo1, leo1);
-	lc1->Register(doo2, oeo2, lo2, leo2);
+	lc2->Register(oo1, oeo1, lo1, leo1);
+	lc1->Register(oo2, oeo2, lo2, leo2);
 	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, lc1.Obj()); });
 	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, lc2.Obj()); });
 

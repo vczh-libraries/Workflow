@@ -88,6 +88,9 @@ If any test case fail, you could continue to run until you collect results from 
 - Task 2: Updated RPC generation so generated object ops own a `_services` dictionary, `RegisterService` stores or removes services by type id, and `RequestService` converts the stored service pointer through lifecycle `PtrToRef`.
 - Task 2: Updated lifecycle mocks and tests so service registration flows from lifecycle into local object ops; `RpcDualLifecycleMock` now unregisters service entries from local object ops when local service objects are released.
 - Task 2: Regenerated RPC C++ and metadata outputs for Win32 and x64 after the generator and reflection changes.
+- Task 3: Removed the `RpcDualObjectOps` forwarding wrapper and changed both runtime and generated C++ RPC test harnesses to cross-register the actual generated object ops objects.
+- Task 3: Moved the only non-trivial hold behavior into generated object ops: generated `ObjectHold` now calls lifecycle controller `AcquireRemoteObject` and `ReleaseRemoteObject` directly instead of storing local `_holds` entries.
+- Task 3: Regenerated RPC C++ and metadata outputs for Win32 and x64 so generated object ops no longer contain `_holds`.
 
 # TEST
 
@@ -95,6 +98,8 @@ If any test case fail, you could continue to run until you collect results from 
 - Success criteria for Task 1: generated `TestCasesRpc.cpp` includes `../Source/TestCasesRpc.h`, no longer contains the `RunRpcTestCase` template body, all generated RPC test cases still compile, and all `CppTest*` RPC cases pass.
 - For Task 2, build Debug Win32 and Debug x64 for `Test\UnitTest\UnitTest.sln`, run `CompilerTest_LoadAndCompile` to refresh generated RPC output, then run the full matrix: `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` across the required platforms.
 - Success criteria for Task 2: lifecycle service registration goes through local generated object ops, generated `RequestService` reads from object ops storage, service unregister clears that storage, and the RPC destructor samples release service objects correctly.
+- For Task 3, build Debug x64 after the direct generator/test harness edits, run `CompilerTest_LoadAndCompile` to regenerate RPC outputs, then build Debug Win32 and Debug x64 again. Run `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` across the required platforms.
+- Success criteria for Task 3: no source or generated C++ file references `RpcDualObjectOps`, generated RPC object ops no longer contain `_holds`, generated `ObjectHold` calls lifecycle controller acquire/release, and the RPC runtime/generated C++ tests all pass.
 
 # PROPOSALS
 
@@ -120,6 +125,35 @@ Move the stable `RunRpcTestCase` template helper out of generated `Test\SourceCp
 - `CppTest` Win32/x64 passed: 2/2 test files, 209/209 test cases.
 - `CppTest_Metaonly` Win32/x64 passed: 2/2 test files, 209/209 test cases.
 - `CppTest_Reflection` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+
+- No.3 Remove `RpcDualObjectOps` by making generated object ops own remote hold forwarding [CONFIRMED]
+
+## No.3 Remove `RpcDualObjectOps` by making generated object ops own remote hold forwarding
+
+Remove the dual object-ops forwarding wrapper and pass the actual generated object ops instances directly between the two mock lifecycles. Preserve the ownership behavior previously hidden inside `RpcDualObjectOps::ObjectHold` by generating controller acquire/release calls in each generated object ops implementation.
+
+### CODE CHANGE
+
+- Removed `RpcDualObjectOps` from `Test\Source\RpcDualLifecycleMock.h` and `Test\Source\RpcDualLifecycleMock.cpp`.
+- Updated `Test\Source\TestCasesRpc.h` and `Test\UnitTest\RuntimeTest\TestRpc.cpp` so `lc2->Register(...)` receives `oo1` directly and `lc1->Register(...)` receives `oo2` directly.
+- Updated `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp` so generated object ops no longer allocate `_holds`; generated `ObjectHold` calls `_lc.Controller.AcquireRemoteObject(ref)` when holding and `_lc.Controller.ReleaseRemoteObject(ref)` when releasing.
+- Regenerated RPC C++ and metadata outputs under `Test\SourceCppGenRpc` and `Test\Generated`.
+
+### CONFIRMED
+
+- `get_errors` reported no diagnostics for all direct Task 3 source files.
+- Debug x64 build passed before regeneration with 0 warnings and 0 errors.
+- `CompilerTest_LoadAndCompile` x64 regenerated RPC output and passed: 6/6 test files, 689/689 test cases.
+- Debug x64 build after regeneration passed with 0 warnings and 0 errors.
+- Debug Win32 build after regeneration passed with 0 warnings and 0 errors.
+- `CompilerTest_LoadAndCompile` x64 and Win32 re-runs each passed both internal passes: 6/6 test files, 689/689 test cases.
+- `LibraryTest` Win32/x64 passed: 2/2 test files, 14/14 test cases.
+- `CompilerTest_GenerateMetadata` Win32/x64 passed: 1/1 test files, 2/2 test cases.
+- `RuntimeTest` Win32/x64 passed: 4/4 test files, 243/243 test cases.
+- `CppTest` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+- `CppTest_Metaonly` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+- `CppTest_Reflection` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+- Search confirmed no remaining `RpcDualObjectOps` references in C++ sources, no generated `_holds` references under RPC outputs, and the generated `Dtor` canary calls controller `AcquireRemoteObject(ref)` and `ReleaseRemoteObject(ref)`.
 
 # PROPOSALS
 

@@ -73,21 +73,6 @@ namespace vl
 			rpc_controller::RpcObjectReference					ref;
 		};
 
-		class RpcDualObjectOps : public Object, public virtual rpc_controller::IRpcObjectOps
-		{
-		private:
-			class RpcDualLifecycleMock*							owner = nullptr;
-			Ptr<rpc_controller::IRpcObjectOps>					callback;
-		public:
-			RpcDualObjectOps(class RpcDualLifecycleMock* _owner, Ptr<rpc_controller::IRpcObjectOps> _callback);
-
-			reflection::description::Value						InvokeMethod(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
-			Ptr<reflection::description::IAsync>				InvokeMethodAsync(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
-			void												ObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId, bool hold)override;
-			void												RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
-			rpc_controller::RpcObjectReference					RequestService(vint typeId)override;
-		};
-
 		class RpcDualObjectEventOps : public Object, public virtual rpc_controller::IRpcObjectEventOps
 		{
 		private:
