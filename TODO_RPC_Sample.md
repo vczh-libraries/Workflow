@@ -1,65 +1,21 @@
 # Repro
 
-Follow job.new-sample.md to add a new sample: Rpc\Event.txt
+Follow job.new-sample.md to add a new sample: Rpc\EventOblist.txt
 
-```Workflow
-module Rpc;
-using system::*;
-using RpcWrapperTest::*;
+Checkout Rpc\Event.txt, follow the pattern, but this time you are going to run the `ItemChanged` event for an `observe int[]` collection. Checkout how how observable list is used in `Rpx\CollectionOblist_*` samples, and check out the `ObservableList<T>` source code to understand how `ItemChanged` is triggered.
 
-namespace YourFavoriteNamespace // use RpcEvent
-{
-	@rpc:Interface
-	@rpc:Ctor
-	interface IService
-	{
-    event SomethingHappened(string);
-
-    func MakeItHappen() : void;
-    func Watch() : void;
-	}
-}
-var s = "";
-
-func serviceMain(lc : IRpcLifeCycle*) : void
-{
-	var serviceObj = new (YourFavoriteNamespace::IService^)
-	{
-    override func MakeItHappen() : void
-    {
-      SomethingHappened("A");
-    }
-
-    override func Watch() : void
-    {
-      attach(SomethingHappened, [s = $"$(s)[serviceMain:$($1)]"]);
-      // or use func (something : string) : void { s = $"$(s)[serviceMain:$(something)]"; }
-    }
-	};
-	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
-}
-
-func clientMain(lc : IRpcLifeCycle*) : string
-{
-	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-
-  // serviceMain raises an event and clientMain handles it
-  var handler = attach(service.SomethingHappened, [s = $"$(s)[serviceMain:$($1)]"]);
-  service.MakeItHappen();
-  detach(service.SomethingHappened, handler);
-
-  // clientMain raises and event and serviceMain handles it
-  service.Watch();
-  service.SomethingHappened("B");
-
-  // [clientMain:A][serviceMain:B]
-  return s;
-}
-```
+Follow Rpc\Event.txt to complete Rpc\EventOblist.txt to, basically this will be done in its `clientMain` function:
+- Send an `observe int[]` to `IService` and the service will hold the object, such object will be obviously a wrapper. Because `observe int[]` is by default passed by reference, so no attributes are needed.
+- Make a function to modify the `observable int[]` object. The function can assume that the list is empty, and after some manipulation, the list will still be empty. But multiple `ItemChanged` event will be triggered.
+- Just like Rpc\Event.txt, clientMain will first register an event handler, ask `IService` to run the function internally, so that events will be triggered on the wrapper and passed from `serviceMain` to `clientMain`. Unregister the event handler.
+- Ask `IService` to register the event on the wrapper, and in `clientMain` call the function again, so that events will be triggered on the local object and passed from `clientMain` to `serviceMain`.
+- Each `ItemChanged` occurance will write down who handles the event, and the event arguments, in a compact way.
+- I will leave you to decide the details of what should be in `Rpc\EventOblist.txt`.
 
 In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
 This test is to ensure that:
-- The sample tests if raising an event works bidirectionaly
+- In `WfLibraryRpc.(h|cpp)` and `RpcDualLifecycleMock.(h|cpp)`, the predefined implementation handles observable list correctly.
+- This is for container, not for interfaces, so I believe no codegen fixing will be involved, until you find that it is impossible to avoid.
 
 Understand what the test case trying to say, you are not allowed to change:
 - The content of the sample, unless it doesn't build.
