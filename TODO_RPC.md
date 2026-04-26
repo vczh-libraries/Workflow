@@ -33,6 +33,12 @@
   - Refactor `RpcDualLifecycleMock` to make it a common implementation for `GacUI`.
   - May need to refactor how to retrieve ops interfaces.
 
+## Next Repro
+
+- In generated `rpc_IRpcObjectOps`, `RequestService` and `RegisterService` is doing switch-case on type ids.
+  - This approach would make too many duplicated code.
+  - A switch-cast should be generated at the beginning of the `RegisterService` function to crash if the type id does not exist or the type id is not `@rpc:Ctor` decorated. The rest of the `RegisterService` is just binding an object with the type id into the map. And `RequestService` doesn't need to care about the type id at all, because illegal type id cannot register.
+
 # Repro
 
 You should complete tasks one by one.
