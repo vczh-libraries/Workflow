@@ -228,4 +228,5 @@ If any test case fail, you could continue to run until you collect results from 
   - Pass all unit test, fix any test failure including pre-existings.
   - After finishing everything, git commit and git push to the current branch.
   - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
+    - Typical files that are generated: `Test\Generated`, `Test\SourceCppGen`, `Test\SourceCppGenRpc`.
   - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
