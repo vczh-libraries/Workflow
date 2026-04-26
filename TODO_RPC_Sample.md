@@ -74,7 +74,6 @@ You are highly possibly need to fix:
 - The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
   - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
 
-
 If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
   - Pass all unit test, fix any test failure including pre-existings.
   - After finishing everything, git commit and git push to the current branch.
