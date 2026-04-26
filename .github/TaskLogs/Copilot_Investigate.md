@@ -2,117 +2,115 @@
 
 # PROBLEM DESCRIPTION
 
-Follow job.new-sample.md to add a new sample: Rpc\Event.txt
+You should complete tasks one by one.
+`General Instruction` is for each tasks, which means, during doing each task:
+- you have to run unit test to make sure your change works.
+- you have to follow the instruction to commit and push for each task, before doing the next task.
 
-```Workflow
-module Rpc;
-using system::*;
-using RpcWrapperTest::*;
+## Task 1
 
-namespace YourFavoriteNamespace // use RpcEvent
+In `TestCasesRpc.cpp` there is a `RunRpcTestCase` function. This file is generated, but this function never changes.
+So I believe it could be just moved to `Test\Source\TestCasesRpc.h`.
+You can then make `TestRpcCompile.cpp` in `CompilerTest_LoadAndCompile` much more clean.
+This file should be also added to all 3 `CppTest*` project in the same solution explorer folder with `TestCasesRpc.cpp`.
+
+## Task 2
+
+Add `IRpcObjectOps::RegisterService` so that lifecycle calls `IRpcObjectOps` instead of opposite.
+Currently in the generated wrapper, the `RequestService` function looks like this:
+```
+override func RequestService(typeId : int) : (system::RpcObjectReference)
 {
-    @rpc:Interface
-    @rpc:Ctor
-    interface IService
+    switch (typeId)
     {
-    event SomethingHappened(string);
-
-    func MakeItHappen() : void;
-    func Watch() : void;
+        case rpctype_RpcEvent__IService:
+        {
+            return _lc.PtrToRef(_lc.RequestService("RpcEvent::IService"));
+        }
+        default:
+        raise "Unknown RPC type id.";
     }
-}
-var s = "";
-
-func serviceMain(lc : IRpcLifeCycle*) : void
-{
-    var serviceObj = new (YourFavoriteNamespace::IService^)
-    {
-    override func MakeItHappen() : void
-    {
-      SomethingHappened("A");
-    }
-
-    override func Watch() : void
-    {
-      attach(SomethingHappened, [s = $"$(s)[serviceMain:$($1)]"]);
-      // or use func (something : string) : void { s = $"$(s)[serviceMain:$(something)]"; }
-    }
-    };
-    lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
-}
-
-func clientMain(lc : IRpcLifeCycle*) : string
-{
-    var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-
-  // serviceMain raises an event and clientMain handles it
-  var handler = attach(service.SomethingHappened, [s = $"$(s)[serviceMain:$($1)]"]);
-  service.MakeItHappen();
-  detach(service.SomethingHappened, handler);
-
-  // clientMain raises and event and serviceMain handles it
-  service.Watch();
-  service.SomethingHappened("B");
-
-  // [clientMain:A][serviceMain:B]
-  return s;
 }
 ```
+I believe by adding `IRpcObjectOps::RegisterService`, you can maintain the type id to service map in this generated `IRpcObjectOps` implementation.
+And then the lifecycle implementation, in `RpcDualLifecycleMock.cpp`, could instead redirect the call to here, instead of the opposite way which is currently implemented.
+In `RpcDualLifecycleMock.cpp`, there is already a string to id mapping. And the `RegisterService` and `RequestService` in `RpcDualLifecycleMock.cpp` takes a string, so it could be directly used, and inject the same error.
 
-In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
-This test is to ensure that:
-- The sample tests if raising an event works bidirectionaly
+## Task 3
 
-Understand what the test case trying to say, you are not allowed to change:
-- The content of the sample, unless it doesn't build.
-- Workflow parser.
-- Workflow compiling.
-- Workflow to C++ code generation.
+`RpcDualObjectOps` looks redundant. In `TestCasesRpc.cpp`:
+- lifecycleA and objectOpsA manages local objects and wrappers for remote objects.
+- objectOpsA is generated in Workflow.
+- lifecycleA talks to objectOpsB to simulate how clientA talks to clientB.
+- `RpcDualObjectOps` looks like just a redirection doing nothing to a objectOpsA/B.
+- I believe `RpcDualObjectOps` could just be removed, and replaced by the actual objectOpsA/B.
+- By saying removing, you should not introduce any other new classes doing pure redirection. You should find a solution to avoid any unnecessary redirection.
 
-You are highly possibly need to fix:
-- `Rpc(B|Unb)oxBy(val|ref)`, as these 4 C++ functions are directly called in generated wrapper classes written Workflow script.
-- The wrapper classes generation.
-- implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
-- The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
-  - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
+## Task 4
+
+`RpcDualObjectEventOps` and `RpcDualEventForwarder` look like never being used outside of `RpcDualObjectOps`. Remove them.
+I believe a better implementation would be:
+- In the generated wrapper for an interface with events, all events are listened so that remote side could trigger the event of a wrapper and local side would know.
+  - This is already implemented, it is good.
+- In the local side, when an object is being used as a local object to the local lifecycle implementation, all events are listened so that the local side could trigger the event of a wrapper and remote side would know.
+  - This is implemented but not in the way I expect.
+  - There is a big piece of code in `RpcDualLifecycleMock::TrackLocalObject` protected by `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA`, this should be not necessary, remove it.
+  - Instead, new functions should be introduced in the generated wrapper Workflow script.
+  - You can follow the pattern of `rpcwrapper_*` and `rpcwrapper_Create`, to create multiple `rpclistener_*` and `rpclistener_Attach` for all `@rpc:Interface` with events.
+    - **IMPORTANT**: "with events" means not only the interface itself but also in base interfaces.
+    - Interface "without events" should not generate the `rpclistener_*` function. If a type id exists but such interface do not have any event, `rpclistener_Attach` should not throw any error.
+    - If no `rpclistener_*` function is generated, `rpclistener_Create` should also be skipped.
+    - Just like how `rpcwrapper_*` is doing, `rpclistener_*` is a function to attach all events and notify the local lifecycle. So it returns `void`. And `rpcwrapper_*` should call `rpclistener_*`, so the same piece of code will not be generated twice.
+    - I believe all generated code from test samples without event involved will still stay unchanged. Because if any event is not declared in a test sample, `rpclistener_*` do not exist.
+- I believe in this way, `RpcDualObjectEventOps` and `RpcDualEventForwarder` and the `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA` protected code from `RpcDualLifecycleMock` should be able to remove.
+- I believe in this way, `TEST_CASE(L"Rpc:Event")` in `TestCasesRpc.cpp` should avoid generated complex code of of the last two lambdas:
+  - The first lambda should be replaced by `rpclistener_*` functions.
+  - The second lambda is handling event ids, there is already a generated `rpc_IRpcObjectEventOps` functions in each wrapper Workflow script, I believe you should just use that instead.
+- Since `TestRpc.cpp` in `RuntimeTest` basically doing the same thing, new generated functions should just be able to use, instead of generating unnecessary reflection code, maybe this is what the `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA` protected code is doing, anyway this should not be necessary. And such code should be in `TestRpc.cpp` instead of in `RpcDualLifecycleMock`. `RpcDualLifecycleMock` is working for both Workflow VM and generated C++ code, so such option doesn't taste good. If any code is only used in `RuntimeTest`, it should be in `TestRpc.cpp`.
+
+## General Instruction
 
 If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
-  - Pass all unit test, fix any test failure including pre-existings.
-  - After finishing everything, git commit and git push to the current branch.
+- Pass all unit test, fix any test failure including pre-existings.
+- After finishing everything, git commit and git push to the current branch.
+- If in any task you are adding new test sample, or modifying any C++ or Workflow generation code, causing a huge amount of files generated from test samples to change:
   - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
-  - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+  - Otherwise, One commit is good.
+- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 # UPDATES
 
-- Added `Test\Resources\Rpc\Event.txt` and registered `Event=[clientMain:A][serviceMain:B]` in `Test\Resources\IndexRpc.txt`.
-- Kept the sample behavior intact, with build-compatible handler functions instead of comments or fragile inline handler syntax.
-- Added the generated RPC Event C++ and reflection files to `Test\UnitTest\Generated_CppRpc\Generated_CppRpc.vcxitems` and `Test\UnitTest\Generated_ReflectionRpc\Generated_ReflectionRpc.vcxitems`.
-- Used explicit `Rpc_Event.obj` and `Rpc_EventReflection.obj` object names to avoid collisions with existing non-RPC Event sources.
-- Implemented bidirectional object event forwarding in `RpcDualLifecycleMock`, defined in `Test\Source\RpcDualLifecycleMock.h` and implemented in `Test\Source\RpcDualLifecycleMock.cpp`.
-- Added event forwarding state and suppression so generated RPC wrappers can forward local event raises without echoing the same event back into the source wrapper.
-- Added native typed event attach support for no-reflection and metaonly generated C++ RPC tests in `Test\UnitTest\CompilerTest_LoadAndCompile\TestRpcCompile.cpp`.
-- Added native typed event delivery support so generated C++ tests unbox event arguments into local values before invoking events, preserving by-value strings across multiple handlers.
-- Fixed event metadata collection by resolving the original RPC interface descriptor and reading argument types from `IEventInfo::GetHandlerType()->GetElementType()`.
-- Fixed `CppTest_Reflection` by loading Workflow library reflection types with `WfLoadLibraryTypes()` before generated RPC reflection metadata in `Test\UnitTest\CppTest_Reflection\Main.cpp`.
+- Task 1: Added `Test\Source\TestCasesRpc.h` with the stable `RunRpcTestCase` template helper that used to be emitted into generated RPC test cases.
+- Task 1: Updated `Test\UnitTest\CompilerTest_LoadAndCompile\TestRpcCompile.cpp` to emit `#include "../Source/TestCasesRpc.h"` and stop writing the helper template body.
+- Task 1: Added `TestCasesRpc.h` to `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` project/filter files under the same `Source Files` Solution Explorer folder as `TestCasesRpc.cpp`.
+- Task 1: Regenerated RPC test harness outputs so `Test\SourceCppGenRpc\TestCasesRpc.cpp`, `Test\Generated\CppRpc32\TestCasesRpc.cpp`, and `Test\Generated\CppRpc64\TestCasesRpc.cpp` include the shared header and no longer contain the `RunRpcTestCase` template body.
 
 # TEST
 
-- Add `Test\Resources\Rpc\Event.txt` using the requested RPC event sample, changing only the sample text if the supplied script does not build.
-- Register `Event=[clientMain:A][serviceMain:B]` in `Test\Resources\IndexRpc.txt` so `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all exercise the same bidirectional event path.
-- Build Debug Win32 and Debug x64 for `Test\UnitTest\UnitTest.sln`, run the unit-test sequence from `Project.md`, and continue through `RuntimeTest` plus all `CppTest*` projects even if one RPC event path fails, to identify whether failure is runtime-only, generated-C++-only, or shared.
-- Success criteria: the new sample compiles, service-raised event `A` reaches the client handler, client-raised event `B` reaches the service handler, the returned string is exactly `[clientMain:A][serviceMain:B]`, all unit tests pass, and final `..\Tools\Tools\Build.ps1 Workflow` validation passes before pushing.
+- For Task 1, build Debug Win32 and Debug x64 for `Test\UnitTest\UnitTest.sln`, run `CompilerTest_LoadAndCompile` so `Test\SourceCppGenRpc\TestCasesRpc.cpp` is regenerated from `TestRpcCompile.cpp`, then build and run `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` for both platforms.
+- Success criteria for Task 1: generated `TestCasesRpc.cpp` includes `../Source/TestCasesRpc.h`, no longer contains the `RunRpcTestCase` template body, all generated RPC test cases still compile, and all `CppTest*` RPC cases pass.
 
-# VALIDATION
+# PROPOSALS
 
-- Debug Win32 build passed with 0 warnings and 0 errors.
-- Debug x64 build passed with 0 warnings and 0 errors.
+- No.1 Move `RunRpcTestCase` to `Test\Source\TestCasesRpc.h`
+
+## No.1 Move `RunRpcTestCase` to `Test\Source\TestCasesRpc.h`
+
+Move the stable `RunRpcTestCase` template helper out of generated `Test\SourceCppGenRpc\TestCasesRpc.cpp` into a real source header. Update `CompilerTest_LoadAndCompile\TestRpcCompile.cpp` so it emits `#include "../Source/TestCasesRpc.h"` instead of writing the template function, and add the new header to `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` in the same Solution Explorer folder as `TestCasesRpc.cpp`.
+
+### CODE CHANGE
+
+- `RunRpcTestCase` now lives in `Test\Source\TestCasesRpc.h` and keeps the same two-lifecycle setup, event bridge fallback, wrapper factory registration, service/client invocation, assertion, and tracked-wrapper cleanup behavior.
+- Generated `TestCasesRpc.cpp` keeps only the sample-specific includes, type loading function, and `RunRpcTestCase<...>` calls with generated lambdas.
+
+### VALIDATION
+
+- `get_errors` reported no diagnostics for `Test\Source\TestCasesRpc.h`, `Test\SourceCppGenRpc\TestCasesRpc.cpp`, or `Test\UnitTest\CompilerTest_LoadAndCompile\TestRpcCompile.cpp`.
+- Debug Win32 and Debug x64 builds passed after the direct edit and again after `CompilerTest_LoadAndCompile` regenerated C++ output.
+- `LibraryTest` Win32/x64 passed: 2/2 test files, 14/14 test cases.
+- `CompilerTest_GenerateMetadata` Win32/x64 passed: 1/1 test files, 2/2 test cases.
+- `CompilerTest_LoadAndCompile` x64 passed: 6/6 test files, 689/689 test cases.
 - `RuntimeTest` Win32/x64 passed: 4/4 test files, 243/243 test cases.
 - `CppTest` Win32/x64 passed: 2/2 test files, 209/209 test cases.
 - `CppTest_Metaonly` Win32/x64 passed: 2/2 test files, 209/209 test cases.
 - `CppTest_Reflection` Win32/x64 passed: 2/2 test files, 209/209 test cases.
-- `LibraryTest` Win32/x64 passed: 2/2 test files, 14/14 test cases.
-- `CompilerTest_GenerateMetadata` Win32/x64 passed: 1/1 test files, 2/2 test cases.
-- `CompilerTest_LoadAndCompile` Win32/x64 passed: each run reported two internal summaries of 6/6 test files and 689/689 test cases.
-- The `Rpc:Event` test returned `[clientMain:A][serviceMain:B]` in RuntimeTest and all CppTest modes.
-
-# PROPOSALS
