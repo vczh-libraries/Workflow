@@ -24,7 +24,7 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	struct __vwsnf1_Rpc_Event_rpcwrapper_RpcEvent__IService_;
+	struct __vwsnf1_Rpc_Event_rpclistener_RpcEvent__IService_;
 	class __vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService;
 	class __vwsnc2_Rpc_Event_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc3_Rpc_Event_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
@@ -78,6 +78,8 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
+		void rpclistener_RpcEvent__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcEvent::IService> target);
+		void rpclistener_Attach(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::IDescriptable> obj);
 		::vl::Ptr<::RpcEvent::IRpcWrapper_IService> rpcwrapper_RpcEvent__IService(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc);
 
@@ -88,12 +90,12 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	struct __vwsnf1_Rpc_Event_rpcwrapper_RpcEvent__IService_
+	struct __vwsnf1_Rpc_Event_rpclistener_RpcEvent__IService_
 	{
 		::vl::rpc_controller::IRpcLifeCycle* lc;
-		::vl::rpc_controller::RpcObjectReference proxyRef;
+		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf1_Rpc_Event_rpcwrapper_RpcEvent__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnf1_Rpc_Event_rpclistener_RpcEvent__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()(const ::vl::WString& arg0) const;
 	};

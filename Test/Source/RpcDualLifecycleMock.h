@@ -17,12 +17,6 @@ namespace vl
 			vint													eventId = 0;
 		};
 
-		struct RpcLocalEventHandler
-		{
-			reflection::description::IEventInfo*					eventInfo = nullptr;
-			Ptr<reflection::description::IEventHandler>			handler;
-		};
-
 		class RpcDualLocalObjectTracker : public Object
 		{
 			friend class RpcDualLifecycleMock;
@@ -62,7 +56,6 @@ namespace vl
 			reflection::IDescriptable*							rawPtr = nullptr;
 			Ptr<reflection::IDescriptable>						ownedPtr;
 			Ptr<EventHandler>									eventHandler;
-			collections::List<RpcLocalEventHandler>				eventHandlers;
 			collections::List<Func<void()>>						nativeEventDetachments;
 		};
 
@@ -73,35 +66,10 @@ namespace vl
 			rpc_controller::RpcObjectReference					ref;
 		};
 
-		class RpcDualObjectEventOps : public Object, public virtual rpc_controller::IRpcObjectEventOps
-		{
-		private:
-			class RpcDualLifecycleMock* 						owner = nullptr;
-			Ptr<rpc_controller::IRpcObjectEventOps>				callback;
-		public:
-			RpcDualObjectEventOps(class RpcDualLifecycleMock* _owner, Ptr<rpc_controller::IRpcObjectEventOps> _callback);
-
-			void												InvokeEvent(rpc_controller::RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override;
-		};
-
-		class RpcDualEventForwarder : public Object, public virtual reflection::description::IValueFunctionProxy
-		{
-		private:
-			class RpcDualLifecycleMock* 						owner = nullptr;
-			rpc_controller::RpcObjectReference					ref;
-			vint												eventId = 0;
-		public:
-			RpcDualEventForwarder(class RpcDualLifecycleMock* _owner, rpc_controller::RpcObjectReference _ref, vint _eventId);
-
-			reflection::description::Value						Invoke(Ptr<reflection::description::IValueReadonlyList> arguments)override;
-		};
-
 		class RpcDualLifecycleMock : public RpcLifecycleMock
 		{
 			friend class RpcDualLocalObjectTracker;
 			friend class RpcDualWrapperTracker;
-			friend class RpcDualObjectEventOps;
-			friend class RpcDualEventForwarder;
 			using UniversalWrapperFactory = Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)>;
 		private:
 			static WString															InternalProperty_LocalObjectTracker;
@@ -116,7 +84,6 @@ namespace vl
 			collections::List<RpcDualEventDispatch>									suppressedEvents;
 
 			static bool																IsSameEvent(const RpcDualEventDispatch& event, rpc_controller::RpcObjectReference ref, vint eventId);
-			static bool																IsForwardingEvent(rpc_controller::RpcObjectReference ref, vint eventId);
 			static bool																TryGetForwardingEventId(rpc_controller::RpcObjectReference ref, vint& eventId);
 			static void																PushForwardingEvent(rpc_controller::RpcObjectReference ref, vint eventId);
 			static void																PopForwardingEvent(rpc_controller::RpcObjectReference ref, vint eventId);

@@ -11,6 +11,8 @@ void RunRpcTestCase(
 	void(*attachLocalEvents)(vl::rpc_controller_test::RpcDualLifecycleMock*, vl::rpc_controller::RpcObjectReference, vl::reflection::IDescriptable*, vl::collections::List<vl::Func<void()>>&),
 	bool(*invokeLocalEvents)(vl::rpc_controller_test::RpcDualLifecycleMock*, vl::rpc_controller::RpcObjectReference, vl::vint, vl::Ptr<vl::reflection::description::IValueArray>))
 {
+	(void)invokeLocalEvents;
+
 	using namespace vl;
 	using namespace vl::collections;
 	using namespace vl::console;
@@ -42,25 +44,6 @@ void RunRpcTestCase(
 			return true;
 		}
 	};
-	class LocalRpcObjectEventOps : public Object, public virtual IRpcObjectEventOps
-	{
-	public:
-		RpcDualLifecycleMock* mock = nullptr;
-		Ptr<IRpcObjectEventOps> fallback;
-		bool(*invokeLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, vint, Ptr<IValueArray>) = nullptr;
-		LocalRpcObjectEventOps(RpcDualLifecycleMock* _mock, Ptr<IRpcObjectEventOps> _fallback, bool(*_invokeLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, vint, Ptr<IValueArray>))
-			: mock(_mock)
-			, fallback(_fallback)
-			, invokeLocalEventsCallback(_invokeLocalEventsCallback)
-		{
-		}
-		void InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override
-		{
-			if (invokeLocalEventsCallback && invokeLocalEventsCallback(mock, ref, eventId, arguments)) return;
-			fallback->InvokeEvent(ref, eventId, arguments);
-		}
-	};
-
 	auto& instance = TInstance::Instance();
 
 	auto lc1 = Ptr(new LocalRpcMock(1));
@@ -79,11 +62,9 @@ void RunRpcTestCase(
 	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
 
 	auto oo1 = instance.rpc_IRpcObjectOps(lc1.Obj());
-	auto rawOeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());
+	auto oeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());
 	auto oo2 = instance.rpc_IRpcObjectOps(lc2.Obj());
-	auto rawOeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());
-	auto oeo1 = Ptr(new LocalRpcObjectEventOps(lc1.Obj(), rawOeo1, invokeLocalEvents));
-	auto oeo2 = Ptr(new LocalRpcObjectEventOps(lc2.Obj(), rawOeo2, invokeLocalEvents));
+	auto oeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());
 	lc1->RegisterLocalObjectOps(oo1);
 	lc2->RegisterLocalObjectOps(oo2);
 

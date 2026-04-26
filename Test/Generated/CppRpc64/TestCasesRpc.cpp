@@ -362,34 +362,10 @@ TEST_CASE(L"Rpc:Event")
 		},
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
-			if (auto target = dynamic_cast<::RpcEvent::IService*>(obj))
-			{
-				auto handler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->SomethingHappened, ::vl::Func<void(const ::vl::WString&)>([=](const ::vl::WString& arg0)
-				{
-					auto arguments = ::vl::reflection::description::IValueArray::Create();
-					::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-					::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg0), mock));
-					::vl::__vwsn::This(mock)->InvokeEvent(ref, ::vl_workflow_global::Rpc_Event::Instance().rpcevent_RpcEvent__IService_SomethingHappened, arguments);
-				}));
-				detachments.Add(::vl::Func<void()>([target, handler]()
-				{
-					::vl::__vwsn::EventDetach(::vl::__vwsn::This(target)->SomethingHappened, handler);
-				}));
-			}
+			(void)detachments;
+			::vl_workflow_global::Rpc_Event::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
 		},
-		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments) -> bool
-		{
-			auto& instance = ::vl_workflow_global::Rpc_Event::Instance();
-			if (eventId == instance.rpcevent_RpcEvent__IService_SomethingHappened)
-			{
-				auto target = ::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(::vl::__vwsn::This(mock)->RefToPtr(ref).Obj());
-				if (!target) return false;
-				auto arg0 = ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))), mock));
-				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(arg0);
-				return true;
-			}
-			return false;
-		});
+		nullptr);
 });
 
 TEST_CASE(L"Rpc:Collection_Default")

@@ -100,19 +100,38 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_Event_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
+	void Rpc_Event::rpclistener_RpcEvent__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcEvent::IService> target)
+	{
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target.Obj())->SomethingHappened, vl::Func(::vl_workflow_global::__vwsnf1_Rpc_Event_rpclistener_RpcEvent__IService_(lc, ref)));
+	}
+
+	void Rpc_Event::rpclistener_Attach(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::IDescriptable> obj)
+	{
+		{
+			auto __vwsn_switch_4 = typeId;
+			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcEvent__IService))
+			{
+				GLOBAL_NAME rpclistener_RpcEvent__IService(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(obj.Obj())));
+				return;
+			}
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for listener attachment."));
+		}
+	}
+
 	::vl::Ptr<::RpcEvent::IRpcWrapper_IService> Rpc_Event::rpcwrapper_RpcEvent__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcEvent__IService);
 		auto proxy = ::vl::Ptr<::RpcEvent::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_Event_rpcwrapper_RpcEvent__IService__RpcEvent_IRpcWrapper_IService(lc, proxyRef));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(proxy.Obj())->SomethingHappened, vl::Func(::vl_workflow_global::__vwsnf1_Rpc_Event_rpcwrapper_RpcEvent__IService_(lc, proxyRef)));
+		GLOBAL_NAME rpclistener_RpcEvent__IService(lc, proxyRef, ::vl::__vwsn::Ensure(::vl::Ptr<::RpcEvent::IService>(proxy)));
 		return proxy;
 	}
 
 	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Event::rpcwrapper_Create(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
-			auto __vwsn_switch_4 = typeId;
-			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcEvent__IService))
+			auto __vwsn_switch_5 = typeId;
+			if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_RpcEvent__IService))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcEvent__IService(lc));
 			}
@@ -132,18 +151,18 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf1_Rpc_Event_rpcwrapper_RpcEvent__IService_::__vwsnf1_Rpc_Event_rpcwrapper_RpcEvent__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnf1_Rpc_Event_rpclistener_RpcEvent__IService_::__vwsnf1_Rpc_Event_rpclistener_RpcEvent__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
 		:lc(__vwsnctor_lc)
-		, proxyRef(__vwsnctor_proxyRef)
+		, ref(__vwsnctor_ref)
 	{
 	}
 
-	void __vwsnf1_Rpc_Event_rpcwrapper_RpcEvent__IService_::operator()(const ::vl::WString& arg0) const
+	void __vwsnf1_Rpc_Event_rpclistener_RpcEvent__IService_::operator()(const ::vl::WString& arg0) const
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(1));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg0), lc));
-		::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->InvokeEvent(this->proxyRef, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments);
+		::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments);
 	}
 
 	//-------------------------------------------------------------------

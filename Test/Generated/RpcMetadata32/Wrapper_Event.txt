@@ -129,6 +129,31 @@ namespace RpcEvent
     }
 }
 
+func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEvent::IService^) : (void)
+{
+    attach(target.SomethingHappened, func (arg0 : ::system::String) : (void)
+    {
+        var arguments : system::Array^ = {};
+        arguments.Resize(1);
+        arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(arg0, lc));
+        lc.Controller.InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
+    });
+}
+
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcEvent__IService:
+        {
+            rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService^) obj));
+            return;
+        }
+        default:
+        raise "Unknown RPC type id for listener attachment.";
+    }
+}
+
 func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifeCycle*) : (RpcEvent::IRpcWrapper_IService^)
 {
     var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcEvent__IService);
@@ -169,13 +194,7 @@ func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifeCycle*) : (RpcEvent::IRp
             _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcEvent__IService_Watch, arguments);
         }
     };
-    attach(proxy.SomethingHappened, func (arg0 : ::system::String) : (void)
-    {
-        var arguments : system::Array^ = {};
-        arguments.Resize(1);
-        arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(arg0, lc));
-        lc.Controller.InvokeEvent(proxyRef, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
-    });
+    rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService^) proxy));
     return proxy;
 }
 
