@@ -18,11 +18,9 @@
 
 - Prompt: only when building fails due to binary occupation, kill cdb and kill the test process.
 - Continue to add more test cases until all features are covered.
-  - Events
-  - Destructors in collection elements.
   - Cached properties (by default)
   - Dynamic properties
-  - Double read byval collections with property attributes.
+  - Double read byval collections with cached/dynamic property.
   - Sending cached property values proactively from remote to wrapper.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - Generate with wrappers.
