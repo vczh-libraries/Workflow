@@ -878,48 +878,45 @@ namespace vl
 					return block;
 				}
 
-				Ptr<WfDeclaration> GenerateRaiseInvalidServiceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
+				Ptr<WfDeclaration> GenerateIsInterfaceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcsvc_RaiseInvalidServiceTypeId", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_IsInterfaceTypeId", CreatePredefinedType(WfPredefinedTypeName::Bool), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					auto isCollectionTypeId = CreateBinary(
+						WfBinaryOperator::And,
+						CreateBinary(WfBinaryOperator::GE, CreateReference(L"typeId"), CreateInt(rpc_controller::RpcTypeId_IValueReadonlyList)),
+						CreateBinary(WfBinaryOperator::LE, CreateReference(L"typeId"), CreateInt(rpc_controller::RpcTypeId_IValueEnumerable))
+					);
+					AddStatement(block, CreateIf(isCollectionTypeId, CreateReturn(CreateBool(true))));
 					auto switchStat = Ptr(new WfSwitchStatement);
 					switchStat->expression = CreateReference(L"typeId");
-					switchStat->defaultBranch = CreateRaise(L"RPC service type id does not exist.");
+					switchStat->defaultBranch = CreateReturn(CreateBool(false));
 
 					auto addKnownType = [&](Ptr<WfExpression> expression)
 					{
 						auto switchCase = Ptr(new WfSwitchCase);
 						switchCase->expression = expression;
-						switchCase->statement = CreateRaise(L"RPC service type id is not an @rpc:Ctor interface.");
+						switchCase->statement = CreateReturn(CreateBool(true));
 						switchStat->caseBranches.Add(switchCase);
 					};
-
-					addKnownType(CreateInt(rpc_controller::RpcTypeId_IValueEnumerable));
-					addKnownType(CreateInt(rpc_controller::RpcTypeId_IValueEnumerator));
-					addKnownType(CreateInt(rpc_controller::RpcTypeId_IValueArray));
-					addKnownType(CreateInt(rpc_controller::RpcTypeId_IValueList));
-					addKnownType(CreateInt(rpc_controller::RpcTypeId_IValueObservableList));
-					addKnownType(CreateInt(rpc_controller::RpcTypeId_IValueDictionary));
-					addKnownType(CreateInt(rpc_controller::RpcTypeId_IValueReadonlyList));
 
 					for (auto&& interfaceModel : interfaces)
 					{
 						addKnownType(CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName));
 					}
 
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), switchStat);
+					AddStatement(block, switchStat);
 					return functionDecl;
 				}
 
-				Ptr<WfDeclaration> GenerateEnsureCtorServiceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
+				Ptr<WfDeclaration> GenerateIsCtorInterfaceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcsvc_EnsureCtorServiceTypeId", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_IsCtorInterfaceTypeId", CreatePredefinedType(WfPredefinedTypeName::Bool), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 					auto switchStat = Ptr(new WfSwitchStatement);
 					switchStat->expression = CreateReference(L"typeId");
-					auto defaultBranch = CreateBlock();
-					AddStatement(defaultBranch, CreateExpressionStatement(CreateCall(CreateReference(L"rpcsvc_RaiseInvalidServiceTypeId"), CreateReference(L"typeId"))));
-					switchStat->defaultBranch = defaultBranch;
+					switchStat->defaultBranch = CreateReturn(CreateBool(false));
 
 					for (auto&& interfaceModel : interfaces)
 					{
@@ -930,7 +927,7 @@ namespace vl
 
 						auto switchCase = Ptr(new WfSwitchCase);
 						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
-						switchCase->statement = CreateBlock();
+						switchCase->statement = CreateReturn(CreateBool(true));
 						switchStat->caseBranches.Add(switchCase);
 					}
 
@@ -938,9 +935,32 @@ namespace vl
 					return functionDecl;
 				}
 
-				Ptr<WfStatement> BuildRegisterServiceCheck()
+				Ptr<WfStatement> BuildRegisterService()
 				{
-					return CreateExpressionStatement(CreateCall(CreateReference(L"rpcsvc_EnsureCtorServiceTypeId"), CreateReference(L"typeId")));
+					auto block = CreateBlock();
+					auto removeBranch = CreateBlock();
+					AddStatement(removeBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Remove"), CreateReference(L"typeId"))));
+					auto setBranch = CreateBlock();
+					AddStatement(setBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Set"), CreateReference(L"typeId"), CreateReference(L"service"))));
+					auto registerBranch = CreateBlock();
+					AddStatement(registerBranch, CreateIf(CreateIsNull(CreateReference(L"service")), removeBranch, setBranch));
+					auto nonCtorBranch = CreateBlock();
+					AddStatement(nonCtorBranch, CreateRaise(L"RPC service type id is not an @rpc:Ctor interface."));
+					auto invalidTypeIdBranch = CreateBlock();
+					AddStatement(invalidTypeIdBranch, CreateRaise(L"RPC service type id does not exist."));
+					AddStatement(
+						block,
+						CreateIf(
+							CreateCall(CreateReference(L"rpcwrapper_IsCtorInterfaceTypeId"), CreateReference(L"typeId")),
+							registerBranch,
+							CreateIf(
+								CreateCall(CreateReference(L"rpcwrapper_IsInterfaceTypeId"), CreateReference(L"typeId")),
+								nonCtorBranch,
+								invalidTypeIdBranch
+							)
+						)
+					);
+					return block;
 				}
 
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
@@ -987,12 +1007,7 @@ namespace vl
 						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateSharedType(L"system::Interface")));
 						auto block = registerService->statement.Cast<WfBlockStatement>();
-						AddStatement(block, BuildRegisterServiceCheck());
-						auto trueBranch = CreateBlock();
-						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Remove"), CreateReference(L"typeId"))));
-						auto falseBranch = CreateBlock();
-						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Set"), CreateReference(L"typeId"), CreateReference(L"service"))));
-						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"service")), trueBranch, falseBranch));
+						AddStatement(block, BuildRegisterService());
 						newOps->declarations.Add(registerService);
 					}
 
@@ -1355,8 +1370,8 @@ namespace vl
 					module->declarations.Add(getIds);
 				}
 
-				module->declarations.Add(GenerateRaiseInvalidServiceTypeIdHelper(interfaces));
-				module->declarations.Add(GenerateEnsureCtorServiceTypeIdHelper(interfaces));
+				module->declarations.Add(GenerateIsInterfaceTypeIdHelper(interfaces));
+				module->declarations.Add(GenerateIsCtorInterfaceTypeIdHelper(interfaces));
 				module->declarations.Add(GenerateObjectOpsFactory(manager, interfaces));
 				module->declarations.Add(GenerateObjectEventOpsFactory(manager, interfaces));
 

@@ -357,18 +357,26 @@ namespace RpcServiceValidationTest
 				WfPrint(wrapperModule, L"", writer);
 			});
 
-			auto ensureCtor = wcsstr(wrapperString.Buffer(), L"func rpcsvc_EnsureCtorServiceTypeId(typeId : int)");
-			auto raiseInvalid = wcsstr(wrapperString.Buffer(), L"func rpcsvc_RaiseInvalidServiceTypeId(typeId : int)");
+			auto isCtor = wcsstr(wrapperString.Buffer(), L"func rpcwrapper_IsCtorInterfaceTypeId(typeId : int)");
+			auto isInterface = wcsstr(wrapperString.Buffer(), L"func rpcwrapper_IsInterfaceTypeId(typeId : int)");
+			auto registerService = wcsstr(wrapperString.Buffer(), L"override func RegisterService(typeId : int, service : system::Interface^)");
 			auto requestService = wcsstr(wrapperString.Buffer(), L"override func RequestService(typeId : int)");
-			TEST_ASSERT(ensureCtor != nullptr);
-			TEST_ASSERT(raiseInvalid != nullptr);
+			TEST_ASSERT(isCtor != nullptr);
+			TEST_ASSERT(isInterface != nullptr);
+			TEST_ASSERT(registerService != nullptr);
 			TEST_ASSERT(requestService != nullptr);
-			TEST_ASSERT(wcsstr(ensureCtor, L"case rpctype_RpcServiceValidationTest__ICtor") != nullptr);
-			TEST_ASSERT(wcsstr(raiseInvalid, L"case rpctype_RpcServiceValidationTest__INonCtor") != nullptr);
-			TEST_ASSERT(wcsstr(raiseInvalid, L"raise \"RPC service type id is not an @rpc:Ctor interface.\";") != nullptr);
-			TEST_ASSERT(wcsstr(raiseInvalid, L"raise \"RPC service type id does not exist.\";") != nullptr);
+			TEST_ASSERT(wcsstr(isCtor, L"case rpctype_RpcServiceValidationTest__ICtor") != nullptr);
+			TEST_ASSERT(wcsstr(isInterface, L"typeId >= -7") != nullptr);
+			TEST_ASSERT(wcsstr(isInterface, L"typeId <= -1") != nullptr);
+			TEST_ASSERT(wcsstr(isInterface, L"case rpctype_RpcServiceValidationTest__INonCtor") != nullptr);
+			TEST_ASSERT(wcsstr(registerService, L"rpcwrapper_IsCtorInterfaceTypeId(typeId)") != nullptr);
+			TEST_ASSERT(wcsstr(registerService, L"rpcwrapper_IsInterfaceTypeId(typeId)") != nullptr);
+			TEST_ASSERT(wcsstr(registerService, L"raise \"RPC service type id is not an @rpc:Ctor interface.\";") != nullptr);
+			TEST_ASSERT(wcsstr(registerService, L"raise \"RPC service type id does not exist.\";") != nullptr);
 			TEST_ASSERT(wcsstr(requestService, L"_services.Keys.Contains(typeId)") != nullptr);
 			TEST_ASSERT(wcsstr(requestService, L"raise \"RPC service is not registered.\";") != nullptr);
+			TEST_ASSERT(wcsstr(wrapperString.Buffer(), L"rpcsvc_EnsureCtorServiceTypeId") == nullptr);
+			TEST_ASSERT(wcsstr(wrapperString.Buffer(), L"rpcsvc_RaiseInvalidServiceTypeId") == nullptr);
 		});
 
 		TEST_CASE(L"Wrapper generation requires property mode")
