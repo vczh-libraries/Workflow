@@ -94,8 +94,8 @@ namespace vl_workflow_global
 		void CallService(::vl::Ptr<::RpcFailDoubleRegistrationTest::IService> service, ::vl::vint32_t indexParameter, ::vl::vint32_t indexReturn);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
-		void rpcsvc_RaiseInvalidServiceTypeId(::vl::vint32_t typeId);
-		void rpcsvc_EnsureCtorServiceTypeId(::vl::vint32_t typeId);
+		bool rpcwrapper_IsInterfaceTypeId(::vl::vint32_t typeId);
+		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject> rpcwrapper_RpcFailDoubleRegistrationTest__IObject(::vl::rpc_controller::IRpcLifeCycle* lc);

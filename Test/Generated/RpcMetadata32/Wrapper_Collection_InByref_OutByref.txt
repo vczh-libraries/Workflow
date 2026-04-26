@@ -12,42 +12,27 @@ func rpc_GetIds() : (int[string])
     return result;
 }
 
-func rpcsvc_RaiseInvalidServiceTypeId(typeId : int) : (void)
+func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
 {
+    if (((typeId >= -7) and (typeId <= -1)))
+    return true;
     switch (typeId)
     {
-        case -1:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
-        case -2:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
-        case -3:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
-        case -4:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
-        case -5:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
-        case -6:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
-        case -7:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
         case rpctype_RpcCollection__InByref__OutByref__IService:
-        raise "RPC service type id is not an @rpc:Ctor interface.";
+        return true;
         default:
-        raise "RPC service type id does not exist.";
+        return false;
     }
 }
 
-func rpcsvc_EnsureCtorServiceTypeId(typeId : int) : (void)
+func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
 {
     switch (typeId)
     {
         case rpctype_RpcCollection__InByref__OutByref__IService:
-        {
-        }
+        return true;
         default:
-        {
-            rpcsvc_RaiseInvalidServiceTypeId(typeId);
-        }
+        return false;
     }
 }
 
@@ -92,14 +77,26 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 
         override func RegisterService(typeId : int, service : system::Interface^) : (void)
         {
-            rpcsvc_EnsureCtorServiceTypeId(typeId);
-            if (service is null)
             {
-                _services.Remove(typeId);
-            }
-            else
-            {
-                _services.Set(typeId, service);
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    if (service is null)
+                    {
+                        _services.Remove(typeId);
+                    }
+                    else
+                    {
+                        _services.Set(typeId, service);
+                    }
+                }
+                else if (rpcwrapper_IsInterfaceTypeId(typeId))
+                {
+                    raise "RPC service type id is not an @rpc:Ctor interface.";
+                }
+                else
+                {
+                    raise "RPC service type id does not exist.";
+                }
             }
         }
 

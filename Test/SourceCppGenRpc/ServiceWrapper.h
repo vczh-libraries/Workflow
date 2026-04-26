@@ -69,8 +69,8 @@ namespace vl_workflow_global
 		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
-		void rpcsvc_RaiseInvalidServiceTypeId(::vl::vint typeId);
-		void rpcsvc_EnsureCtorServiceTypeId(::vl::vint typeId);
+		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);
+		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::RpcServiceWrapperTest::IRpcWrapper_IService> rpcwrapper_RpcServiceWrapperTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc);

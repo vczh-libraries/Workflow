@@ -104,42 +104,27 @@ Global Functions
 		return result;
 	}
 
-	void Rpc_Collection_PropByval::rpcsvc_RaiseInvalidServiceTypeId(::vl::vint32_t typeId)
+	bool Rpc_Collection_PropByval::rpcwrapper_IsInterfaceTypeId(::vl::vint32_t typeId)
 	{
+		if (((typeId >= static_cast<::vl::vint32_t>(-7)) && (typeId <= static_cast<::vl::vint32_t>(-1))))
+			return true;
 		{
 			auto __vwsn_switch_0 = typeId;
-			if ((__vwsn_switch_0 == static_cast<::vl::vint32_t>(-1)))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint32_t>(-2)))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint32_t>(-3)))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint32_t>(-4)))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint32_t>(-5)))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint32_t>(-6)))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint32_t>(-7)))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			else if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcCollection__InByval__PropByval__IService))
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcCollection__InByval__PropByval__IService))
+				return true;
 			else
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+				return false;
 		}
 	}
 
-	void Rpc_Collection_PropByval::rpcsvc_EnsureCtorServiceTypeId(::vl::vint32_t typeId)
+	bool Rpc_Collection_PropByval::rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId)
 	{
 		{
 			auto __vwsn_switch_1 = typeId;
 			if ((__vwsn_switch_1 == GLOBAL_NAME rpctype_RpcCollection__InByval__PropByval__IService))
-			{
-			}
+				return true;
 			else
-			{
-				GLOBAL_NAME rpcsvc_RaiseInvalidServiceTypeId(typeId);
-			}
+				return false;
 		}
 	}
 
@@ -253,14 +238,26 @@ Closures
 
 	void __vwsnc2_Rpc_Collection_PropByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint32_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
 	{
-		GLOBAL_NAME rpcsvc_EnsureCtorServiceTypeId(typeId);
-		if ((! static_cast<bool>(service)))
 		{
-			::vl::__vwsn::This(_services.Obj())->Remove(::vl::__vwsn::Box(typeId));
-		}
-		else
-		{
-			::vl::__vwsn::This(_services.Obj())->Set(::vl::__vwsn::Box(typeId), ::vl::__vwsn::Box(service));
+			if (GLOBAL_NAME rpcwrapper_IsCtorInterfaceTypeId(typeId))
+			{
+				if ((! static_cast<bool>(service)))
+				{
+					::vl::__vwsn::This(_services.Obj())->Remove(::vl::__vwsn::Box(typeId));
+				}
+				else
+				{
+					::vl::__vwsn::This(_services.Obj())->Set(::vl::__vwsn::Box(typeId), ::vl::__vwsn::Box(service));
+				}
+			}
+			else if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
+			{
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+			}
+			else
+			{
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+			}
 		}
 	}
 
