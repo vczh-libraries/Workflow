@@ -45,7 +45,7 @@ WfRuntimeCallStackInfo
 			{
 				if (!cache)
 				{
-					if (!context)
+					if (context)
 					{
 						Dictionary<WString, Value> map;
 						for (auto [name, index] : indexed(names))
