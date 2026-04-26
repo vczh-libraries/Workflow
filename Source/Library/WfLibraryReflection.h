@@ -205,6 +205,11 @@ Interface Implementation Proxy (Implement)
 					INVOKE_INTERFACE_PROXY(ObjectHold, ref, remoteClientId, hold);
 				}
 
+				void RegisterService(vl::vint typeId, vl::Ptr<vl::reflection::IDescriptable> service)override
+				{
+					INVOKE_INTERFACE_PROXY(RegisterService, typeId, service);
+				}
+
 				vl::rpc_controller::RpcObjectReference RequestService(vl::vint typeId)override
 				{
 					INVOKEGET_INTERFACE_PROXY(RequestService, typeId);

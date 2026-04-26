@@ -107,6 +107,11 @@ namespace vl
 			RequireObjectCallback()->ObjectHold(ref, remoteClientId, hold);
 		}
 
+		void RpcLifecycleMock::RegisterService(vint typeId, Ptr<IDescriptable> service)
+		{
+			RequireObjectCallback()->RegisterService(typeId, service);
+		}
+
 		RpcObjectReference RpcLifecycleMock::RequestService(vint typeId)
 		{
 			return RequireObjectCallback()->RequestService(typeId);

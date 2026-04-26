@@ -84,6 +84,7 @@ namespace vl
 			reflection::description::Value						InvokeMethod(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
 			Ptr<reflection::description::IAsync>				InvokeMethodAsync(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
 			void												ObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId, bool hold)override;
+			void												RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
 			rpc_controller::RpcObjectReference					RequestService(vint typeId)override;
 		};
 
@@ -125,6 +126,7 @@ namespace vl
 			vint																	nextObjectId = 1;
 			UniversalWrapperFactory													universalWrapperFactory;
 			rpc_controller::RpcObjectReference										pendingProxyRef;
+			Ptr<rpc_controller::IRpcObjectOps>									localObjectCallback;
 			collections::List<RpcWrapperProperties>									wrapperProperties;
 			collections::List<RpcDualEventDispatch>									suppressedEvents;
 
@@ -155,6 +157,7 @@ namespace vl
 
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	RegisterWrapperFactory(Func<Ptr<rpc_controller::IRpcWrapperBase>(vint, rpc_controller::IRpcLifeCycle*)> factory);
+			void																	RegisterLocalObjectOps(Ptr<rpc_controller::IRpcObjectOps> objectCallback);
 
 			// IRpcController
 
@@ -169,6 +172,7 @@ namespace vl
 			rpc_controller::RpcObjectReference										RequestService(vint typeId)override;
 			// IRpcLifeCycle
 
+			void																	RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
 			Ptr<reflection::IDescriptable>											RequestService(const WString& fullName)override;
 			Ptr<reflection::IDescriptable>											RefToPtr(rpc_controller::RpcObjectReference ref)override;
 			rpc_controller::RpcObjectReference										PtrToRef(Ptr<reflection::IDescriptable> obj)override;

@@ -151,6 +151,11 @@ namespace vl
 			}
 		}
 
+		void RpcDualObjectOps::RegisterService(vint typeId, Ptr<IDescriptable> service)
+		{
+			callback->RegisterService(typeId, service);
+		}
+
 		RpcObjectReference RpcDualObjectOps::RequestService(vint typeId)
 		{
 			return callback->RequestService(typeId);
@@ -236,6 +241,7 @@ namespace vl
 				UnregisterLocalObject(props->ref);
 			}
 			services.Clear();
+			localObjectCallback = nullptr;
 		}
 
 		void RpcDualLifecycleMock::SetIdMap(const Dictionary<WString, vint>& _idMap)
@@ -249,6 +255,11 @@ namespace vl
 		void RpcDualLifecycleMock::RegisterWrapperFactory(Func<Ptr<IRpcWrapperBase>(vint, IRpcLifeCycle*)> factory)
 		{
 			universalWrapperFactory = factory;
+		}
+
+		void RpcDualLifecycleMock::RegisterLocalObjectOps(Ptr<IRpcObjectOps> objectCallback)
+		{
+			localObjectCallback = objectCallback;
 		}
 
 		vint RpcDualLifecycleMock::DecideTypeId(IDescriptable* obj)const
@@ -579,12 +590,18 @@ namespace vl
 			CHECK_ERROR(index != -1, L"RpcDualLifecycleMock::UnregisterLocalObject: Object not registered.");
 			auto props = localObjectProperties.Values().Get(index);
 
+			bool unregisterService = false;
 			for (vint i = services.Count() - 1; i >= 0; i--)
 			{
 				if (services.Values()[i].Obj() == props->rawPtr)
 				{
+					unregisterService = true;
 					services.Remove(services.Keys()[i]);
 				}
+			}
+			if (unregisterService && localObjectCallback)
+			{
+				localObjectCallback->RegisterService(props->ref.typeId, nullptr);
 			}
 
 			UntrackLocalObject(ref);
@@ -649,6 +666,18 @@ namespace vl
 /***********************************************************************
 * RpcDualLifecycleMock (IRpcLifeCycle)
 ***********************************************************************/
+
+		void RpcDualLifecycleMock::RegisterService(const WString& fullName, Ptr<IDescriptable> service)
+		{
+			auto index = idMap.Keys().IndexOf(fullName);
+			if (index == -1)
+			{
+				throw Exception(L"Unknown RPC type id.");
+			}
+			CHECK_ERROR(localObjectCallback, L"RpcDualLifecycleMock::RegisterService: No local object callback registered.");
+			localObjectCallback->RegisterService(idMap.Values()[index], service);
+			services.Set(fullName, service);
+		}
 
 		Ptr<IDescriptable> RpcDualLifecycleMock::RequestService(const WString& fullName)
 		{

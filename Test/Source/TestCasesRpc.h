@@ -84,6 +84,8 @@ void RunRpcTestCase(
 	auto rawOeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());
 	auto oeo1 = Ptr(new LocalRpcObjectEventOps(lc1.Obj(), rawOeo1, invokeLocalEvents));
 	auto oeo2 = Ptr(new LocalRpcObjectEventOps(lc2.Obj(), rawOeo2, invokeLocalEvents));
+	lc1->RegisterLocalObjectOps(oo1);
+	lc2->RegisterLocalObjectOps(oo2);
 	auto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));
 	auto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));
 
@@ -100,6 +102,8 @@ void RunRpcTestCase(
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
 
+	lc2->RegisterLocalObjectOps(nullptr);
+	lc1->RegisterLocalObjectOps(nullptr);
 	lc2->DisconnectTrackedWrappersBeforeDispose();
 	lc1->DisconnectTrackedWrappersBeforeDispose();
 }

@@ -84,11 +84,17 @@ If any test case fail, you could continue to run until you collect results from 
 - Task 1: Updated `Test\UnitTest\CompilerTest_LoadAndCompile\TestRpcCompile.cpp` to emit `#include "../Source/TestCasesRpc.h"` and stop writing the helper template body.
 - Task 1: Added `TestCasesRpc.h` to `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` project/filter files under the same `Source Files` Solution Explorer folder as `TestCasesRpc.cpp`.
 - Task 1: Regenerated RPC test harness outputs so `Test\SourceCppGenRpc\TestCasesRpc.cpp`, `Test\Generated\CppRpc32\TestCasesRpc.cpp`, and `Test\Generated\CppRpc64\TestCasesRpc.cpp` include the shared header and no longer contain the `RunRpcTestCase` template body.
+- Task 2: Added `IRpcObjectOps::RegisterService(vint typeId, Ptr<IDescriptable> service)` to the RPC controller interface, reflection proxy, and metadata.
+- Task 2: Updated RPC generation so generated object ops own a `_services` dictionary, `RegisterService` stores or removes services by type id, and `RequestService` converts the stored service pointer through lifecycle `PtrToRef`.
+- Task 2: Updated lifecycle mocks and tests so service registration flows from lifecycle into local object ops; `RpcDualLifecycleMock` now unregisters service entries from local object ops when local service objects are released.
+- Task 2: Regenerated RPC C++ and metadata outputs for Win32 and x64 after the generator and reflection changes.
 
 # TEST
 
 - For Task 1, build Debug Win32 and Debug x64 for `Test\UnitTest\UnitTest.sln`, run `CompilerTest_LoadAndCompile` so `Test\SourceCppGenRpc\TestCasesRpc.cpp` is regenerated from `TestRpcCompile.cpp`, then build and run `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` for both platforms.
 - Success criteria for Task 1: generated `TestCasesRpc.cpp` includes `../Source/TestCasesRpc.h`, no longer contains the `RunRpcTestCase` template body, all generated RPC test cases still compile, and all `CppTest*` RPC cases pass.
+- For Task 2, build Debug Win32 and Debug x64 for `Test\UnitTest\UnitTest.sln`, run `CompilerTest_LoadAndCompile` to refresh generated RPC output, then run the full matrix: `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` across the required platforms.
+- Success criteria for Task 2: lifecycle service registration goes through local generated object ops, generated `RequestService` reads from object ops storage, service unregister clears that storage, and the RPC destructor samples release service objects correctly.
 
 # PROPOSALS
 
@@ -110,6 +116,34 @@ Move the stable `RunRpcTestCase` template helper out of generated `Test\SourceCp
 - `LibraryTest` Win32/x64 passed: 2/2 test files, 14/14 test cases.
 - `CompilerTest_GenerateMetadata` Win32/x64 passed: 1/1 test files, 2/2 test cases.
 - `CompilerTest_LoadAndCompile` x64 passed: 6/6 test files, 689/689 test cases.
+- `RuntimeTest` Win32/x64 passed: 4/4 test files, 243/243 test cases.
+- `CppTest` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+- `CppTest_Metaonly` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+- `CppTest_Reflection` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+
+# PROPOSALS
+
+- No.2 Route RPC service registration through object ops
+
+## No.2 Route RPC service registration through object ops
+
+Add `IRpcObjectOps::RegisterService` and move service object storage into generated object ops. Keep lifecycle APIs string-based, but make lifecycle implementations resolve the full name to a type id and call local object ops for the actual service registration.
+
+### CODE CHANGE
+
+- `IRpcObjectOps` now declares `RegisterService(vint typeId, Ptr<IDescriptable> service)`, and reflection metadata/proxy support the new method.
+- Generated RPC object ops allocate `_services : system::Interface^[int]`, implement `RegisterService` by type id, remove entries when `service` is null, and implement `RequestService` by returning `_lc.PtrToRef(_services[typeId])`.
+- `RpcLifecycleMock` and `RpcDualLifecycleMock` forward service registration to the registered object ops callback.
+- `RpcDualLifecycleMock::UnregisterLocalObject` now detects service objects and clears the generated object ops service entry with `RegisterService(typeId, nullptr)`, fixing the destructor ownership regression in the RPC `Dtor` samples.
+- Runtime and generated RPC test helpers register local generated object ops with each lifecycle before running the cross-lifecycle RPC scenarios and clear those callbacks during teardown.
+
+### VALIDATION
+
+- Debug x64 build passed with 0 warnings and 0 errors.
+- Debug Win32 build passed with 0 warnings and 0 errors.
+- `LibraryTest` Win32/x64 passed: 2/2 test files, 14/14 test cases.
+- `CompilerTest_GenerateMetadata` Win32/x64 passed: 1/1 test files, 2/2 test cases.
+- `CompilerTest_LoadAndCompile` x64 passed both internal passes: 6/6 test files, 689/689 test cases.
 - `RuntimeTest` Win32/x64 passed: 4/4 test files, 243/243 test cases.
 - `CppTest` Win32/x64 passed: 2/2 test files, 209/209 test cases.
 - `CppTest_Metaonly` Win32/x64 passed: 2/2 test files, 209/209 test cases.

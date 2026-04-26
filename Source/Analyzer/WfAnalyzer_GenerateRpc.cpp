@@ -837,7 +837,30 @@ namespace vl
 						auto switchCase = Ptr(new WfSwitchCase);
 						switchCase->expression = CreateRpcConstantReference(L"rpctype_", fullName);
 						auto block = CreateBlock();
-						AddStatement(block, CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateCall(CreateMember(CreateReference(L"_lc"), L"RequestService"), CreateString(fullName)))));
+						AddStatement(block, CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateIndex(CreateReference(L"_services"), CreateReference(L"typeId")))));
+						switchCase->statement = block;
+						switchStat->caseBranches.Add(switchCase);
+					}
+					return switchStat;
+				}
+
+				Ptr<WfStatement> BuildRegisterServiceSwitch(WfLexicalScopeManager* manager)
+				{
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(L"typeId");
+					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id.");
+
+					for (auto fullName : manager->rpcMetadata->typeFullNames)
+					{
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", fullName);
+						auto block = CreateBlock();
+						auto trueBranch = CreateBlock();
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Remove"), CreateReference(L"typeId"))));
+						auto falseBranch = CreateBlock();
+						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Set"), CreateReference(L"typeId"), CreateReference(L"service"))));
+						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"service")), trueBranch, falseBranch));
+						AddStatement(block, CreateReturn(nullptr));
 						switchCase->statement = block;
 						switchStat->caseBranches.Add(switchCase);
 					}
@@ -851,6 +874,7 @@ namespace vl
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
 					newOps->declarations.Add(CreateVariableDeclaration(L"_holds", CreateMapType(CreateQualifiedType(L"system::RpcObjectReference"), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_services", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreateSharedType(L"system::Interface")), CreateConstructor()));
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
@@ -881,6 +905,14 @@ namespace vl
 						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_holds"), L"Remove"), CreateReference(L"ref"))));
 						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
 						newOps->declarations.Add(objectHold);
+					}
+
+					{
+						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateSharedType(L"system::Interface")));
+						AddStatement(registerService->statement.Cast<WfBlockStatement>(), BuildRegisterServiceSwitch(manager));
+						newOps->declarations.Add(registerService);
 					}
 
 					{

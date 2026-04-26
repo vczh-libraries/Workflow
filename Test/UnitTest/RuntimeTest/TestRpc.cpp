@@ -38,6 +38,7 @@ namespace
 
 		~RpcWorkflowLifecycleMock()
 		{
+			RegisterLocalObjectOps(nullptr);
 			// Disconnect wrappers while globalContext is still alive,
 			// because DisconnectFromLifecycle executes Workflow bytecode.
 			DisconnectTrackedWrappers();
@@ -166,6 +167,8 @@ TEST_FILE
 				auto oeo1 = createEventOps(lc1.Obj());
 				auto oo2 = createObjectOps(lc2.Obj());
 				auto oeo2 = createEventOps(lc2.Obj());
+				lc1->RegisterLocalObjectOps(oo1);
+				lc2->RegisterLocalObjectOps(oo2);
 				auto doo1 = Ptr(new RpcDualObjectOps(lc1.Obj(), oo1));
 				auto doo2 = Ptr(new RpcDualObjectOps(lc2.Obj(), oo2));
 
@@ -187,6 +190,8 @@ TEST_FILE
 
 				// Explicit cleanup order to avoid circular references
 				// between WfRuntimeGlobalContext and Workflow objects
+				lc2->RegisterLocalObjectOps(nullptr);
+				lc1->RegisterLocalObjectOps(nullptr);
 				oeo2 = nullptr;
 				oo2 = nullptr;
 				oeo1 = nullptr;
