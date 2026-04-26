@@ -61,6 +61,7 @@ namespace vl
 					WString						fullName;
 					WString						interfaceName;
 					vint						typeId = -1;
+					bool						ctor = false;
 					WfClassDeclaration*			interfaceDecl = nullptr;
 					List<WString>				baseFullNames;
 					List<RpcPropertyModel>		properties;
@@ -604,6 +605,7 @@ namespace vl
 						interfaceModel.fullName = typeFullName;
 						interfaceModel.interfaceName = fragments[fragments.Count() - 1];
 						interfaceModel.typeId = manager->rpcMetadata->typeFullNames.IndexOf(typeFullName);
+						interfaceModel.ctor = HasRpcAttribute(interfaceDecl->attributes, L"Ctor");
 						interfaceModel.interfaceDecl = interfaceDecl;
 
 						if (auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName))
@@ -859,42 +861,27 @@ namespace vl
 					return switchStat;
 				}
 
-				Ptr<WfStatement> BuildRequestServiceSwitch(WfLexicalScopeManager* manager)
+				Ptr<WfStatement> BuildRequestService()
 				{
-					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateReference(L"typeId");
-					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id.");
-
-					for (auto fullName : manager->rpcMetadata->typeFullNames)
-					{
-						auto switchCase = Ptr(new WfSwitchCase);
-						switchCase->expression = CreateRpcConstantReference(L"rpctype_", fullName);
-						auto block = CreateBlock();
-						AddStatement(block, CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateIndex(CreateReference(L"_services"), CreateReference(L"typeId")))));
-						switchCase->statement = block;
-						switchStat->caseBranches.Add(switchCase);
-					}
-					return switchStat;
+					return CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateIndex(CreateReference(L"_services"), CreateReference(L"typeId"))));
 				}
 
-				Ptr<WfStatement> BuildRegisterServiceSwitch(WfLexicalScopeManager* manager)
+				Ptr<WfStatement> BuildRegisterServiceCheck(const List<RpcInterfaceModel>& interfaces)
 				{
 					auto switchStat = Ptr(new WfSwitchStatement);
 					switchStat->expression = CreateReference(L"typeId");
 					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id.");
 
-					for (auto fullName : manager->rpcMetadata->typeFullNames)
+					for (auto&& interfaceModel : interfaces)
 					{
+						if (!interfaceModel.ctor)
+						{
+							continue;
+						}
+
 						auto switchCase = Ptr(new WfSwitchCase);
-						switchCase->expression = CreateRpcConstantReference(L"rpctype_", fullName);
-						auto block = CreateBlock();
-						auto trueBranch = CreateBlock();
-						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Remove"), CreateReference(L"typeId"))));
-						auto falseBranch = CreateBlock();
-						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Set"), CreateReference(L"typeId"), CreateReference(L"service"))));
-						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"service")), trueBranch, falseBranch));
-						AddStatement(block, CreateReturn(nullptr));
-						switchCase->statement = block;
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
+						switchCase->statement = CreateBlock();
 						switchStat->caseBranches.Add(switchCase);
 					}
 					return switchStat;
@@ -943,14 +930,20 @@ namespace vl
 						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
 						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateSharedType(L"system::Interface")));
-						AddStatement(registerService->statement.Cast<WfBlockStatement>(), BuildRegisterServiceSwitch(manager));
+						auto block = registerService->statement.Cast<WfBlockStatement>();
+						AddStatement(block, BuildRegisterServiceCheck(interfaces));
+						auto trueBranch = CreateBlock();
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Remove"), CreateReference(L"typeId"))));
+						auto falseBranch = CreateBlock();
+						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Set"), CreateReference(L"typeId"), CreateReference(L"service"))));
+						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"service")), trueBranch, falseBranch));
 						newOps->declarations.Add(registerService);
 					}
 
 					{
 						auto requestService = CreateFunctionDeclaration(L"RequestService", CreateQualifiedType(L"system::RpcObjectReference"), WfFunctionKind::Override);
 						requestService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						AddStatement(requestService->statement.Cast<WfBlockStatement>(), BuildRequestServiceSwitch(manager));
+						AddStatement(requestService->statement.Cast<WfBlockStatement>(), BuildRequestService());
 						newOps->declarations.Add(requestService);
 					}
 
