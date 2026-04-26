@@ -41,19 +41,19 @@ rpc_GetIds (145 .. 160)
     Local Variables:
         result
 
-rpc_IRpcObjectOps (161 .. 176)
+rpc_IRpcObjectOps (161 .. 179)
     Arguments:
         lc
     Captured Variables:
     Local Variables:
 
-rpc_IRpcObjectEventOps (246 .. 254)
+rpc_IRpcObjectEventOps (278 .. 286)
     Arguments:
         lc
     Captured Variables:
     Local Variables:
 
-rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (261 .. 281)
+rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (293 .. 313)
     Arguments:
         lc
     Captured Variables:
@@ -61,13 +61,13 @@ rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (261 .. 281)
         proxyRef
         proxy
 
-rpcwrapper_Create (337 .. 352)
+rpcwrapper_Create (369 .. 384)
     Arguments:
         typeId
         lc
     Captured Variables:
     Local Variables:
-        <switch>3
+        <switch>4
 
 <initialize> (0 .. 7)
     Arguments:
@@ -82,7 +82,7 @@ rpcwrapper_Create (337 .. 352)
     Local Variables:
         xsObj
 
-<method:InvokeMethod<system::IRpcObjectOps>(10)> in rpc_IRpcObjectOps (177 .. 206)
+<method:InvokeMethod<system::IRpcObjectOps>(10)> in rpc_IRpcObjectOps (180 .. 209)
     Arguments:
         ref
         methodId
@@ -90,12 +90,13 @@ rpcwrapper_Create (337 .. 352)
     Captured Variables:
         <captured>_lc
         <captured>_holds
+        <captured>_services
         <captured-this>0
     Local Variables:
         <switch>0
         target
 
-<method:InvokeMethodAsync<system::IRpcObjectOps>(11)> in rpc_IRpcObjectOps (207 .. 210)
+<method:InvokeMethodAsync<system::IRpcObjectOps>(11)> in rpc_IRpcObjectOps (210 .. 213)
     Arguments:
         ref
         methodId
@@ -103,10 +104,11 @@ rpcwrapper_Create (337 .. 352)
     Captured Variables:
         <captured>_lc
         <captured>_holds
+        <captured>_services
         <captured-this>0
     Local Variables:
 
-<method:ObjectHold<system::IRpcObjectOps>(12)> in rpc_IRpcObjectOps (211 .. 227)
+<method:ObjectHold<system::IRpcObjectOps>(12)> in rpc_IRpcObjectOps (214 .. 230)
     Arguments:
         ref
         remoteClientId
@@ -114,20 +116,34 @@ rpcwrapper_Create (337 .. 352)
     Captured Variables:
         <captured>_lc
         <captured>_holds
+        <captured>_services
         <captured-this>0
     Local Variables:
 
-<method:RequestService<system::IRpcObjectOps>(13)> in rpc_IRpcObjectOps (228 .. 245)
+<method:RegisterService<system::IRpcObjectOps>(13)> in rpc_IRpcObjectOps (231 .. 259)
+    Arguments:
+        typeId
+        service
+    Captured Variables:
+        <captured>_lc
+        <captured>_holds
+        <captured>_services
+        <captured-this>0
+    Local Variables:
+        <switch>1
+
+<method:RequestService<system::IRpcObjectOps>(14)> in rpc_IRpcObjectOps (260 .. 277)
     Arguments:
         typeId
     Captured Variables:
         <captured>_lc
         <captured>_holds
+        <captured>_services
         <captured-this>0
     Local Variables:
-        <switch>1
+        <switch>2
 
-<method:InvokeEvent<system::IRpcObjectEventOps>(14)> in rpc_IRpcObjectEventOps (255 .. 260)
+<method:InvokeEvent<system::IRpcObjectEventOps>(15)> in rpc_IRpcObjectEventOps (287 .. 292)
     Arguments:
         ref
         eventId
@@ -136,9 +152,9 @@ rpcwrapper_Create (337 .. 352)
         <captured>_lc
         <captured-this>0
     Local Variables:
-        <switch>2
+        <switch>3
 
-<method:DisconnectFromLifecycle<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(15)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (282 .. 287)
+<method:DisconnectFromLifecycle<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(16)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (314 .. 319)
     Arguments:
     Captured Variables:
         <captured>_lc
@@ -146,7 +162,7 @@ rpcwrapper_Create (337 .. 352)
         <captured-this>0
     Local Variables:
 
-<method:DoList<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(16)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (288 .. 322)
+<method:DoList<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(17)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (320 .. 354)
     Arguments:
         xs
     Captured Variables:
@@ -156,7 +172,7 @@ rpcwrapper_Create (337 .. 352)
     Local Variables:
         arguments
 
-<dtor:<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(17)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (323 .. 336)
+<dtor:<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(18)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService (355 .. 368)
     Arguments:
     Captured Variables:
         <captured>_lc
@@ -491,383 +507,447 @@ Instructions:
 161  :     LoadLocalVar  : var = 0(lc)
 //  {}
 162  :     NewDictionary : stackPatternCount = 0
-//  new (system::IRpcObjectOps^)
-163  :     LoadValue     : value = <null>
-//  new (system::IRpcObjectOps^)
-164  :     CreateClosureContext: stackPatternCount = 3
-//  new (system::IRpcObjectOps^)
-165  :     LoadMethodInfo: methodInfo = InvokeMethod<system::IRpcObjectOps>
-//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
-166  :     LoadFunction  : func = 10(<method:InvokeMethod<system::IRpcObjectOps>(10)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-167  :     LoadMethodInfo: methodInfo = InvokeMethodAsync<system::IRpcObjectOps>
-//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
-168  :     LoadFunction  : func = 11(<method:InvokeMethodAsync<system::IRpcObjectOps>(11)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-169  :     LoadMethodInfo: methodInfo = ObjectHold<system::IRpcObjectOps>
-//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
-170  :     LoadFunction  : func = 12(<method:ObjectHold<system::IRpcObjectOps>(12)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-171  :     LoadMethodInfo: methodInfo = RequestService<system::IRpcObjectOps>
-//  func RequestService(typeId : int) : (system::RpcObjectReference)
-172  :     LoadFunction  : func = 13(<method:RequestService<system::IRpcObjectOps>(13)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-173  :     CreateInterface: methodInfo = <system::IRpcObjectOps>, stackPatternCount = 8
-//  return new (system::IRpcObjectOps^)
-174  :     Return        
-//  func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
-175  :     LoadValue     : value = <null>
-//  func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
-176  :     Return        
-//  methodId
-177  :     LoadLocalVar  : var = 1(methodId)
-//  var <switch>0 : ::system::Int32 = methodId;
-178  :     StoreLocalVar : var = 3(<switch>0)
-//  <switch>0
-179  :     LoadLocalVar  : var = 3(<switch>0)
-//  rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList
-180  :     LoadGlobalVar : var = 2(rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList)
-//  (<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32))
-181  :     CompareValue  
-//  if ((<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32)))
-182  :     OpNot         : type = Bool
-//  if ((<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32)))
-183  :     JumpIf        : label = 203
-//  ref
-184  :     LoadLocalVar  : var = 0(ref)
-//  _lc
-185  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.RefToPtr(ref)
-186  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifeCycle>, stackPatternCount = 1
-//  _lc.RefToPtr(ref)
-187  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcCollectionDict::InByref::OutByref::IService
-//  var target : RpcCollectionDict::InByref::OutByref::IService^ = (cast (RpcCollectionDict::InByref::OutByref::IService^) _lc.RefToPtr(ref));
-188  :     StoreLocalVar : var = 4(target)
-//  0
-189  :     LoadValue     : value = <I4, 0>
-//  arguments
-190  :     LoadLocalVar  : var = 2(arguments)
-//  arguments[0]
-191  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  _lc
-192  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)
-193  :     LoadValue     : value = <null>
-//  system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)
-194  :     InvokeMethod  : methodInfo = RpcUnboxByref<system::IRpcLifeCycle>, stackPatternCount = 2
-//  system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)
-195  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Dictionary
-//  target
-196  :     LoadLocalVar  : var = 4(target)
-//  target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)))
-197  :     InvokeMethod  : methodInfo = DoList<RpcCollectionDict::InByref::OutByref::IService>, stackPatternCount = 1
-//  _lc
-198  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc)
-199  :     LoadValue     : value = <null>
-//  system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc)
-200  :     InvokeMethod  : methodInfo = RpcBoxByref<system::IRpcLifeCycle>, stackPatternCount = 2
-//  return system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc);
-201  :     Return        
-//  if ((<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32)))
-202  :     Jump          : label = 205
-//  "Unknown RPC method id."
-203  :     LoadValue     : value = <String, Unknown RPC method id.>
-//  raise "Unknown RPC method id.";
-204  :     RaiseException
-//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
-205  :     LoadValue     : value = <null>
-//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
-206  :     Return        
-//  "InvokeMethodAsync is not supported."
-207  :     LoadValue     : value = <String, InvokeMethodAsync is not supported.>
-//  raise "InvokeMethodAsync is not supported.";
-208  :     RaiseException
-//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
-209  :     LoadValue     : value = <null>
-//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
-210  :     Return        
-//  hold
-211  :     LoadLocalVar  : var = 2(hold)
-//  if (hold)
-212  :     OpNot         : type = Bool
-//  if (hold)
-213  :     JumpIf        : label = 222
-//  ref
-214  :     LoadLocalVar  : var = 0(ref)
-//  ref
-215  :     LoadLocalVar  : var = 0(ref)
-//  _lc
-216  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.RefToPtr(ref)
-217  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifeCycle>, stackPatternCount = 1
-//  _holds
-218  :     LoadCapturedVar: var = 1(<captured>_holds)
-//  _holds.Set(ref, _lc.RefToPtr(ref))
-219  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  _holds.Set(ref, _lc.RefToPtr(ref));
-220  :     Pop           
-//  if (hold)
-221  :     Jump          : label = 226
-//  ref
-222  :     LoadLocalVar  : var = 0(ref)
-//  _holds
-223  :     LoadCapturedVar: var = 1(<captured>_holds)
-//  _holds.Remove(ref)
-224  :     InvokeMethod  : methodInfo = Remove<system::Dictionary>, stackPatternCount = 1
-//  _holds.Remove(ref);
-225  :     Pop           
-//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
-226  :     LoadValue     : value = <null>
-//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
-227  :     Return        
-//  typeId
-228  :     LoadLocalVar  : var = 0(typeId)
-//  var <switch>1 : ::system::Int32 = typeId;
-229  :     StoreLocalVar : var = 1(<switch>1)
-//  <switch>1
-230  :     LoadLocalVar  : var = 1(<switch>1)
-//  rpctype_RpcCollectionDict__InByref__OutByref__IService
-231  :     LoadGlobalVar : var = 1(rpctype_RpcCollectionDict__InByref__OutByref__IService)
-//  (<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32))
-232  :     CompareValue  
-//  if ((<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
-233  :     OpNot         : type = Bool
-//  if ((<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
-234  :     JumpIf        : label = 242
-//  "RpcCollectionDict::InByref::OutByref::IService"
-235  :     LoadValue     : value = <String, RpcCollectionDict::InByref::OutByref::IService>
-//  _lc
-236  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.RequestService("RpcCollectionDict::InByref::OutByref::IService")
-237  :     InvokeMethod  : methodInfo = RequestService<system::IRpcLifeCycle>, stackPatternCount = 1
-//  _lc
-238  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.PtrToRef(_lc.RequestService("RpcCollectionDict::InByref::OutByref::IService"))
-239  :     InvokeMethod  : methodInfo = PtrToRef<system::IRpcLifeCycle>, stackPatternCount = 1
-//  return _lc.PtrToRef(_lc.RequestService("RpcCollectionDict::InByref::OutByref::IService"));
-240  :     Return        
-//  if ((<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
-241  :     Jump          : label = 244
-//  "Unknown RPC type id."
-242  :     LoadValue     : value = <String, Unknown RPC type id.>
-//  raise "Unknown RPC type id.";
-243  :     RaiseException
-//  func RequestService(typeId : int) : (system::RpcObjectReference)
-244  :     LoadValue     : value = <null>
-//  func RequestService(typeId : int) : (system::RpcObjectReference)
-245  :     Return        
-//  lc
-246  :     LoadLocalVar  : var = 0(lc)
-//  new (system::IRpcObjectEventOps^)
-247  :     LoadValue     : value = <null>
-//  new (system::IRpcObjectEventOps^)
-248  :     CreateClosureContext: stackPatternCount = 2
-//  new (system::IRpcObjectEventOps^)
-249  :     LoadMethodInfo: methodInfo = InvokeEvent<system::IRpcObjectEventOps>
-//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
-250  :     LoadFunction  : func = 14(<method:InvokeEvent<system::IRpcObjectEventOps>(14)> in rpc_IRpcObjectEventOps)
-//  new (system::IRpcObjectEventOps^)
-251  :     CreateInterface: methodInfo = <system::IRpcObjectEventOps>, stackPatternCount = 2
-//  return new (system::IRpcObjectEventOps^)
-252  :     Return        
-//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
-253  :     LoadValue     : value = <null>
-//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
-254  :     Return        
-//  eventId
-255  :     LoadLocalVar  : var = 1(eventId)
-//  var <switch>2 : ::system::Int32 = eventId;
-256  :     StoreLocalVar : var = 3(<switch>2)
-//  "Unknown RPC event id."
-257  :     LoadValue     : value = <String, Unknown RPC event id.>
-//  raise "Unknown RPC event id.";
-258  :     RaiseException
-//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
-259  :     LoadValue     : value = <null>
-//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
-260  :     Return        
-//  rpctype_RpcCollectionDict__InByref__OutByref__IService
-261  :     LoadGlobalVar : var = 1(rpctype_RpcCollectionDict__InByref__OutByref__IService)
-//  lc
-262  :     LoadLocalVar  : var = 0(lc)
-//  lc.Controller
-263  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifeCycle>, stackPatternCount = 0
-//  lc.Controller.RequestService(rpctype_RpcCollectionDict__InByref__OutByref__IService)
-264  :     InvokeMethod  : methodInfo = RequestService<system::IRpcObjectOps>, stackPatternCount = 1
-//  var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcCollectionDict__InByref__OutByref__IService);
-265  :     StoreLocalVar : var = 1(proxyRef)
-//  lc
-266  :     LoadLocalVar  : var = 0(lc)
-//  proxyRef
-267  :     LoadLocalVar  : var = 1(proxyRef)
-//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-268  :     LoadValue     : value = <null>
-//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-269  :     CreateClosureContext: stackPatternCount = 3
-//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-270  :     LoadMethodInfo: methodInfo = DisconnectFromLifecycle<system::IRpcWrapperBase>
-//  func DisconnectFromLifecycle() : (void)
-271  :     LoadFunction  : func = 15(<method:DisconnectFromLifecycle<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(15)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService)
-//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-272  :     LoadMethodInfo: methodInfo = DoList<RpcCollectionDict::InByref::OutByref::IService>
-//  func DoList(xs : ::system::String[::system::Int32]) : (::system::String[::system::Int32])
-273  :     LoadFunction  : func = 16(<method:DoList<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(16)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService)
-//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-274  :     LoadValue     : value = <null>
-//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-275  :     LoadFunction  : func = 17(<dtor:<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(17)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService)
-//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-276  :     CreateInterface: methodInfo = <RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>, stackPatternCount = 6
-//  var proxy : RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^ = new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-277  :     StoreLocalVar : var = 2(proxy)
-//  proxy
-278  :     LoadLocalVar  : var = 2(proxy)
-//  return proxy;
-279  :     Return        
-//  func rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc : system::IRpcLifeCycle*) : (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-280  :     LoadValue     : value = <null>
-//  func rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc : system::IRpcLifeCycle*) : (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
-281  :     Return        
-//  null
-282  :     LoadValue     : value = <null>
-//  (_lc = null)
-283  :     Duplicate     : stackPatternCount = 0
-//  (_lc = null)
-284  :     StoreCapturedVar: var = 0
-//  (_lc = null);
-285  :     Pop           
-//  func DisconnectFromLifecycle() : (void)
-286  :     LoadValue     : value = <null>
-//  func DisconnectFromLifecycle() : (void)
-287  :     Return        
-//  _lc
-288  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc is null
-289  :     LoadValue     : value = <null>
-//  _lc is null
-290  :     CompareReference
-//  if (_lc is null)
-291  :     OpNot         : type = Bool
-//  if (_lc is null)
-292  :     JumpIf        : label = 296
-//  "RPC wrapper has been disconnected from lifecycle."
-293  :     LoadValue     : value = <String, RPC wrapper has been disconnected from lifecycle.>
-//  raise "RPC wrapper has been disconnected from lifecycle.";
-294  :     RaiseException
-//  if (_lc is null)
-295  :     Jump          : label = 296
 //  {}
-296  :     NewArray      : stackPatternCount = 0
-//  var arguments : system::Array^ = {};
-297  :     StoreLocalVar : var = 1(arguments)
-//  1
-298  :     LoadValue     : value = <I4, 1>
-//  arguments
-299  :     LoadLocalVar  : var = 1(arguments)
-//  arguments.Resize(1)
-300  :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
-//  arguments.Resize(1);
-301  :     Pop           
-//  0
-302  :     LoadValue     : value = <I4, 0>
-//  xs
-303  :     LoadLocalVar  : var = 0(xs)
-//  _lc
-304  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  system::IRpcLifeCycle::RpcBoxByref(xs, _lc)
-305  :     LoadValue     : value = <null>
-//  system::IRpcLifeCycle::RpcBoxByref(xs, _lc)
-306  :     InvokeMethod  : methodInfo = RpcBoxByref<system::IRpcLifeCycle>, stackPatternCount = 2
-//  arguments
-307  :     LoadLocalVar  : var = 1(arguments)
-//  arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(xs, _lc))
-308  :     InvokeMethod  : methodInfo = Set<system::Array>, stackPatternCount = 2
-//  arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(xs, _lc));
-309  :     Pop           
-//  _ref
-310  :     LoadCapturedVar: var = 1(<captured>_ref)
+163  :     NewDictionary : stackPatternCount = 0
+//  new (system::IRpcObjectOps^)
+164  :     LoadValue     : value = <null>
+//  new (system::IRpcObjectOps^)
+165  :     CreateClosureContext: stackPatternCount = 4
+//  new (system::IRpcObjectOps^)
+166  :     LoadMethodInfo: methodInfo = InvokeMethod<system::IRpcObjectOps>
+//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+167  :     LoadFunction  : func = 10(<method:InvokeMethod<system::IRpcObjectOps>(10)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+168  :     LoadMethodInfo: methodInfo = InvokeMethodAsync<system::IRpcObjectOps>
+//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+169  :     LoadFunction  : func = 11(<method:InvokeMethodAsync<system::IRpcObjectOps>(11)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+170  :     LoadMethodInfo: methodInfo = ObjectHold<system::IRpcObjectOps>
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+171  :     LoadFunction  : func = 12(<method:ObjectHold<system::IRpcObjectOps>(12)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+172  :     LoadMethodInfo: methodInfo = RegisterService<system::IRpcObjectOps>
+//  func RegisterService(typeId : int, service : system::Interface^) : (void)
+173  :     LoadFunction  : func = 13(<method:RegisterService<system::IRpcObjectOps>(13)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+174  :     LoadMethodInfo: methodInfo = RequestService<system::IRpcObjectOps>
+//  func RequestService(typeId : int) : (system::RpcObjectReference)
+175  :     LoadFunction  : func = 14(<method:RequestService<system::IRpcObjectOps>(14)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+176  :     CreateInterface: methodInfo = <system::IRpcObjectOps>, stackPatternCount = 10
+//  return new (system::IRpcObjectOps^)
+177  :     Return        
+//  func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+178  :     LoadValue     : value = <null>
+//  func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+179  :     Return        
+//  methodId
+180  :     LoadLocalVar  : var = 1(methodId)
+//  var <switch>0 : ::system::Int32 = methodId;
+181  :     StoreLocalVar : var = 3(<switch>0)
+//  <switch>0
+182  :     LoadLocalVar  : var = 3(<switch>0)
 //  rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList
-311  :     LoadGlobalVar : var = 2(rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList)
+183  :     LoadGlobalVar : var = 2(rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList)
+//  (<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32))
+184  :     CompareValue  
+//  if ((<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32)))
+185  :     OpNot         : type = Bool
+//  if ((<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32)))
+186  :     JumpIf        : label = 206
+//  ref
+187  :     LoadLocalVar  : var = 0(ref)
+//  _lc
+188  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.RefToPtr(ref)
+189  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifeCycle>, stackPatternCount = 1
+//  _lc.RefToPtr(ref)
+190  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcCollectionDict::InByref::OutByref::IService
+//  var target : RpcCollectionDict::InByref::OutByref::IService^ = (cast (RpcCollectionDict::InByref::OutByref::IService^) _lc.RefToPtr(ref));
+191  :     StoreLocalVar : var = 4(target)
+//  0
+192  :     LoadValue     : value = <I4, 0>
 //  arguments
-312  :     LoadLocalVar  : var = 1(arguments)
+193  :     LoadLocalVar  : var = 2(arguments)
+//  arguments[0]
+194  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
 //  _lc
-313  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Controller
-314  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifeCycle>, stackPatternCount = 0
-//  _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments)
-315  :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
+195  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)
+196  :     LoadValue     : value = <null>
+//  system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)
+197  :     InvokeMethod  : methodInfo = RpcUnboxByref<system::IRpcLifeCycle>, stackPatternCount = 2
+//  system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)
+198  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Dictionary
+//  target
+199  :     LoadLocalVar  : var = 4(target)
+//  target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)))
+200  :     InvokeMethod  : methodInfo = DoList<RpcCollectionDict::InByref::OutByref::IService>, stackPatternCount = 1
 //  _lc
-316  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc)
-317  :     LoadValue     : value = <null>
-//  system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc)
-318  :     InvokeMethod  : methodInfo = RpcUnboxByref<system::IRpcLifeCycle>, stackPatternCount = 2
-//  system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc)
-319  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Dictionary
-//  return (cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc));
-320  :     Return        
-//  func DoList(xs : ::system::String[::system::Int32]) : (::system::String[::system::Int32])
-321  :     LoadValue     : value = <null>
-//  func DoList(xs : ::system::String[::system::Int32]) : (::system::String[::system::Int32])
-322  :     Return        
+201  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc)
+202  :     LoadValue     : value = <null>
+//  system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc)
+203  :     InvokeMethod  : methodInfo = RpcBoxByref<system::IRpcLifeCycle>, stackPatternCount = 2
+//  return system::IRpcLifeCycle::RpcBoxByref(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc))), _lc);
+204  :     Return        
+//  if ((<switch>0 == rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList of (::system::Int32)))
+205  :     Jump          : label = 208
+//  "Unknown RPC method id."
+206  :     LoadValue     : value = <String, Unknown RPC method id.>
+//  raise "Unknown RPC method id.";
+207  :     RaiseException
+//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+208  :     LoadValue     : value = <null>
+//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+209  :     Return        
+//  "InvokeMethodAsync is not supported."
+210  :     LoadValue     : value = <String, InvokeMethodAsync is not supported.>
+//  raise "InvokeMethodAsync is not supported.";
+211  :     RaiseException
+//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+212  :     LoadValue     : value = <null>
+//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+213  :     Return        
+//  hold
+214  :     LoadLocalVar  : var = 2(hold)
+//  if (hold)
+215  :     OpNot         : type = Bool
+//  if (hold)
+216  :     JumpIf        : label = 225
+//  ref
+217  :     LoadLocalVar  : var = 0(ref)
+//  ref
+218  :     LoadLocalVar  : var = 0(ref)
 //  _lc
-323  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc is not null
-324  :     LoadValue     : value = <null>
-//  _lc is not null
-325  :     CompareReference
-//  _lc is not null
-326  :     OpNot         : type = Bool
-//  if (_lc is not null)
-327  :     OpNot         : type = Bool
-//  if (_lc is not null)
-328  :     JumpIf        : label = 335
-//  _ref
-329  :     LoadCapturedVar: var = 1(<captured>_ref)
-//  _lc
-330  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Controller
-331  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifeCycle>, stackPatternCount = 0
-//  _lc.Controller.ReleaseRemoteObject(_ref)
-332  :     InvokeMethod  : methodInfo = ReleaseRemoteObject<system::IRpcController>, stackPatternCount = 1
-//  _lc.Controller.ReleaseRemoteObject(_ref);
-333  :     Pop           
-//  if (_lc is not null)
-334  :     Jump          : label = 335
-//  delete
-335  :     LoadValue     : value = <null>
-//  delete
-336  :     Return        
+219  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.RefToPtr(ref)
+220  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifeCycle>, stackPatternCount = 1
+//  _holds
+221  :     LoadCapturedVar: var = 1(<captured>_holds)
+//  _holds.Set(ref, _lc.RefToPtr(ref))
+222  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
+//  _holds.Set(ref, _lc.RefToPtr(ref));
+223  :     Pop           
+//  if (hold)
+224  :     Jump          : label = 229
+//  ref
+225  :     LoadLocalVar  : var = 0(ref)
+//  _holds
+226  :     LoadCapturedVar: var = 1(<captured>_holds)
+//  _holds.Remove(ref)
+227  :     InvokeMethod  : methodInfo = Remove<system::Dictionary>, stackPatternCount = 1
+//  _holds.Remove(ref);
+228  :     Pop           
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+229  :     LoadValue     : value = <null>
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+230  :     Return        
 //  typeId
-337  :     LoadLocalVar  : var = 0(typeId)
-//  var <switch>3 : ::system::Int32 = typeId;
-338  :     StoreLocalVar : var = 2(<switch>3)
-//  <switch>3
-339  :     LoadLocalVar  : var = 2(<switch>3)
+231  :     LoadLocalVar  : var = 0(typeId)
+//  var <switch>1 : ::system::Int32 = typeId;
+232  :     StoreLocalVar : var = 2(<switch>1)
+//  <switch>1
+233  :     LoadLocalVar  : var = 2(<switch>1)
 //  rpctype_RpcCollectionDict__InByref__OutByref__IService
-340  :     LoadGlobalVar : var = 1(rpctype_RpcCollectionDict__InByref__OutByref__IService)
-//  (<switch>3 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32))
-341  :     CompareValue  
-//  if ((<switch>3 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
-342  :     OpNot         : type = Bool
-//  if ((<switch>3 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
-343  :     JumpIf        : label = 349
+234  :     LoadGlobalVar : var = 1(rpctype_RpcCollectionDict__InByref__OutByref__IService)
+//  (<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32))
+235  :     CompareValue  
+//  if ((<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+236  :     OpNot         : type = Bool
+//  if ((<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+237  :     JumpIf        : label = 256
+//  service
+238  :     LoadLocalVar  : var = 1(service)
+//  service is null
+239  :     LoadValue     : value = <null>
+//  service is null
+240  :     CompareReference
+//  if (service is null)
+241  :     OpNot         : type = Bool
+//  if (service is null)
+242  :     JumpIf        : label = 248
+//  typeId
+243  :     LoadLocalVar  : var = 0(typeId)
+//  _services
+244  :     LoadCapturedVar: var = 2(<captured>_services)
+//  _services.Remove(typeId)
+245  :     InvokeMethod  : methodInfo = Remove<system::Dictionary>, stackPatternCount = 1
+//  _services.Remove(typeId);
+246  :     Pop           
+//  if (service is null)
+247  :     Jump          : label = 253
+//  typeId
+248  :     LoadLocalVar  : var = 0(typeId)
+//  service
+249  :     LoadLocalVar  : var = 1(service)
+//  _services
+250  :     LoadCapturedVar: var = 2(<captured>_services)
+//  _services.Set(typeId, service)
+251  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
+//  _services.Set(typeId, service);
+252  :     Pop           
+//  return;
+253  :     LoadValue     : value = <null>
+//  return;
+254  :     Return        
+//  if ((<switch>1 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+255  :     Jump          : label = 258
+//  "Unknown RPC type id."
+256  :     LoadValue     : value = <String, Unknown RPC type id.>
+//  raise "Unknown RPC type id.";
+257  :     RaiseException
+//  func RegisterService(typeId : int, service : system::Interface^) : (void)
+258  :     LoadValue     : value = <null>
+//  func RegisterService(typeId : int, service : system::Interface^) : (void)
+259  :     Return        
+//  typeId
+260  :     LoadLocalVar  : var = 0(typeId)
+//  var <switch>2 : ::system::Int32 = typeId;
+261  :     StoreLocalVar : var = 1(<switch>2)
+//  <switch>2
+262  :     LoadLocalVar  : var = 1(<switch>2)
+//  rpctype_RpcCollectionDict__InByref__OutByref__IService
+263  :     LoadGlobalVar : var = 1(rpctype_RpcCollectionDict__InByref__OutByref__IService)
+//  (<switch>2 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32))
+264  :     CompareValue  
+//  if ((<switch>2 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+265  :     OpNot         : type = Bool
+//  if ((<switch>2 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+266  :     JumpIf        : label = 274
+//  typeId
+267  :     LoadLocalVar  : var = 0(typeId)
+//  _services
+268  :     LoadCapturedVar: var = 2(<captured>_services)
+//  _services[typeId]
+269  :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+//  _lc
+270  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.PtrToRef(_services[typeId])
+271  :     InvokeMethod  : methodInfo = PtrToRef<system::IRpcLifeCycle>, stackPatternCount = 1
+//  return _lc.PtrToRef(_services[typeId]);
+272  :     Return        
+//  if ((<switch>2 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+273  :     Jump          : label = 276
+//  "Unknown RPC type id."
+274  :     LoadValue     : value = <String, Unknown RPC type id.>
+//  raise "Unknown RPC type id.";
+275  :     RaiseException
+//  func RequestService(typeId : int) : (system::RpcObjectReference)
+276  :     LoadValue     : value = <null>
+//  func RequestService(typeId : int) : (system::RpcObjectReference)
+277  :     Return        
 //  lc
-344  :     LoadLocalVar  : var = 1(lc)
-//  rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc)
-345  :     Invoke        : func = 6(rpcwrapper_RpcCollectionDict__InByref__OutByref__IService), stackPatternCount = 1
-//  rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc)
-346  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
-//  return rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc);
-347  :     Return        
-//  if ((<switch>3 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
-348  :     Jump          : label = 351
-//  "Unknown RPC type id for wrapper creation."
-349  :     LoadValue     : value = <String, Unknown RPC type id for wrapper creation.>
-//  raise "Unknown RPC type id for wrapper creation.";
-350  :     RaiseException
-//  func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
-351  :     LoadValue     : value = <null>
-//  func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+278  :     LoadLocalVar  : var = 0(lc)
+//  new (system::IRpcObjectEventOps^)
+279  :     LoadValue     : value = <null>
+//  new (system::IRpcObjectEventOps^)
+280  :     CreateClosureContext: stackPatternCount = 2
+//  new (system::IRpcObjectEventOps^)
+281  :     LoadMethodInfo: methodInfo = InvokeEvent<system::IRpcObjectEventOps>
+//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+282  :     LoadFunction  : func = 15(<method:InvokeEvent<system::IRpcObjectEventOps>(15)> in rpc_IRpcObjectEventOps)
+//  new (system::IRpcObjectEventOps^)
+283  :     CreateInterface: methodInfo = <system::IRpcObjectEventOps>, stackPatternCount = 2
+//  return new (system::IRpcObjectEventOps^)
+284  :     Return        
+//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+285  :     LoadValue     : value = <null>
+//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+286  :     Return        
+//  eventId
+287  :     LoadLocalVar  : var = 1(eventId)
+//  var <switch>3 : ::system::Int32 = eventId;
+288  :     StoreLocalVar : var = 3(<switch>3)
+//  "Unknown RPC event id."
+289  :     LoadValue     : value = <String, Unknown RPC event id.>
+//  raise "Unknown RPC event id.";
+290  :     RaiseException
+//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+291  :     LoadValue     : value = <null>
+//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+292  :     Return        
+//  rpctype_RpcCollectionDict__InByref__OutByref__IService
+293  :     LoadGlobalVar : var = 1(rpctype_RpcCollectionDict__InByref__OutByref__IService)
+//  lc
+294  :     LoadLocalVar  : var = 0(lc)
+//  lc.Controller
+295  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifeCycle>, stackPatternCount = 0
+//  lc.Controller.RequestService(rpctype_RpcCollectionDict__InByref__OutByref__IService)
+296  :     InvokeMethod  : methodInfo = RequestService<system::IRpcObjectOps>, stackPatternCount = 1
+//  var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcCollectionDict__InByref__OutByref__IService);
+297  :     StoreLocalVar : var = 1(proxyRef)
+//  lc
+298  :     LoadLocalVar  : var = 0(lc)
+//  proxyRef
+299  :     LoadLocalVar  : var = 1(proxyRef)
+//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+300  :     LoadValue     : value = <null>
+//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+301  :     CreateClosureContext: stackPatternCount = 3
+//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+302  :     LoadMethodInfo: methodInfo = DisconnectFromLifecycle<system::IRpcWrapperBase>
+//  func DisconnectFromLifecycle() : (void)
+303  :     LoadFunction  : func = 16(<method:DisconnectFromLifecycle<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(16)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService)
+//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+304  :     LoadMethodInfo: methodInfo = DoList<RpcCollectionDict::InByref::OutByref::IService>
+//  func DoList(xs : ::system::String[::system::Int32]) : (::system::String[::system::Int32])
+305  :     LoadFunction  : func = 17(<method:DoList<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(17)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService)
+//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+306  :     LoadValue     : value = <null>
+//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+307  :     LoadFunction  : func = 18(<dtor:<RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>(18)> in rpcwrapper_RpcCollectionDict__InByref__OutByref__IService)
+//  new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+308  :     CreateInterface: methodInfo = <RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService>, stackPatternCount = 6
+//  var proxy : RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^ = new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+309  :     StoreLocalVar : var = 2(proxy)
+//  proxy
+310  :     LoadLocalVar  : var = 2(proxy)
+//  return proxy;
+311  :     Return        
+//  func rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc : system::IRpcLifeCycle*) : (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+312  :     LoadValue     : value = <null>
+//  func rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc : system::IRpcLifeCycle*) : (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+313  :     Return        
+//  null
+314  :     LoadValue     : value = <null>
+//  (_lc = null)
+315  :     Duplicate     : stackPatternCount = 0
+//  (_lc = null)
+316  :     StoreCapturedVar: var = 0
+//  (_lc = null);
+317  :     Pop           
+//  func DisconnectFromLifecycle() : (void)
+318  :     LoadValue     : value = <null>
+//  func DisconnectFromLifecycle() : (void)
+319  :     Return        
+//  _lc
+320  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc is null
+321  :     LoadValue     : value = <null>
+//  _lc is null
+322  :     CompareReference
+//  if (_lc is null)
+323  :     OpNot         : type = Bool
+//  if (_lc is null)
+324  :     JumpIf        : label = 328
+//  "RPC wrapper has been disconnected from lifecycle."
+325  :     LoadValue     : value = <String, RPC wrapper has been disconnected from lifecycle.>
+//  raise "RPC wrapper has been disconnected from lifecycle.";
+326  :     RaiseException
+//  if (_lc is null)
+327  :     Jump          : label = 328
+//  {}
+328  :     NewArray      : stackPatternCount = 0
+//  var arguments : system::Array^ = {};
+329  :     StoreLocalVar : var = 1(arguments)
+//  1
+330  :     LoadValue     : value = <I4, 1>
+//  arguments
+331  :     LoadLocalVar  : var = 1(arguments)
+//  arguments.Resize(1)
+332  :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
+//  arguments.Resize(1);
+333  :     Pop           
+//  0
+334  :     LoadValue     : value = <I4, 0>
+//  xs
+335  :     LoadLocalVar  : var = 0(xs)
+//  _lc
+336  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  system::IRpcLifeCycle::RpcBoxByref(xs, _lc)
+337  :     LoadValue     : value = <null>
+//  system::IRpcLifeCycle::RpcBoxByref(xs, _lc)
+338  :     InvokeMethod  : methodInfo = RpcBoxByref<system::IRpcLifeCycle>, stackPatternCount = 2
+//  arguments
+339  :     LoadLocalVar  : var = 1(arguments)
+//  arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(xs, _lc))
+340  :     InvokeMethod  : methodInfo = Set<system::Array>, stackPatternCount = 2
+//  arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(xs, _lc));
+341  :     Pop           
+//  _ref
+342  :     LoadCapturedVar: var = 1(<captured>_ref)
+//  rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList
+343  :     LoadGlobalVar : var = 2(rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList)
+//  arguments
+344  :     LoadLocalVar  : var = 1(arguments)
+//  _lc
+345  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Controller
+346  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifeCycle>, stackPatternCount = 0
+//  _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments)
+347  :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
+//  _lc
+348  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc)
+349  :     LoadValue     : value = <null>
+//  system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc)
+350  :     InvokeMethod  : methodInfo = RpcUnboxByref<system::IRpcLifeCycle>, stackPatternCount = 2
+//  system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc)
+351  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Dictionary
+//  return (cast (::system::String[::system::Int32]) system::IRpcLifeCycle::RpcUnboxByref(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList, arguments), _lc));
 352  :     Return        
+//  func DoList(xs : ::system::String[::system::Int32]) : (::system::String[::system::Int32])
+353  :     LoadValue     : value = <null>
+//  func DoList(xs : ::system::String[::system::Int32]) : (::system::String[::system::Int32])
+354  :     Return        
+//  _lc
+355  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc is not null
+356  :     LoadValue     : value = <null>
+//  _lc is not null
+357  :     CompareReference
+//  _lc is not null
+358  :     OpNot         : type = Bool
+//  if (_lc is not null)
+359  :     OpNot         : type = Bool
+//  if (_lc is not null)
+360  :     JumpIf        : label = 367
+//  _ref
+361  :     LoadCapturedVar: var = 1(<captured>_ref)
+//  _lc
+362  :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Controller
+363  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifeCycle>, stackPatternCount = 0
+//  _lc.Controller.ReleaseRemoteObject(_ref)
+364  :     InvokeMethod  : methodInfo = ReleaseRemoteObject<system::IRpcController>, stackPatternCount = 1
+//  _lc.Controller.ReleaseRemoteObject(_ref);
+365  :     Pop           
+//  if (_lc is not null)
+366  :     Jump          : label = 367
+//  delete
+367  :     LoadValue     : value = <null>
+//  delete
+368  :     Return        
+//  typeId
+369  :     LoadLocalVar  : var = 0(typeId)
+//  var <switch>4 : ::system::Int32 = typeId;
+370  :     StoreLocalVar : var = 2(<switch>4)
+//  <switch>4
+371  :     LoadLocalVar  : var = 2(<switch>4)
+//  rpctype_RpcCollectionDict__InByref__OutByref__IService
+372  :     LoadGlobalVar : var = 1(rpctype_RpcCollectionDict__InByref__OutByref__IService)
+//  (<switch>4 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32))
+373  :     CompareValue  
+//  if ((<switch>4 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+374  :     OpNot         : type = Bool
+//  if ((<switch>4 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+375  :     JumpIf        : label = 381
+//  lc
+376  :     LoadLocalVar  : var = 1(lc)
+//  rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc)
+377  :     Invoke        : func = 6(rpcwrapper_RpcCollectionDict__InByref__OutByref__IService), stackPatternCount = 1
+//  rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc)
+378  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
+//  return rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc);
+379  :     Return        
+//  if ((<switch>4 == rpctype_RpcCollectionDict__InByref__OutByref__IService of (::system::Int32)))
+380  :     Jump          : label = 383
+//  "Unknown RPC type id for wrapper creation."
+381  :     LoadValue     : value = <String, Unknown RPC type id for wrapper creation.>
+//  raise "Unknown RPC type id for wrapper creation.";
+382  :     RaiseException
+//  func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+383  :     LoadValue     : value = <null>
+//  func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+384  :     Return        

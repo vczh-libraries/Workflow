@@ -38,6 +38,8 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 
         var _holds : object[system::RpcObjectReference] = {};
 
+        var _services : system::Interface^[int] = {};
+
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -94,17 +96,50 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
             }
         }
 
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            switch (typeId)
+            {
+                case rpctype_RpcOverloadingTest__IStringRepresentable:
+                {
+                    if (service is null)
+                    {
+                        _services.Remove(typeId);
+                    }
+                    else
+                    {
+                        _services.Set(typeId, service);
+                    }
+                    return;
+                }
+                case rpctype_RpcOverloadingTest__IService:
+                {
+                    if (service is null)
+                    {
+                        _services.Remove(typeId);
+                    }
+                    else
+                    {
+                        _services.Set(typeId, service);
+                    }
+                    return;
+                }
+                default:
+                raise "Unknown RPC type id.";
+            }
+        }
+
         override func RequestService(typeId : int) : (system::RpcObjectReference)
         {
             switch (typeId)
             {
                 case rpctype_RpcOverloadingTest__IStringRepresentable:
                 {
-                    return _lc.PtrToRef(_lc.RequestService("RpcOverloadingTest::IStringRepresentable"));
+                    return _lc.PtrToRef(_services[typeId]);
                 }
                 case rpctype_RpcOverloadingTest__IService:
                 {
-                    return _lc.PtrToRef(_lc.RequestService("RpcOverloadingTest::IService"));
+                    return _lc.PtrToRef(_services[typeId]);
                 }
                 default:
                 raise "Unknown RPC type id.";

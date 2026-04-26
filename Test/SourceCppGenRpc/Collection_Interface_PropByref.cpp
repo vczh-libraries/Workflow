@@ -196,12 +196,12 @@ Global Functions
 	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Collection_Interface_PropByref::rpcwrapper_Create(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
-			auto __vwsn_switch_3 = typeId;
-			if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IValue))
+			auto __vwsn_switch_4 = typeId;
+			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IValue))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollection__Interface__InByref__PropByref__IValue(lc));
 			}
-			else if ((__vwsn_switch_3 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IService))
+			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IService))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollection__Interface__InByref__PropByref__IService(lc));
 			}
@@ -261,6 +261,7 @@ Closures
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_holds = ::vl::reflection::description::IValueDictionary::Create();
+		this->_services = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
 	::vl::reflection::description::Value __vwsnc3_Rpc_Collection_Interface_PropByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -305,17 +306,50 @@ Closures
 		}
 	}
 
-	::vl::rpc_controller::RpcObjectReference __vwsnc3_Rpc_Collection_Interface_PropByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint typeId)
+	void __vwsnc3_Rpc_Collection_Interface_PropByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
 	{
 		{
 			auto __vwsn_switch_1 = typeId;
 			if ((__vwsn_switch_1 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IValue))
 			{
-				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::This(_lc)->RequestService(::vl::WString::Unmanaged(L"RpcCollection::Interface::InByref::PropByref::IValue")));
+				if ((! static_cast<bool>(service)))
+				{
+					::vl::__vwsn::This(_services.Obj())->Remove(::vl::__vwsn::Box(typeId));
+				}
+				else
+				{
+					::vl::__vwsn::This(_services.Obj())->Set(::vl::__vwsn::Box(typeId), ::vl::__vwsn::Box(service));
+				}
+				return;
 			}
 			else if ((__vwsn_switch_1 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IService))
 			{
-				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::This(_lc)->RequestService(::vl::WString::Unmanaged(L"RpcCollection::Interface::InByref::PropByref::IService")));
+				if ((! static_cast<bool>(service)))
+				{
+					::vl::__vwsn::This(_services.Obj())->Remove(::vl::__vwsn::Box(typeId));
+				}
+				else
+				{
+					::vl::__vwsn::This(_services.Obj())->Set(::vl::__vwsn::Box(typeId), ::vl::__vwsn::Box(service));
+				}
+				return;
+			}
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id."));
+		}
+	}
+
+	::vl::rpc_controller::RpcObjectReference __vwsnc3_Rpc_Collection_Interface_PropByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint typeId)
+	{
+		{
+			auto __vwsn_switch_2 = typeId;
+			if ((__vwsn_switch_2 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IValue))
+			{
+				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
+			}
+			else if ((__vwsn_switch_2 == GLOBAL_NAME rpctype_RpcCollection__Interface__InByref__PropByref__IService))
+			{
+				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id."));
@@ -332,7 +366,7 @@ Closures
 	void __vwsnc4_Rpc_Collection_Interface_PropByref_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
-			auto __vwsn_switch_2 = eventId;
+			auto __vwsn_switch_3 = eventId;
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
 		}
 	}
