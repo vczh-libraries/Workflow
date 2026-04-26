@@ -70,11 +70,19 @@ namespace
 		{
 			SetIdMap(_idMap);
 			wrapperCreateFunc = LoadFunction(globalContext, L"rpcwrapper_Create");
-			const auto& listenerAttachFunctions = globalContext->assembly->functionByName[L"rpclistener_Attach"];
-			CHECK_ERROR(listenerAttachFunctions.Count() <= 1, L"Multiple rpclistener_Attach functions are found.");
-			listenerAttachFunc = listenerAttachFunctions.Count() == 1
-				? LoadFunction<void(vint, IRpcLifeCycle*, RpcObjectReference, Ptr<IDescriptable>)>(globalContext, L"rpclistener_Attach")
-				: Func<void(vint, IRpcLifeCycle*, RpcObjectReference, Ptr<IDescriptable>)>();
+			auto listenerAttachIndex = globalContext->assembly->functionByName.Keys().IndexOf(L"rpclistener_Attach");
+			if (listenerAttachIndex == -1)
+			{
+				listenerAttachFunc = {};
+			}
+			else
+			{
+				const auto& listenerAttachFunctions = globalContext->assembly->functionByName.GetByIndex(listenerAttachIndex);
+				CHECK_ERROR(listenerAttachFunctions.Count() <= 1, L"Multiple rpclistener_Attach functions are found.");
+				listenerAttachFunc = listenerAttachFunctions.Count() == 1
+					? LoadFunction<void(vint, IRpcLifeCycle*, RpcObjectReference, Ptr<IDescriptable>)>(globalContext, L"rpclistener_Attach")
+					: Func<void(vint, IRpcLifeCycle*, RpcObjectReference, Ptr<IDescriptable>)>();
+			}
 
 			RegisterWrapperFactory([this, wrapperFactoryLifecycle](vint typeId, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
 			{

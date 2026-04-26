@@ -91,6 +91,10 @@ If any test case fail, you could continue to run until you collect results from 
 - Task 3: Removed the `RpcDualObjectOps` forwarding wrapper and changed both runtime and generated C++ RPC test harnesses to cross-register the actual generated object ops objects.
 - Task 3: Moved the only non-trivial hold behavior into generated object ops: generated `ObjectHold` now calls lifecycle controller `AcquireRemoteObject` and `ReleaseRemoteObject` directly instead of storing local `_holds` entries.
 - Task 3: Regenerated RPC C++ and metadata outputs for Win32 and x64 so generated object ops no longer contain `_holds`.
+- Task 4: User rejected the attempted generic C++ wrapper/event-signature change in `Source\Cpp\WfCpp_Class.cpp`; it was removed from the working tree.
+- Task 4: User rejected the attempted generic event invocation preservation in `Source\Cpp\WfCpp_Expression.cpp`; it was removed from the working tree.
+- Task 4: Kept the accepted local-variable approach in generated RPC Workflow: `InvokeEvent` unboxes arguments into local variables before invoking the target event, so generated C++ passes lvalues to `EventInvoke`.
+- Task 4: Updated `RuntimeTest\TestRpc.cpp` so assemblies without generated listener functions can omit `rpclistener_Attach`.
 
 # TEST
 
@@ -100,6 +104,8 @@ If any test case fail, you could continue to run until you collect results from 
 - Success criteria for Task 2: lifecycle service registration goes through local generated object ops, generated `RequestService` reads from object ops storage, service unregister clears that storage, and the RPC destructor samples release service objects correctly.
 - For Task 3, build Debug x64 after the direct generator/test harness edits, run `CompilerTest_LoadAndCompile` to regenerate RPC outputs, then build Debug Win32 and Debug x64 again. Run `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` across the required platforms.
 - Success criteria for Task 3: no source or generated C++ file references `RpcDualObjectOps`, generated RPC object ops no longer contain `_holds`, generated `ObjectHold` calls lifecycle controller acquire/release, and the RPC runtime/generated C++ tests all pass.
+- For Task 4, build Debug Win32 and Debug x64, run `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile` x64 to regenerate outputs, rebuild Debug Win32 and Debug x64, then run `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` for both platforms.
+- Success criteria for Task 4: no remaining source diff in `WfCpp_Class.cpp` or `WfCpp_Expression.cpp`, generated RPC event dispatch unboxes event arguments to locals before calling the event, assemblies without events can omit `rpclistener_Attach`, and `Rpc:Event` reports `[clientMain:A][serviceMain:B]` in both runtime and generated C++ tests.
 
 # PROPOSALS
 
@@ -178,6 +184,59 @@ Add `IRpcObjectOps::RegisterService` and move service object storage into genera
 - `LibraryTest` Win32/x64 passed: 2/2 test files, 14/14 test cases.
 - `CompilerTest_GenerateMetadata` Win32/x64 passed: 1/1 test files, 2/2 test cases.
 - `CompilerTest_LoadAndCompile` x64 passed both internal passes: 6/6 test files, 689/689 test cases.
+- `RuntimeTest` Win32/x64 passed: 4/4 test files, 243/243 test cases.
+- `CppTest` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+- `CppTest_Metaonly` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+- `CppTest_Reflection` Win32/x64 passed: 2/2 test files, 209/209 test cases.
+
+- No.4 Change generated wrapper event signatures in `WfCpp_Class.cpp` [DENIED BY USER]
+- No.5 Preserve all generated C++ event invocation arguments in `WfCpp_Expression.cpp` [DENIED BY USER]
+- No.6 Bind RPC event dispatch arguments to Workflow locals [CONFIRMED]
+
+## No.4 Change generated wrapper event signatures in `WfCpp_Class.cpp`
+
+Change generated C++ event fields to use reference-style argument types such as `const WString&`, avoiding moves when handlers are invoked.
+
+### CODE CHANGE
+
+The attempted change was removed. There is no remaining diff in `Source\Cpp\WfCpp_Class.cpp`.
+
+### DENIED BY USER
+
+The user rejected this approach because it changes generic C++ wrapper generation instead of the RPC-specific generated Workflow code. It is too broad for the observed failure, and it would affect event signatures outside the RPC event dispatch path.
+
+## No.5 Preserve all generated C++ event invocation arguments in `WfCpp_Expression.cpp`
+
+Wrap generated C++ event invocations in a lambda and store event arguments in temporary local variables before calling `EventInvoke`.
+
+### CODE CHANGE
+
+The attempted change was removed. There is no remaining diff in `Source\Cpp\WfCpp_Expression.cpp`.
+
+### DENIED BY USER
+
+The user correctly pointed out that named string variables already deduce as `WString&` when passed to `Event<T>::operator()`, so the generic expression generator does not need to be changed. The real failure occurs when RPC dispatch passes the result of `RpcUnboxByval` directly as a temporary into an event with multiple handlers. This proposal was too broad and was replaced by the RPC-local-variable proposal.
+
+## No.6 Bind RPC event dispatch arguments to Workflow locals
+
+In generated `rpc_IRpcObjectEventOps.InvokeEvent`, unbox each event argument into a generated Workflow local variable and then invoke the target event with those local variables.
+
+### CODE CHANGE
+
+- `Source\Analyzer\WfAnalyzer_GenerateRpc.cpp` now emits `var argN = cast(..., RpcUnboxByval(...))` statements in `BuildInvokeEventBranch`, then invokes the target event with `argN`.
+- `Test\UnitTest\RuntimeTest\TestRpc.cpp` now checks whether `rpclistener_Attach` exists before loading it, allowing assemblies without event listener functions to run normally.
+- Regenerated RPC outputs for `Rpc\Event` now call `EventInvoke(...)(arg0)` after unboxing `arg0` as a local variable.
+
+### CONFIRMED
+
+The proposal is confirmed because the generated RPC event dispatch now passes an lvalue to `EventInvoke`, avoiding the observed moved-from string when RPC forwarding and user handlers are both attached. `RuntimeTest` and all generated C++ variants report `Rpc:Event` as `[clientMain:A][serviceMain:B]`.
+
+- Debug Win32 build passed with 0 warnings and 0 errors.
+- Debug x64 build passed with 0 warnings and 0 errors.
+- `LibraryTest` Win32/x64 passed: 2/2 test files, 14/14 test cases.
+- `CompilerTest_GenerateMetadata` Win32/x64 passed: 1/1 test files, 2/2 test cases.
+- `CompilerTest_LoadAndCompile` x64 passed and regenerated the RPC outputs.
+- Rebuilt Debug Win32 and Debug x64 after regeneration, both with 0 warnings and 0 errors.
 - `RuntimeTest` Win32/x64 passed: 4/4 test files, 243/243 test cases.
 - `CppTest` Win32/x64 passed: 2/2 test files, 209/209 test cases.
 - `CppTest_Metaonly` Win32/x64 passed: 2/2 test files, 209/209 test cases.
