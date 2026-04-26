@@ -113,7 +113,8 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEv
                 case rpcevent_RpcEvent__IService_SomethingHappened:
                 {
                     var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
-                    target.SomethingHappened((cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc)));
+                    var arg0 : ::system::String = (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc));
+                    target.SomethingHappened(arg0);
                 }
                 default:
                 raise "Unknown RPC event id.";

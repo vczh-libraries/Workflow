@@ -275,7 +275,8 @@ Closures
 			if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0))), _lc)));
+				auto arg0 = ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0))), _lc));
+				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(arg0);
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
