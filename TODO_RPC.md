@@ -32,3 +32,4 @@
 - Update `TestLibraryRpcByval.cpp` in `LibraryTest` to use `RpcDualLifecycleMock`, remove `RpcByvalLifecycleMock`.
   - Refactor `RpcDualLifecycleMock` to make it a common implementation for `GacUI`.
   - May need to refactor how to retrieve ops interfaces.
+- Sort `IndexRpc.txt`.
