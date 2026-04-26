@@ -189,7 +189,6 @@ Closures
 	__vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
-		this->_holds = ::vl::reflection::description::IValueDictionary::Create();
 		this->_services = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
@@ -241,11 +240,11 @@ Closures
 	{
 		if (hold)
 		{
-			::vl::__vwsn::This(_holds.Obj())->Set(::vl::__vwsn::Box(ref), ::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->RefToPtr(ref)));
+			::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->AcquireRemoteObject(ref);
 		}
 		else
 		{
-			::vl::__vwsn::This(_holds.Obj())->Remove(::vl::__vwsn::Box(ref));
+			::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->ReleaseRemoteObject(ref);
 		}
 	}
 

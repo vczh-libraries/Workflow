@@ -15,8 +15,6 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
-        var _holds : object[system::RpcObjectReference] = {};
-
         var _services : system::Interface^[int] = {};
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
@@ -37,11 +35,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _holds.Set(ref, _lc.RefToPtr(ref));
+                _lc.Controller.AcquireRemoteObject(ref);
             }
             else
             {
-                _holds.Remove(ref);
+                _lc.Controller.ReleaseRemoteObject(ref);
             }
         }
 

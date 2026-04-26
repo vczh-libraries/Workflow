@@ -106,7 +106,6 @@ Closures
 		__vwsnc2_Rpc_CollectionDict_Nested_PropDefault_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> _holds;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> _services;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
