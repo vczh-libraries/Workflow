@@ -19,9 +19,8 @@
 - Continue to add more test cases until all features are covered.
   - Cached properties (by default)
     - Primitive type
-    - Interface type
-    - Collection type
-    - Nullable type
+    - Interface type (and dtor)
+    - Collection type (and dtor)
   - Dynamic properties
   - Double read byval collections with cached/dynamic property.
   - Sending cached property values proactively from remote to wrapper.
