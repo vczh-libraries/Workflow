@@ -1,0 +1,334 @@
+﻿module RpcMetadata;
+
+var rpctype_RpcPropDefaultInterface__IValue : int = 0;
+
+var rpctype_RpcPropDefaultInterface__IService : int = 1;
+
+var rpcmethod_RpcPropDefaultInterface__IValue_GetValue : int = 2;
+
+var rpcmethod_RpcPropDefaultInterface__IService_GetValue : int = 3;
+
+var rpcmethod_RpcPropDefaultInterface__IService_SetValue : int = 4;
+
+var rpcmethod_RpcPropDefaultInterface__IService_Signal : int = 5;
+
+var rpcevent_RpcPropDefaultInterface__IService_ValueChanged : int = 6;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("RpcPropDefaultInterface::IValue", 0);
+    result.Set("RpcPropDefaultInterface::IService", 1);
+    result.Set("RpcPropDefaultInterface::IValue.GetValue", 2);
+    result.Set("RpcPropDefaultInterface::IService.GetValue", 3);
+    result.Set("RpcPropDefaultInterface::IService.SetValue", 4);
+    result.Set("RpcPropDefaultInterface::IService.Signal", 5);
+    result.Set("RpcPropDefaultInterface::IService.ValueChanged", 6);
+    return result;
+}
+
+func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+{
+    if (((typeId >= -7) and (typeId <= -1)))
+    return true;
+    switch (typeId)
+    {
+        case rpctype_RpcPropDefaultInterface__IValue:
+        return true;
+        case rpctype_RpcPropDefaultInterface__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcPropDefaultInterface__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _services : system::Interface^[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            switch (methodId)
+            {
+                case rpcmethod_RpcPropDefaultInterface__IValue_GetValue:
+                {
+                    var target : RpcPropDefaultInterface::IValue^ = (cast (RpcPropDefaultInterface::IValue^) _lc.RefToPtr(ref));
+                    return system::IRpcLifeCycle::RpcBoxByval(target.GetValue(), _lc);
+                }
+                case rpcmethod_RpcPropDefaultInterface__IService_GetValue:
+                {
+                    var target : RpcPropDefaultInterface::IService^ = (cast (RpcPropDefaultInterface::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifeCycle::RpcBoxByval(target.GetValue(), _lc);
+                }
+                case rpcmethod_RpcPropDefaultInterface__IService_SetValue:
+                {
+                    var target : RpcPropDefaultInterface::IService^ = (cast (RpcPropDefaultInterface::IService^) _lc.RefToPtr(ref));
+                    target.SetValue((cast (::RpcPropDefaultInterface::IValue^) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc)));
+                    return null;
+                }
+                case rpcmethod_RpcPropDefaultInterface__IService_Signal:
+                {
+                    var target : RpcPropDefaultInterface::IService^ = (cast (RpcPropDefaultInterface::IService^) _lc.RefToPtr(ref));
+                    target.Signal();
+                    return null;
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+        }
+
+        override func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+        {
+            raise "InvokeMethodAsync is not supported.";
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.Controller.AcquireRemoteObject(ref);
+            }
+            else
+            {
+                _lc.Controller.ReleaseRemoteObject(ref);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    if (service is null)
+                    {
+                        _services.Remove(typeId);
+                    }
+                    else
+                    {
+                        _services.Set(typeId, service);
+                    }
+                }
+                else if (rpcwrapper_IsInterfaceTypeId(typeId))
+                {
+                    raise "RPC service type id is not an @rpc:Ctor interface.";
+                }
+                else
+                {
+                    raise "RPC service type id does not exist.";
+                }
+            }
+        }
+
+        override func RequestService(typeId : int) : (system::RpcObjectReference)
+        {
+            {
+                if (_services.Keys.Contains(typeId))
+                {
+                    return _lc.PtrToRef(_services[typeId]);
+                }
+                raise "RPC service is not registered.";
+            }
+        }
+    };
+}
+
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            switch (eventId)
+            {
+                case rpcevent_RpcPropDefaultInterface__IService_ValueChanged:
+                {
+                    var target : RpcPropDefaultInterface::IService^ = (cast (RpcPropDefaultInterface::IService^) _lc.RefToPtr(ref));
+                    target.ValueChanged();
+                }
+                default:
+                raise "Unknown RPC event id.";
+            }
+        }
+    };
+}
+
+namespace RpcPropDefaultInterface
+{
+    interface IRpcWrapper_IValue : RpcPropDefaultInterface::IValue, system::IRpcWrapperBase
+    {
+    }
+
+    interface IRpcWrapper_IService : RpcPropDefaultInterface::IService, system::IRpcWrapperBase
+    {
+        func _rpcInvalidate_Value() : (void);
+    }
+}
+
+func rpclistener_RpcPropDefaultInterface__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcPropDefaultInterface::IService^) : (void)
+{
+    attach(target.ValueChanged, func () : (void)
+    {
+        var arguments : system::Array^ = {};
+        arguments.Resize(0);
+        lc.Controller.InvokeEvent(ref, rpcevent_RpcPropDefaultInterface__IService_ValueChanged, arguments);
+    });
+}
+
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcPropDefaultInterface__IValue:
+        {
+            return;
+        }
+        case rpctype_RpcPropDefaultInterface__IService:
+        {
+            rpclistener_RpcPropDefaultInterface__IService(lc, ref, (cast (RpcPropDefaultInterface::IService^) obj));
+            return;
+        }
+        default:
+        raise "Unknown RPC type id for listener attachment.";
+    }
+}
+
+func rpcwrapper_RpcPropDefaultInterface__IValue(lc : system::IRpcLifeCycle*) : (RpcPropDefaultInterface::IRpcWrapper_IValue^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcPropDefaultInterface__IValue);
+    var proxy : RpcPropDefaultInterface::IRpcWrapper_IValue^ = new (RpcPropDefaultInterface::IRpcWrapper_IValue^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+
+        override func GetValue() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IValue_GetValue, arguments), _lc));
+        }
+    };
+    return proxy;
+}
+
+func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifeCycle*) : (RpcPropDefaultInterface::IRpcWrapper_IService^)
+{
+    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcPropDefaultInterface__IService);
+    var proxy : RpcPropDefaultInterface::IRpcWrapper_IService^ = new (RpcPropDefaultInterface::IRpcWrapper_IService^)
+    {
+        var _lc : system::IRpcLifeCycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var Value<Cached> : ::RpcPropDefaultInterface::IValue^ = null of (::RpcPropDefaultInterface::IValue^);
+
+        var Value<Available> : bool = false;
+
+        override func _rpcInvalidate_Value() : (void)
+        {
+            (Value<Available> = false);
+        }
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Controller.ReleaseRemoteObject(_ref);
+            }
+        }
+
+        override func GetValue() : (::RpcPropDefaultInterface::IValue^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            if (Value<Available>)
+            {
+                return Value<Cached>;
+            }
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            (Value<Cached> = (cast (::RpcPropDefaultInterface::IValue^) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_GetValue, arguments), _lc)));
+            (Value<Available> = true);
+            return Value<Cached>;
+        }
+
+        override func SetValue(value : ::RpcPropDefaultInterface::IValue^) : (::system::Void)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
+            _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_SetValue, arguments);
+        }
+
+        override func Signal() : (::system::Void)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_Signal, arguments);
+        }
+    };
+    attach((cast (RpcPropDefaultInterface::IService^) proxy).ValueChanged, func () : (void)
+    {
+        (cast (RpcPropDefaultInterface::IRpcWrapper_IService^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
+    });
+    rpclistener_RpcPropDefaultInterface__IService(lc, proxyRef, (cast (RpcPropDefaultInterface::IService^) proxy));
+    return proxy;
+}
+
+func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcPropDefaultInterface__IValue:
+        {
+            return rpcwrapper_RpcPropDefaultInterface__IValue(lc);
+        }
+        case rpctype_RpcPropDefaultInterface__IService:
+        {
+            return rpcwrapper_RpcPropDefaultInterface__IService(lc);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}

@@ -107,6 +107,9 @@
 #include "PrimitiveTypesReflection.h"
 #include "PropCachedReflection.h"
 #include "PropDefaultReflection.h"
+#include "PropDefaultInterfaceReflection.h"
+#include "PropDefaultInterfaceListReflection.h"
+#include "PropDefaultListReflection.h"
 #include "PropDynamicReflection.h"
 #include "RequestServiceReflection.h"
 #include "ServiceWrapperReflection.h"
@@ -232,6 +235,9 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_PrimitiveTypesTypes();
 	 LoadRpc_PropCachedTypes();
 	 LoadRpc_PropDefaultTypes();
+	 LoadRpc_PropDefaultInterfaceTypes();
+	 LoadRpc_PropDefaultInterfaceListTypes();
+	 LoadRpc_PropDefaultListTypes();
 	 LoadRpc_PropDynamicTypes();
 	 LoadRpc_RequestServiceTypes();
 	 LoadRpc_ServiceWrapperTypes();
@@ -1721,6 +1727,59 @@ TEST_CASE(L"Rpc:PropDefault")
 		{
 			(void)detachments;
 			::vl_workflow_global::Rpc_PropDefault::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:PropDefaultInterface")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultInterface>(L"[A][A][ValueChanged][B]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_PropDefaultInterface::Instance();
+			if (dynamic_cast<::RpcPropDefaultInterface::IValue*>(obj)) return instance.rpctype_RpcPropDefaultInterface__IValue;
+			if (dynamic_cast<::RpcPropDefaultInterface::IService*>(obj)) return instance.rpctype_RpcPropDefaultInterface__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_PropDefaultInterface::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:PropDefaultInterfaceList")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultInterfaceList>(L"[A][A][ValueChanged][BCD]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_PropDefaultInterfaceList::Instance();
+			if (dynamic_cast<::RpcPropDefaultInterfaceList::IValue*>(obj)) return instance.rpctype_RpcPropDefaultInterfaceList__IValue;
+			if (dynamic_cast<::RpcPropDefaultInterfaceList::IService*>(obj)) return instance.rpctype_RpcPropDefaultInterfaceList__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_PropDefaultInterfaceList::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:PropDefaultList")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultList>(L"[A][A][ValueChanged][BCD]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_PropDefaultList::Instance();
+			if (dynamic_cast<::RpcPropDefaultList::IService*>(obj)) return instance.rpctype_RpcPropDefaultList__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_PropDefaultList::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
 		},
 		nullptr);
 });
