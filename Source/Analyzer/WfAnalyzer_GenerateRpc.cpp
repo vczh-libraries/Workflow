@@ -33,8 +33,10 @@ namespace vl
 					WString					name;
 					Ptr<WfType>				type;
 					bool					byref = false;
+					bool					cached = false;
 					WString					getterName;
 					WString					setterName;
+					WString					valueChangedEvent;
 				};
 
 				struct RpcMethodModel
@@ -81,6 +83,23 @@ namespace vl
 					for (auto attribute : attributes)
 					{
 						if (IsRpcAttribute(attribute.Obj(), name))
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool HasAttribute(IAttributeBag* bag, ITypeDescriptor* attrTd)
+				{
+					if (!bag || !attrTd)
+					{
+						return false;
+					}
+
+					for (vint i = 0; i < bag->GetAttributeCount(); i++)
+					{
+						if (bag->GetAttribute(i)->GetAttributeType() == attrTd)
 						{
 							return true;
 						}
@@ -588,6 +607,9 @@ namespace vl
 					List<RpcInterfaceModel> interfaces;
 					auto typeCount = manager->rpcMetadata->typeFullNames.Count();
 					auto methodCount = manager->rpcMetadata->methodFullNames.Count();
+					auto rpcByrefAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Byref>();
+					auto rpcCachedAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Cached>();
+					auto rpcDynamicAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Dynamic>();
 
 					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
 					{
@@ -637,8 +659,10 @@ namespace vl
 								propertyModel.name = propertyDecl->name.value;
 								propertyModel.type = CopyType(propertyDecl->type.Obj());
 								propertyModel.byref = HasRpcAttribute(propertyDecl->attributes, L"Byref");
+								propertyModel.cached = !HasRpcAttribute(propertyDecl->attributes, L"Dynamic");
 								propertyModel.getterName = propertyDecl->getter.value;
 								propertyModel.setterName = propertyDecl->setter.value;
+								propertyModel.valueChangedEvent = propertyDecl->valueChangedEvent.value;
 								if (!HasRpcAttribute(propertyDecl->attributes, L"Cached") && !HasRpcAttribute(propertyDecl->attributes, L"Dynamic"))
 								{
 									manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresPropertyMode(propertyDecl.Obj(), typeFullName + L"." + propertyDecl->name.value));
@@ -646,13 +670,63 @@ namespace vl
 								interfaceModel.properties.Add(std::move(propertyModel));
 
 								auto propertyIndex = interfaceModel.properties.Count() - 1;
-								if (propertyModel.getterName != L"")
+								auto&& insertedProperty = interfaceModel.properties[propertyIndex];
+								if (insertedProperty.getterName != L"")
 								{
-									getterPropertyIndexes.Add(propertyModel.getterName, propertyIndex);
+									getterPropertyIndexes.Add(insertedProperty.getterName, propertyIndex);
 								}
-								if (propertyModel.setterName != L"")
+								if (insertedProperty.setterName != L"")
 								{
-									setterPropertyIndexes.Add(propertyModel.setterName, propertyIndex);
+									setterPropertyIndexes.Add(insertedProperty.setterName, propertyIndex);
+								}
+							}
+						}
+
+						if (interfaceModel.properties.Count() == 0)
+						{
+							if (auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName))
+							{
+								for (vint i = 0; i < typeDescriptor->GetPropertyCount(); i++)
+								{
+									auto propertyInfo = typeDescriptor->GetProperty(i);
+									if (!propertyInfo || propertyInfo->GetOwnerTypeDescriptor() != typeDescriptor)
+									{
+										continue;
+									}
+
+									RpcPropertyModel propertyModel;
+									propertyModel.name = propertyInfo->GetName();
+									propertyModel.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+									propertyModel.byref = HasAttribute(propertyInfo, rpcByrefAttrTd);
+									propertyModel.cached = !HasAttribute(propertyInfo, rpcDynamicAttrTd);
+									if (auto getter = propertyInfo->GetGetter())
+									{
+										propertyModel.getterName = getter->GetName();
+									}
+									if (auto setter = propertyInfo->GetSetter())
+									{
+										propertyModel.setterName = setter->GetName();
+									}
+									if (auto valueChangedEvent = propertyInfo->GetValueChangedEvent())
+									{
+										propertyModel.valueChangedEvent = valueChangedEvent->GetName();
+									}
+									if (!HasAttribute(propertyInfo, rpcCachedAttrTd) && !HasAttribute(propertyInfo, rpcDynamicAttrTd))
+									{
+										propertyModel.cached = true;
+									}
+									interfaceModel.properties.Add(std::move(propertyModel));
+
+									auto propertyIndex = interfaceModel.properties.Count() - 1;
+									auto&& insertedProperty = interfaceModel.properties[propertyIndex];
+									if (insertedProperty.getterName != L"")
+									{
+										getterPropertyIndexes.Add(insertedProperty.getterName, propertyIndex);
+									}
+									if (insertedProperty.setterName != L"")
+									{
+										setterPropertyIndexes.Add(insertedProperty.setterName, propertyIndex);
+									}
 								}
 							}
 						}
@@ -1103,6 +1177,49 @@ namespace vl
 					return events.Count() > 0;
 				}
 
+				const RpcEventModel* FindInterfaceEvent(const List<const RpcEventModel*>& events, const WString& name)
+				{
+					for (auto eventModel : events)
+					{
+						if (eventModel->name == name)
+						{
+							return eventModel;
+						}
+					}
+					return nullptr;
+				}
+
+				WString GetPropertyCacheAvailableName(const RpcPropertyModel& propertyModel)
+				{
+					return L"_rpcCacheAvailable_" + propertyModel.name;
+				}
+
+				WString GetPropertyCacheValueName(const RpcPropertyModel& propertyModel)
+				{
+					return L"_rpcCacheValue_" + propertyModel.name;
+				}
+
+				WString GetPropertyCacheCellName(const RpcPropertyModel& propertyModel)
+				{
+					return L"_rpcCache_" + propertyModel.name;
+				}
+
+				Ptr<WfExpression> CreatePropertyCacheAvailableRead(const RpcPropertyModel& propertyModel)
+				{
+					return CreateCast(
+						CreatePredefinedType(WfPredefinedTypeName::Bool),
+						CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(propertyModel)), L"Get"), CreateInt(0))
+					);
+				}
+
+				Ptr<WfExpression> CreatePropertyCacheValueRead(const RpcPropertyModel& propertyModel)
+				{
+					return CreateCast(
+						CreateQualifiedType(L"system::Object"),
+						CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(propertyModel)), L"Get"), CreateInt(1))
+					);
+				}
+
 				Ptr<WfDeclaration> GenerateWrapperInterface(const RpcInterfaceModel& interfaceModel)
 				{
 					auto interfaceDecl = Ptr(new WfClassDeclaration);
@@ -1199,12 +1316,24 @@ namespace vl
 				{
 					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
 					auto wrapperInterfaceFullName = interfaceModel.fullName.Sub(0, interfaceModel.fullName.Length() - interfaceModel.interfaceName.Length()) + L"IRpcWrapper_" + interfaceModel.interfaceName;
+					List<const RpcEventModel*> events;
+					CollectInterfaceEvents(interfaceModel, interfaces, events);
 
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					AddStatement(block, CreateVariableStatement(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference"), CreateCall(CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"RequestService"), CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName))));
+
+					for (auto&& propertyModel : interfaceModel.properties)
+					{
+						if (propertyModel.cached)
+						{
+							AddStatement(block, CreateVariableStatement(GetPropertyCacheCellName(propertyModel), CreateSharedType(L"system::Array"), CreateConstructor()));
+							AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(propertyModel)), L"Resize"), CreateInt(2))));
+							AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(propertyModel)), L"Set"), CreateInt(0), CreateBool(false))));
+						}
+					}
 
 					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
@@ -1235,6 +1364,19 @@ namespace vl
 
 					for (auto&& methodModel : interfaceModel.methods)
 					{
+						const RpcPropertyModel* cachedProperty = nullptr;
+						if (methodModel.kind == RpcMethodKind::PropertyGetter)
+						{
+							for (auto&& propertyModel : interfaceModel.properties)
+							{
+								if (propertyModel.cached && propertyModel.getterName == methodModel.name)
+								{
+									cachedProperty = &propertyModel;
+									break;
+								}
+							}
+						}
+
 						auto methodDecl = CreateFunctionDeclaration(methodModel.name, CopyType(methodModel.returnType.Obj()), WfFunctionKind::Override);
 						for (auto&& paramModel : methodModel.params)
 						{
@@ -1250,6 +1392,13 @@ namespace vl
 							AddStatement(methodBlock, CreateIf(condition, trueBranch));
 						}
 
+						if (cachedProperty)
+						{
+							auto trueBranch = CreateBlock();
+							AddStatement(trueBranch, CreateReturn(CreateCast(CopyType(methodModel.returnType.Obj()), CreateLifecycleHelperCall(methodModel.returnByref ? L"RpcUnboxByref" : L"RpcUnboxByval", CreatePropertyCacheValueRead(*cachedProperty), CreateReference(L"_lc")))));
+							AddStatement(methodBlock, CreateIf(CreatePropertyCacheAvailableRead(*cachedProperty), trueBranch));
+						}
+
 						AddStatement(methodBlock, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
 						AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(methodModel.params.Count()))));
 						for (vint i = 0; i < methodModel.params.Count(); i++)
@@ -1263,6 +1412,12 @@ namespace vl
 						{
 							AddStatement(methodBlock, CreateExpressionStatement(invoke));
 						}
+						else if (cachedProperty)
+						{
+							AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(*cachedProperty)), L"Set"), CreateInt(1), invoke)));
+							AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(*cachedProperty)), L"Set"), CreateInt(0), CreateBool(true))));
+							AddStatement(methodBlock, CreateReturn(CreateCast(CopyType(methodModel.returnType.Obj()), CreateLifecycleHelperCall(methodModel.returnByref ? L"RpcUnboxByref" : L"RpcUnboxByval", CreatePropertyCacheValueRead(*cachedProperty), CreateReference(L"_lc")))));
+						}
 						else
 						{
 							AddStatement(methodBlock, CreateReturn(CreateCast(CopyType(methodModel.returnType.Obj()), CreateLifecycleHelperCall(methodModel.returnByref ? L"RpcUnboxByref" : L"RpcUnboxByval", invoke, CreateReference(L"_lc")))));
@@ -1273,7 +1428,26 @@ namespace vl
 
 					AddStatement(block, CreateVariableStatement(L"proxy", CreateSharedType(wrapperInterfaceFullName), proxyExpr));
 
-					if (HasInterfaceEvents(interfaceModel, interfaces))
+					for (auto&& propertyModel : interfaceModel.properties)
+					{
+						if (propertyModel.cached && propertyModel.valueChangedEvent != L"")
+						{
+							if (auto eventModel = FindInterfaceEvent(events, propertyModel.valueChangedEvent))
+							{
+								auto lambdaBody = CreateBlock();
+								AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(propertyModel)), L"Resize"), CreateInt(0))));
+								AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(propertyModel)), L"Resize"), CreateInt(2))));
+								AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(GetPropertyCacheCellName(propertyModel)), L"Set"), CreateInt(0), CreateBool(false))));
+
+								auto attach = Ptr(new WfAttachEventExpression);
+								attach->event = CreateMember(CreateCast(CreateSharedType(interfaceModel.fullName), CreateReference(L"proxy")), eventModel->name);
+								attach->function = CreateFunctionExpression(CreateAnonymousLambda(eventModel->params, lambdaBody));
+								AddStatement(block, CreateExpressionStatement(attach));
+							}
+						}
+					}
+
+					if (events.Count() > 0)
 					{
 						AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"proxyRef"), CreateCast(CreateSharedType(interfaceModel.fullName), CreateReference(L"proxy")))));
 					}
