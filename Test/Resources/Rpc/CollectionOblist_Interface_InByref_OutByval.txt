@@ -5,143 +5,143 @@ using RpcCollectionOblist::Interface::InByref::OutByval::*;
 
 namespace RpcCollectionOblist
 {
-	namespace Interface
-	{
-		namespace InByref
-		{
-			namespace OutByval
-			{
-				@rpc:Interface
-				interface IValue
-				{
-					func GetValue() : string;
-								@rpc:Dynamic
-					prop Value : string {GetValue}
-				}
+  namespace Interface
+  {
+    namespace InByref
+    {
+      namespace OutByval
+      {
+        @rpc:Interface
+        interface IValue
+        {
+          func GetValue() : string;
+          @rpc:Dynamic
+          prop Value : string {GetValue}
+        }
 
-				@rpc:Interface
-				@rpc:Ctor
-				interface IService
-				{
-					@rpc:Byval
-					func DoList(@rpc:Byref xs : observe IValue^[]) : observe IValue^[];
-				}
-			}
-		}
-	}
+        @rpc:Interface
+        @rpc:Ctor
+        interface IService
+        {
+          @rpc:Byval
+          func DoList(@rpc:Byref xs : observe IValue^[]) : observe IValue^[];
+        }
+      }
+    }
+  }
 }
 
 var xsService : observe IValue^[] = {};
 
 func MakeValue(value : int) : IValue^
 {
-	return MakeValue($"$(value)");
+  return MakeValue($"$(value)");
 }
 
 func MakeValue(value : string) : IValue^
 {
-	return new (IValue^)
-	{
-		override func GetValue() : string
-		{
-			return value;
-		}
-	};
+  return new (IValue^)
+  {
+    override func GetValue() : string
+    {
+      return value;
+    }
+  };
 }
 
 func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
 {
-	var valueObj : object = value;
-	if (shouldBeWrapper)
-	{
-		if ((valueObj as (system::IRpcWrapperBase^) is null))
-		{
-			raise $"$(name) should be a wrapper object";
-		}
-	}
-	else
-	{
-		if ((valueObj as (system::IRpcWrapperBase^) is not null))
-		{
-			raise $"$(name) should be a local object";
-		}
-	}
+  var valueObj : object = value;
+  if (shouldBeWrapper)
+  {
+    if ((valueObj as (system::IRpcWrapperBase^) is null))
+    {
+      raise $"$(name) should be a wrapper object";
+    }
+  }
+  else
+  {
+    if ((valueObj as (system::IRpcWrapperBase^) is not null))
+    {
+      raise $"$(name) should be a local object";
+    }
+  }
 }
 
 func CheckServiceItems(xs : observe IValue^[]) : void
 {
-	for (i in range [0, xs.Count))
-	{
-	  CheckValue(xs[i], i != 3, $"xsService[$(i)]");
-	}
+  for (i in range [0, xs.Count))
+  {
+    CheckValue(xs[i], i != 3, $"xsService[$(i)]");
+  }
 }
 
 func CheckClientItems(xs : observe IValue^[]) : void
 {
-	for (i in range [0, xs.Count))
-	{
-	  CheckValue(xs[i], i == 3, $"xsService[$(i)]");
-	}
+  for (i in range [0, xs.Count))
+  {
+    CheckValue(xs[i], i == 3, $"xsService[$(i)]");
+  }
 }
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (IService^)
-	{
-		override func DoList(xs : observe IValue^[]) : observe IValue^[]
-		{
-			var xsObj : object = xs;
-			if ((xsObj as (system::IRpcWrapperBase^) is null))
-			{
-				raise "Parameter xs should be a wrapper object in serviceMain";
-			}
+  var serviceObj = new (IService^)
+  {
+    override func DoList(xs : observe IValue^[]) : observe IValue^[]
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "Parameter xs should be a wrapper object in serviceMain";
+      }
 
-			xsService = xs;
-			xs.Add(MakeValue(4));
-			return xs;
-		}
-	};
-	lc.RegisterService("RpcCollectionOblist::Interface::InByref::OutByval::IService", serviceObj);
+      xsService = xs;
+      xs.Add(MakeValue(4));
+      return xs;
+    }
+  };
+  lc.RegisterService("RpcCollectionOblist::Interface::InByref::OutByval::IService", serviceObj);
 }
 
 func Print(xs : observe IValue^[]) : string
 {
-	var result = "";
-	for (x in xs)
-	{
-		result = $"$(result)$(x.Value)";
-	}
-	return result;
+  var result = "";
+  for (x in xs)
+  {
+    result = $"$(result)$(x.Value)";
+  }
+  return result;
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var xsOrigin : observe IValue^[] = {};
-	xsOrigin.Add(MakeValue(1));
-	xsOrigin.Add(MakeValue(2));
-	xsOrigin.Add(MakeValue(3));
-	var service = cast (IService^) lc.RequestService("RpcCollectionOblist::Interface::InByref::OutByval::IService");
-	var xs = service.DoList(xsOrigin);
+  var xsOrigin : observe IValue^[] = {};
+  xsOrigin.Add(MakeValue(1));
+  xsOrigin.Add(MakeValue(2));
+  xsOrigin.Add(MakeValue(3));
+  var service = cast (IService^) lc.RequestService("RpcCollectionOblist::Interface::InByref::OutByval::IService");
+  var xs = service.DoList(xsOrigin);
 
-	if (xs == xsOrigin)
-	{
-		raise "Return value xs should be a copied local object in clientMain";
-	}
+  if (xs == xsOrigin)
+  {
+    raise "Return value xs should be a copied local object in clientMain";
+  }
 
-	var xsObj : object = xs;
-	if ((xsObj as (system::IRpcWrapperBase^) is not null))
-	{
-		raise "Return value xs should not be a wrapper object in clientMain";
-	}
+  var xsObj : object = xs;
+  if ((xsObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "Return value xs should not be a wrapper object in clientMain";
+  }
 
-	var xsClient = xs;
-	xs.Add(MakeValue(5));
+  var xsClient = xs;
+  xs.Add(MakeValue(5));
 
-	CheckServiceItems(xsService);
-	CheckClientItems(xsClient);
+  CheckServiceItems(xsService);
+  CheckClientItems(xsClient);
 
-	return
-		$"[$(Print(xsOrigin))]" &
-		$"[$(Print(xsService))]" &
-		$"[$(Print(xsClient))]";
+  return
+    $"[$(Print(xsOrigin))]" &
+    $"[$(Print(xsService))]" &
+    $"[$(Print(xsClient))]";
 }

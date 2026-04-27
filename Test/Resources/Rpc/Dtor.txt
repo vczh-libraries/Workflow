@@ -4,40 +4,40 @@ using RpcDtorTest::*;
 
 namespace RpcDtorTest
 {
-	@rpc:Interface
-	@rpc:Ctor
-	interface IService
-	{
-	}
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+  }
 }
 
 var s = "Not Deleted";
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (RpcDtorTest::IService^)
-	{
-		delete
-		{
-			s = "Deleted";
-		}
-	};
-	lc.RegisterService("RpcDtorTest::IService", serviceObj);
+  var serviceObj = new (RpcDtorTest::IService^)
+  {
+    delete
+    {
+      s = "Deleted";
+    }
+  };
+  lc.RegisterService("RpcDtorTest::IService", serviceObj);
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var obj = lc.RequestService("RpcDtorTest::IService");
-	if ((obj as (system::IRpcWrapperBase^) is null))
-	{
-		raise "IService(obj) should be a wrapper object in clientMain";
-	}
-	var clientObj = cast (RpcDtorTest::IService^) obj;
-	var wrapperObj = cast (system::IRpcWrapperBase^) obj;
-	wrapperObj = null;
-	var m = $"[$(s)]"; /* s should be "Not Deleted" */
-	clientObj = null;
-	obj = null; /* obj also owns the same wrapper, so drop it before checking the final state */
-	m = $"$(m)[$(s)]"; /* s should be "Deleted" */
-	return m;
+  var obj = lc.RequestService("RpcDtorTest::IService");
+  if ((obj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(obj) should be a wrapper object in clientMain";
+  }
+  var clientObj = cast (RpcDtorTest::IService^) obj;
+  var wrapperObj = cast (system::IRpcWrapperBase^) obj;
+  wrapperObj = null;
+  var m = $"[$(s)]"; /* s should be "Not Deleted" */
+  clientObj = null;
+  obj = null; /* obj also owns the same wrapper, so drop it before checking the final state */
+  m = $"$(m)[$(s)]"; /* s should be "Deleted" */
+  return m;
 }

@@ -4,63 +4,63 @@ using RpcWrapperTest::*;
 
 namespace RpcPropDynamic
 {
-	@rpc:Interface
-	@rpc:Ctor
-	interface IService
-	{
-		@rpc:Dynamic
-		prop Value : string {GetValue : ValueChanged}
-		func GetValue() : string;
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+    @rpc:Dynamic
+    prop Value : string {GetValue : ValueChanged}
+    func GetValue() : string;
 
-		func SetValue(value : string) : void;
-		func Signal() : void;
-		event ValueChanged();
-	}
+    func SetValue(value : string) : void;
+    func Signal() : void;
+    event ValueChanged();
+  }
 }
 
 var s = "";
 
 func ClientValueChanged() : void
 {
-	s = $"$(s)[ValueChanged]";
+  s = $"$(s)[ValueChanged]";
 }
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (RpcPropDynamic::IService^)
-	{
-		var _Value : string = "A";
+  var serviceObj = new (RpcPropDynamic::IService^)
+  {
+    var _Value : string = "A";
 
-		override func GetValue() : string
-		{
-			return _Value;
-		}
+    override func GetValue() : string
+    {
+      return _Value;
+    }
 
-		override func SetValue(value : string) : void
-		{
-			_Value = value;
-		}
+    override func SetValue(value : string) : void
+    {
+      _Value = value;
+    }
 
-		override func Signal() : void
-		{
-			ValueChanged();
-		}
-	};
-	lc.RegisterService("RpcPropDynamic::IService", serviceObj);
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterService("RpcPropDynamic::IService", serviceObj);
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var service = cast (RpcPropDynamic::IService^) lc.RequestService("RpcPropDynamic::IService");
-	attach(service.ValueChanged, ClientValueChanged);
+  var service = cast (RpcPropDynamic::IService^) lc.RequestService("RpcPropDynamic::IService");
+  attach(service.ValueChanged, ClientValueChanged);
 
-	s = $"$(s)[$(service.Value)]";
+  s = $"$(s)[$(service.Value)]";
 
-	service.SetValue("B");
-	s = $"$(s)[$(service.Value)]";
+  service.SetValue("B");
+  s = $"$(s)[$(service.Value)]";
 
-	service.Signal();
-	s = $"$(s)[$(service.Value)]";
+  service.Signal();
+  s = $"$(s)[$(service.Value)]";
 
-	return s;
+  return s;
 }

@@ -4,55 +4,55 @@ using RpcEvent::*;
 
 namespace RpcEvent
 {
-	@rpc:Interface
-	@rpc:Ctor
-	interface IService
-	{
-		event SomethingHappened(string);
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+    event SomethingHappened(string);
 
-		func MakeItHappen() : void;
-		func Watch() : void;
-	}
+    func MakeItHappen() : void;
+    func Watch() : void;
+  }
 }
 var s = "";
 
 func ServiceSomethingHappened(something : string) : void
 {
-	s = $"$(s)[serviceMain:$(something)]";
+  s = $"$(s)[serviceMain:$(something)]";
 }
 
 func ClientSomethingHappened(something : string) : void
 {
-	s = $"$(s)[clientMain:$(something)]";
+  s = $"$(s)[clientMain:$(something)]";
 }
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (RpcEvent::IService^)
-	{
-		override func MakeItHappen() : void
-		{
-			SomethingHappened("A");
-		}
+  var serviceObj = new (RpcEvent::IService^)
+  {
+    override func MakeItHappen() : void
+    {
+      SomethingHappened("A");
+    }
 
-		override func Watch() : void
-		{
-			attach(SomethingHappened, ServiceSomethingHappened);
-		}
-	};
-	lc.RegisterService("RpcEvent::IService", serviceObj);
+    override func Watch() : void
+    {
+      attach(SomethingHappened, ServiceSomethingHappened);
+    }
+  };
+  lc.RegisterService("RpcEvent::IService", serviceObj);
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var service = cast (RpcEvent::IService^) lc.RequestService("RpcEvent::IService");
+  var service = cast (RpcEvent::IService^) lc.RequestService("RpcEvent::IService");
 
-	var handler = attach(service.SomethingHappened, ClientSomethingHappened);
-	service.MakeItHappen();
-	detach(service.SomethingHappened, handler);
+  var handler = attach(service.SomethingHappened, ClientSomethingHappened);
+  service.MakeItHappen();
+  detach(service.SomethingHappened, handler);
 
-	service.Watch();
-	service.SomethingHappened("B");
+  service.Watch();
+  service.SomethingHappened("B");
 
-	return s;
+  return s;
 }

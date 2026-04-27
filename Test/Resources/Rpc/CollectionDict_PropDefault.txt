@@ -4,80 +4,80 @@ using RpcWrapperTest::*;
 
 namespace RpcCollectionDict
 {
-	namespace PropDefault
-	{
-		@rpc:Interface
-		@rpc:Ctor
-		interface IService
-		{
-			@rpc:Dynamic
-			prop List : string[int] {not observe}
-		}
-	}
+  namespace PropDefault
+  {
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+      @rpc:Dynamic
+      prop List : string[int] {not observe}
+    }
+  }
 }
 
 var xsService : string[int] = {};
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (RpcCollectionDict::PropDefault::IService^)
-	{
-		var _List : string[int] = null;
+  var serviceObj = new (RpcCollectionDict::PropDefault::IService^)
+  {
+    var _List : string[int] = null;
 
-		override func GetList() : string[int]
-		{
-			return _List;
-		}
+    override func GetList() : string[int]
+    {
+      return _List;
+    }
 
-		override func SetList(xs : string[int]) : void
-		{
-			var xsObj : object = xs;
-			if ((xsObj as (system::IRpcWrapperBase^) is not null))
-			{
-				raise "Parameter xs should be a copied local object in serviceMain";
-			}
+    override func SetList(xs : string[int]) : void
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "Parameter xs should be a copied local object in serviceMain";
+      }
 
-			xsService = xs;
-			xs.Set(4, "D");
-			_List = xs;
-		}
-	};
-	lc.RegisterService("RpcCollectionDict::PropDefault::IService", serviceObj);
+      xsService = xs;
+      xs.Set(4, "D");
+      _List = xs;
+    }
+  };
+  lc.RegisterService("RpcCollectionDict::PropDefault::IService", serviceObj);
 }
 
 func Print(xs : string[int]) : string
 {
-	var result = "";
-	for (key in range [1, xs.Count])
-	{
-		result = $"$(result)$(key)$(xs[key])";
-	}
-	return result;
+  var result = "";
+  for (key in range [1, xs.Count])
+  {
+    result = $"$(result)$(key)$(xs[key])";
+  }
+  return result;
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var xsOrigin = {1:"A" 2:"B" 3:"C"};
-	var service = cast (RpcCollectionDict::PropDefault::IService^) lc.RequestService("RpcCollectionDict::PropDefault::IService");
-	service.List = xsOrigin;
-	var xs = service.List;
-	var xsObj : object = xs;
+  var xsOrigin = {1:"A" 2:"B" 3:"C"};
+  var service = cast (RpcCollectionDict::PropDefault::IService^) lc.RequestService("RpcCollectionDict::PropDefault::IService");
+  service.List = xsOrigin;
+  var xs = service.List;
+  var xsObj : object = xs;
 
-	if (xs == xsOrigin)
-	{
-		raise "Return value xs should be a copied local object in clientMain";
-	}
+  if (xs == xsOrigin)
+  {
+    raise "Return value xs should be a copied local object in clientMain";
+  }
 
-	if ((xsObj as (system::IRpcWrapperBase^) is not null))
-	{
-		raise "Return value xs should be a copied local object in clientMain";
-	}
+  if ((xsObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "Return value xs should be a copied local object in clientMain";
+  }
 
-	var xsClient = xs;
-	xs.Set(5, "E");
+  var xsClient = xs;
+  xs.Set(5, "E");
 
-	return
-		$"[$(Print(xsOrigin))]" &
-		$"[$(Print(xsService))]" &
-		$"[$(Print(xsClient))]";
+  return
+    $"[$(Print(xsOrigin))]" &
+    $"[$(Print(xsService))]" &
+    $"[$(Print(xsClient))]";
 }

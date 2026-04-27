@@ -5,129 +5,129 @@ using RpcDtorList2::*;
 
 namespace RpcDtorList2
 {
-	@rpc:Interface
-	interface IValue
-	{
-	}
+  @rpc:Interface
+  interface IValue
+  {
+  }
 
-	@rpc:Interface
-	@rpc:Ctor
-	interface IService
-	{
-		@rpc:Byref
-		func Make() : IValue^[];
-		func Clear() : void;
-		func Hold() : void;
-		func Unhold() : void;
-	}
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+    @rpc:Byref
+    func Make() : IValue^[];
+    func Clear() : void;
+    func Hold() : void;
+    func Unhold() : void;
+  }
 }
 
 var s = "";
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (RpcDtorList2::IService^)
-	{
-		var _List : IValue^[] = null;
-		var _Value : IValue^ = null;
+  var serviceObj = new (RpcDtorList2::IService^)
+  {
+    var _List : IValue^[] = null;
+    var _Value : IValue^ = null;
 
-		override func Make() : IValue^[]
-		{
-			_List = {};
-			return _List;
-		}
+    override func Make() : IValue^[]
+    {
+      _List = {};
+      return _List;
+    }
 
-		override func Clear() : void
-		{
-			_List.Clear();
-		}
+    override func Clear() : void
+    {
+      _List.Clear();
+    }
 
-		override func Hold() : void
-		{
-			_Value = _List[0];
-			var xsObj : object = _Value;
-			if ((xsObj as (system::IRpcWrapperBase^) is null))
-			{
-				raise "List element should be a wrapper object in serviceMain";
-			}
-		}
+    override func Hold() : void
+    {
+      _Value = _List[0];
+      var xsObj : object = _Value;
+      if ((xsObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "List element should be a wrapper object in serviceMain";
+      }
+    }
 
-		override func Unhold() : void
-		{
-			_Value = null;
-		}
-	};
-	lc.RegisterService("RpcDtorList2::IService", serviceObj);
+    override func Unhold() : void
+    {
+      _Value = null;
+    }
+  };
+  lc.RegisterService("RpcDtorList2::IService", serviceObj);
 }
 
 func MakeValue() : IValue^
 {
-	return new (RpcDtorList2::IValue^)
-	{
-		delete
-		{
-			s = $"$(s)[IValue]";
-		}
-	};
+  return new (RpcDtorList2::IValue^)
+  {
+    delete
+    {
+      s = $"$(s)[IValue]";
+    }
+  };
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var service = cast (RpcDtorList2::IService^) lc.RequestService("RpcDtorList2::IService");
+  var service = cast (RpcDtorList2::IService^) lc.RequestService("RpcDtorList2::IService");
 
-	{
-		var xs : IValue^[] = null;
-		s = $"$(s)[a1]";
-		xs = service.Make();
-		xs.Add(MakeValue());
-		s = $"$(s)[a2]";
-		service.Clear();
-		s = $"$(s)[a3]";
-		xs = null;
-	}
+  {
+    var xs : IValue^[] = null;
+    s = $"$(s)[a1]";
+    xs = service.Make();
+    xs.Add(MakeValue());
+    s = $"$(s)[a2]";
+    service.Clear();
+    s = $"$(s)[a3]";
+    xs = null;
+  }
 
-	{
-		var xs : IValue^[] = null;
-		s = $"$(s)[b1]";
-		xs = service.Make();
-		xs.Add(MakeValue());
-		s = $"$(s)[b2]";
-		xs = null;
-		s = $"$(s)[b3]";
-		service.Clear();
-	}
+  {
+    var xs : IValue^[] = null;
+    s = $"$(s)[b1]";
+    xs = service.Make();
+    xs.Add(MakeValue());
+    s = $"$(s)[b2]";
+    xs = null;
+    s = $"$(s)[b3]";
+    service.Clear();
+  }
 
-	{
-		s = $"$(s)[c1]";
-		service.Make().Add(MakeValue());
-		service.Hold();
-		s = $"$(s)[c2]";
-		service.Clear();
-		s = $"$(s)[c3]";
-		service.Unhold();
-	}
+  {
+    s = $"$(s)[c1]";
+    service.Make().Add(MakeValue());
+    service.Hold();
+    s = $"$(s)[c2]";
+    service.Clear();
+    s = $"$(s)[c3]";
+    service.Unhold();
+  }
 
-	{
-		s = $"$(s)[d1]";
-		service.Make().Add(MakeValue());
-		service.Hold();
-		s = $"$(s)[d2]";
-		service.Unhold();
-		s = $"$(s)[d3]";
-		service.Clear();
-	}
+  {
+    s = $"$(s)[d1]";
+    service.Make().Add(MakeValue());
+    service.Hold();
+    s = $"$(s)[d2]";
+    service.Unhold();
+    s = $"$(s)[d3]";
+    service.Clear();
+  }
 
-	{
-		var x = MakeValue();
-		s = $"$(s)[e1]";
-		service.Make().Add(x);
-		service.Hold();
-		service.Clear();
-		s = $"$(s)[e2]";
-		service.Unhold();
-		s = $"$(s)[e3]";
-		x = null;
-	}
+  {
+    var x = MakeValue();
+    s = $"$(s)[e1]";
+    service.Make().Add(x);
+    service.Hold();
+    service.Clear();
+    s = $"$(s)[e2]";
+    service.Unhold();
+    s = $"$(s)[e3]";
+    x = null;
+  }
 
-	return s;
+  return s;
 }

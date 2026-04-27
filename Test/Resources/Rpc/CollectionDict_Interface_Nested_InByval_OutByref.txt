@@ -5,143 +5,143 @@ using RpcCollectionDict::Interface::Nested::InByval::OutByref::*;
 
 namespace RpcCollectionDict
 {
-	namespace Interface
-	{
-		namespace Nested
-		{
-			namespace InByval
-			{
-				namespace OutByref
-				{
-					@rpc:Interface
-					interface IValue
-					{
-						func GetValue() : string;
-												@rpc:Dynamic
-						prop Value : string {GetValue}
-					}
+  namespace Interface
+  {
+    namespace Nested
+    {
+      namespace InByval
+      {
+        namespace OutByref
+        {
+          @rpc:Interface
+          interface IValue
+          {
+            func GetValue() : string;
+            @rpc:Dynamic
+            prop Value : string {GetValue}
+          }
 
-					@rpc:Interface
-					@rpc:Ctor
-					interface IService
-					{
-						@rpc:Byref
-						func DoList(@rpc:Byval xs : IValue^[int][int]) : IValue^[int][int];
-					}
-				}
-			}
-		}
-	}
+          @rpc:Interface
+          @rpc:Ctor
+          interface IService
+          {
+            @rpc:Byref
+            func DoList(@rpc:Byval xs : IValue^[int][int]) : IValue^[int][int];
+          }
+        }
+      }
+    }
+  }
 }
 
 var xsService : IValue^[int][int] = {};
 
 func MakeValue(value : string) : IValue^
 {
-	return new (IValue^)
-	{
-		override func GetValue() : string
-		{
-			return value;
-		}
-	};
+  return new (IValue^)
+  {
+    override func GetValue() : string
+    {
+      return value;
+    }
+  };
 }
 
 func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
 {
-	var valueObj : object = value;
-	if (shouldBeWrapper)
-	{
-		if ((valueObj as (system::IRpcWrapperBase^) is null))
-		{
-			raise $"$(name) should be a wrapper object";
-		}
-	}
-	else
-	{
-		if ((valueObj as (system::IRpcWrapperBase^) is not null))
-		{
-			raise $"$(name) should be a local object";
-		}
-	}
+  var valueObj : object = value;
+  if (shouldBeWrapper)
+  {
+    if ((valueObj as (system::IRpcWrapperBase^) is null))
+    {
+      raise $"$(name) should be a wrapper object";
+    }
+  }
+  else
+  {
+    if ((valueObj as (system::IRpcWrapperBase^) is not null))
+    {
+      raise $"$(name) should be a local object";
+    }
+  }
 }
 
 func CheckServiceItems(xs : IValue^[int][int]) : void
 {
-	var ys = xs[0];
-	for (i in range [1, ys.Count])
-	{
-		CheckValue(ys[i], i != 4, $"xsService[0][$(i)]");
-	}
+  var ys = xs[0];
+  for (i in range [1, ys.Count])
+  {
+    CheckValue(ys[i], i != 4, $"xsService[0][$(i)]");
+  }
 }
 
 func CheckClientItems(xs : IValue^[int][int]) : void
 {
-	var ys = xs[0];
-	for (i in range [1, ys.Count])
-	{
-		CheckValue(ys[i], i == 4, $"xsClient[0][$(i)]");
-	}
+  var ys = xs[0];
+  for (i in range [1, ys.Count])
+  {
+    CheckValue(ys[i], i == 4, $"xsClient[0][$(i)]");
+  }
 }
 
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
-	var serviceObj = new (IService^)
-	{
-		override func DoList(xs : IValue^[int][int]) : IValue^[int][int]
-		{
-			var xsObj : object = xs;
-			if ((xsObj as (system::IRpcWrapperBase^) is not null))
-			{
-				raise "Parameter xs should be a copied local object in serviceMain";
-			}
+  var serviceObj = new (IService^)
+  {
+    override func DoList(xs : IValue^[int][int]) : IValue^[int][int]
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "Parameter xs should be a copied local object in serviceMain";
+      }
 
-			xsService = xs;
-			var ys = xs[0];
-			ys.Set(4, MakeValue("D"));
-			return xs;
-		}
-	};
-	lc.RegisterService("RpcCollectionDict::Interface::Nested::InByval::OutByref::IService", serviceObj);
+      xsService = xs;
+      var ys = xs[0];
+      ys.Set(4, MakeValue("D"));
+      return xs;
+    }
+  };
+  lc.RegisterService("RpcCollectionDict::Interface::Nested::InByval::OutByref::IService", serviceObj);
 }
 
 func Print(xs : IValue^[int][int]) : string
 {
-	var ys = xs[0];
-	var result = "";
-	for (key in range [1, ys.Count])
-	{
-		result = $"$(result)$(key)$(ys[key].Value)";
-	}
-	return result;
+  var ys = xs[0];
+  var result = "";
+  for (key in range [1, ys.Count])
+  {
+    result = $"$(result)$(key)$(ys[key].Value)";
+  }
+  return result;
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
-	var ysOrigin : IValue^[int] = {};
-	ysOrigin.Set(1, MakeValue("A"));
-	ysOrigin.Set(2, MakeValue("B"));
-	ysOrigin.Set(3, MakeValue("C"));
-	var xsOrigin : IValue^[int][int] = {};
-	xsOrigin.Set(0, ysOrigin);
-	var service = cast (IService^) lc.RequestService("RpcCollectionDict::Interface::Nested::InByval::OutByref::IService");
-	var xs = service.DoList(xsOrigin);
-	var xsObj : object = xs;
+  var ysOrigin : IValue^[int] = {};
+  ysOrigin.Set(1, MakeValue("A"));
+  ysOrigin.Set(2, MakeValue("B"));
+  ysOrigin.Set(3, MakeValue("C"));
+  var xsOrigin : IValue^[int][int] = {};
+  xsOrigin.Set(0, ysOrigin);
+  var service = cast (IService^) lc.RequestService("RpcCollectionDict::Interface::Nested::InByval::OutByref::IService");
+  var xs = service.DoList(xsOrigin);
+  var xsObj : object = xs;
 
-	if ((xsObj as (system::IRpcWrapperBase^) is null))
-	{
-		raise "Return value xs should be a wrapper object in clientMain";
-	}
+  if ((xsObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "Return value xs should be a wrapper object in clientMain";
+  }
 
-	var xsClient = xs;
-	var ys = xs[0];
-	ys.Set(5, MakeValue("E"));
+  var xsClient = xs;
+  var ys = xs[0];
+  ys.Set(5, MakeValue("E"));
 
-	CheckServiceItems(xsService);
-	CheckClientItems(xsClient);
+  CheckServiceItems(xsService);
+  CheckClientItems(xsClient);
 
-	return
-		$"[$(Print(xsOrigin))]" &
-		$"[$(Print(xsService))]" &
-		$"[$(Print(xsClient))]";
+  return
+    $"[$(Print(xsOrigin))]" &
+    $"[$(Print(xsService))]" &
+    $"[$(Print(xsClient))]";
 }
