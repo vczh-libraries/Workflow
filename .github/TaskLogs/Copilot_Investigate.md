@@ -2,66 +2,112 @@
 
 # PROBLEM DESCRIPTION
 
-I like the work you have done. I would like to do a follow up change. `@rpc:Cached` processing is just introduced, and I found that I actually missed a lot of `@rpc:Dynamic` in existing test cases. I would like you to do this:
+You should complete tasks one by one.
+`General Instruction` is for each tasks, which means, during doing each task:
+- you have to run unit test to make sure your change works.
+- you have to follow the instruction to commit and push for each task, before doing the next task.
 
-1. Review all samples in Rpc, but except `Prop(Default|Dynamic|Cached)` you just created, find all properties and add `@rpc:Dynamic` if there are no `@rpc:Dynamic` or `@rpc:Cached`.
-2. Run the compiler as well as all following unit test to make sure it does not affect the test result.
-3. Commit everything that are changed.
-4. At this moment, the last commit will be this change, and the last second commit are all "accidentally affected" geenrated files while implementing the `@rpc:Cached` feature. Now you can run `git reset HEAD~2`, but doing this I believe many generated file changing in these two commit will cancel each other. This is how you verify if you have adding enough `@rpc:Dynamic`. But when there are still  unexpected changes, you need to verify the change and decide if it is reasonable.
-5. commit it, but do not push, I will do a manual reviewing after that, to verify if anything needs to add to this feature.
+## Task 1
+
+`@rpc:Cached` decorated properties are already supported, but the implementation uses `_rpcCache_Value`. I would like you to do an improvement.
+`_rpcCache_Value` contains all property values and all property availabilities, but you can do it better by:
+For any `@rpc:Cached prop NAME : TYPE {...}` property, create variable `var NAME<Cached> : T = default;` and `var NAME<Available> : bool = false;`.
+These variables will be inside the new interface expression, becoming its fields.
+`_rpcCache_Value` can then be removed. When `NAME<Available>` is false it means the getter should be called to fill `NAME<Cached>`.
+The feature is already implemented, just want to replace the `_rpcCache_Value` implementation with multiple variables. To keep it strong typed.
+
+## Task 2
+
+Follow `job.new-sample.md`, read `PropDefault.txt` and copy (indentation should be double spaces): 
+- `PropDefaultInterface.txt`
+- `PropDefaultList.txt`
+- `PropDefaultInterfaceList.txt`
+
+It changes the property type from `string` to `IValue^`, `string[]` and `IValue^[]`.
+There are many `IValue` definition in other samples, copy one that has a string property so that it is easy to log.
+During logging for list, each item could just be one letter, therefore you can say changing from `[A]` to `[BCD]`.
+
+You will need extra verification in `clientMain` to test if the property returns a
+- before changing, a wrapper, which means it implements `IRpcWrapperBase`, other samples have similar tests everywhere.
+  - because the value is set inside the interface, therefore it is a service side object.
+  - if it is a container of interfaces, all elements should also be wrappers.
+- after changing, not a wrapper.
+  - because the value is set from the client side, therefore it is a local object.
+  - if it si a container of interfaces, all elements should also be interfaces.
+
+Because these samples are testing against properties, so that not only for interface but also for list, the complete value should be replaced, instead of changing data inside the interface or container.
+
+If the implementation is correct, these new samples should just pass every tests.
+
+### Verifying Samples
+
+Workflow script syntax and semantic should be intuitive.
+During reading the sample, you should verify it with the goal of the task.
+Ensure all logs or exceptions in the sample accurately reflected the intention of the design.
+Ensure the expected result would be what users would expect.
+
+### Restriction
+
+Understand what the test case trying to say, you are not allowed to change:
+- The content of the verified sample, unless it doesn't build.
+- Workflow parser.
+- Workflow compiling.
+- Workflow to C++ code generation.
+
+You are highly possibly need to fix:
+- `Rpc(B|Unb)oxBy(val|ref)`, as these 4 C++ functions are directly called in generated wrapper classes written Workflow script.
+- The wrapper classes generation.
+- implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
+- The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
+  - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
+
+## General Instruction
+
+If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
+- Pass all unit test, fix any test failure including pre-existings.
+- After finishing everything, git commit and git push to the current branch.
+- If in any task you are adding new test sample, or modifying any C++ or Workflow generation code, causing a huge amount of files generated from test samples to change:
+  - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
+  - Otherwise, One commit is good.
+  - Typical files that are generated: `Test\Generated`, `Test\SourceCppGen`, `Test\SourceCppGenRpc`, `Test\UnitTest\Generated_*`.
+- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 # UPDATES
 
-# TEST [CONFIRMED]
+- Task 1 completed.
+- Replaced `_rpcCache_Value` array-based cache storage with strongly typed per-property fields inside the generated `new interface` expression:
+  - `NAME<Cached> : T`
+  - `NAME<Available> : bool`
+- Removed cache cell reads and writes based on `system::Array`.
+- Added generated invalidation helper methods on wrapper interfaces for cached properties with `ValueChanged`, and used event handlers to reset `NAME<Available>` to `false`.
+- Verified the new implementation against all related unit test projects on x64 and Win32.
+- Task 2 has not started yet.
 
-- Static confirmation: scan every file under `Test/Resources/Rpc` except `PropCached.txt`, `PropDefault.txt`, and `PropDynamic.txt`; every `prop` declaration must now have an immediately preceding `@rpc:Dynamic` or `@rpc:Cached` line.
-- Static result: the scan found no remaining implicit-mode property declarations outside the three `Prop*` samples.
-- Sample edit scope: 33 RPC sample files changed, with one explicit `@rpc:Dynamic` inserted in each file.
-- Validation matrix and success criteria:
-  - `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed.
-  - `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed.
-  - `CompilerTest_GenerateMetadata` `Debug|x64`: passed.
-  - `CompilerTest_GenerateMetadata` `Debug|Win32`: passed.
-  - `CompilerTest_LoadAndCompile` `Debug|x64`: passed.
-  - Rebuild after regenerated outputs:
-    - `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed.
-    - `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed.
-  - `RuntimeTest` `Debug|x64`: passed.
-  - `RuntimeTest` `Debug|Win32`: passed.
-  - `CppTest` `Debug|x64`: passed.
-  - `CppTest` `Debug|Win32`: passed.
-  - `CppTest_Metaonly` `Debug|x64`: passed.
-  - `CppTest_Metaonly` `Debug|Win32`: passed.
-  - `CppTest_Reflection` `Debug|x64`: passed.
-  - `CppTest_Reflection` `Debug|Win32`: passed.
-- Reset verification criteria: after a checkpoint commit and `git reset HEAD~2`, the remaining generated diff should be explainable by the explicit `@rpc:Dynamic` sample sweep and the real cached-feature generator output, not by unrelated wrapper metadata churn.
-- Reset verification result: all `Test/Generated/RpcMetadata*` diffs disappeared. The surviving generated changes were limited to `Test/Generated/Workflow*`, `Test/Generated/CppRpc*`, `Test/SourceCppGenRpc`, and `Release/VlppWorkflowCompiler.cpp`, all scoped to the same 33 edited sample stems plus `TestCasesRpc`.
+# TEST
+
+- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32`
+- Result: all passed.
 
 # PROPOSALS
 
-- No.1 Add explicit `@rpc:Dynamic` to all remaining implicit RPC properties [CONFIRMED]
-
-## No.1 Add explicit `@rpc:Dynamic` to all remaining implicit RPC properties
-
-### CODE CHANGE
-
-- Added `@rpc:Dynamic` to the 30 remaining collection-interface RPC sample properties that previously relied on the default property mode:
-  - `Collection_Interface_(Default|InByref_OutByref|InByref_OutByval|InByval_OutByref|InByval_OutByval)`
-  - `Collection_Interface_Nested_(Default|InByref_OutByref|InByref_OutByval|InByval_OutByref|InByval_OutByval)`
-  - `CollectionDict_Interface_(Default|InByref_OutByref|InByref_OutByval|InByval_OutByref|InByval_OutByval)`
-  - `CollectionDict_Interface_Nested_(Default|InByref_OutByref|InByref_OutByval|InByval_OutByref|InByval_OutByval)`
-  - `CollectionOblist_Interface_(Default|InByref_OutByref|InByref_OutByval|InByval_OutByref|InByval_OutByval)`
-  - `CollectionOblist_Interface_Nested_(Default|InByref_OutByref|InByref_OutByval|InByval_OutByref|InByval_OutByval)`
-- Added `@rpc:Dynamic` to the remaining standalone interface properties in:
-  - `Dtor3.txt`
-  - `FailDoubleRegistration.txt`
-  - `Overloading.txt`
-- Regenerated affected Workflow and C++ outputs by rerunning the compiler and downstream unit tests.
-- No parser, compiler, or wrapper-generator source changes were needed for this follow-up.
-
-### CONFIRMED
-
-- The post-edit scan confirmed there are no remaining implicit-mode property declarations outside `PropCached`, `PropDefault`, and `PropDynamic`.
-- The full downstream validation matrix passed on both platforms, so making the property mode explicit did not change test outcomes unexpectedly.
-- After creating a checkpoint commit and performing the requested `git reset HEAD~2`, wrapper metadata output changes canceled out completely, which is the expected signal that the missing explicit `@rpc:Dynamic` annotations had been covering previously accidental generated churn.
-- The remaining generated changes were reasonable: they matched the same 33 edited sample stems in Workflow/C++ outputs, updated the shared `TestCasesRpc` generated sources, and preserved the real `Release/VlppWorkflowCompiler.cpp` regeneration from the cached-property feature work.
+- Task 1 is ready to commit in two commits:
+  - manual changes
+  - generated files
+- After pushing Task 1, start Task 2 from `Test/Resources/Rpc/PropDefault.txt` and add the three requested samples.
