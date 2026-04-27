@@ -9,57 +9,9 @@ You should complete tasks one by one.
 
 ## Task 1
 
-`@rpc:Cached` decorated properties are already supported, but the implementation uses `_rpcCache_Value`. I would like you to do an improvement.
-`_rpcCache_Value` contains all property values and all property availabilities, but you can do it better by:
-For any `@rpc:Cached prop NAME : TYPE {...}` property, create variable `var NAME<Cached> : T = default;` and `var NAME<Available> : bool = false;`.
-These variables will be inside the new interface expression, becoming its fields.
-`_rpcCache_Value` can then be removed. When `NAME<Available>` is false it means the getter should be called to fill `NAME<Cached>`.
-The feature is already implemented, just want to replace the `_rpcCache_Value` implementation with multiple variables. To keep it strong typed.
-
-## Task 2
-
-Follow `job.new-sample.md`, read `PropDefault.txt` and copy (indentation should be double spaces): 
-- `PropDefaultInterface.txt`
-- `PropDefaultList.txt`
-- `PropDefaultInterfaceList.txt`
-
-It changes the property type from `string` to `IValue^`, `string[]` and `IValue^[]`.
-There are many `IValue` definition in other samples, copy one that has a string property so that it is easy to log.
-During logging for list, each item could just be one letter, therefore you can say changing from `[A]` to `[BCD]`.
-
-You will need extra verification in `clientMain` to test if the property returns a
-- before changing, a wrapper, which means it implements `IRpcWrapperBase`, other samples have similar tests everywhere.
-  - because the value is set inside the interface, therefore it is a service side object.
-  - if it is a container of interfaces, all elements should also be wrappers.
-- after changing, not a wrapper.
-  - because the value is set from the client side, therefore it is a local object.
-  - if it si a container of interfaces, all elements should also be interfaces.
-
-Because these samples are testing against properties, so that not only for interface but also for list, the complete value should be replaced, instead of changing data inside the interface or container.
-
-If the implementation is correct, these new samples should just pass every tests.
-
-### Verifying Samples
-
-Workflow script syntax and semantic should be intuitive.
-During reading the sample, you should verify it with the goal of the task.
-Ensure all logs or exceptions in the sample accurately reflected the intention of the design.
-Ensure the expected result would be what users would expect.
-
-### Restriction
-
-Understand what the test case trying to say, you are not allowed to change:
-- The content of the verified sample, unless it doesn't build.
-- Workflow parser.
-- Workflow compiling.
-- Workflow to C++ code generation.
-
-You are highly possibly need to fix:
-- `Rpc(B|Unb)oxBy(val|ref)`, as these 4 C++ functions are directly called in generated wrapper classes written Workflow script.
-- The wrapper classes generation.
-- implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
-- The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
-  - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
+In generated `rpclistener_*`, the last parameter should be `*` not `^`.
+This includes the function for an interface, and the `rpclistener_Attach`.
+This should help removing unnecessary conversion from `T*` to `Ptr<T>` in `TestCasesRpc.cpp`, as well as other places.
 
 ## General Instruction
 
@@ -74,52 +26,55 @@ If any test case fail, you could continue to run until you collect results from 
 
 # UPDATES
 
-- Task 1 completed.
-- Replaced `_rpcCache_Value` array-based cache storage with strongly typed per-property fields inside the generated `new interface` expression:
-  - `NAME<Cached> : T`
-  - `NAME<Available> : bool`
-- Removed cache cell reads and writes based on `system::Array`.
-- Added generated invalidation helper methods on wrapper interfaces for cached properties with `ValueChanged`, and used event handlers to reset `NAME<Available>` to `false`.
-- Verified the new implementation against all related unit test projects on x64 and Win32.
-- Task 2 completed.
-- Added the new RPC samples:
-  - `Test/Resources/Rpc/PropDefaultInterface.txt`
-  - `Test/Resources/Rpc/PropDefaultList.txt`
-  - `Test/Resources/Rpc/PropDefaultInterfaceList.txt`
-- Updated `Test/Resources/IndexRpc.txt` with the new expected outputs.
-- Added project include entries so the new generated RPC C++ and reflection files are compiled by `CppTest*`.
-- Adjusted the shared C++ and runtime RPC test harnesses to skip sample-specific listener attachment for built-in byref container type ids while still attaching listeners for generated RPC interfaces.
-- Verified the new samples cover wrapper vs local-object behavior before and after property replacement:
-  - interface value
-  - string list value
-  - interface list value
+# TEST [CONFIRMED]
 
-# TEST
-
-- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
-- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
-- Result: all passed.
+- Problem confirmation:
+  - After changing the generated `rpclistener_*` signatures from `^` to `*`, the first `Debug|x64` build failed in `Test/SourceCppGenRpc/TestCasesRpc.cpp` and `Test/UnitTest/RuntimeTest/TestRpc.cpp` because the remaining attachment bridge still passed `Ptr<IDescriptable>` into `rpclistener_Attach(..., IDescriptable*)`.
+  - This proved the requested change was not only a metadata-format change; the runtime bridge and generated RPC test harness also had to consume the new raw-pointer signature.
+- Test idea:
+  - Regenerate the RPC metadata and C++ outputs, then confirm every generated `rpclistener_*` and `rpclistener_Attach` uses raw-pointer last parameters and that all listener-attach bridges pass `obj` directly instead of wrapping it into `Ptr<T>`.
+- Verification commands:
+  - `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform Win32`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform Win32`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform Win32`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64`
+  - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32`
+  - `& ..\Tools\Tools\Build.ps1 Workflow`
+- Success criteria:
+  - `CompilerTest_LoadAndCompile` passes both internal runs with `Passed test files: 6/6` and `Passed test cases: 700/700`.
+  - Generated RPC metadata uses `*` instead of `^` in every `rpclistener_*` and `rpclistener_Attach` last parameter.
+  - Generated `TestCasesRpc.cpp` files in `Test/Generated/CppRpc32`, `Test/Generated/CppRpc64`, and `Test/SourceCppGenRpc` call `rpclistener_Attach(ref.typeId, mock, ref, obj);` directly.
+  - `RuntimeTest` and all `CppTest*` projects pass on x64 and Win32.
+  - The repo-wide `Build.ps1 Workflow` wrapper exits with code `0`.
 
 # PROPOSALS
 
-- Task 1 and Task 2 are both ready to commit in two-commit batches:
-  - manual changes
-  - generated files
+- No.1 Generate listeners with raw target pointers [CONFIRMED]
+
+## No.1 Generate listeners with raw target pointers
+
+### CODE CHANGE
+
+- Changed `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp` so generated `rpclistener_<Interface>` functions and `rpclistener_Attach` use raw-pointer last parameters instead of shared-pointer parameters.
+- Changed the generated attach and wrapper call sites in the same file from shared-pointer casts to raw-pointer casts so the emitted Workflow metadata and generated C++ stay consistent with the new listener signatures.
+- Changed `Test/UnitTest/CompilerTest_LoadAndCompile/TestRpcCompile.cpp` so the generated RPC harness writes `rpclistener_Attach(ref.typeId, mock, ref, obj);` instead of wrapping `obj` in `Ptr<IDescriptable>`.
+- Changed `Test/UnitTest/RuntimeTest/TestRpc.cpp` so the dynamically loaded `rpclistener_Attach` function type and invocation both use `IDescriptable*`.
+- Reran `CompilerTest_LoadAndCompile` to refresh the generated RPC metadata, Workflow assembly dumps, `Test/Generated/CppRpc{32,64}`, and `Test/SourceCppGenRpc` outputs.
+
+### CONFIRMED
+
+- The root cause was a partial type migration. The listener generator started producing raw-pointer signatures, but the two consumers that bridge local objects into `rpclistener_Attach` still assumed shared pointers.
+- `rpclistener_*` only attaches event handlers to an existing object; it does not transfer ownership. Using `T*` is therefore the correct ownership model and removes the unnecessary `T* -> Ptr<T>` wrapping that previously appeared in generated RPC test harnesses.
+- After updating the generator and both consumer bridges, regenerated RPC metadata now consistently uses raw-pointer listener parameters, the generated C++ harness passes raw pointers directly, both debug builds succeed, all required unit tests pass on x64 and Win32, and the repo-wide `Build.ps1 Workflow` wrapper succeeds with `EXIT:0`.

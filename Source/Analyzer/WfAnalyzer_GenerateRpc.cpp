@@ -1279,7 +1279,7 @@ namespace vl
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_" + mangledName, CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateSharedType(interfaceModel.fullName)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateRawType(interfaceModel.fullName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					for (auto eventModel : events)
@@ -1310,7 +1310,7 @@ namespace vl
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateSharedType(L"system::Interface")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateRawType(L"system::Interface")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					auto switchStat = Ptr(new WfSwitchStatement);
@@ -1325,7 +1325,7 @@ namespace vl
 						if (HasInterfaceEvents(interfaceModel, interfaces))
 						{
 							auto mangledName = MangleRpcFullName(interfaceModel.fullName);
-							AddStatement(caseBranch, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateCast(CreateSharedType(interfaceModel.fullName), CreateReference(L"obj")))));
+							AddStatement(caseBranch, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"obj")))));
 						}
 						AddStatement(caseBranch, CreateReturn(nullptr));
 						switchCase->statement = caseBranch;
@@ -1481,7 +1481,7 @@ namespace vl
 
 					if (events.Count() > 0)
 					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"proxyRef"), CreateCast(CreateSharedType(interfaceModel.fullName), CreateReference(L"proxy")))));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"proxyRef"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"proxy")))));
 					}
 
 					AddStatement(block, CreateReturn(CreateReference(L"proxy")));

@@ -696,7 +696,7 @@ namespace RpcWrapperValidation
 					writer.WriteLine(L"\t\t\t(void)detachments;");
 					writer.WriteString(L"\t\t\t::vl_workflow_global::");
 					writer.WriteString(assemblyNames[itemName]);
-					writer.WriteLine(L"::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));");
+					writer.WriteLine(L"::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);");
 					writer.WriteLine(L"\t\t},");
 					writer.WriteLine(L"\t\tnullptr);");
 				}

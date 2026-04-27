@@ -30,7 +30,7 @@ namespace
 	private:
 		Ptr<WfRuntimeGlobalContext>								globalContext;
 		Ptr<IValueFunctionProxy>								wrapperCreateFunc;
-		Func<void(vint, IRpcLifeCycle*, RpcObjectReference, Ptr<IDescriptable>)>	listenerAttachFunc;
+		Func<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>		listenerAttachFunc;
 	public:
 		RpcWorkflowLifecycleMock(vint _clientId)
 			: RpcDualLifecycleMock(_clientId)
@@ -80,8 +80,8 @@ namespace
 				const auto& listenerAttachFunctions = globalContext->assembly->functionByName.GetByIndex(listenerAttachIndex);
 				CHECK_ERROR(listenerAttachFunctions.Count() <= 1, L"Multiple rpclistener_Attach functions are found.");
 				listenerAttachFunc = listenerAttachFunctions.Count() == 1
-					? LoadFunction<void(vint, IRpcLifeCycle*, RpcObjectReference, Ptr<IDescriptable>)>(globalContext, L"rpclistener_Attach")
-					: Func<void(vint, IRpcLifeCycle*, RpcObjectReference, Ptr<IDescriptable>)>();
+					? LoadFunction<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>(globalContext, L"rpclistener_Attach")
+					: Func<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>();
 			}
 
 			RegisterWrapperFactory([this, wrapperFactoryLifecycle](vint typeId, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
@@ -128,7 +128,7 @@ namespace
 			(void)detachments;
 			if (!listenerAttachFunc) return false;
 			if (ref.typeId < 0) return false;
-			listenerAttachFunc(ref.typeId, this, ref, Ptr<IDescriptable>(obj));
+			listenerAttachFunc(ref.typeId, this, ref, obj);
 			return true;
 		}
 	};
