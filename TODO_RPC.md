@@ -16,7 +16,6 @@
 
 ## ToDo
 
-- `DtorList.txt` and `DtorList2.txt`: `serviceMain` check if _Value is an wrapper.
 - Continue to add more test cases until all features are covered.
   - Cached properties (by default)
   - Dynamic properties
