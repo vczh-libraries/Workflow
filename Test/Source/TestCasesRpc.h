@@ -40,6 +40,7 @@ void RunRpcTestCase(
 		bool AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments) override
 		{
 			if (!attachLocalEventsCallback) return false;
+			if (ref.typeId < 0) return false;
 			attachLocalEventsCallback(this, ref, obj, detachments);
 			return true;
 		}

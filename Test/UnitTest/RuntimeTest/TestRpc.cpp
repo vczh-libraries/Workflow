@@ -127,6 +127,7 @@ namespace
 		{
 			(void)detachments;
 			if (!listenerAttachFunc) return false;
+			if (ref.typeId < 0) return false;
 			listenerAttachFunc(ref.typeId, this, ref, Ptr<IDescriptable>(obj));
 			return true;
 		}

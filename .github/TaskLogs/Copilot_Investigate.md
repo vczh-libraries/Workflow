@@ -81,7 +81,18 @@ If any test case fail, you could continue to run until you collect results from 
 - Removed cache cell reads and writes based on `system::Array`.
 - Added generated invalidation helper methods on wrapper interfaces for cached properties with `ValueChanged`, and used event handlers to reset `NAME<Available>` to `false`.
 - Verified the new implementation against all related unit test projects on x64 and Win32.
-- Task 2 has not started yet.
+- Task 2 completed.
+- Added the new RPC samples:
+  - `Test/Resources/Rpc/PropDefaultInterface.txt`
+  - `Test/Resources/Rpc/PropDefaultList.txt`
+  - `Test/Resources/Rpc/PropDefaultInterfaceList.txt`
+- Updated `Test/Resources/IndexRpc.txt` with the new expected outputs.
+- Added project include entries so the new generated RPC C++ and reflection files are compiled by `CppTest*`.
+- Adjusted the shared C++ and runtime RPC test harnesses to skip sample-specific listener attachment for built-in byref container type ids while still attaching listeners for generated RPC interfaces.
+- Verified the new samples cover wrapper vs local-object behavior before and after property replacement:
+  - interface value
+  - string list value
+  - interface list value
 
 # TEST
 
@@ -103,11 +114,12 @@ If any test case fail, you could continue to run until you collect results from 
 - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32`
 - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64`
 - `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
+- `& ..\..\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
 - Result: all passed.
 
 # PROPOSALS
 
-- Task 1 is ready to commit in two commits:
+- Task 1 and Task 2 are both ready to commit in two-commit batches:
   - manual changes
   - generated files
-- After pushing Task 1, start Task 2 from `Test/Resources/Rpc/PropDefault.txt` and add the three requested samples.
