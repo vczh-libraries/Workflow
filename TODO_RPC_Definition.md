@@ -146,3 +146,27 @@ All types below count as serializable types, but serialization itself is optiona
 ## @rpc:Dynamic
 
 - The getter will trigger actual RPC action immediately.
+
+# Preventing Event Forwarding Deadloops
+
+When an RPC interface (or an `observe T[]`) is shared between two sides, both sides end up with a listener attached to the same logical event:
+
+- On the side that owns the local object, `rpclistener_*` (for `IRpcObjectEventOps`) or the equivalent `IValueObservableList::ItemChanged` hookup (for `IRpcListEventOps`) forwards every raised event to the remote peer via `IRpcController::InvokeEvent` / `IRpcListEventOps::OnItemChanged`.
+- On the receiving side, the dispatcher (`IRpcObjectEventOps::InvokeEvent` for object events, `IRpcListEventOps::OnItemChanged` for list events) raises the event on the local wrapper proxy. The wrapper proxy has the same `rpclistener_*` (or `ItemChanged`) hookup attached at construction time, so without further protection it would forward the event right back to the originating side, causing an infinite ping-pong.
+
+To break the loop, an `IRpcController` implementation must suppress the immediate bounce-back of an event that is already being delivered. The contract is:
+
+- While `InvokeEvent` (or `OnItemChanged`) is dispatching event `E` on object reference `R`, the controller marks `(R, E)` as "currently forwarding".
+- When the dispatcher resolves `R` to its local target (the wrapper proxy on this side), the controller records `(R, E)` as a pending suppression for that local target's controller.
+- When the wrapper proxy raises the event and its `rpclistener_*` calls `InvokeEvent` / `OnItemChanged` again with the same `(R, E)`, the controller consumes the pending suppression and returns immediately without dispatching, breaking the cycle.
+- After the original dispatch completes, the "currently forwarding" mark for `(R, E)` is cleared.
+
+This rule applies symmetrically to:
+- `IRpcObjectEventOps::InvokeEvent` for events declared on `@rpc:Interface` interfaces (whose listeners are emitted as `rpclistener_*` in generated wrappers, both Workflow-script and C++).
+- `IRpcListEventOps::OnItemChanged` for `IValueObservableList` (whose `ItemChanged` listener is hand-written in C++ but follows the same forwarding shape).
+
+The cycle prevention is a property of the `IRpcController` implementation, not of the wire protocol or the generated wrapper code. Generated wrappers always attach the listener on both the local object and the wrapper proxy; it is the controller's responsibility to ensure each end-to-end event delivery results in exactly one bounce, not an unbounded chain.
+
+The reference test harness `RpcDualLifecycleMock` implements this with two pieces of state:
+- A static `forwardingEvents` stack tracking `(ref, eventId)` currently being dispatched.
+- A per-instance `suppressedEvents` list of pending one-shot suppressions, populated at the moment `RefToPtr` resolves the target during a forwarding dispatch, and consumed at the entry of the next `InvokeEvent` / `OnItemChanged` for the same `(ref, eventId)`.
