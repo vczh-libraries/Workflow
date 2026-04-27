@@ -54,6 +54,10 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcPropCached::IService)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcPropCached::IRpcWrapper_IService, ::RpcPropCached::IService, ::vl::rpc_controller::IRpcWrapperBase)
+				void _rpcInvalidate_Value() override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(_rpcInvalidate_Value);
+				}
 			END_INTERFACE_PROXY(::RpcPropCached::IRpcWrapper_IService)
 #endif
 #endif

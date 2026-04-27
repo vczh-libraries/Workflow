@@ -54,6 +54,8 @@ namespace RpcPropDefault
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IRpcWrapper_IService>;
 #endif
+	public:
+		virtual void _rpcInvalidate_Value() = 0;
 	};
 
 }
@@ -106,9 +108,10 @@ Closures
 
 	struct __vwsnf2_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService_
 	{
-		::vl::Ptr<::vl::reflection::description::IValueArray> _rpcCache_Value;
+		::vl::rpc_controller::IRpcLifeCycle* lc;
+		::vl::rpc_controller::RpcObjectReference proxyRef;
 
-		__vwsnf2_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService_(::vl::Ptr<::vl::reflection::description::IValueArray> __vwsnctor__rpcCache_Value);
+		__vwsnf2_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		void operator()() const;
 	};
@@ -150,12 +153,13 @@ Closures
 	class __vwsnc4_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPropDefault::IRpcWrapper_IService
 	{
 	public:
-		::vl::Ptr<::vl::reflection::description::IValueArray> _rpcCache_Value;
-
-		__vwsnc4_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService(::vl::Ptr<::vl::reflection::description::IValueArray> __vwsnctor__rpcCache_Value, ::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::WString __vwsn_Cached_;
+		bool __vwsn_Available_ = false;
+		void _rpcInvalidate_Value() override;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc4_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService();
 		::vl::WString GetValue() override;

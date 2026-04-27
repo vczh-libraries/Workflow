@@ -160,6 +160,7 @@ namespace RpcPropCached
 {
     interface IRpcWrapper_IService : RpcPropCached::IService, system::IRpcWrapperBase
     {
+        func _rpcInvalidate_Value() : (void);
     }
 }
 
@@ -190,14 +191,20 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system:
 func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifeCycle*) : (RpcPropCached::IRpcWrapper_IService^)
 {
     var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcPropCached__IService);
-    var _rpcCache_Value : system::Array^ = {};
-    _rpcCache_Value.Resize(2);
-    _rpcCache_Value.Set(0, false);
     var proxy : RpcPropCached::IRpcWrapper_IService^ = new (RpcPropCached::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
+
+        var Value<Cached> : ::system::String = "";
+
+        var Value<Available> : bool = false;
+
+        override func _rpcInvalidate_Value() : (void)
+        {
+            (Value<Available> = false);
+        }
 
         override func DisconnectFromLifecycle() : (void)
         {
@@ -216,15 +223,15 @@ func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifeCycle*) : (RpcPropC
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            if ((cast (bool) _rpcCache_Value.Get(0)))
+            if (Value<Available>)
             {
-                return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval((cast (system::Object) _rpcCache_Value.Get(1)), _lc));
+                return Value<Cached>;
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _rpcCache_Value.Set(1, _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPropCached__IService_GetValue, arguments));
-            _rpcCache_Value.Set(0, true);
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval((cast (system::Object) _rpcCache_Value.Get(1)), _lc));
+            (Value<Cached> = (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPropCached__IService_GetValue, arguments), _lc)));
+            (Value<Available> = true);
+            return Value<Cached>;
         }
 
         override func SetValue(value : ::system::String) : (::system::Void)
@@ -248,9 +255,7 @@ func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifeCycle*) : (RpcPropC
     };
     attach((cast (RpcPropCached::IService^) proxy).ValueChanged, func () : (void)
     {
-        _rpcCache_Value.Resize(0);
-        _rpcCache_Value.Resize(2);
-        _rpcCache_Value.Set(0, false);
+        (cast (RpcPropCached::IRpcWrapper_IService^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
     });
     rpclistener_RpcPropCached__IService(lc, proxyRef, (cast (RpcPropCached::IService^) proxy));
     return proxy;

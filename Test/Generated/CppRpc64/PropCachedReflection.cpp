@@ -38,6 +38,7 @@ namespace vl
 			BEGIN_INTERFACE_MEMBER(::RpcPropCached::IRpcWrapper_IService)
 				CLASS_MEMBER_BASE(::RpcPropCached::IService)
 				CLASS_MEMBER_BASE(::vl::rpc_controller::IRpcWrapperBase)
+				CLASS_MEMBER_METHOD(_rpcInvalidate_Value, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcPropCached::IRpcWrapper_IService)
 
 			BEGIN_INTERFACE_MEMBER(::RpcPropCached::IService)
