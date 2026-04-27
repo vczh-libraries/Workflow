@@ -7,19 +7,57 @@ You should complete tasks one by one.
 
 ## Task 1
 
-Checkout commit `c8cc8579349c0d827ac45bab50049b0d9d825af4` you will see, in order to complete `DtorList.txt` and `DtorList2.txt`, `IRpcLocalMutationTarget` is added.
-The test case is about how elements in containers can be stably deleted.
-You can check out the content of existing Copilot_Investigate.md to understand what happened. Copilot_Investigate.md is not changed in all later commits so you can just read it directly. 
+`@rpc:Cached` decorated properties are already supported, but the implementation uses `_rpcCache_Value`. I would like you to do an improvement.
+`_rpcCache_Value` contains all property values and all property availabilities, but you can do it better by:
+For any `@rpc:Cached prop NAME : TYPE {...}` property, create variable `var NAME<Cached> : T = default;` and `var NAME<Available> : bool = false;`.
+These variables will be inside the new interface expression, becoming its fields.
+`_rpcCache_Value` can then be removed. When `NAME<Available>` is false it means the getter should be called to fill `NAME<Cached>`.
+The feature is already implemented, just want to replace the `_rpcCache_Value` implementation with multiple variables. To keep it strong typed.
 
-My thought is that, in `Dtor[23]?.txt` we proved that, only when both local object and wrapper is not hold by both side, the local object will get destructed.
-`Dtor3.txt` is about a local object holding a wrapper (remote object), and it works well.
-So obviously, only when both local container and wrapper container is not hold by both side, the local container will get destructed.
-And that's when elements in the container destructed, no matter if elements are wrapper or not.
+## Task 2
 
-So the added `IRpcLocalMutationTarget` looks wired to me. I expect a solution that no extra construction is added.
-I would like you to dig deeper into the source code, find the root cause, and try to avoid `IRpcLocalMutationTarget`.
+Follow `job.new-sample.md`, read `PropDefault.txt` and copy:
+- `PropDefaultInterface.txt`
+- `PropDefaultList.txt`
+- `PropDefaultInterfaceList.txt`
 
-I believe Workflow compiler and code generation should be good, so they should be the least thing you want to change.
+It changes the property type from `string` to `IValue^`, `string[]` and `IValue^[]`.
+There are many `IValue` definition in other samples, copy one that has a string property so that it is easy to log.
+During logging for list, each item could just be one letter, therefore you can say changing from `[A]` to `[BCD]`.
+
+You will need extra verification in `clientMain` to test if the property returns a
+- before changing, a wrapper, which means it implements `IRpcWrapperBase`, other samples have similar tests everywhere.
+  - because the value is set inside the interface, therefore it is a service side object.
+  - if it is a container of interfaces, all elements should also be wrappers.
+- after changing, not a wrapper.
+  - because the value is set from the client side, therefore it is a local object.
+  - if it si a container of interfaces, all elements should also be interfaces.
+
+Because these samples are testing against properties, so that not only for interface but also for list, the complete value should be replaced, instead of changing data inside the interface or container.
+
+If the implementation is correct, these new samples should just pass every tests.
+
+### Verifying Samples
+
+Workflow script syntax and semantic should be intuitive.
+During reading the sample, you should verify it with the goal of the task.
+Ensure all logs or exceptions in the sample accurately reflected the intention of the design.
+Ensure the expected result would be what users would expect.
+
+### Restriction
+
+Understand what the test case trying to say, you are not allowed to change:
+- The content of the verified sample, unless it doesn't build.
+- Workflow parser.
+- Workflow compiling.
+- Workflow to C++ code generation.
+
+You are highly possibly need to fix:
+- `Rpc(B|Unb)oxBy(val|ref)`, as these 4 C++ functions are directly called in generated wrapper classes written Workflow script.
+- The wrapper classes generation.
+- implementation of `RpcDualLifecycleMock` and its connected interfaces if sample fails in either `RuntimeTest` or `CppTest*`.
+- The generated C++ code is very straight forward, if it fails, check `RpcDualLifecycleMock` first.
+  - The comment in the sample describes how `RpcDualLifecycleMock` and the generated C++ code is supposed to work.
 
 ## General Instruction
 
