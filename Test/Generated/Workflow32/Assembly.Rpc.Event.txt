@@ -906,9 +906,9 @@ Instructions:
 335  :     AttachEvent   : eventInfo = SomethingHappened<RpcEvent::IService>
 //  attach(target.SomethingHappened, func (arg0 : ::system::String) : (void)
 336  :     Pop           
-//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEvent::IService^) : (void)
+//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEvent::IService*) : (void)
 337  :     LoadValue     : value = <null>
-//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEvent::IService^) : (void)
+//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEvent::IService*) : (void)
 338  :     Return        
 //  {}
 339  :     NewArray      : stackPatternCount = 0
@@ -977,10 +977,10 @@ Instructions:
 //  obj
 371  :     LoadLocalVar  : var = 3(obj)
 //  obj
-372  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
-//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService^) obj))
+372  :     ConvertToType : flag = RawPtr, typeDescriptor = RpcEvent::IService
+//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService*) obj))
 373  :     Invoke        : func = 9(rpclistener_RpcEvent__IService), stackPatternCount = 3
-//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService^) obj));
+//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService*) obj));
 374  :     Pop           
 //  return;
 375  :     LoadValue     : value = <null>
@@ -992,9 +992,9 @@ Instructions:
 378  :     LoadValue     : value = <String, Unknown RPC type id for listener attachment.>
 //  raise "Unknown RPC type id for listener attachment.";
 379  :     RaiseException
-//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 380  :     LoadValue     : value = <null>
-//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 381  :     Return        
 //  rpctype_RpcEvent__IService
 382  :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
@@ -1041,10 +1041,10 @@ Instructions:
 //  proxy
 403  :     LoadLocalVar  : var = 2(proxy)
 //  proxy
-404  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
-//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService^) proxy))
+404  :     ConvertToType : flag = RawPtr, typeDescriptor = RpcEvent::IService
+//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService*) proxy))
 405  :     Invoke        : func = 9(rpclistener_RpcEvent__IService), stackPatternCount = 3
-//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService^) proxy));
+//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService*) proxy));
 406  :     Pop           
 //  proxy
 407  :     LoadLocalVar  : var = 2(proxy)

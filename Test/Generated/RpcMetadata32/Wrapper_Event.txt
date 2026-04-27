@@ -156,7 +156,7 @@ namespace RpcEvent
     }
 }
 
-func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEvent::IService^) : (void)
+func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEvent::IService*) : (void)
 {
     attach(target.SomethingHappened, func (arg0 : ::system::String) : (void)
     {
@@ -167,13 +167,13 @@ func rpclistener_RpcEvent__IService(lc : system::IRpcLifeCycle*, ref : system::R
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 {
     switch (typeId)
     {
         case rpctype_RpcEvent__IService:
         {
-            rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService^) obj));
+            rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService*) obj));
             return;
         }
         default:
@@ -221,7 +221,7 @@ func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifeCycle*) : (RpcEvent::IRp
             _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcEvent__IService_Watch, arguments);
         }
     };
-    rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService^) proxy));
+    rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService*) proxy));
     return proxy;
 }
 

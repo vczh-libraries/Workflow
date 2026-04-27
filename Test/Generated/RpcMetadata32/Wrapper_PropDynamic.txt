@@ -163,7 +163,7 @@ namespace RpcPropDynamic
     }
 }
 
-func rpclistener_RpcPropDynamic__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcPropDynamic::IService^) : (void)
+func rpclistener_RpcPropDynamic__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcPropDynamic::IService*) : (void)
 {
     attach(target.ValueChanged, func () : (void)
     {
@@ -173,13 +173,13 @@ func rpclistener_RpcPropDynamic__IService(lc : system::IRpcLifeCycle*, ref : sys
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 {
     switch (typeId)
     {
         case rpctype_RpcPropDynamic__IService:
         {
-            rpclistener_RpcPropDynamic__IService(lc, ref, (cast (RpcPropDynamic::IService^) obj));
+            rpclistener_RpcPropDynamic__IService(lc, ref, (cast (RpcPropDynamic::IService*) obj));
             return;
         }
         default:
@@ -237,7 +237,7 @@ func rpcwrapper_RpcPropDynamic__IService(lc : system::IRpcLifeCycle*) : (RpcProp
             _lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPropDynamic__IService_Signal, arguments);
         }
     };
-    rpclistener_RpcPropDynamic__IService(lc, proxyRef, (cast (RpcPropDynamic::IService^) proxy));
+    rpclistener_RpcPropDynamic__IService(lc, proxyRef, (cast (RpcPropDynamic::IService*) proxy));
     return proxy;
 }
 

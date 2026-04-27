@@ -181,7 +181,7 @@ namespace RpcPropDefaultInterfaceList
     }
 }
 
-func rpclistener_RpcPropDefaultInterfaceList__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcPropDefaultInterfaceList::IService^) : (void)
+func rpclistener_RpcPropDefaultInterfaceList__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcPropDefaultInterfaceList::IService*) : (void)
 {
     attach(target.ValueChanged, func () : (void)
     {
@@ -191,7 +191,7 @@ func rpclistener_RpcPropDefaultInterfaceList__IService(lc : system::IRpcLifeCycl
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 {
     switch (typeId)
     {
@@ -201,7 +201,7 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system:
         }
         case rpctype_RpcPropDefaultInterfaceList__IService:
         {
-            rpclistener_RpcPropDefaultInterfaceList__IService(lc, ref, (cast (RpcPropDefaultInterfaceList::IService^) obj));
+            rpclistener_RpcPropDefaultInterfaceList__IService(lc, ref, (cast (RpcPropDefaultInterfaceList::IService*) obj));
             return;
         }
         default:
@@ -312,7 +312,7 @@ func rpcwrapper_RpcPropDefaultInterfaceList__IService(lc : system::IRpcLifeCycle
     {
         (cast (RpcPropDefaultInterfaceList::IRpcWrapper_IService^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
     });
-    rpclistener_RpcPropDefaultInterfaceList__IService(lc, proxyRef, (cast (RpcPropDefaultInterfaceList::IService^) proxy));
+    rpclistener_RpcPropDefaultInterfaceList__IService(lc, proxyRef, (cast (RpcPropDefaultInterfaceList::IService*) proxy));
     return proxy;
 }
 

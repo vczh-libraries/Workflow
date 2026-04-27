@@ -122,18 +122,18 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_PropDefault_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	void Rpc_PropDefault::rpclistener_RpcPropDefault__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcPropDefault::IService> target)
+	void Rpc_PropDefault::rpclistener_RpcPropDefault__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcPropDefault::IService* target)
 	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_Rpc_PropDefault_rpclistener_RpcPropDefault__IService_(lc, ref)));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_Rpc_PropDefault_rpclistener_RpcPropDefault__IService_(lc, ref)));
 	}
 
-	void Rpc_PropDefault::rpclistener_Attach(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::IDescriptable> obj)
+	void Rpc_PropDefault::rpclistener_Attach(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj)
 	{
 		{
 			auto __vwsn_switch_4 = typeId;
 			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcPropDefault__IService))
 			{
-				GLOBAL_NAME rpclistener_RpcPropDefault__IService(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefault::IService>(obj.Obj())));
+				GLOBAL_NAME rpclistener_RpcPropDefault__IService(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::RpcPropDefault::IService>(obj)));
 				return;
 			}
 			else
@@ -146,7 +146,7 @@ Global Functions
 		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcPropDefault__IService);
 		auto proxy = ::vl::Ptr<::RpcPropDefault::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService(lc, proxyRef));
 		::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::Ptr<::RpcPropDefault::IService>(proxy)).Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf2_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService_(lc, proxyRef)));
-		GLOBAL_NAME rpclistener_RpcPropDefault__IService(lc, proxyRef, ::vl::__vwsn::Ensure(::vl::Ptr<::RpcPropDefault::IService>(proxy)));
+		GLOBAL_NAME rpclistener_RpcPropDefault__IService(lc, proxyRef, ::vl::__vwsn::Ensure(static_cast<::RpcPropDefault::IService*>(proxy.Obj())));
 		return proxy;
 	}
 

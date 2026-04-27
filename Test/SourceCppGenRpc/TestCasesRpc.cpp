@@ -1623,7 +1623,7 @@ TEST_CASE(L"Rpc:Event")
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
 			(void)detachments;
-			::vl_workflow_global::Rpc_Event::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+			::vl_workflow_global::Rpc_Event::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });
@@ -1709,7 +1709,7 @@ TEST_CASE(L"Rpc:PropCached")
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
 			(void)detachments;
-			::vl_workflow_global::Rpc_PropCached::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+			::vl_workflow_global::Rpc_PropCached::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });
@@ -1726,7 +1726,7 @@ TEST_CASE(L"Rpc:PropDefault")
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
 			(void)detachments;
-			::vl_workflow_global::Rpc_PropDefault::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+			::vl_workflow_global::Rpc_PropDefault::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });
@@ -1744,7 +1744,7 @@ TEST_CASE(L"Rpc:PropDefaultInterface")
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
 			(void)detachments;
-			::vl_workflow_global::Rpc_PropDefaultInterface::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+			::vl_workflow_global::Rpc_PropDefaultInterface::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });
@@ -1762,7 +1762,7 @@ TEST_CASE(L"Rpc:PropDefaultInterfaceList")
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
 			(void)detachments;
-			::vl_workflow_global::Rpc_PropDefaultInterfaceList::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+			::vl_workflow_global::Rpc_PropDefaultInterfaceList::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });
@@ -1779,7 +1779,7 @@ TEST_CASE(L"Rpc:PropDefaultList")
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
 			(void)detachments;
-			::vl_workflow_global::Rpc_PropDefaultList::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+			::vl_workflow_global::Rpc_PropDefaultList::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });
@@ -1796,7 +1796,7 @@ TEST_CASE(L"Rpc:PropDynamic")
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
 		{
 			(void)detachments;
-			::vl_workflow_global::Rpc_PropDynamic::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+			::vl_workflow_global::Rpc_PropDynamic::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });

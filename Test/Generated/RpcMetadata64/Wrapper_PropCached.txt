@@ -164,7 +164,7 @@ namespace RpcPropCached
     }
 }
 
-func rpclistener_RpcPropCached__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcPropCached::IService^) : (void)
+func rpclistener_RpcPropCached__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcPropCached::IService*) : (void)
 {
     attach(target.ValueChanged, func () : (void)
     {
@@ -174,13 +174,13 @@ func rpclistener_RpcPropCached__IService(lc : system::IRpcLifeCycle*, ref : syst
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface^) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 {
     switch (typeId)
     {
         case rpctype_RpcPropCached__IService:
         {
-            rpclistener_RpcPropCached__IService(lc, ref, (cast (RpcPropCached::IService^) obj));
+            rpclistener_RpcPropCached__IService(lc, ref, (cast (RpcPropCached::IService*) obj));
             return;
         }
         default:
@@ -257,7 +257,7 @@ func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifeCycle*) : (RpcPropC
     {
         (cast (RpcPropCached::IRpcWrapper_IService^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
     });
-    rpclistener_RpcPropCached__IService(lc, proxyRef, (cast (RpcPropCached::IService^) proxy));
+    rpclistener_RpcPropCached__IService(lc, proxyRef, (cast (RpcPropCached::IService*) proxy));
     return proxy;
 }
 
