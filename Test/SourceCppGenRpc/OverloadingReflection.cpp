@@ -63,6 +63,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(GetStringValue, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(StringValue, GetStringValue)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcOverloadingTest::IStringRepresentable)
 
 #undef _

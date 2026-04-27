@@ -42,6 +42,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IObject)
 
 			BEGIN_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)

@@ -11,6 +11,9 @@
 #include "OverloadingReflection.h"
 #include "EventReflection.h"
 #include "EventOblistReflection.h"
+#include "PropCachedReflection.h"
+#include "PropDefaultReflection.h"
+#include "PropDynamicReflection.h"
 #include "Collection_DefaultReflection.h"
 #include "Collection_PropDefaultReflection.h"
 #include "Collection_InByval_OutByvalReflection.h"
@@ -133,6 +136,9 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_OverloadingTypes();
 	 LoadRpc_EventTypes();
 	 LoadRpc_EventOblistTypes();
+	 LoadRpc_PropCachedTypes();
+	 LoadRpc_PropDefaultTypes();
+	 LoadRpc_PropDynamicTypes();
 	 LoadRpc_Collection_DefaultTypes();
 	 LoadRpc_Collection_PropDefaultTypes();
 	 LoadRpc_Collection_InByval_OutByvalTypes();
@@ -412,6 +418,57 @@ TEST_CASE(L"Rpc:EventOblist")
 			return RpcTypeId_NotFound;
 		},
 		nullptr,
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:PropCached")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropCached>(L"[A][A][ValueChanged][B]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_PropCached::Instance();
+			if (dynamic_cast<::RpcPropCached::IService*>(obj)) return instance.rpctype_RpcPropCached__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_PropCached::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:PropDefault")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefault>(L"[A][A][ValueChanged][B]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_PropDefault::Instance();
+			if (dynamic_cast<::RpcPropDefault::IService*>(obj)) return instance.rpctype_RpcPropDefault__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_PropDefault::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:PropDynamic")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDynamic>(L"[A][B][ValueChanged][B]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_PropDynamic::Instance();
+			if (dynamic_cast<::RpcPropDynamic::IService*>(obj)) return instance.rpctype_RpcPropDynamic__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_PropDynamic::Instance().rpclistener_Attach(ref.typeId, mock, ref, Ptr<IDescriptable>(obj));
+		},
 		nullptr);
 });
 
