@@ -5,6 +5,8 @@
 #include "DtorReflection.h"
 #include "Dtor2Reflection.h"
 #include "Dtor3Reflection.h"
+#include "DtorListReflection.h"
+#include "DtorList2Reflection.h"
 #include "FailDoubleRegistrationReflection.h"
 #include "OverloadingReflection.h"
 #include "EventReflection.h"
@@ -125,6 +127,8 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_DtorTypes();
 	 LoadRpc_Dtor2Types();
 	 LoadRpc_Dtor3Types();
+	 LoadRpc_DtorListTypes();
+	 LoadRpc_DtorList2Types();
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_OverloadingTypes();
 	 LoadRpc_EventTypes();
@@ -319,6 +323,34 @@ TEST_CASE(L"Rpc:Dtor3")
 			if (dynamic_cast<::RpcDtor3Test::IContainer*>(obj)) return instance.rpctype_RpcDtor3Test__IContainer;
 			if (dynamic_cast<::RpcDtor3Test::IValue*>(obj)) return instance.rpctype_RpcDtor3Test__IValue;
 			if (dynamic_cast<::RpcDtor3Test::IService*>(obj)) return instance.rpctype_RpcDtor3Test__IService;
+			return RpcTypeId_NotFound;
+		},
+		nullptr,
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:DtorList")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorList>(L"[a1][a2][IValue][a3][b1][b2][b3][IValue][c1][c2][c3][IValue][d1][d2][d3][IValue][e1][e2][e3][IValue][f1][f2][IValue][f3]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_DtorList::Instance();
+			if (dynamic_cast<::RpcDtorList::IValue*>(obj)) return instance.rpctype_RpcDtorList__IValue;
+			if (dynamic_cast<::RpcDtorList::IService*>(obj)) return instance.rpctype_RpcDtorList__IService;
+			return RpcTypeId_NotFound;
+		},
+		nullptr,
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:DtorList2")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorList2>(L"[a1][a2][IValue][a3][b1][b2][b3][IValue][c1][c2][c3][IValue][d1][d2][d3][IValue][e1][e2][e3][IValue]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_DtorList2::Instance();
+			if (dynamic_cast<::RpcDtorList2::IValue*>(obj)) return instance.rpctype_RpcDtorList2__IValue;
+			if (dynamic_cast<::RpcDtorList2::IService*>(obj)) return instance.rpctype_RpcDtorList2__IService;
 			return RpcTypeId_NotFound;
 		},
 		nullptr,
