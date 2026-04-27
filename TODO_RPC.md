@@ -17,7 +17,6 @@
 ## ToDo
 
 - In generated `IRpcObjectEventOps`, the attached handler should be removed, and then trigger the event, and then re-attach the event, avoid from bidirectional deadlooping.
-- In generated `rpclistener_*`, the last parameter should be `*` not `^`.
 - Continue to add more test cases until all features are covered.
   - Cached properties with dtor affected by cached value
     - Interface type
