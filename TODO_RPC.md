@@ -23,11 +23,18 @@
   - Sending cached property values proactively from remote to wrapper.
   - Event argument default byref/byval options.
 - Generate JSON from "RPC metadata in Workflow syntax".
-  - Generate with wrappers.
+  - JSON for predefined types.
+  - `RpcLifecycleBase` and `RpcLifecycleJson`.
+    - So `IRpcController` implementation should be assigned not inherited.
+    - This could remove reflection registration for `RpcLfiecycle`.
+  - Extract some implementation from `RpcDualLifecycleMock`.
+  - `RpcLifecycleJson` should notnhave knowledge of where JSON goes and async/sync.
+  - `TestCasesRpc.cpp` will call both, and JSON version runs in both sync and async.
+    - May need 3 files to call a shared cases list from the header.
+    - Need to re-initiate Workflow global variables, like reload/unload global storage in each test file.
 - Solve interface inheritance and casting.
 - C++ codegen for rpc data type JSON serialization.
 - Delete Runtime test category.
 - Update `TestLibraryRpcByval.cpp` in `LibraryTest` to use `RpcDualLifecycleMock`, remove `RpcByvalLifecycleMock`.
-  - Refactor `RpcDualLifecycleMock` to make it a common implementation for `GacUI`.
   - May need to refactor how to retrieve ops interfaces.
-- Sort `IndexRpc.txt`.
+- Sort `WfErrors`.
