@@ -29,5 +29,5 @@ If any test case fail, you could continue to run until you collect results from 
 - If in any task you are adding new test sample, or modifying any C++ or Workflow generation code, causing a huge amount of files generated from test samples to change:
   - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
   - Otherwise, One commit is good.
-  - Typical files that are generated: `Test\Generated`, `Test\SourceCppGen`, `Test\SourceCppGenRpc`.
+  - Typical files that are generated: `Test\Generated`, `Test\SourceCppGen`, `Test\SourceCppGenRpc`, `Test\UnitTest\Generated_*`.
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.

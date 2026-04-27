@@ -209,10 +209,17 @@ This test is to ensure that:
 - Elements in containers are correctly deleted at the right timing. (DtorList.txt)
 - When elements and containers are created at different side, it still function. (DtorList2.txt)
 
+## Verifying Samples
+
+Workflow script syntax and semantic should be intuitive.
+During reading the sample, you should verify it with the goal of the task.
+Ensure all logs or exceptions in the sample accurately reflected the intention of the design.
+Ensure the expected result would be what users would expect.
+
 ## Restriction
 
 Understand what the test case trying to say, you are not allowed to change:
-- The content of the sample, unless it doesn't build.
+- The content of the verified sample, unless it doesn't build.
 - Workflow parser.
 - Workflow compiling.
 - Workflow to C++ code generation.
@@ -228,5 +235,5 @@ If any test case fail, you could continue to run until you collect results from 
   - Pass all unit test, fix any test failure including pre-existings.
   - After finishing everything, git commit and git push to the current branch.
   - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
-    - Typical files that are generated: `Test\Generated`, `Test\SourceCppGen`, `Test\SourceCppGenRpc`.
+    - Typical files that are generated: `Test\Generated`, `Test\SourceCppGen`, `Test\SourceCppGenRpc`, `Test\UnitTest\Generated_*`.
   - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
