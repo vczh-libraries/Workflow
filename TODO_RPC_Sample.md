@@ -1,29 +1,27 @@
 # Repro
 
-## Sample Rpc\DtorList.txt
+Follow job.new-sample.md to add new samples:
 
-Follow job.new-sample.md to add a new sample:
+## Sample Rpc\PropCached.txt
+
+Also copy `PropDefault.txt` but removing `@rpc:Cached`, so that we can verify omitting means `@rpc:Cached` for properties.
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcDtorList
+namespace YourFavoriteNamespace // use RpcPropCached or RpcPropDefault
 {
-	@rpc:Interface
-	interface IValue
-	{
-	}
-
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    func Set(@rpc:Byref xs : IValue^[]) : void;
-    func Clear() : void;
-    func Hold() : void;
-    func Unhold() : void;
+    @rpc:Cached // no such line in PropDefault.txt
+    prop Value : string {const}
+
+    func SetValue(value : string) : void;
+    func Signal() : void;
 	}
 }
 
@@ -33,181 +31,127 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    var _List : IValue^[] = null;
-    var _Value : IValue^ = null;
+    var _Value : string = "A";
 
-    override func Set(xs : IValue^[]) : void
+    override func GetValue() : string
     {
-			if ((xs as (system::IRpcWrapperBase^) is null))
-			{
-				raise "Parameter xs should be a wrapper object in serviceMain";
-			}
-      _List = xs;
+      return _Value;
     }
 
-    override func Clear() : void
+    override func SetValue(value : string) : void
     {
-      _List.Clear();
+      _Value = value;
     }
 
-    override func Hold() : void
+    override func Signal() : void
     {
-      _Value = _List[0];
-    }
-
-    override func Unholde() : void
-    {
-      _Value = null;
+      ValueChanged();
     }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
 }
 
-func MakeValue() : IValue^
+func clientMain(lc : IRpcLifeCycle*) : string
 {
-	return new (YourFavoriteNamespace::IValue^)
+	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
+  attach(service.ValueChanged, [s = $"$(s)[ValueChanged]]);
+
+  // call GetValue the first time triggers the read
+  s = $"$(s)[$(service.Value)];
+
+  // call SetValue, but the event is not signaled, so @rpc:Cached properties updating on wrapper side is not triggered
+  service.SetValue("B");
+  s = $"$(s)[$(service.Value)];
+
+  // trigger the event
+  service.Siangl();
+  s = $"$(s)[$(service.Value)];
+
+  return s; // [A][A][ValueChanged][B]
+}
+```
+
+## Sample Rpc\PropDynamic.txt
+
+```Workflow
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+namespace YourFavoriteNamespace // use RpcPropDynamic
+{
+	@rpc:Interface
+	@rpc:Ctor
+	interface IService
 	{
-		delete
-		{
-			s = $"$(s)[IValue]";
-		}
+    @rpc:Dynamic
+    prop Value : string {const}
+
+    func SetValue(value : string) : void;
+    func Signal() : void;
+	}
+}
+
+var s = "";
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+	var serviceObj = new (YourFavoriteNamespace::IService^)
+	{
+    var _Value : string = "A";
+
+    override func GetValue() : string
+    {
+      return _Value;
+    }
+
+    override func SetValue(value : string) : void
+    {
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
 	};
+	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
 }
 
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
+  attach(service.ValueChanged, [s = $"$(s)[ValueChanged]]);
 
-  {
-    var xs : IValue^[] = {};
-		s = $"$(s)[a1]";
-    service.Set(xs);
-    xs.Add(MakeValue());
-		s = $"$(s)[a2]";
-    service.Clear();
-		s = $"$(s)[a3]";
-    xs = null;
-  }
-  
-  {
-    var xs : IValue^[] = {};
-		s = $"$(s)[b1]";
-    service.Set(xs);
-    xs.Add(MakeValue());
-		s = $"$(s)[b2]";
-    xs = null;
-		s = $"$(s)[b3]";
-    service.Clear();
-  }
-  
-  {
-		s = $"$(s)[c1]";
-    service.Set({MakeValue()});
-    service.Hold();
-		s = $"$(s)[c2]";
-    service.Clear();
-		s = $"$(s)[c3]";
-    service.Unhold();
-  }
-  
-  {
-		s = $"$(s)[d1]";
-    service.Set({MakeValue()});
-    service.Hold();
-		s = $"$(s)[d2]";
-    service.Unhold();
-		s = $"$(s)[d3]";
-    service.Clear();
-  }
-  
-  {
-    var x = MakeValue();
-		s = $"$(s)[e1]";
-    service.Set({x});
-    service.Hold();
-    service.Clear();
-		s = $"$(s)[e2]";
-    service.Unhold();
-		s = $"$(s)[e3]";
-    x = null;
-  }
-  
-  {
-    var xs : IValue^[] = {MakeValue()};
-		s = $"$(s)[f1]";
-    service.Set(xs);
-    service.Hold();
-    service.Clear();
-		s = $"$(s)[f2]";
-    service.Unhold();
-		s = $"$(s)[f3]";
-    xs = null;
-  }
+  // call GetValue the first time triggers the read
+  s = $"$(s)[$(service.Value)];
 
-  // [a1][a2][a3][IValue][b1][b2][b3][IValue][c1][c2][c3][IValue][d1][d2][d3][IValue][e1][e2][e3][IValue][f1][f2][f3][IValue]
-  return s;
+  // call SetValue, no matter ValueChanged triggered or not, @rpc:Dynamic always perform reading on GetValue
+  service.SetValue("B");
+  s = $"$(s)[$(service.Value)];
+
+  // trigger the event
+  service.Siangl();
+  s = $"$(s)[$(service.Value)];
+
+  return s; // [A][B][ValueChanged][B]
 }
-```
-
-## Sample Rpc\DtorList2.txt
-
-Just like Rpc\DtorList.txt but with the following changes:
-
-In `IService` from `func Set(@rpc:Byref xs : IValue^[]) : void;` to `@rpc:Byref func Make() : IValue^[];`
-therefore the implementation becomes
-```Workflow
-override func Make() : IValue^[]
-{
-  _List = {};
-  return _List;
-}
-```
-
-In `clientMain`, copy the first 5 sections and change:
-
-Section 1 and 2 from
-```Workflow
-var xs : IValue^[] = {};
-s = $"$(s)[...]";
-service.Set(xs);
-```
-To
-```Workflow
-var xs : IValue^[] = null;
-s = $"$(s)[...]";
-xs = service.Make();
-```
-
-Section 3 and 4 from
-```Workflow
-s = $"$(s)[...]";
-service.Set({MakeValue()});
-```
-To
-```Workflow
-s = $"$(s)[...]";
-service.Make().Add(MakeValue());
-```
-
-Section 5 from
-```Workflow
-var x = MakeValue();
-s = $"$(s)[...]";
-service.Set({x});
-```
-To
-```Workflow
-var x = MakeValue();
-s = $"$(s)[...]";
-service.Make().Add(x);
 ```
 
 ## Goal
 
 In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
 This test is to ensure that:
-- Elements in containers are correctly deleted at the right timing. (DtorList.txt)
-- When elements and containers are created at different side, it still function. (DtorList2.txt)
+- @rpc:Cached properties cache their value on the first reading, and the cache will be invalidate when the associated changed event triggered.
+
+## Implementation
+
+For auto property, without `{... not observe}` the event will always be `PropertyNameChanged`. For trival property, the event name is specified in `{... : EventName}`.
+Follow the WfAssembly generation and C++ reflection code generation to figure out how such information should be correctly read.
+It is acceptable when @rpc:Cached decorates an property without associated event. In this case there will be no refreshing you can do, it is fine. Extra mechanism will be offered in the future. The expected behavior of such property is to, only call the getter when the property is first read, and the value in the wrapper remain unchanged forever.
+In the generated wrapper, you can generated `PropertyName<Cached> : T` and `PropertyName<Available> : bool` pair of variables for caching.
+When the getter is called, only when it is unavailable, the remote caller will be called and the cached value will be refreshed, and then it becomes available.
+The wrapper should also attach to the property changed event (if it exists), and set it to unavailable when the event is triggered.
 
 ## Verifying Samples
 
