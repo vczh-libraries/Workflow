@@ -107,6 +107,7 @@
 #include "EventOblistReflection.h"
 #include "FailDoubleRegistrationReflection.h"
 #include "LocalAndWrapperReflection.h"
+#include "NullableReflection.h"
 #include "OverloadingReflection.h"
 #include "PrimitiveTypesReflection.h"
 #include "PropCachedReflection.h"
@@ -239,6 +240,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_EventOblistTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_LocalAndWrapperTypes();
+	 LoadRpc_NullableTypes();
 	 LoadRpc_OverloadingTypes();
 	 LoadRpc_PrimitiveTypesTypes();
 	 LoadRpc_PropCachedTypes();
@@ -1743,6 +1745,20 @@ TEST_CASE(L"Rpc:LocalAndWrapper")
 			if (dynamic_cast<::RpcWrapperTest::IObj1*>(obj)) return instance.rpctype_RpcWrapperTest__IObj1;
 			if (dynamic_cast<::RpcWrapperTest::IObj2*>(obj)) return instance.rpctype_RpcWrapperTest__IObj2;
 			if (dynamic_cast<::RpcWrapperTest::IService*>(obj)) return instance.rpctype_RpcWrapperTest__IService;
+			return RpcTypeId_NotFound;
+		},
+		nullptr,
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:Nullable")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Nullable>(L"[abc][null][null][def]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Nullable::Instance();
+			if (dynamic_cast<::RpcNullable::IValue*>(obj)) return instance.rpctype_RpcNullable__IValue;
+			if (dynamic_cast<::RpcNullable::IService*>(obj)) return instance.rpctype_RpcNullable__IService;
 			return RpcTypeId_NotFound;
 		},
 		nullptr,
