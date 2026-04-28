@@ -1,5 +1,5 @@
-#ifndef VCZH_WORKFLOW_TEST_RPC_LIFECYCLE_MOCK
-#define VCZH_WORKFLOW_TEST_RPC_LIFECYCLE_MOCK
+#ifndef VCZH_WORKFLOW_TEST_RPC_CONTROLLER_MOCK
+#define VCZH_WORKFLOW_TEST_RPC_CONTROLLER_MOCK
 
 #include "../../Source/Library/WfLibraryRpc.h"
 
@@ -7,14 +7,13 @@ namespace vl
 {
 	namespace rpc_controller_test
 	{
-		class RpcLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle, public rpc_controller::IRpcController, public reflection::Description<RpcLifecycleMock>
+		class RpcControllerMock : public Object, public rpc_controller::IRpcController
 		{
 		protected:
 			Ptr<IRpcObjectOps>														objectCallback;
 			Ptr<IRpcObjectEventOps>												eventCallback;
 			Ptr<IRpcListOps>														listCallback;
 			Ptr<IRpcListEventOps>												listEventCallback;
-			collections::Dictionary<WString, Ptr<reflection::IDescriptable>>				services;
 
 			IRpcObjectOps*																	RequireObjectCallback()const;
 			IRpcObjectEventOps*																RequireEventCallback()const;
@@ -22,18 +21,19 @@ namespace vl
 			IRpcListEventOps*																RequireListEventCallback()const;
 		public:
 
-			RpcLifecycleMock();
-			~RpcLifecycleMock();
+			RpcControllerMock();
+			~RpcControllerMock();
+
+			// RpcControllerMock
+
+			virtual void																	Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
 
 			// IRpcController
 
-			void																			Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
-
-			// IRpcLifeCycle
-
-			rpc_controller::IRpcController*													GetController() override;
-			void																			RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
-			Ptr<reflection::IDescriptable>													RequestService(const WString& fullName)override;
+			rpc_controller::RpcObjectReference												RegisterLocalObject(vint typeId)override = 0;
+			void																			UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override = 0;
+			void																			AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override = 0;
+			void																			ReleaseRemoteObject(rpc_controller::RpcObjectReference ref)override = 0;
 
 			// IRpcObjectOps
 

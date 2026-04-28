@@ -43,19 +43,8 @@ namespace
 			// Disconnect wrappers while globalContext is still alive,
 			// because DisconnectFromLifecycle executes Workflow bytecode.
 			DisconnectTrackedWrappers();
-			for (auto service : services.Values())
-			{
-				if (auto obj = service->SafeAggregationCast<IRpcWrapperBase>())
-				{
-					obj->DisconnectFromLifecycle();
-				}
-			}
-			services.Clear();
-			while (localObjectProperties.Count() > 0)
-			{
-				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
-				UnregisterLocalObject(props->ref);
-			}
+			DisconnectServices();
+			UnregisterAllLocalObjects();
 			listenerAttachFunc = {};
 			wrapperCreateFunc = nullptr;
 			globalContext = nullptr;
@@ -195,8 +184,8 @@ TEST_FILE
 				lc2->RegisterLocalObjectOps(oo2);
 
 				// Register cross: ops from lc1 go to lc2, and vice versa
-				lc2->Register(oo1, oeo1, lo1, leo1);
-				lc1->Register(oo2, oeo2, lo2, leo2);
+				lc2->GetController()->Register(oo1, oeo1, lo1, leo1);
+				lc1->GetController()->Register(oo2, oeo2, lo2, leo2);
 
 				// Run serviceMain with lc1
 				auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");

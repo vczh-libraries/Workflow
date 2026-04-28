@@ -228,7 +228,6 @@ namespace vl
 		{
 			using namespace test;
 			using namespace vl::rpc_controller;
-			using namespace vl::rpc_controller_test;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			UNITTEST_TYPELIST(IMPL_CPP_TYPE_INFO)
@@ -307,11 +306,6 @@ namespace vl
 				CLASS_MEMBER_BASE(IAsyncScheduler)
 				CLASS_MEMBER_STATIC_METHOD(Run, { L"callback "})
 			END_CLASS_MEMBER(SyncScheduler)
-
-			BEGIN_CLASS_MEMBER(RpcLifecycleMock)
-				CLASS_MEMBER_BASE(IRpcLifeCycle)
-				CLASS_MEMBER_BASE(IRpcController)
-			END_CLASS_MEMBER(RpcLifecycleMock)
 
 			BEGIN_STRUCT_MEMBER(att_test_Int)
 				STRUCT_MEMBER(argument)
