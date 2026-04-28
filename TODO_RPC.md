@@ -16,6 +16,7 @@
 
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
+  - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - JSON for predefined types.
   - `RpcLifecycleBase` and `RpcLifecycleJson`.
@@ -26,9 +27,6 @@
   - `TestCasesRpc.cpp` will call both, and JSON version runs in both sync and async.
     - May need 3 files to call a shared cases list from the header.
     - Need to re-initiate Workflow global variables, like reload/unload global storage in each test file.
-- Solve interface inheritance and casting.
-- C++ codegen for rpc data type JSON serialization.
 - Delete Runtime test category.
 - Update `TestLibraryRpcByval.cpp` in `LibraryTest` to use `RpcDualLifecycleMock`, remove `RpcByvalLifecycleMock`.
   - May need to refactor how to retrieve ops interfaces.
-- Sort `WfErrors`.
