@@ -99,6 +99,9 @@
 #include "Dtor3Reflection.h"
 #include "DtorListReflection.h"
 #include "DtorList2Reflection.h"
+#include "DtorPropCachedReflection.h"
+#include "DtorPropCachedListByvalReflection.h"
+#include "DtorPropCachedListVByrefReflection.h"
 #include "EventReflection.h"
 #include "EventOblistReflection.h"
 #include "FailDoubleRegistrationReflection.h"
@@ -227,6 +230,9 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_Dtor3Types();
 	 LoadRpc_DtorListTypes();
 	 LoadRpc_DtorList2Types();
+	 LoadRpc_DtorPropCachedTypes();
+	 LoadRpc_DtorPropCachedListByvalTypes();
+	 LoadRpc_DtorPropCachedListVByrefTypes();
 	 LoadRpc_EventTypes();
 	 LoadRpc_EventOblistTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
@@ -1608,6 +1614,60 @@ TEST_CASE(L"Rpc:DtorList2")
 			return RpcTypeId_NotFound;
 		},
 		nullptr,
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:DtorPropCached")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCached>(L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_DtorPropCached::Instance();
+			if (dynamic_cast<::RpcDtorPropCached::IValue*>(obj)) return instance.rpctype_RpcDtorPropCached__IValue;
+			if (dynamic_cast<::RpcDtorPropCached::IService*>(obj)) return instance.rpctype_RpcDtorPropCached__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_DtorPropCached::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:DtorPropCachedListByval")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCachedListByval>(L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_DtorPropCachedListByval::Instance();
+			if (dynamic_cast<::RpcDtorPropCachedListByval::IValue*>(obj)) return instance.rpctype_RpcDtorPropCachedListByval__IValue;
+			if (dynamic_cast<::RpcDtorPropCachedListByval::IService*>(obj)) return instance.rpctype_RpcDtorPropCachedListByval__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_DtorPropCachedListByval::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:DtorPropCachedListVByref")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCachedListVByref>(L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_DtorPropCachedListVByref::Instance();
+			if (dynamic_cast<::RpcDtorPropCachedListVByref::IValue*>(obj)) return instance.rpctype_RpcDtorPropCachedListVByref__IValue;
+			if (dynamic_cast<::RpcDtorPropCachedListVByref::IService*>(obj)) return instance.rpctype_RpcDtorPropCachedListVByref__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_DtorPropCachedListVByref::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
+		},
 		nullptr);
 });
 
