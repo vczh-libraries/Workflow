@@ -11,43 +11,30 @@ using RpcWrapperTest::*;
 
 namespace YourFavoriteNamespace // use RpcEventArgs
 {
+  @rpc:Interface
+  interface IValue
+  {
+    @rpc:Cached
+    prop Value : string {const, not observe}
+  }
+
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    event SomethingHappened(int[], observe int[]);
-
-    func MakeItHappen() : void;
-    func AddElement() : void;
+    func Print(s : string?, v : IValue^) : string;
 	}
 }
 
 var s = "";
 
-func Print(xs : int[]) : void
-{
-  for (x in xs)
-  {
-    s = $"$(s)[$(x)]";
-  }
-}
-
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    var xs : int[] = {1 2};
-    var ys : observe int[] = {3 4};
-
-    func MakeItHappen() : void
+    override func Print(s : string?, v : IValue^) : string
     {
-      SomethingHappened(xs, ys);
-    }
-
-    func AddElement() : void
-    {
-      xs.Add(5);
-      ys.Add(6);
+      return $"[$(cast string s ?? 'null')][$(v.Value ?? 'null')]";
     }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
@@ -56,20 +43,11 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  var xs : int[] = null;
-  var ys : observe int[] = null;
-  attach(service.SomethingHappened, func(_xs : int[], _ys : observe int[]) : void
-  {
-    xs = _xs;
-    ys = _ys;
-  });
-  
-  service.MakeItHappen();
-  service.AddElement();
-  Print(xs);
-  Print(ys);
 
-  return s; // [1][2][3][4][6]
+  s = $"$(s)$(service.Print("abc", null))";
+  s = $"$(s)$(service.Print(null, new IValue^ { override func GetValue() { return "def"; } }))";
+
+  return s; // [abc][null][null][def]
 }
 ```
 
@@ -77,7 +55,11 @@ func clientMain(lc : IRpcLifeCycle*) : string
 
 In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
 This test is to ensure that:
-- `@rpc:Byval` and `@rpc:Byref` cannot apply to event arguments, but it uses the default options, according to the same rule for function arguments.
+- Since all primitive types are serializable, nullable type could only be applied to primitive types, so it should also be serializable.
+  - If nullable types is rejected with PRC specific errors, it should be fixed.
+  - There are also limited types that could be used with the nullable operator "?". Verify if such types are all serializable. If yes, it is easy to say all nullable types are also serializable. If no, then you need to look into `T` when you see `T?`. Answer this question when you finish the work.
+- Passing null is handled properly.
+  - If passing null crashes, `Rpc(B|Unb)oxBy(val|ref)` should be the first thing to look at.
 
 If the current implemention is correct, the added samples should just pass the test.
 

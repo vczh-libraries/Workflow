@@ -18,8 +18,6 @@
 
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
-  - Passing null to interface.
-  - Passing null to nullable.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - JSON for predefined types.
   - `RpcLifecycleBase` and `RpcLifecycleJson`.

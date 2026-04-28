@@ -22,6 +22,9 @@ All types below count as serializable types, but serialization itself is optiona
   - Otherwise, trigger the fallback serialization (generated).
 - Enum types, including flags.
   - Serialized to its interger value.
+- Nullable types.
+  - Nullable could be applied to primitive types, struct types and enum types.
+  - Also all nullable types should just be serializable.
 - Strong typed collection types, its element type, key type, value type should all be serializable.
   - Strong typed collection types here mean the type uses Workflow's collection type syntax.
     - `T{}`, `T[]`, `V[K]` and `observe T[]`.
