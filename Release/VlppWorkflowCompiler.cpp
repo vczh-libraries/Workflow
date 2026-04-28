@@ -13127,6 +13127,9 @@ ValidateModuleRPC_Ast
 					if (!type) return false;
 					switch (type->GetDecorator())
 					{
+					case ITypeInfo::Nullable:
+						return IsSerializableType(type->GetElementType(), rpcInterfaceAttrTd, rpcInterfaceTds);
+
 					case ITypeInfo::SharedPtr:
 						{
 							auto e = type->GetElementType();

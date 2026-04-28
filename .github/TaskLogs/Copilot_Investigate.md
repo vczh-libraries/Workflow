@@ -13,43 +13,30 @@ using RpcWrapperTest::*;
 
 namespace YourFavoriteNamespace // use RpcEventArgs
 {
+  @rpc:Interface
+  interface IValue
+  {
+    @rpc:Cached
+    prop Value : string {const, not observe}
+  }
+
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    event SomethingHappened(int[], observe int[]);
-
-    func MakeItHappen() : void;
-    func AddElement() : void;
+    func Print(s : string?, v : IValue^) : string;
 	}
 }
 
 var s = "";
 
-func Print(xs : int[]) : void
-{
-  for (x in xs)
-  {
-    s = $"$(s)[$(x)]";
-  }
-}
-
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    var xs : int[] = {1 2};
-    var ys : observe int[] = {3 4};
-
-    func MakeItHappen() : void
+    override func Print(s : string?, v : IValue^) : string
     {
-      SomethingHappened(xs, ys);
-    }
-
-    func AddElement() : void
-    {
-      xs.Add(5);
-      ys.Add(6);
+      return $"[$(cast string s ?? 'null')][$(v.Value ?? 'null')]";
     }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
@@ -58,20 +45,11 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  var xs : int[] = null;
-  var ys : observe int[] = null;
-  attach(service.SomethingHappened, func(_xs : int[], _ys : observe int[]) : void
-  {
-    xs = _xs;
-    ys = _ys;
-  });
 
-  service.MakeItHappen();
-  service.AddElement();
-  Print(xs);
-  Print(ys);
+  s = $"$(s)$(service.Print("abc", null))";
+  s = $"$(s)$(service.Print(null, new IValue^ { override func GetValue() { return "def"; } }))";
 
-  return s; // [1][2][3][4][6]
+  return s; // [abc][null][null][def]
 }
 ```
 
@@ -79,7 +57,11 @@ func clientMain(lc : IRpcLifeCycle*) : string
 
 In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
 This test is to ensure that:
-- `@rpc:Byval` and `@rpc:Byref` cannot apply to event arguments, but it uses the default options, according to the same rule for function arguments.
+- Since all primitive types are serializable, nullable type could only be applied to primitive types, so it should also be serializable.
+  - If nullable types is rejected with PRC specific errors, it should be fixed.
+  - There are also limited types that could be used with the nullable operator "?". Verify if such types are all serializable. If yes, it is easy to say all nullable types are also serializable. If no, then you need to look into `T` when you see `T?`. Answer this question when you finish the work.
+- Passing null is handled properly.
+  - If passing null crashes, `Rpc(B|Unb)oxBy(val|ref)` should be the first thing to look at.
 
 If the current implemention is correct, the added samples should just pass the test.
 
@@ -114,100 +96,54 @@ If any test case fail, you could continue to run until you collect results from 
 
 # UPDATES
 
-# TEST
+## UPDATE
 
-Added `Rpc\EventArgs.txt` and registered it in `Test\Resources\IndexRpc.txt`.
+You accidentally stopped, please continue to follow #file:investigate.prompt.md to finish the work.
 
-The sample raises an RPC event with two collection arguments:
+To my observation, you should have already finished most of editing works, I have committed all changes so far, but please take a look at the latest commit, it has generated C++ files. These files have not been added to vcxitems and filters yet. It is highly possibly that CompilerTest_LoadAndCompile have finished.
 
-- `int[]` should use the default by-value behavior, matching function arguments. After the event is delivered, the service mutates its original list with `xs.Add(5)`, and the client-side captured `xs` should remain `[1][2]`.
-- `observe int[]` should use the default by-reference behavior, matching function arguments. After the event is delivered, the service mutates its original observable list with `ys.Add(6)`, and the client-side captured `ys` should reflect `[3][4][6]`.
+so please fix project files and then run `..\Tools\Tools\Build.ps1 Workflow` to make sure it works, or fix the code to address any test failures, including pre-existings.
 
-The success criteria is that `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` run the sample and return:
+# TEST [CONFIRMED]
+
+Added an RPC sample for nullable arguments and null interface arguments. The requested `Rpc\EventArgs.txt` file already exists for a separate event-argument test, so this investigation adds the new case as `Rpc\Nullable.txt` to preserve existing coverage.
+
+The sample should compile as a legal `@rpc:Interface` declaration with a `string?` method parameter and should run through both VM runtime and generated C++ RPC wrappers. The expected client result is:
 
 ```text
-[1][2][3][4][6]
+[abc][null][null][def]
 ```
 
-This confirms event arguments use default RPC collection transfer options because Workflow has no syntax for applying `@rpc:Byval` or `@rpc:Byref` to event arguments directly.
+Success criteria:
 
-Status: CONFIRMED.
-
-Initial result before the generator fix:
-
-- `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all returned `[1][2][3][4]` for `EventArgs`.
-- Generated wrappers boxed and unboxed both event arguments with `RpcBoxByval` and `RpcUnboxByval`.
-
-This showed the sample was valid and exposed a wrapper-generation issue for event argument transfer defaults.
+- `CompilerTest_LoadAndCompile` accepts the nullable RPC parameter without RPC-specific serializability errors.
+- `RuntimeTest` runs `Rpc\Nullable.txt` and returns the expected result.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` run generated C++ for `Rpc\Nullable.txt` and return the expected result.
+- Null values passed through nullable parameters and RPC interface shared pointer parameters do not crash in `RpcBoxByval`, `RpcUnboxByval`, `RpcBoxByref`, or `RpcUnboxByref`.
 
 # PROPOSALS
 
-- No.1 Add RPC event argument default-option sample
-- No.2 Fix generated wrapper transfer for RPC event arguments
+- No.1 Register generated Nullable RPC files in shared item projects [CONFIRMED]
 
-## No.1 Add RPC event argument default-option sample
-
-### CODE CHANGE
-
-Added `Test/Resources/Rpc/EventArgs.txt` with a service event:
-
-- First argument: `int[]`, expected default by-value behavior.
-- Second argument: `observe int[]`, expected default by-reference behavior.
-
-Updated `Test/Resources/IndexRpc.txt`:
-
-```text
-EventArgs=[1][2][3][4][6]
-```
-
-Status: CONFIRMED.
-
-## No.2 Fix generated wrapper transfer for RPC event arguments
-
-### FINDING
-
-`WfAnalyzer_GenerateRpc.cpp` previously forced all generated event wrapper arguments through by-value boxing and unboxing. Event arguments cannot carry `@rpc:Byval` or `@rpc:Byref` attributes, so the generator must compute the default transfer mode from the reflected event argument type.
-
-While implementing this, the reflected event handler generic type needed one extra offset: generic argument 0 is the event sender, and `WfEventDeclaration::arguments` starts at the first user-declared event payload argument.
+## No.1 Register generated Nullable RPC files in shared item projects
 
 ### CODE CHANGE
 
-Updated `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp` to:
+The latest commit already contained the generated RPC C++ files for `Rpc\Nullable.txt` in `Test\SourceCppGenRpc`, which indicates that `CompilerTest_LoadAndCompile` had already finished successfully.
 
-- Detect strong typed RPC collection types from `ITypeInfo`.
-- Apply the default rule used by RPC definitions: observable collections and collections containing RPC interfaces are by reference; other strong collections are by value.
-- Store the computed event argument transfer mode in `RpcParamModel::byref`.
-- Generate `RpcBoxByref`/`RpcUnboxByref` for by-reference event arguments and keep `RpcBoxByval`/`RpcUnboxByval` for by-value event arguments.
+Updated the two shared item project files consumed by `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`:
 
-Generated `EventArgs.cpp` now contains:
+- Added `Nullable.cpp` and `Nullable.h` to `Test\UnitTest\Generated_CppRpc\Generated_CppRpc.vcxitems`.
+- Added `NullableReflection.cpp` and `NullableReflection.h` to `Test\UnitTest\Generated_ReflectionRpc\Generated_ReflectionRpc.vcxitems`.
 
-```text
-arg0: RpcBoxByval / RpcUnboxByval
-arg1: RpcBoxByref / RpcUnboxByref
-```
+I also checked for corresponding RPC `.filters` files. Unlike `Generated_Cpp` and `Generated_Reflection`, the RPC shared-item folders currently do not contain `Generated_CppRpc.vcxitems.filters` or `Generated_ReflectionRpc.vcxitems.filters`, so there was no existing RPC filter file to update.
 
-Status: CONFIRMED.
+### CONFIRMED
 
-# VERIFICATION
+This proposal is confirmed.
 
-Confirmed all of the following passed:
+Running `..\Tools\Tools\Build.ps1 Workflow` succeeded after the shared item updates. The wrapper build rebuilt and executed all required Workflow test projects, including `CompilerTest_LoadAndCompile`, `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, and `RuntimeTest`, and then continued into Workflow release packaging.
 
-- `copilotBuild.ps1 -Configuration Debug -Platform x64`
-- `copilotBuild.ps1 -Configuration Debug -Platform Win32`
-- `copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform x64`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform x64`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform x64`
-- `copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform x64`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform x64`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64`
-- `copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform Win32`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform Win32`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform Win32`
-- `copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform Win32`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32`
-- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32`
-- `C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow`
+This means the remaining issue was not nullable RPC semantics or null handling in `RpcBoxByval`, `RpcUnboxByval`, `RpcBoxByref`, or `RpcUnboxByref`. The generated sample and runtime behavior were already correct; the C++ test projects simply were not compiling the newly generated `Nullable` translation units.
 
-Status: CONFIRMED.
+For the nullable-type question from the task: all legal nullable types are serializable in the current design. `TODO_RPC_Definition.md` states that nullable can only apply to primitive, struct, and enum types, and all nullable types should be serializable. The implementation matches that design: `ValidateTypeStructure` only permits nullable over those categories, and `WfAnalyzer_ValidateRPC.cpp` handles `ITypeInfo::Nullable` by recursively validating the element type for RPC serializability.
