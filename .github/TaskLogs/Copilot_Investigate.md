@@ -4,42 +4,33 @@
 
 Follow job.new-sample.md to add new samples, indentation should be double spaces no matter how the code below is written:
 
-## Sample Rpc\DtorPropCached.txt
+## Sample Rpc\EventArgs.txt
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcDtorPropCached
+namespace YourFavoriteNamespace // use RpcEventArgs
 {
-  @rpc:Interface
-  interface IValue
-  {
-  }
-
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    @rpc:Cached
-    prop Value : IValue^ {const}
+    event SomethingHappened(int[], observe int[]);
 
-    func SetValue(value : IValue^) : void;
-    func Signal() : void;
+    func MakeItHappen() : void;
+    func AddElement() : void;
 	}
 }
 
 var s = "";
 
-func MakeValue(value : string) : IValue^
+func Print(xs : int[]) : void
 {
-  return new IValue^
+  for (x in xs)
   {
-    delete
-    {
-      s = $"$(s)[Deleted:$(value)]";
-    }
+    s = $"$(s)[$(x)]";
   }
 }
 
@@ -47,21 +38,18 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    var _Value : IValue^ = MakeValue("A");
+    var xs : int[] = {1 2};
+    var ys : observe int[] = {3 4};
 
-    override func GetValue() : IValue^
+    func MakeItHappen() : void
     {
-      return _Value;
+      SomethingHappened(xs, ys);
     }
 
-    override func SetValue(value : IValue^) : void
+    func AddElement() : void
     {
-      _Value = value;
-    }
-
-    override func Signal() : void
-    {
-      ValueChanged();
+      xs.Add(5);
+      ys.Add(6);
     }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
@@ -70,75 +58,28 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  attach(service.ValueChanged, [s = $"$(s)[ValueChanged]]);
-
-  // No wrapper in the service wrapper, calling SetValue would cause the A value to be destroyed immediately
-  s = $"$(s)[1];
-  service.SetValue(MakeValue("B"));
-
-  // call GetValue the first time triggers the read, storing B value in the service wrapper
-  s = $"$(s)[2];
-  var v = service.Value;
-
-  // call SetValue, but the event is not signaled, so @rpc:Cached properties updating is not visible in the service wrapper
-  s = $"$(s)[3];
-  service.SetValue(MakeValue("C"));
-  if (v != service.Value)
+  var xs : int[] = null;
+  var ys : observe int[] = null;
+  attach(service.SomethingHappened, func(_xs : int[], _ys : observe int[]) : void
   {
-    raise "IService::Value in clientMain should not change before calling IService::Signal";
-  }
+    xs = _xs;
+    ys = _ys;
+  });
 
-  // trigger the event, the cached property value in the service wrapper is marked inavailable, but the B value is still there
-  s = $"$(s)[4];
-  service.Signal();
+  service.MakeItHappen();
+  service.AddElement();
+  Print(xs);
+  Print(ys);
 
-  // Read the property again, the B value in the service wrapper will be replaced
-  // No outside variable to catch the C value, but it is still in the service wrapper
-  // A value is in variable v
-  s = $"$(s)[5];
-  service.Value;
-
-  // Reset v causing B value to destroy
-  s = $"$(s)[6];
-  v = null;
-
-  // call SetValue again
-  s = $"$(s)[7];
-  service.SetValue(MakeValue("D"));
-
-  // trigger the event
-  s = $"$(s)[8];
-  service.Signal();
-
-  // Read the property again, the C value in the service wrapper will be replaced
-  s = $"$(s)[9];
-  service.Value;
-
-  return s; // [1][Deleted:A][2][3][4][5][6][Delete:B][7][8][9][Deleted:C]
+  return s; // [1][2][3][4][6]
 }
 ```
-
-## Sample Rpc\DtorPropCachedListByval.txt
-
-The same to `Rpc\DtorPropCached.txt` but change the:
-- property type to `IValue^[]`, initialized with A in the list, and later replaced each time, with a new list containing a new value.
-- use `@rpc:Byval` on property.
-- variable v in clientMain becomes IValue^[] too.
-- the output should remain. even when the property container is copied, but the IValue still a reference.
-
-## Sample Rpc\DtorPropCachedListVByref.txt
-
-The same to `Rpc\DtorPropCached.txt` but change the:
-- property type to `IValue^[]`, initialized with A in the list, and later replaced each time, with a new list containing a new value.
-- use `@rpc:Byref` on property.
-- variable v in clientMain becomes IValue^[] too.
-- the output should remain. the property container is wrapperd, it should affect the lifecycle of its element which is a IValue reference.
 
 ## Goal
 
 In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
 This test is to ensure that:
-- @rpc:Cached properties cache their value on the first reading, and the cache will be invalidate when the associated changed event triggered.
+- `@rpc:Byval` and `@rpc:Byref` cannot apply to event arguments, but it uses the default options, according to the same rule for function arguments.
 
 If the current implemention is correct, the added samples should just pass the test.
 
@@ -173,40 +114,100 @@ If any test case fail, you could continue to run until you collect results from 
 
 # UPDATES
 
-No additional updates.
+# TEST
 
-# TEST [CONFIRMED]
+Added `Rpc\EventArgs.txt` and registered it in `Test\Resources\IndexRpc.txt`.
 
-Add three RPC samples:
+The sample raises an RPC event with two collection arguments:
 
-- `Rpc\DtorPropCached.txt`: scalar `@rpc:Cached` interface reference property.
-- `Rpc\DtorPropCachedListByval.txt`: `@rpc:Cached @rpc:Byval` list property whose element is an interface reference.
-- `Rpc\DtorPropCachedListVByref.txt`: `@rpc:Cached @rpc:Byref` list property whose element is an interface reference.
+- `int[]` should use the default by-value behavior, matching function arguments. After the event is delivered, the service mutates its original list with `xs.Add(5)`, and the client-side captured `xs` should remain `[1][2]`.
+- `observe int[]` should use the default by-reference behavior, matching function arguments. After the event is delivered, the service mutates its original observable list with `ys.Add(6)`, and the client-side captured `ys` should reflect `[3][4][6]`.
 
-The success criteria is that all three samples produce:
+The success criteria is that `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` run the sample and return:
 
 ```text
-[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]
+[1][2][3][4][6]
 ```
 
-This confirms the first property read caches the value, changing the server-side value without signaling keeps the cached client value visible, and signaling `ValueChanged` invalidates the cache so the next read replaces the cached wrapper and releases the previous referenced value at the expected time. The list variants must keep the same destructor order even when the list container is copied or wrapped, because the contained `IValue^` is still a reference.
+This confirms event arguments use default RPC collection transfer options because Workflow has no syntax for applying `@rpc:Byval` or `@rpc:Byref` to event arguments directly.
 
-The test is confirmed by Debug Win32/x64 `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`, plus the final Release `Build.ps1 Workflow` run.
+Status: CONFIRMED.
+
+Initial result before the generator fix:
+
+- `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all returned `[1][2][3][4]` for `EventArgs`.
+- Generated wrappers boxed and unboxed both event arguments with `RpcBoxByval` and `RpcUnboxByval`.
+
+This showed the sample was valid and exposed a wrapper-generation issue for event argument transfer defaults.
 
 # PROPOSALS
 
-- No.1 Add cached RPC destructor samples [CONFIRMED]
+- No.1 Add RPC event argument default-option sample
+- No.2 Fix generated wrapper transfer for RPC event arguments
 
-## No.1 Add cached RPC destructor samples
+## No.1 Add RPC event argument default-option sample
 
 ### CODE CHANGE
 
-Added the three requested RPC sample files under `Test\Resources\Rpc` and registered them in `Test\Resources\IndexRpc.txt` with the confirmed output including the two `ValueChanged` event deliveries. The sample syntax keeps two-space indentation and uses block comments plus explicit event handler functions so the existing Workflow parser accepts the files.
+Added `Test/Resources/Rpc/EventArgs.txt` with a service event:
 
-Generated RPC workflow metadata and C++ outputs were refreshed for Win32 and x64. `Test\UnitTest\Generated_CppRpc\Generated_CppRpc.vcxitems` and `Test\UnitTest\Generated_ReflectionRpc\Generated_ReflectionRpc.vcxitems` were updated to include the generated sample sources so the generated C++ test projects link successfully.
+- First argument: `int[]`, expected default by-value behavior.
+- Second argument: `observe int[]`, expected default by-reference behavior.
 
-No production runtime, parser, compiler, or code generator change was required.
+Updated `Test/Resources/IndexRpc.txt`:
 
-### CONFIRMED
+```text
+EventArgs=[1][2][3][4][6]
+```
 
-All three new samples pass in the runtime interpreter path and in generated C++ paths. `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all report the expected destructor log for the scalar cached property and both list cached-property variants, proving the existing cached-property invalidation and reference lifetime behavior is already correct for these cases.
+Status: CONFIRMED.
+
+## No.2 Fix generated wrapper transfer for RPC event arguments
+
+### FINDING
+
+`WfAnalyzer_GenerateRpc.cpp` previously forced all generated event wrapper arguments through by-value boxing and unboxing. Event arguments cannot carry `@rpc:Byval` or `@rpc:Byref` attributes, so the generator must compute the default transfer mode from the reflected event argument type.
+
+While implementing this, the reflected event handler generic type needed one extra offset: generic argument 0 is the event sender, and `WfEventDeclaration::arguments` starts at the first user-declared event payload argument.
+
+### CODE CHANGE
+
+Updated `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp` to:
+
+- Detect strong typed RPC collection types from `ITypeInfo`.
+- Apply the default rule used by RPC definitions: observable collections and collections containing RPC interfaces are by reference; other strong collections are by value.
+- Store the computed event argument transfer mode in `RpcParamModel::byref`.
+- Generate `RpcBoxByref`/`RpcUnboxByref` for by-reference event arguments and keep `RpcBoxByval`/`RpcUnboxByval` for by-value event arguments.
+
+Generated `EventArgs.cpp` now contains:
+
+```text
+arg0: RpcBoxByval / RpcUnboxByval
+arg1: RpcBoxByref / RpcUnboxByref
+```
+
+Status: CONFIRMED.
+
+# VERIFICATION
+
+Confirmed all of the following passed:
+
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32`
+- `C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow`
+
+Status: CONFIRMED.

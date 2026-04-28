@@ -103,6 +103,7 @@
 #include "DtorPropCachedListByvalReflection.h"
 #include "DtorPropCachedListVByrefReflection.h"
 #include "EventReflection.h"
+#include "EventArgsReflection.h"
 #include "EventOblistReflection.h"
 #include "FailDoubleRegistrationReflection.h"
 #include "LocalAndWrapperReflection.h"
@@ -234,6 +235,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_DtorPropCachedListByvalTypes();
 	 LoadRpc_DtorPropCachedListVByrefTypes();
 	 LoadRpc_EventTypes();
+	 LoadRpc_EventArgsTypes();
 	 LoadRpc_EventOblistTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_LocalAndWrapperTypes();
@@ -1684,6 +1686,23 @@ TEST_CASE(L"Rpc:Event")
 		{
 			(void)detachments;
 			::vl_workflow_global::Rpc_Event::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:EventArgs")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_EventArgs>(L"[1][2][3][4][6]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_EventArgs::Instance();
+			if (dynamic_cast<::RpcEventArgs::IService*>(obj)) return instance.rpctype_RpcEventArgs__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments)
+		{
+			(void)detachments;
+			::vl_workflow_global::Rpc_EventArgs::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		},
 		nullptr);
 });

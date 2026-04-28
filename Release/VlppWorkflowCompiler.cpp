@@ -9744,6 +9744,95 @@ namespace vl
 						|| dynamic_cast<WfObservableListType*>(type) != nullptr;
 				}
 
+				bool IsRpcStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+
+					auto collectionType = genericType->GetElementType();
+					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+
+					auto collectionTd = collectionType->GetTypeDescriptor();
+					if (collectionTd == GetTypeDescriptor<IValueEnumerable>()
+						|| collectionTd == GetTypeDescriptor<IValueReadonlyList>()
+						|| collectionTd == GetTypeDescriptor<IValueList>()
+						|| collectionTd == GetTypeDescriptor<IValueObservableList>())
+					{
+						return genericType->GetGenericArgumentCount() == 1;
+					}
+
+					if (collectionTd == GetTypeDescriptor<IValueReadonlyDictionary>()
+						|| collectionTd == GetTypeDescriptor<IValueDictionary>())
+					{
+						return genericType->GetGenericArgumentCount() == 2;
+					}
+
+					switch (type->GetHint())
+					{
+					case TypeInfoHint::LazyList:
+					case TypeInfoHint::Array:
+					case TypeInfoHint::List:
+						return genericType->GetGenericArgumentCount() == 1;
+					case TypeInfoHint::Dictionary:
+						return genericType->GetGenericArgumentCount() == 2;
+					default:
+						return false;
+					}
+				}
+
+				ITypeInfo* GetRpcStrongTypedCollectionElementType(ITypeInfo* type)
+				{
+					if (!IsRpcStrongTypedCollection(type)) return nullptr;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return nullptr;
+					switch (genericType->GetGenericArgumentCount())
+					{
+					case 1:
+						return genericType->GetGenericArgument(0);
+					case 2:
+						return genericType->GetGenericArgument(1);
+					default:
+						return nullptr;
+					}
+				}
+
+				bool IsRpcObservableStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!IsRpcStrongTypedCollection(type)) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+					auto collectionType = genericType->GetElementType();
+					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					return collectionType->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>();
+				}
+
+				bool IsRpcInterfaceSharedType(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto elementType = type->GetElementType();
+					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					auto td = elementType->GetTypeDescriptor();
+					return td
+						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
+						&& rpcInterfaceTds.Contains(td);
+				}
+
+				bool IsRpcStrongTypedCollectionContainingRpcInterface(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					auto elementType = GetRpcStrongTypedCollectionElementType(type);
+					if (!elementType) return false;
+					return IsRpcInterfaceSharedType(elementType, rpcInterfaceTds)
+						|| IsRpcStrongTypedCollectionContainingRpcInterface(elementType, rpcInterfaceTds);
+				}
+
+				bool IsDefaultRpcTransferByref(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					return IsRpcStrongTypedCollection(type)
+						&& (IsRpcObservableStrongTypedCollection(type)
+							|| IsRpcStrongTypedCollectionContainingRpcInterface(type, rpcInterfaceTds));
+				}
+
 				void SplitTypeFullName(const WString& typeFullName, List<WString>& fragments)
 				{
 					vint start = 0;
@@ -10240,6 +10329,18 @@ namespace vl
 					auto rpcByrefAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Byref>();
 					auto rpcCachedAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Cached>();
 					auto rpcDynamicAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Dynamic>();
+					SortedList<ITypeDescriptor*> rpcInterfaceTds;
+
+					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
+					{
+						if (auto td = FindRpcTypeDescriptor(manager, typeFullName))
+						{
+							if (!rpcInterfaceTds.Contains(td))
+							{
+								rpcInterfaceTds.Add(td);
+							}
+						}
+					}
 
 					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
 					{
@@ -10259,8 +10360,9 @@ namespace vl
 						interfaceModel.typeId = manager->rpcMetadata->typeFullNames.IndexOf(typeFullName);
 						interfaceModel.ctor = HasRpcAttribute(interfaceDecl->attributes, L"Ctor");
 						interfaceModel.interfaceDecl = interfaceDecl;
+						auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName);
 
-						if (auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName))
+						if (typeDescriptor)
 						{
 							for (vint i = 0; i < typeDescriptor->GetBaseTypeDescriptorCount(); i++)
 							{
@@ -10312,7 +10414,7 @@ namespace vl
 							}
 						}
 
-						if (auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName))
+						if (typeDescriptor)
 						{
 							for (vint i = 0; i < typeDescriptor->GetPropertyCount(); i++)
 							{
@@ -10451,12 +10553,37 @@ namespace vl
 								eventModel.name = eventDecl->name.value;
 								eventModel.eventId = typeCount + methodCount + manager->rpcMetadata->eventFullNames.IndexOf(eventFullName);
 
+								ITypeInfo* handlerGenericType = nullptr;
+								if (typeDescriptor)
+								{
+									for (vint j = 0; j < typeDescriptor->GetEventCount(); j++)
+									{
+										auto eventInfo = typeDescriptor->GetEvent(j);
+										if (eventInfo && eventInfo->GetOwnerTypeDescriptor() == typeDescriptor && eventInfo->GetName() == eventModel.name)
+										{
+											auto handlerType = eventInfo->GetHandlerType();
+											if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+											{
+												auto genericType = handlerType->GetElementType();
+												if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+												{
+													handlerGenericType = genericType;
+												}
+											}
+											break;
+										}
+									}
+								}
+
 								for (vint i = 0; i < eventDecl->arguments.Count(); i++)
 								{
 									RpcParamModel paramModel;
 									paramModel.name = L"arg" + itow(i);
 									paramModel.type = CopyType(eventDecl->arguments[i].Obj());
-									paramModel.byref = false;
+									auto genericArgumentIndex = i + 1;
+									paramModel.byref = handlerGenericType && genericArgumentIndex < handlerGenericType->GetGenericArgumentCount()
+										? IsDefaultRpcTransferByref(handlerGenericType->GetGenericArgument(genericArgumentIndex), rpcInterfaceTds)
+										: dynamic_cast<WfObservableListType*>(eventDecl->arguments[i].Obj()) != nullptr;
 									eventModel.params.Add(std::move(paramModel));
 								}
 
@@ -10542,7 +10669,7 @@ namespace vl
 					for (vint i = 0; i < eventModel.params.Count(); i++)
 					{
 						auto&& paramModel = eventModel.params[i];
-						AddStatement(block, CreateVariableStatement(paramModel.name, CopyType(paramModel.type.Obj()), CreateCast(CopyType(paramModel.type.Obj()), CreateLifecycleHelperCall(L"RpcUnboxByval", CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc")))));
+						AddStatement(block, CreateVariableStatement(paramModel.name, CopyType(paramModel.type.Obj()), CreateCast(CopyType(paramModel.type.Obj()), CreateLifecycleHelperCall(paramModel.byref ? L"RpcUnboxByref" : L"RpcUnboxByval", CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc")))));
 						invoke->arguments.Add(CreateReference(paramModel.name));
 					}
 					AddStatement(block, CreateExpressionStatement(invoke));
@@ -10920,7 +11047,7 @@ namespace vl
 						for (vint i = 0; i < eventModel->params.Count(); i++)
 						{
 							auto&& paramModel = eventModel->params[i];
-							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"lc")))));
+							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(paramModel.byref ? L"RpcBoxByref" : L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"lc")))));
 						}
 						AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"InvokeEvent"), CreateReference(L"ref"), CreateRpcConstantReference(L"rpcevent_", eventModel->fullName), CreateReference(L"arguments"))));
 
