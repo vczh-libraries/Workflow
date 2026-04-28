@@ -1,0 +1,53 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+namespace RpcNullable
+{
+  @rpc:Interface
+  interface IValue
+  {
+    @rpc:Cached
+    prop Value : string {const, not observe}
+  }
+
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+    func Print(value : string?, v : IValue^) : string;
+  }
+}
+
+var s = "";
+
+func serviceMain(lc : IRpcLifeCycle*) : void
+{
+  var serviceObj = new (RpcNullable::IService^)
+  {
+    override func Print(value : string?, v : RpcNullable::IValue^) : string
+    {
+      var nullableText = value is null ? "null" : cast string value;
+      var valueText = v is null ? "null" : v.Value;
+      return "[" & nullableText & "][" & valueText & "]";
+    }
+  };
+  lc.RegisterService("RpcNullable::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifeCycle*) : string
+{
+  var service = cast (RpcNullable::IService^) lc.RequestService("RpcNullable::IService");
+
+  s = s & service.Print("abc", null);
+  var value = new (RpcNullable::IValue^)
+  {
+    override func GetValue() : string
+    {
+      return "def";
+    }
+  };
+  s = s & service.Print(null, value);
+
+  return s;
+}
