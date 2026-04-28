@@ -2,42 +2,33 @@
 
 Follow job.new-sample.md to add new samples, indentation should be double spaces no matter how the code below is written:
 
-## Sample Rpc\DtorPropCached.txt
+## Sample Rpc\EventArgs.txt
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcDtorPropCached
+namespace YourFavoriteNamespace // use RpcEventArgs
 {
-  @rpc:Interface
-  interface IValue
-  {
-  }
-
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    @rpc:Cached
-    prop Value : IValue^ {const}
+    event SomethingHappened(int[], observe int[]);
 
-    func SetValue(value : IValue^) : void;
-    func Signal() : void;
+    func MakeItHappen() : void;
+    func AddElement() : void;
 	}
 }
 
 var s = "";
 
-func MakeValue(value : string) : IValue^
+func Print(xs : int[]) : void
 {
-  return new IValue^
+  for (x in xs)
   {
-    delete
-    {
-      s = $"$(s)[Deleted:$(value)]";
-    }
+    s = $"$(s)[$(x)]";
   }
 }
 
@@ -45,21 +36,18 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    var _Value : IValue^ = MakeValue("A");
+    var xs : int[] = {1 2};
+    var ys : observe int[] = {3 4};
 
-    override func GetValue() : IValue^
+    func MakeItHappen() : void
     {
-      return _Value;
+      SomethingHappened(xs, ys);
     }
 
-    override func SetValue(value : IValue^) : void
+    func AddElement() : void
     {
-      _Value = value;
-    }
-
-    override func Signal() : void
-    {
-      ValueChanged();
+      xs.Add(5);
+      ys.Add(6);
     }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
@@ -68,75 +56,28 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  attach(service.ValueChanged, [s = $"$(s)[ValueChanged]]);
-
-  // No wrapper in the service wrapper, calling SetValue would cause the A value to be destroyed immediately
-  s = $"$(s)[1];
-  service.SetValue(MakeValue("B"));
-
-  // call GetValue the first time triggers the read, storing B value in the service wrapper
-  s = $"$(s)[2];
-  var v = service.Value;
-
-  // call SetValue, but the event is not signaled, so @rpc:Cached properties updating is not visible in the service wrapper
-  s = $"$(s)[3];
-  service.SetValue(MakeValue("C"));
-  if (v != service.Value)
+  var xs : int[] = null;
+  var ys : observe int[] = null;
+  attach(service.SomethingHappened, func(_xs : int[], _ys : observe int[]) : void
   {
-    raise "IService::Value in clientMain should not change before calling IService::Signal";
-  }
+    xs = _xs;
+    ys = _ys;
+  });
+  
+  service.MakeItHappen();
+  service.AddElement();
+  Print(xs);
+  Print(ys);
 
-  // trigger the event, the cached property value in the service wrapper is marked inavailable, but the B value is still there
-  s = $"$(s)[4];
-  service.Signal();
-
-  // Read the property again, the B value in the service wrapper will be replaced
-  // No outside variable to catch the C value, but it is still in the service wrapper
-  // A value is in variable v
-  s = $"$(s)[5];
-  service.Value;
-
-  // Reset v causing B value to destroy
-  s = $"$(s)[6];
-  v = null;
-
-  // call SetValue again
-  s = $"$(s)[7];
-  service.SetValue(MakeValue("D"));
-
-  // trigger the event
-  s = $"$(s)[8];
-  service.Signal();
-
-  // Read the property again, the C value in the service wrapper will be replaced
-  s = $"$(s)[9];
-  service.Value;
-
-  return s; // [1][Deleted:A][2][3][4][5][6][Delete:B][7][8][9][Deleted:C]
+  return s; // [1][2][3][4][6]
 }
 ```
-
-## Sample Rpc\DtorPropCachedListByval.txt
-
-The same to `Rpc\DtorPropCached.txt` but change the:
-- property type to `IValue^[]`, initialized with A in the list, and later replaced each time, with a new list containing a new value.
-- use `@rpc:Byval` on property.
-- variable v in clientMain becomes IValue^[] too.
-- the output should remain. even when the property container is copied, but the IValue still a reference.
-
-## Sample Rpc\DtorPropCachedListVByref.txt
-
-The same to `Rpc\DtorPropCached.txt` but change the:
-- property type to `IValue^[]`, initialized with A in the list, and later replaced each time, with a new list containing a new value.
-- use `@rpc:Byref` on property.
-- variable v in clientMain becomes IValue^[] too.
-- the output should remain. the property container is wrapperd, it should affect the lifecycle of its element which is a IValue reference.
 
 ## Goal
 
 In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
 This test is to ensure that:
-- @rpc:Cached properties cache their value on the first reading, and the cache will be invalidate when the associated changed event triggered.
+- `@rpc:Byval` and `@rpc:Byref` cannot apply to event arguments, but it uses the default options, according to the same rule for function arguments.
 
 If the current implemention is correct, the added samples should just pass the test.
 

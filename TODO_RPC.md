@@ -17,11 +17,7 @@
 ## ToDo
 
 - Continue to add more test cases until all features are covered.
-  - Cached properties with dtor affected by cached value
-    - Interface type
-    - Collection type
   - Sending cached property values proactively from remote to wrapper.
-  - Event argument default byref/byval options.
   - Passing null to interface.
   - Passing null to nullable.
 - Generate JSON from "RPC metadata in Workflow syntax".
