@@ -721,10 +721,10 @@ Error Messages
 				static glr::ParsingError					RpcAttributeRequiresStrongTypedCollection(WfAttribute* node, const WString& attributeName, const WString& memberName);
 				static glr::ParsingError					RpcAttributeCanOnlyApplyToProperty(WfAttribute* node, const WString& attributeName);
 				static glr::ParsingError					RpcAttributeCannotCoexistWithOther(WfAttribute* node, const WString& attributeName, const WString& otherAttributeName, const WString& memberName);
+				static glr::ParsingError					RpcGeneratedNameConflict(WfDeclaration* node, const WString& category, const WString& generatedName);
 				static glr::ParsingError					RpcWrapperGenerationRequiresPropertyMode(WfPropertyDeclaration* node, const WString& memberName);
 				static glr::ParsingError					RpcWrapperGenerationRequiresCollectionReturnTransfer(WfFunctionDeclaration* node, const WString& memberName);
 				static glr::ParsingError					RpcWrapperGenerationRequiresCollectionParameterTransfer(WfFunctionArgument* node, const WString& memberName);
-				static glr::ParsingError					RpcGeneratedNameConflict(WfDeclaration* node, const WString& category, const WString& generatedName);
 				static glr::ParsingError					RpcMangledNameConflict(WfDeclaration* node, const WString& mangledName, const WString& previousFullName, const WString& currentFullName);
 
 				// CPP: C++ code generation error

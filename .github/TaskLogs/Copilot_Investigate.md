@@ -54,7 +54,7 @@ Success criteria:
 # PROPOSALS
 
 - No.1 Split RPC lifecycle mocks from controller mocks [CONFIRMED]
-- No.2 Reorder `WfErrors` H and Cpp groups
+- No.2 Reorder `WfErrors` H and Cpp groups [CONFIRMED]
 
 ## No.1 Split RPC lifecycle mocks from controller mocks
 
@@ -89,3 +89,25 @@ All required unit tests passed:
 ### CODE CHANGE
 
 Move the RPC attribute-checking `WfErrors` declarations/definitions before C++ code-generation errors, keeping each group internally ordered by error number and keeping header/cpp order identical.
+
+Implemented in `Source/Analyzer/WfAnalyzer.h` and `Source/Analyzer/WfAnalyzer_Errors.cpp`:
+
+- Moved `RpcGeneratedNameConflict` (`H9`) before `RpcWrapperGenerationRequiresPropertyMode` (`I0`).
+- Kept `RpcWrapperGenerationRequiresPropertyMode`, `RpcWrapperGenerationRequiresCollectionReturnTransfer`, `RpcWrapperGenerationRequiresCollectionParameterTransfer`, and `RpcMangledNameConflict` as the `I0` to `I3` group.
+- Left the `CppUnableToDecideClassOrder` and `CppUnableToSeparateCustomFile` C++ code-generation errors after the I group.
+
+### CONFIRMED
+
+Task 2 is confirmed.
+
+Debug Win32 and x64 builds passed with `0 Warning(s)` and `0 Error(s)`.
+
+All required unit tests passed:
+
+- `LibraryTest`: Win32 and x64.
+- `CompilerTest_GenerateMetadata`: Win32 and x64.
+- `CompilerTest_LoadAndCompile`: x64.
+- `RuntimeTest`: Win32 and x64.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`: Win32 and x64.
+
+The repository-level final verification `..\Tools\Tools\Build.ps1 Workflow` also passed. It updated the generated release mirror files `Release\VlppWorkflowCompiler.h` and `Release\VlppWorkflowCompiler.cpp` with the same declaration and definition reorder.
