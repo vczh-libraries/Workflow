@@ -2,43 +2,57 @@
 
 Follow job.new-sample.md to add new samples, indentation should be double spaces no matter how the code below is written:
 
-## Sample Rpc\PropCached.txt
-
-Also copy `PropDefault.txt` but removing `@rpc:Cached`, so that we can verify omitting means `@rpc:Cached` for properties.
+## Sample Rpc\DtorPropCached.txt
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcPropCached or RpcPropDefault
+namespace YourFavoriteNamespace // use RpcDtorPropCached
 {
+  @rpc:Interface
+  interface IValue
+  {
+  }
+
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    @rpc:Cached // no such line in PropDefault.txt
-    prop Value : string {const}
+    @rpc:Cached
+    prop Value : IValue^ {const}
 
-    func SetValue(value : string) : void;
+    func SetValue(value : IValue^) : void;
     func Signal() : void;
 	}
 }
 
 var s = "";
 
+func MakeValue(value : string) : IValue^
+{
+  return new IValue^
+  {
+    delete
+    {
+      s = $"$(s)[Deleted:$(value)]";
+    }
+  }
+}
+
 func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    var _Value : string = "A";
+    var _Value : IValue^ = MakeValue("A");
 
-    override func GetValue() : string
+    override func GetValue() : IValue^
     {
       return _Value;
     }
 
-    override func SetValue(value : string) : void
+    override func SetValue(value : IValue^) : void
     {
       _Value = value;
     }
@@ -56,87 +70,67 @@ func clientMain(lc : IRpcLifeCycle*) : string
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
   attach(service.ValueChanged, [s = $"$(s)[ValueChanged]]);
 
-  // call GetValue the first time triggers the read
-  s = $"$(s)[$(service.Value)];
+  // No wrapper in the service wrapper, calling SetValue would cause the A value to be destroyed immediately
+  s = $"$(s)[1];
+  service.SetValue(MakeValue("B"));
 
-  // call SetValue, but the event is not signaled, so @rpc:Cached properties updating on wrapper side is not triggered
-  service.SetValue("B");
-  s = $"$(s)[$(service.Value)];
+  // call GetValue the first time triggers the read, storing B value in the service wrapper
+  s = $"$(s)[2];
+  var v = service.Value;
+
+  // call SetValue, but the event is not signaled, so @rpc:Cached properties updating is not visible in the service wrapper
+  s = $"$(s)[3];
+  service.SetValue(MakeValue("C"));
+  if (v != service.Value)
+  {
+    raise "IService::Value in clientMain should not change before calling IService::Signal";
+  }
+
+  // trigger the event, the cached property value in the service wrapper is marked inavailable, but the B value is still there
+  s = $"$(s)[4];
+  service.Signal();
+
+  // Read the property again, the B value in the service wrapper will be replaced
+  // No outside variable to catch the C value, but it is still in the service wrapper
+  // A value is in variable v
+  s = $"$(s)[5];
+  service.Value;
+
+  // Reset v causing B value to destroy
+  s = $"$(s)[6];
+  v = null;
+
+  // call SetValue again
+  s = $"$(s)[7];
+  service.SetValue(MakeValue("D"));
 
   // trigger the event
-  service.Siangl();
-  s = $"$(s)[$(service.Value)];
+  s = $"$(s)[8];
+  service.Signal();
 
-  return s; // [A][A][ValueChanged][B]
+  // Read the property again, the C value in the service wrapper will be replaced
+  s = $"$(s)[9];
+  service.Value;
+
+  return s; // [1][Deleted:A][2][3][4][5][6][Delete:B][7][8][9][Deleted:C]
 }
 ```
 
-## Sample Rpc\PropDynamic.txt
+## Sample Rpc\DtorPropCachedListByval.txt
 
-```Workflow
-module Rpc;
-using system::*;
-using RpcWrapperTest::*;
+The same to `Rpc\DtorPropCached.txt` but change the:
+- property type to `IValue^[]`, initialized with A in the list, and later replaced each time, with a new list containing a new value.
+- use `@rpc:Byval` on property.
+- variable v in clientMain becomes IValue^[] too.
+- the output should remain. even when the property container is copied, but the IValue still a reference.
 
-namespace YourFavoriteNamespace // use RpcPropDynamic
-{
-	@rpc:Interface
-	@rpc:Ctor
-	interface IService
-	{
-    @rpc:Dynamic
-    prop Value : string {const}
+## Sample Rpc\DtorPropCachedListVByref.txt
 
-    func SetValue(value : string) : void;
-    func Signal() : void;
-	}
-}
-
-var s = "";
-
-func serviceMain(lc : IRpcLifeCycle*) : void
-{
-	var serviceObj = new (YourFavoriteNamespace::IService^)
-	{
-    var _Value : string = "A";
-
-    override func GetValue() : string
-    {
-      return _Value;
-    }
-
-    override func SetValue(value : string) : void
-    {
-      _Value = value;
-    }
-
-    override func Signal() : void
-    {
-      ValueChanged();
-    }
-	};
-	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
-}
-
-func clientMain(lc : IRpcLifeCycle*) : string
-{
-	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  attach(service.ValueChanged, [s = $"$(s)[ValueChanged]]);
-
-  // call GetValue the first time triggers the read
-  s = $"$(s)[$(service.Value)];
-
-  // call SetValue, no matter ValueChanged triggered or not, @rpc:Dynamic always perform reading on GetValue
-  service.SetValue("B");
-  s = $"$(s)[$(service.Value)];
-
-  // trigger the event
-  service.Siangl();
-  s = $"$(s)[$(service.Value)];
-
-  return s; // [A][B][ValueChanged][B]
-}
-```
+The same to `Rpc\DtorPropCached.txt` but change the:
+- property type to `IValue^[]`, initialized with A in the list, and later replaced each time, with a new list containing a new value.
+- use `@rpc:Byref` on property.
+- variable v in clientMain becomes IValue^[] too.
+- the output should remain. the property container is wrapperd, it should affect the lifecycle of its element which is a IValue reference.
 
 ## Goal
 
@@ -144,14 +138,7 @@ In this task you are going to build and run test cases to verify if these cases 
 This test is to ensure that:
 - @rpc:Cached properties cache their value on the first reading, and the cache will be invalidate when the associated changed event triggered.
 
-## Implementation
-
-For auto property, without `{... not observe}` the event will always be `PropertyNameChanged`. For trival property, the event name is specified in `{... : EventName}`.
-Follow the WfAssembly generation and C++ reflection code generation to figure out how such information should be correctly read.
-It is acceptable when @rpc:Cached decorates an property without associated event. In this case there will be no refreshing you can do, it is fine. Extra mechanism will be offered in the future. The expected behavior of such property is to, only call the getter when the property is first read, and the value in the wrapper remain unchanged forever.
-In the generated wrapper, you can generated `PropertyName<Cached> : T` and `PropertyName<Available> : bool` pair of variables for caching.
-When the getter is called, only when it is unavailable, the remote caller will be called and the cached value will be refreshed, and then it becomes available.
-The wrapper should also attach to the property changed event (if it exists), and set it to unavailable when the event is triggered.
+If the current implemention is correct, the added samples should just pass the test.
 
 ## Verifying Samples
 
