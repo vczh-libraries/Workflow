@@ -17,6 +17,7 @@
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
+- `RpcDualLifecycleMock::RegisterLocalObjectOps` should not exist, we should have a central place to show which lifecycle has the service instance.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - JSON for predefined types.
   - `RpcLifecycleBase` and `RpcLifecycleJson`.

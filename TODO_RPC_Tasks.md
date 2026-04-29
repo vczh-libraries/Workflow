@@ -3,20 +3,22 @@
 You should complete tasks one by one.
 `General Instruction` is for each tasks, which means, during doing each task:
 - you have to run unit test to make sure your change works.
-- you have to follow complete instructions in `Rules\verify-and-commit.md` to finish the current task, before doing the next task.
+- you have to follow complete instructions in `Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
 
 ## Task 1
 
-- Remove the reflection for `RpcLifecycleMock`. The reason that adding the reflection will gone once the rest of the task is implemented currently.
-- Rename `RpcLifecycleMock` to `RpcControllerMock`, including the header and cpp file name.
-- Instead of `RpcByvalLifecycleMock` and `RpcDualLifecycleMock` inheriting from `RpcLifecycleMock`:
-  - They create sub classes of `RpcControllerMock` internally and return it to the `GetController` function. `IRpcLifecycle` does not inherit `IRpcController` so this step should be easy.
-  - Both class implements 4 remaining function in `RpcControllerMock`, now you need to create:
-    - `RpcByvalControllerMock` and `RpcDualControllerMock` and move necessary members to them.
-    - In these controller mocks friend their own lifecycle mocks.
-    - Lifecycle mocks return them to the `GetController` function.
-    - This is a chance to split implementations, rely on it wisely. The ideal situation will be lifecycle mocks don't need to access internal members in controller mocks completely, but if you have no choice (having to duplicate data in both controller and lifecycle is not acceptable, by the way), you can share limited members.
+Refactor `RpcDualLifecycleMock.(h|cpp).
 
-## Task 2
-
-Reorder WfError::xxx static functions in the cpp file, to move all H on top of all I on to of all Cpp. In each group order by their number. Keep the order of declarations in WfError using the same order in their cpp file.
+- `controller.localObjectProperties` is readonly in `RpcDualLifecycleMock`, Make a `const ...& RpcDualControllerMock::GetLocalObjectProperties();`.
+- I don't think `RpcDualControllerModk::pendingProxyRef` is even useful, we should delete it. It is changed in `RpcDualLifecycleMock::CreateCallerProxy`, but `universalWrapperFactory` does not call `RequestService`, which means `RequestService` is supposed to always see an empty value. Delete this variable and the meaningless code using it.
+- Now the only two private `RpcDualControllerMock` members usage in `RpcDualLifecycleMock` is eliminated, we should remove the `friend` declaration.
+- In `RpcDualLifecycleMock`:
+  - `wrapperProperties` should be a dictionary whose key is the `ref`. Since this is the only way how it search data.
+  - `suppressedEvents` should be a SortedList, and by making `RpcDualEventDispatch` comparible, `IsSameEvent` could be deleted.
+    - The idea of `suppressedEvents` actually looks wired. Because when we received an event, but the object is not used in this lifecycle (by finding no record of this local object or wrapper), the event could just be discarded. So maybe we could just delete `suppressedEvents` and code using it directly.
+  - `forwardingEvents` should be a SortedList, pushing and poping is not necessary, just add and remove.
+    - `forwardingEvents` should not be static. And if the intention is to enable communication between lifecycles, this would be totally wrong to do it in this way. Lifecycles do not talk to each other through anything other than 4 ops interfaces.
+  - `try-catch` in `RpcDualControllerMock::InvokeEvent` is unnecessary, there should be no exception, catching it just hide the problem. If any exception is raised, it is a bug (so far).
+  - `services` should not be necessary, because the actual service map is stored in generated `IRpcObjectOps` in each wrapper Workflow script. `RpcDualControllerMock` is not supposed to maintain anything.
+    - `DisconnectServices` looks like need to be moved to the destructor in generated `IRpcObjectOps` implementations.
+  - `UnregisterAllLocalObjects` could be moved to `RpcDualControllerMock`, better inside its destructor.

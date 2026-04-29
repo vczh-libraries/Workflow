@@ -14,8 +14,8 @@ namespace vl
 
 		struct RpcDualEventDispatch
 		{
-			rpc_controller::RpcObjectReference					ref;
-			vint													eventId = 0;
+			rpc_controller::RpcObjectReference				ref;
+			vint											eventId = 0;
 		};
 
 		class RpcDualLocalObjectTracker : public Object
@@ -112,8 +112,8 @@ namespace vl
 			static WString															InternalProperty_WrapperTracker;
 			static collections::List<RpcDualEventDispatch>							forwardingEvents;
 			UniversalWrapperFactory													universalWrapperFactory;
-			Ptr<rpc_controller::IRpcObjectOps>									localObjectCallback;
-			collections::Dictionary<WString, Ptr<reflection::IDescriptable>>			services;
+			Ptr<rpc_controller::IRpcObjectOps>										localObjectCallback;
+			collections::Dictionary<WString, Ptr<reflection::IDescriptable>>		services;
 			collections::List<RpcWrapperProperties>									wrapperProperties;
 			collections::List<RpcDualEventDispatch>									suppressedEvents;
 
