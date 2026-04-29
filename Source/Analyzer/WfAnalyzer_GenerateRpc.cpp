@@ -350,6 +350,13 @@ namespace vl
 					return type;
 				}
 
+				Ptr<WfType> CreateNullableType(const WString& fullName)
+				{
+					auto type = Ptr(new WfNullableType);
+					type->element = CreateQualifiedType(fullName);
+					return type;
+				}
+
 				Ptr<WfType> CreateMapType(Ptr<WfType> keyType, Ptr<WfType> valueType)
 				{
 					auto type = Ptr(new WfMapType);
@@ -1101,7 +1108,7 @@ namespace vl
 					auto trueBranch = CreateBlock();
 					AddStatement(trueBranch, CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateIndex(CreateReference(L"_services"), CreateReference(L"typeId")))));
 					AddStatement(block, CreateIf(containsTypeId, trueBranch));
-					AddStatement(block, CreateReturn(CreateConstructor()));
+					AddStatement(block, CreateReturn(CreateNull()));
 					return block;
 				}
 
@@ -1275,7 +1282,7 @@ namespace vl
 					}
 
 					{
-						auto requestService = CreateFunctionDeclaration(L"RequestService", CreateQualifiedType(L"system::RpcObjectReference"), WfFunctionKind::Override);
+						auto requestService = CreateFunctionDeclaration(L"RequestService", CreateNullableType(L"system::RpcObjectReference"), WfFunctionKind::Override);
 						requestService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						AddStatement(requestService->statement.Cast<WfBlockStatement>(), BuildRequestService());
 						newOps->declarations.Add(requestService);

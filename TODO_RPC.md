@@ -18,6 +18,8 @@
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
 - `RpcDualLifecycleMock::RegisterLocalObjectOps` should not exist, we should have a central place to show which lifecycle has the service instance.
+  - Clean `RpcDualLifecycleMock::RequestService` with wired checking `localObjectCallback->RequestService` followed by `controller.RequestService`.
+  - Find if there is any magic number that should use constants at the very top of `WfLibraryRpc.h`.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - JSON for predefined types.
   - `RpcLifecycleBase` and `RpcLifecycleJson`.

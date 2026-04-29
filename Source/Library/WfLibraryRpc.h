@@ -15,11 +15,15 @@ namespace vl
 {
 	namespace rpc_controller
 	{
+		constexpr vint RpcTypeId_NotFound = -100;
+		constexpr vint RpcClientId_Invalid = -1;
+		constexpr vint RpcObjectId_Invalid = -1;
+
 		struct RpcObjectReference
 		{
-			vl::vint						clientId = 0;
-			vl::vint						objectId = 0;
-			vl::vint						typeId = 0;
+			vl::vint						clientId = RpcClientId_Invalid;
+			vl::vint						objectId = RpcObjectId_Invalid;
+			vl::vint						typeId = RpcTypeId_NotFound;
 
 			auto operator<=>(const RpcObjectReference&) const = default;
 		};
@@ -74,7 +78,7 @@ namespace vl
 			virtual vl::Ptr<vl::reflection::description::IAsync>		InvokeMethodAsync(RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
 			virtual void												ObjectHold(RpcObjectReference ref, vl::vint remoteClientId, bool hold) = 0;
 			virtual void												RegisterService(vl::vint typeId, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
-			virtual RpcObjectReference									RequestService(vl::vint typeId) = 0;
+			virtual Nullable<RpcObjectReference>						RequestService(vl::vint typeId) = 0;
 		};
 
 		class IRpcListEventOps

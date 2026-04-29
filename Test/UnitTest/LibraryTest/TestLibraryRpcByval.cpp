@@ -13,11 +13,11 @@ namespace
 	class StubObjectOps : public Object, public IRpcObjectOps
 	{
 	public:
-		Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return {}; }
-		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override { (void)ref; (void)methodId; (void)arguments; CHECK_FAIL(L"Not Supported!"); return nullptr; }
-		void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override { (void)ref; (void)remoteClientId; (void)hold; CHECK_FAIL(L"Not Supported!"); }
-		void RegisterService(vint typeId, Ptr<IDescriptable> service)override { (void)typeId; (void)service; CHECK_FAIL(L"Not Supported!"); }
-		RpcObjectReference RequestService(vint typeId)override { (void)typeId; CHECK_FAIL(L"Not Supported!"); return {}; }
+		Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override				{ CHECK_FAIL(L"Not Supported!"); }
+		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override	{ CHECK_FAIL(L"Not Supported!"); }
+		void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override								{ CHECK_FAIL(L"Not Supported!"); }
+		void RegisterService(vint typeId, Ptr<IDescriptable> service)override										{ CHECK_FAIL(L"Not Supported!"); }
+		Nullable<RpcObjectReference> RequestService(vint typeId)override											{ CHECK_FAIL(L"Not Supported!"); }
 	};
 
 	class StubObjectEventOps : public Object, public IRpcObjectEventOps

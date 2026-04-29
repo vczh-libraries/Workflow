@@ -7,8 +7,6 @@ namespace vl
 {
 	namespace rpc_controller_test
 	{
-		static constexpr vint RpcTypeId_NotFound = -100;
-
 		class RpcDualLifecycleMock;
 		class RpcDualControllerMock;
 
@@ -71,8 +69,8 @@ namespace vl
 		{
 		private:
 			RpcDualLifecycleMock*													lifecycle = nullptr;
-			vint																	clientId = 1;
-			vint																	nextObjectId = 1;
+			vint																	clientId = rpc_controller::RpcClientId_Invalid;
+			vint																	nextObjectId = rpc_controller::RpcObjectId_Invalid;
 			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>			localObjectProperties;
 		public:
 			RpcDualControllerMock(RpcDualLifecycleMock* lc, vint _clientId);
@@ -105,6 +103,7 @@ namespace vl
 			friend class RpcDualLocalObjectTracker;
 			friend class RpcDualWrapperTracker;
 			using UniversalWrapperFactory = Func<Ptr<rpc_controller::IRpcWrapperBase>(rpc_controller::RpcObjectReference, rpc_controller::IRpcLifeCycle*)>;
+			using WrapperProperties = collections::Dictionary<rpc_controller::RpcObjectReference, RpcWrapperProperties>;
 		private:
 			RpcDualControllerMock													controller;
 			static WString															InternalProperty_LocalObjectTracker;
@@ -112,7 +111,7 @@ namespace vl
 			collections::SortedList<RpcDualEventDispatch>							forwardingEvents;
 			UniversalWrapperFactory													universalWrapperFactory;
 			Ptr<rpc_controller::IRpcObjectOps>										localObjectCallback;
-			collections::Dictionary<rpc_controller::RpcObjectReference, RpcWrapperProperties>	wrapperProperties;
+			WrapperProperties														wrapperProperties;
 
 			bool																	BeginForwardingEvent(rpc_controller::RpcObjectReference ref, vint eventId);
 			void																	EndForwardingEvent(rpc_controller::RpcObjectReference ref, vint eventId);

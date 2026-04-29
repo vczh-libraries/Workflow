@@ -81,7 +81,7 @@ namespace vl
 			RequireObjectCallback()->RegisterService(typeId, service);
 		}
 
-		RpcObjectReference RpcControllerMock::RequestService(vint typeId)
+		Nullable<RpcObjectReference> RpcControllerMock::RequestService(vint typeId)
 		{
 			return RequireObjectCallback()->RequestService(typeId);
 		}

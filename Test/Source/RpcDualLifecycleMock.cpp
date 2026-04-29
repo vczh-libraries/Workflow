@@ -106,7 +106,7 @@ namespace vl
 
 		RpcObjectReference RpcDualControllerMock::RegisterLocalObject(vint typeId)
 		{
-			auto ref = RpcObjectReference{ clientId, nextObjectId++, typeId };
+			auto ref = RpcObjectReference{ clientId, ++nextObjectId, typeId };
 			CHECK_ERROR(!localObjectProperties.Keys().Contains(ref.objectId), L"RpcDualControllerMock::RegisterLocalObject: Object ID already registered.");
 			auto props = Ptr(new RpcLocalObjectProperties());
 			props->ref = ref;
@@ -208,7 +208,6 @@ namespace vl
 		RpcDualLifecycleMock::~RpcDualLifecycleMock()
 		{
 			DisconnectTrackedWrappers();
-			controller.UnregisterAllLocalObjects();
 			localObjectCallback = nullptr;
 		}
 
@@ -386,11 +385,8 @@ namespace vl
 
 		void RpcDualLifecycleMock::DisconnectTrackedWrappers()
 		{
-			while (wrapperProperties.Count() > 0)
+			for (auto [ref, properties] : wrapperProperties)
 			{
-				auto ref = wrapperProperties.Keys()[wrapperProperties.Count() - 1];
-				auto properties = wrapperProperties.Values()[wrapperProperties.Count() - 1];
-				wrapperProperties.Remove(ref);
 				controller.ReleaseRemoteObject(ref);
 
 				if (properties.root)
@@ -408,6 +404,7 @@ namespace vl
 					properties.proxy->DisconnectFromLifecycle();
 				}
 			}
+			wrapperProperties.Clear();
 		}
 
 		bool RpcDualLifecycleMock::TryGetTrackedWrapperRef(DescriptableObject* obj, RpcObjectReference& ref)const
@@ -520,14 +517,14 @@ namespace vl
 				if (localObjectCallback)
 				{
 					auto localRef = localObjectCallback->RequestService(typeId);
-					if (localRef.clientId != 0)
+					if (localRef)
 					{
-						return RefToPtr(localRef);
+						return RefToPtr(localRef.Value());
 					}
 				}
 				auto ref = controller.RequestService(typeId);
-				CHECK_ERROR(ref.clientId != 0, L"RpcDualLifecycleMock::RequestService: RPC service is not registered.");
-				return CreateCallerProxy(ref);
+				CHECK_ERROR(ref, L"RpcDualLifecycleMock::RequestService: RPC service is not registered.");
+				return CreateCallerProxy(ref.Value());
 			}
 
 			return nullptr;

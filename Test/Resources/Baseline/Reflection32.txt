@@ -325,7 +325,7 @@ interface system::IRpcObjectOps : system::Interface {
     function InvokeMethodAsync(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Async^;
     function ObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32, hold : system::Boolean) : system::Void;
     function RegisterService(typeId : system::Int32, service : system::Interface^) : system::Void;
-    function RequestService(typeId : system::Int32) : system::RpcObjectReference;
+    function RequestService(typeId : system::Int32) : system::RpcObjectReference?;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create)

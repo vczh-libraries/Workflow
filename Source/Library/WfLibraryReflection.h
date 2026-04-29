@@ -210,7 +210,7 @@ Interface Implementation Proxy (Implement)
 					INVOKE_INTERFACE_PROXY(RegisterService, typeId, service);
 				}
 
-				vl::rpc_controller::RpcObjectReference RequestService(vl::vint typeId)override
+				vl::Nullable<vl::rpc_controller::RpcObjectReference> RequestService(vl::vint typeId)override
 				{
 					INVOKEGET_INTERFACE_PROXY(RequestService, typeId);
 				}
