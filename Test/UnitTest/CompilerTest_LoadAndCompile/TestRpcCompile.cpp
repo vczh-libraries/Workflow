@@ -374,7 +374,7 @@ namespace RpcServiceValidationTest
 			TEST_ASSERT(wcsstr(registerService, L"raise \"RPC service type id is not an @rpc:Ctor interface.\";") != nullptr);
 			TEST_ASSERT(wcsstr(registerService, L"raise \"RPC service type id does not exist.\";") != nullptr);
 			TEST_ASSERT(wcsstr(requestService, L"_services.Keys.Contains(typeId)") != nullptr);
-			TEST_ASSERT(wcsstr(requestService, L"raise \"RPC service is not registered.\";") != nullptr);
+			TEST_ASSERT(wcsstr(requestService, L"return {};") != nullptr);
 			TEST_ASSERT(wcsstr(wrapperString.Buffer(), L"rpcsvc_EnsureCtorServiceTypeId") == nullptr);
 			TEST_ASSERT(wcsstr(wrapperString.Buffer(), L"rpcsvc_RaiseInvalidServiceTypeId") == nullptr);
 		});

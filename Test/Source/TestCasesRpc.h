@@ -71,8 +71,8 @@ void RunRpcTestCase(
 
 	lc2->GetController()->Register(oo1, oeo1, lo1, leo1);
 	lc1->GetController()->Register(oo2, oeo2, lo2, leo2);
-	lc1->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, lc1.Obj()); });
-	lc2->RegisterWrapperFactory([&](vint typeId, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(typeId, lc2.Obj()); });
+	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(ref, lc1.Obj()); });
+	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(ref, lc2.Obj()); });
 
 	instance.serviceMain(lc1.Obj());
 

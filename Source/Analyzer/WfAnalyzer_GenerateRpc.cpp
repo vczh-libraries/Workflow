@@ -471,6 +471,15 @@ namespace vl
 					return cast;
 				}
 
+				Ptr<WfExpression> CreateWeakCast(Ptr<WfType> type, Ptr<WfExpression> expression)
+				{
+					auto cast = Ptr(new WfTypeCastingExpression);
+					cast->strategy = WfTypeCastingStrategy::Weak;
+					cast->type = type;
+					cast->expression = expression;
+					return cast;
+				}
+
 				template<typename ...TArgs>
 				Ptr<WfCallExpression> CreateCall(Ptr<WfExpression> function, TArgs... arguments)
 				{
@@ -1092,7 +1101,7 @@ namespace vl
 					auto trueBranch = CreateBlock();
 					AddStatement(trueBranch, CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateIndex(CreateReference(L"_services"), CreateReference(L"typeId")))));
 					AddStatement(block, CreateIf(containsTypeId, trueBranch));
-					AddStatement(block, CreateRaise(L"RPC service is not registered."));
+					AddStatement(block, CreateReturn(CreateConstructor()));
 					return block;
 				}
 
@@ -1166,16 +1175,23 @@ namespace vl
 					AddStatement(nonCtorBranch, CreateRaise(L"RPC service type id is not an @rpc:Ctor interface."));
 					auto invalidTypeIdBranch = CreateBlock();
 					AddStatement(invalidTypeIdBranch, CreateRaise(L"RPC service type id does not exist."));
+					auto invalidRegisterBranch = CreateBlock();
+					AddStatement(
+						invalidRegisterBranch,
+						CreateIf(
+							CreateCall(CreateReference(L"rpcwrapper_IsInterfaceTypeId"), CreateReference(L"typeId")),
+							nonCtorBranch,
+							invalidTypeIdBranch
+							)
+						);
+					auto unregisterNonCtorBranch = CreateBlock();
+					AddStatement(unregisterNonCtorBranch, CreateIf(CreateIsNotNull(CreateReference(L"service")), invalidRegisterBranch));
 					AddStatement(
 						block,
 						CreateIf(
 							CreateCall(CreateReference(L"rpcwrapper_IsCtorInterfaceTypeId"), CreateReference(L"typeId")),
 							registerBranch,
-							CreateIf(
-								CreateCall(CreateReference(L"rpcwrapper_IsInterfaceTypeId"), CreateReference(L"typeId")),
-								nonCtorBranch,
-								invalidTypeIdBranch
-							)
+							unregisterNonCtorBranch
 						)
 					);
 					return block;
@@ -1188,6 +1204,35 @@ namespace vl
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
 					newOps->declarations.Add(CreateVariableDeclaration(L"_services", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreateSharedType(L"system::Interface")), CreateConstructor()));
+
+					{
+						auto dtorDecl = Ptr(new WfDestructorDeclaration);
+						auto dtorBlock = CreateBlock();
+						dtorDecl->statement = dtorBlock;
+
+						auto forEachService = Ptr(new WfForEachStatement);
+						forEachService->name.value = L"service";
+						forEachService->direction = WfForEachDirection::Normal;
+						forEachService->collection = CreateMember(CreateReference(L"_services"), L"Values");
+						auto forEachBlock = CreateBlock();
+
+						AddStatement(
+							forEachBlock,
+							CreateVariableStatement(
+								L"wrapper",
+								CreateSharedType(L"system::IRpcWrapperBase"),
+								CreateWeakCast(CreateSharedType(L"system::IRpcWrapperBase"), CreateReference(L"service"))
+								)
+							);
+
+						auto disconnectBranch = CreateBlock();
+						AddStatement(disconnectBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"wrapper"), L"DisconnectFromLifecycle"))));
+						AddStatement(forEachBlock, CreateIf(CreateIsNotNull(CreateReference(L"wrapper")), disconnectBranch));
+
+						forEachService->statement = forEachBlock;
+						AddStatement(dtorBlock, forEachService);
+						newOps->declarations.Add(dtorDecl);
+					}
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
@@ -1472,9 +1517,8 @@ namespace vl
 
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					AddStatement(block, CreateVariableStatement(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference"), CreateCall(CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"RequestService"), CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName))));
 
 					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
@@ -1620,12 +1664,12 @@ namespace vl
 					auto returnType = Ptr(new WfSharedPointerType);
 					returnType->element = CreateQualifiedType(L"system::IRpcWrapperBase");
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", returnType, WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateReference(L"typeId");
+					switchStat->expression = CreateMember(CreateReference(L"ref"), L"typeId");
 					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id for wrapper creation.");
 
 					for (auto&& interfaceModel : interfaces)
@@ -1634,7 +1678,7 @@ namespace vl
 						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
 						auto caseBranch = CreateBlock();
 						auto mangledName = MangleRpcFullName(interfaceModel.fullName);
-						AddStatement(caseBranch, CreateReturn(CreateCall(CreateReference(L"rpcwrapper_" + mangledName), CreateReference(L"lc"))));
+						AddStatement(caseBranch, CreateReturn(CreateCall(CreateReference(L"rpcwrapper_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"))));
 						switchCase->statement = caseBranch;
 						switchStat->caseBranches.Add(switchCase);
 					}

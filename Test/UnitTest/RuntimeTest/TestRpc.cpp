@@ -43,11 +43,15 @@ namespace
 			// Disconnect wrappers while globalContext is still alive,
 			// because DisconnectFromLifecycle executes Workflow bytecode.
 			DisconnectTrackedWrappers();
-			DisconnectServices();
-			UnregisterAllLocalObjects();
+			GetController()->UnregisterAllLocalObjects();
 			listenerAttachFunc = {};
 			wrapperCreateFunc = nullptr;
 			globalContext = nullptr;
+		}
+
+		void DisconnectTrackedWrappersBeforeDispose()
+		{
+			DisconnectTrackedWrappers();
 		}
 
 		void SetGlobalContext(Ptr<WfRuntimeGlobalContext> _globalContext)
@@ -73,11 +77,11 @@ namespace
 					: Func<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>();
 			}
 
-			RegisterWrapperFactory([this, wrapperFactoryLifecycle](vint typeId, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
+			RegisterWrapperFactory([this, wrapperFactoryLifecycle](RpcObjectReference ref, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
 			{
 				(void)lc;
 				auto argList = IValueList::Create();
-				argList->Add(BoxValue<vint>(typeId));
+				argList->Add(BoxValue(ref));
 				argList->Add(BoxValue<IRpcLifeCycle*>(wrapperFactoryLifecycle));
 				auto result = wrapperCreateFunc->Invoke(argList);
 				auto wrapper = Ptr(result.GetRawPtr()->SafeAggregationCast<IRpcWrapperBase>());
@@ -201,6 +205,8 @@ TEST_FILE
 
 				// Explicit cleanup order to avoid circular references
 				// between WfRuntimeGlobalContext and Workflow objects
+				lc2->DisconnectTrackedWrappersBeforeDispose();
+				lc1->DisconnectTrackedWrappersBeforeDispose();
 				lc2->RegisterLocalObjectOps(nullptr);
 				lc1->RegisterLocalObjectOps(nullptr);
 				oeo2 = nullptr;

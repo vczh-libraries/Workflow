@@ -5,109 +5,59 @@
 You should complete tasks one by one.
 `General Instruction` is for each tasks, which means, during doing each task:
 - you have to run unit test to make sure your change works.
-- you have to follow the instruction to commit and push for each task, before doing the next task.
+- you have to follow complete instructions in `Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
 
 ## Task 1
 
-- Remove the reflection for `RpcLifecycleMock`. The reason that adding the reflection will gone once the rest of the task is implemented currently.
-- Rename `RpcLifecycleMock` to `RpcControllerMock`, including the header and cpp file name.
-- Instead of `RpcByvalLifecycleMock` and `RpcDualLifecycleMock` inheriting from `RpcLifecycleMock`:
-  - They create sub classes of `RpcControllerMock` internally and return it to the `GetController` function. `IRpcLifecycle` does not inherit `IRpcController` so this step should be easy.
-  - Both class implements 4 remaining function in `RpcControllerMock`, now you need to create:
-    - `RpcByvalControllerMock` and `RpcDualControllerMock` and move necessary members to them.
-    - In these controller mocks friend their own lifecycle mocks.
-    - Lifecycle mocks return them to the `GetController` function.
-    - This is a chance to split implementations, rely on it wisely. The ideal situation will be lifecycle mocks don't need to access internal members in controller mocks completely, but if you have no choice (having to duplicate data in both controller and lifecycle is not acceptable, by the way), you can share limited members.
+Refactor `RpcDualLifecycleMock.(h|cpp).
 
-## Task 2
-
-Reorder WfError::xxx static functions in the cpp file, to move all H on top of all I on to of all Cpp. In each group order by their number. Keep the order of declarations in WfError using the same order in their cpp file.
-
-## General Instruction
-
-If any test case fail, you could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
-- Pass all unit test, fix any test failure including pre-existings.
-- After finishing everything, git commit and git push to the current branch.
-- If in any task you are adding new test sample, or modifying any C++ or Workflow generation code, causing a huge amount of files generated from test samples to change:
-  - Two commits are required. First commit only has all modified files and files you created directly, second commit has all new files that not created by you (aka auto generated)
-  - Otherwise, One commit is good.
-  - Typical files that are generated: `Test\Generated`, `Test\SourceCppGen`, `Test\SourceCppGenRpc`, `Test\UnitTest\Generated_*`.
-- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+- `controller.localObjectProperties` is readonly in `RpcDualLifecycleMock`, Make a `const ...& RpcDualControllerMock::GetLocalObjectProperties();`.
+- I don't think `RpcDualControllerModk::pendingProxyRef` is even useful, we should delete it. It is changed in `RpcDualLifecycleMock::CreateCallerProxy`, but `universalWrapperFactory` does not call `RequestService`, which means `RequestService` is supposed to always see an empty value. Delete this variable and the meaningless code using it.
+- Now the only two private `RpcDualControllerMock` members usage in `RpcDualLifecycleMock` is eliminated, we should remove the `friend` declaration.
+- In `RpcDualLifecycleMock`:
+  - `wrapperProperties` should be a dictionary whose key is the `ref`. Since this is the only way how it search data.
+  - `suppressedEvents` should be a SortedList, and by making `RpcDualEventDispatch` comparible, `IsSameEvent` could be deleted.
+    - The idea of `suppressedEvents` actually looks wired. Because when we received an event, but the object is not used in this lifecycle (by finding no record of this local object or wrapper), the event could just be discarded. So maybe we could just delete `suppressedEvents` and code using it directly.
+  - `forwardingEvents` should be a SortedList, pushing and poping is not necessary, just add and remove.
+    - `forwardingEvents` should not be static. And if the intention is to enable communication between lifecycles, this would be totally wrong to do it in this way. Lifecycles do not talk to each other through anything other than 4 ops interfaces.
+  - `try-catch` in `RpcDualControllerMock::InvokeEvent` is unnecessary, there should be no exception, catching it just hide the problem. If any exception is raised, it is a bug (so far).
+  - `services` should not be necessary, because the actual service map is stored in generated `IRpcObjectOps` in each wrapper Workflow script. `RpcDualControllerMock` is not supposed to maintain anything.
+    - `DisconnectServices` looks like need to be moved to the destructor in generated `IRpcObjectOps` implementations.
+  - `UnregisterAllLocalObjects` could be moved to `RpcDualControllerMock`, better inside its destructor.
 
 # UPDATES
 
-# TEST [CONFIRMED]
+- Refactored `RpcDualControllerMock` so lifecycle code reads local object properties through `GetLocalObjectProperties()` and no longer needs friendship.
+- Removed `pendingProxyRef`; generated wrapper creation now receives the concrete `RpcObjectReference` directly.
+- Changed wrapper tracking in `RpcDualLifecycleMock` to use `Dictionary<RpcObjectReference, RpcWrapperProperties>`.
+- Deleted `suppressedEvents` and `IsSameEvent`. Unknown lifecycle events are discarded, and echo prevention is handled by an instance `SortedList<RpcDualEventDispatch>` for currently forwarding events.
+- Removed lifecycle-owned service state. Generated `IRpcObjectOps` remains the owner of service mappings, unregisters services when local objects go away, and disconnects service wrappers in its destructor.
+- Moved local object unregister-all cleanup onto `RpcDualControllerMock` and its destructor.
+- Removed the `try-catch` from `RpcDualControllerMock::InvokeEvent`.
+- Added explicit wrapper-disconnect cleanup in the RPC test lifecycles so both sides release remote references while peer lifecycles are still alive.
 
-The requested changes are structural and covered by existing build and unit-test coverage:
+# TEST
 
-- Task 1 should compile all projects that use RPC test mocks after `RpcLifecycleMock` is renamed to `RpcControllerMock`, reflection registration is removed, and lifecycle mocks no longer inherit `IRpcController`.
-- Task 1 should pass RPC-related tests in `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`, because those tests exercise byval collection wrappers and dual RPC lifecycles.
-- Task 1 should regenerate reflection metadata without `vl::rpc_controller_test::RpcLifecycleMock` and update the baseline if the metadata test confirms that expected removal.
-- Task 2 should compile with `WfErrors` declarations and definitions in the same order.
-
-Success criteria:
-
-- Debug Win32 and x64 builds succeed.
-- Required unit-test projects pass in the order from `Project.md`.
-- Static inspection confirms no source/project references to `RpcLifecycleMock` remain except historical task documents, and `WfErrors` places all H RPC errors before I C++ errors in declaration and definition order.
+- [CONFIRMED] `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- [CONFIRMED] `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- [CONFIRMED] `LibraryTest` Debug Win32
+- [CONFIRMED] `LibraryTest` Debug x64
+- [CONFIRMED] `CompilerTest_GenerateMetadata` Debug Win32
+- [CONFIRMED] `CompilerTest_GenerateMetadata` Debug x64
+- [CONFIRMED] `CompilerTest_LoadAndCompile` Debug x64
+- [CONFIRMED] post-generation `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- [CONFIRMED] post-generation `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- [CONFIRMED] `RuntimeTest` Debug Win32
+- [CONFIRMED] `RuntimeTest` Debug x64
+- [CONFIRMED] `CppTest` Debug Win32
+- [CONFIRMED] `CppTest` Debug x64
+- [CONFIRMED] `CppTest_Metaonly` Debug Win32
+- [CONFIRMED] `CppTest_Metaonly` Debug x64
+- [CONFIRMED] `CppTest_Reflection` Debug Win32
+- [CONFIRMED] `CppTest_Reflection` Debug x64
 
 # PROPOSALS
 
-- No.1 Split RPC lifecycle mocks from controller mocks [CONFIRMED]
-- No.2 Reorder `WfErrors` H and Cpp groups [CONFIRMED]
+## No.1 Refactor dual RPC lifecycle mock [CONFIRMED]
 
-## No.1 Split RPC lifecycle mocks from controller mocks
-
-### CODE CHANGE
-
-Rename `RpcLifecycleMock` to `RpcControllerMock`, remove its reflection registration, and make it implement only the shared `IRpcController` forwarding behavior. Add `RpcByvalControllerMock` and `RpcDualControllerMock` owned by the corresponding lifecycle mocks, return them from `GetController()`, and move controller-specific reference-count/object-id behavior into those controller mocks.
-
-Implemented in `Test/Source` and affected unit-test project files:
-
-- `RpcControllerMock` is no longer reflected and implements the shared controller callback forwarding behavior.
-- `RpcByvalLifecycleMock` and `RpcDualLifecycleMock` now implement `IRpcLifeCycle` without inheriting `IRpcController`.
-- `RpcByvalControllerMock` and `RpcDualControllerMock` own controller-only object/reference operations and are returned through covariant `GetController()` overrides.
-- Existing test helpers call `GetController()->Register(...)` instead of relying on lifecycle/controller inheritance.
-- Reflection generated outputs and baselines were regenerated so `vl::rpc_controller_test::RpcLifecycleMock` is no longer present.
-
-### CONFIRMED
-
-Task 1 is confirmed.
-
-Debug Win32 and x64 builds passed with `0 Warning(s)` and `0 Error(s)`.
-
-All required unit tests passed:
-
-- `LibraryTest`: Win32 and x64.
-- `CompilerTest_GenerateMetadata`: Win32 and x64, with reflection outputs and baselines updated.
-- `CompilerTest_LoadAndCompile`: x64; it did not update `Test\SourceCppGen*`.
-- `RuntimeTest`: Win32 and x64.
-- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`: Win32 and x64.
-
-## No.2 Reorder `WfErrors` H and Cpp groups
-
-### CODE CHANGE
-
-Move the RPC attribute-checking `WfErrors` declarations/definitions before C++ code-generation errors, keeping each group internally ordered by error number and keeping header/cpp order identical.
-
-Implemented in `Source/Analyzer/WfAnalyzer.h` and `Source/Analyzer/WfAnalyzer_Errors.cpp`:
-
-- Moved `RpcGeneratedNameConflict` (`H9`) before `RpcWrapperGenerationRequiresPropertyMode` (`I0`).
-- Kept `RpcWrapperGenerationRequiresPropertyMode`, `RpcWrapperGenerationRequiresCollectionReturnTransfer`, `RpcWrapperGenerationRequiresCollectionParameterTransfer`, and `RpcMangledNameConflict` as the `I0` to `I3` group.
-- Left the `CppUnableToDecideClassOrder` and `CppUnableToSeparateCustomFile` C++ code-generation errors after the I group.
-
-### CONFIRMED
-
-Task 2 is confirmed.
-
-Debug Win32 and x64 builds passed with `0 Warning(s)` and `0 Error(s)`.
-
-All required unit tests passed:
-
-- `LibraryTest`: Win32 and x64.
-- `CompilerTest_GenerateMetadata`: Win32 and x64.
-- `CompilerTest_LoadAndCompile`: x64.
-- `RuntimeTest`: Win32 and x64.
-- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`: Win32 and x64.
-
-The repository-level final verification `..\Tools\Tools\Build.ps1 Workflow` also passed. It updated the generated release mirror files `Release\VlppWorkflowCompiler.h` and `Release\VlppWorkflowCompiler.cpp` with the same declaration and definition reorder.
+The requested refactor is implemented and verified. The only extra scope required was updating the generated RPC wrapper contract and expected generated outputs, because removing `pendingProxyRef` means generated wrapper construction must accept the actual object reference instead of attempting to request it indirectly.
