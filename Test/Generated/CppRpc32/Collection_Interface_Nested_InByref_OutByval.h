@@ -112,9 +112,9 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::RpcCollection::Interface::Nested::InByref::OutByval::IRpcWrapper_IValue> rpcwrapper_RpcCollection__Interface__Nested__InByref__OutByval__IValue(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::RpcCollection::Interface::Nested::InByref::OutByval::IRpcWrapper_IService> rpcwrapper_RpcCollection__Interface__Nested__InByref__OutByval__IService(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::RpcCollection::Interface::Nested::InByref::OutByval::IRpcWrapper_IValue> rpcwrapper_RpcCollection__Interface__Nested__InByref__OutByval__IValue(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::RpcCollection::Interface::Nested::InByref::OutByval::IRpcWrapper_IService> rpcwrapper_RpcCollection__Interface__Nested__InByref__OutByval__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc);
 
 		static Rpc_Collection_Interface_Nested_InByref_OutByval& Instance();
 	};
@@ -148,6 +148,7 @@ Closures
 
 		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> _services;
+		~__vwsnc3_Rpc_Collection_Interface_Nested_InByref_OutByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps();
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;

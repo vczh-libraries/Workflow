@@ -185,22 +185,21 @@ Global Functions
 		}
 	}
 
-	::vl::Ptr<::RpcPropDefaultList::IRpcWrapper_IService> Rpc_PropDefaultList::rpcwrapper_RpcPropDefaultList__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcPropDefaultList::IRpcWrapper_IService> Rpc_PropDefaultList::rpcwrapper_RpcPropDefaultList__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
 	{
-		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcPropDefaultList__IService);
 		auto proxy = ::vl::Ptr<::RpcPropDefaultList::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_PropDefaultList_rpcwrapper_RpcPropDefaultList__IService__RpcPropDefaultList_IRpcWrapper_IService(lc, proxyRef));
 		::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::Ptr<::RpcPropDefaultList::IService>(proxy)).Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf2_Rpc_PropDefaultList_rpcwrapper_RpcPropDefaultList__IService_(lc, proxyRef)));
 		GLOBAL_NAME rpclistener_RpcPropDefaultList__IService(lc, proxyRef, ::vl::__vwsn::Ensure(static_cast<::RpcPropDefaultList::IService*>(proxy.Obj())));
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_PropDefaultList::rpcwrapper_Create(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_PropDefaultList::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
-			auto __vwsn_switch_5 = typeId;
+			auto __vwsn_switch_5 = ref.typeId;
 			if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_RpcPropDefaultList__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcPropDefaultList__IService(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcPropDefaultList__IService(lc, ref));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -241,7 +240,7 @@ Closures
 
 	void __vwsnf2_Rpc_PropDefaultList_rpcwrapper_RpcPropDefaultList__IService_::operator()() const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultList::IRpcWrapper_IService>(::vl::__vwsn::This(lc)->RefToPtr(this->proxyRef).Obj())).Obj())->_rpcInvalidate_Value();
+		::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultList::IRpcWrapper_IService>(::vl::__vwsn::This(lc)->RefToPtr(proxyRef).Obj())).Obj())->_rpcInvalidate_Value();
 	}
 
 	//-------------------------------------------------------------------
@@ -277,6 +276,25 @@ Closures
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_services = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	__vwsnc2_Rpc_PropDefaultList_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::~__vwsnc2_Rpc_PropDefaultList_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps()
+	{
+		{
+			auto __vwsn_for_enumerable_service = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(_services.Obj())->GetValues());
+			auto __vwsn_for_enumerator_service = ::vl::__vwsn::This(__vwsn_for_enumerable_service.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_service.Obj())->Next())
+			{
+				auto service = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_service.Obj())->GetCurrent());
+				{
+					auto wrapper = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(service);
+					if (static_cast<bool>(wrapper))
+					{
+						::vl::__vwsn::This(wrapper.Obj())->DisconnectFromLifecycle();
+					}
+				}
+			}
+		}
 	}
 
 	::vl::reflection::description::Value __vwsnc2_Rpc_PropDefaultList_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -336,13 +354,19 @@ Closures
 					::vl::__vwsn::This(_services.Obj())->Set(::vl::__vwsn::Box(typeId), ::vl::__vwsn::Box(service));
 				}
 			}
-			else if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
-			{
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			}
 			else
 			{
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+				if (static_cast<bool>(service))
+				{
+					if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
+					{
+						throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+					}
+					else
+					{
+						throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+					}
+				}
 			}
 		}
 	}
@@ -354,7 +378,7 @@ Closures
 			{
 				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
 			}
-			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service is not registered."));
+			return ::vl::rpc_controller::RpcObjectReference{};
 		}
 	}
 

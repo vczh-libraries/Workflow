@@ -53,6 +53,18 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
 
         var _services : system::Interface^[int] = {};
 
+        delete
+        {
+            for (service in _services.Values)
+            {
+                var wrapper : system::IRpcWrapperBase^ = (service as (system::IRpcWrapperBase^));
+                if (wrapper is not null)
+                {
+                    wrapper.DisconnectFromLifecycle();
+                }
+            }
+        }
+
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -110,13 +122,19 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                         _services.Set(typeId, service);
                     }
                 }
-                else if (rpcwrapper_IsInterfaceTypeId(typeId))
-                {
-                    raise "RPC service type id is not an @rpc:Ctor interface.";
-                }
                 else
                 {
-                    raise "RPC service type id does not exist.";
+                    if (service is not null)
+                    {
+                        if (rpcwrapper_IsInterfaceTypeId(typeId))
+                        {
+                            raise "RPC service type id is not an @rpc:Ctor interface.";
+                        }
+                        else
+                        {
+                            raise "RPC service type id does not exist.";
+                        }
+                    }
                 }
             }
         }
@@ -128,7 +146,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 {
                     return _lc.PtrToRef(_services[typeId]);
                 }
-                raise "RPC service is not registered.";
+                return {};
             }
         }
     };
@@ -188,9 +206,8 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system:
     }
 }
 
-func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifeCycle*) : (RpcPropCached::IRpcWrapper_IService^)
+func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcPropCached::IRpcWrapper_IService^)
 {
-    var proxyRef : system::RpcObjectReference = lc.Controller.RequestService(rpctype_RpcPropCached__IService);
     var proxy : RpcPropCached::IRpcWrapper_IService^ = new (RpcPropCached::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
@@ -261,13 +278,13 @@ func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifeCycle*) : (RpcPropC
     return proxy;
 }
 
-func rpcwrapper_Create(typeId : int, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
 {
-    switch (typeId)
+    switch (ref.typeId)
     {
         case rpctype_RpcPropCached__IService:
         {
-            return rpcwrapper_RpcPropCached__IService(lc);
+            return rpcwrapper_RpcPropCached__IService(lc, ref);
         }
         default:
         raise "Unknown RPC type id for wrapper creation.";

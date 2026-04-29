@@ -205,31 +205,29 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc4_Rpc_Collection_Interface_PropDefault_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcCollection::Interface::PropDefault::IRpcWrapper_IValue> Rpc_Collection_Interface_PropDefault::rpcwrapper_RpcCollection__Interface__PropDefault__IValue(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcCollection::Interface::PropDefault::IRpcWrapper_IValue> Rpc_Collection_Interface_PropDefault::rpcwrapper_RpcCollection__Interface__PropDefault__IValue(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
 	{
-		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcCollection__Interface__PropDefault__IValue);
 		auto proxy = ::vl::Ptr<::RpcCollection::Interface::PropDefault::IRpcWrapper_IValue>(new ::vl_workflow_global::__vwsnc5_Rpc_Collection_Interface_PropDefault_rpcwrapper_RpcCollection__Interface__PropDefault__IValue__RpcCollection_Interface_PropDefault_IRpcWrapper_IValue(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::RpcCollection::Interface::PropDefault::IRpcWrapper_IService> Rpc_Collection_Interface_PropDefault::rpcwrapper_RpcCollection__Interface__PropDefault__IService(::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::RpcCollection::Interface::PropDefault::IRpcWrapper_IService> Rpc_Collection_Interface_PropDefault::rpcwrapper_RpcCollection__Interface__PropDefault__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
 	{
-		auto proxyRef = ::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->RequestService(GLOBAL_NAME rpctype_RpcCollection__Interface__PropDefault__IService);
 		auto proxy = ::vl::Ptr<::RpcCollection::Interface::PropDefault::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_Collection_Interface_PropDefault_rpcwrapper_RpcCollection__Interface__PropDefault__IService__RpcCollection_Interface_PropDefault_IRpcWrapper_IService(lc, proxyRef));
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Collection_Interface_PropDefault::rpcwrapper_Create(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Collection_Interface_PropDefault::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc)
 	{
 		{
-			auto __vwsn_switch_4 = typeId;
+			auto __vwsn_switch_4 = ref.typeId;
 			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcCollection__Interface__PropDefault__IValue))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollection__Interface__PropDefault__IValue(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollection__Interface__PropDefault__IValue(lc, ref));
 			}
 			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcCollection__Interface__PropDefault__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollection__Interface__PropDefault__IService(lc));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollection__Interface__PropDefault__IService(lc, ref));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -289,6 +287,25 @@ Closures
 		this->_services = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
+	__vwsnc3_Rpc_Collection_Interface_PropDefault_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::~__vwsnc3_Rpc_Collection_Interface_PropDefault_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps()
+	{
+		{
+			auto __vwsn_for_enumerable_service = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(_services.Obj())->GetValues());
+			auto __vwsn_for_enumerator_service = ::vl::__vwsn::This(__vwsn_for_enumerable_service.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_service.Obj())->Next())
+			{
+				auto service = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_service.Obj())->GetCurrent());
+				{
+					auto wrapper = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(service);
+					if (static_cast<bool>(wrapper))
+					{
+						::vl::__vwsn::This(wrapper.Obj())->DisconnectFromLifecycle();
+					}
+				}
+			}
+		}
+	}
+
 	::vl::reflection::description::Value __vwsnc3_Rpc_Collection_Interface_PropDefault_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
@@ -345,13 +362,19 @@ Closures
 					::vl::__vwsn::This(_services.Obj())->Set(::vl::__vwsn::Box(typeId), ::vl::__vwsn::Box(service));
 				}
 			}
-			else if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
-			{
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-			}
 			else
 			{
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+				if (static_cast<bool>(service))
+				{
+					if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
+					{
+						throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+					}
+					else
+					{
+						throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
+					}
+				}
 			}
 		}
 	}
@@ -363,7 +386,7 @@ Closures
 			{
 				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
 			}
-			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service is not registered."));
+			return ::vl::rpc_controller::RpcObjectReference{};
 		}
 	}
 
