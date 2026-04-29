@@ -274,14 +274,14 @@ Closures
 		}
 	}
 
-	::vl::rpc_controller::RpcObjectReference __vwsnc2_Rpc_CollectionDict_Nested_InByval_OutByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint typeId)
+	::vl::Nullable<::vl::rpc_controller::RpcObjectReference> __vwsnc2_Rpc_CollectionDict_Nested_InByval_OutByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint typeId)
 	{
 		{
 			if (::vl::__vwsn::This(::vl::__vwsn::This(_services.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(typeId)))
 			{
-				return ::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId))));
+				return ::vl::Nullable<::vl::rpc_controller::RpcObjectReference>(::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId)))));
 			}
-			return ::vl::rpc_controller::RpcObjectReference{};
+			return ::vl::Nullable<::vl::rpc_controller::RpcObjectReference>();
 		}
 	}
 

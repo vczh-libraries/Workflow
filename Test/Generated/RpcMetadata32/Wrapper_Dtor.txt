@@ -110,14 +110,14 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
             }
         }
 
-        override func RequestService(typeId : int) : (system::RpcObjectReference)
+        override func RequestService(typeId : int) : (system::RpcObjectReference?)
         {
             {
                 if (_services.Keys.Contains(typeId))
                 {
                     return _lc.PtrToRef(_services[typeId]);
                 }
-                return {};
+                return null;
             }
         }
     };
