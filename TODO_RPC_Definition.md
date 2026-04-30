@@ -174,6 +174,36 @@ Lifecycle and controller implementations should not use another lifecycle's obje
 - If the ref is local, it returns the local object.
 - If the ref is remote, it returns or creates a wrapper for the remote object.
 
+### Refcounting and Service Hold Semantics
+
+Refcounting tracks interested clients for local objects. It is not the same concept as `Ptr<T>` or `std::shared_ptr` ownership. A hold means a client has a remote wrapper or an equivalent durable interest in the local object.
+
+- `IRpcLifecycle::LocalObjectHold(ref, remoteClientId)` records that `remoteClientId` is interested in the local object identified by `ref`.
+- `IRpcLifecycle::LocalObjectUnhold(ref, remoteClientId)` removes that interest.
+- These functions only track local objects. If `ref` does not belong to the current lifecycle, this is an implementation error.
+- The counter should track interested clients, not wrapper instances. Wrapper construction and destruction should happen once for each object/client pair, so duplicate holds or unholds for the same `(ref, remoteClientId)` should not silently create a different ownership meaning.
+
+`PtrToRef(ptr)` only converts a local object to a `RpcObjectReference`. It should allocate a new local object id when needed and attach the object-to-ref internal property, but it must not increase the interested-client counter.
+
+For a normal non-service object, the counter becomes 1 only after the first remote client actually receives the ref and creates its wrapper:
+
+- The remote wrapper constructor calls `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, currentClientId, true)`.
+- Generated interface wrappers and predefined container wrappers follow the same rule.
+- The owner lifecycle receives this through `IRpcObjectOps::ObjectHold` and calls `IRpcLifecycle::LocalObjectHold(ref, remoteClientId)`.
+- The wrapper destructor calls `ObjectHold(ref, currentClientId, false)` if it has not been disconnected from the lifecycle, and the owner lifecycle calls `IRpcLifecycle::LocalObjectUnhold(ref, remoteClientId)`.
+
+When the interested-client counter decreases to 0, the lifecycle should remove all resources and tracking for that local object reference. After this removal, a later `PtrToRef(ptr)` on the same object should allocate a new object id.
+
+There is a special case when `PtrToRef(ptr)` is called but no remote client ever receives the returned ref, so no wrapper constructor sends `ObjectHold(..., true)`. The object-to-ref internal property is the final fallback for this case: if the local object is deleted while the lifecycle is still alive, the property cleanup removes the tracking resource. During lifecycle finalization, implementations should remove these internal properties from all tracked local objects, so objects deleted after the lifecycle is gone do not call back into a finalized lifecycle.
+
+Services use the same local-object tracking, but `RegisterService` adds an owner hold:
+
+- An object registered by `IRpcObjectOps::RegisterService` has an initial interested-client count of 1.
+- This hold represents the owner client being in the interested-client list. It is not created by a remote wrapper.
+- Remote clients still send normal hold and unhold messages when they create or destroy wrappers for the service object.
+- When all remote clients unhold the service object, the owner hold remains, so the service is not unregistered by ordinary refcounting.
+- Ordinary service unregistration is not part of the RPC interface. Finalization clears the dispatcher service map and lifecycle local-object tracking, including registered services.
+
 ### Point-to-Point Operations
 
 When a wrapper performs a method call or list operation, the message is sent to the lifecycle that owns `ref.clientId`.
