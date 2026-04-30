@@ -71,7 +71,6 @@ namespace vl
 
 			vint																	GetClientId()const;
 			const collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>&		GetLocalObjectProperties()const;
-			void																	UnregisterAllLocalObjects(bool includeRegisteredServices = false);
 
 			// IRpcController
 
@@ -132,13 +131,13 @@ namespace vl
 
 			virtual vint															DecideTypeId(reflection::IDescriptable* obj)const;
 			virtual bool															AttachLocalObjectEvents(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj, collections::List<Func<void()>>& detachments);
-			void																	DisconnectTrackedWrappers();
 		public:
 			RpcDualLifecycleMock(vint _clientId);
 			~RpcDualLifecycleMock();
 
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	RegisterWrapperFactory(UniversalWrapperFactory factory);
+			void																	DisconnectTrackedWrappers();
 
 			// IRpcLifeCycle
 

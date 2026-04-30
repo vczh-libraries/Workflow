@@ -39,18 +39,9 @@ namespace
 
 		~RpcWorkflowLifecycleMock()
 		{
-			// Disconnect wrappers while globalContext is still alive,
-			// because DisconnectFromLifecycle executes Workflow bytecode.
-			DisconnectTrackedWrappers();
-			GetController()->UnregisterAllLocalObjects(true);
 			listenerAttachFunc = {};
 			wrapperCreateFunc = nullptr;
 			globalContext = nullptr;
-		}
-
-		void DisconnectTrackedWrappersBeforeDispose()
-		{
-			DisconnectTrackedWrappers();
 		}
 
 		void SetGlobalContext(Ptr<WfRuntimeGlobalContext> _globalContext)
@@ -161,62 +152,51 @@ TEST_FILE
 					}
 				}
 
-				// Create two lifecycle mocks
-				auto lc1 = Ptr(new RpcWorkflowLifecycleMock(1));
-				auto lc2 = Ptr(new RpcWorkflowLifecycleMock(2));
-				lc1->SetGlobalContext(globalContext);
-				lc2->SetGlobalContext(globalContext);
-				lc1->SetIdMapWithReflection(idMap);
-				lc2->SetIdMapWithReflection(idMap);
+				{
+					// Create two lifecycle mocks
+					auto lc1 = Ptr(new RpcWorkflowLifecycleMock(1));
+					auto lc2 = Ptr(new RpcWorkflowLifecycleMock(2));
+					lc1->SetGlobalContext(globalContext);
+					lc2->SetGlobalContext(globalContext);
+					lc1->SetIdMapWithReflection(idMap);
+					lc2->SetIdMapWithReflection(idMap);
 
-				// Create list ops default implementations
-				auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj()));
-				auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj()));
-				auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj()));
-				auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
+					// Create list ops default implementations
+					auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj()));
+					auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj()));
+					auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj()));
+					auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
 
-				// Create object ops implementations from the assembly
-				auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectOps");
-				auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectEventOps");
-				auto oo1 = createObjectOps(lc1.Obj());
-				auto oeo1 = createEventOps(lc1.Obj());
-				auto oo2 = createObjectOps(lc2.Obj());
-				auto oeo2 = createEventOps(lc2.Obj());
+					// Create object ops implementations from the assembly
+					auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectOps");
+					auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectEventOps");
+					auto oo1 = createObjectOps(lc1.Obj());
+					auto oeo1 = createEventOps(lc1.Obj());
+					auto oo2 = createObjectOps(lc2.Obj());
+					auto oeo2 = createEventOps(lc2.Obj());
 
-				lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
-				lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
-				RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
+					lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
+					lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+					RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 
-				// Run serviceMain with lc1
-				auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");
-				serviceMain(lc1.Obj());
+					// Run serviceMain with lc1
+					auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");
+					serviceMain(lc1.Obj());
 
-				// Run clientMain with lc2 and get the result
-				auto clientMain = LoadFunction<WString(IRpcLifeCycle*)>(globalContext, L"clientMain");
-				auto actual = clientMain(lc2.Obj());
+					// Run clientMain with lc2 and get the result
+					auto clientMain = LoadFunction<WString(IRpcLifeCycle*)>(globalContext, L"clientMain");
+					auto actual = clientMain(lc2.Obj());
 
-				TEST_PRINT(L"    expected  : " + itemResult);
-				TEST_PRINT(L"    actual    : " + actual);
-				TEST_ASSERT(actual == itemResult);
+					TEST_PRINT(L"    expected  : " + itemResult);
+					TEST_PRINT(L"    actual    : " + actual);
+					TEST_ASSERT(actual == itemResult);
 
-				// Explicit cleanup order to avoid circular references
-				// between WfRuntimeGlobalContext and Workflow objects
-				lc2->DisconnectTrackedWrappersBeforeDispose();
-				lc1->DisconnectTrackedWrappersBeforeDispose();
-				lc2->GetController()->UnregisterAllLocalObjects(true);
-				lc1->GetController()->UnregisterAllLocalObjects(true);
-				oeo2 = nullptr;
-				oo2 = nullptr;
-				oeo1 = nullptr;
-				oo1 = nullptr;
-				leo2 = nullptr;
-				lo2 = nullptr;
-				leo1 = nullptr;
-				lo1 = nullptr;
+					// Disconnect wrappers while globalContext is still alive,
+					// because DisconnectFromLifecycle executes Workflow bytecode.
+					lc2->DisconnectTrackedWrappers();
+					lc1->DisconnectTrackedWrappers();
+				}
 				globalContext->globalVariables = nullptr;
-				lc2 = nullptr;
-				lc1 = nullptr;
-				globalContext = nullptr;
 			});
 		}
 	});

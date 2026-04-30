@@ -84,19 +84,6 @@ namespace vl
 			return localObjectProperties;
 		}
 
-		void RpcDualControllerMock::UnregisterAllLocalObjects(bool includeRegisteredServices)
-		{
-			for (vint i = localObjectProperties.Count() - 1; i >= 0; i--)
-			{
-				auto ref = localObjectProperties.Values().Get(i)->ref;
-				if (includeRegisteredServices || !lifecycle->GetDispatcher()->IsRegisteredService(ref))
-				{
-					lifecycle->UntrackLocalObject(ref);
-					localObjectProperties.Remove(ref.objectId);
-				}
-			}
-		}
-
 /***********************************************************************
 * RpcDualControllerMock (IRpcController)
 ***********************************************************************/
@@ -256,6 +243,30 @@ namespace vl
 			universalWrapperFactory = factory;
 		}
 
+		void RpcDualLifecycleMock::DisconnectTrackedWrappers()
+		{
+			for (auto [ref, properties] : wrapperProperties)
+			{
+				controller.ReleaseRemoteObject(ref);
+
+				if (properties.root)
+				{
+					auto trackerObj = properties.root->GetInternalProperty(InternalProperty_WrapperTracker);
+					CHECK_ERROR(trackerObj, L"RpcDualLifecycleMock::DisconnectTrackedWrappers: Wrapper tracker missing.");
+					auto tracker = trackerObj.Cast<RpcDualWrapperTracker>();
+					CHECK_ERROR(tracker, L"RpcDualLifecycleMock::DisconnectTrackedWrappers: Invalid wrapper tracker type.");
+					tracker->Detach();
+					properties.root->SetInternalProperty(InternalProperty_WrapperTracker, nullptr);
+				}
+
+				if (properties.proxy)
+				{
+					properties.proxy->DisconnectFromLifecycle();
+				}
+			}
+			wrapperProperties.Clear();
+		}
+
 		vint RpcDualLifecycleMock::DecideTypeId(IDescriptable* obj)const
 		{
 			if (dynamic_cast<IValueObservableList*>(obj)) return RpcTypeId_IValueObservableList;
@@ -390,30 +401,6 @@ namespace vl
 		void RpcDualLifecycleMock::UntrackWrapper(RpcObjectReference ref)
 		{
 			wrapperProperties.Remove(ref);
-		}
-
-		void RpcDualLifecycleMock::DisconnectTrackedWrappers()
-		{
-			for (auto [ref, properties] : wrapperProperties)
-			{
-				controller.ReleaseRemoteObject(ref);
-
-				if (properties.root)
-				{
-					auto trackerObj = properties.root->GetInternalProperty(InternalProperty_WrapperTracker);
-					CHECK_ERROR(trackerObj, L"RpcDualLifecycleMock::DisconnectTrackedWrappers: Wrapper tracker missing.");
-					auto tracker = trackerObj.Cast<RpcDualWrapperTracker>();
-					CHECK_ERROR(tracker, L"RpcDualLifecycleMock::DisconnectTrackedWrappers: Invalid wrapper tracker type.");
-					tracker->Detach();
-					properties.root->SetInternalProperty(InternalProperty_WrapperTracker, nullptr);
-				}
-
-				if (properties.proxy)
-				{
-					properties.proxy->DisconnectFromLifecycle();
-				}
-			}
-			wrapperProperties.Clear();
 		}
 
 		bool RpcDualLifecycleMock::TryGetTrackedWrapperRef(DescriptableObject* obj, RpcObjectReference& ref)const
