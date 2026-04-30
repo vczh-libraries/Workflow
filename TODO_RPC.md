@@ -25,6 +25,10 @@
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - JSON for predefined types.
+  - A function to rin a series of nullable casting from object to primitve type and then do casting.
+    - Or in the wrapper and ops implementation we pick the serialization function directly, and ops pass JSON nodes directly.
+    - So two set of wrappers + ops will be needed, one is real and another one is combinator.
+    - How to deal with elements in containers?
   - Run JSON serialization for predefined types, generated types and operations in `RpcDualDispatcherMock`.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC.
