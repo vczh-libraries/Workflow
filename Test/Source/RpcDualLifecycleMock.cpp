@@ -227,7 +227,6 @@ namespace vl
 
 		RpcDualLifecycleMock::~RpcDualLifecycleMock()
 		{
-			DisconnectTrackedWrappers();
 		}
 
 		void RpcDualLifecycleMock::SetIdMap(const Dictionary<WString, vint>& _idMap)

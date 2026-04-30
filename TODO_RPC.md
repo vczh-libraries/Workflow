@@ -15,7 +15,6 @@
 ## ToDo
 
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
-- Find if there is any magic number that should use constants at the very top of `WfLibraryRpc.h`.
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.

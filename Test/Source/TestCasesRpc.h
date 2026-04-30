@@ -27,16 +27,14 @@ void RunRpcTestCase(
 		vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
 		void(*attachLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*, List<Func<void()>>&) = nullptr;
 		using RpcDualLifecycleMock::RpcDualLifecycleMock;
-		void DisconnectTrackedWrappersBeforeDispose()
-		{
-			DisconnectTrackedWrappers();
-		}
+
 		vint DecideTypeId(IDescriptable* obj)const override
 		{
 			auto result = RpcDualLifecycleMock::DecideTypeId(obj);
 			if (result != RpcTypeId_NotFound) return result;
 			return decideTypeIdCallback(obj);
 		}
+
 		bool AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments) override
 		{
 			if (!attachLocalEventsCallback) return false;
@@ -81,8 +79,8 @@ void RunRpcTestCase(
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
 
-	lc2->DisconnectTrackedWrappersBeforeDispose();
-	lc1->DisconnectTrackedWrappersBeforeDispose();
+	lc2->DisconnectTrackedWrappers();
+	lc1->DisconnectTrackedWrappers();
 }
 
 #endif
