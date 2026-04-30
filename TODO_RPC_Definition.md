@@ -150,26 +150,73 @@ All types below count as serializable types, but serialization itself is optiona
 
 - The getter will trigger actual RPC action immediately.
 
-# Preventing Event Forwarding Deadloops
+## Message Dispatching and Event Suppression
 
-When an RPC interface (or an `observe T[]`) is shared between two sides, both sides end up with a listener attached to the same logical event:
+The RPC runtime has three local concepts and one cross-client concept:
 
-- On the side that owns the local object, `rpclistener_*` (for `IRpcObjectEventOps`) or the equivalent `IValueObservableList::ItemChanged` hookup (for `IRpcListEventOps`) forwards every raised event to the remote peer via `IRpcController::InvokeEvent` / `IRpcListEventOps::OnItemChanged`.
-- On the receiving side, the dispatcher (`IRpcObjectEventOps::InvokeEvent` for object events, `IRpcListEventOps::OnItemChanged` for list events) raises the event on the local wrapper proxy. The wrapper proxy has the same `rpclistener_*` (or `ItemChanged`) hookup attached at construction time, so without further protection it would forward the event right back to the originating side, causing an infinite ping-pong.
+- `IRpcLifeCycle` owns object/reference conversion for one client.
+- `IRpcController` owns local objects, local wrappers, local ops, and local suppression state for one client.
+- `IRpcOperations` exposes the local client's list, object, list-event, and object-event operation objects.
+- `IRpcDispatcher` is the only object that knows how to send a message from one client to another client.
 
-To break the loop, an `IRpcController` implementation must suppress the immediate bounce-back of an event that is already being delivered. The contract is:
+Lifecycle and controller implementations should not use another lifecycle's objects directly. When a message needs to leave the current client, it goes through `IRpcDispatcher`.
 
-- While `InvokeEvent` (or `OnItemChanged`) is dispatching event `E` on object reference `R`, the controller marks `(R, E)` as "currently forwarding".
-- When the dispatcher resolves `R` to its local target (the wrapper proxy on this side), the controller records `(R, E)` as a pending suppression for that local target's controller.
-- When the wrapper proxy raises the event and its `rpclistener_*` calls `InvokeEvent` / `OnItemChanged` again with the same `(R, E)`, the controller consumes the pending suppression and returns immediately without dispatching, breaking the cycle.
-- After the original dispatch completes, the "currently forwarding" mark for `(R, E)` is cleared.
+### Service Registration and Lookup
 
-This rule applies symmetrically to:
-- `IRpcObjectEventOps::InvokeEvent` for events declared on `@rpc:Interface` interfaces (whose listeners are emitted as `rpclistener_*` in generated wrappers, both Workflow-script and C++).
-- `IRpcListEventOps::OnItemChanged` for `IValueObservableList` (whose `ItemChanged` listener is hand-written in C++ but follows the same forwarding shape).
+`IRpcDispatcher` owns service lookup. It stores a map from RPC type id to `RpcObjectReference`.
 
-The cycle prevention is a property of the `IRpcController` implementation, not of the wire protocol or the generated wrapper code. Generated wrappers always attach the listener on both the local object and the wrapper proxy; it is the controller's responsibility to ensure each end-to-end event delivery results in exactly one bounce, not an unbounded chain.
+`IRpcObjectOps::RegisterService` remains the generated validation and registration hook. It validates that the type id exists and represents an `@rpc:Ctor` interface, converts the service object to a `RpcObjectReference` through the current lifecycle, and calls `IRpcDispatcher::RegisterService(typeId, ref)`.
 
-The reference test harness `RpcDualLifecycleMock` implements this with two pieces of state:
-- A static `forwardingEvents` stack tracking `(ref, eventId)` currently being dispatched.
-- A per-instance `suppressedEvents` list of pending one-shot suppressions, populated at the moment `RefToPtr` resolves the target during a forwarding dispatch, and consumed at the entry of the next `InvokeEvent` / `OnItemChanged` for the same `(ref, eventId)`.
+`IRpcObjectOps::RequestService` should not exist. There should be only one service lookup authority. `IRpcLifeCycle::RequestService(fullName)` resolves `fullName` to `typeId`, asks `IRpcDispatcher::RequestService(typeId)` for the ref, and then calls `RefToPtr(ref)`.
+
+`RefToPtr(ref)` uses `ref.clientId` to decide whether the ref belongs to the current client:
+
+- If the ref is local, it returns the local object.
+- If the ref is remote, it returns or creates a wrapper for the remote object.
+
+### Point-to-Point Operations
+
+When a wrapper performs a method call or list operation, the message is sent to the lifecycle that owns `ref.clientId`.
+
+- Object method calls use `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)`.
+- List operations use `IRpcDispatcher::SendToClient_ListOps(ref.clientId)`.
+
+The returned ops object is the target client's local operation object. The caller should not know or store the target lifecycle directly.
+
+### Event Broadcasts
+
+Events are broadcast from the client that observed or raised the event. The broadcast excludes that caller client and sends to all other clients.
+
+- Object events use `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(selfClientId)->InvokeEvent(...)`.
+- List events use `IRpcDispatcher::BroadcastFromClient_ListEventOps(selfClientId)->OnItemChanged(...)`.
+
+This rule applies whether the event is raised from a local object or from a wrapper. If a wrapper raises an event, the owner client is still just another client in the broadcast target set unless it is the caller client.
+
+In the dual-client test implementation, broadcasting can be implemented by returning event ops from the lifecycle whose client id is not `selfClientId`.
+
+### Event Suppression
+
+Event suppression is local controller state. It is not dispatcher state.
+
+Suppression prevents an event replayed from a remote message from being forwarded again by the normal locally attached event handlers.
+
+`IRpcController` exposes these suppression APIs:
+
+- `SetEventSuppressedFlag(ref, eventId, bool)`
+- `GetEventSuppressedFlag(ref, eventId)`
+- `SetItemChangedSuppressedFlag(ref, bool)`
+- `GetItemChangedSuppressedFlag(ref)`
+
+Although the setter takes a `bool`, implementations should store a counter for each suppression key. Setting `true` increments the counter. Setting `false` decrements it. The getter returns true when the counter is greater than zero. Decrementing below zero should be treated as an implementation error.
+
+Object event suppression is keyed by `(RpcObjectReference, eventId)`. List `ItemChanged` suppression is keyed by `RpcObjectReference`.
+
+When `IRpcObjectEventOps::InvokeEvent(ref, eventId, arguments)` receives a remote event, generated `rpc_IRpcObjectEventOps` should:
+
+- Call `lc.Controller.SetEventSuppressedFlag(ref, eventId, true)`.
+- Unbox arguments and raise the local event.
+- Call `lc.Controller.SetEventSuppressedFlag(ref, eventId, false)` in a `finally` block.
+
+Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before boxing arguments. If the flag is set, the handler returns immediately. Otherwise it boxes arguments and broadcasts through `IRpcDispatcher`.
+
+List events use the same shape without an event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting.

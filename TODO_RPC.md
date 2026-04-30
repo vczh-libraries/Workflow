@@ -14,12 +14,11 @@
 
 ## ToDo
 
+- Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
+- Find if there is any magic number that should use constants at the very top of `WfLibraryRpc.h`.
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
-- `RpcDualLifecycleMock::RegisterLocalObjectOps` should not exist, we should have a central place to show which lifecycle has the service instance.
-  - Clean `RpcDualLifecycleMock::RequestService` with wired checking `localObjectCallback->RequestService` followed by `controller.RequestService`.
-  - Find if there is any magic number that should use constants at the very top of `WfLibraryRpc.h`.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - JSON for predefined types.
   - `RpcLifecycleBase` and `RpcLifecycleJson`.
@@ -33,3 +32,6 @@
 - Delete Runtime test category.
 - Update `TestLibraryRpcByval.cpp` in `LibraryTest` to use `RpcDualLifecycleMock`, remove `RpcByvalLifecycleMock`.
   - May need to refactor how to retrieve ops interfaces.
+- Document RPC.
+- Document compiler process.
+- Document AST building helper functions.
