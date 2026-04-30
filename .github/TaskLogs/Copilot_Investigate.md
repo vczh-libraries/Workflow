@@ -5,7 +5,7 @@
 You should complete tasks one by one.
 `General Instruction` is for each tasks, which means, during doing each task:
 - you have to run unit test to make sure your change works.
-- you have to follow complete instructions in `Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
+- you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
 
 ## Task 1
 
