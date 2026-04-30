@@ -21,7 +21,7 @@ namespace RpcCollectionDict
 
 var xsService : string[int] = {};
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcCollectionDict::InByval::OutByval::IService^)
   {
@@ -51,7 +51,7 @@ func Print(xs : string[int]) : string
   return result;
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var xsOrigin = {1:"A" 2:"B" 3:"C"};
   var service = cast (RpcCollectionDict::InByval::OutByval::IService^) lc.RequestService("RpcCollectionDict::InByval::OutByval::IService");

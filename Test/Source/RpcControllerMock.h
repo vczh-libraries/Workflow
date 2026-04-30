@@ -39,6 +39,7 @@ namespace vl
 			rpc_controller::IRpcListEventOps*					GetListEventOps()override;
 			rpc_controller::IRpcObjectEventOps*					GetObjectEventOps()override;
 
+			void												Finalize()override;
 			void												SetEventSuppressedFlag(rpc_controller::RpcObjectReference ref, vint eventId, bool suppressed)override;
 			bool												GetEventSuppressedFlag(rpc_controller::RpcObjectReference ref, vint eventId)override;
 			void												SetItemChangedSuppressedFlag(rpc_controller::RpcObjectReference ref, bool suppressed)override;

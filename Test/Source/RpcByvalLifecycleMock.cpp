@@ -7,6 +7,7 @@ namespace vl
 		using namespace reflection;
 		using namespace reflection::description;
 		using namespace rpc_controller;
+		using namespace collections;
 
 		RpcObjectTracker::RpcObjectTracker(RpcByvalControllerMock* c, RpcObjectReference r)
 			: controller(c), ref(r)
@@ -15,10 +16,15 @@ namespace vl
 
 		RpcObjectTracker::~RpcObjectTracker()
 		{
-			if (controller->IsTracked(ref.objectId))
+			if (controller && controller->IsTracked(ref.objectId))
 			{
-				controller->UntrackLocalObject(ref);
+				controller->RemoveLocalObject(ref);
 			}
+		}
+
+		void RpcObjectTracker::Detach()
+		{
+			controller = nullptr;
 		}
 
 /***********************************************************************
@@ -70,11 +76,30 @@ namespace vl
 			{
 				auto obj = localObjects.Get(ref.objectId);
 				refsByPtr.Remove(obj);
+				if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
+				{
+					if (auto trackerObj = descriptable->GetInternalProperty(L"RpcLifecycleTracker"))
+					{
+						auto tracker = trackerObj.Cast<RpcObjectTracker>();
+						CHECK_ERROR(tracker, L"RpcByvalControllerMock::UntrackLocalObject: Invalid tracker type.");
+						tracker->Detach();
+						descriptable->SetInternalProperty(L"RpcLifecycleTracker", nullptr);
+					}
+				}
 				localObjects.Remove(ref.objectId);
 			}
 			refsById.Remove(ref.objectId);
 			ownedObjects.Remove(ref.objectId);
 			observableProxies.Remove(ref.objectId);
+		}
+
+		void RpcByvalControllerMock::RemoveLocalObject(RpcObjectReference ref)
+		{
+			if (localObjects.Keys().Contains(ref.objectId))
+			{
+				UntrackLocalObject(ref);
+			}
+			interestedClients.Remove(ref.objectId);
 		}
 
 		bool RpcByvalControllerMock::IsTracked(vint objectId)const
@@ -87,46 +112,44 @@ namespace vl
 			return lastRegisteredObject;
 		}
 
-/***********************************************************************
-* RpcByvalControllerMock (IRpcController)
-***********************************************************************/
-
-		RpcObjectReference RpcByvalControllerMock::RegisterLocalObject(vint typeId)
+		RpcObjectReference RpcByvalControllerMock::AllocateLocalObject(vint typeId)
 		{
 			lastRegisteredObject = { clientId, ++nextObjectId, typeId };
-			typeIds.Set(lastRegisteredObject.objectId, typeId);
-			refCounts.Set(lastRegisteredObject.objectId, 1);
+			interestedClients.Set(lastRegisteredObject.objectId, Ptr(new SortedList<vint>));
 			return lastRegisteredObject;
 		}
 
-		void RpcByvalControllerMock::UnregisterLocalObject(RpcObjectReference ref)
+		void RpcByvalControllerMock::LocalObjectHold(RpcObjectReference ref, vint remoteClientId)
 		{
-			UntrackLocalObject(ref);
-			refCounts.Remove(ref.objectId);
-			typeIds.Remove(ref.objectId);
+			CHECK_ERROR(ref.clientId == clientId, L"RpcByvalControllerMock::LocalObjectHold: Ref is not local.");
+			CHECK_ERROR(interestedClients.Keys().Contains(ref.objectId), L"RpcByvalControllerMock::LocalObjectHold: Object not registered.");
+			auto clients = interestedClients.Get(ref.objectId);
+			if (!clients->Contains(remoteClientId))
+			{
+				clients->Add(remoteClientId);
+			}
 		}
 
-		void RpcByvalControllerMock::AcquireRemoteObject(RpcObjectReference ref)
+		void RpcByvalControllerMock::LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)
 		{
-			(void)ref;
+			CHECK_ERROR(ref.clientId == clientId, L"RpcByvalControllerMock::LocalObjectUnhold: Ref is not local.");
+			CHECK_ERROR(interestedClients.Keys().Contains(ref.objectId), L"RpcByvalControllerMock::LocalObjectUnhold: Object not registered.");
+			auto clients = interestedClients.Get(ref.objectId);
+			CHECK_ERROR(clients->Contains(remoteClientId), L"RpcByvalControllerMock::LocalObjectUnhold: Client does not hold this object.");
+			clients->Remove(remoteClientId);
+			if (clients->Count() == 0)
+			{
+				RemoveLocalObject(ref);
+			}
 		}
 
-		void RpcByvalControllerMock::ReleaseRemoteObject(RpcObjectReference ref)
+		void RpcByvalControllerMock::Finalize()
 		{
-			if (!refCounts.Keys().Contains(ref.objectId))
+			while (refsById.Count() > 0)
 			{
-				return;
+				RemoveLocalObject(refsById.Values().Get(refsById.Count() - 1));
 			}
-
-			auto count = refCounts.Get(ref.objectId) - 1;
-			if (count <= 0)
-			{
-				UnregisterLocalObject(ref);
-			}
-			else
-			{
-				refCounts.Set(ref.objectId, count);
-			}
+			RpcControllerMock::Finalize();
 		}
 
 /***********************************************************************
@@ -148,33 +171,33 @@ namespace vl
 		RpcByvalLifecycleMock::RpcByvalLifecycleMock()
 			: controller(this)
 		{
-			proxyFactories.Set(RpcTypeId_IValueEnumerable, [](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			proxyFactories.Set(RpcTypeId_IValueEnumerable, [](IRpcLifecycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				return Ptr(new RpcByrefEnumerable(lc, ref));
 			});
-			proxyFactories.Set(RpcTypeId_IValueEnumerator, [](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			proxyFactories.Set(RpcTypeId_IValueEnumerator, [](IRpcLifecycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				return Ptr(new RpcByrefEnumerator(lc, ref));
 			});
-			proxyFactories.Set(RpcTypeId_IValueArray, [](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			proxyFactories.Set(RpcTypeId_IValueArray, [](IRpcLifecycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				return Ptr(new RpcByrefArray(lc, ref));
 			});
-			proxyFactories.Set(RpcTypeId_IValueReadonlyList, [](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			proxyFactories.Set(RpcTypeId_IValueReadonlyList, [](IRpcLifecycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				return Ptr(new RpcByrefReadonlyList(lc, ref));
 			});
-			proxyFactories.Set(RpcTypeId_IValueList, [](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			proxyFactories.Set(RpcTypeId_IValueList, [](IRpcLifecycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				return Ptr(new RpcByrefList(lc, ref));
 			});
-			proxyFactories.Set(RpcTypeId_IValueObservableList, [this](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			proxyFactories.Set(RpcTypeId_IValueObservableList, [this](IRpcLifecycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				auto proxy = Ptr(new RpcByrefObservableList(lc, ref));
 				controller.observableProxies.Set(ref.objectId, dynamic_cast<IValueObservableList*>(proxy.Obj()));
 				return proxy;
 			});
-			proxyFactories.Set(RpcTypeId_IValueDictionary, [](IRpcLifeCycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
+			proxyFactories.Set(RpcTypeId_IValueDictionary, [](IRpcLifecycle* lc, RpcObjectReference ref) -> Ptr<IDescriptable>
 			{
 				return Ptr(new RpcByrefDictionary(lc, ref));
 			});
@@ -182,14 +205,7 @@ namespace vl
 
 		RpcByvalLifecycleMock::~RpcByvalLifecycleMock()
 		{
-			for (auto service : services.Values())
-			{
-				if (auto obj = service->SafeAggregationCast<IRpcWrapperBase>())
-				{
-					obj->DisconnectFromLifecycle();
-				}
-			}
-			services.Clear();
+			Finalize();
 		}
 
 		vint RpcByvalLifecycleMock::DecideTypeId(IDescriptable* obj)const
@@ -217,8 +233,21 @@ namespace vl
 		}
 
 /***********************************************************************
-* RpcByvalLifecycleMock (IRpcLifeCycle)
+* RpcByvalLifecycleMock (IRpcLifecycle)
 ***********************************************************************/
+
+		void RpcByvalLifecycleMock::Finalize()
+		{
+			for (auto service : services.Values())
+			{
+				if (auto obj = service->SafeAggregationCast<IRpcWrapperBase>())
+				{
+					obj->DisconnectFromLifecycle();
+				}
+			}
+			services.Clear();
+			controller.Finalize();
+		}
 
 		vint RpcByvalLifecycleMock::GetClientId()
 		{
@@ -233,6 +262,16 @@ namespace vl
 		RpcByvalControllerMock* RpcByvalLifecycleMock::GetController()
 		{
 			return &controller;
+		}
+
+		void RpcByvalLifecycleMock::LocalObjectHold(RpcObjectReference ref, vint remoteClientId)
+		{
+			controller.LocalObjectHold(ref, remoteClientId);
+		}
+
+		void RpcByvalLifecycleMock::LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)
+		{
+			controller.LocalObjectUnhold(ref, remoteClientId);
 		}
 
 		void RpcByvalLifecycleMock::RegisterService(const WString& fullName, Ptr<IDescriptable> service)
@@ -268,12 +307,10 @@ namespace vl
 			CHECK_ERROR(obj, L"RpcByvalLifecycleMock::PtrToRef requires a value.");
 			if (controller.refsByPtr.Keys().Contains(obj.Obj()))
 			{
-				auto ref = controller.refsByPtr.Get(obj.Obj());
-				controller.refCounts.Set(ref.objectId, controller.refCounts.Get(ref.objectId) + 1);
-				return ref;
+				return controller.refsByPtr.Get(obj.Obj());
 			}
 
-			auto ref = controller.RegisterLocalObject(DecideTypeId(obj.Obj()));
+			auto ref = controller.AllocateLocalObject(DecideTypeId(obj.Obj()));
 			controller.ownedObjects.Set(ref.objectId, obj);
 			controller.TrackLocalObject(ref, obj.Obj());
 			return ref;

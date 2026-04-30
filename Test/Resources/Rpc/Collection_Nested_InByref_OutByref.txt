@@ -24,7 +24,7 @@ namespace RpcCollection
 
 var xsService : (int[])[] = {};
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcCollection::Nested::InByref::OutByref::IService^)
   {
@@ -55,7 +55,7 @@ func Print(xs : (int[])[]) : string
   return result;
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var xsOrigin = {{1 2 3}};
   var service = cast (RpcCollection::Nested::InByref::OutByref::IService^) lc.RequestService("RpcCollection::Nested::InByref::OutByref::IService");

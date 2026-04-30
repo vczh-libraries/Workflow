@@ -49,6 +49,10 @@ namespace vl
 			return eventCallback.Obj();
 		}
 
+		void RpcControllerMock::Finalize()
+		{
+		}
+
 		template<typename TKey>
 		void SetSuppressedFlag(Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed)
 		{

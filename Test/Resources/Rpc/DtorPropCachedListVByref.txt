@@ -43,7 +43,7 @@ func MakeValues(value : string) : IValue^[]
   return values;
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
@@ -67,7 +67,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcDtorPropCachedListVByref::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (IService^) lc.RequestService("RpcDtorPropCachedListVByref::IService");
   attach(service.ValueChanged, func() : void

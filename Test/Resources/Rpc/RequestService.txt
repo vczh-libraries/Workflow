@@ -11,7 +11,7 @@ namespace RpcTest
   }
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var service = new (RpcTest::IService^)
   {
@@ -23,7 +23,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcTest::IService", service);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var obj = lc.RequestService("RpcTest::IService");
   var service = cast (RpcTest::IService^) obj;

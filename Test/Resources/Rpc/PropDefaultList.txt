@@ -35,7 +35,7 @@ func Print(xs : string[]) : string
   return result;
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
@@ -64,7 +64,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcPropDefaultList::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (IService^) lc.RequestService("RpcPropDefaultList::IService");
   attach(service.ValueChanged, ClientValueChanged);

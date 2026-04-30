@@ -10,157 +10,93 @@ You should complete tasks one by one.
 ## Task 1
 
 Refactor `WfLibraryRpc.(h|cpp)` and `RpcDualLifecycleMock.(h|cpp)`.
-I have manually edited `WfLibraryRpc.h` to modify interface definitions, you are going to fix everything including reflection and code generation, and apply refactor to `RpcDualLifecycleMock` series classes.
 
-The target message dispatching and event suppression design is defined in [TODO_RPC_Definition.md](TODO_RPC_Definition.md#message-dispatching-and-event-suppression). This task list should follow that definition.
+It seems that finalization needs to be executed explicitly, currently we are calling `DisconnectTrackedWrappers`. We should add `Finalize` to `IRpcDispatcher`, `IRpcLifecycle`, `IRpcController`. So in any test cases we should just call `IRpcDispatcher::Finalize` at the end of the test case, without bothering how to take care of others. And then delete unnecessary functions. `RpcDualDispatcherMock::Finalize` calls `RpcDualLifecycleMock::Finalize`, which calls `RpcControllerMock::Finalize`. The exact finalization order inside the Dual and Byval test implementations is left to these implementations, to do whatever they need. `RpcControllerMock::Finalize` can be an empty implementation. Explicit finalization exists because in `RuntimeTest` project, finalization runs Workflow code, so it should be done before unloading Workflow context. Although a registered service cannot be "unregistered", but during finalization, all registered services should just gone. `Finalize` is special, after calling this function, all rpc interfaces should not be touched. But we do not need to check if finalize has been called or any other equivalent condition.
 
-### Introduction to New Interfaces
+`IRpcWrapperBase::DisconnectFromLifecycle` should be called when a proxy is no longer used, it should not be delayed to the finalization. It only resets the internal lifecycle pointer to null, which is already implemented in predefined container wrappers and generated wrappers, so this is fine. If `DisconnectFromLifecycle` is called, `ObjectHold` in the destructor could skip.
 
-- `IRpcOperations`: Instead of `IRpcController` inheriting from 4 ops interfaces, it now inherits from `IRpcOperations`, and all operations are not base types anymore, they are accessible via methods.
-- `IRpcDispatcher`: Currently `RpcControllerMock` implements ops interfaces with implementation that only doing redirection, they could not be deleted.
-  - `IRpcObjectOps::RegisterService` should stay as the generated validation and registration hook. It validates the type id, converts the service to a ref through the lifecycle, and calls `IRpcDispatcher::RegisterService` to store the ref.
-  - Remove `IRpcObjectOps::RequestService`. Service lookup should have only one authority: `IRpcDispatcher::RequestService`.
-- `IRpcDispatcher` exposes event broadcasting and point-to-point calls with dedicated methods:
-  - `BroadcastFromClient_ListEventOps(selfClientId)` returns list event ops for all clients except `selfClientId`.
-  - `BroadcastFromClient_ObjectEventOps(selfClientId)` returns object event ops for all clients except `selfClientId`.
-  - `SendToClient_ListOps(targetClientId)` returns list ops for the specified client.
-  - `SendToClient_ObjectOps(targetClientId)` returns object ops for the specified client.
-- In `RpcDualLifecycleMock.h`, a `RpcDualDispatcherMock` is implemented like this:
-  - It maintains a map for typeid -> ref.
-  - `RpcDualLifecycleMock::RegisterLocalObjectOps` aware code can now be completely deleted, it just go to `IRpcDispatcher::RequestService` to query for the ref directly. And later convert the ref to wrapper or local object using the current way.
-  - The constructor takes two `RpcDualLifecycleMock` because in the unit test there will be only two `IRpcLifeCycle` instances.
-  - `BroadcastFromClient_ListEventOps` and `BroadcastFromClient_ObjectEventOps` are supposed to call all other clients except the specified client id, but in the `RpcDualDispatcherMock`, since there is only two `RpcDualLifecycleMock` registered in it, it could just find the lifecycle **whose client id is not the specified one** and return the corresponding event ops from its controller.
-  - `SendToClient_ListOps` and `SendToClient_ObjectOps` doing the opposite thing to broadcast methods, they return the corresponding ops from the controller **whose client id is the specified client id**.
-  - DO not make `RpcDualLifecycleMock` too complex, just stores two `RpcDualLifecycleMock*` in it, that's enough.
-- `IRpcDispatcher::IsRegisteredService` checks if a ref is a registered service, and when it returns true, `IRpcController::UnregisterLocalObject` should just do nothing, because after a service is registered, it can never be unregistered, so such object just can't be unregistered. No exception need to raise.
+The return value if `RpcDualLifecycleMock::AttachLocalObjectEvents` never gets used, so it should be `void`, and I think we should just make it `= 0;` in `RpcDualLifecycleMock` anyway, since all sub classes overrides it.
 
-### IRpcController::Register breaking changes
+In `RunRpcTestCase`:
+- `invokeLocalEvents` argument seems no longer used, we should remove it.
+- In `attachLocalEvents` call back the last arguments seem never get called, because only `TestCasesRpc.cpp` uses it but the argument is ignored.
+  - `RpcLocalObjectProperties::nativeEventDetachments` is passed to this argument but this list is never add things, so this one should also be removed.
 
-Here is a snapshot in `TestCasesRpc.h`
-```C++
-lc1->RegisterLocalObjectOps(oo1);
-lc2->RegisterLocalObjectOps(oo2);
+In `RpcDualControllerMock`:
+- `AcquireRemoteObject` and `ReleaseRemoteObject` should just be removed.
+  - `AcquireRemoteObject` and `ReleaseRemoteObject` should not handle the case `ref.clientId == clientId`, because this function is supposed to send to the remote object when wrapper is created or released. I think it needs to handle this case because the generated `IRpcObjectOps::ObjectHold` in wrapper Workflow script calls this function, but this is wrong.
+  - After removing the duty of handling local object, they just redirect the call to `ObjectHold`, and they should not handle local object cases, so they seem to be not useful anymore. So the wrapper should just call `ObjectHold` by itself because now it can use `IRpcDispatcher` to do dispatching.
+- Only wrapper constructor and destructor calls `IRpcDispatcher::SendToClient_ObjectOps::ObjectHold`.
+  - All wrappers, including predefined container wrappers and generated interface wrappers, should do this.
+  - Wrapper constructor calls `ObjectHold(ref, currentClientId, true)`.
+  - Wrapper destructor calls `ObjectHold(ref, currentClientId, false)` if it has not been disconnected from lifecycle.
+  - Currently boxing and unboxing calls `AcquireRemoteObject` and `ReleaseRemoteObject`, which is not necessary, the wrapper RTTI should handle it well.
+  - After this, I think `RpcDualControllerMock` no more depends on `RpcDualLifecycleMock`, this argument could just be removed.
+- `RegisterLocalObject` and `UnregisterLocalObject` should be removed.
+  - `IRpcObjectOps::ObjectHold` should call `IRpcLifecycle::LocalObjectHold` when `hold` is true, and `IRpcLifecycle::LocalObjectUnhold` when `hold` is false.
+  - `IRpcLifecycle::LocalObjectHold` and `IRpcLifecycle::LocalObjectUnhold` do not exist, they should be added.
+  - `IRpcLifecycle::LocalObjectHold` and `IRpcLifecycle::LocalObjectUnhold` should take two arguments: `ref` and `remoteClientId`, just like `IRpcObjectOps::ObjectHold`, so we know which client is asking for what.
+  - `IRpcLifecycle::LocalObjectHold` and `IRpcLifecycle::LocalObjectUnhold` should only track local objects.
+  - They should take the responsibility of the original `RegisterLocalObject` and `UnregisterLocalObject`.
+  - The reference counter is not the same concept as `Ptr` or `std::shared_ptr`; it tracks how many clients are interested in the local object.
+  - Because wrapper constructor and destructor happen once per object/client pair, the counter should track interested clients rather than wrapper object instances.
+  - Inside `PtrToRef`, since there is no `RegisterLocalObject`, it should allocate the new object id by itself.
+  - `PtrToRef` should not increase the reference counter. The counter will be increased to 1 for a non-service object after the first remote client receives it and calls `ObjectHold(..., true)`.
+  - When the counter decreases to 0, all resources and tracking for the specified local object should be removed. Therefore the next time `PtrToRef` is called on this object it gets a new id.
+  - There is an issue when `PtrToRef` is called but no remote client ever receives the ref and therefore no `ObjectHold(..., true)` arrives. This is why the object-to-ref internal property exists on the local object: if the object is deleted while the lifecycle is still alive, it is the final fallback to remove the resource.
+  - `RpcDualLifecycleMock::Finalize` should remove all such internal properties from all tracked local objects, so if an object is deleted after deleting `RpcDualLifecycleMock`, it still works.
+  - An object registered by `RegisterService` will by default have 1 refcount, therefore even if all remote clients untrack it, it will not be actually unregistered.
+  - Service registration should add this extra count for the owner client, so the owner client is also in the interested-client list.
+- By doing this, `RpcDualControllerMock` actually no need to exist anymore, it should just use `RpcControllerMock`, and `clientId`, `nextObjectId`, `localObjectProperties` will be moved back into `RpcDualLifecycleMock`.
 
-lc2->GetController()->Register(oo1, oeo1, lo1, leo1);
-lc1->GetController()->Register(oo2, oeo2, lo2, leo2);
-```
+- You will need to fix `RpcByvalControllerMock` accordingly to the above change.
 
-Change it to
-```C++
-lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
-lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
-RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
-```
-This is an example, feel free to do any change
+- `IRpcLifeCycle` should be renamed to `IRpcLifecycle`, change the letter C from upper case to lower case, to align with everywhere else. Therefore if any variable has the name lifecycle, and it points to `IRpcLifeCycle` or any actual implementation, it should also keep the lowercase c.
 
-There will be no more `RegisterLocalObjectOps`, because when `IRpcLifeCycle::RequestService` is called, it should ask `IRpcDispatcher` for the ref, and the ref.clientId should tell if it is a local object or a remote object. `RegisterLocalObjectOps` is currently used like a test, so it can be removed.
+## Hints
 
-Currently all ops interfaces are registered to the opposite lifecycle, but now the logic is changed. They should register to the local lifecycle, so that its `IRpcOperations` base classes could return the current object.
-
-`IRpcObjectOps::RequestService` should be removed from the interface, reflection registration, generated `rpc_IRpcObjectOps`, and mock/controller redirection code. `IRpcLifeCycle::RequestService` should resolve `fullName` to `typeId`, call `IRpcDispatcher::RequestService(typeId)`, and then call `RefToPtr(ref)`. `RefToPtr` should use `ref.clientId` to decide whether the ref is local or remote.
-
-### New Way to Implement Wrappers and Event Broadcasting
-
-In the current implementation, ops interfaces are registered to the opposite controller because this is how two lifecycle talks to each other. But this is no more.
-
-There are scenarios that different lifecycle communicates, it would require many rewrite of wrapper Workflow script generating code, and also predefined wrappers for container interfaces.
-
-#### 1. Calling methods of remote objects
-
-When an object is a wrapper, calling methods actually send the call to the remote lifecycle who owns this object.
-Now we have a new way. Because the message is sending to only one client, so we call `IRpcDispatcher::SendToClient_ListOps(ref.clientId)->xxx` for list operations, and `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)->xxx` for object operations.
-
-#### 2. Invoking events of objects
-
-An object could have multiple wrappers in different lifecycles. So when an event is raised, no matter who is raising it, all clients need to know.
-When raising an event of a local object, the message will be sent to all other clients.
-When raising an event of a wrapper, the message will be sent to all other clients, including the client that owns this object.
-So we use `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(the caller lifecycle's client id)->InvokeEvent(...)` for object events, and `IRpcDispatcher::BroadcastFromClient_ListEventOps(the caller lifecycle's client id)->OnItemChanged(...)` for list events.
-
-Tricky thing is that, in the test case we know we only have two lifecycles, that is the name `Dual` mean. So in `RpcDualDispatcherMock` we only need to do the opposite thing of `SendToClient_*`, which is returnning the event ops from the lifecycle who is not the `selfClientId`.
-
-#### 3. Others
-
-Extra scenarios is inside `IRpcDispatcher` which is the central dispatcher of all (and in the dual implementation we only have to) clients. So it would exactly know which one to talk to.
-
-### Extra Rules
-
-- There is no need to verify if an ops interface is registered, we should just use it like we know it will never be null.
-- If a function is only called in the destructor in the same class, we should just move the code to the destructor, and remove the function.
-- In a destructor, there is no need to do things like, clear its list fields, reset its pointer fields, anything like that. After the destructor the object is not accessible anyway, those are just unnecessary dumb code.
-- If an `IRpcXXX` does not implement `IRpcYYY`, any `RpcDualXXXMock` should not implement `IRpcYYY`.
-- DO NOT create unnecessary redirection. If you know which object to call, just call it. Until it is required by the semantic of the interface.
-- `IRpcDispatcher` is supposed to be the only way we send messages to other lifecycles.
-  - Review the current implementation precisely, and keep it in this way.
-  - Any lifecycle/controller implementation should not store any object that does not belong to this client. It should only use `IRpcDispatcher` to send messages.
-- Besides of `RpcDualDispatcherMock`, `RpcDualControllerMock`, `RpcDualLifecycleMock`, I don't think any other **dual** specific mocks should be created.
-
-I would like to see code in simple structure, and the above information is telling you why we can keep things simple, and I am offering you the idea of how to implement them.
-
-There are 3 constants at the beginning of `WfLibraryRpc.h`, search `WfLibraryRpc.cpp` and all mocks to see if there is any related magic number, and use these constants instead. Not magic number is allowed.
-
-## Additional Design Notes
-
-### Event Suppression for Broadcasted Events
-
-Although we do not always know who will call an event, when an event is called because `InvokeEvent` or `OnItemChanged` is received, we exactly know the request is from a remote client. Therefore suppression should happen at this exact moment:
-- Mark the incoming event as suppressed.
-- Raise the event locally.
-- Unmark the event after the local event invocation finishes.
-
-The current generated wrapper shape in `Test/Generated/RpcMetadata32/Wrapper_Event.txt` has two important locations:
-- `rpc_IRpcObjectEventOps(...).InvokeEvent` receives `(ref, eventId, arguments)`, resolves `target = _lc.RefToPtr(ref)`, unboxes arguments, and raises the local event on `target`.
-- `rpclistener_*` is attached to both real local objects and generated wrappers. Its handler already captures `lc`, `ref`, and the generated event id constant, then boxes arguments and forwards the event.
-
-So the forwarding handler should know suppression by asking the local controller, not by asking `IRpcDispatcher`. The lifecycle is already passed into `rpclistener_*`, and generated Workflow code can reach the controller through `lc.Controller`. A concrete `IRpcController` API can be:
-- `SetEventSuppressedFlag(ref, eventId, bool)`
-- `GetEventSuppressedFlag(ref, eventId)`
-- `SetItemChangedSuppressedFlag(ref, bool)`
-- `GetItemChangedSuppressedFlag(ref)`
-
-These methods have already been added to `IRpcController` in `WfLibraryRpc.h` as part of the target interface shape. The later implementation task still needs to add reflection registration, concrete controller implementations, and generated-code calls.
-
-Although the setter receives a `bool`, the controller should store suppression as a counter internally: setting `true` increments, setting `false` decrements, and `Get*` returns true when the count is greater than zero. This keeps nested or reentrant remote event replay from clearing the flag too early.
-
-The object-event receive path should call `lc.Controller.SetEventSuppressedFlag(ref, eventId, true)` before raising the local event, and call `lc.Controller.SetEventSuppressedFlag(ref, eventId, false)` in a `finally` block after the local event invocation finishes. This can be emitted directly in `rpc_IRpcObjectEventOps(...).InvokeEvent`, or implemented by a controller/lifecycle bridge that wraps the generated object event ops, as long as the generated `rpclistener_*` handler observes the same controller suppression state.
-
-The generated `rpclistener_*` handler should check suppression before boxing arguments. If `lc.Controller.GetEventSuppressedFlag(ref, eventId)` returns true, it returns immediately. Otherwise it boxes arguments and broadcasts through `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(...)`.
-
-List events should use the same pattern without an event id. The receive-side `OnItemChanged` calls `lc.Controller.SetItemChangedSuppressedFlag(ref, true)`, raises the local list notification, and calls `lc.Controller.SetItemChangedSuppressedFlag(ref, false)` in a `finally` block. The native list event handler checks `lc.Controller.GetItemChangedSuppressedFlag(ref)` before calling `IRpcDispatcher::BroadcastFromClient_ListEventOps(...)`.
-
-### Responses to Feasibility Notes
-
-- For generated wrappers needing dispatcher or client information: generated wrappers currently bring the lifecycle of the current object, so the lifecycle is enough to provide whatever dispatcher or client information the generated code needs.
-- For `RpcControllerMock` redirection and `IRpcOperations`: this can be done by changing every code path that calls ops from the lifecycle/controller interface to use the new `GetListOps`, `GetObjectOps`, `GetListEventOps`, and `GetObjectEventOps` shape.
-- For registered service lifetime and unregister behavior: a service shared pointer will be owned by the controller, so no service destructor should be called until the controller is going to destroy. Therefore `UnregisterLocalObject` doing nothing for registered services is still fine.
+- The listed scope at the beginning is only the main target. This refactor will probably also affect reflection registration, generated RPC analyzer code, generated test harness code, byval tests, generated files, and metadata baselines.
+- Potential things to update include `WfLibraryReflection.(h|cpp)`, `WfAnalyzer_GenerateRpc.cpp`, `TestRpcCompile.cpp`, `TestCasesRpc.h`, `TestRpc.cpp`, `RpcByvalLifecycleMock.(h|cpp)`, generated C++ RPC sources, generated RPC metadata, and reflection/RPC baselines.
+- Change everywhere needed to eventually remove `(Acquire|Release)RemoteObject`. As now `IRpcLifecycle` is going to track the ref counter by the new added `IRpcLifecycle::LocalObjectHold` and `IRpcLifecycle::LocalObjectUnhold` anyway.
+- Wrapper constructors and destructors will call `IRpcDispatcher::SendToClient_ObjectOps::ObjectHold`, so reference tracking should still happen through the dispatcher and object ops boundary.
+- Reflection registration should expose `Finalize`, `LocalObjectHold`, and `LocalObjectUnhold`.
+- Generated RPC code should update `IRpcObjectOps::ObjectHold` to call `IRpcLifecycle::LocalObjectHold(ref, remoteClientId)` or `IRpcLifecycle::LocalObjectUnhold(ref, remoteClientId)`.
+- Generated wrapper constructors and destructors should use `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, lc.ClientId, hold)`.
 
 # UPDATES
-- Refactored the RPC interfaces around `IRpcOperations` and `IRpcDispatcher`, removed `IRpcObjectOps::RequestService`, and reflected the new lifecycle/controller/dispatcher surface.
-- Reworked `RpcControllerMock` to expose local operation objects directly and to store event suppression state with counters.
-- Reworked dual RPC lifecycle tests around a simple `RpcDualDispatcherMock` that owns service refs and routes point-to-point calls or broadcasts by client id.
-- Updated byref wrappers, generated RPC Workflow code, and native list event bridges to send cross-client messages only through `IRpcDispatcher`.
-- Added receive-side object/list event suppression and generated listener suppression checks before rebroadcasting events.
-- Updated service lifetime cleanup in runtime tests so registered services remain pinned during normal unregister, then are explicitly released while Workflow globals are still alive.
-- Replaced related invalid client/object/type magic values with the RPC constants where applicable and regenerated RPC metadata/source/baselines.
 
 # TEST
-- `Test/UnitTest/UnitTest.sln` Debug Win32 build: passed.
-- `Test/UnitTest/UnitTest.sln` Debug x64 build: passed.
-- `CompilerTest_GenerateMetadata` Debug Win32: passed.
-- `CompilerTest_GenerateMetadata` Debug x64: passed.
-- `CompilerTest_LoadAndCompile` Debug x64: passed.
-- Post-generation `Test/UnitTest/UnitTest.sln` Debug Win32 build: passed.
-- Post-generation `Test/UnitTest/UnitTest.sln` Debug x64 build: passed.
-- `LibraryTest` Debug Win32: passed, 14/14.
-- `LibraryTest` Debug x64: passed, 14/14.
-- `RuntimeTest` Debug Win32: passed, 257/257.
-- `RuntimeTest` Debug x64: passed, 257/257.
-- `CppTest` Debug Win32: passed, 223/223.
-- `CppTest` Debug x64: passed, 223/223.
-- `CppTest_Metaonly` Debug Win32: passed, 223/223.
-- `CppTest_Metaonly` Debug x64: passed, 223/223.
-- `CppTest_Reflection` Debug Win32: passed, 223/223.
-- `CppTest_Reflection` Debug x64: passed, 223/223.
+
+The test signal for this refactor is the existing RPC and generated-code suite: the interfaces must compile after removing controller-side acquire/release and local registration APIs, generated Workflow RPC wrappers must use `IRpcDispatcher::SendToClient_ObjectOps(...)->ObjectHold(...)`, explicit finalization must replace direct wrapper-disconnection calls in tests, and metadata/source baselines must regenerate cleanly. Success criteria are passing unit tests in the order required by `Project.md`, with any expected generated baseline changes accepted and re-run.
 
 # PROPOSALS
-- None.
+
+- No.1 Move RPC lifetime accounting into lifecycle finalization and ObjectHold
+
+## No.1 Move RPC lifetime accounting into lifecycle finalization and ObjectHold
+
+### CODE CHANGE
+
+[CONFIRMED]
+
+Implemented the RPC lifecycle refactor:
+
+- Added explicit `Finalize` methods to dispatcher/controller/lifecycle contracts and updated dual/byval test dispatchers to finalize through lifecycle/controller ownership.
+- Renamed `IRpcLifeCycle` to `IRpcLifecycle` everywhere and updated reflection registration for `Finalize`, `LocalObjectHold`, and `LocalObjectUnhold`.
+- Removed controller-side `AcquireRemoteObject`, `ReleaseRemoteObject`, `RegisterLocalObject`, and `UnregisterLocalObject`; local object interest is now tracked by lifecycle implementations through `ObjectHold`.
+- Moved dual/byval local object id allocation and interested-client tracking into lifecycle mocks, with service owner interest retained and zero-interest cleanup removing object tracking.
+- Updated predefined and generated wrappers so construction/destruction call `IRpcDispatcher::SendToClient_ObjectOps(...)->ObjectHold(...)`, and skipped destructor unhold after `DisconnectFromLifecycle`.
+- Removed unused RPC test harness callbacks/arguments and updated tests to call dispatcher `Finalize`.
+- Regenerated RPC C++ sources, metadata baselines, reflection baselines, and release amalgamation outputs.
+
+Verification completed:
+
+- Debug Win32/x64 build via `copilotBuild.ps1`.
+- `LibraryTest` Debug Win32/x64.
+- `CompilerTest_GenerateMetadata` Debug Win32/x64.
+- `CompilerTest_LoadAndCompile` Debug x64.
+- Post-generation Debug Win32/x64 rebuild.
+- `RuntimeTest` Debug Win32/x64.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` Debug Win32/x64.
+- Full `..\Tools\Tools\Build.ps1 Workflow` release verification.
+- Stale reference scan found no `IRpcLifeCycle`, acquire/release/register/unregister, `DisconnectTrackedWrappers`, `nativeEventDetachments`, or `invokeLocalEvents` leftovers in edited source/test/resource scopes.

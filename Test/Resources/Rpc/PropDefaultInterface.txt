@@ -63,7 +63,7 @@ func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
   }
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
@@ -88,7 +88,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcPropDefaultInterface::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (IService^) lc.RequestService("RpcPropDefaultInterface::IService");
   attach(service.ValueChanged, ClientValueChanged);

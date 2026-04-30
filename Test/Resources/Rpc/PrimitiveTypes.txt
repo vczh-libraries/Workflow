@@ -32,7 +32,7 @@ namespace RpcPrimitiveTest
   }
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var service = new (RpcPrimitiveTest::IService^)
   {
@@ -80,7 +80,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcPrimitiveTest::IService", service);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var obj = lc.RequestService("RpcPrimitiveTest::IService");
   var service = cast (RpcPrimitiveTest::IService^) obj;

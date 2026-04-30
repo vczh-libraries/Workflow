@@ -25,7 +25,7 @@ namespace RpcCollectionOblist
 
 var xsService : observe (observe int[])[] = {};
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcCollectionOblist::Nested::InByref::PropByref::IService^)
   {
@@ -63,7 +63,7 @@ func Print(xs : observe (observe int[])[]) : string
   return result;
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var xsOrigin : observe (observe int[])[] = {{1 2 3}};
   var service = cast (RpcCollectionOblist::Nested::InByref::PropByref::IService^) lc.RequestService("RpcCollectionOblist::Nested::InByref::PropByref::IService");

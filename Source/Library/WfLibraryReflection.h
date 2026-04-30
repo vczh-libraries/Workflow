@@ -65,7 +65,7 @@ Predefined Types
 			F(vl::rpc_controller::IRpcOperations)\
 			F(vl::rpc_controller::IRpcDispatcher)\
 			F(vl::rpc_controller::IRpcController)\
-			F(vl::rpc_controller::IRpcLifeCycle)\
+			F(vl::rpc_controller::IRpcLifecycle)\
 			F(vl::rpc_controller::IRpcWrapperBase)\
 			F(vl::rpc_controller::RpcByrefEnumerator)\
 			F(vl::rpc_controller::RpcByrefEnumerable)\

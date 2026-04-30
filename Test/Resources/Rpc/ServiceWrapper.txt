@@ -14,7 +14,7 @@ namespace RpcServiceWrapperTest
 
 var serviceObj : IService^ = null;
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   serviceObj = new (RpcServiceWrapperTest::IService^)
   {
@@ -31,7 +31,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcServiceWrapperTest::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var obj = lc.RequestService("RpcServiceWrapperTest::IService");
   if ((obj as (system::IRpcWrapperBase^) is null))

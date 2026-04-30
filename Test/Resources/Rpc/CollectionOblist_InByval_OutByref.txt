@@ -22,7 +22,7 @@ namespace RpcCollectionOblist
 
 var xsService : observe int[] = {};
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
@@ -52,7 +52,7 @@ func Print5(xs : observe int[]) : string
   return $"$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])";
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var xsOrigin : observe int[] = {1 2 3};
   var service = cast (IService^) lc.RequestService("RpcCollectionOblist::InByval::OutByref::IService");

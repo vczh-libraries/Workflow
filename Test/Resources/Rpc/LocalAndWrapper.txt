@@ -27,7 +27,7 @@ var serviceReceived_Obj2 : IObj2^ = null;
 var clientReceived_Obj1 : IObj1^ = null;
 var clientReceived_Obj2 : IObj2^ = null;
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var service = new (RpcWrapperTest::IService^)
   {
@@ -56,7 +56,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcWrapperTest::IService", service);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var obj = lc.RequestService("RpcWrapperTest::IService");
   if ((obj as (system::IRpcWrapperBase^) is null))

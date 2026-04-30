@@ -23,7 +23,7 @@ namespace RpcCollection
 
 var xsService : int[] = {};
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
@@ -55,7 +55,7 @@ func Print5(xs : int[]) : string
   return $"$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])";
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var xsOrigin = {1 2 3};
   var service = cast (IService^) lc.RequestService("RpcCollection::InByref::PropByref::IService");

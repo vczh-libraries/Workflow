@@ -41,7 +41,7 @@ func RecordSomethingHappened(_xs : int[], _ys : observe int[]) : void
   receivedYs = _ys;
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcEventArgs::IService^)
   {
@@ -62,7 +62,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcEventArgs::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (RpcEventArgs::IService^) lc.RequestService("RpcEventArgs::IService");
   attach(service.SomethingHappened, RecordSomethingHappened);

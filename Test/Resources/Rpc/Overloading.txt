@@ -26,7 +26,7 @@ namespace RpcOverloadingTest
 
 var s = "";
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcOverloadingTest::IService^)
   {
@@ -58,7 +58,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcOverloadingTest::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (RpcOverloadingTest::IService^) lc.RequestService("RpcOverloadingTest::IService");
   var value1 = 123;

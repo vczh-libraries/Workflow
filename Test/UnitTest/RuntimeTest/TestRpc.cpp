@@ -30,7 +30,7 @@ namespace
 	private:
 		Ptr<WfRuntimeGlobalContext>								globalContext;
 		Ptr<IValueFunctionProxy>								wrapperCreateFunc;
-		Func<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>		listenerAttachFunc;
+		Func<void(vint, IRpcLifecycle*, RpcObjectReference, IDescriptable*)>		listenerAttachFunc;
 	public:
 		RpcWorkflowLifecycleMock(vint _clientId)
 			: RpcDualLifecycleMock(_clientId)
@@ -63,15 +63,15 @@ namespace
 				const auto& listenerAttachFunctions = globalContext->assembly->functionByName.GetByIndex(listenerAttachIndex);
 				CHECK_ERROR(listenerAttachFunctions.Count() <= 1, L"Multiple rpclistener_Attach functions are found.");
 				listenerAttachFunc = listenerAttachFunctions.Count() == 1
-					? LoadFunction<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>(globalContext, L"rpclistener_Attach")
-					: Func<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>();
+					? LoadFunction<void(vint, IRpcLifecycle*, RpcObjectReference, IDescriptable*)>(globalContext, L"rpclistener_Attach")
+					: Func<void(vint, IRpcLifecycle*, RpcObjectReference, IDescriptable*)>();
 			}
 
-			RegisterWrapperFactory([this](RpcObjectReference ref, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
+			RegisterWrapperFactory([this](RpcObjectReference ref, IRpcLifecycle* lc) -> Ptr<IRpcWrapperBase>
 			{
 				auto argList = IValueList::Create();
 				argList->Add(BoxValue(ref));
-				argList->Add(BoxValue<IRpcLifeCycle*>(lc));
+				argList->Add(BoxValue<IRpcLifecycle*>(lc));
 				auto result = wrapperCreateFunc->Invoke(argList);
 				auto wrapper = Ptr(result.GetRawPtr()->SafeAggregationCast<IRpcWrapperBase>());
 				CHECK_ERROR(wrapper, L"rpcwrapper_Create did not return IRpcWrapperBase.");
@@ -105,13 +105,11 @@ namespace
 			return RpcTypeId_NotFound;
 		}
 
-		bool AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments) override
+		void AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj) override
 		{
-			(void)detachments;
-			if (!listenerAttachFunc) return false;
-			if (ref.typeId < 0) return false;
+			if (!listenerAttachFunc) return;
+			if (ref.typeId < 0) return;
 			listenerAttachFunc(ref.typeId, this, ref, obj);
-			return true;
 		}
 	};
 }
@@ -168,8 +166,8 @@ TEST_FILE
 					auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
 
 					// Create object ops implementations from the assembly
-					auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectOps");
-					auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifeCycle*)>(globalContext, L"rpc_IRpcObjectEventOps");
+					auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifecycle*)>(globalContext, L"rpc_IRpcObjectOps");
+					auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifecycle*)>(globalContext, L"rpc_IRpcObjectEventOps");
 					auto oo1 = createObjectOps(lc1.Obj());
 					auto oeo1 = createEventOps(lc1.Obj());
 					auto oo2 = createObjectOps(lc2.Obj());
@@ -180,21 +178,20 @@ TEST_FILE
 					RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 
 					// Run serviceMain with lc1
-					auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");
+					auto serviceMain = LoadFunction<void(IRpcLifecycle*)>(globalContext, L"serviceMain");
 					serviceMain(lc1.Obj());
 
 					// Run clientMain with lc2 and get the result
-					auto clientMain = LoadFunction<WString(IRpcLifeCycle*)>(globalContext, L"clientMain");
+					auto clientMain = LoadFunction<WString(IRpcLifecycle*)>(globalContext, L"clientMain");
 					auto actual = clientMain(lc2.Obj());
 
 					TEST_PRINT(L"    expected  : " + itemResult);
 					TEST_PRINT(L"    actual    : " + actual);
 					TEST_ASSERT(actual == itemResult);
 
-					// Disconnect wrappers while globalContext is still alive,
-					// because DisconnectFromLifecycle executes Workflow bytecode.
-					lc2->DisconnectTrackedWrappers();
-					lc1->DisconnectTrackedWrappers();
+					// Finalize while globalContext is still alive,
+					// because finalization can execute Workflow bytecode.
+					dispatcher.Finalize();
 				}
 				globalContext->globalVariables = nullptr;
 			});

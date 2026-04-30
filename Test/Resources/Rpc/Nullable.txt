@@ -21,7 +21,7 @@ namespace RpcNullable
 
 var s = "";
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcNullable::IService^)
   {
@@ -35,7 +35,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcNullable::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (RpcNullable::IService^) lc.RequestService("RpcNullable::IService");
 

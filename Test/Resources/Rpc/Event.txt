@@ -26,7 +26,7 @@ func ClientSomethingHappened(something : string) : void
   s = $"$(s)[clientMain:$(something)]";
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcEvent::IService^)
   {
@@ -43,7 +43,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcEvent::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (RpcEvent::IService^) lc.RequestService("RpcEvent::IService");
 

@@ -14,7 +14,7 @@ namespace RpcDtor2Test
 
 var s = "Not Deleted";
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtor2Test::IService^)
   {
@@ -36,7 +36,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcDtor2Test::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var obj = lc.RequestService("RpcDtor2Test::IService");
   var clientObj = cast (RpcDtor2Test::IService^) obj;

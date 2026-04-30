@@ -32,15 +32,17 @@ func MakeObject(name : string) : IObject^
 }
 
 var objs : IObject^[] = { MakeObject("1st"); MakeObject("2nd"); };
+var held : IObject^[] = {};
 var s = "";
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcFailDoubleRegistrationTest::IService^)
   {
     override func SetObject(obj : IObject^, index : int) : IObject^
     {
       s = $"$(s)[service:Received $(obj.Name)]";
+      held.Add(obj);
       return objs[index];
     }
   };
@@ -54,6 +56,7 @@ func CallService(service : RpcFailDoubleRegistrationTest::IService^, indexParame
   {
     var obj = service.SetObject(objs[indexParameter], indexReturn);
     s = $"$(s)[client:Received $(obj.Name)]";
+    held.Add(obj);
   }
   catch (ex)
   {
@@ -61,7 +64,7 @@ func CallService(service : RpcFailDoubleRegistrationTest::IService^, indexParame
   }
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (RpcFailDoubleRegistrationTest::IService^) lc.RequestService("RpcFailDoubleRegistrationTest::IService");
 

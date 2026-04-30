@@ -24,7 +24,7 @@ func ClientValueChanged() : void
   s = $"$(s)[ValueChanged]";
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcPropDefault::IService^)
   {
@@ -48,7 +48,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcPropDefault::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (RpcPropDefault::IService^) lc.RequestService("RpcPropDefault::IService");
   attach(service.ValueChanged, ClientValueChanged);

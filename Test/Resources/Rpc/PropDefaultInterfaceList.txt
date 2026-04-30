@@ -97,7 +97,7 @@ func CheckList(xs : IValue^[], shouldBeWrapper : bool, name : string) : void
   }
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
@@ -123,7 +123,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcPropDefaultInterfaceList::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var service = cast (IService^) lc.RequestService("RpcPropDefaultInterfaceList::IService");
   attach(service.ValueChanged, ClientValueChanged);

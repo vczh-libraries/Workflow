@@ -8,11 +8,8 @@ template<typename TInstance>
 void RunRpcTestCase(
 	const vl::WString& expected,
 	vl::vint(*decideTypeId)(vl::reflection::IDescriptable*),
-	void(*attachLocalEvents)(vl::rpc_controller_test::RpcDualLifecycleMock*, vl::rpc_controller::RpcObjectReference, vl::reflection::IDescriptable*, vl::collections::List<vl::Func<void()>>&),
-	bool(*invokeLocalEvents)(vl::rpc_controller_test::RpcDualLifecycleMock*, vl::rpc_controller::RpcObjectReference, vl::vint, vl::Ptr<vl::reflection::description::IValueArray>))
+	void(*attachLocalEvents)(vl::rpc_controller_test::RpcDualLifecycleMock*, vl::rpc_controller::RpcObjectReference, vl::reflection::IDescriptable*))
 {
-	(void)invokeLocalEvents;
-
 	using namespace vl;
 	using namespace vl::collections;
 	using namespace vl::console;
@@ -25,7 +22,7 @@ void RunRpcTestCase(
 	{
 	public:
 		vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
-		void(*attachLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*, List<Func<void()>>&) = nullptr;
+		void(*attachLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*) = nullptr;
 		using RpcDualLifecycleMock::RpcDualLifecycleMock;
 
 		vint DecideTypeId(IDescriptable* obj)const override
@@ -35,12 +32,11 @@ void RunRpcTestCase(
 			return decideTypeIdCallback(obj);
 		}
 
-		bool AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj, List<Func<void()>>& detachments) override
+		void AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj) override
 		{
-			if (!attachLocalEventsCallback) return false;
-			if (ref.typeId < 0) return false;
-			attachLocalEventsCallback(this, ref, obj, detachments);
-			return true;
+			if (!attachLocalEventsCallback) return;
+			if (ref.typeId < 0) return;
+			attachLocalEventsCallback(this, ref, obj);
 		}
 	};
 	auto& instance = TInstance::Instance();
@@ -68,8 +64,8 @@ void RunRpcTestCase(
 	lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
 	lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
 	RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
-	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
-	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
+	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
+	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
 
 	instance.serviceMain(lc1.Obj());
 
@@ -79,8 +75,7 @@ void RunRpcTestCase(
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
 
-	lc2->DisconnectTrackedWrappers();
-	lc1->DisconnectTrackedWrappers();
+	dispatcher.Finalize();
 }
 
 #endif

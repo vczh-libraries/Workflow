@@ -8,7 +8,6 @@ namespace vl
 	namespace rpc_controller_test
 	{
 		class RpcDualLifecycleMock;
-		class RpcDualControllerMock;
 		class RpcDualDispatcherMock;
 
 		class RpcDualLocalObjectTracker : public Object
@@ -45,39 +44,10 @@ namespace vl
 		struct RpcLocalObjectProperties : public Object
 		{
 			rpc_controller::RpcObjectReference					ref;
-			vint												refCount = 0;
+			collections::SortedList<vint>						interestedClients;
 			reflection::IDescriptable*							rawPtr = nullptr;
 			Ptr<reflection::IDescriptable>						ownedPtr;
 			Ptr<EventHandler>									eventHandler;
-			collections::List<Func<void()>>						nativeEventDetachments;
-		};
-
-		struct RpcWrapperProperties
-		{
-			reflection::DescriptableObject*						root = nullptr;
-			rpc_controller::IRpcWrapperBase*					proxy = nullptr;
-		};
-
-		class RpcDualControllerMock : public RpcControllerMock
-		{
-		private:
-			RpcDualLifecycleMock*													lifecycle = nullptr;
-			vint																	clientId = rpc_controller::RpcClientId_Invalid;
-			vint																	nextObjectId = rpc_controller::RpcObjectId_Invalid;
-			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>			localObjectProperties;
-		public:
-			RpcDualControllerMock(RpcDualLifecycleMock* lc, vint _clientId);
-			~RpcDualControllerMock();
-
-			vint																	GetClientId()const;
-			const collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>&		GetLocalObjectProperties()const;
-
-			// IRpcController
-
-			rpc_controller::RpcObjectReference										RegisterLocalObject(vint typeId)override;
-			void																	UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override;
-			void																	AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override;
-			void																	ReleaseRemoteObject(rpc_controller::RpcObjectReference ref)override;
 		};
 
 		class RpcDualDispatcherMock : public Object, public rpc_controller::IRpcDispatcher
@@ -93,6 +63,7 @@ namespace vl
 			RpcDualDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2);
 			~RpcDualDispatcherMock();
 
+			void																	Finalize()override;
 			bool																	IsRegisteredService(rpc_controller::RpcObjectReference ref)override;
 			void																	RegisterService(vint typeId, rpc_controller::RpcObjectReference ref)override;
 			rpc_controller::RpcObjectReference										RequestService(vint typeId)override;
@@ -102,16 +73,23 @@ namespace vl
 			rpc_controller::IRpcObjectOps*											SendToClient_ObjectOps(vint targetClientId)override;
 		};
 
-		class RpcDualLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle
+		class RpcDualLifecycleMock : public Object, public rpc_controller::IRpcLifecycle
 		{
-			friend class RpcDualControllerMock;
 			friend class RpcDualDispatcherMock;
 			friend class RpcDualLocalObjectTracker;
 			friend class RpcDualWrapperTracker;
-			using UniversalWrapperFactory = Func<Ptr<rpc_controller::IRpcWrapperBase>(rpc_controller::RpcObjectReference, rpc_controller::IRpcLifeCycle*)>;
+			using UniversalWrapperFactory = Func<Ptr<rpc_controller::IRpcWrapperBase>(rpc_controller::RpcObjectReference, rpc_controller::IRpcLifecycle*)>;
+			struct RpcWrapperProperties
+			{
+				reflection::DescriptableObject*						root = nullptr;
+				rpc_controller::IRpcWrapperBase*					proxy = nullptr;
+			};
 			using WrapperProperties = collections::Dictionary<rpc_controller::RpcObjectReference, RpcWrapperProperties>;
 		private:
-			RpcDualControllerMock													controller;
+			RpcControllerMock														controller;
+			vint																	clientId = rpc_controller::RpcClientId_Invalid;
+			vint																	nextObjectId = rpc_controller::RpcObjectId_Invalid;
+			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>			localObjectProperties;
 			rpc_controller::IRpcDispatcher*											dispatcher = nullptr;
 			static WString															InternalProperty_LocalObjectTracker;
 			static WString															InternalProperty_WrapperTracker;
@@ -123,27 +101,31 @@ namespace vl
 			bool																	TryGetTrackedWrapperRef(reflection::DescriptableObject* obj, rpc_controller::RpcObjectReference& ref)const;
 			rpc_controller::IRpcWrapperBase*										GetTrackedWrapper(rpc_controller::RpcObjectReference ref)const;
 			void																	TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
-			void																	UntrackLocalObject(rpc_controller::RpcObjectReference ref);
+			void																	UntrackLocalObject(rpc_controller::RpcObjectReference ref, bool clearInternalProperty);
+			void																	RemoveLocalObject(rpc_controller::RpcObjectReference ref, bool clearInternalProperty);
 			bool																	IsTracked(vint objectId)const;
 			Ptr<reflection::IDescriptable>											CreateCallerProxy(rpc_controller::RpcObjectReference ref);
+			void																	DisconnectWrappersForFinalize();
 		protected:
 			collections::Dictionary<WString, vint>									idMap;
 
 			virtual vint															DecideTypeId(reflection::IDescriptable* obj)const;
-			virtual bool															AttachLocalObjectEvents(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj, collections::List<Func<void()>>& detachments);
+			virtual void															AttachLocalObjectEvents(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj) = 0;
 		public:
 			RpcDualLifecycleMock(vint _clientId);
 			~RpcDualLifecycleMock();
 
 			void																	SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void																	RegisterWrapperFactory(UniversalWrapperFactory factory);
-			void																	DisconnectTrackedWrappers();
 
-			// IRpcLifeCycle
+			// IRpcLifecycle
 
+			void																	Finalize()override;
 			vint																	GetClientId()override;
 			rpc_controller::IRpcDispatcher*											GetDispatcher()override;
-			RpcDualControllerMock*													GetController()override;
+			RpcControllerMock*														GetController()override;
+			void																	LocalObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId)override;
+			void																	LocalObjectUnhold(rpc_controller::RpcObjectReference ref, vint remoteClientId)override;
 			void																	RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
 			Ptr<reflection::IDescriptable>											RequestService(const WString& fullName)override;
 			Ptr<reflection::IDescriptable>											RefToPtr(rpc_controller::RpcObjectReference ref)override;

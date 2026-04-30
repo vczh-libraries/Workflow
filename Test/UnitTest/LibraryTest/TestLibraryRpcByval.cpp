@@ -12,10 +12,27 @@ namespace
 {
 	class StubObjectOps : public Object, public IRpcObjectOps
 	{
+	private:
+		IRpcLifecycle*											lifecycle = nullptr;
 	public:
+		StubObjectOps(IRpcLifecycle* lc)
+			: lifecycle(lc)
+		{
+		}
+
 		Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override				{ CHECK_FAIL(L"Not Supported!"); }
 		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override	{ CHECK_FAIL(L"Not Supported!"); }
-		void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override								{ CHECK_FAIL(L"Not Supported!"); }
+		void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override
+		{
+			if (hold)
+			{
+				lifecycle->LocalObjectHold(ref, remoteClientId);
+			}
+			else
+			{
+				lifecycle->LocalObjectUnhold(ref, remoteClientId);
+			}
+		}
 		void RegisterService(vint typeId, Ptr<IDescriptable> service)override										{ CHECK_FAIL(L"Not Supported!"); }
 	};
 
@@ -27,7 +44,7 @@ namespace
 
 	struct RpcTestContext
 	{
-		Ptr<RpcByvalLifecycleMock>			lifeCycle;
+		Ptr<RpcByvalLifecycleMock>			lifecycle;
 		Ptr<RpcCalleeListOps>				listOps;
 		Ptr<RpcCalleeListEventBridge>		listEventBridge;
 	};
@@ -35,10 +52,10 @@ namespace
 	RpcTestContext CreateContext()
 	{
 		RpcTestContext context;
-		context.lifeCycle = Ptr(new RpcByvalLifecycleMock);
-		context.listOps = Ptr(new RpcCalleeListOps(context.lifeCycle.Obj()));
-		context.listEventBridge = Ptr(new RpcCalleeListEventBridge(context.lifeCycle.Obj()));
-		context.lifeCycle->GetController()->Register(Ptr(new StubObjectOps), Ptr(new StubObjectEventOps), context.listOps, context.listEventBridge);
+		context.lifecycle = Ptr(new RpcByvalLifecycleMock);
+		context.listOps = Ptr(new RpcCalleeListOps(context.lifecycle.Obj()));
+		context.listEventBridge = Ptr(new RpcCalleeListEventBridge(context.lifecycle.Obj()));
+		context.lifecycle->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle.Obj())), Ptr(new StubObjectEventOps), context.listOps, context.listEventBridge);
 		return context;
 	}
 }
@@ -56,11 +73,11 @@ TEST_FILE
 
 		// Keep reflected wrapper alive
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifeCycle.Obj());
+		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
 		auto ref = UnboxValue<RpcObjectReference>(serializable);
 		{
 			// Create proxy explicitly (RefToPtr returns local object, so create proxy directly)
-			auto proxy = Ptr(new RpcByrefArray(context.lifeCycle.Obj(), ref));
+			auto proxy = Ptr(new RpcByrefArray(context.lifecycle.Obj(), ref));
 
 			proxy->Set(1, BoxParameter((vint)42));
 			TEST_ASSERT(values[1] == 42);
@@ -72,7 +89,7 @@ TEST_FILE
 
 			TEST_ERROR(proxy->Resize(3));
 		}
-		// After proxy destroyed, ReleaseRemoteObject was called
+		// After proxy destroyed, ObjectHold(false) was sent
 	});
 
 	TEST_CASE(L"RpcByrefList forwards Add Insert RemoveAt and Clear")
@@ -83,9 +100,9 @@ TEST_FILE
 		values.Add(3);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifeCycle.Obj());
+		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
 		auto ref = UnboxValue<RpcObjectReference>(serializable);
-		auto proxy = Ptr(new RpcByrefList(context.lifeCycle.Obj(), ref));
+		auto proxy = Ptr(new RpcByrefList(context.lifecycle.Obj(), ref));
 
 		TEST_ASSERT(proxy->Add(BoxParameter((vint)5)) == 2);
 		TEST_ASSERT(values.Count() == 3);
@@ -111,9 +128,9 @@ TEST_FILE
 		values.Set(2, 20);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifeCycle.Obj());
+		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
 		auto ref = UnboxValue<RpcObjectReference>(serializable);
-		auto proxy = Ptr(new RpcByrefDictionary(context.lifeCycle.Obj(), ref));
+		auto proxy = Ptr(new RpcByrefDictionary(context.lifecycle.Obj(), ref));
 
 		auto keysView = proxy->GetKeys();
 		auto valuesView = proxy->GetValues();
@@ -152,11 +169,11 @@ TEST_FILE
 		values.Add(2);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifeCycle.Obj());
+		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
 		auto ref = UnboxValue<RpcObjectReference>(serializable);
 
 		// Create proxy via factory path so it gets registered in observableProxies
-		auto proxyDesc = context.lifeCycle->CreateCallerProxy(ref);
+		auto proxyDesc = context.lifecycle->CreateCallerProxy(ref);
 		auto proxy = Ptr(dynamic_cast<IValueObservableList*>(proxyDesc.Obj()));
 		List<WString> events;
 		auto handler = proxy->ItemChanged.Add([&](vint index, vint oldCount, vint newCount)
@@ -189,9 +206,9 @@ TEST_FILE
 		values.Add(20);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifeCycle.Obj());
+		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
 		auto ref = UnboxValue<RpcObjectReference>(serializable);
-		auto proxy = Ptr(new RpcByrefList(context.lifeCycle.Obj(), ref));
+		auto proxy = Ptr(new RpcByrefList(context.lifecycle.Obj(), ref));
 		{
 			auto enumerator = proxy->CreateEnumerator();
 			TEST_ASSERT(enumerator->Next());
@@ -200,6 +217,6 @@ TEST_FILE
 			TEST_ASSERT(UnboxValue<vint>(enumerator->GetCurrent()) == 20);
 			TEST_ASSERT(!enumerator->Next());
 		}
-		// Enumerator destroyed - ReleaseRemoteObject called
+		// Enumerator destroyed - ObjectHold(false) was sent
 	});
 }

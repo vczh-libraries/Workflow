@@ -39,7 +39,7 @@ func Modify(xs : observe int[]) : void
   xs.Clear();
 }
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcEventOblist::IService^)
   {
@@ -69,7 +69,7 @@ func serviceMain(lc : IRpcLifeCycle*) : void
   lc.RegisterService("RpcEventOblist::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
   var xs : observe int[] = {};
   var service = cast (RpcEventOblist::IService^) lc.RequestService("RpcEventOblist::IService");

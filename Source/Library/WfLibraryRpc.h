@@ -116,6 +116,7 @@ namespace vl
 			, public reflection::Description<IRpcDispatcher>
 		{
 		public:
+			virtual void							Finalize() = 0;
 			virtual bool							IsRegisteredService(RpcObjectReference ref) = 0;
 			virtual void							RegisterService(vint typeId, RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				RequestService(vint typeId) = 0;
@@ -131,28 +132,26 @@ namespace vl
 			, public reflection::Description<IRpcController>
 		{
 		public:
-			virtual RpcObjectReference				RegisterLocalObject(vint typeId) = 0;
-			virtual void							UnregisterLocalObject(RpcObjectReference ref) = 0;
-
-			virtual void							AcquireRemoteObject(RpcObjectReference ref) = 0;
-			virtual void							ReleaseRemoteObject(RpcObjectReference ref) = 0;
-
+			virtual void							Finalize() = 0;
 			virtual void							SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed) = 0;
 			virtual bool							GetEventSuppressedFlag(RpcObjectReference ref, vint eventId) = 0;
 			virtual void							SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed) = 0;
 			virtual bool							GetItemChangedSuppressedFlag(RpcObjectReference ref) = 0;
 		};
 
-		class IRpcLifeCycle
+		class IRpcLifecycle
 			: public virtual reflection::IDescriptable
-			, public reflection::Description<IRpcLifeCycle>
+			, public reflection::Description<IRpcLifecycle>
 		{
 		public:
+			virtual void							Finalize() = 0;
 			virtual vint							GetClientId() = 0;
 			virtual IRpcDispatcher*					GetDispatcher() = 0;
 			virtual IRpcController*					GetController() = 0;
 			virtual Ptr<reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				PtrToRef(Ptr<reflection::IDescriptable> obj) = 0;
+			virtual void							LocalObjectHold(RpcObjectReference ref, vint remoteClientId) = 0;
+			virtual void							LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId) = 0;
 			virtual void							RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service) = 0;
 			virtual Ptr<reflection::IDescriptable>	RequestService(const WString& fullName) = 0;
 		};
@@ -172,12 +171,11 @@ namespace vl
 		class RpcByrefEnumerator : public Object, public reflection::Description<RpcByrefEnumerator>, public reflection::description::IValueEnumerator, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*									lifeCycle = nullptr;
-			IRpcController*									controller = nullptr;
+			IRpcLifecycle*									lifecycle = nullptr;
 			RpcObjectReference								ref;
 			vint											index = -1;
 		public:
-			RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef);
+			RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef);
 			~RpcByrefEnumerator();
 
 			void											DisconnectFromLifecycle()override;
@@ -189,11 +187,10 @@ namespace vl
 		class RpcByrefEnumerable : public Object, public reflection::Description<RpcByrefEnumerable>, public reflection::description::IValueEnumerable, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*									lifeCycle = nullptr;
-			IRpcController*									controller = nullptr;
+			IRpcLifecycle*									lifecycle = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefEnumerable(IRpcLifeCycle* lc, RpcObjectReference enumerableRef);
+			RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef);
 			~RpcByrefEnumerable();
 
 			void											DisconnectFromLifecycle()override;
@@ -203,11 +200,10 @@ namespace vl
 		class RpcByrefReadonlyList : public Object, public reflection::Description<RpcByrefReadonlyList>, public virtual reflection::description::IValueReadonlyList, public virtual IRpcWrapperBase
 		{
 		protected:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefReadonlyList(IRpcLifeCycle* lc, RpcObjectReference listRef);
+			RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefReadonlyList();
 
 			void											DisconnectFromLifecycle()override;
@@ -221,7 +217,7 @@ namespace vl
 		class RpcByrefList : public RpcByrefReadonlyList, public reflection::Description<RpcByrefList>, public virtual reflection::description::IValueList
 		{
 		public:
-			RpcByrefList(IRpcLifeCycle* lc, RpcObjectReference listRef);
+			RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefList()override;
 
 			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
@@ -240,11 +236,10 @@ namespace vl
 		class RpcByrefArray : public Object, public reflection::Description<RpcByrefArray>, public reflection::description::IValueArray, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefArray(IRpcLifeCycle* lc, RpcObjectReference arrayRef);
+			RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef);
 			~RpcByrefArray();
 
 			void											DisconnectFromLifecycle()override;
@@ -260,11 +255,10 @@ namespace vl
 		class RpcByrefObservableList : public Object, public reflection::Description<RpcByrefObservableList>, public reflection::description::IValueObservableList, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef);
+			RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefObservableList();
 
 			void											DisconnectFromLifecycle()override;
@@ -284,11 +278,10 @@ namespace vl
 		class RpcByrefDictionary : public Object, public reflection::Description<RpcByrefDictionary>, public reflection::description::IValueDictionary, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefDictionary(IRpcLifeCycle* lc, RpcObjectReference dictRef);
+			RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef);
 			~RpcByrefDictionary();
 
 			void												DisconnectFromLifecycle()override;
@@ -308,10 +301,10 @@ namespace vl
 		class RpcCalleeListOps : public Object, public IRpcListOps
 		{
 		private:
-			IRpcLifeCycle*									lifeCycle = nullptr;
+			IRpcLifecycle*									lifecycle = nullptr;
 
 		public:
-			RpcCalleeListOps(IRpcLifeCycle* lc);
+			RpcCalleeListOps(IRpcLifecycle* lc);
 
 			RpcObjectReference								EnumCreate(RpcObjectReference ref)override;
 			bool											EnumNext(RpcObjectReference enumerator)override;
@@ -340,10 +333,10 @@ namespace vl
 		class RpcCalleeListEventBridge : public Object, public IRpcListEventOps
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 
 		public:
-			RpcCalleeListEventBridge(IRpcLifeCycle* lc);
+			RpcCalleeListEventBridge(IRpcLifecycle* lc);
 
 			void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};
@@ -352,10 +345,10 @@ namespace vl
 * Helpers
 ***********************************************************************/
 
-		reflection::description::Value						RpcBoxByref		(const reflection::description::Value& trivial, IRpcLifeCycle* lc);
-		reflection::description::Value						RpcUnboxByref	(const reflection::description::Value& serializable, IRpcLifeCycle* lc);
-		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifeCycle* lc);
-		reflection::description::Value						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifeCycle* lc);
+		reflection::description::Value						RpcBoxByref		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		reflection::description::Value						RpcUnboxByref	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		reflection::description::Value						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
 	}
 }
 

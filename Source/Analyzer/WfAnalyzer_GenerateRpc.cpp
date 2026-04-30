@@ -633,9 +633,9 @@ namespace vl
 					return declaration;
 				}
 
-				Ptr<WfExpression> CreateLifecycleHelperCall(const wchar_t* helperName, Ptr<WfExpression> value, Ptr<WfExpression> lifeCycle)
+				Ptr<WfExpression> CreateLifecycleHelperCall(const wchar_t* helperName, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
 				{
-					return CreateCall(CreateQualifiedExpression(L"system::IRpcLifeCycle::" + WString::Unmanaged(helperName)), value, lifeCycle);
+					return CreateCall(CreateQualifiedExpression(L"system::IRpcLifecycle::" + WString::Unmanaged(helperName)), value, lifecycle);
 				}
 
 				bool IsVoidType(WfType* type)
@@ -1201,9 +1201,9 @@ namespace vl
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpc_IRpcObjectOps", CreateSharedType(L"system::IRpcObjectOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
@@ -1229,9 +1229,9 @@ namespace vl
 						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
 						auto trueBranch = CreateBlock();
-						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"AcquireRemoteObject"), CreateReference(L"ref"))));
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectHold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
 						auto falseBranch = CreateBlock();
-						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"ReleaseRemoteObject"), CreateReference(L"ref"))));
+						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
 						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
 						newOps->declarations.Add(objectHold);
 					}
@@ -1252,9 +1252,9 @@ namespace vl
 				Ptr<WfDeclaration> GenerateObjectEventOpsFactory(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpc_IRpcObjectEventOps", CreateSharedType(L"system::IRpcObjectEventOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
 
 					{
 						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
@@ -1417,7 +1417,7 @@ namespace vl
 
 					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_" + mangledName, CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateRawType(interfaceModel.fullName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
@@ -1475,7 +1475,7 @@ namespace vl
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_Attach", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateRawType(L"system::Interface")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
@@ -1511,12 +1511,12 @@ namespace vl
 					CollectInterfaceEvents(interfaceModel, interfaces, events);
 
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateQualifiedType(L"system::RpcObjectReference"), CreateReference(L"proxyRef")));
 					for (auto&& propertyModel : interfaceModel.properties)
 					{
@@ -1552,10 +1552,26 @@ namespace vl
 						auto dtorBlock = CreateBlock();
 						dtorDecl->statement = dtorBlock;
 
-						// if (_lc is not null) { _lc.Controller.ReleaseRemoteObject(_ref); }
+						// if (_lc is not null) { _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false); }
 						auto condition = CreateIsNotNull(CreateReference(L"_lc"));
 						auto trueBranch = CreateBlock();
-						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"ReleaseRemoteObject"), CreateReference(L"_ref"))));
+						AddStatement(
+							trueBranch,
+							CreateExpressionStatement(
+								CreateCall(
+									CreateMember(
+										CreateCall(
+											CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
+											CreateMember(CreateReference(L"_ref"), L"clientId")
+											),
+										L"ObjectHold"
+										),
+									CreateReference(L"_ref"),
+									CreateMember(CreateReference(L"_lc"), L"ClientId"),
+									CreateBool(false)
+									)
+								)
+							);
 						AddStatement(dtorBlock, CreateIf(condition, trueBranch));
 
 						proxyExpr->declarations.Add(dtorDecl);
@@ -1637,6 +1653,23 @@ namespace vl
 					}
 
 					AddStatement(block, CreateVariableStatement(L"proxy", CreateSharedType(wrapperInterfaceFullName), proxyExpr));
+					AddStatement(
+						block,
+						CreateExpressionStatement(
+							CreateCall(
+								CreateMember(
+									CreateCall(
+										CreateMember(CreateMember(CreateReference(L"lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
+										CreateMember(CreateReference(L"proxyRef"), L"clientId")
+										),
+									L"ObjectHold"
+									),
+								CreateReference(L"proxyRef"),
+								CreateMember(CreateReference(L"lc"), L"ClientId"),
+								CreateBool(true)
+								)
+							)
+						);
 
 					for (auto&& propertyModel : interfaceModel.properties)
 					{
@@ -1671,7 +1704,7 @@ namespace vl
 					returnType->element = CreateQualifiedType(L"system::IRpcWrapperBase");
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", returnType, WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					auto switchStat = Ptr(new WfSwitchStatement);

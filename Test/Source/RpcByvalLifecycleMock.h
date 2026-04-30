@@ -18,6 +18,7 @@ namespace vl
 		public:
 			RpcObjectTracker(RpcByvalControllerMock* c, rpc_controller::RpcObjectReference r);
 			~RpcObjectTracker();
+			void																Detach();
 		};
 
 		class RpcByvalControllerMock : public RpcControllerMock
@@ -29,8 +30,7 @@ namespace vl
 			vint																																		clientId = rpc_controller::RpcClientId_Invalid + 1;
 			vint																																		nextObjectId = rpc_controller::RpcObjectId_Invalid;
 			rpc_controller::RpcObjectReference																											lastRegisteredObject;
-			collections::Dictionary<vint, vint>																											refCounts;
-			collections::Dictionary<vint, vint>																											typeIds;
+			collections::Dictionary<vint, Ptr<collections::SortedList<vint>>>																				interestedClients;
 			collections::Dictionary<vint, reflection::IDescriptable*>																					localObjects;
 			collections::Dictionary<vint, Ptr<reflection::IDescriptable>>																				ownedObjects;
 			collections::Dictionary<const reflection::IDescriptable*, rpc_controller::RpcObjectReference>												refsByPtr;
@@ -40,31 +40,29 @@ namespace vl
 
 			void																	TrackLocalObject(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj);
 			void																	UntrackLocalObject(rpc_controller::RpcObjectReference ref);
+			void																	RemoveLocalObject(rpc_controller::RpcObjectReference ref);
 			bool																	IsTracked(vint objectId)const;
 		public:
 			RpcByvalControllerMock(RpcByvalLifecycleMock* lc);
 
 			rpc_controller::RpcObjectReference										GetLastRegisteredObject()const;
-
-			// IRpcController
-
-			rpc_controller::RpcObjectReference										RegisterLocalObject(vint typeId)override;
-			void																	UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override;
-			void																	AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override;
-			void																	ReleaseRemoteObject(rpc_controller::RpcObjectReference ref)override;
+			rpc_controller::RpcObjectReference										AllocateLocalObject(vint typeId);
+			void																	LocalObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId);
+			void																	LocalObjectUnhold(rpc_controller::RpcObjectReference ref, vint remoteClientId);
+			void																	Finalize()override;
 
 			// IRpcListEventOps
 
 			void																	OnItemChanged(rpc_controller::RpcObjectReference ref, vint index, vint oldCount, vint newCount);
 		};
 
-		class RpcByvalLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle, public rpc_controller::IRpcDispatcher
+		class RpcByvalLifecycleMock : public Object, public rpc_controller::IRpcLifecycle, public rpc_controller::IRpcDispatcher
 		{
 			friend class RpcByvalControllerMock;
 		private:
 			RpcByvalControllerMock																												controller;
 			collections::Dictionary<WString, Ptr<reflection::IDescriptable>>																		services;
-			collections::Dictionary<vint, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifeCycle*, rpc_controller::RpcObjectReference)>>		proxyFactories;
+			collections::Dictionary<vint, Func<Ptr<reflection::IDescriptable>(rpc_controller::IRpcLifecycle*, rpc_controller::RpcObjectReference)>>		proxyFactories;
 
 			vint																	DecideTypeId(reflection::IDescriptable* obj)const;
 		public:
@@ -74,11 +72,14 @@ namespace vl
 			rpc_controller::RpcObjectReference										GetLastRegisteredObject()const;
 			Ptr<reflection::IDescriptable>											CreateCallerProxy(rpc_controller::RpcObjectReference ref);
 
-			// IRpcLifeCycle
+			// IRpcLifecycle
 
+			void																	Finalize()override;
 			vint																	GetClientId()override;
 			rpc_controller::IRpcDispatcher*											GetDispatcher()override;
 			RpcByvalControllerMock*													GetController()override;
+			void																	LocalObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId)override;
+			void																	LocalObjectUnhold(rpc_controller::RpcObjectReference ref, vint remoteClientId)override;
 			void																	RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
 			Ptr<reflection::IDescriptable>											RequestService(const WString& fullName)override;
 			Ptr<reflection::IDescriptable>											RefToPtr(rpc_controller::RpcObjectReference ref)override;
