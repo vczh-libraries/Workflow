@@ -35,4 +35,6 @@ In `RpcDualControllerMock`:
   - `IRpcLifecycle::ObjectHold` handle reference counting, when it comes to zero, all tracking to the specified local object should be removed. Therefore the next time `PtrToRef` is called on this object it gets a new id.
 - By doing this, `RpcDualControllerMock` actually no need to exist anymore, it should just use `RpcControllerMock`, and `clientId`, `nextObjectId`, `localObjectProperties` will be moved back into `RpcDualLifecycleMock`.
 
+- You will need to fix `RpcByvalControllerMock` accordingly to the above change.
+
 - `IRpcLifeCycle` should be renamed to `IRpcLifecycle`, change the letter C from upper case to lower case, to align with everywhere else. Therefore if any variable has the name lifecycle, and it points to `IRpcLifeCycle` or any actual implementation, it should also keep the lowercase c.
