@@ -277,26 +277,6 @@ Closures
 	__vwsnc3_Rpc_CollectionDict_Interface_InByval_OutByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc3_Rpc_CollectionDict_Interface_InByval_OutByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
-		this->_services = ::vl::reflection::description::IValueDictionary::Create();
-	}
-
-	__vwsnc3_Rpc_CollectionDict_Interface_InByval_OutByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::~__vwsnc3_Rpc_CollectionDict_Interface_InByval_OutByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps()
-	{
-		{
-			auto __vwsn_for_enumerable_service = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(_services.Obj())->GetValues());
-			auto __vwsn_for_enumerator_service = ::vl::__vwsn::This(__vwsn_for_enumerable_service.Obj())->CreateEnumerator();
-			while (::vl::__vwsn::This(__vwsn_for_enumerator_service.Obj())->Next())
-			{
-				auto service = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_service.Obj())->GetCurrent());
-				{
-					auto wrapper = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(service);
-					if (static_cast<bool>(wrapper))
-					{
-						::vl::__vwsn::This(wrapper.Obj())->DisconnectFromLifecycle();
-					}
-				}
-			}
-		}
 	}
 
 	::vl::reflection::description::Value __vwsnc3_Rpc_CollectionDict_Interface_InByval_OutByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -340,40 +320,19 @@ Closures
 		{
 			if (GLOBAL_NAME rpcwrapper_IsCtorInterfaceTypeId(typeId))
 			{
-				if ((! static_cast<bool>(service)))
-				{
-					::vl::__vwsn::This(_services.Obj())->Remove(::vl::__vwsn::Box(typeId));
-				}
-				else
-				{
-					::vl::__vwsn::This(_services.Obj())->Set(::vl::__vwsn::Box(typeId), ::vl::__vwsn::Box(service));
-				}
+				::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->RegisterService(typeId, ::vl::__vwsn::This(_lc)->PtrToRef(service));
 			}
 			else
 			{
-				if (static_cast<bool>(service))
+				if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
 				{
-					if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
-					{
-						throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-					}
-					else
-					{
-						throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
-					}
+					throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
+				}
+				else
+				{
+					throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
 				}
 			}
-		}
-	}
-
-	::vl::Nullable<::vl::rpc_controller::RpcObjectReference> __vwsnc3_Rpc_CollectionDict_Interface_InByval_OutByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RequestService(::vl::vint32_t typeId)
-	{
-		{
-			if (::vl::__vwsn::This(::vl::__vwsn::This(_services.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(typeId)))
-			{
-				return ::vl::Nullable<::vl::rpc_controller::RpcObjectReference>(::vl::__vwsn::This(_lc)->PtrToRef(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::IDescriptable>>(::vl::__vwsn::This(_services.Obj())->Get(::vl::__vwsn::Box(typeId)))));
-			}
-			return ::vl::Nullable<::vl::rpc_controller::RpcObjectReference>();
 		}
 	}
 
@@ -386,9 +345,24 @@ Closures
 
 	void __vwsnc4_Rpc_CollectionDict_Interface_InByval_OutByref_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
-			auto __vwsn_switch_3 = eventId;
-			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+			auto __vwsnb_0 = [&]()
+			{
+				::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, false);
+			}
+			;
+			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
+			try
+			{
+				{
+					auto __vwsn_switch_3 = eventId;
+					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+				}
+			}
+			catch(const ::vl::Exception&)
+			{
+			}
 		}
 	}
 
@@ -419,7 +393,7 @@ Closures
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__InByval__OutByref__IValue_GetValue, arguments), _lc));
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__InByval__OutByref__IValue_GetValue, arguments), _lc));
 	}
 
 	//-------------------------------------------------------------------
@@ -450,7 +424,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(1));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(xs), _lc));
-		return ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::rpc_controller::RpcUnboxByref(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__InByval__OutByref__IService_DoList, arguments), _lc));
+		return ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::rpc_controller::RpcUnboxByref(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__InByval__OutByref__IService_DoList, arguments), _lc));
 	}
 
 }

@@ -63,20 +63,6 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     {
         var _lc : system::IRpcLifeCycle* = lc;
 
-        var _services : system::Interface^[int] = {};
-
-        delete
-        {
-            for (service in _services.Values)
-            {
-                var wrapper : system::IRpcWrapperBase^ = (service as (system::IRpcWrapperBase^));
-                if (wrapper is not null)
-                {
-                    wrapper.DisconnectFromLifecycle();
-                }
-            }
-        }
-
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -148,40 +134,19 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
             {
                 if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
                 {
-                    if (service is null)
-                    {
-                        _services.Remove(typeId);
-                    }
-                    else
-                    {
-                        _services.Set(typeId, service);
-                    }
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
                 }
                 else
                 {
-                    if (service is not null)
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
                     {
-                        if (rpcwrapper_IsInterfaceTypeId(typeId))
-                        {
-                            raise "RPC service type id is not an @rpc:Ctor interface.";
-                        }
-                        else
-                        {
-                            raise "RPC service type id does not exist.";
-                        }
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
                     }
                 }
-            }
-        }
-
-        override func RequestService(typeId : int) : (system::RpcObjectReference?)
-        {
-            {
-                if (_services.Keys.Contains(typeId))
-                {
-                    return _lc.PtrToRef(_services[typeId]);
-                }
-                return null;
             }
         }
     };
@@ -195,10 +160,16 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEv
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
+            _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
             switch (eventId)
             {
                 default:
                 raise "Unknown RPC event id.";
+            }
+            finally
+            {
+                _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
         }
     };
@@ -239,7 +210,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Boolean) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments), _lc));
+            return (cast (::system::Boolean) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments), _lc));
         }
 
         override func ProcessDouble(value : ::system::Double) : (::system::Double)
@@ -249,7 +220,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Double) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments), _lc));
+            return (cast (::system::Double) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments), _lc));
         }
 
         override func ProcessEnum(value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season)
@@ -259,7 +230,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::RpcPrimitiveTest::Season) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments), _lc));
+            return (cast (::RpcPrimitiveTest::Season) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments), _lc));
         }
 
         override func ProcessFloat(value : ::system::Single) : (::system::Single)
@@ -269,7 +240,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Single) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments), _lc));
+            return (cast (::system::Single) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments), _lc));
         }
 
         override func ProcessInt(value : ::system::Int64) : (::system::Int64)
@@ -279,7 +250,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Int64) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments), _lc));
+            return (cast (::system::Int64) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments), _lc));
         }
 
         override func ProcessString(value : ::system::String) : (::system::String)
@@ -289,7 +260,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments), _lc));
+            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments), _lc));
         }
 
         override func ProcessStruct(value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point)
@@ -299,7 +270,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::RpcPrimitiveTest::Point) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments), _lc));
+            return (cast (::RpcPrimitiveTest::Point) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments), _lc));
         }
 
         override func ProcessUInt(value : ::system::UInt64) : (::system::UInt64)
@@ -309,7 +280,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::UInt64) system::IRpcLifeCycle::RpcUnboxByval(_lc.Controller.InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments), _lc));
+            return (cast (::system::UInt64) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments), _lc));
         }
     };
     return proxy;

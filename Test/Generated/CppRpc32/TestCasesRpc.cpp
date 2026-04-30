@@ -1554,7 +1554,7 @@ TEST_CASE(L"Rpc:CollectionOblist_PropDefault")
 
 TEST_CASE(L"Rpc:Dtor")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor>(L"[Not Deleted][Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor>(L"[Not Deleted][Not Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Dtor::Instance();
@@ -1567,7 +1567,7 @@ TEST_CASE(L"Rpc:Dtor")
 
 TEST_CASE(L"Rpc:Dtor2")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor2>(L"[Not Deleted][Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor2>(L"[Not Deleted][Not Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Dtor2::Instance();
