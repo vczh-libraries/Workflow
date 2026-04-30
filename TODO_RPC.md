@@ -14,23 +14,18 @@
 
 ## ToDo
 
-- Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
+- Rework `Dtor.txt` and `Dtor2.txt` as the service now no longer being deleted before unit test ends.
+- Review `RpcControllerMock` and promote it to become a standard implementation `RpcController`.
+- Review `RpcDualLifecycleMock`, split as many thing as possible to the base class `RpcLifecycleMock`, which does not have the knowledge of "dual", and promote to become a standard implementation `RpcLifecycleBase`.
+- Review `LocalLifecycleMock` in `TestCasesRpc.h`.
+- Remove `RpcByvalLifecycleMock`, replace it with `RpcDualLifecycleMock`.
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - JSON for predefined types.
-  - `RpcLifecycleBase` and `RpcLifecycleJson`.
-    - So `IRpcController` implementation should be assigned not inherited.
-    - This could remove reflection registration for `RpcLfiecycle`.
-  - Extract some implementation from `RpcDualLifecycleMock`.
-  - `RpcLifecycleJson` should notnhave knowledge of where JSON goes and async/sync.
-  - `TestCasesRpc.cpp` will call both, and JSON version runs in both sync and async.
-    - May need 3 files to call a shared cases list from the header.
-    - Need to re-initiate Workflow global variables, like reload/unload global storage in each test file.
-- Delete Runtime test category.
-- Update `TestLibraryRpcByval.cpp` in `LibraryTest` to use `RpcDualLifecycleMock`, remove `RpcByvalLifecycleMock`.
-  - May need to refactor how to retrieve ops interfaces.
+  - Run JSON serialization for predefined types, generated types and operations in `RpcDualDispatcherMock`.
+- Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC.
 - Document compiler process.
 - Document AST building helper functions.
