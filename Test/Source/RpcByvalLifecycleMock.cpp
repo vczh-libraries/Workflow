@@ -93,7 +93,7 @@ namespace vl
 
 		RpcObjectReference RpcByvalControllerMock::RegisterLocalObject(vint typeId)
 		{
-			lastRegisteredObject = { clientId, nextObjectId++, typeId };
+			lastRegisteredObject = { clientId, ++nextObjectId, typeId };
 			typeIds.Set(lastRegisteredObject.objectId, typeId);
 			refCounts.Set(lastRegisteredObject.objectId, 1);
 			return lastRegisteredObject;
@@ -202,7 +202,7 @@ namespace vl
 			if (dynamic_cast<IValueEnumerator*>(obj)) return RpcTypeId_IValueEnumerator;
 			if (dynamic_cast<IValueEnumerable*>(obj)) return RpcTypeId_IValueEnumerable;
 			CHECK_FAIL(L"RpcByvalLifecycleMock::DecideTypeId cannot determine the proxy type.");
-			return 0;
+			return RpcTypeId_NotFound;
 		}
 
 		RpcObjectReference RpcByvalLifecycleMock::GetLastRegisteredObject()const
@@ -219,6 +219,16 @@ namespace vl
 /***********************************************************************
 * RpcByvalLifecycleMock (IRpcLifeCycle)
 ***********************************************************************/
+
+		vint RpcByvalLifecycleMock::GetClientId()
+		{
+			return controller.clientId;
+		}
+
+		IRpcDispatcher* RpcByvalLifecycleMock::GetDispatcher()
+		{
+			return this;
+		}
 
 		RpcByvalControllerMock* RpcByvalLifecycleMock::GetController()
 		{
@@ -267,6 +277,54 @@ namespace vl
 			controller.ownedObjects.Set(ref.objectId, obj);
 			controller.TrackLocalObject(ref, obj.Obj());
 			return ref;
+		}
+
+/***********************************************************************
+* RpcByvalLifecycleMock (IRpcDispatcher)
+***********************************************************************/
+
+		bool RpcByvalLifecycleMock::IsRegisteredService(RpcObjectReference ref)
+		{
+			(void)ref;
+			return false;
+		}
+
+		void RpcByvalLifecycleMock::RegisterService(vint typeId, RpcObjectReference ref)
+		{
+			(void)typeId;
+			(void)ref;
+			CHECK_FAIL(L"RpcByvalLifecycleMock::RegisterService(typeId, ref) is not supported.");
+		}
+
+		RpcObjectReference RpcByvalLifecycleMock::RequestService(vint typeId)
+		{
+			(void)typeId;
+			CHECK_FAIL(L"RpcByvalLifecycleMock::RequestService(typeId) is not supported.");
+			return {};
+		}
+
+		IRpcListEventOps* RpcByvalLifecycleMock::BroadcastFromClient_ListEventOps(vint selfClientId)
+		{
+			(void)selfClientId;
+			return controller.GetListEventOps();
+		}
+
+		IRpcObjectEventOps* RpcByvalLifecycleMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
+		{
+			(void)selfClientId;
+			return controller.GetObjectEventOps();
+		}
+
+		IRpcListOps* RpcByvalLifecycleMock::SendToClient_ListOps(vint targetClientId)
+		{
+			(void)targetClientId;
+			return controller.GetListOps();
+		}
+
+		IRpcObjectOps* RpcByvalLifecycleMock::SendToClient_ObjectOps(vint targetClientId)
+		{
+			(void)targetClientId;
+			return controller.GetObjectOps();
 		}
 	}
 }

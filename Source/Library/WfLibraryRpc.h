@@ -78,7 +78,6 @@ namespace vl
 			virtual Ptr<reflection::description::IAsync>			InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
 			virtual void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold) = 0;
 			virtual void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
-			virtual Nullable<RpcObjectReference>					RequestService(vint typeId) = 0;
 		};
 
 		class IRpcListEventOps
@@ -149,6 +148,8 @@ namespace vl
 			, public reflection::Description<IRpcLifeCycle>
 		{
 		public:
+			virtual vint							GetClientId() = 0;
+			virtual IRpcDispatcher*					GetDispatcher() = 0;
 			virtual IRpcController*					GetController() = 0;
 			virtual Ptr<reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				PtrToRef(Ptr<reflection::IDescriptable> obj) = 0;

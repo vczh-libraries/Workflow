@@ -57,155 +57,82 @@ namespace vl
 			listEventCallback = _listEventCallback;
 		}
 
-/***********************************************************************
-* RpcControllerMock (IRpcObjectOps)
-***********************************************************************/
-
-		Value RpcControllerMock::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		IRpcListOps* RpcControllerMock::GetListOps()
 		{
-			return RequireObjectCallback()->InvokeMethod(ref, methodId, arguments);
+			return RequireListCallback();
 		}
 
-		Ptr<IAsync> RpcControllerMock::InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		IRpcObjectOps* RpcControllerMock::GetObjectOps()
 		{
-			return RequireObjectCallback()->InvokeMethodAsync(ref, methodId, arguments);
+			return RequireObjectCallback();
 		}
 
-		void RpcControllerMock::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
+		IRpcListEventOps* RpcControllerMock::GetListEventOps()
 		{
-			RequireObjectCallback()->ObjectHold(ref, remoteClientId, hold);
+			return RequireListEventCallback();
 		}
 
-		void RpcControllerMock::RegisterService(vint typeId, Ptr<IDescriptable> service)
+		IRpcObjectEventOps* RpcControllerMock::GetObjectEventOps()
 		{
-			RequireObjectCallback()->RegisterService(typeId, service);
+			return RequireEventCallback();
 		}
 
-		Nullable<RpcObjectReference> RpcControllerMock::RequestService(vint typeId)
+		template<typename TKey>
+		void SetSuppressedFlag(Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed)
 		{
-			return RequireObjectCallback()->RequestService(typeId);
+			auto index = flags.Keys().IndexOf(key);
+			if (suppressed)
+			{
+				if (index == -1)
+				{
+					flags.Add(key, 1);
+				}
+				else
+				{
+					flags.Set(key, flags.Values()[index] + 1);
+				}
+			}
+			else
+			{
+				CHECK_ERROR(index != -1, L"RpcControllerMock::SetSuppressedFlag: Suppression counter is not set.");
+				auto count = flags.Values()[index] - 1;
+				CHECK_ERROR(count >= 0, L"RpcControllerMock::SetSuppressedFlag: Suppression counter is negative.");
+				if (count == 0)
+				{
+					flags.Remove(key);
+				}
+				else
+				{
+					flags.Set(key, count);
+				}
+			}
 		}
 
-/***********************************************************************
-* RpcControllerMock (IRpcObjectEventOps)
-***********************************************************************/
-
-		void RpcControllerMock::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		template<typename TKey>
+		bool GetSuppressedFlag(const Dictionary<TKey, vint>& flags, const TKey& key)
 		{
-			RequireEventCallback()->InvokeEvent(ref, eventId, arguments);
+			auto index = flags.Keys().IndexOf(key);
+			return index != -1 && flags.Values()[index] > 0;
 		}
 
-/***********************************************************************
-* RpcControllerMock (IRpcListOps)
-***********************************************************************/
-
-		RpcObjectReference RpcControllerMock::EnumCreate(RpcObjectReference ref)
+		void RpcControllerMock::SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)
 		{
-			return RequireListCallback()->EnumCreate(ref);
+			SetSuppressedFlag(eventSuppressedFlags, { ref,eventId }, suppressed);
 		}
 
-		bool RpcControllerMock::EnumNext(RpcObjectReference enumerator)
+		bool RpcControllerMock::GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)
 		{
-			return RequireListCallback()->EnumNext(enumerator);
+			return GetSuppressedFlag(eventSuppressedFlags, { ref,eventId });
 		}
 
-		Value RpcControllerMock::EnumGetCurrent(RpcObjectReference enumerator)
+		void RpcControllerMock::SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)
 		{
-			return RequireListCallback()->EnumGetCurrent(enumerator);
+			SetSuppressedFlag(itemChangedSuppressedFlags, ref, suppressed);
 		}
 
-		vint RpcControllerMock::ListGetCount(RpcObjectReference ref)
+		bool RpcControllerMock::GetItemChangedSuppressedFlag(RpcObjectReference ref)
 		{
-			return RequireListCallback()->ListGetCount(ref);
-		}
-
-		Value RpcControllerMock::ListGet(RpcObjectReference ref, vint index)
-		{
-			return RequireListCallback()->ListGet(ref, index);
-		}
-
-		void RpcControllerMock::ListSet(RpcObjectReference ref, vint index, const Value& value)
-		{
-			RequireListCallback()->ListSet(ref, index, value);
-		}
-
-		vint RpcControllerMock::ListAdd(RpcObjectReference ref, const Value& value)
-		{
-			return RequireListCallback()->ListAdd(ref, value);
-		}
-
-		vint RpcControllerMock::ListInsert(RpcObjectReference ref, vint index, const Value& value)
-		{
-			return RequireListCallback()->ListInsert(ref, index, value);
-		}
-
-		bool RpcControllerMock::ListRemoveAt(RpcObjectReference ref, vint index)
-		{
-			return RequireListCallback()->ListRemoveAt(ref, index);
-		}
-
-		void RpcControllerMock::ListClear(RpcObjectReference ref)
-		{
-			RequireListCallback()->ListClear(ref);
-		}
-
-		bool RpcControllerMock::ListContains(RpcObjectReference ref, const Value& value)
-		{
-			return RequireListCallback()->ListContains(ref, value);
-		}
-
-		vint RpcControllerMock::ListIndexOf(RpcObjectReference ref, const Value& value)
-		{
-			return RequireListCallback()->ListIndexOf(ref, value);
-		}
-
-		vint RpcControllerMock::DictGetCount(RpcObjectReference ref)
-		{
-			return RequireListCallback()->DictGetCount(ref);
-		}
-
-		Value RpcControllerMock::DictGet(RpcObjectReference ref, const Value& key)
-		{
-			return RequireListCallback()->DictGet(ref, key);
-		}
-
-		void RpcControllerMock::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
-		{
-			RequireListCallback()->DictSet(ref, key, value);
-		}
-
-		bool RpcControllerMock::DictRemove(RpcObjectReference ref, const Value& key)
-		{
-			return RequireListCallback()->DictRemove(ref, key);
-		}
-
-		void RpcControllerMock::DictClear(RpcObjectReference ref)
-		{
-			RequireListCallback()->DictClear(ref);
-		}
-
-		bool RpcControllerMock::DictContainsKey(RpcObjectReference ref, const Value& key)
-		{
-			return RequireListCallback()->DictContainsKey(ref, key);
-		}
-
-		RpcObjectReference RpcControllerMock::DictGetKeys(RpcObjectReference ref)
-		{
-			return RequireListCallback()->DictGetKeys(ref);
-		}
-
-		RpcObjectReference RpcControllerMock::DictGetValues(RpcObjectReference ref)
-		{
-			return RequireListCallback()->DictGetValues(ref);
-		}
-
-/***********************************************************************
-* RpcControllerMock (IRpcListEventOps)
-***********************************************************************/
-
-		void RpcControllerMock::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
-		{
-			RequireListEventCallback()->OnItemChanged(ref, index, oldCount, newCount);
+			return GetSuppressedFlag(itemChangedSuppressedFlags, ref);
 		}
 	}
 }

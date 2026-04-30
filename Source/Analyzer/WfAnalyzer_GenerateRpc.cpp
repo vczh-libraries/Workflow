@@ -572,6 +572,14 @@ namespace vl
 					return statement;
 				}
 
+				Ptr<WfStatement> CreateTryFinally(Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement)
+				{
+					auto statement = Ptr(new WfTryStatement);
+					statement->protectedStatement = protectedStatement;
+					statement->finallyStatement = finallyStatement;
+					return statement;
+				}
+
 				Ptr<WfBlockStatement> CreateBlock()
 				{
 					return Ptr(new WfBlockStatement);
@@ -1095,23 +1103,6 @@ namespace vl
 					return switchStat;
 				}
 
-				Ptr<WfStatement> BuildRequestService()
-				{
-					auto block = CreateBlock();
-					auto containsTypeId = CreateCall(
-						CreateMember(
-							CreateMember(CreateReference(L"_services"), L"Keys"),
-							L"Contains"
-						),
-						CreateReference(L"typeId")
-					);
-					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateReturn(CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateIndex(CreateReference(L"_services"), CreateReference(L"typeId")))));
-					AddStatement(block, CreateIf(containsTypeId, trueBranch));
-					AddStatement(block, CreateReturn(CreateNull()));
-					return block;
-				}
-
 				Ptr<WfDeclaration> GenerateIsInterfaceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_IsInterfaceTypeId", CreatePredefinedType(WfPredefinedTypeName::Bool), WfFunctionKind::Normal);
@@ -1172,12 +1163,17 @@ namespace vl
 				Ptr<WfStatement> BuildRegisterService()
 				{
 					auto block = CreateBlock();
-					auto removeBranch = CreateBlock();
-					AddStatement(removeBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Remove"), CreateReference(L"typeId"))));
-					auto setBranch = CreateBlock();
-					AddStatement(setBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_services"), L"Set"), CreateReference(L"typeId"), CreateReference(L"service"))));
 					auto registerBranch = CreateBlock();
-					AddStatement(registerBranch, CreateIf(CreateIsNull(CreateReference(L"service")), removeBranch, setBranch));
+					AddStatement(
+						registerBranch,
+						CreateExpressionStatement(
+							CreateCall(
+								CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"RegisterService"),
+								CreateReference(L"typeId"),
+								CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateReference(L"service"))
+								)
+							)
+						);
 					auto nonCtorBranch = CreateBlock();
 					AddStatement(nonCtorBranch, CreateRaise(L"RPC service type id is not an @rpc:Ctor interface."));
 					auto invalidTypeIdBranch = CreateBlock();
@@ -1191,14 +1187,12 @@ namespace vl
 							invalidTypeIdBranch
 							)
 						);
-					auto unregisterNonCtorBranch = CreateBlock();
-					AddStatement(unregisterNonCtorBranch, CreateIf(CreateIsNotNull(CreateReference(L"service")), invalidRegisterBranch));
 					AddStatement(
 						block,
 						CreateIf(
 							CreateCall(CreateReference(L"rpcwrapper_IsCtorInterfaceTypeId"), CreateReference(L"typeId")),
 							registerBranch,
-							unregisterNonCtorBranch
+							invalidRegisterBranch
 						)
 					);
 					return block;
@@ -1210,36 +1204,6 @@ namespace vl
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifeCycle")));
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifeCycle"), CreateReference(L"lc")));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_services", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreateSharedType(L"system::Interface")), CreateConstructor()));
-
-					{
-						auto dtorDecl = Ptr(new WfDestructorDeclaration);
-						auto dtorBlock = CreateBlock();
-						dtorDecl->statement = dtorBlock;
-
-						auto forEachService = Ptr(new WfForEachStatement);
-						forEachService->name.value = L"service";
-						forEachService->direction = WfForEachDirection::Normal;
-						forEachService->collection = CreateMember(CreateReference(L"_services"), L"Values");
-						auto forEachBlock = CreateBlock();
-
-						AddStatement(
-							forEachBlock,
-							CreateVariableStatement(
-								L"wrapper",
-								CreateSharedType(L"system::IRpcWrapperBase"),
-								CreateWeakCast(CreateSharedType(L"system::IRpcWrapperBase"), CreateReference(L"service"))
-								)
-							);
-
-						auto disconnectBranch = CreateBlock();
-						AddStatement(disconnectBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"wrapper"), L"DisconnectFromLifecycle"))));
-						AddStatement(forEachBlock, CreateIf(CreateIsNotNull(CreateReference(L"wrapper")), disconnectBranch));
-
-						forEachService->statement = forEachBlock;
-						AddStatement(dtorBlock, forEachService);
-						newOps->declarations.Add(dtorDecl);
-					}
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
@@ -1281,13 +1245,6 @@ namespace vl
 						newOps->declarations.Add(registerService);
 					}
 
-					{
-						auto requestService = CreateFunctionDeclaration(L"RequestService", CreateNullableType(L"system::RpcObjectReference"), WfFunctionKind::Override);
-						requestService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						AddStatement(requestService->statement.Cast<WfBlockStatement>(), BuildRequestService());
-						newOps->declarations.Add(requestService);
-					}
-
 					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
 					return functionDecl;
 				}
@@ -1304,7 +1261,11 @@ namespace vl
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
-						AddStatement(invokeEvent->statement.Cast<WfBlockStatement>(), BuildDispatchChain(interfaces, true));
+						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
+						auto finallyBlock = CreateBlock();
+						AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
+						AddStatement(block, CreateTryFinally(BuildDispatchChain(interfaces, true), finallyBlock));
 						newOps->declarations.Add(invokeEvent);
 					}
 
@@ -1465,6 +1426,17 @@ namespace vl
 					{
 						auto lambdaBody = CreateBlock();
 
+						AddStatement(
+							lambdaBody,
+							CreateIf(
+								CreateCall(
+									CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"GetEventSuppressedFlag"),
+									CreateReference(L"ref"),
+									CreateRpcConstantReference(L"rpcevent_", eventModel->fullName)
+									),
+								CreateReturn(nullptr)
+								)
+							);
 						AddStatement(lambdaBody, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
 						AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(eventModel->params.Count()))));
 						for (vint i = 0; i < eventModel->params.Count(); i++)
@@ -1472,7 +1444,23 @@ namespace vl
 							auto&& paramModel = eventModel->params[i];
 							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(paramModel.byref ? L"RpcBoxByref" : L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"lc")))));
 						}
-						AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"InvokeEvent"), CreateReference(L"ref"), CreateRpcConstantReference(L"rpcevent_", eventModel->fullName), CreateReference(L"arguments"))));
+						AddStatement(
+							lambdaBody,
+							CreateExpressionStatement(
+								CreateCall(
+									CreateMember(
+										CreateCall(
+											CreateMember(CreateMember(CreateReference(L"lc"), L"Dispatcher"), L"BroadcastFromClient_ObjectEventOps"),
+											CreateMember(CreateReference(L"lc"), L"ClientId")
+											),
+										L"InvokeEvent"
+										),
+									CreateReference(L"ref"),
+									CreateRpcConstantReference(L"rpcevent_", eventModel->fullName),
+									CreateReference(L"arguments")
+									)
+								)
+							);
 
 						auto attach = Ptr(new WfAttachEventExpression);
 						attach->event = CreateMember(CreateReference(L"target"), eventModel->name);
@@ -1618,7 +1606,18 @@ namespace vl
 							AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(paramModel.byref ? L"RpcBoxByref" : L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"_lc")))));
 						}
 
-						auto invoke = CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"InvokeMethod"), CreateReference(L"_ref"), CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName), CreateReference(L"arguments"));
+						auto invoke = CreateCall(
+							CreateMember(
+								CreateCall(
+									CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
+									CreateMember(CreateReference(L"_ref"), L"clientId")
+									),
+								L"InvokeMethod"
+								),
+							CreateReference(L"_ref"),
+							CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName),
+							CreateReference(L"arguments")
+							);
 						if (IsVoidType(methodModel.returnType.Obj()))
 						{
 							AddStatement(methodBlock, CreateExpressionStatement(invoke));

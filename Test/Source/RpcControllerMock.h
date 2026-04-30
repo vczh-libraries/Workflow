@@ -7,18 +7,28 @@ namespace vl
 {
 	namespace rpc_controller_test
 	{
+		struct RpcEventSuppressionKey
+		{
+			rpc_controller::RpcObjectReference					ref;
+			vint												eventId = 0;
+
+			auto operator<=>(const RpcEventSuppressionKey&) const = default;
+		};
+
 		class RpcControllerMock : public Object, public rpc_controller::IRpcController
 		{
 		protected:
-			Ptr<IRpcObjectOps>									objectCallback;
-			Ptr<IRpcObjectEventOps>								eventCallback;
-			Ptr<IRpcListOps>									listCallback;
-			Ptr<IRpcListEventOps>								listEventCallback;
+			Ptr<rpc_controller::IRpcObjectOps>					objectCallback;
+			Ptr<rpc_controller::IRpcObjectEventOps>				eventCallback;
+			Ptr<rpc_controller::IRpcListOps>						listCallback;
+			Ptr<rpc_controller::IRpcListEventOps>				listEventCallback;
+			collections::Dictionary<RpcEventSuppressionKey, vint>	eventSuppressedFlags;
+			collections::Dictionary<rpc_controller::RpcObjectReference, vint>	itemChangedSuppressedFlags;
 
-			IRpcObjectOps*										RequireObjectCallback()const;
-			IRpcObjectEventOps*									RequireEventCallback()const;
-			IRpcListOps*										RequireListCallback()const;
-			IRpcListEventOps*									RequireListEventCallback()const;
+			rpc_controller::IRpcObjectOps*						RequireObjectCallback()const;
+			rpc_controller::IRpcObjectEventOps*					RequireEventCallback()const;
+			rpc_controller::IRpcListOps*							RequireListCallback()const;
+			rpc_controller::IRpcListEventOps*					RequireListEventCallback()const;
 		public:
 
 			RpcControllerMock();
@@ -26,53 +36,22 @@ namespace vl
 
 			// RpcControllerMock
 
-			virtual void										Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
+			virtual void										Register(Ptr<rpc_controller::IRpcObjectOps> objectCallback, Ptr<rpc_controller::IRpcObjectEventOps> eventCallback, Ptr<rpc_controller::IRpcListOps> listCallback, Ptr<rpc_controller::IRpcListEventOps> listEventCallback);
 
 			// IRpcController
 
+			rpc_controller::IRpcListOps*							GetListOps()override;
+			rpc_controller::IRpcObjectOps*						GetObjectOps()override;
+			rpc_controller::IRpcListEventOps*					GetListEventOps()override;
+			rpc_controller::IRpcObjectEventOps*					GetObjectEventOps()override;
 			rpc_controller::RpcObjectReference					RegisterLocalObject(vint typeId)override = 0;
 			void												UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override = 0;
 			void												AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override = 0;
 			void												ReleaseRemoteObject(rpc_controller::RpcObjectReference ref)override = 0;
-
-			// IRpcObjectOps
-
-			reflection::description::Value						InvokeMethod(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
-			Ptr<reflection::description::IAsync>				InvokeMethodAsync(rpc_controller::RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
-			void												ObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId, bool hold)override;
-			void												RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
-			Nullable<rpc_controller::RpcObjectReference>		RequestService(vint typeId)override;
-
-			// IRpcObjectEventOps
-
-			void												InvokeEvent(rpc_controller::RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override;
-
-			// IRpcListOps
-
-			rpc_controller::RpcObjectReference					EnumCreate(rpc_controller::RpcObjectReference ref)override;
-			bool												EnumNext(rpc_controller::RpcObjectReference enumerator)override;
-			reflection::description::Value						EnumGetCurrent(rpc_controller::RpcObjectReference enumerator)override;
-			vint												ListGetCount(rpc_controller::RpcObjectReference ref)override;
-			reflection::description::Value						ListGet(rpc_controller::RpcObjectReference ref, vint index)override;
-			void												ListSet(rpc_controller::RpcObjectReference ref, vint index, const reflection::description::Value& value)override;
-			vint												ListAdd(rpc_controller::RpcObjectReference ref, const reflection::description::Value& value)override;
-			vint												ListInsert(rpc_controller::RpcObjectReference ref, vint index, const reflection::description::Value& value)override;
-			bool												ListRemoveAt(rpc_controller::RpcObjectReference ref, vint index)override;
-			void												ListClear(rpc_controller::RpcObjectReference ref)override;
-			bool												ListContains(rpc_controller::RpcObjectReference ref, const reflection::description::Value& value)override;
-			vint												ListIndexOf(rpc_controller::RpcObjectReference ref, const reflection::description::Value& value)override;
-			vint												DictGetCount(rpc_controller::RpcObjectReference ref)override;
-			reflection::description::Value						DictGet(rpc_controller::RpcObjectReference ref, const reflection::description::Value& key)override;
-			void												DictSet(rpc_controller::RpcObjectReference ref, const reflection::description::Value& key, const reflection::description::Value& value)override;
-			bool												DictRemove(rpc_controller::RpcObjectReference ref, const reflection::description::Value& key)override;
-			void												DictClear(rpc_controller::RpcObjectReference ref)override;
-			bool												DictContainsKey(rpc_controller::RpcObjectReference ref, const reflection::description::Value& key)override;
-			rpc_controller::RpcObjectReference					DictGetKeys(rpc_controller::RpcObjectReference ref)override;
-			rpc_controller::RpcObjectReference					DictGetValues(rpc_controller::RpcObjectReference ref)override;
-
-			// IRpcListEventOps
-
-			void												OnItemChanged(rpc_controller::RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
+			void												SetEventSuppressedFlag(rpc_controller::RpcObjectReference ref, vint eventId, bool suppressed)override;
+			bool												GetEventSuppressedFlag(rpc_controller::RpcObjectReference ref, vint eventId)override;
+			void												SetItemChangedSuppressedFlag(rpc_controller::RpcObjectReference ref, bool suppressed)override;
+			bool												GetItemChangedSuppressedFlag(rpc_controller::RpcObjectReference ref)override;
 		};
 	}
 }

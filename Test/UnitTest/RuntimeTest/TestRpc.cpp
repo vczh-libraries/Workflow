@@ -39,11 +39,10 @@ namespace
 
 		~RpcWorkflowLifecycleMock()
 		{
-			RegisterLocalObjectOps(nullptr);
 			// Disconnect wrappers while globalContext is still alive,
 			// because DisconnectFromLifecycle executes Workflow bytecode.
 			DisconnectTrackedWrappers();
-			GetController()->UnregisterAllLocalObjects();
+			GetController()->UnregisterAllLocalObjects(true);
 			listenerAttachFunc = {};
 			wrapperCreateFunc = nullptr;
 			globalContext = nullptr;
@@ -59,7 +58,7 @@ namespace
 			globalContext = _globalContext;
 		}
 
-		void SetIdMapWithReflection(const Dictionary<WString, vint>& _idMap, IRpcLifeCycle* wrapperFactoryLifecycle)
+		void SetIdMapWithReflection(const Dictionary<WString, vint>& _idMap)
 		{
 			SetIdMap(_idMap);
 			wrapperCreateFunc = LoadFunction(globalContext, L"rpcwrapper_Create");
@@ -77,12 +76,11 @@ namespace
 					: Func<void(vint, IRpcLifeCycle*, RpcObjectReference, IDescriptable*)>();
 			}
 
-			RegisterWrapperFactory([this, wrapperFactoryLifecycle](RpcObjectReference ref, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
+			RegisterWrapperFactory([this](RpcObjectReference ref, IRpcLifeCycle* lc) -> Ptr<IRpcWrapperBase>
 			{
-				(void)lc;
 				auto argList = IValueList::Create();
 				argList->Add(BoxValue(ref));
-				argList->Add(BoxValue<IRpcLifeCycle*>(wrapperFactoryLifecycle));
+				argList->Add(BoxValue<IRpcLifeCycle*>(lc));
 				auto result = wrapperCreateFunc->Invoke(argList);
 				auto wrapper = Ptr(result.GetRawPtr()->SafeAggregationCast<IRpcWrapperBase>());
 				CHECK_ERROR(wrapper, L"rpcwrapper_Create did not return IRpcWrapperBase.");
@@ -168,8 +166,8 @@ TEST_FILE
 				auto lc2 = Ptr(new RpcWorkflowLifecycleMock(2));
 				lc1->SetGlobalContext(globalContext);
 				lc2->SetGlobalContext(globalContext);
-				lc1->SetIdMapWithReflection(idMap, lc1.Obj());
-				lc2->SetIdMapWithReflection(idMap, lc2.Obj());
+				lc1->SetIdMapWithReflection(idMap);
+				lc2->SetIdMapWithReflection(idMap);
 
 				// Create list ops default implementations
 				auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj()));
@@ -184,12 +182,10 @@ TEST_FILE
 				auto oeo1 = createEventOps(lc1.Obj());
 				auto oo2 = createObjectOps(lc2.Obj());
 				auto oeo2 = createEventOps(lc2.Obj());
-				lc1->RegisterLocalObjectOps(oo1);
-				lc2->RegisterLocalObjectOps(oo2);
 
-				// Register cross: ops from lc1 go to lc2, and vice versa
-				lc2->GetController()->Register(oo1, oeo1, lo1, leo1);
-				lc1->GetController()->Register(oo2, oeo2, lo2, leo2);
+				lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
+				lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+				RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 
 				// Run serviceMain with lc1
 				auto serviceMain = LoadFunction<void(IRpcLifeCycle*)>(globalContext, L"serviceMain");
@@ -207,8 +203,8 @@ TEST_FILE
 				// between WfRuntimeGlobalContext and Workflow objects
 				lc2->DisconnectTrackedWrappersBeforeDispose();
 				lc1->DisconnectTrackedWrappersBeforeDispose();
-				lc2->RegisterLocalObjectOps(nullptr);
-				lc1->RegisterLocalObjectOps(nullptr);
+				lc2->GetController()->UnregisterAllLocalObjects(true);
+				lc1->GetController()->UnregisterAllLocalObjects(true);
 				oeo2 = nullptr;
 				oo2 = nullptr;
 				oeo1 = nullptr;

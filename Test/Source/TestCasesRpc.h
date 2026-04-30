@@ -66,13 +66,12 @@ void RunRpcTestCase(
 	auto oeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());
 	auto oo2 = instance.rpc_IRpcObjectOps(lc2.Obj());
 	auto oeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());
-	lc1->RegisterLocalObjectOps(oo1);
-	lc2->RegisterLocalObjectOps(oo2);
 
-	lc2->GetController()->Register(oo1, oeo1, lo1, leo1);
-	lc1->GetController()->Register(oo2, oeo2, lo2, leo2);
-	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(ref, lc1.Obj()); });
-	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { (void)lc; return instance.rpcwrapper_Create(ref, lc2.Obj()); });
+	lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
+	lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+	RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
+	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
+	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifeCycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
 
 	instance.serviceMain(lc1.Obj());
 
@@ -82,8 +81,6 @@ void RunRpcTestCase(
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
 
-	lc2->RegisterLocalObjectOps(nullptr);
-	lc1->RegisterLocalObjectOps(nullptr);
 	lc2->DisconnectTrackedWrappersBeforeDispose();
 	lc1->DisconnectTrackedWrappersBeforeDispose();
 }

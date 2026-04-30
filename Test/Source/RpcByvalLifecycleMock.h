@@ -26,8 +26,8 @@ namespace vl
 			friend class RpcObjectTracker;
 		private:
 			RpcByvalLifecycleMock*																												lifecycle = nullptr;
-			vint																																		clientId = 1;
-			vint																																		nextObjectId = 1;
+			vint																																		clientId = rpc_controller::RpcClientId_Invalid + 1;
+			vint																																		nextObjectId = rpc_controller::RpcObjectId_Invalid;
 			rpc_controller::RpcObjectReference																											lastRegisteredObject;
 			collections::Dictionary<vint, vint>																											refCounts;
 			collections::Dictionary<vint, vint>																											typeIds;
@@ -55,10 +55,10 @@ namespace vl
 
 			// IRpcListEventOps
 
-			void																	OnItemChanged(rpc_controller::RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
+			void																	OnItemChanged(rpc_controller::RpcObjectReference ref, vint index, vint oldCount, vint newCount);
 		};
 
-		class RpcByvalLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle
+		class RpcByvalLifecycleMock : public Object, public rpc_controller::IRpcLifeCycle, public rpc_controller::IRpcDispatcher
 		{
 			friend class RpcByvalControllerMock;
 		private:
@@ -76,11 +76,23 @@ namespace vl
 
 			// IRpcLifeCycle
 
+			vint																	GetClientId()override;
+			rpc_controller::IRpcDispatcher*											GetDispatcher()override;
 			RpcByvalControllerMock*													GetController()override;
 			void																	RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
 			Ptr<reflection::IDescriptable>											RequestService(const WString& fullName)override;
 			Ptr<reflection::IDescriptable>											RefToPtr(rpc_controller::RpcObjectReference ref)override;
 			rpc_controller::RpcObjectReference										PtrToRef(Ptr<reflection::IDescriptable> obj)override;
+
+			// IRpcDispatcher
+
+			bool																	IsRegisteredService(rpc_controller::RpcObjectReference ref)override;
+			void																	RegisterService(vint typeId, rpc_controller::RpcObjectReference ref)override;
+			rpc_controller::RpcObjectReference										RequestService(vint typeId)override;
+			rpc_controller::IRpcListEventOps*										BroadcastFromClient_ListEventOps(vint selfClientId)override;
+			rpc_controller::IRpcObjectEventOps*										BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
+			rpc_controller::IRpcListOps*											SendToClient_ListOps(vint targetClientId)override;
+			rpc_controller::IRpcObjectOps*											SendToClient_ObjectOps(vint targetClientId)override;
 		};
 	}
 }

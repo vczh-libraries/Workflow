@@ -17,7 +17,6 @@ namespace
 		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override	{ CHECK_FAIL(L"Not Supported!"); }
 		void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override								{ CHECK_FAIL(L"Not Supported!"); }
 		void RegisterService(vint typeId, Ptr<IDescriptable> service)override										{ CHECK_FAIL(L"Not Supported!"); }
-		Nullable<RpcObjectReference> RequestService(vint typeId)override											{ CHECK_FAIL(L"Not Supported!"); }
 	};
 
 	class StubObjectEventOps : public Object, public IRpcObjectEventOps

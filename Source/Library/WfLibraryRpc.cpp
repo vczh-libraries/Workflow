@@ -67,6 +67,11 @@ namespace vl
 				}
 				return Ptr(new TWrapper(lc, ref));
 			}
+
+			IRpcListOps* GetRemoteListOps(IRpcLifeCycle* lc, RpcObjectReference ref)
+			{
+				return lc->GetDispatcher()->SendToClient_ListOps(ref.clientId);
+			}
 		}
 		
 /***********************************************************************
@@ -94,7 +99,7 @@ namespace vl
 
 		Value RpcByrefEnumerator::GetCurrent()
 		{
-			return RpcUnboxByref(controller->EnumGetCurrent(ref), lifeCycle);
+			return RpcUnboxByref(GetRemoteListOps(lifeCycle, ref)->EnumGetCurrent(ref), lifeCycle);
 		}
 
 		vint RpcByrefEnumerator::GetIndex()
@@ -104,7 +109,7 @@ namespace vl
 
 		bool RpcByrefEnumerator::Next()
 		{
-			if (controller->EnumNext(ref))
+			if (GetRemoteListOps(lifeCycle, ref)->EnumNext(ref))
 			{
 				index++;
 				return true;
@@ -133,7 +138,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefEnumerable::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, GetRemoteListOps(lifeCycle, ref)->EnumCreate(ref));
 		}
 		
 /***********************************************************************
@@ -161,27 +166,27 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefReadonlyList::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, GetRemoteListOps(lifeCycle, ref)->EnumCreate(ref));
 		}
 
 		vint RpcByrefReadonlyList::GetCount()
 		{
-			return controller->ListGetCount(ref);
+			return GetRemoteListOps(lifeCycle, ref)->ListGetCount(ref);
 		}
 
 		Value RpcByrefReadonlyList::Get(vint index)
 		{
-			return RpcUnboxByref(controller->ListGet(ref, index), lifeCycle);
+			return RpcUnboxByref(GetRemoteListOps(lifeCycle, ref)->ListGet(ref, index), lifeCycle);
 		}
 
 		bool RpcByrefReadonlyList::Contains(const Value& value)
 		{
-			return controller->ListContains(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListContains(ref, RpcBoxByref(value, lifeCycle));
 		}
 
 		vint RpcByrefReadonlyList::IndexOf(const Value& value)
 		{
-			return controller->ListIndexOf(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListIndexOf(ref, RpcBoxByref(value, lifeCycle));
 		}
 		
 /***********************************************************************
@@ -224,33 +229,33 @@ namespace vl
 
 		void RpcByrefList::Set(vint index, const Value& value)
 		{
-			controller->ListSet(ref, index, RpcBoxByref(value, lifeCycle));
+			GetRemoteListOps(lifeCycle, ref)->ListSet(ref, index, RpcBoxByref(value, lifeCycle));
 		}
 
 		vint RpcByrefList::Add(const Value& value)
 		{
-			return controller->ListAdd(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListAdd(ref, RpcBoxByref(value, lifeCycle));
 		}
 
 		vint RpcByrefList::Insert(vint index, const Value& value)
 		{
-			return controller->ListInsert(ref, index, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListInsert(ref, index, RpcBoxByref(value, lifeCycle));
 		}
 
 		bool RpcByrefList::Remove(const Value& value)
 		{
 			auto index = IndexOf(value);
-			return index == -1 ? false : controller->ListRemoveAt(ref, index);
+			return index == -1 ? false : GetRemoteListOps(lifeCycle, ref)->ListRemoveAt(ref, index);
 		}
 
 		bool RpcByrefList::RemoveAt(vint index)
 		{
-			return controller->ListRemoveAt(ref, index);
+			return GetRemoteListOps(lifeCycle, ref)->ListRemoveAt(ref, index);
 		}
 
 		void RpcByrefList::Clear()
 		{
-			controller->ListClear(ref);
+			GetRemoteListOps(lifeCycle, ref)->ListClear(ref);
 		}
 		
 /***********************************************************************
@@ -278,32 +283,32 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefArray::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, GetRemoteListOps(lifeCycle, ref)->EnumCreate(ref));
 		}
 
 		vint RpcByrefArray::GetCount()
 		{
-			return controller->ListGetCount(ref);
+			return GetRemoteListOps(lifeCycle, ref)->ListGetCount(ref);
 		}
 
 		Value RpcByrefArray::Get(vint index)
 		{
-			return RpcUnboxByref(controller->ListGet(ref, index), lifeCycle);
+			return RpcUnboxByref(GetRemoteListOps(lifeCycle, ref)->ListGet(ref, index), lifeCycle);
 		}
 
 		bool RpcByrefArray::Contains(const Value& value)
 		{
-			return controller->ListContains(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListContains(ref, RpcBoxByref(value, lifeCycle));
 		}
 
 		vint RpcByrefArray::IndexOf(const Value& value)
 		{
-			return controller->ListIndexOf(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListIndexOf(ref, RpcBoxByref(value, lifeCycle));
 		}
 
 		void RpcByrefArray::Set(vint index, const Value& value)
 		{
-			controller->ListSet(ref, index, RpcBoxByref(value, lifeCycle));
+			GetRemoteListOps(lifeCycle, ref)->ListSet(ref, index, RpcBoxByref(value, lifeCycle));
 		}
 
 		void RpcByrefArray::Resize(vint size)
@@ -312,7 +317,7 @@ namespace vl
 			if (size > count) CHECK_FAIL(L"RpcByrefArray::Resize cannot grow.");
 			for (vint i = count - 1; i >= size; i--)
 			{
-				controller->ListRemoveAt(ref, i);
+				GetRemoteListOps(lifeCycle, ref)->ListRemoveAt(ref, i);
 			}
 		}
 		
@@ -341,58 +346,58 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefObservableList::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, controller->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifeCycle, GetRemoteListOps(lifeCycle, ref)->EnumCreate(ref));
 		}
 
 		vint RpcByrefObservableList::GetCount()
 		{
-			return controller->ListGetCount(ref);
+			return GetRemoteListOps(lifeCycle, ref)->ListGetCount(ref);
 		}
 
 		Value RpcByrefObservableList::Get(vint index)
 		{
-			return RpcUnboxByref(controller->ListGet(ref, index), lifeCycle);
+			return RpcUnboxByref(GetRemoteListOps(lifeCycle, ref)->ListGet(ref, index), lifeCycle);
 		}
 
 		bool RpcByrefObservableList::Contains(const Value& value)
 		{
-			return controller->ListContains(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListContains(ref, RpcBoxByref(value, lifeCycle));
 		}
 
 		vint RpcByrefObservableList::IndexOf(const Value& value)
 		{
-			return controller->ListIndexOf(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListIndexOf(ref, RpcBoxByref(value, lifeCycle));
 		}
 
 		void RpcByrefObservableList::Set(vint index, const Value& value)
 		{
-			controller->ListSet(ref, index, RpcBoxByref(value, lifeCycle));
+			GetRemoteListOps(lifeCycle, ref)->ListSet(ref, index, RpcBoxByref(value, lifeCycle));
 		}
 
 		vint RpcByrefObservableList::Add(const Value& value)
 		{
-			return controller->ListAdd(ref, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListAdd(ref, RpcBoxByref(value, lifeCycle));
 		}
 
 		vint RpcByrefObservableList::Insert(vint index, const Value& value)
 		{
-			return controller->ListInsert(ref, index, RpcBoxByref(value, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->ListInsert(ref, index, RpcBoxByref(value, lifeCycle));
 		}
 
 		bool RpcByrefObservableList::Remove(const Value& value)
 		{
 			auto index = IndexOf(value);
-			return index == -1 ? false : controller->ListRemoveAt(ref, index);
+			return index == -1 ? false : GetRemoteListOps(lifeCycle, ref)->ListRemoveAt(ref, index);
 		}
 
 		bool RpcByrefObservableList::RemoveAt(vint index)
 		{
-			return controller->ListRemoveAt(ref, index);
+			return GetRemoteListOps(lifeCycle, ref)->ListRemoveAt(ref, index);
 		}
 
 		void RpcByrefObservableList::Clear()
 		{
-			controller->ListClear(ref);
+			GetRemoteListOps(lifeCycle, ref)->ListClear(ref);
 		}
 		
 /***********************************************************************
@@ -420,37 +425,37 @@ namespace vl
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetKeys()
 		{
-			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifeCycle, controller->DictGetKeys(ref));
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifeCycle, GetRemoteListOps(lifeCycle, ref)->DictGetKeys(ref));
 		}
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetValues()
 		{
-			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifeCycle, controller->DictGetValues(ref));
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifeCycle, GetRemoteListOps(lifeCycle, ref)->DictGetValues(ref));
 		}
 
 		vint RpcByrefDictionary::GetCount()
 		{
-			return controller->DictGetCount(ref);
+			return GetRemoteListOps(lifeCycle, ref)->DictGetCount(ref);
 		}
 
 		Value RpcByrefDictionary::Get(const Value& key)
 		{
-			return RpcUnboxByref(controller->DictGet(ref, RpcBoxByref(key, lifeCycle)), lifeCycle);
+			return RpcUnboxByref(GetRemoteListOps(lifeCycle, ref)->DictGet(ref, RpcBoxByref(key, lifeCycle)), lifeCycle);
 		}
 
 		void RpcByrefDictionary::Set(const Value& key, const Value& value)
 		{
-			controller->DictSet(ref, RpcBoxByref(key, lifeCycle), RpcBoxByref(value, lifeCycle));
+			GetRemoteListOps(lifeCycle, ref)->DictSet(ref, RpcBoxByref(key, lifeCycle), RpcBoxByref(value, lifeCycle));
 		}
 
 		bool RpcByrefDictionary::Remove(const Value& key)
 		{
-			return controller->DictRemove(ref, RpcBoxByref(key, lifeCycle));
+			return GetRemoteListOps(lifeCycle, ref)->DictRemove(ref, RpcBoxByref(key, lifeCycle));
 		}
 
 		void RpcByrefDictionary::Clear()
 		{
-			controller->DictClear(ref);
+			GetRemoteListOps(lifeCycle, ref)->DictClear(ref);
 		}
 		
 /***********************************************************************
@@ -678,7 +683,21 @@ namespace vl
 
 		void RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
-			lifeCycle->GetController()->OnItemChanged(ref, index, oldCount, newCount);
+			auto controller = lifeCycle->GetController();
+			controller->SetItemChangedSuppressedFlag(ref, true);
+			try
+			{
+				auto obj = lifeCycle->RefToPtr(ref);
+				auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
+				CHECK_ERROR(observable, L"RpcCalleeListEventBridge::OnItemChanged cannot find the target observable list.");
+				observable->ItemChanged(index, oldCount, newCount);
+			}
+			catch (...)
+			{
+				controller->SetItemChangedSuppressedFlag(ref, false);
+				throw;
+			}
+			controller->SetItemChangedSuppressedFlag(ref, false);
 		}
 		
 /***********************************************************************

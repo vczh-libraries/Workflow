@@ -66,7 +66,12 @@ namespace vl
 
 		RpcDualControllerMock::~RpcDualControllerMock()
 		{
-			UnregisterAllLocalObjects();
+			while (localObjectProperties.Count() > 0)
+			{
+				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
+				lifecycle->UntrackLocalObject(props->ref);
+				localObjectProperties.Remove(props->ref.objectId);
+			}
 		}
 
 		vint RpcDualControllerMock::GetClientId()const
@@ -79,12 +84,16 @@ namespace vl
 			return localObjectProperties;
 		}
 
-		void RpcDualControllerMock::UnregisterAllLocalObjects()
+		void RpcDualControllerMock::UnregisterAllLocalObjects(bool includeRegisteredServices)
 		{
-			while (localObjectProperties.Count() > 0)
+			for (vint i = localObjectProperties.Count() - 1; i >= 0; i--)
 			{
-				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
-				UnregisterLocalObject(props->ref);
+				auto ref = localObjectProperties.Values().Get(i)->ref;
+				if (includeRegisteredServices || !lifecycle->GetDispatcher()->IsRegisteredService(ref))
+				{
+					lifecycle->UntrackLocalObject(ref);
+					localObjectProperties.Remove(ref.objectId);
+				}
 			}
 		}
 
@@ -116,13 +125,14 @@ namespace vl
 
 		void RpcDualControllerMock::UnregisterLocalObject(RpcObjectReference ref)
 		{
+			if (lifecycle->GetDispatcher()->IsRegisteredService(ref))
+			{
+				return;
+			}
+
 			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
 			CHECK_ERROR(index != -1, L"RpcDualControllerMock::UnregisterLocalObject: Object not registered.");
 
-			if (lifecycle->localObjectCallback)
-			{
-				lifecycle->localObjectCallback->RegisterService(ref.typeId, nullptr);
-			}
 			lifecycle->UntrackLocalObject(ref);
 			localObjectProperties.Remove(ref.objectId);
 		}
@@ -137,7 +147,7 @@ namespace vl
 			}
 			else
 			{
-				RpcControllerMock::ObjectHold(ref, clientId, true);
+				lifecycle->GetDispatcher()->SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, clientId, true);
 			}
 		}
 
@@ -156,44 +166,79 @@ namespace vl
 			}
 			else
 			{
-				RpcControllerMock::ObjectHold(ref, clientId, false);
+				lifecycle->GetDispatcher()->SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, clientId, false);
 			}
 		}
 
 /***********************************************************************
-* RpcDualControllerMock (IRpcObjectEventOps)
+* RpcDualDispatcherMock
 ***********************************************************************/
 
-		void RpcDualControllerMock::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		RpcDualLifecycleMock* RpcDualDispatcherMock::GetLifecycle(vint clientId)const
 		{
-			if (!lifecycle->BeginForwardingEvent(ref, eventId))
-			{
-				return;
-			}
-
-			RpcControllerMock::InvokeEvent(ref, eventId, arguments);
-			lifecycle->EndForwardingEvent(ref, eventId);
+			if (lifecycle1 && lifecycle1->GetClientId() == clientId) return lifecycle1;
+			if (lifecycle2 && lifecycle2->GetClientId() == clientId) return lifecycle2;
+			CHECK_FAIL(L"RpcDualDispatcherMock::GetLifecycle: Unknown client id.");
+			return nullptr;
 		}
 
-/***********************************************************************
-* RpcDualControllerMock (IRpcListEventOps)
-***********************************************************************/
-
-		void RpcDualControllerMock::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		RpcDualLifecycleMock* RpcDualDispatcherMock::GetOtherLifecycle(vint clientId)const
 		{
-			if (auto proxy = lifecycle->GetTrackedWrapper(ref))
-			{
-				if (auto observable = dynamic_cast<IValueObservableList*>(proxy))
-				{
-					observable->ItemChanged(index, oldCount, newCount);
-					return;
-				}
-			}
+			if (lifecycle1 && lifecycle1->GetClientId() == clientId) return lifecycle2;
+			if (lifecycle2 && lifecycle2->GetClientId() == clientId) return lifecycle1;
+			CHECK_FAIL(L"RpcDualDispatcherMock::GetOtherLifecycle: Unknown client id.");
+			return nullptr;
+		}
 
-			if (listEventCallback)
-			{
-				RpcControllerMock::OnItemChanged(ref, index, oldCount, newCount);
-			}
+		RpcDualDispatcherMock::RpcDualDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2)
+			: lifecycle1(lc1)
+			, lifecycle2(lc2)
+		{
+			CHECK_ERROR(lifecycle1 && lifecycle2, L"RpcDualDispatcherMock requires two lifecycles.");
+			lifecycle1->dispatcher = this;
+			lifecycle2->dispatcher = this;
+		}
+
+		RpcDualDispatcherMock::~RpcDualDispatcherMock()
+		{
+		}
+
+		bool RpcDualDispatcherMock::IsRegisteredService(RpcObjectReference ref)
+		{
+			return services.Values().Contains(ref);
+		}
+
+		void RpcDualDispatcherMock::RegisterService(vint typeId, RpcObjectReference ref)
+		{
+			CHECK_ERROR(!services.Keys().Contains(typeId), L"RpcDualDispatcherMock::RegisterService: Service is already registered.");
+			services.Set(typeId, ref);
+		}
+
+		RpcObjectReference RpcDualDispatcherMock::RequestService(vint typeId)
+		{
+			auto index = services.Keys().IndexOf(typeId);
+			CHECK_ERROR(index != -1, L"RpcDualDispatcherMock::RequestService: Service is not registered.");
+			return services.Values()[index];
+		}
+
+		IRpcListEventOps* RpcDualDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)
+		{
+			return GetOtherLifecycle(selfClientId)->GetController()->GetListEventOps();
+		}
+
+		IRpcObjectEventOps* RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
+		{
+			return GetOtherLifecycle(selfClientId)->GetController()->GetObjectEventOps();
+		}
+
+		IRpcListOps* RpcDualDispatcherMock::SendToClient_ListOps(vint targetClientId)
+		{
+			return GetLifecycle(targetClientId)->GetController()->GetListOps();
+		}
+
+		IRpcObjectOps* RpcDualDispatcherMock::SendToClient_ObjectOps(vint targetClientId)
+		{
+			return GetLifecycle(targetClientId)->GetController()->GetObjectOps();
 		}
 
 /***********************************************************************
@@ -208,7 +253,6 @@ namespace vl
 		RpcDualLifecycleMock::~RpcDualLifecycleMock()
 		{
 			DisconnectTrackedWrappers();
-			localObjectCallback = nullptr;
 		}
 
 		void RpcDualLifecycleMock::SetIdMap(const Dictionary<WString, vint>& _idMap)
@@ -222,11 +266,6 @@ namespace vl
 		void RpcDualLifecycleMock::RegisterWrapperFactory(UniversalWrapperFactory factory)
 		{
 			universalWrapperFactory = factory;
-		}
-
-		void RpcDualLifecycleMock::RegisterLocalObjectOps(Ptr<IRpcObjectOps> objectCallback)
-		{
-			localObjectCallback = objectCallback;
 		}
 
 		vint RpcDualLifecycleMock::DecideTypeId(IDescriptable* obj)const
@@ -247,28 +286,6 @@ namespace vl
 			return false;
 		}
 
-		bool RpcDualLifecycleMock::BeginForwardingEvent(RpcObjectReference ref, vint eventId)
-		{
-			if (!HasEventTarget(ref))
-			{
-				return false;
-			}
-
-			auto event = RpcDualEventDispatch{ ref,eventId };
-			if (forwardingEvents.Contains(event))
-			{
-				return false;
-			}
-			forwardingEvents.Add(event);
-			return true;
-		}
-
-		void RpcDualLifecycleMock::EndForwardingEvent(RpcObjectReference ref, vint eventId)
-		{
-			auto event = RpcDualEventDispatch{ ref,eventId };
-			CHECK_ERROR(forwardingEvents.Remove(event), L"RpcDualLifecycleMock::EndForwardingEvent: Event was not forwarding.");
-		}
-
 		void RpcDualLifecycleMock::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
 		{
 			auto&& localObjectProperties = controller.GetLocalObjectProperties();
@@ -283,7 +300,11 @@ namespace vl
 			{
 				auto handler = observable->ItemChanged.Add([this, ref](vint index, vint oldCount, vint newCount)
 				{
-					this->GetController()->OnItemChanged(ref, index, oldCount, newCount);
+					if (this->GetController()->GetItemChangedSuppressedFlag(ref))
+					{
+						return;
+					}
+					this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount);
 				});
 				props->eventHandler = handler;
 			}
@@ -437,15 +458,6 @@ namespace vl
 			return nullptr;
 		}
 
-		bool RpcDualLifecycleMock::HasEventTarget(RpcObjectReference ref)const
-		{
-			if (ref.clientId == controller.GetClientId())
-			{
-				return IsTracked(ref.objectId);
-			}
-			return wrapperProperties.Keys().Contains(ref);
-		}
-
 		Ptr<IDescriptable> RpcDualLifecycleMock::CreateCallerProxy(RpcObjectReference ref)
 		{
 			IRpcLifeCycle* lc = this;
@@ -492,6 +504,17 @@ namespace vl
 * RpcDualLifecycleMock (IRpcLifeCycle)
 ***********************************************************************/
 
+		vint RpcDualLifecycleMock::GetClientId()
+		{
+			return controller.GetClientId();
+		}
+
+		IRpcDispatcher* RpcDualLifecycleMock::GetDispatcher()
+		{
+			CHECK_ERROR(dispatcher, L"RpcDualLifecycleMock::GetDispatcher: No dispatcher registered.");
+			return dispatcher;
+		}
+
 		RpcDualControllerMock* RpcDualLifecycleMock::GetController()
 		{
 			return &controller;
@@ -504,8 +527,7 @@ namespace vl
 			{
 				throw Exception(L"Unknown RPC type id.");
 			}
-			CHECK_ERROR(localObjectCallback, L"RpcDualLifecycleMock::RegisterService: No local object callback registered.");
-			localObjectCallback->RegisterService(idMap.Values()[index], service);
+			controller.GetObjectOps()->RegisterService(idMap.Values()[index], service);
 		}
 
 		Ptr<IDescriptable> RpcDualLifecycleMock::RequestService(const WString& fullName)
@@ -513,18 +535,8 @@ namespace vl
 			if (idMap.Keys().Contains(fullName))
 			{
 				auto typeId = idMap.Get(fullName);
-				CHECK_ERROR(universalWrapperFactory, L"RpcDualLifecycleMock::RequestService: No wrapper factory registered.");
-				if (localObjectCallback)
-				{
-					auto localRef = localObjectCallback->RequestService(typeId);
-					if (localRef)
-					{
-						return RefToPtr(localRef.Value());
-					}
-				}
-				auto ref = controller.RequestService(typeId);
-				CHECK_ERROR(ref, L"RpcDualLifecycleMock::RequestService: RPC service is not registered.");
-				return CreateCallerProxy(ref.Value());
+				auto ref = GetDispatcher()->RequestService(typeId);
+				return RefToPtr(ref);
 			}
 
 			return nullptr;

@@ -62,6 +62,8 @@ Predefined Types
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
 			F(vl::rpc_controller::IRpcObjectEventOps)\
+			F(vl::rpc_controller::IRpcOperations)\
+			F(vl::rpc_controller::IRpcDispatcher)\
 			F(vl::rpc_controller::IRpcController)\
 			F(vl::rpc_controller::IRpcLifeCycle)\
 			F(vl::rpc_controller::IRpcWrapperBase)\
@@ -208,11 +210,6 @@ Interface Implementation Proxy (Implement)
 				void RegisterService(vl::vint typeId, vl::Ptr<vl::reflection::IDescriptable> service)override
 				{
 					INVOKE_INTERFACE_PROXY(RegisterService, typeId, service);
-				}
-
-				vl::Nullable<vl::rpc_controller::RpcObjectReference> RequestService(vl::vint typeId)override
-				{
-					INVOKEGET_INTERFACE_PROXY(RequestService, typeId);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
