@@ -96,16 +96,16 @@ namespace vl_workflow_global
 		::vl::vint32_t rpcmethod_RpcOverloadingTest__IService_ToString_value__3 = 0;
 		::vl::vint32_t rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_ = 0;
 
-		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
+		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint32_t typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::RpcOverloadingTest::IRpcWrapper_IStringRepresentable> rpcwrapper_RpcOverloadingTest__IStringRepresentable(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcOverloadingTest::IRpcWrapper_IService> rpcwrapper_RpcOverloadingTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcOverloadingTest::IRpcWrapper_IStringRepresentable> rpcwrapper_RpcOverloadingTest__IStringRepresentable(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::RpcOverloadingTest::IRpcWrapper_IService> rpcwrapper_RpcOverloadingTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
 
 		static Rpc_Overloading& Instance();
 	};
@@ -137,9 +137,9 @@ Closures
 	class __vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;
@@ -149,18 +149,18 @@ Closures
 	class __vwsnc4_Rpc_Overloading_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc4_Rpc_Overloading_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_Overloading_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc5_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable : public ::vl::Object, public virtual ::RpcOverloadingTest::IRpcWrapper_IStringRepresentable
 	{
 	public:
-		__vwsnc5_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc5_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable();
@@ -170,9 +170,9 @@ Closures
 	class __vwsnc6_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcOverloadingTest::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc6_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc6_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc6_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService();

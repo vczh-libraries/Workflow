@@ -44,11 +44,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
@@ -57,12 +57,12 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName:
                 {
                     var target : RpcFailDoubleRegistrationTest::IObject^ = (cast (RpcFailDoubleRegistrationTest::IObject^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.GetName(), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.GetName(), _lc);
                 }
                 case rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject:
                 {
                     var target : RpcFailDoubleRegistrationTest::IService^ = (cast (RpcFailDoubleRegistrationTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.SetObject((cast (::RpcFailDoubleRegistrationTest::IObject^) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc)), (cast (::system::Int32) system::IRpcLifeCycle::RpcUnboxByval(arguments[1], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.SetObject((cast (::RpcFailDoubleRegistrationTest::IObject^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)), (cast (::system::Int32) system::IRpcLifecycle::RpcUnboxByval(arguments[1], _lc))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -78,11 +78,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _lc.Controller.AcquireRemoteObject(ref);
+                _lc.LocalObjectHold(ref, remoteClientId);
             }
             else
             {
-                _lc.Controller.ReleaseRemoteObject(ref);
+                _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
 
@@ -109,11 +109,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
@@ -143,11 +143,11 @@ namespace RpcFailDoubleRegistrationTest
     }
 }
 
-func rpcwrapper_RpcFailDoubleRegistrationTest__IObject(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^)
+func rpcwrapper_RpcFailDoubleRegistrationTest__IObject(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^)
 {
     var proxy : RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^ = new (RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -160,7 +160,7 @@ func rpcwrapper_RpcFailDoubleRegistrationTest__IObject(lc : system::IRpcLifeCycl
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -170,17 +170,18 @@ func rpcwrapper_RpcFailDoubleRegistrationTest__IObject(lc : system::IRpcLifeCycl
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName, arguments), _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName, arguments), _lc));
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_RpcFailDoubleRegistrationTest__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcFailDoubleRegistrationTest::IRpcWrapper_IService^)
+func rpcwrapper_RpcFailDoubleRegistrationTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcFailDoubleRegistrationTest::IRpcWrapper_IService^)
 {
     var proxy : RpcFailDoubleRegistrationTest::IRpcWrapper_IService^ = new (RpcFailDoubleRegistrationTest::IRpcWrapper_IService^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -193,7 +194,7 @@ func rpcwrapper_RpcFailDoubleRegistrationTest__IService(lc : system::IRpcLifeCyc
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -203,15 +204,16 @@ func rpcwrapper_RpcFailDoubleRegistrationTest__IService(lc : system::IRpcLifeCyc
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(2);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(obj, _lc));
-            arguments.Set(1, system::IRpcLifeCycle::RpcBoxByval(index, _lc));
-            return (cast (::RpcFailDoubleRegistrationTest::IObject^) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(obj, _lc));
+            arguments.Set(1, system::IRpcLifecycle::RpcBoxByval(index, _lc));
+            return (cast (::RpcFailDoubleRegistrationTest::IObject^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject, arguments), _lc));
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {

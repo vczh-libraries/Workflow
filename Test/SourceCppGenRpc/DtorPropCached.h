@@ -97,18 +97,18 @@ namespace vl_workflow_global
 		::vl::vint rpcevent_RpcDtorPropCached__IService_ValueChanged = 0;
 
 		::vl::Ptr<::RpcDtorPropCached::IValue> MakeValue(const ::vl::WString& value);
-		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
+		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		void rpclistener_RpcDtorPropCached__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcDtorPropCached::IService* target);
-		void rpclistener_Attach(::vl::vint typeId, ::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
-		::vl::Ptr<::RpcDtorPropCached::IRpcWrapper_IValue> rpcwrapper_RpcDtorPropCached__IValue(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcDtorPropCached::IRpcWrapper_IService> rpcwrapper_RpcDtorPropCached__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		void rpclistener_RpcDtorPropCached__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcDtorPropCached::IService* target);
+		void rpclistener_Attach(::vl::vint typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
+		::vl::Ptr<::RpcDtorPropCached::IRpcWrapper_IValue> rpcwrapper_RpcDtorPropCached__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::RpcDtorPropCached::IRpcWrapper_IService> rpcwrapper_RpcDtorPropCached__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
 
 		static Rpc_DtorPropCached& Instance();
 	};
@@ -126,20 +126,20 @@ Closures
 
 	struct __vwsnf2_Rpc_DtorPropCached_rpclistener_RpcDtorPropCached__IService_
 	{
-		::vl::rpc_controller::IRpcLifeCycle* lc;
+		::vl::rpc_controller::IRpcLifecycle* lc;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf2_Rpc_DtorPropCached_rpclistener_RpcDtorPropCached__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf2_Rpc_DtorPropCached_rpclistener_RpcDtorPropCached__IService_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
 	struct __vwsnf3_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService_
 	{
-		::vl::rpc_controller::IRpcLifeCycle* lc;
+		::vl::rpc_controller::IRpcLifecycle* lc;
 		::vl::rpc_controller::RpcObjectReference proxyRef;
 
-		__vwsnf3_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnf3_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		void operator()() const;
 	};
@@ -168,9 +168,9 @@ Closures
 	class __vwsnc3_Rpc_DtorPropCached_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc3_Rpc_DtorPropCached_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc3_Rpc_DtorPropCached_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold) override;
@@ -180,18 +180,18 @@ Closures
 	class __vwsnc4_Rpc_DtorPropCached_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc4_Rpc_DtorPropCached_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_DtorPropCached_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc5_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IRpcWrapper_IValue
 	{
 	public:
-		__vwsnc5_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc5_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue();
@@ -200,9 +200,9 @@ Closures
 	class __vwsnc6_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtorPropCached::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc6_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc6_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		::vl::Ptr<::RpcDtorPropCached::IValue> __vwsn_Cached_;
 		bool __vwsn_Available_ = false;

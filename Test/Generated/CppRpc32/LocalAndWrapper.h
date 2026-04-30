@@ -111,17 +111,17 @@ namespace vl_workflow_global
 		::vl::vint32_t rpcmethod_RpcWrapperTest__IService_Exchange1 = 0;
 		::vl::vint32_t rpcmethod_RpcWrapperTest__IService_Exchange2 = 0;
 
-		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
+		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint32_t typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj1> rpcwrapper_RpcWrapperTest__IObj1(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj2> rpcwrapper_RpcWrapperTest__IObj2(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IService> rpcwrapper_RpcWrapperTest__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj1> rpcwrapper_RpcWrapperTest__IObj1(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IObj2> rpcwrapper_RpcWrapperTest__IObj2(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::RpcWrapperTest::IRpcWrapper_IService> rpcwrapper_RpcWrapperTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
 
 		static Rpc_LocalAndWrapper& Instance();
 	};
@@ -156,9 +156,9 @@ Closures
 	class __vwsnc4_Rpc_LocalAndWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc4_Rpc_LocalAndWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_LocalAndWrapper_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;
@@ -168,18 +168,18 @@ Closures
 	class __vwsnc5_Rpc_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc5_Rpc_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc5_Rpc_LocalAndWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc6_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj1__RpcWrapperTest_IRpcWrapper_IObj1 : public ::vl::Object, public virtual ::RpcWrapperTest::IRpcWrapper_IObj1
 	{
 	public:
-		__vwsnc6_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj1__RpcWrapperTest_IRpcWrapper_IObj1(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc6_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj1__RpcWrapperTest_IRpcWrapper_IObj1(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc6_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj1__RpcWrapperTest_IRpcWrapper_IObj1();
@@ -188,9 +188,9 @@ Closures
 	class __vwsnc7_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj2__RpcWrapperTest_IRpcWrapper_IObj2 : public ::vl::Object, public virtual ::RpcWrapperTest::IRpcWrapper_IObj2
 	{
 	public:
-		__vwsnc7_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj2__RpcWrapperTest_IRpcWrapper_IObj2(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc7_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj2__RpcWrapperTest_IRpcWrapper_IObj2(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc7_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj2__RpcWrapperTest_IRpcWrapper_IObj2();
@@ -199,9 +199,9 @@ Closures
 	class __vwsnc8_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IService__RpcWrapperTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcWrapperTest::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc8_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IService__RpcWrapperTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc8_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IService__RpcWrapperTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc8_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IService__RpcWrapperTest_IRpcWrapper_IService();

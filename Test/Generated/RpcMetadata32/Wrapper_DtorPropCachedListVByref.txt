@@ -50,11 +50,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
@@ -63,12 +63,12 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcDtorPropCachedListVByref__IService_GetValue:
                 {
                     var target : RpcDtorPropCachedListVByref::IService^ = (cast (RpcDtorPropCachedListVByref::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByref(target.GetValue(), _lc);
+                    return system::IRpcLifecycle::RpcBoxByref(target.GetValue(), _lc);
                 }
                 case rpcmethod_RpcDtorPropCachedListVByref__IService_SetValue:
                 {
                     var target : RpcDtorPropCachedListVByref::IService^ = (cast (RpcDtorPropCachedListVByref::IService^) _lc.RefToPtr(ref));
-                    target.SetValue((cast (::RpcDtorPropCachedListVByref::IValue^[]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)));
+                    target.SetValue((cast (::RpcDtorPropCachedListVByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(arguments[0], _lc)));
                     return null;
                 }
                 case rpcmethod_RpcDtorPropCachedListVByref__IService_Signal:
@@ -91,11 +91,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _lc.Controller.AcquireRemoteObject(ref);
+                _lc.LocalObjectHold(ref, remoteClientId);
             }
             else
             {
-                _lc.Controller.ReleaseRemoteObject(ref);
+                _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
 
@@ -122,11 +122,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
@@ -162,7 +162,7 @@ namespace RpcDtorPropCachedListVByref
     }
 }
 
-func rpclistener_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcDtorPropCachedListVByref::IService*) : (void)
+func rpclistener_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcDtorPropCachedListVByref::IService*) : (void)
 {
     attach(target.ValueChanged, func () : (void)
     {
@@ -174,7 +174,7 @@ func rpclistener_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycl
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 {
     switch (typeId)
     {
@@ -192,11 +192,11 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system:
     }
 }
 
-func rpcwrapper_RpcDtorPropCachedListVByref__IValue(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcDtorPropCachedListVByref::IRpcWrapper_IValue^)
+func rpcwrapper_RpcDtorPropCachedListVByref__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcDtorPropCachedListVByref::IRpcWrapper_IValue^)
 {
     var proxy : RpcDtorPropCachedListVByref::IRpcWrapper_IValue^ = new (RpcDtorPropCachedListVByref::IRpcWrapper_IValue^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -209,18 +209,19 @@ func rpcwrapper_RpcDtorPropCachedListVByref__IValue(lc : system::IRpcLifeCycle*,
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcDtorPropCachedListVByref::IRpcWrapper_IService^)
+func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcDtorPropCachedListVByref::IRpcWrapper_IService^)
 {
     var proxy : RpcDtorPropCachedListVByref::IRpcWrapper_IService^ = new (RpcDtorPropCachedListVByref::IRpcWrapper_IService^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -242,7 +243,7 @@ func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycle
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -256,7 +257,7 @@ func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycle
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            (Value<Cached> = (cast (::RpcDtorPropCachedListVByref::IValue^[]) system::IRpcLifeCycle::RpcUnboxByref(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCachedListVByref__IService_GetValue, arguments), _lc)));
+            (Value<Cached> = (cast (::RpcDtorPropCachedListVByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCachedListVByref__IService_GetValue, arguments), _lc)));
             (Value<Available> = true);
             return Value<Cached>;
         }
@@ -267,7 +268,7 @@ func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycle
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(value, _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(value, _lc));
             _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCachedListVByref__IService_SetValue, arguments);
         }
 
@@ -280,6 +281,7 @@ func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycle
             _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCachedListVByref__IService_Signal, arguments);
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     attach((cast (RpcDtorPropCachedListVByref::IService^) proxy).ValueChanged, func () : (void)
     {
         (cast (RpcDtorPropCachedListVByref::IRpcWrapper_IService^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
@@ -288,7 +290,7 @@ func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifeCycle
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {

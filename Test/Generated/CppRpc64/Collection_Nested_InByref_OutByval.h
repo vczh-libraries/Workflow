@@ -75,16 +75,16 @@ namespace vl_workflow_global
 		::vl::vint64_t rpctype_RpcCollection__Nested__InByref__OutByval__IService = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Nested__InByref__OutByval__IService_DoList = 0;
 
-		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
+		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueList> xs);
-		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint64_t typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::RpcCollection::Nested::InByref::OutByval::IRpcWrapper_IService> rpcwrapper_RpcCollection__Nested__InByref__OutByval__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcCollection::Nested::InByref::OutByval::IRpcWrapper_IService> rpcwrapper_RpcCollection__Nested__InByref__OutByval__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
 
 		static Rpc_Collection_Nested_InByref_OutByval& Instance();
 	};
@@ -104,9 +104,9 @@ Closures
 	class __vwsnc2_Rpc_Collection_Nested_InByref_OutByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc2_Rpc_Collection_Nested_InByref_OutByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc2_Rpc_Collection_Nested_InByref_OutByval_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold) override;
@@ -116,18 +116,18 @@ Closures
 	class __vwsnc3_Rpc_Collection_Nested_InByref_OutByval_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc3_Rpc_Collection_Nested_InByref_OutByval_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc3_Rpc_Collection_Nested_InByref_OutByval_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc4_Rpc_Collection_Nested_InByref_OutByval_rpcwrapper_RpcCollection__Nested__InByref__OutByval__IService__RpcCollection_Nested_InByref_OutByval_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollection::Nested::InByref::OutByval::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc4_Rpc_Collection_Nested_InByref_OutByval_rpcwrapper_RpcCollection__Nested__InByref__OutByval__IService__RpcCollection_Nested_InByref_OutByval_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_Collection_Nested_InByref_OutByval_rpcwrapper_RpcCollection__Nested__InByref__OutByval__IService__RpcCollection_Nested_InByref_OutByval_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc4_Rpc_Collection_Nested_InByref_OutByval_rpcwrapper_RpcCollection__Nested__InByref__OutByval__IService__RpcCollection_Nested_InByref_OutByval_IRpcWrapper_IService();

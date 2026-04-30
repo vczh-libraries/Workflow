@@ -904,11 +904,15 @@ namespace vl
 {
 	namespace rpc_controller
 	{
+		constexpr vint RpcTypeId_NotFound = -100;
+		constexpr vint RpcClientId_Invalid = -1;
+		constexpr vint RpcObjectId_Invalid = -1;
+
 		struct RpcObjectReference
 		{
-			vl::vint						clientId = 0;
-			vl::vint						objectId = 0;
-			vl::vint						typeId = 0;
+			vint							clientId = RpcClientId_Invalid;
+			vint							objectId = RpcObjectId_Invalid;
+			vint							typeId = RpcTypeId_NotFound;
 
 			auto operator<=>(const RpcObjectReference&) const = default;
 		};
@@ -922,235 +926,261 @@ namespace vl
 		inline constexpr vint				RpcTypeId_IValueReadonlyList = -7;
 		
 /***********************************************************************
-* Interfaces
+* Interfaces (Operations)
 ***********************************************************************/
 
 		class IRpcListOps
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcListOps>
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcListOps>
 		{
 		public:
-			virtual RpcObjectReference									EnumCreate(RpcObjectReference ref) = 0;
-			virtual bool												EnumNext(RpcObjectReference enumerator) = 0;
-			virtual vl::reflection::description::Value					EnumGetCurrent(RpcObjectReference enumerator) = 0;
+			virtual RpcObjectReference								EnumCreate(RpcObjectReference ref) = 0;
+			virtual bool											EnumNext(RpcObjectReference enumerator) = 0;
+			virtual reflection::description::Value					EnumGetCurrent(RpcObjectReference enumerator) = 0;
 
-			virtual vl::vint											ListGetCount(RpcObjectReference ref) = 0;
-			virtual vl::reflection::description::Value					ListGet(RpcObjectReference ref, vl::vint index) = 0;
-			virtual void												ListSet(RpcObjectReference ref, vl::vint index, const vl::reflection::description::Value& value) = 0;
-			virtual vl::vint											ListAdd(RpcObjectReference ref, const vl::reflection::description::Value& value) = 0;
-			virtual vl::vint											ListInsert(RpcObjectReference ref, vl::vint index, const vl::reflection::description::Value& value) = 0;
-			virtual bool												ListRemoveAt(RpcObjectReference ref, vl::vint index) = 0;
-			virtual void												ListClear(RpcObjectReference ref) = 0;
-			virtual bool												ListContains(RpcObjectReference ref, const vl::reflection::description::Value& value) = 0;
-			virtual vl::vint											ListIndexOf(RpcObjectReference ref, const vl::reflection::description::Value& value) = 0;
+			virtual vint											ListGetCount(RpcObjectReference ref) = 0;
+			virtual reflection::description::Value					ListGet(RpcObjectReference ref, vint index) = 0;
+			virtual void											ListSet(RpcObjectReference ref, vint index, const reflection::description::Value& value) = 0;
+			virtual vint											ListAdd(RpcObjectReference ref, const reflection::description::Value& value) = 0;
+			virtual vint											ListInsert(RpcObjectReference ref, vint index, const reflection::description::Value& value) = 0;
+			virtual bool											ListRemoveAt(RpcObjectReference ref, vint index) = 0;
+			virtual void											ListClear(RpcObjectReference ref) = 0;
+			virtual bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value) = 0;
+			virtual vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value) = 0;
 
-			virtual vl::vint											DictGetCount(RpcObjectReference ref) = 0;
-			virtual vl::reflection::description::Value					DictGet(RpcObjectReference ref, const vl::reflection::description::Value& key) = 0;
-			virtual void												DictSet(RpcObjectReference ref, const vl::reflection::description::Value& key, const vl::reflection::description::Value& value) = 0;
-			virtual bool												DictRemove(RpcObjectReference ref, const vl::reflection::description::Value& key) = 0;
-			virtual void												DictClear(RpcObjectReference ref) = 0;
-			virtual bool												DictContainsKey(RpcObjectReference ref, const vl::reflection::description::Value& key) = 0;
-			virtual RpcObjectReference									DictGetKeys(RpcObjectReference ref) = 0;
-			virtual RpcObjectReference									DictGetValues(RpcObjectReference ref) = 0;
+			virtual vint											DictGetCount(RpcObjectReference ref) = 0;
+			virtual reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key) = 0;
+			virtual void											DictSet(RpcObjectReference ref, const reflection::description::Value& key, const reflection::description::Value& value) = 0;
+			virtual bool											DictRemove(RpcObjectReference ref, const reflection::description::Value& key) = 0;
+			virtual void											DictClear(RpcObjectReference ref) = 0;
+			virtual bool											DictContainsKey(RpcObjectReference ref, const reflection::description::Value& key) = 0;
+			virtual RpcObjectReference								DictGetKeys(RpcObjectReference ref) = 0;
+			virtual RpcObjectReference								DictGetValues(RpcObjectReference ref) = 0;
 		};
 
 		class IRpcObjectOps
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcObjectOps>
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcObjectOps>
 		{
 		public:
-			virtual vl::reflection::description::Value					InvokeMethod(RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
-			virtual vl::Ptr<vl::reflection::description::IAsync>		InvokeMethodAsync(RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
-			virtual void												ObjectHold(RpcObjectReference ref, vl::vint remoteClientId, bool hold) = 0;
-			virtual void												RegisterService(vl::vint typeId, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
-			virtual RpcObjectReference									RequestService(vl::vint typeId) = 0;
+			virtual reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
+			virtual Ptr<reflection::description::IAsync>			InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
+			virtual void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold) = 0;
+			virtual void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
 		};
 
 		class IRpcListEventOps
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcListEventOps>
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcListEventOps>
 		{
 		public:
-			virtual void												OnItemChanged(RpcObjectReference ref, vl::vint index, vl::vint oldCount, vl::vint newCount) = 0;
+			virtual void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount) = 0;
 		};
 
 		class IRpcObjectEventOps
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcObjectEventOps>
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcObjectEventOps>
 		{
 		public:
-			virtual void												InvokeEvent(RpcObjectReference ref, vl::vint eventId, vl::Ptr<vl::reflection::description::IValueArray> arguments) = 0;
+			virtual void											InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
+		};
+		
+/***********************************************************************
+* Interfaces (Lifecycle)
+***********************************************************************/
+
+		class IRpcOperations
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcOperations>
+		{
+		public:
+			virtual IRpcListOps*					GetListOps() = 0;
+			virtual IRpcObjectOps*					GetObjectOps() = 0;
+			virtual IRpcListEventOps*				GetListEventOps() = 0;
+			virtual IRpcObjectEventOps*				GetObjectEventOps() = 0;
+		};
+
+		class IRpcDispatcher
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcDispatcher>
+		{
+		public:
+			virtual void							Finalize() = 0;
+			virtual bool							IsRegisteredService(RpcObjectReference ref) = 0;
+			virtual void							RegisterService(vint typeId, RpcObjectReference ref) = 0;
+			virtual RpcObjectReference				RequestService(vint typeId) = 0;
+
+			virtual IRpcListEventOps*				BroadcastFromClient_ListEventOps(vint selfClientId) = 0;
+			virtual IRpcObjectEventOps*				BroadcastFromClient_ObjectEventOps(vint selfClientId) = 0;
+			virtual IRpcListOps*					SendToClient_ListOps(vint targetClientId) = 0;
+			virtual IRpcObjectOps*					SendToClient_ObjectOps(vint targetClientId) = 0;
 		};
 
 		class IRpcController
-			: public virtual IRpcListOps
-			, public virtual IRpcObjectOps
-			, public virtual IRpcListEventOps
-			, public virtual IRpcObjectEventOps
-			, public vl::reflection::Description<IRpcController>
+			: public virtual IRpcOperations
+			, public reflection::Description<IRpcController>
 		{
 		public:
-			virtual RpcObjectReference		RegisterLocalObject(vl::vint typeId) = 0;
-			virtual void					UnregisterLocalObject(RpcObjectReference ref) = 0;
-
-			virtual void					AcquireRemoteObject(RpcObjectReference ref) = 0;
-			virtual void					ReleaseRemoteObject(RpcObjectReference ref) = 0;
+			virtual void							Finalize() = 0;
+			virtual void							SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed) = 0;
+			virtual bool							GetEventSuppressedFlag(RpcObjectReference ref, vint eventId) = 0;
+			virtual void							SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed) = 0;
+			virtual bool							GetItemChangedSuppressedFlag(RpcObjectReference ref) = 0;
 		};
 
-		class IRpcLifeCycle
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcLifeCycle>
+		class IRpcLifecycle
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcLifecycle>
 		{
 		public:
-			virtual IRpcController*							GetController() = 0;
-			virtual vl::Ptr<vl::reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
-			virtual RpcObjectReference						PtrToRef(vl::Ptr<vl::reflection::IDescriptable> obj) = 0;
-			virtual void									RegisterService(const vl::WString& fullName, vl::Ptr<vl::reflection::IDescriptable> service) = 0;
-			virtual vl::Ptr<vl::reflection::IDescriptable>	RequestService(const vl::WString& fullName) = 0;
+			virtual void							Finalize() = 0;
+			virtual vint							GetClientId() = 0;
+			virtual IRpcDispatcher*					GetDispatcher() = 0;
+			virtual IRpcController*					GetController() = 0;
+			virtual Ptr<reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
+			virtual RpcObjectReference				PtrToRef(Ptr<reflection::IDescriptable> obj) = 0;
+			virtual void							LocalObjectHold(RpcObjectReference ref, vint remoteClientId) = 0;
+			virtual void							LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId) = 0;
+			virtual void							RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service) = 0;
+			virtual Ptr<reflection::IDescriptable>	RequestService(const WString& fullName) = 0;
 		};
 
 		class IRpcWrapperBase
-			: public virtual vl::reflection::IDescriptable
-			, public vl::reflection::Description<IRpcWrapperBase>
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcWrapperBase>
 		{
 		public:
-			virtual void									DisconnectFromLifecycle() = 0;
+			virtual void							DisconnectFromLifecycle() = 0;
 		};
 		
 /***********************************************************************
 * Collection Caller Wrappers
 **********************************************************************/
 
-		class RpcByrefEnumerator : public Object, public vl::reflection::Description<RpcByrefEnumerator>, public vl::reflection::description::IValueEnumerator, public virtual IRpcWrapperBase
+		class RpcByrefEnumerator : public Object, public reflection::Description<RpcByrefEnumerator>, public reflection::description::IValueEnumerator, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*											lifeCycle = nullptr;
-			IRpcController*											controller = nullptr;
-			RpcObjectReference										ref;
-			vint													index = -1;
+			IRpcLifecycle*									lifecycle = nullptr;
+			RpcObjectReference								ref;
+			vint											index = -1;
 		public:
-			RpcByrefEnumerator(IRpcLifeCycle* lc, RpcObjectReference enumeratorRef);
+			RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef);
 			~RpcByrefEnumerator();
 
-			void													DisconnectFromLifecycle()override;
-			vl::reflection::description::Value						GetCurrent()override;
-			vint													GetIndex()override;
-			bool													Next()override;
+			void											DisconnectFromLifecycle()override;
+			reflection::description::Value					GetCurrent()override;
+			vint											GetIndex()override;
+			bool											Next()override;
 		};
 
-		class RpcByrefEnumerable : public Object, public vl::reflection::Description<RpcByrefEnumerable>, public vl::reflection::description::IValueEnumerable, public virtual IRpcWrapperBase
+		class RpcByrefEnumerable : public Object, public reflection::Description<RpcByrefEnumerable>, public reflection::description::IValueEnumerable, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*											lifeCycle = nullptr;
-			IRpcController*											controller = nullptr;
-			RpcObjectReference										ref;
+			IRpcLifecycle*									lifecycle = nullptr;
+			RpcObjectReference								ref;
 		public:
-			RpcByrefEnumerable(IRpcLifeCycle* lc, RpcObjectReference enumerableRef);
+			RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef);
 			~RpcByrefEnumerable();
 
-			void													DisconnectFromLifecycle()override;
-			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
+			void											DisconnectFromLifecycle()override;
+			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
 		};
 
-		class RpcByrefReadonlyList : public Object, public vl::reflection::Description<RpcByrefReadonlyList>, public virtual vl::reflection::description::IValueReadonlyList, public virtual IRpcWrapperBase
+		class RpcByrefReadonlyList : public Object, public reflection::Description<RpcByrefReadonlyList>, public virtual reflection::description::IValueReadonlyList, public virtual IRpcWrapperBase
 		{
 		protected:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefReadonlyList(IRpcLifeCycle* lc, RpcObjectReference listRef);
+			RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefReadonlyList();
 
-			void													DisconnectFromLifecycle()override;
-			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
-			vint													GetCount()override;
-			vl::reflection::description::Value						Get(vint index)override;
-			bool													Contains(const vl::reflection::description::Value& value)override;
-			vint													IndexOf(const vl::reflection::description::Value& value)override;
+			void											DisconnectFromLifecycle()override;
+			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
+			vint											GetCount()override;
+			reflection::description::Value					Get(vint index)override;
+			bool											Contains(const reflection::description::Value& value)override;
+			vint											IndexOf(const reflection::description::Value& value)override;
 		};
 
-		class RpcByrefList : public RpcByrefReadonlyList, public vl::reflection::Description<RpcByrefList>, public virtual vl::reflection::description::IValueList
+		class RpcByrefList : public RpcByrefReadonlyList, public reflection::Description<RpcByrefList>, public virtual reflection::description::IValueList
 		{
 		public:
-			RpcByrefList(IRpcLifeCycle* lc, RpcObjectReference listRef);
+			RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefList()override;
 
-			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
-			vint													GetCount()override;
-			vl::reflection::description::Value						Get(vint index)override;
-			bool													Contains(const vl::reflection::description::Value& value)override;
-			vint													IndexOf(const vl::reflection::description::Value& value)override;
-			void													Set(vint index, const vl::reflection::description::Value& value)override;
-			vint													Add(const vl::reflection::description::Value& value)override;
-			vint													Insert(vint index, const vl::reflection::description::Value& value)override;
-			bool													Remove(const vl::reflection::description::Value& value)override;
-			bool													RemoveAt(vint index)override;
-			void													Clear()override;
+			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
+			vint											GetCount()override;
+			reflection::description::Value					Get(vint index)override;
+			bool											Contains(const reflection::description::Value& value)override;
+			vint											IndexOf(const reflection::description::Value& value)override;
+			void											Set(vint index, const reflection::description::Value& value)override;
+			vint											Add(const reflection::description::Value& value)override;
+			vint											Insert(vint index, const reflection::description::Value& value)override;
+			bool											Remove(const reflection::description::Value& value)override;
+			bool											RemoveAt(vint index)override;
+			void											Clear()override;
 		};
 
-		class RpcByrefArray : public Object, public vl::reflection::Description<RpcByrefArray>, public vl::reflection::description::IValueArray, public virtual IRpcWrapperBase
+		class RpcByrefArray : public Object, public reflection::Description<RpcByrefArray>, public reflection::description::IValueArray, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefArray(IRpcLifeCycle* lc, RpcObjectReference arrayRef);
+			RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef);
 			~RpcByrefArray();
 
-			void													DisconnectFromLifecycle()override;
-			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
-			vint													GetCount()override;
-			vl::reflection::description::Value						Get(vint index)override;
-			bool													Contains(const vl::reflection::description::Value& value)override;
-			vint													IndexOf(const vl::reflection::description::Value& value)override;
-			void													Set(vint index, const vl::reflection::description::Value& value)override;
-			void													Resize(vint size)override;
+			void											DisconnectFromLifecycle()override;
+			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
+			vint											GetCount()override;
+			reflection::description::Value					Get(vint index)override;
+			bool											Contains(const reflection::description::Value& value)override;
+			vint											IndexOf(const reflection::description::Value& value)override;
+			void											Set(vint index, const reflection::description::Value& value)override;
+			void											Resize(vint size)override;
 		};
 
-		class RpcByrefObservableList : public Object, public vl::reflection::Description<RpcByrefObservableList>, public vl::reflection::description::IValueObservableList, public virtual IRpcWrapperBase
+		class RpcByrefObservableList : public Object, public reflection::Description<RpcByrefObservableList>, public reflection::description::IValueObservableList, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefObservableList(IRpcLifeCycle* lc, RpcObjectReference listRef);
+			RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefObservableList();
 
-			void													DisconnectFromLifecycle()override;
-			vl::Ptr<vl::reflection::description::IValueEnumerator>	CreateEnumerator()override;
-			vint													GetCount()override;
-			vl::reflection::description::Value						Get(vint index)override;
-			bool													Contains(const vl::reflection::description::Value& value)override;
-			vint													IndexOf(const vl::reflection::description::Value& value)override;
-			void													Set(vint index, const vl::reflection::description::Value& value)override;
-			vint													Add(const vl::reflection::description::Value& value)override;
-			vint													Insert(vint index, const vl::reflection::description::Value& value)override;
-			bool													Remove(const vl::reflection::description::Value& value)override;
-			bool													RemoveAt(vint index)override;
-			void													Clear()override;
+			void											DisconnectFromLifecycle()override;
+			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
+			vint											GetCount()override;
+			reflection::description::Value					Get(vint index)override;
+			bool											Contains(const reflection::description::Value& value)override;
+			vint											IndexOf(const reflection::description::Value& value)override;
+			void											Set(vint index, const reflection::description::Value& value)override;
+			vint											Add(const reflection::description::Value& value)override;
+			vint											Insert(vint index, const reflection::description::Value& value)override;
+			bool											Remove(const reflection::description::Value& value)override;
+			bool											RemoveAt(vint index)override;
+			void											Clear()override;
 		};
 
-		class RpcByrefDictionary : public Object, public vl::reflection::Description<RpcByrefDictionary>, public vl::reflection::description::IValueDictionary, public virtual IRpcWrapperBase
+		class RpcByrefDictionary : public Object, public reflection::Description<RpcByrefDictionary>, public reflection::description::IValueDictionary, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
-			IRpcController*					controller = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 			RpcObjectReference				ref;
 		public:
-			RpcByrefDictionary(IRpcLifeCycle* lc, RpcObjectReference dictRef);
+			RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef);
 			~RpcByrefDictionary();
 
-			void														DisconnectFromLifecycle()override;
-			vl::Ptr<vl::reflection::description::IValueReadonlyList>	GetKeys()override;
-			vl::Ptr<vl::reflection::description::IValueReadonlyList>	GetValues()override;
-			vint														GetCount()override;
-			vl::reflection::description::Value							Get(const vl::reflection::description::Value& key)override;
-			void														Set(const vl::reflection::description::Value& key, const vl::reflection::description::Value& value)override;
-			bool														Remove(const vl::reflection::description::Value& key)override;
-			void														Clear()override;
+			void												DisconnectFromLifecycle()override;
+			Ptr<reflection::description::IValueReadonlyList>	GetKeys()override;
+			Ptr<reflection::description::IValueReadonlyList>	GetValues()override;
+			vint												GetCount()override;
+			reflection::description::Value						Get(const reflection::description::Value& key)override;
+			void												Set(const reflection::description::Value& key, const reflection::description::Value& value)override;
+			bool												Remove(const reflection::description::Value& key)override;
+			void												Clear()override;
 		};
 		
 /***********************************************************************
@@ -1160,54 +1190,54 @@ namespace vl
 		class RpcCalleeListOps : public Object, public IRpcListOps
 		{
 		private:
-			IRpcLifeCycle*																					lifeCycle = nullptr;
+			IRpcLifecycle*									lifecycle = nullptr;
 
 		public:
-			RpcCalleeListOps(IRpcLifeCycle* lc);
+			RpcCalleeListOps(IRpcLifecycle* lc);
 
-			RpcObjectReference									EnumCreate(RpcObjectReference ref)override;
-			bool												EnumNext(RpcObjectReference enumerator)override;
-			vl::reflection::description::Value					EnumGetCurrent(RpcObjectReference enumerator)override;
+			RpcObjectReference								EnumCreate(RpcObjectReference ref)override;
+			bool											EnumNext(RpcObjectReference enumerator)override;
+			reflection::description::Value					EnumGetCurrent(RpcObjectReference enumerator)override;
 
-			vint												ListGetCount(RpcObjectReference ref)override;
-			vl::reflection::description::Value					ListGet(RpcObjectReference ref, vint index)override;
-			void												ListSet(RpcObjectReference ref, vint index, const vl::reflection::description::Value& value)override;
-			vint												ListAdd(RpcObjectReference ref, const vl::reflection::description::Value& value)override;
-			vint												ListInsert(RpcObjectReference ref, vint index, const vl::reflection::description::Value& value)override;
-			bool												ListRemoveAt(RpcObjectReference ref, vint index)override;
-			void												ListClear(RpcObjectReference ref)override;
-			bool												ListContains(RpcObjectReference ref, const vl::reflection::description::Value& value)override;
-			vint												ListIndexOf(RpcObjectReference ref, const vl::reflection::description::Value& value)override;
+			vint											ListGetCount(RpcObjectReference ref)override;
+			reflection::description::Value					ListGet(RpcObjectReference ref, vint index)override;
+			void											ListSet(RpcObjectReference ref, vint index, const reflection::description::Value& value)override;
+			vint											ListAdd(RpcObjectReference ref, const reflection::description::Value& value)override;
+			vint											ListInsert(RpcObjectReference ref, vint index, const reflection::description::Value& value)override;
+			bool											ListRemoveAt(RpcObjectReference ref, vint index)override;
+			void											ListClear(RpcObjectReference ref)override;
+			bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value)override;
+			vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value)override;
 
-			vint												DictGetCount(RpcObjectReference ref)override;
-			vl::reflection::description::Value					DictGet(RpcObjectReference ref, const vl::reflection::description::Value& key)override;
-			void												DictSet(RpcObjectReference ref, const vl::reflection::description::Value& key, const vl::reflection::description::Value& value)override;
-			bool												DictRemove(RpcObjectReference ref, const vl::reflection::description::Value& key)override;
-			void												DictClear(RpcObjectReference ref)override;
-			bool												DictContainsKey(RpcObjectReference ref, const vl::reflection::description::Value& key)override;
-			RpcObjectReference									DictGetKeys(RpcObjectReference ref)override;
-			RpcObjectReference									DictGetValues(RpcObjectReference ref)override;
+			vint											DictGetCount(RpcObjectReference ref)override;
+			reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key)override;
+			void											DictSet(RpcObjectReference ref, const reflection::description::Value& key, const reflection::description::Value& value)override;
+			bool											DictRemove(RpcObjectReference ref, const reflection::description::Value& key)override;
+			void											DictClear(RpcObjectReference ref)override;
+			bool											DictContainsKey(RpcObjectReference ref, const reflection::description::Value& key)override;
+			RpcObjectReference								DictGetKeys(RpcObjectReference ref)override;
+			RpcObjectReference								DictGetValues(RpcObjectReference ref)override;
 		};
 
 		class RpcCalleeListEventBridge : public Object, public IRpcListEventOps
 		{
 		private:
-			IRpcLifeCycle*					lifeCycle = nullptr;
+			IRpcLifecycle*					lifecycle = nullptr;
 
 		public:
-			RpcCalleeListEventBridge(IRpcLifeCycle* lc);
+			RpcCalleeListEventBridge(IRpcLifecycle* lc);
 
-			void												OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
+			void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};
 		
 /***********************************************************************
 * Helpers
 ***********************************************************************/
 
-		vl::reflection::description::Value						RpcBoxByref		(const vl::reflection::description::Value& trivial, IRpcLifeCycle* lc);
-		vl::reflection::description::Value						RpcUnboxByref	(const vl::reflection::description::Value& serializable, IRpcLifeCycle* lc);
-		vl::reflection::description::Value						RpcBoxByval		(const vl::reflection::description::Value& trivial, IRpcLifeCycle* lc);
-		vl::reflection::description::Value						RpcUnboxByval	(const vl::reflection::description::Value& serializable, IRpcLifeCycle* lc);
+		reflection::description::Value						RpcBoxByref		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		reflection::description::Value						RpcUnboxByref	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		reflection::description::Value						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
 	}
 }
 
@@ -1279,8 +1309,10 @@ Predefined Types
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
 			F(vl::rpc_controller::IRpcObjectEventOps)\
+			F(vl::rpc_controller::IRpcOperations)\
+			F(vl::rpc_controller::IRpcDispatcher)\
 			F(vl::rpc_controller::IRpcController)\
-			F(vl::rpc_controller::IRpcLifeCycle)\
+			F(vl::rpc_controller::IRpcLifecycle)\
 			F(vl::rpc_controller::IRpcWrapperBase)\
 			F(vl::rpc_controller::RpcByrefEnumerator)\
 			F(vl::rpc_controller::RpcByrefEnumerable)\
@@ -1426,11 +1458,6 @@ Interface Implementation Proxy (Implement)
 				{
 					INVOKE_INTERFACE_PROXY(RegisterService, typeId, service);
 				}
-
-				vl::rpc_controller::RpcObjectReference RequestService(vl::vint typeId)override
-				{
-					INVOKEGET_INTERFACE_PROXY(RequestService, typeId);
-				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListEventOps)
@@ -1499,3 +1526,4 @@ LoadPredefinedTypes
 }
 
 #endif
+

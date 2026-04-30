@@ -56,11 +56,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
@@ -69,32 +69,32 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue:
                 {
                     var target : RpcOverloadingTest::IStringRepresentable^ = (cast (RpcOverloadingTest::IStringRepresentable^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.GetStringValue(), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.GetStringValue(), _lc);
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__1:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ToString((cast (::system::Boolean) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ToString((cast (::system::Boolean) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__2:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ToString((cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ToString((cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__3:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ToString((cast (::RpcOverloadingTest::IStringRepresentable^) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ToString((cast (::RpcOverloadingTest::IStringRepresentable^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ToString((cast (::system::Int32) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc)), (cast (::system::Boolean) system::IRpcLifeCycle::RpcUnboxByval(arguments[1], _lc)), (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(arguments[2], _lc)), (cast (::RpcOverloadingTest::IStringRepresentable^) system::IRpcLifeCycle::RpcUnboxByval(arguments[3], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ToString((cast (::system::Int32) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)), (cast (::system::Boolean) system::IRpcLifecycle::RpcUnboxByval(arguments[1], _lc)), (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[2], _lc)), (cast (::RpcOverloadingTest::IStringRepresentable^) system::IRpcLifecycle::RpcUnboxByval(arguments[3], _lc))), _lc);
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToStringInt:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ToStringInt((cast (::system::Int32) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ToStringInt((cast (::system::Int32) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -110,11 +110,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _lc.Controller.AcquireRemoteObject(ref);
+                _lc.LocalObjectHold(ref, remoteClientId);
             }
             else
             {
-                _lc.Controller.ReleaseRemoteObject(ref);
+                _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
 
@@ -141,11 +141,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
@@ -175,11 +175,11 @@ namespace RpcOverloadingTest
     }
 }
 
-func rpcwrapper_RpcOverloadingTest__IStringRepresentable(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcOverloadingTest::IRpcWrapper_IStringRepresentable^)
+func rpcwrapper_RpcOverloadingTest__IStringRepresentable(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcOverloadingTest::IRpcWrapper_IStringRepresentable^)
 {
     var proxy : RpcOverloadingTest::IRpcWrapper_IStringRepresentable^ = new (RpcOverloadingTest::IRpcWrapper_IStringRepresentable^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -192,7 +192,7 @@ func rpcwrapper_RpcOverloadingTest__IStringRepresentable(lc : system::IRpcLifeCy
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -202,17 +202,18 @@ func rpcwrapper_RpcOverloadingTest__IStringRepresentable(lc : system::IRpcLifeCy
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue, arguments), _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue, arguments), _lc));
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcOverloadingTest::IRpcWrapper_IService^)
+func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcOverloadingTest::IRpcWrapper_IService^)
 {
     var proxy : RpcOverloadingTest::IRpcWrapper_IService^ = new (RpcOverloadingTest::IRpcWrapper_IService^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -225,7 +226,7 @@ func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifeCycle*, proxyR
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -235,8 +236,8 @@ func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifeCycle*, proxyR
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__1, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__1, arguments), _lc));
         }
 
         override func ToString(value : ::system::String) : (::system::String)
@@ -245,8 +246,8 @@ func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifeCycle*, proxyR
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__2, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__2, arguments), _lc));
         }
 
         override func ToString(value : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String)
@@ -255,8 +256,8 @@ func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifeCycle*, proxyR
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__3, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__3, arguments), _lc));
         }
 
         override func ToString(value1 : ::system::Int32, value2 : ::system::Boolean, value3 : ::system::String, value4 : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String)
@@ -265,11 +266,11 @@ func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifeCycle*, proxyR
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(4);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value1, _lc));
-            arguments.Set(1, system::IRpcLifeCycle::RpcBoxByval(value2, _lc));
-            arguments.Set(2, system::IRpcLifeCycle::RpcBoxByval(value3, _lc));
-            arguments.Set(3, system::IRpcLifeCycle::RpcBoxByval(value4, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value1, _lc));
+            arguments.Set(1, system::IRpcLifecycle::RpcBoxByval(value2, _lc));
+            arguments.Set(2, system::IRpcLifecycle::RpcBoxByval(value3, _lc));
+            arguments.Set(3, system::IRpcLifecycle::RpcBoxByval(value4, _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, arguments), _lc));
         }
 
         override func ToStringInt(value : ::system::Int32) : (::system::String)
@@ -278,14 +279,15 @@ func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifeCycle*, proxyR
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToStringInt, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcOverloadingTest__IService_ToStringInt, arguments), _lc));
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {

@@ -242,14 +242,11 @@ interface system::Future : system::Async, system::Promise {
 
 @FullName:vl::rpc_controller::IRpcController
 interface system::IRpcController : system::IRpcOperations {
-    function AcquireRemoteObject(ref : system::RpcObjectReference) : system::Void;
+    function Finalize() : system::Void;
     function GetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int32) : system::Boolean;
     function GetItemChangedSuppressedFlag(ref : system::RpcObjectReference) : system::Boolean;
-    function RegisterLocalObject(typeId : system::Int32) : system::RpcObjectReference;
-    function ReleaseRemoteObject(ref : system::RpcObjectReference) : system::Void;
     function SetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int32, suppressed : system::Boolean) : system::Void;
     function SetItemChangedSuppressedFlag(ref : system::RpcObjectReference, suppressed : system::Boolean) : system::Void;
-    function UnregisterLocalObject(ref : system::RpcObjectReference) : system::Void;
 
 }
 
@@ -257,6 +254,7 @@ interface system::IRpcController : system::IRpcOperations {
 interface system::IRpcDispatcher : system::Interface {
     function BroadcastFromClient_ListEventOps(selfClientId : system::Int32) : system::IRpcListEventOps*;
     function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int32) : system::IRpcObjectEventOps*;
+    function Finalize() : system::Void;
     function IsRegisteredService(ref : system::RpcObjectReference) : system::Boolean;
     function RegisterService(typeId : system::Int32, ref : system::RpcObjectReference) : system::Void;
     function RequestService(typeId : system::Int32) : system::RpcObjectReference;
@@ -265,31 +263,34 @@ interface system::IRpcDispatcher : system::Interface {
 
 }
 
-@FullName:vl::rpc_controller::IRpcLifeCycle
-interface system::IRpcLifeCycle : system::Interface {
+@FullName:vl::rpc_controller::IRpcLifecycle
+interface system::IRpcLifecycle : system::Interface {
     property ClientId : system::Int32 { get:GetClientId }
     property Controller : system::IRpcController* { get:GetController }
     property Dispatcher : system::IRpcDispatcher* { get:GetDispatcher }
 
+    function Finalize() : system::Void;
     function GetClientId() : system::Int32;
     function GetController() : system::IRpcController*;
     function GetDispatcher() : system::IRpcDispatcher*;
+    function LocalObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32) : system::Void;
+    function LocalObjectUnhold(ref : system::RpcObjectReference, remoteClientId : system::Int32) : system::Void;
     function PtrToRef(obj : system::Interface^) : system::RpcObjectReference;
     function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
     function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
     function RequestService(fullName : system::String) : system::Interface^;
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByref)
-    static function RpcBoxByref(trivial : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    static function RpcBoxByref(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByval($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByval)
-    static function RpcBoxByval(trivial : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    static function RpcBoxByval(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
     @InvokeTemplate:::vl::rpc_controller::RpcUnboxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByref)
-    static function RpcUnboxByref(serializable : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    static function RpcUnboxByref(serializable : system::Object, lc : system::IRpcLifecycle*) : system::Object;
     @InvokeTemplate:::vl::rpc_controller::RpcUnboxByval($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByval)
-    static function RpcUnboxByval(serializable : system::Object, lc : system::IRpcLifeCycle*) : system::Object;
+    static function RpcUnboxByval(serializable : system::Object, lc : system::IRpcLifecycle*) : system::Object;
 
 }
 

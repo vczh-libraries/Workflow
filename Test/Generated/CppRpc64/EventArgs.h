@@ -76,17 +76,17 @@ namespace vl_workflow_global
 		void Print(::vl::Ptr<::vl::reflection::description::IValueList> values);
 		void Print(::vl::Ptr<::vl::reflection::description::IValueObservableList> values);
 		void RecordSomethingHappened(::vl::Ptr<::vl::reflection::description::IValueList> _xs, ::vl::Ptr<::vl::reflection::description::IValueObservableList> _ys);
-		void serviceMain(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::WString clientMain(::vl::rpc_controller::IRpcLifeCycle* lc);
+		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint64_t typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* lc);
-		void rpclistener_RpcEventArgs__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcEventArgs::IService* target);
-		void rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
-		::vl::Ptr<::RpcEventArgs::IRpcWrapper_IService> rpcwrapper_RpcEventArgs__IService(::vl::rpc_controller::IRpcLifeCycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifeCycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		void rpclistener_RpcEventArgs__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcEventArgs::IService* target);
+		void rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
+		::vl::Ptr<::RpcEventArgs::IRpcWrapper_IService> rpcwrapper_RpcEventArgs__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
 
 		static Rpc_EventArgs& Instance();
 	};
@@ -97,10 +97,10 @@ Closures
 
 	struct __vwsnf1_Rpc_EventArgs_rpclistener_RpcEventArgs__IService_
 	{
-		::vl::rpc_controller::IRpcLifeCycle* lc;
+		::vl::rpc_controller::IRpcLifecycle* lc;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf1_Rpc_EventArgs_rpclistener_RpcEventArgs__IService_(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf1_Rpc_EventArgs_rpclistener_RpcEventArgs__IService_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()(::vl::Ptr<::vl::reflection::description::IValueList> arg0, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg1) const;
 	};
@@ -119,9 +119,9 @@ Closures
 	class __vwsnc2_Rpc_EventArgs_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc2_Rpc_EventArgs_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc2_Rpc_EventArgs_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		::vl::Ptr<::vl::reflection::description::IAsync> InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold) override;
@@ -131,18 +131,18 @@ Closures
 	class __vwsnc3_Rpc_EventArgs_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc3_Rpc_EventArgs_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc);
+		__vwsnc3_Rpc_EventArgs_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc4_Rpc_EventArgs_rpcwrapper_RpcEventArgs__IService__RpcEventArgs_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcEventArgs::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc4_Rpc_EventArgs_rpcwrapper_RpcEventArgs__IService__RpcEventArgs_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifeCycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_EventArgs_rpcwrapper_RpcEventArgs__IService__RpcEventArgs_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
-		::vl::rpc_controller::IRpcLifeCycle* _lc = nullptr;
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc4_Rpc_EventArgs_rpcwrapper_RpcEventArgs__IService__RpcEventArgs_IRpcWrapper_IService();

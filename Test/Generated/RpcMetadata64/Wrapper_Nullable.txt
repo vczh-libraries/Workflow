@@ -44,11 +44,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
@@ -57,12 +57,12 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcNullable__IValue_GetValue:
                 {
                     var target : RpcNullable::IValue^ = (cast (RpcNullable::IValue^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.GetValue(), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
                 }
                 case rpcmethod_RpcNullable__IService_Print:
                 {
                     var target : RpcNullable::IService^ = (cast (RpcNullable::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.Print((cast (::system::String?) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc)), (cast (::RpcNullable::IValue^) system::IRpcLifeCycle::RpcUnboxByval(arguments[1], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.Print((cast (::system::String?) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)), (cast (::RpcNullable::IValue^) system::IRpcLifecycle::RpcUnboxByval(arguments[1], _lc))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -78,11 +78,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _lc.Controller.AcquireRemoteObject(ref);
+                _lc.LocalObjectHold(ref, remoteClientId);
             }
             else
             {
-                _lc.Controller.ReleaseRemoteObject(ref);
+                _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
 
@@ -109,11 +109,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
@@ -143,11 +143,11 @@ namespace RpcNullable
     }
 }
 
-func rpcwrapper_RpcNullable__IValue(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcNullable::IRpcWrapper_IValue^)
+func rpcwrapper_RpcNullable__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcNullable::IRpcWrapper_IValue^)
 {
     var proxy : RpcNullable::IRpcWrapper_IValue^ = new (RpcNullable::IRpcWrapper_IValue^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -164,7 +164,7 @@ func rpcwrapper_RpcNullable__IValue(lc : system::IRpcLifeCycle*, proxyRef : syst
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -178,19 +178,20 @@ func rpcwrapper_RpcNullable__IValue(lc : system::IRpcLifeCycle*, proxyRef : syst
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            (Value<Cached> = (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IValue_GetValue, arguments), _lc)));
+            (Value<Cached> = (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IValue_GetValue, arguments), _lc)));
             (Value<Available> = true);
             return Value<Cached>;
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_RpcNullable__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcNullable::IRpcWrapper_IService^)
+func rpcwrapper_RpcNullable__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcNullable::IRpcWrapper_IService^)
 {
     var proxy : RpcNullable::IRpcWrapper_IService^ = new (RpcNullable::IRpcWrapper_IService^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -203,7 +204,7 @@ func rpcwrapper_RpcNullable__IService(lc : system::IRpcLifeCycle*, proxyRef : sy
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -213,15 +214,16 @@ func rpcwrapper_RpcNullable__IService(lc : system::IRpcLifeCycle*, proxyRef : sy
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(2);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            arguments.Set(1, system::IRpcLifeCycle::RpcBoxByval(v, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IService_Print, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            arguments.Set(1, system::IRpcLifecycle::RpcBoxByval(v, _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IService_Print, arguments), _lc));
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {

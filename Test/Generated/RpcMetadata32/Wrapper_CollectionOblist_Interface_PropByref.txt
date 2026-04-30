@@ -47,11 +47,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
@@ -60,17 +60,17 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IValue_GetValue:
                 {
                     var target : RpcCollectionOblist::Interface::InByref::PropByref::IValue^ = (cast (RpcCollectionOblist::Interface::InByref::PropByref::IValue^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.GetValue(), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
                 }
                 case rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IService_GetList:
                 {
                     var target : RpcCollectionOblist::Interface::InByref::PropByref::IService^ = (cast (RpcCollectionOblist::Interface::InByref::PropByref::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByref(target.GetList(), _lc);
+                    return system::IRpcLifecycle::RpcBoxByref(target.GetList(), _lc);
                 }
                 case rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IService_SetList:
                 {
                     var target : RpcCollectionOblist::Interface::InByref::PropByref::IService^ = (cast (RpcCollectionOblist::Interface::InByref::PropByref::IService^) _lc.RefToPtr(ref));
-                    target.SetList((cast (observe ::RpcCollectionOblist::Interface::InByref::PropByref::IValue^[]) system::IRpcLifeCycle::RpcUnboxByref(arguments[0], _lc)));
+                    target.SetList((cast (observe ::RpcCollectionOblist::Interface::InByref::PropByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(arguments[0], _lc)));
                     return null;
                 }
                 default:
@@ -87,11 +87,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _lc.Controller.AcquireRemoteObject(ref);
+                _lc.LocalObjectHold(ref, remoteClientId);
             }
             else
             {
-                _lc.Controller.ReleaseRemoteObject(ref);
+                _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
 
@@ -118,11 +118,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
@@ -161,11 +161,11 @@ namespace RpcCollectionOblist
     }
 }
 
-func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IValue(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IValue^)
+func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IValue^)
 {
     var proxy : RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IValue^ = new (RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IValue^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -178,7 +178,7 @@ func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IValue(lc : 
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -188,17 +188,18 @@ func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IValue(lc : 
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IValue_GetValue, arguments), _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IValue_GetValue, arguments), _lc));
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IService^)
+func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IService^)
 {
     var proxy : RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IService^ = new (RpcCollectionOblist::Interface::InByref::PropByref::IRpcWrapper_IService^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -211,7 +212,7 @@ func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IService(lc 
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -221,7 +222,7 @@ func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IService(lc 
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (observe ::RpcCollectionOblist::Interface::InByref::PropByref::IValue^[]) system::IRpcLifeCycle::RpcUnboxByref(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IService_GetList, arguments), _lc));
+            return (cast (observe ::RpcCollectionOblist::Interface::InByref::PropByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IService_GetList, arguments), _lc));
         }
 
         override func SetList(<value> : observe ::RpcCollectionOblist::Interface::InByref::PropByref::IValue^[]) : (::system::Void)
@@ -230,14 +231,15 @@ func rpcwrapper_RpcCollectionOblist__Interface__InByref__PropByref__IService(lc 
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByref(<value>, _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(<value>, _lc));
             _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__InByref__PropByref__IService_SetList, arguments);
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {

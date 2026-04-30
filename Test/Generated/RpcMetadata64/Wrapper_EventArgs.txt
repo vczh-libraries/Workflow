@@ -42,11 +42,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
@@ -78,11 +78,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _lc.Controller.AcquireRemoteObject(ref);
+                _lc.LocalObjectHold(ref, remoteClientId);
             }
             else
             {
-                _lc.Controller.ReleaseRemoteObject(ref);
+                _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
 
@@ -109,11 +109,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
@@ -124,8 +124,8 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEv
                 case rpcevent_RpcEventArgs__IService_SomethingHappened:
                 {
                     var target : RpcEventArgs::IService^ = (cast (RpcEventArgs::IService^) _lc.RefToPtr(ref));
-                    var arg0 : ::system::Int64[] = (cast (::system::Int64[]) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc));
-                    var arg1 : observe ::system::Int64[] = (cast (observe ::system::Int64[]) system::IRpcLifeCycle::RpcUnboxByref(arguments[1], _lc));
+                    var arg0 : ::system::Int64[] = (cast (::system::Int64[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc));
+                    var arg1 : observe ::system::Int64[] = (cast (observe ::system::Int64[]) system::IRpcLifecycle::RpcUnboxByref(arguments[1], _lc));
                     target.SomethingHappened(arg0, arg1);
                 }
                 default:
@@ -146,7 +146,7 @@ namespace RpcEventArgs
     }
 }
 
-func rpclistener_RpcEventArgs__IService(lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, target : RpcEventArgs::IService*) : (void)
+func rpclistener_RpcEventArgs__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcEventArgs::IService*) : (void)
 {
     attach(target.SomethingHappened, func (arg0 : ::system::Int64[], arg1 : observe ::system::Int64[]) : (void)
     {
@@ -154,13 +154,13 @@ func rpclistener_RpcEventArgs__IService(lc : system::IRpcLifeCycle*, ref : syste
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(2);
-        arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(arg0, lc));
-        arguments.Set(1, system::IRpcLifeCycle::RpcBoxByref(arg1, lc));
+        arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg0, lc));
+        arguments.Set(1, system::IRpcLifecycle::RpcBoxByref(arg1, lc));
         lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEventArgs__IService_SomethingHappened, arguments);
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
 {
     switch (typeId)
     {
@@ -174,11 +174,11 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifeCycle*, ref : system:
     }
 }
 
-func rpcwrapper_RpcEventArgs__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcEventArgs::IRpcWrapper_IService^)
+func rpcwrapper_RpcEventArgs__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcEventArgs::IRpcWrapper_IService^)
 {
     var proxy : RpcEventArgs::IRpcWrapper_IService^ = new (RpcEventArgs::IRpcWrapper_IService^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -191,7 +191,7 @@ func rpcwrapper_RpcEventArgs__IService(lc : system::IRpcLifeCycle*, proxyRef : s
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -213,11 +213,12 @@ func rpcwrapper_RpcEventArgs__IService(lc : system::IRpcLifeCycle*, proxyRef : s
             _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEventArgs__IService_MakeItHappen, arguments);
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     rpclistener_RpcEventArgs__IService(lc, proxyRef, (cast (RpcEventArgs::IService*) proxy));
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {

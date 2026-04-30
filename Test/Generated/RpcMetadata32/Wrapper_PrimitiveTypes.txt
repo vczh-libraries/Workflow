@@ -57,11 +57,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
+func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
@@ -70,42 +70,42 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessBool:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessBool((cast (::system::Boolean) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessBool((cast (::system::Boolean) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessDouble:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessDouble((cast (::system::Double) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessDouble((cast (::system::Double) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessEnum:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessEnum((cast (::RpcPrimitiveTest::Season) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessEnum((cast (::RpcPrimitiveTest::Season) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessFloat:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessFloat((cast (::system::Single) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessFloat((cast (::system::Single) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessInt:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessInt((cast (::system::Int32) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessInt((cast (::system::Int32) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessString:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessString((cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessString((cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessStruct:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessStruct((cast (::RpcPrimitiveTest::Point) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessStruct((cast (::RpcPrimitiveTest::Point) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessUInt:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifeCycle::RpcBoxByval(target.ProcessUInt((cast (::system::UInt32) system::IRpcLifeCycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ProcessUInt((cast (::system::UInt32) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -121,11 +121,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
         {
             if (hold)
             {
-                _lc.Controller.AcquireRemoteObject(ref);
+                _lc.LocalObjectHold(ref, remoteClientId);
             }
             else
             {
-                _lc.Controller.ReleaseRemoteObject(ref);
+                _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
 
@@ -152,11 +152,11 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifeCycle*) : (system::IRpcObjectEventOps^)
+func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
         {
@@ -182,11 +182,11 @@ namespace RpcPrimitiveTest
     }
 }
 
-func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef : system::RpcObjectReference) : (RpcPrimitiveTest::IRpcWrapper_IService^)
+func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcPrimitiveTest::IRpcWrapper_IService^)
 {
     var proxy : RpcPrimitiveTest::IRpcWrapper_IService^ = new (RpcPrimitiveTest::IRpcWrapper_IService^)
     {
-        var _lc : system::IRpcLifeCycle* = lc;
+        var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
 
@@ -199,7 +199,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
         {
             if (_lc is not null)
             {
-                _lc.Controller.ReleaseRemoteObject(_ref);
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
         }
 
@@ -209,8 +209,8 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Boolean) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::Boolean) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments), _lc));
         }
 
         override func ProcessDouble(value : ::system::Double) : (::system::Double)
@@ -219,8 +219,8 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Double) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::Double) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments), _lc));
         }
 
         override func ProcessEnum(value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season)
@@ -229,8 +229,8 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::RpcPrimitiveTest::Season) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::RpcPrimitiveTest::Season) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments), _lc));
         }
 
         override func ProcessFloat(value : ::system::Single) : (::system::Single)
@@ -239,8 +239,8 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Single) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::Single) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments), _lc));
         }
 
         override func ProcessInt(value : ::system::Int32) : (::system::Int32)
@@ -249,8 +249,8 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::Int32) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::Int32) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments), _lc));
         }
 
         override func ProcessString(value : ::system::String) : (::system::String)
@@ -259,8 +259,8 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::String) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments), _lc));
         }
 
         override func ProcessStruct(value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point)
@@ -269,8 +269,8 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::RpcPrimitiveTest::Point) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::RpcPrimitiveTest::Point) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments), _lc));
         }
 
         override func ProcessUInt(value : ::system::UInt32) : (::system::UInt32)
@@ -279,14 +279,15 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifeCycle*, proxyRef
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifeCycle::RpcBoxByval(value, _lc));
-            return (cast (::system::UInt32) system::IRpcLifeCycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments), _lc));
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            return (cast (::system::UInt32) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments), _lc));
         }
     };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifeCycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {
