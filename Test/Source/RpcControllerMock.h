@@ -18,36 +18,27 @@ namespace vl
 		class RpcControllerMock : public Object, public rpc_controller::IRpcController
 		{
 		protected:
-			Ptr<rpc_controller::IRpcObjectOps>					objectCallback;
-			Ptr<rpc_controller::IRpcObjectEventOps>				eventCallback;
-			Ptr<rpc_controller::IRpcListOps>						listCallback;
-			Ptr<rpc_controller::IRpcListEventOps>				listEventCallback;
-			collections::Dictionary<RpcEventSuppressionKey, vint>	eventSuppressedFlags;
+			Ptr<rpc_controller::IRpcObjectOps>									objectCallback;
+			Ptr<rpc_controller::IRpcObjectEventOps>								eventCallback;
+			Ptr<rpc_controller::IRpcListOps>									listCallback;
+			Ptr<rpc_controller::IRpcListEventOps>								listEventCallback;
+			collections::Dictionary<RpcEventSuppressionKey, vint>				eventSuppressedFlags;
 			collections::Dictionary<rpc_controller::RpcObjectReference, vint>	itemChangedSuppressedFlags;
 
-			rpc_controller::IRpcObjectOps*						RequireObjectCallback()const;
-			rpc_controller::IRpcObjectEventOps*					RequireEventCallback()const;
-			rpc_controller::IRpcListOps*							RequireListCallback()const;
-			rpc_controller::IRpcListEventOps*					RequireListEventCallback()const;
 		public:
 
 			RpcControllerMock();
 			~RpcControllerMock();
 
-			// RpcControllerMock
-
-			virtual void										Register(Ptr<rpc_controller::IRpcObjectOps> objectCallback, Ptr<rpc_controller::IRpcObjectEventOps> eventCallback, Ptr<rpc_controller::IRpcListOps> listCallback, Ptr<rpc_controller::IRpcListEventOps> listEventCallback);
+			void												Register(Ptr<rpc_controller::IRpcObjectOps> objectCallback, Ptr<rpc_controller::IRpcObjectEventOps> eventCallback, Ptr<rpc_controller::IRpcListOps> listCallback, Ptr<rpc_controller::IRpcListEventOps> listEventCallback);
 
 			// IRpcController
 
-			rpc_controller::IRpcListOps*							GetListOps()override;
+			rpc_controller::IRpcListOps*						GetListOps()override;
 			rpc_controller::IRpcObjectOps*						GetObjectOps()override;
 			rpc_controller::IRpcListEventOps*					GetListEventOps()override;
 			rpc_controller::IRpcObjectEventOps*					GetObjectEventOps()override;
-			rpc_controller::RpcObjectReference					RegisterLocalObject(vint typeId)override = 0;
-			void												UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override = 0;
-			void												AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override = 0;
-			void												ReleaseRemoteObject(rpc_controller::RpcObjectReference ref)override = 0;
+
 			void												SetEventSuppressedFlag(rpc_controller::RpcObjectReference ref, vint eventId, bool suppressed)override;
 			bool												GetEventSuppressedFlag(rpc_controller::RpcObjectReference ref, vint eventId)override;
 			void												SetItemChangedSuppressedFlag(rpc_controller::RpcObjectReference ref, bool suppressed)override;

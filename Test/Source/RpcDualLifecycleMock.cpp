@@ -101,18 +101,6 @@ namespace vl
 * RpcDualControllerMock (IRpcController)
 ***********************************************************************/
 
-		void RpcDualControllerMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
-		{
-			objectCallback = _objectCallback;
-			eventCallback = _eventCallback;
-			listCallback = _listCallback;
-			listEventCallback = _listEventCallback;
-
-			// Do not call SyncIds on Workflow proxy objects.
-			// The Workflow proxy's SyncIds cannot convert Dictionary<WString,vint> through reflection.
-			// IDs are already synced via global variables set during <initialize>.
-		}
-
 		RpcObjectReference RpcDualControllerMock::RegisterLocalObject(vint typeId)
 		{
 			auto ref = RpcObjectReference{ clientId, ++nextObjectId, typeId };

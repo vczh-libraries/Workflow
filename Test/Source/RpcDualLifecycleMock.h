@@ -75,7 +75,6 @@ namespace vl
 
 			// IRpcController
 
-			void																	Register(Ptr<rpc_controller::IRpcObjectOps> objectCallback, Ptr<rpc_controller::IRpcObjectEventOps> eventCallback, Ptr<rpc_controller::IRpcListOps> listCallback, Ptr<rpc_controller::IRpcListEventOps> listEventCallback)override;
 			rpc_controller::RpcObjectReference										RegisterLocalObject(vint typeId)override;
 			void																	UnregisterLocalObject(rpc_controller::RpcObjectReference ref)override;
 			void																	AcquireRemoteObject(rpc_controller::RpcObjectReference ref)override;

@@ -13,30 +13,6 @@ namespace vl
 * RpcControllerMock
 ***********************************************************************/
 
-		IRpcObjectOps* RpcControllerMock::RequireObjectCallback()const
-		{
-			CHECK_ERROR(objectCallback, L"RpcControllerMock requires an object callback.");
-			return objectCallback.Obj();
-		}
-
-		IRpcObjectEventOps* RpcControllerMock::RequireEventCallback()const
-		{
-			CHECK_ERROR(eventCallback, L"RpcControllerMock requires an event callback.");
-			return eventCallback.Obj();
-		}
-
-		IRpcListOps* RpcControllerMock::RequireListCallback()const
-		{
-			CHECK_ERROR(listCallback, L"RpcControllerMock requires a list callback.");
-			return listCallback.Obj();
-		}
-
-		IRpcListEventOps* RpcControllerMock::RequireListEventCallback()const
-		{
-			CHECK_ERROR(listEventCallback, L"RpcControllerMock requires a list event callback.");
-			return listEventCallback.Obj();
-		}
-
 		RpcControllerMock::RpcControllerMock()
 		{
 		}
@@ -44,10 +20,6 @@ namespace vl
 		RpcControllerMock::~RpcControllerMock()
 		{
 		}
-
-/***********************************************************************
-* RpcControllerMock (IRpcController)
-***********************************************************************/
 
 		void RpcControllerMock::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
 		{
@@ -59,22 +31,22 @@ namespace vl
 
 		IRpcListOps* RpcControllerMock::GetListOps()
 		{
-			return RequireListCallback();
+			return listCallback.Obj();
 		}
 
 		IRpcObjectOps* RpcControllerMock::GetObjectOps()
 		{
-			return RequireObjectCallback();
+			return objectCallback.Obj();
 		}
 
 		IRpcListEventOps* RpcControllerMock::GetListEventOps()
 		{
-			return RequireListEventCallback();
+			return listEventCallback.Obj();
 		}
 
 		IRpcObjectEventOps* RpcControllerMock::GetObjectEventOps()
 		{
-			return RequireEventCallback();
+			return eventCallback.Obj();
 		}
 
 		template<typename TKey>
