@@ -34,15 +34,27 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcDtorTest::IRpcWrapper_IService)
+			DECL_TYPE_INFO(::RpcDtorTest::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcDtorTest::IService)
+			DECL_TYPE_INFO(::RpcDtorTest::IValue)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtorTest::IService)
+				::vl::Ptr<::RpcDtorTest::IValue> MakeValue() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(MakeValue);
+				}
 			END_INTERFACE_PROXY(::RpcDtorTest::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtorTest::IValue)
+			END_INTERFACE_PROXY(::RpcDtorTest::IValue)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcDtorTest::IRpcWrapper_IService, ::RpcDtorTest::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcDtorTest::IRpcWrapper_IService)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcDtorTest::IRpcWrapper_IValue, ::RpcDtorTest::IValue, ::vl::rpc_controller::IRpcWrapperBase)
+			END_INTERFACE_PROXY(::RpcDtorTest::IRpcWrapper_IValue)
 #endif
 #endif
 

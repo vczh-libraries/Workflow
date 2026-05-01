@@ -1458,10 +1458,11 @@ TEST_CASE(L"Rpc:CollectionOblist_PropDefault")
 
 TEST_CASE(L"Rpc:Dtor")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor>(L"[Not Deleted][Not Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor>(L"[Not Deleted][Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Dtor::Instance();
+			if (dynamic_cast<::RpcDtorTest::IValue*>(obj)) return instance.rpctype_RpcDtorTest__IValue;
 			if (dynamic_cast<::RpcDtorTest::IService*>(obj)) return instance.rpctype_RpcDtorTest__IService;
 			return RpcTypeId_NotFound;
 		},
@@ -1470,10 +1471,11 @@ TEST_CASE(L"Rpc:Dtor")
 
 TEST_CASE(L"Rpc:Dtor2")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor2>(L"[Not Deleted][Not Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor2>(L"[Not Deleted][Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Dtor2::Instance();
+			if (dynamic_cast<::RpcDtor2Test::IValue*>(obj)) return instance.rpctype_RpcDtor2Test__IValue;
 			if (dynamic_cast<::RpcDtor2Test::IService*>(obj)) return instance.rpctype_RpcDtor2Test__IService;
 			return RpcTypeId_NotFound;
 		},

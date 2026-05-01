@@ -5,9 +5,15 @@ using RpcDtorTest::*;
 namespace RpcDtorTest
 {
   @rpc:Interface
+  interface IValue
+  {
+  }
+
+  @rpc:Interface
   @rpc:Ctor
   interface IService
   {
+    func MakeValue() : IValue^;
   }
 }
 
@@ -17,9 +23,15 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtorTest::IService^)
   {
-    delete
+    override func MakeValue() : IValue^
     {
-      s = "Deleted";
+      return new (RpcDtorTest::IValue^)
+      {
+        delete
+        {
+          s = "Deleted";
+        }
+      };
     }
   };
   lc.RegisterService("RpcDtorTest::IService", serviceObj);
@@ -33,11 +45,19 @@ func clientMain(lc : IRpcLifecycle*) : string
     raise "IService(obj) should be a wrapper object in clientMain";
   }
   var clientObj = cast (RpcDtorTest::IService^) obj;
-  var wrapperObj = cast (system::IRpcWrapperBase^) obj;
+  var valueObj : object = clientObj.MakeValue();
+  if ((valueObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IValue(valueObj) should be a wrapper object in clientMain";
+  }
+  var value = cast (RpcDtorTest::IValue^) valueObj;
+  var wrapperObj = cast (system::IRpcWrapperBase^) valueObj;
   wrapperObj = null;
   var m = $"[$(s)]"; /* s should be "Not Deleted" */
-  clientObj = null;
-  obj = null; /* obj also owns the same wrapper, so drop it before checking the final state */
+  value = null;
+  valueObj = null; /* valueObj also owns the same wrapper, so drop it before checking the final state */
   m = $"$(m)[$(s)]"; /* s should be "Deleted" */
+  clientObj = null;
+  obj = null;
   return m;
 }

@@ -25,15 +25,19 @@ https://github.com/vczh-libraries
 namespace vl_workflow_global
 {
 	class __vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService;
-	class __vwsnc2_Rpc_Dtor2_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
-	class __vwsnc3_Rpc_Dtor2_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService;
+	class __vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue;
+	class __vwsnc3_Rpc_Dtor2_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc4_Rpc_Dtor2_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc5_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IValue__RpcDtor2Test_IRpcWrapper_IValue;
+	class __vwsnc6_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService;
 }
 
 namespace RpcDtor2Test
 {
 	class IService;
 	class IRpcWrapper_IService;
+	class IValue;
+	class IRpcWrapper_IValue;
 
 	class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 	{
@@ -41,13 +45,28 @@ namespace RpcDtor2Test
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 	public:
-		virtual ::vl::Ptr<::RpcDtor2Test::IService> GetServiceAgain() = 0;
+		virtual ::vl::Ptr<::RpcDtor2Test::IValue> MakeValue() = 0;
+		virtual ::vl::Ptr<::RpcDtor2Test::IValue> ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value) = 0;
 	};
 
 	class IRpcWrapper_IService : public virtual ::RpcDtor2Test::IService, public virtual ::vl::rpc_controller::IRpcWrapperBase, public ::vl::reflection::Description<IRpcWrapper_IService>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IRpcWrapper_IService>;
+#endif
+	};
+
+	class IValue : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IValue>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IValue>;
+#endif
+	};
+
+	class IRpcWrapper_IValue : public virtual ::RpcDtor2Test::IValue, public virtual ::vl::rpc_controller::IRpcWrapperBase, public ::vl::reflection::Description<IRpcWrapper_IValue>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IRpcWrapper_IValue>;
 #endif
 	};
 
@@ -63,8 +82,10 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
+		::vl::vint64_t rpctype_RpcDtor2Test__IValue = 0;
 		::vl::vint64_t rpctype_RpcDtor2Test__IService = 0;
-		::vl::vint64_t rpcmethod_RpcDtor2Test__IService_GetServiceAgain = 0;
+		::vl::vint64_t rpcmethod_RpcDtor2Test__IService_MakeValue = 0;
+		::vl::vint64_t rpcmethod_RpcDtor2Test__IService_ReviewValue = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
@@ -73,6 +94,7 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcDtor2Test::IRpcWrapper_IValue> rpcwrapper_RpcDtor2Test__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
 		::vl::Ptr<::RpcDtor2Test::IRpcWrapper_IService> rpcwrapper_RpcDtor2Test__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
 
@@ -86,18 +108,26 @@ Closures
 	class __vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService : public ::vl::Object, public virtual ::RpcDtor2Test::IService
 	{
 	public:
-		::vl::rpc_controller::IRpcLifecycle* lc;
+		__vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService();
 
-		__vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
-
-		~__vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService();
-		::vl::Ptr<::RpcDtor2Test::IService> GetServiceAgain() override;
+		::vl::Ptr<::RpcDtor2Test::IValue> MakeValue() override;
+		::vl::Ptr<::RpcDtor2Test::IValue> ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value) override;
 	};
 
-	class __vwsnc2_Rpc_Dtor2_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	class __vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue : public ::vl::Object, public virtual ::RpcDtor2Test::IValue
 	{
 	public:
-		__vwsnc2_Rpc_Dtor2_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		::RpcDtor2Test::IService* __vwsnthis_0;
+
+		__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue(::RpcDtor2Test::IService* __vwsnctorthis_0);
+
+		~__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue();
+	};
+
+	class __vwsnc3_Rpc_Dtor2_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	{
+	public:
+		__vwsnc3_Rpc_Dtor2_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
@@ -106,25 +136,37 @@ Closures
 		void RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
 
-	class __vwsnc3_Rpc_Dtor2_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	class __vwsnc4_Rpc_Dtor2_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc3_Rpc_Dtor2_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_Dtor2_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtor2Test::IRpcWrapper_IService
+	class __vwsnc5_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IValue__RpcDtor2Test_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtor2Test::IRpcWrapper_IValue
 	{
 	public:
-		__vwsnc4_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IValue__RpcDtor2Test_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc4_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService();
-		::vl::Ptr<::RpcDtor2Test::IService> GetServiceAgain() override;
+		~__vwsnc5_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IValue__RpcDtor2Test_IRpcWrapper_IValue();
+	};
+
+	class __vwsnc6_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtor2Test::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc6_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::rpc_controller::RpcObjectReference _ref;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc6_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService();
+		::vl::Ptr<::RpcDtor2Test::IValue> MakeValue() override;
+		::vl::Ptr<::RpcDtor2Test::IValue> ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value) override;
 	};
 }
 

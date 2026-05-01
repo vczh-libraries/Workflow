@@ -38,7 +38,9 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"Not Deleted");
-		instance.rpctype_RpcDtorTest__IService = static_cast<::vl::vint>(0);
+		instance.rpctype_RpcDtorTest__IValue = static_cast<::vl::vint>(0);
+		instance.rpctype_RpcDtorTest__IService = static_cast<::vl::vint>(1);
+		instance.rpcmethod_RpcDtorTest__IService_MakeValue = static_cast<::vl::vint>(2);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -64,19 +66,29 @@ Global Functions
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"IService(obj) should be a wrapper object in clientMain"));
 		}
 		auto clientObj = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(obj.Obj()));
-		auto wrapperObj = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::rpc_controller::IRpcWrapperBase>(obj.Obj()));
+		auto valueObj = ::vl::__vwsn::Box(::vl::__vwsn::This(clientObj.Obj())->MakeValue());
+		if ((! static_cast<bool>(::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(valueObj))))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"IValue(valueObj) should be a wrapper object in clientMain"));
+		}
+		auto value = ::vl::__vwsn::Unbox<::vl::Ptr<::RpcDtorTest::IValue>>(valueObj);
+		auto wrapperObj = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(valueObj);
 		(wrapperObj = ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>());
 		auto m = ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]"));
+		(value = ::vl::Ptr<::RpcDtorTest::IValue>());
+		(valueObj = ::vl::reflection::description::Value());
+		(m = ((((::vl::WString::Unmanaged(L"") + m) + ::vl::WString::Unmanaged(L"[")) + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]")));
 		(clientObj = ::vl::Ptr<::RpcDtorTest::IService>());
 		(obj = ::vl::Ptr<::vl::reflection::IDescriptable>());
-		(m = ((((::vl::WString::Unmanaged(L"") + m) + ::vl::WString::Unmanaged(L"[")) + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]")));
 		return m;
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_Dtor::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService.MakeValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
 		return result;
 	}
 
@@ -86,7 +98,9 @@ Global Functions
 			return true;
 		{
 			auto __vwsn_switch_0 = typeId;
-			if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcDtorTest__IService))
+			if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcDtorTest__IValue))
+				return true;
+			else if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_RpcDtorTest__IService))
 				return true;
 			else
 				return false;
@@ -106,17 +120,24 @@ Global Functions
 
 	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> Rpc_Dtor::rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc2_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(lc));
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc3_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(lc));
 	}
 
 	::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> Rpc_Dtor::rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc4_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
+	}
+
+	::vl::Ptr<::RpcDtorTest::IRpcWrapper_IValue> Rpc_Dtor::rpcwrapper_RpcDtorTest__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	{
+		auto proxy = ::vl::Ptr<::RpcDtorTest::IRpcWrapper_IValue>(new ::vl_workflow_global::__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue(lc, proxyRef));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
+		return proxy;
 	}
 
 	::vl::Ptr<::RpcDtorTest::IRpcWrapper_IService> Rpc_Dtor::rpcwrapper_RpcDtorTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
 	{
-		auto proxy = ::vl::Ptr<::RpcDtorTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(lc, proxyRef));
+		auto proxy = ::vl::Ptr<::RpcDtorTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(lc, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
@@ -125,7 +146,11 @@ Global Functions
 	{
 		{
 			auto __vwsn_switch_4 = ref.typeId;
-			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcDtorTest__IService))
+			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcDtorTest__IValue))
+			{
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcDtorTest__IValue(lc, ref));
+			}
+			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcDtorTest__IService))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcDtorTest__IService(lc, ref));
 			}
@@ -149,32 +174,50 @@ Closures
 	{
 	}
 
-	__vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService::~__vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService()
+	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService::MakeValue()
+	{
+		return ::vl::Ptr<::RpcDtorTest::IValue>(new ::vl_workflow_global::__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue(this));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue::__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue(::RpcDtorTest::IService* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue::~__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue()
 	{
 		(GLOBAL_NAME s = ::vl::WString::Unmanaged(L"Deleted"));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc2_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	__vwsnc3_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc3_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
 	}
 
-	::vl::reflection::description::Value __vwsnc2_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::reflection::description::Value __vwsnc3_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
 			auto __vwsn_switch_2 = methodId;
-			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
+			if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue))
+			{
+				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+				return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->MakeValue()), _lc);
+			}
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 		}
 	}
 
-	::vl::Ptr<::vl::reflection::description::IAsync> __vwsnc2_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::Ptr<::vl::reflection::description::IAsync> __vwsnc3_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethodAsync(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		throw ::vl::Exception(::vl::WString::Unmanaged(L"InvokeMethodAsync is not supported."));
 	}
 
-	void __vwsnc2_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
+	void __vwsnc3_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
 	{
 		if (hold)
 		{
@@ -186,7 +229,7 @@ Closures
 		}
 	}
 
-	void __vwsnc2_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
+	void __vwsnc3_Rpc_Dtor_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
 	{
 		{
 			if (GLOBAL_NAME rpcwrapper_IsCtorInterfaceTypeId(typeId))
@@ -209,12 +252,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc3_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	__vwsnc4_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc4_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
 	}
 
-	void __vwsnc3_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	void __vwsnc4_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
@@ -239,23 +282,53 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::__vwsnc4_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
 	}
 
-	void __vwsnc4_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
 	}
 
-	__vwsnc4_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::~__vwsnc4_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService()
+	__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::~__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue()
 	{
 		if ((_lc != nullptr))
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->ObjectHold(_ref, ::vl::__vwsn::This(_lc)->GetClientId(), false);
 		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	{
+		this->_lc = __vwsnctor_lc;
+		this->_ref = __vwsnctor_proxyRef;
+	}
+
+	void __vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::DisconnectFromLifecycle()
+	{
+		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+	}
+
+	__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::~__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService()
+	{
+		if ((_lc != nullptr))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->ObjectHold(_ref, ::vl::__vwsn::This(_lc)->GetClientId(), false);
+		}
+	}
+
+	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::MakeValue()
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(0));
+		return ::vl::__vwsn::Unbox<::vl::Ptr<::RpcDtorTest::IValue>>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue, arguments), _lc));
 	}
 
 }
@@ -264,10 +337,21 @@ Closures
 Class (::RpcDtorTest::IService)
 ***********************************************************************/
 
+namespace RpcDtorTest
+{
 /***********************************************************************
 Class (::RpcDtorTest::IRpcWrapper_IService)
 ***********************************************************************/
 
+/***********************************************************************
+Class (::RpcDtorTest::IValue)
+***********************************************************************/
+
+/***********************************************************************
+Class (::RpcDtorTest::IRpcWrapper_IValue)
+***********************************************************************/
+
+}
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ

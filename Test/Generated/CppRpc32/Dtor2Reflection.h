@@ -34,19 +34,31 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcDtor2Test::IRpcWrapper_IService)
+			DECL_TYPE_INFO(::RpcDtor2Test::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcDtor2Test::IService)
+			DECL_TYPE_INFO(::RpcDtor2Test::IValue)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtor2Test::IService)
-				::vl::Ptr<::RpcDtor2Test::IService> GetServiceAgain() override
+				::vl::Ptr<::RpcDtor2Test::IValue> MakeValue() override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetServiceAgain);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(MakeValue);
+				}
+				::vl::Ptr<::RpcDtor2Test::IValue> ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(ReviewValue, value);
 				}
 			END_INTERFACE_PROXY(::RpcDtor2Test::IService)
 
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtor2Test::IValue)
+			END_INTERFACE_PROXY(::RpcDtor2Test::IValue)
+
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcDtor2Test::IRpcWrapper_IService, ::RpcDtor2Test::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcDtor2Test::IRpcWrapper_IService)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcDtor2Test::IRpcWrapper_IValue, ::RpcDtor2Test::IValue, ::vl::rpc_controller::IRpcWrapperBase)
+			END_INTERFACE_PROXY(::RpcDtor2Test::IRpcWrapper_IValue)
 #endif
 #endif
 

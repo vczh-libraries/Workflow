@@ -5,10 +5,16 @@ using RpcDtor2Test::*;
 namespace RpcDtor2Test
 {
   @rpc:Interface
+  interface IValue
+  {
+  }
+
+  @rpc:Interface
   @rpc:Ctor
   interface IService
   {
-    func GetServiceAgain() : IService^;
+    func MakeValue() : IValue^;
+    func ReviewValue(value : IValue^) : IValue^;
   }
 }
 
@@ -18,19 +24,25 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtor2Test::IService^)
   {
-    delete
+    override func MakeValue() : IValue^
     {
-      s = "Deleted";
+      return new (RpcDtor2Test::IValue^)
+      {
+        delete
+        {
+          s = "Deleted";
+        }
+      };
     }
 
-    override func GetServiceAgain() : IService^
+    override func ReviewValue(value : IValue^) : IValue^
     {
-      var obj = lc.RequestService("RpcDtor2Test::IService");
-      if ((obj as (system::IRpcWrapperBase^) is not null))
+      var valueObj : object = value;
+      if ((valueObj as (system::IRpcWrapperBase^) is not null))
       {
-          raise "IService(obj) should be a local object in serviceMain";
+        raise "IValue(value) should be a local object in serviceMain";
       }
-      return cast (RpcDtor2Test::IService^) obj;
+      return value;
     }
   };
   lc.RegisterService("RpcDtor2Test::IService", serviceObj);
@@ -44,15 +56,17 @@ func clientMain(lc : IRpcLifecycle*) : string
   {
     raise "IService(obj) should be a wrapper object in clientMain";
   }
-  var wrapperObj : object = clientObj.GetServiceAgain();
+  var value = clientObj.MakeValue();
+  var wrapperObj : object = clientObj.ReviewValue(value);
   if ((wrapperObj as (system::IRpcWrapperBase^) is null))
   {
-    raise "IService(wrapperObj) should be a wrapper object in clientMain";
+    raise "IValue(wrapperObj) should be a wrapper object in clientMain";
   }
   wrapperObj = null;
   var m = $"[$(s)]";
+  value = null;
+  m = $"$(m)[$(s)]";
   clientObj = null;
   obj = null;
-  m = $"$(m)[$(s)]";
   return m;
 }

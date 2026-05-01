@@ -31,7 +31,9 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcDtor2Test::IRpcWrapper_IService)
+			IMPL_CPP_TYPE_INFO(RpcDtor2Test::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcDtor2Test::IService)
+			IMPL_CPP_TYPE_INFO(RpcDtor2Test::IValue)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -40,12 +42,23 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_MEMBER(::RpcDtor2Test::IRpcWrapper_IService)
 
+			BEGIN_INTERFACE_MEMBER(::RpcDtor2Test::IRpcWrapper_IValue)
+				CLASS_MEMBER_BASE(::RpcDtor2Test::IValue)
+				CLASS_MEMBER_BASE(::vl::rpc_controller::IRpcWrapperBase)
+			END_INTERFACE_MEMBER(::RpcDtor2Test::IRpcWrapper_IValue)
+
 			BEGIN_INTERFACE_MEMBER(::RpcDtor2Test::IService)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Ctor)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
-				CLASS_MEMBER_METHOD(GetServiceAgain, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(MakeValue, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ReviewValue, { L"value" })
 			END_INTERFACE_MEMBER(::RpcDtor2Test::IService)
+
+			BEGIN_INTERFACE_MEMBER(::RpcDtor2Test::IValue)
+				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+			END_INTERFACE_MEMBER(::RpcDtor2Test::IValue)
 
 #undef _
 			class Rpc_Dtor2TypeLoader : public Object, public ITypeLoader
@@ -54,7 +67,9 @@ namespace vl
 				void Load(ITypeManager* manager)
 				{
 					ADD_TYPE_INFO(::RpcDtor2Test::IRpcWrapper_IService)
+					ADD_TYPE_INFO(::RpcDtor2Test::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcDtor2Test::IService)
+					ADD_TYPE_INFO(::RpcDtor2Test::IValue)
 				}
 
 				void Unload(ITypeManager* manager)
