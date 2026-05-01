@@ -14,6 +14,7 @@
 
 ## ToDo
 
+- `Event<T>` moving argument bug fixed. Workflow RPC have to workaround to create variables for event arguments before triggering the event. Move it back.
 - Rework `Dtor.txt` and `Dtor2.txt` as the service now no longer being deleted before unit test ends.
 - Review `RpcControllerMock` and promote it to become a standard implementation `RpcController`.
 - Review `RpcDualLifecycleMock`, split as many thing as possible to the base class `RpcLifecycleMock`, which does not have the knowledge of "dual", and promote to become a standard implementation `RpcLifecycleBase`.
