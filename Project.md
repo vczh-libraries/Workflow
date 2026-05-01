@@ -107,3 +107,18 @@ This executable needs to run if any file in the following folders are changed:
 There is a `Parser.xml` file in these folder.
 You need to offer the absolute path of `Parser.xml` to the tool as a command-line argument.
 Only run necessary `Parser.xml` in folders that are changed.
+
+## Linux Specific
+
+`REPO-ROOT/Test/Linux` stores linux configurations for:
+- `CompilerTest_GenerateMetadata`: `CompilerTest_GenerateMetadata.vcxproj`.
+- `CompilerTest_LoadAndCompile`: `CompilerTest_LoadAndCompile.vcxproj`.
+- `CppTest`: `CppTest.vcxproj`.
+- `CppTest_Metaonly`: `CppTest_Metaonly.vcxproj`.
+- `CppTest_Reflection`: `CppTest_Reflection.vcxproj`.
+- `LibraryTest`: `LibraryTest.vcxproj`.
+- `RuntimeTest`: `RuntimeTest.vcxproj`.
+
+You need to build, test and debug in that specific folder, otherwise the unit test will not function properly.
+On Linux, only configuration "debug x64" is available, no need to build or run projects with other configurations.
+Unlike Windows, building have to be done in each folder separately.
