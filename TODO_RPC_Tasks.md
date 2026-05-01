@@ -7,10 +7,16 @@ You should complete tasks one by one.
 
 ## Task 1
 
-Due to the previous change which makes registered services no longer unregister, Dtor.txt and Dtor2.txt samples now is not working. You can check out IndexRpc.txt and find that in the long the service is no longer deleted. We need to update these samples. Because service won't release, we should change it to track another object:
-- Add a `IValue` interface just like other test cases.
-- Move the destructor from IService to IValue implementation.
-- clientMain manipulate IValue's lifecycle instead of IValue
-- In Dtor2.txt, `func GetServiceAgain() : IService^` will be changed to `func ReviewValue(value : IValue^) : IValue^`. clientMain passes the obtained value to this function, and this function returns itself. Therefore the original RequestService could be replaced by reading the argument, and all tests remain.
+I would like to move RpcControllerMock.(h|cpp) to Source\Library with these changes:
+- Now this pair of file needs to be in the library vcxitems instead of in each test projects' vcxproj files
+- Rename it to WfLibraryRpcController.(h|cpp)
+- Rename the class to vl::rpc_controller::RpcControllerDefault.
+- You should adjust the guard macro naming and the header of the header file align with all other library header files.
 
-You should be able to revert IndexRpc.txt back to use `[Deleted]` for these two samples at the end. Check out comments in Dtor1.txt to understand what were expected to happen before the behacior changing to service lifecycle.
+Further more, you need to fix all CHECK_ERROR or CHECK_FAIL which have actual messages to align with the rest of the source code:
+- At the beginning and the end of the function, define and undef ERROR_MESSAGE_PREFIX, to include the full class and function name.
+- Use it inside CHECK_ERROR or CHECK_FAIL.
+- You must check out other CHECK_ERROR samples in Source or Import to see how they are used.
+- Ignore `CHECK_FAIL(L"Not Supported|);` or `CHECK_FAIL(L"Not Supported!");`
+
+No reflection registration is needed, you can skip CompilerTest_GenerateMetadata and CompilerTest_LoadAndCompiler and Build.ps1, to shortern your test. This change should not affect the compiler and any code generation.
