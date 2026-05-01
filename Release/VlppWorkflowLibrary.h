@@ -1089,8 +1089,8 @@ namespace vl
 		class RpcByrefReadonlyList : public Object, public reflection::Description<RpcByrefReadonlyList>, public virtual reflection::description::IValueReadonlyList, public virtual IRpcWrapperBase
 		{
 		protected:
-			IRpcLifecycle*					lifecycle = nullptr;
-			RpcObjectReference				ref;
+			IRpcLifecycle*									lifecycle = nullptr;
+			RpcObjectReference								ref;
 		public:
 			RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefReadonlyList();
@@ -1125,8 +1125,8 @@ namespace vl
 		class RpcByrefArray : public Object, public reflection::Description<RpcByrefArray>, public reflection::description::IValueArray, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifecycle*					lifecycle = nullptr;
-			RpcObjectReference				ref;
+			IRpcLifecycle*									lifecycle = nullptr;
+			RpcObjectReference								ref;
 		public:
 			RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef);
 			~RpcByrefArray();
@@ -1144,8 +1144,8 @@ namespace vl
 		class RpcByrefObservableList : public Object, public reflection::Description<RpcByrefObservableList>, public reflection::description::IValueObservableList, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifecycle*					lifecycle = nullptr;
-			RpcObjectReference				ref;
+			IRpcLifecycle*									lifecycle = nullptr;
+			RpcObjectReference								ref;
 		public:
 			RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef);
 			~RpcByrefObservableList();
@@ -1167,8 +1167,8 @@ namespace vl
 		class RpcByrefDictionary : public Object, public reflection::Description<RpcByrefDictionary>, public reflection::description::IValueDictionary, public virtual IRpcWrapperBase
 		{
 		private:
-			IRpcLifecycle*					lifecycle = nullptr;
-			RpcObjectReference				ref;
+			IRpcLifecycle*									lifecycle = nullptr;
+			RpcObjectReference								ref;
 		public:
 			RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef);
 			~RpcByrefDictionary();
@@ -1222,7 +1222,7 @@ namespace vl
 		class RpcCalleeListEventBridge : public Object, public IRpcListEventOps
 		{
 		private:
-			IRpcLifecycle*					lifecycle = nullptr;
+			IRpcLifecycle*									lifecycle = nullptr;
 
 		public:
 			RpcCalleeListEventBridge(IRpcLifecycle* lc);

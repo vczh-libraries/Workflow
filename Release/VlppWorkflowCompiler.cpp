@@ -10693,8 +10693,7 @@ namespace vl
 					for (vint i = 0; i < eventModel.params.Count(); i++)
 					{
 						auto&& paramModel = eventModel.params[i];
-						AddStatement(block, CreateVariableStatement(paramModel.name, CopyType(paramModel.type.Obj()), CreateCast(CopyType(paramModel.type.Obj()), CreateLifecycleHelperCall(paramModel.byref ? L"RpcUnboxByref" : L"RpcUnboxByval", CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc")))));
-						invoke->arguments.Add(CreateReference(paramModel.name));
+						invoke->arguments.Add(CreateCast(CopyType(paramModel.type.Obj()), CreateLifecycleHelperCall(paramModel.byref ? L"RpcUnboxByref" : L"RpcUnboxByval", CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc"))));
 					}
 					AddStatement(block, CreateExpressionStatement(invoke));
 					return block;
