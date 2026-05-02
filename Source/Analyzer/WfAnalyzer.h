@@ -175,6 +175,7 @@ Scope Manager
 			struct WfRpcMetadata
 			{
 				vl::Ptr<vl::workflow::WfModule>													metadataModule;
+				vl::WString																		dts;
 				vl::collections::Dictionary<vl::WString, vl::workflow::WfClassDeclaration*>		typeNames;
 				vl::collections::Dictionary<vl::WString, vl::workflow::WfFunctionDeclaration*>	methodNames;
 				vl::collections::Dictionary<vl::WString, vl::workflow::WfEventDeclaration*>		eventNames;
@@ -482,6 +483,7 @@ RPC Analyzing
 
 			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern WString									GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager);
 			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager);
 
 /***********************************************************************

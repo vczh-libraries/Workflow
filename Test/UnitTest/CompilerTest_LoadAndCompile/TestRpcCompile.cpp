@@ -263,6 +263,7 @@ TEST_FILE
 					{
 						WfPrint(manager.rpcMetadata->metadataModule, L"", writer);
 					});
+					auto dtsString = manager.rpcMetadata->dts;
 
 					auto outputFolder = FilePath(GetTestOutputBasePath()) / (WString::Unmanaged(L"RpcMetadata") + bits);
 					Folder folder(outputFolder);
@@ -278,6 +279,15 @@ TEST_FILE
 						EncoderStream encoderStream(fileStream, encoder);
 						StreamWriter writer(encoderStream);
 						writer.WriteString(metadataString);
+					}
+
+					auto dtsPath = outputFolder / (L"Serialization_" + itemName + L".d.ts");
+					{
+						FileStream fileStream(dtsPath.GetFullPath(), FileStream::WriteOnly);
+						BomEncoder encoder(BomEncoder::Utf8);
+						EncoderStream encoderStream(fileStream, encoder);
+						StreamWriter writer(encoderStream);
+						writer.WriteString(dtsString);
 					}
 
 					auto outputPath = outputFolder / (L"Wrapper_" + itemName + L".txt");

@@ -1973,7 +1973,483 @@ ValidateModuleRPC
 				if (context.workflowRpcInterfaceTds.Count() > 0 && manager->errors.Count() == 0)
 				{
 					rpc_compiling::ValidateModuleRPC_GenerateMetadata(manager, module, context);
+					if (manager->rpcMetadata)
+					{
+						manager->rpcMetadata->dts = GenerateDtsFromRpcMetadata(manager);
+					}
 				}
+			}
+
+/***********************************************************************
+GenerateDtsFromRpcMetadata
+***********************************************************************/
+
+			namespace rpc_dts_generating
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				struct DtsFieldModel
+				{
+					WString					name;
+					Ptr<WfType>				type;
+				};
+
+				struct DtsStructModel
+				{
+					WString					fullName;
+					Ptr<List<DtsFieldModel>> fields;
+				};
+
+				struct DtsContext
+				{
+					WfLexicalScopeManager*	manager = nullptr;
+					List<WString>*			enums = nullptr;
+					List<DtsStructModel>*	structs = nullptr;
+				};
+
+				void AppendChar(WString& text, wchar_t c)
+				{
+					text += WString::CopyFrom(&c, 1);
+				}
+
+				bool IsDtsIdentifierStart(wchar_t c)
+				{
+					return (L'a' <= c && c <= L'z')
+						|| (L'A' <= c && c <= L'Z')
+						|| c == L'_'
+						|| c == L'$';
+				}
+
+				bool IsDtsIdentifierPart(wchar_t c)
+				{
+					return IsDtsIdentifierStart(c) || (L'0' <= c && c <= L'9');
+				}
+
+				WString EscapeDtsString(const WString& value)
+				{
+					WString result = L"\"";
+					for (vint i = 0; i < value.Length(); i++)
+					{
+						auto c = value[i];
+						switch (c)
+						{
+						case L'\\': result += L"\\\\"; break;
+						case L'"': result += L"\\\""; break;
+						case L'\r': result += L"\\r"; break;
+						case L'\n': result += L"\\n"; break;
+						case L'\t': result += L"\\t"; break;
+						default:
+							AppendChar(result, c);
+							break;
+						}
+					}
+					result += L"\"";
+					return result;
+				}
+
+				WString GetDtsPropertyName(const WString& name)
+				{
+					if (name.Length() > 0 && IsDtsIdentifierStart(name[0]))
+					{
+						bool isIdentifier = true;
+						for (vint i = 1; i < name.Length(); i++)
+						{
+							if (!IsDtsIdentifierPart(name[i]))
+							{
+								isIdentifier = false;
+								break;
+							}
+						}
+						if (isIdentifier)
+						{
+							return name;
+						}
+					}
+					return EscapeDtsString(name);
+				}
+
+				WString MakeStructSchemaName(const WString& fullName)
+				{
+					WString result = L"StructSchema_";
+					for (vint i = 0; i < fullName.Length(); i++)
+					{
+						auto c = fullName[i];
+						if (IsDtsIdentifierPart(c))
+						{
+							AppendChar(result, c);
+						}
+						else if (result.Length() == 0 || result[result.Length() - 1] != L'_')
+						{
+							result += L"_";
+						}
+					}
+					if (result.Length() > 0 && result[result.Length() - 1] == L'_')
+					{
+						result = result.Left(result.Length() - 1);
+					}
+					return result;
+				}
+
+				bool TryGetPrimitiveKeyword(const WString& fullName, WString& keyword)
+				{
+					auto tryName = [&](const wchar_t* name)
+					{
+						if (fullName == WString::Unmanaged(L"system::") + name)
+						{
+							keyword = WString::Unmanaged(name);
+							return true;
+						}
+						return false;
+					};
+
+					return tryName(L"UInt8")
+						|| tryName(L"UInt16")
+						|| tryName(L"UInt32")
+						|| tryName(L"UInt64")
+						|| tryName(L"Int8")
+						|| tryName(L"Int16")
+						|| tryName(L"Int32")
+						|| tryName(L"Int64")
+						|| tryName(L"Single")
+						|| tryName(L"Double")
+						|| tryName(L"Boolean")
+						|| tryName(L"Char")
+						|| tryName(L"String")
+						|| tryName(L"DateTime")
+						|| tryName(L"Locale");
+				}
+
+				WString GetPredefinedFullName(WfLexicalScopeManager* manager, WfPredefinedTypeName name)
+				{
+					switch (name)
+					{
+					case WfPredefinedTypeName::Int:
+						return manager && manager->cputdSInt ? manager->cputdSInt->GetTypeName() : WString::Unmanaged(L"system::Int64");
+					case WfPredefinedTypeName::UInt:
+						return manager && manager->cputdUInt ? manager->cputdUInt->GetTypeName() : WString::Unmanaged(L"system::UInt64");
+					case WfPredefinedTypeName::Float:
+						return L"system::Single";
+					case WfPredefinedTypeName::Double:
+						return L"system::Double";
+					case WfPredefinedTypeName::String:
+						return L"system::String";
+					case WfPredefinedTypeName::Char:
+						return L"system::Char";
+					case WfPredefinedTypeName::Bool:
+						return L"system::Boolean";
+					case WfPredefinedTypeName::Object:
+						return L"system::Object";
+					case WfPredefinedTypeName::Interface:
+						return L"system::Interface";
+					default:
+						return L"";
+					}
+				}
+
+				WString GetTypeFullName(WfLexicalScopeManager* manager, WfType* type)
+				{
+					if (!type)
+					{
+						return L"";
+					}
+					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
+					{
+						return GetPredefinedFullName(manager, predefined->name);
+					}
+					if (auto top = dynamic_cast<WfTopQualifiedType*>(type))
+					{
+						return top->name.value;
+					}
+					if (auto reference = dynamic_cast<WfReferenceType*>(type))
+					{
+						return reference->name.value;
+					}
+					if (auto child = dynamic_cast<WfChildType*>(type))
+					{
+						auto parent = GetTypeFullName(manager, child->parent.Obj());
+						return parent == L"" ? child->name.value : parent + L"::" + child->name.value;
+					}
+					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
+					{
+						return GetTypeFullName(manager, raw->element.Obj());
+					}
+					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
+					{
+						return GetTypeFullName(manager, shared->element.Obj());
+					}
+					if (auto nullable = dynamic_cast<WfNullableType*>(type))
+					{
+						return GetTypeFullName(manager, nullable->element.Obj());
+					}
+					return L"";
+				}
+
+				vint FindStruct(const List<DtsStructModel>& structs, const WString& fullName)
+				{
+					for (vint i = 0; i < structs.Count(); i++)
+					{
+						if (structs[i].fullName == fullName)
+						{
+							return i;
+						}
+					}
+					return -1;
+				}
+
+				WString GetDtsTypeFromFullName(DtsContext& context, const WString& fullName)
+				{
+					WString keyword;
+					if (TryGetPrimitiveKeyword(fullName, keyword))
+					{
+						return L"[" + EscapeDtsString(keyword) + L", string]";
+					}
+					if (context.enums && context.enums->Contains(fullName))
+					{
+						return L"[" + EscapeDtsString(fullName) + L", number]";
+					}
+					if (context.structs && FindStruct(*context.structs, fullName) != -1)
+					{
+						return MakeStructSchemaName(fullName);
+					}
+					return L"Schema";
+				}
+
+				WString GetDtsTypeFromType(DtsContext& context, WfType* type)
+				{
+					if (!type)
+					{
+						return L"Schema";
+					}
+					if (auto nullable = dynamic_cast<WfNullableType*>(type))
+					{
+						return GetDtsTypeFromType(context, nullable->element.Obj()) + L" | null";
+					}
+					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
+					{
+						return GetDtsTypeFromType(context, raw->element.Obj());
+					}
+					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
+					{
+						return GetDtsTypeFromType(context, shared->element.Obj());
+					}
+					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
+					{
+						return L"ListSchema<" + GetDtsTypeFromType(context, enumerable->element.Obj()) + L">";
+					}
+					if (auto map = dynamic_cast<WfMapType*>(type))
+					{
+						if (map->key)
+						{
+							return L"MapSchema<" + GetDtsTypeFromType(context, map->key.Obj()) + L", " + GetDtsTypeFromType(context, map->value.Obj()) + L">";
+						}
+						return L"ListSchema<" + GetDtsTypeFromType(context, map->value.Obj()) + L">";
+					}
+					if (auto observable = dynamic_cast<WfObservableListType*>(type))
+					{
+						return L"ObservableSchema<" + GetDtsTypeFromType(context, observable->element.Obj()) + L">";
+					}
+					return GetDtsTypeFromFullName(context, GetTypeFullName(context.manager, type));
+				}
+
+				void AddDtsTypesFromDeclarations(
+					const List<Ptr<WfDeclaration>>& declarations,
+					const WString& prefix,
+					List<WString>& enums,
+					List<DtsStructModel>& structs)
+				{
+					for (auto declaration : declarations)
+					{
+						auto fullName = prefix == L"" ? declaration->name.value : prefix + L"::" + declaration->name.value;
+						if (auto namespaceDecl = declaration.Cast<WfNamespaceDeclaration>())
+						{
+							AddDtsTypesFromDeclarations(namespaceDecl->declarations, fullName, enums, structs);
+						}
+						else if (declaration.Cast<WfEnumDeclaration>())
+						{
+							if (!enums.Contains(fullName))
+							{
+								enums.Add(fullName);
+							}
+						}
+						else if (auto structDecl = declaration.Cast<WfStructDeclaration>())
+						{
+							if (FindStruct(structs, fullName) != -1)
+							{
+								continue;
+							}
+
+							DtsStructModel model;
+							model.fullName = fullName;
+							model.fields = Ptr(new List<DtsFieldModel>);
+							for (auto member : structDecl->members)
+							{
+								DtsFieldModel field;
+								field.name = member->name.value;
+								field.type = CopyType(member->type.Obj());
+								model.fields->Add(field);
+							}
+							structs.Add(model);
+						}
+					}
+				}
+
+				void AddRpcObjectReferenceDtsStruct(List<DtsStructModel>& structs)
+				{
+					auto fullName = WString::Unmanaged(L"system::RpcObjectReference");
+					if (FindStruct(structs, fullName) != -1)
+					{
+						return;
+					}
+
+					auto td = GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>();
+					if (!td)
+					{
+						return;
+					}
+
+					DtsStructModel model;
+					model.fullName = fullName;
+					model.fields = Ptr(new List<DtsFieldModel>);
+					for (vint i = 0; i < td->GetPropertyCount(); i++)
+					{
+						auto propertyInfo = td->GetProperty(i);
+						DtsFieldModel field;
+						field.name = propertyInfo->GetName();
+						field.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+						model.fields->Add(field);
+					}
+					structs.Add(model);
+				}
+
+				void AppendPredefinedSchema(WString& dts)
+				{
+					const wchar_t* primitiveNames[] =
+					{
+						L"UInt8",
+						L"UInt16",
+						L"UInt32",
+						L"UInt64",
+						L"Int8",
+						L"Int16",
+						L"Int32",
+						L"Int64",
+						L"Single",
+						L"Double",
+						L"Boolean",
+						L"Char",
+						L"String",
+						L"DateTime",
+						L"Locale",
+					};
+
+					dts += L"export type PredefinedSchema =\r\n";
+					for (auto name : primitiveNames)
+					{
+						dts += L"  | [" + EscapeDtsString(WString::Unmanaged(name)) + L", string]\r\n";
+					}
+					dts += L"  ;\r\n\r\n";
+				}
+
+				void AppendEnumSchema(WString& dts, const List<WString>& enums)
+				{
+					if (enums.Count() == 0)
+					{
+						dts += L"export type EnumSchema = never;\r\n\r\n";
+						return;
+					}
+
+					dts += L"export type EnumSchema =\r\n";
+					for (auto fullName : enums)
+					{
+						dts += L"  | [" + EscapeDtsString(fullName) + L", number]\r\n";
+					}
+					dts += L"  ;\r\n\r\n";
+				}
+
+				void AppendSchemaUnion(WString& dts, const List<WString>& enums, const List<DtsStructModel>& structs)
+				{
+					dts += L"export type Schema =\r\n";
+					dts += L"  | null\r\n";
+					dts += L"  | PredefinedSchema\r\n";
+					if (enums.Count() > 0)
+					{
+						dts += L"  | EnumSchema\r\n";
+					}
+					dts += L"  | ListSchema\r\n";
+					dts += L"  | MapSchema\r\n";
+					dts += L"  | ObservableSchema\r\n";
+					for (auto&& model : structs)
+					{
+						dts += L"  | " + MakeStructSchemaName(model.fullName) + L"\r\n";
+					}
+					dts += L"  ;\r\n\r\n";
+				}
+
+				void AppendCollectionSchemas(WString& dts)
+				{
+					dts += L"export interface ListSchema<T extends Schema = Schema>\r\n";
+					dts += L"{\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"list") + L";\r\n";
+					dts += L"  values: T[];\r\n";
+					dts += L"}\r\n\r\n";
+
+					dts += L"export interface MapSchema<K extends Schema = Schema, V extends Schema = Schema>\r\n";
+					dts += L"{\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"map") + L";\r\n";
+					dts += L"  values: Array<[K, V]>;\r\n";
+					dts += L"}\r\n\r\n";
+
+					dts += L"export interface ObservableSchema<T extends Schema = Schema>\r\n";
+					dts += L"{\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"observable-list") + L";\r\n";
+					dts += L"  values: T[];\r\n";
+					dts += L"}\r\n\r\n";
+				}
+
+				void AppendStructSchemas(WString& dts, DtsContext& context)
+				{
+					for (auto&& model : *context.structs)
+					{
+						dts += L"export interface " + MakeStructSchemaName(model.fullName) + L"\r\n";
+						dts += L"{\r\n";
+						dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(model.fullName) + L";\r\n";
+						for (auto&& field : *model.fields.Obj())
+						{
+							dts += L"  " + GetDtsPropertyName(field.name) + L": " + GetDtsTypeFromType(context, field.type.Obj()) + L";\r\n";
+						}
+						dts += L"}\r\n\r\n";
+					}
+				}
+			}
+
+			WString GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager)
+			{
+				using namespace rpc_dts_generating;
+
+				WString dts;
+				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
+				{
+					return dts;
+				}
+
+				List<WString> enums;
+				List<DtsStructModel> structs;
+				AddDtsTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
+				AddRpcObjectReferenceDtsStruct(structs);
+
+				DtsContext context;
+				context.manager = manager;
+				context.enums = &enums;
+				context.structs = &structs;
+
+				AppendPredefinedSchema(dts);
+				AppendEnumSchema(dts, enums);
+				AppendSchemaUnion(dts, enums, structs);
+				AppendCollectionSchemas(dts);
+				AppendStructSchemas(dts, context);
+				return dts;
 			}
 		}
 	}

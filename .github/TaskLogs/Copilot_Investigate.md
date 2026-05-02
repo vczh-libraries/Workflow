@@ -82,6 +82,17 @@ You are going to create a function in `WfAnalyzer_ValidateRpc.cpp` after `Valida
 - Added `Metadata_<sample>.txt` emission in `TestRpcCompile.cpp`, printing `manager.rpcMetadata->metadataModule` into `Test\Generated\RpcMetadata32` or `Test\Generated\RpcMetadata64` beside the existing wrapper script output.
 - Kept the existing runtime metadata baseline output unchanged.
 
+## Task 3
+
+- Added `WfRpcMetadata::dts` and `GenerateDtsFromRpcMetadata(manager)` so RPC validation now builds a TypeScript declaration for the generated JSON serialization schema.
+- The DTS generator emits:
+  - `PredefinedSchema` primitive tuples matching `rpcjson_Serialize`
+  - `EnumSchema` tuple unions for RPC metadata enums
+  - `Schema` as the exported top-level serialized JSON shape
+  - `ListSchema`, `MapSchema`, and `ObservableSchema` interfaces
+  - `StructSchema_Namespace_Name` interfaces for RPC metadata structs, including `system::RpcObjectReference` once
+- Added `Serialization_<sample>.d.ts` emission in `TestRpcCompile.cpp` for both `Test\Generated\RpcMetadata32` and `Test\Generated\RpcMetadata64`.
+
 # TEST
 
 ## Task 1
@@ -106,6 +117,29 @@ All commands passed.
 - `copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
 
 ## Task 2
+
+All commands passed.
+
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform Win32`
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64`
+- `copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32`
+- `copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32`
+
+## Task 3
 
 All commands passed.
 
