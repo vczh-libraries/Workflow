@@ -26,6 +26,9 @@
       - numbers should be passed by `number`, booleans should be passed by `bool`.
       - Inside a wrapper, byval strong typed collection will be serialized/deserialized with loops, each level of loop expands one level of container.
         - Byref containers have no choice but to use weak type serialization, these will be implemented in containers wrappers (how)?
+        - Dispatcher or Lifecycle may need to expose a weak type serialization API, so that when JsonNode is seen, they are called.
+        - Or always call these API and then Dispatcher will do JSON or other or no transformation automatically.
+         - RpcDualJsonDispatcher
   - Run JSON serialization for predefined types, generated types and operations in `RpcDualDispatcherMock`.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC.
