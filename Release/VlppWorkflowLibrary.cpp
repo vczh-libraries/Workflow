@@ -1545,6 +1545,21 @@ namespace vl
 				lc->GetDispatcher()->SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, lc->GetClientId(), hold);
 			}
 
+			/*
+			* When a container of interfaces is boxed byval
+			* the boxed result is a container of RpcObjectReference values
+			* but before the boxed container is unboxed from the other side
+			* contained wrappers must be kept alive for a while
+			* so RpcByvalKeepAlive will be assigned to the boxed container with RpcByvalKeepAliveProperty
+			* these wrappers will still be alive even when there is no other shared pointers holding them,
+			*
+			* when the boxed value gets passed to the other side
+			* connection established and these wrappers are now referenced by the other side
+			* the boxed containers of RpcObjectReference is no longer needed
+			* therefore RpcByvalKeepAlive can now be destroyed along with the boxed container
+			* and the remote object of these wrappers are still alive
+			* (it is possible that "the other side" actually ownes some remote objects)
+			*/
 			const WString RpcByvalKeepAliveProperty = L"RpcByvalKeepAlive";
 
 			class RpcByvalKeepAlive : public Object
@@ -2603,17 +2618,9 @@ namespace vl
 		{
 		}
 
-		void RpcLifecycleBase::SetDispatcher(IRpcDispatcher* _dispatcher)
-		{
-			dispatcher = _dispatcher;
-		}
-
 		void RpcLifecycleBase::SetIdMap(const Dictionary<WString, vint>& _idMap)
 		{
-			for (auto&& [key, value] : _idMap)
-			{
-				idMap.Set(key, value);
-			}
+			CopyFrom(idMap, _idMap);
 		}
 
 		void RpcLifecycleBase::RegisterWrapperFactory(UniversalWrapperFactory factory)
