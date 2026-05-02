@@ -1,0 +1,20 @@
+﻿module RpcMetadata;
+
+namespace RpcPropDynamic
+{
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        @rpc:Dynamic
+        prop Value : ::system::String{GetValue : ValueChanged}
+
+        event ValueChanged();
+
+        func GetValue() : (::system::String);
+
+        func SetValue(value : ::system::String) : (::system::Void);
+
+        func Signal() : (::system::Void);
+    }
+}

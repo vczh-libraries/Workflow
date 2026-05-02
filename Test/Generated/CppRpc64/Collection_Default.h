@@ -11,6 +11,7 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_COLLECTION_DEFAULT
 
 #include "../Source/CppTypes.h"
+#include "../../Import/VlppGlrParser.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)
@@ -73,6 +74,18 @@ namespace vl_workflow_global
 		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueList> xs);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_NewNull();
+		::vl::glr::ParsingToken rpcjson_NewToken(const ::vl::WString& value);
+		::vl::Ptr<::vl::glr::json::JsonString> rpcjson_NewString(const ::vl::WString& content);
+		::vl::Ptr<::vl::glr::json::JsonNumber> rpcjson_NewNumber(const ::vl::WString& content);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_NewArray2(const ::vl::WString& keyword, ::vl::Ptr<::vl::glr::json::JsonNode> value);
+		void rpcjson_ObjectAdd(::vl::Ptr<::vl::glr::json::JsonObject> object, const ::vl::WString& name, ::vl::Ptr<::vl::glr::json::JsonNode> value);
+		::vl::Ptr<::vl::glr::json::JsonObject> rpcjson_NewObject(const ::vl::WString& keyword);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_ObjectGet(::vl::Ptr<::vl::glr::json::JsonObject> object, const ::vl::WString& name);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_SerializeCollection(const ::vl::WString& keyword, ::vl::Ptr<::vl::reflection::description::IValueEnumerable> values);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_SerializeMap(::vl::Ptr<::vl::reflection::description::IValueReadonlyDictionary> values);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
+		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint64_t typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);

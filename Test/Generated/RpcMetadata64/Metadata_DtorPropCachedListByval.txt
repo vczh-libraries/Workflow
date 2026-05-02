@@ -1,0 +1,27 @@
+﻿module RpcMetadata;
+
+namespace RpcDtorPropCachedListByval
+{
+    @rpc:Interface
+    interface IValue
+    {
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        @rpc:Byval
+        @rpc:Cached
+        prop Value : ::RpcDtorPropCachedListByval::IValue^[]{GetValue : ValueChanged}
+
+        event ValueChanged();
+
+        @rpc:Byval
+        func GetValue() : (::RpcDtorPropCachedListByval::IValue^[]);
+
+        func SetValue(@rpc:Byref value : ::RpcDtorPropCachedListByval::IValue^[]) : (::system::Void);
+
+        func Signal() : (::system::Void);
+    }
+}

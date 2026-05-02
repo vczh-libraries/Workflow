@@ -1,0 +1,21 @@
+﻿module RpcMetadata;
+
+namespace RpcPropDefaultList
+{
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        @rpc:Cached
+        prop Value : ::system::String[]{GetValue : ValueChanged}
+
+        event ValueChanged();
+
+        @rpc:Byval
+        func GetValue() : (::system::String[]);
+
+        func SetValue(@rpc:Byval value : ::system::String[]) : (::system::Void);
+
+        func Signal() : (::system::Void);
+    }
+}

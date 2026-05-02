@@ -1,0 +1,20 @@
+﻿module RpcMetadata;
+
+namespace RpcNullable
+{
+    @rpc:Interface
+    interface IValue
+    {
+        @rpc:Cached
+        prop Value : ::system::String{GetValue}
+
+        func GetValue() : (::system::String);
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        func Print(value : ::system::String?, v : ::RpcNullable::IValue^) : (::system::String);
+    }
+}

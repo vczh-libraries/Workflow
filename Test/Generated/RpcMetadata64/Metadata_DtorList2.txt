@@ -1,0 +1,23 @@
+﻿module RpcMetadata;
+
+namespace RpcDtorList2
+{
+    @rpc:Interface
+    interface IValue
+    {
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        func Clear() : (::system::Void);
+
+        func Hold() : (::system::Void);
+
+        @rpc:Byref
+        func Make() : (::RpcDtorList2::IValue^[]);
+
+        func Unhold() : (::system::Void);
+    }
+}

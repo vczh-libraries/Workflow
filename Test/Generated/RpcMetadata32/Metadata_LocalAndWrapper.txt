@@ -1,0 +1,23 @@
+﻿module RpcMetadata;
+
+namespace RpcWrapperTest
+{
+    @rpc:Interface
+    interface IObj1
+    {
+    }
+
+    @rpc:Interface
+    interface IObj2
+    {
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        func Exchange1(o : ::RpcWrapperTest::IObj1^) : (::RpcWrapperTest::IObj2^);
+
+        func Exchange2(o : ::RpcWrapperTest::IObj2^) : (::RpcWrapperTest::IObj1^);
+    }
+}

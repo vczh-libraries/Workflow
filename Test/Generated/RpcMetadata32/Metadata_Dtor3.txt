@@ -1,0 +1,25 @@
+﻿module RpcMetadata;
+
+namespace RpcDtor3Test
+{
+    @rpc:Interface
+    interface IContainer
+    {
+        @rpc:Dynamic
+        prop Value : ::RpcDtor3Test::IValue^{GetValue}
+
+        func GetValue() : (::RpcDtor3Test::IValue^);
+    }
+
+    @rpc:Interface
+    interface IValue
+    {
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        func ContainValue(value : ::RpcDtor3Test::IValue^) : (::RpcDtor3Test::IContainer^);
+    }
+}

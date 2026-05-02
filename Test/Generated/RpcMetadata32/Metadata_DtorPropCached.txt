@@ -1,0 +1,25 @@
+﻿module RpcMetadata;
+
+namespace RpcDtorPropCached
+{
+    @rpc:Interface
+    interface IValue
+    {
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        @rpc:Cached
+        prop Value : ::RpcDtorPropCached::IValue^{GetValue : ValueChanged}
+
+        event ValueChanged();
+
+        func GetValue() : (::RpcDtorPropCached::IValue^);
+
+        func SetValue(value : ::RpcDtorPropCached::IValue^) : (::system::Void);
+
+        func Signal() : (::system::Void);
+    }
+}

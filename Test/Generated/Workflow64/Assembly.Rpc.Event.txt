@@ -43,33 +43,175 @@ rpc_GetIds (99 .. 124)
     Local Variables:
         result
 
-rpcwrapper_IsInterfaceTypeId (125 .. 152)
+rpcjson_NewNull (125 .. 137)
     Arguments:
-        typeId
     Captured Variables:
     Local Variables:
+        node
+
+rpcjson_NewToken (138 .. 143)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+rpcjson_NewString (144 .. 156)
+    Arguments:
+        content
+    Captured Variables:
+    Local Variables:
+        node
+
+rpcjson_NewNumber (157 .. 169)
+    Arguments:
+        content
+    Captured Variables:
+    Local Variables:
+        node
+
+rpcjson_NewArray2 (170 .. 188)
+    Arguments:
+        keyword
+        value
+    Captured Variables:
+    Local Variables:
+        array
+
+rpcjson_ObjectAdd (189 .. 209)
+    Arguments:
+        object
+        name
+        value
+    Captured Variables:
+    Local Variables:
+        field
+
+rpcjson_NewObject (210 .. 223)
+    Arguments:
+        keyword
+    Captured Variables:
+    Local Variables:
+        object
+
+rpcjson_ObjectGet (224 .. 254)
+    Arguments:
+        object
+        name
+    Captured Variables:
+    Local Variables:
+        <for-enumerable>field
+        <for-enumerator>field
+        field
+
+rpcjson_SerializeCollection (255 .. 290)
+    Arguments:
+        keyword
+        values
+    Captured Variables:
+    Local Variables:
+        object
+        array
+        <for-enumerable>value
+        <for-enumerator>value
+        value
+
+rpcjson_SerializeMap (291 .. 344)
+    Arguments:
+        values
+    Captured Variables:
+    Local Variables:
+        object
+        array
+        <for-enumerable>key
+        <for-enumerator>key
+        key
+        pair
+
+rpcjson_Serialize (345 .. 830)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+        observableList
+        dictionary
+        readonlyDictionary
+        list
+        readonlyList
+        enumerable
+        value_system__UInt8
+        value_system__UInt16
+        value_system__UInt32
+        value_system__UInt64
+        value_system__Int8
+        value_system__Int16
+        value_system__Int32
+        value_system__Int64
+        value_system__Single
+        value_system__Double
+        value_system__Boolean
+        value_system__Char
+        value_system__String
+        value_system__DateTime
+        value_system__Locale
+        value_system__RpcObjectReference
+        object
+
+rpcjson_Deserialize (831 .. 1275)
+    Arguments:
+        node
+    Captured Variables:
+    Local Variables:
+        literal
+        array
+        keyword
         <switch>0
+        object
+        keyword
+        <switch>1
+        result
+        values
+        <for-enumerable>item
+        <for-enumerator>item
+        item
+        result
+        values
+        <for-enumerable>item
+        <for-enumerator>item
+        item
+        result
+        values
+        <for-enumerable>item
+        <for-enumerator>item
+        item
+        pair
 
-rpcwrapper_IsCtorInterfaceTypeId (153 .. 166)
+rpcwrapper_IsInterfaceTypeId (1276 .. 1303)
     Arguments:
         typeId
     Captured Variables:
     Local Variables:
-        <switch>1
+        <switch>2
 
-rpc_IRpcObjectOps (167 .. 181)
+rpcwrapper_IsCtorInterfaceTypeId (1304 .. 1317)
+    Arguments:
+        typeId
+    Captured Variables:
+    Local Variables:
+        <switch>3
+
+rpc_IRpcObjectOps (1318 .. 1332)
     Arguments:
         lc
     Captured Variables:
     Local Variables:
 
-rpc_IRpcObjectEventOps (264 .. 272)
+rpc_IRpcObjectEventOps (1415 .. 1423)
     Arguments:
         lc
     Captured Variables:
     Local Variables:
 
-rpclistener_RpcEvent__IService (328 .. 337)
+rpclistener_RpcEvent__IService (1479 .. 1488)
     Arguments:
         lc
         ref
@@ -77,7 +219,7 @@ rpclistener_RpcEvent__IService (328 .. 337)
     Captured Variables:
     Local Variables:
 
-rpclistener_Attach (374 .. 393)
+rpclistener_Attach (1525 .. 1544)
     Arguments:
         typeId
         lc
@@ -85,9 +227,9 @@ rpclistener_Attach (374 .. 393)
         obj
     Captured Variables:
     Local Variables:
-        <switch>4
+        <switch>6
 
-rpcwrapper_RpcEvent__IService (394 .. 428)
+rpcwrapper_RpcEvent__IService (1545 .. 1579)
     Arguments:
         lc
         proxyRef
@@ -95,45 +237,32 @@ rpcwrapper_RpcEvent__IService (394 .. 428)
     Local Variables:
         proxy
 
-rpcwrapper_Create (507 .. 524)
+rpcwrapper_Create (1658 .. 1675)
     Arguments:
         ref
         lc
     Captured Variables:
     Local Variables:
-        <switch>5
+        <switch>7
 
 <initialize> (0 .. 11)
     Arguments:
     Captured Variables:
     Local Variables:
 
-<method:MakeItHappen<RpcEvent::IService>(14)> in serviceMain (56 .. 61)
+<method:MakeItHappen<RpcEvent::IService>(26)> in serviceMain (56 .. 61)
     Arguments:
     Captured Variables:
         <captured-this>0
     Local Variables:
 
-<method:Watch<RpcEvent::IService>(15)> in serviceMain (62 .. 69)
+<method:Watch<RpcEvent::IService>(27)> in serviceMain (62 .. 69)
     Arguments:
     Captured Variables:
         <captured-this>0
     Local Variables:
 
-<method:InvokeMethod<system::IRpcObjectOps>(16)> in rpc_IRpcObjectOps (182 .. 219)
-    Arguments:
-        ref
-        methodId
-        arguments
-    Captured Variables:
-        <captured>_lc
-        <captured-this>0
-    Local Variables:
-        <switch>2
-        target
-        target
-
-<method:InvokeMethodAsync<system::IRpcObjectOps>(17)> in rpc_IRpcObjectOps (220 .. 223)
+<method:InvokeMethod<system::IRpcObjectOps>(28)> in rpc_IRpcObjectOps (1333 .. 1370)
     Arguments:
         ref
         methodId
@@ -142,8 +271,21 @@ rpcwrapper_Create (507 .. 524)
         <captured>_lc
         <captured-this>0
     Local Variables:
+        <switch>4
+        target
+        target
 
-<method:ObjectHold<system::IRpcObjectOps>(18)> in rpc_IRpcObjectOps (224 .. 239)
+<method:InvokeMethodAsync<system::IRpcObjectOps>(29)> in rpc_IRpcObjectOps (1371 .. 1374)
+    Arguments:
+        ref
+        methodId
+        arguments
+    Captured Variables:
+        <captured>_lc
+        <captured-this>0
+    Local Variables:
+
+<method:ObjectHold<system::IRpcObjectOps>(30)> in rpc_IRpcObjectOps (1375 .. 1390)
     Arguments:
         ref
         remoteClientId
@@ -153,7 +295,7 @@ rpcwrapper_Create (507 .. 524)
         <captured-this>0
     Local Variables:
 
-<method:RegisterService<system::IRpcObjectOps>(19)> in rpc_IRpcObjectOps (240 .. 263)
+<method:RegisterService<system::IRpcObjectOps>(31)> in rpc_IRpcObjectOps (1391 .. 1414)
     Arguments:
         typeId
         service
@@ -162,7 +304,7 @@ rpcwrapper_Create (507 .. 524)
         <captured-this>0
     Local Variables:
 
-<method:InvokeEvent<system::IRpcObjectEventOps>(20)> in rpc_IRpcObjectEventOps (273 .. 327)
+<method:InvokeEvent<system::IRpcObjectEventOps>(32)> in rpc_IRpcObjectEventOps (1424 .. 1478)
     Arguments:
         ref
         eventId
@@ -171,11 +313,11 @@ rpcwrapper_Create (507 .. 524)
         <captured>_lc
         <captured-this>0
     Local Variables:
-        <switch>3
+        <switch>5
         target
         <catch>
 
-<lambda:(21)> in rpclistener_RpcEvent__IService (338 .. 373)
+<lambda:(33)> in rpclistener_RpcEvent__IService (1489 .. 1524)
     Arguments:
         arg0
     Captured Variables:
@@ -184,7 +326,7 @@ rpcwrapper_Create (507 .. 524)
     Local Variables:
         arguments
 
-<method:DisconnectFromLifecycle<RpcEvent::IRpcWrapper_IService>(22)> in rpcwrapper_RpcEvent__IService (429 .. 434)
+<method:DisconnectFromLifecycle<RpcEvent::IRpcWrapper_IService>(34)> in rpcwrapper_RpcEvent__IService (1580 .. 1585)
     Arguments:
     Captured Variables:
         <captured>_lc
@@ -192,16 +334,7 @@ rpcwrapper_Create (507 .. 524)
         <captured-this>0
     Local Variables:
 
-<method:MakeItHappen<RpcEvent::IRpcWrapper_IService>(23)> in rpcwrapper_RpcEvent__IService (435 .. 460)
-    Arguments:
-    Captured Variables:
-        <captured>_lc
-        <captured>_ref
-        <captured-this>0
-    Local Variables:
-        arguments
-
-<method:Watch<RpcEvent::IRpcWrapper_IService>(24)> in rpcwrapper_RpcEvent__IService (461 .. 486)
+<method:MakeItHappen<RpcEvent::IRpcWrapper_IService>(35)> in rpcwrapper_RpcEvent__IService (1586 .. 1611)
     Arguments:
     Captured Variables:
         <captured>_lc
@@ -210,7 +343,16 @@ rpcwrapper_Create (507 .. 524)
     Local Variables:
         arguments
 
-<dtor:<RpcEvent::IRpcWrapper_IService>(25)> in rpcwrapper_RpcEvent__IService (487 .. 506)
+<method:Watch<RpcEvent::IRpcWrapper_IService>(36)> in rpcwrapper_RpcEvent__IService (1612 .. 1637)
+    Arguments:
+    Captured Variables:
+        <captured>_lc
+        <captured>_ref
+        <captured-this>0
+    Local Variables:
+        arguments
+
+<dtor:<RpcEvent::IRpcWrapper_IService>(37)> in rpcwrapper_RpcEvent__IService (1638 .. 1657)
     Arguments:
     Captured Variables:
         <captured>_lc
@@ -306,11 +448,11 @@ Instructions:
 //  new (RpcEvent::IService^)
 42   :     LoadMethodInfo: methodInfo = MakeItHappen<RpcEvent::IService>
 //  func MakeItHappen() : (void)
-43   :     LoadFunction  : func = 14(<method:MakeItHappen<RpcEvent::IService>(14)> in serviceMain)
+43   :     LoadFunction  : func = 26(<method:MakeItHappen<RpcEvent::IService>(26)> in serviceMain)
 //  new (RpcEvent::IService^)
 44   :     LoadMethodInfo: methodInfo = Watch<RpcEvent::IService>
 //  func Watch() : (void)
-45   :     LoadFunction  : func = 15(<method:Watch<RpcEvent::IService>(15)> in serviceMain)
+45   :     LoadFunction  : func = 27(<method:Watch<RpcEvent::IService>(27)> in serviceMain)
 //  new (RpcEvent::IService^)
 46   :     CreateInterface: methodInfo = <RpcEvent::IService>, stackPatternCount = 4
 //  var serviceObj = new (RpcEvent::IService^)
@@ -469,803 +611,3105 @@ Instructions:
 123  :     LoadValue     : value = <null>
 //  func rpc_GetIds() : (int[string])
 124  :     Return        
-//  typeId
-125  :     LoadLocalVar  : var = 0(typeId)
-//  -7
-126  :     LoadValue     : value = <I8, -7>
-//  (typeId >= -7)
-127  :     CompareLiteral: type = I8
-//  (typeId >= -7)
-128  :     OpGE          
-//  typeId
-129  :     LoadLocalVar  : var = 0(typeId)
-//  -1
-130  :     LoadValue     : value = <I8, -1>
-//  (typeId <= -1)
-131  :     CompareLiteral: type = I8
-//  (typeId <= -1)
-132  :     OpLE          
-//  ((typeId >= -7) and (typeId <= -1))
-133  :     OpAnd         : type = Bool
-//  if (((typeId >= -7) and (typeId <= -1)))
-134  :     OpNot         : type = Bool
-//  if (((typeId >= -7) and (typeId <= -1)))
-135  :     JumpIf        : label = 139
-//  true
-136  :     LoadValue     : value = <Bool, true>
-//  return true;
+//  new (system::JsonLiteral^)()
+125  :     LoadValue     : value = <null>
+//  new (system::JsonLiteral^)()
+126  :     InvokeMethod  : methodInfo = <system::JsonLiteral>, stackPatternCount = 0
+//  var node : system::JsonLiteral^ = new (system::JsonLiteral^)();
+127  :     StoreLocalVar : var = 0(node)
+//  system::JsonLiteralValue::Null
+128  :     LoadValue     : value = <enum: 2>
+//  (node.value = system::JsonLiteralValue::Null)
+129  :     Duplicate     : stackPatternCount = 0
+//  node
+130  :     LoadLocalVar  : var = 0(node)
+//  (node.value = system::JsonLiteralValue::Null)
+131  :     SetProperty   : propertyInfo = value<system::JsonLiteral>
+//  (node.value = system::JsonLiteralValue::Null);
+132  :     Pop           
+//  node
+133  :     LoadLocalVar  : var = 0(node)
+//  node
+134  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  return node;
+135  :     Return        
+//  func rpcjson_NewNull() : (system::JsonNode^)
+136  :     LoadValue     : value = <null>
+//  func rpcjson_NewNull() : (system::JsonNode^)
 137  :     Return        
-//  if (((typeId >= -7) and (typeId <= -1)))
-138  :     Jump          : label = 139
-//  typeId
-139  :     LoadLocalVar  : var = 0(typeId)
-//  var <switch>0 : ::system::Int64 = typeId;
-140  :     StoreLocalVar : var = 1(<switch>0)
-//  <switch>0
-141  :     LoadLocalVar  : var = 1(<switch>0)
-//  rpctype_RpcEvent__IService
-142  :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
-//  (<switch>0 == rpctype_RpcEvent__IService of (::system::Int64))
-143  :     CompareValue  
-//  if ((<switch>0 == rpctype_RpcEvent__IService of (::system::Int64)))
-144  :     OpNot         : type = Bool
-//  if ((<switch>0 == rpctype_RpcEvent__IService of (::system::Int64)))
-145  :     JumpIf        : label = 149
-//  true
-146  :     LoadValue     : value = <Bool, true>
-//  return true;
-147  :     Return        
-//  if ((<switch>0 == rpctype_RpcEvent__IService of (::system::Int64)))
-148  :     Jump          : label = 151
-//  false
-149  :     LoadValue     : value = <Bool, false>
-//  return false;
-150  :     Return        
-//  func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
-151  :     LoadValue     : value = <null>
-//  func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
-152  :     Return        
-//  typeId
-153  :     LoadLocalVar  : var = 0(typeId)
-//  var <switch>1 : ::system::Int64 = typeId;
-154  :     StoreLocalVar : var = 1(<switch>1)
-//  <switch>1
-155  :     LoadLocalVar  : var = 1(<switch>1)
-//  rpctype_RpcEvent__IService
-156  :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
-//  (<switch>1 == rpctype_RpcEvent__IService of (::system::Int64))
-157  :     CompareValue  
-//  if ((<switch>1 == rpctype_RpcEvent__IService of (::system::Int64)))
-158  :     OpNot         : type = Bool
-//  if ((<switch>1 == rpctype_RpcEvent__IService of (::system::Int64)))
-159  :     JumpIf        : label = 163
-//  true
-160  :     LoadValue     : value = <Bool, true>
-//  return true;
-161  :     Return        
-//  if ((<switch>1 == rpctype_RpcEvent__IService of (::system::Int64)))
-162  :     Jump          : label = 165
-//  false
-163  :     LoadValue     : value = <Bool, false>
-//  return false;
-164  :     Return        
-//  func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
-165  :     LoadValue     : value = <null>
-//  func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
-166  :     Return        
-//  lc
-167  :     LoadLocalVar  : var = 0(lc)
-//  new (system::IRpcObjectOps^)
+//  {value : value;}
+138  :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
+//  value
+139  :     LoadLocalVar  : var = 0(value)
+//  {value : value;}
+140  :     UpdateProperty: propertyInfo = value<system::ParsingToken>
+//  return {value : value;};
+141  :     Return        
+//  func rpcjson_NewToken(value : string) : (system::ParsingToken)
+142  :     LoadValue     : value = <null>
+//  func rpcjson_NewToken(value : string) : (system::ParsingToken)
+143  :     Return        
+//  new (system::JsonString^)()
+144  :     LoadValue     : value = <null>
+//  new (system::JsonString^)()
+145  :     InvokeMethod  : methodInfo = <system::JsonString>, stackPatternCount = 0
+//  var node : system::JsonString^ = new (system::JsonString^)();
+146  :     StoreLocalVar : var = 1(node)
+//  content
+147  :     LoadLocalVar  : var = 0(content)
+//  rpcjson_NewToken(content)
+148  :     Invoke        : func = 6(rpcjson_NewToken), stackPatternCount = 1
+//  (node.content = rpcjson_NewToken(content))
+149  :     Duplicate     : stackPatternCount = 0
+//  node
+150  :     LoadLocalVar  : var = 1(node)
+//  (node.content = rpcjson_NewToken(content))
+151  :     SetProperty   : propertyInfo = content<system::JsonString>
+//  (node.content = rpcjson_NewToken(content));
+152  :     Pop           
+//  node
+153  :     LoadLocalVar  : var = 1(node)
+//  return node;
+154  :     Return        
+//  func rpcjson_NewString(content : string) : (system::JsonString^)
+155  :     LoadValue     : value = <null>
+//  func rpcjson_NewString(content : string) : (system::JsonString^)
+156  :     Return        
+//  new (system::JsonNumber^)()
+157  :     LoadValue     : value = <null>
+//  new (system::JsonNumber^)()
+158  :     InvokeMethod  : methodInfo = <system::JsonNumber>, stackPatternCount = 0
+//  var node : system::JsonNumber^ = new (system::JsonNumber^)();
+159  :     StoreLocalVar : var = 1(node)
+//  content
+160  :     LoadLocalVar  : var = 0(content)
+//  rpcjson_NewToken(content)
+161  :     Invoke        : func = 6(rpcjson_NewToken), stackPatternCount = 1
+//  (node.content = rpcjson_NewToken(content))
+162  :     Duplicate     : stackPatternCount = 0
+//  node
+163  :     LoadLocalVar  : var = 1(node)
+//  (node.content = rpcjson_NewToken(content))
+164  :     SetProperty   : propertyInfo = content<system::JsonNumber>
+//  (node.content = rpcjson_NewToken(content));
+165  :     Pop           
+//  node
+166  :     LoadLocalVar  : var = 1(node)
+//  return node;
+167  :     Return        
+//  func rpcjson_NewNumber(content : string) : (system::JsonNumber^)
 168  :     LoadValue     : value = <null>
-//  new (system::IRpcObjectOps^)
-169  :     CreateClosureContext: stackPatternCount = 2
-//  new (system::IRpcObjectOps^)
-170  :     LoadMethodInfo: methodInfo = InvokeMethod<system::IRpcObjectOps>
-//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
-171  :     LoadFunction  : func = 16(<method:InvokeMethod<system::IRpcObjectOps>(16)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-172  :     LoadMethodInfo: methodInfo = InvokeMethodAsync<system::IRpcObjectOps>
-//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
-173  :     LoadFunction  : func = 17(<method:InvokeMethodAsync<system::IRpcObjectOps>(17)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-174  :     LoadMethodInfo: methodInfo = ObjectHold<system::IRpcObjectOps>
-//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
-175  :     LoadFunction  : func = 18(<method:ObjectHold<system::IRpcObjectOps>(18)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-176  :     LoadMethodInfo: methodInfo = RegisterService<system::IRpcObjectOps>
-//  func RegisterService(typeId : int, service : system::Interface^) : (void)
-177  :     LoadFunction  : func = 19(<method:RegisterService<system::IRpcObjectOps>(19)> in rpc_IRpcObjectOps)
-//  new (system::IRpcObjectOps^)
-178  :     CreateInterface: methodInfo = <system::IRpcObjectOps>, stackPatternCount = 8
-//  return new (system::IRpcObjectOps^)
-179  :     Return        
-//  func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
-180  :     LoadValue     : value = <null>
-//  func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
-181  :     Return        
-//  methodId
-182  :     LoadLocalVar  : var = 1(methodId)
-//  var <switch>2 : ::system::Int64 = methodId;
-183  :     StoreLocalVar : var = 3(<switch>2)
-//  <switch>2
-184  :     LoadLocalVar  : var = 3(<switch>2)
-//  rpcmethod_RpcEvent__IService_MakeItHappen
-185  :     LoadGlobalVar : var = 2(rpcmethod_RpcEvent__IService_MakeItHappen)
-//  (<switch>2 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64))
-186  :     CompareValue  
-//  if ((<switch>2 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64)))
-187  :     OpNot         : type = Bool
-//  if ((<switch>2 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64)))
-188  :     JumpIf        : label = 200
-//  ref
-189  :     LoadLocalVar  : var = 0(ref)
-//  _lc
-190  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.RefToPtr(ref)
-191  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
-//  _lc.RefToPtr(ref)
-192  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
-//  var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
-193  :     StoreLocalVar : var = 4(target)
-//  target
-194  :     LoadLocalVar  : var = 4(target)
-//  target.MakeItHappen()
-195  :     InvokeMethod  : methodInfo = MakeItHappen<RpcEvent::IService>, stackPatternCount = 0
-//  target.MakeItHappen();
-196  :     Pop           
-//  null
-197  :     LoadValue     : value = <null>
-//  return null;
-198  :     Return        
-//  if ((<switch>2 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64)))
-199  :     Jump          : label = 218
-//  <switch>2
-200  :     LoadLocalVar  : var = 3(<switch>2)
-//  rpcmethod_RpcEvent__IService_Watch
-201  :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
-//  (<switch>2 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64))
-202  :     CompareValue  
-//  if ((<switch>2 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64)))
-203  :     OpNot         : type = Bool
-//  if ((<switch>2 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64)))
-204  :     JumpIf        : label = 216
-//  ref
-205  :     LoadLocalVar  : var = 0(ref)
-//  _lc
-206  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.RefToPtr(ref)
-207  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
-//  _lc.RefToPtr(ref)
-208  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
-//  var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
-209  :     StoreLocalVar : var = 5(target)
-//  target
-210  :     LoadLocalVar  : var = 5(target)
-//  target.Watch()
-211  :     InvokeMethod  : methodInfo = Watch<RpcEvent::IService>, stackPatternCount = 0
-//  target.Watch();
-212  :     Pop           
-//  null
-213  :     LoadValue     : value = <null>
-//  return null;
-214  :     Return        
-//  if ((<switch>2 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64)))
-215  :     Jump          : label = 218
-//  "Unknown RPC method id."
-216  :     LoadValue     : value = <String, Unknown RPC method id.>
-//  raise "Unknown RPC method id.";
-217  :     RaiseException
-//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
-218  :     LoadValue     : value = <null>
-//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
-219  :     Return        
-//  "InvokeMethodAsync is not supported."
-220  :     LoadValue     : value = <String, InvokeMethodAsync is not supported.>
-//  raise "InvokeMethodAsync is not supported.";
-221  :     RaiseException
-//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+//  func rpcjson_NewNumber(content : string) : (system::JsonNumber^)
+169  :     Return        
+//  new (system::JsonArray^)()
+170  :     LoadValue     : value = <null>
+//  new (system::JsonArray^)()
+171  :     InvokeMethod  : methodInfo = <system::JsonArray>, stackPatternCount = 0
+//  var array : system::JsonArray^ = new (system::JsonArray^)();
+172  :     StoreLocalVar : var = 2(array)
+//  keyword
+173  :     LoadLocalVar  : var = 0(keyword)
+//  rpcjson_NewString(keyword)
+174  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  array
+175  :     LoadLocalVar  : var = 2(array)
+//  array.items
+176  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items.Add(rpcjson_NewString(keyword))
+177  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  array.items.Add(rpcjson_NewString(keyword));
+178  :     Pop           
+//  value
+179  :     LoadLocalVar  : var = 1(value)
+//  array
+180  :     LoadLocalVar  : var = 2(array)
+//  array.items
+181  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items.Add(value)
+182  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  array.items.Add(value);
+183  :     Pop           
+//  array
+184  :     LoadLocalVar  : var = 2(array)
+//  array
+185  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  return array;
+186  :     Return        
+//  func rpcjson_NewArray2(keyword : string, value : system::JsonNode^) : (system::JsonNode^)
+187  :     LoadValue     : value = <null>
+//  func rpcjson_NewArray2(keyword : string, value : system::JsonNode^) : (system::JsonNode^)
+188  :     Return        
+//  new (system::JsonObjectField^)()
+189  :     LoadValue     : value = <null>
+//  new (system::JsonObjectField^)()
+190  :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
+//  var field : system::JsonObjectField^ = new (system::JsonObjectField^)();
+191  :     StoreLocalVar : var = 3(field)
+//  name
+192  :     LoadLocalVar  : var = 1(name)
+//  rpcjson_NewToken(name)
+193  :     Invoke        : func = 6(rpcjson_NewToken), stackPatternCount = 1
+//  (field.name = rpcjson_NewToken(name))
+194  :     Duplicate     : stackPatternCount = 0
+//  field
+195  :     LoadLocalVar  : var = 3(field)
+//  (field.name = rpcjson_NewToken(name))
+196  :     SetProperty   : propertyInfo = name<system::JsonObjectField>
+//  (field.name = rpcjson_NewToken(name));
+197  :     Pop           
+//  value
+198  :     LoadLocalVar  : var = 2(value)
+//  (field.value = value)
+199  :     Duplicate     : stackPatternCount = 0
+//  field
+200  :     LoadLocalVar  : var = 3(field)
+//  (field.value = value)
+201  :     SetProperty   : propertyInfo = value<system::JsonObjectField>
+//  (field.value = value);
+202  :     Pop           
+//  field
+203  :     LoadLocalVar  : var = 3(field)
+//  object
+204  :     LoadLocalVar  : var = 0(object)
+//  object.fields
+205  :     GetProperty   : propertyInfo = fields<system::JsonObject>
+//  object.fields.Add(field)
+206  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  object.fields.Add(field);
+207  :     Pop           
+//  func rpcjson_ObjectAdd(object : system::JsonObject^, name : string, value : system::JsonNode^) : (void)
+208  :     LoadValue     : value = <null>
+//  func rpcjson_ObjectAdd(object : system::JsonObject^, name : string, value : system::JsonNode^) : (void)
+209  :     Return        
+//  new (system::JsonObject^)()
+210  :     LoadValue     : value = <null>
+//  new (system::JsonObject^)()
+211  :     InvokeMethod  : methodInfo = <system::JsonObject>, stackPatternCount = 0
+//  var object : system::JsonObject^ = new (system::JsonObject^)();
+212  :     StoreLocalVar : var = 1(object)
+//  object
+213  :     LoadLocalVar  : var = 1(object)
+//  "$"
+214  :     LoadValue     : value = <String, $>
+//  keyword
+215  :     LoadLocalVar  : var = 0(keyword)
+//  rpcjson_NewString(keyword)
+216  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString(keyword)
+217  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_ObjectAdd(object, "$", rpcjson_NewString(keyword))
+218  :     Invoke        : func = 10(rpcjson_ObjectAdd), stackPatternCount = 3
+//  rpcjson_ObjectAdd(object, "$", rpcjson_NewString(keyword));
+219  :     Pop           
+//  object
+220  :     LoadLocalVar  : var = 1(object)
+//  return object;
+221  :     Return        
+//  func rpcjson_NewObject(keyword : string) : (system::JsonObject^)
 222  :     LoadValue     : value = <null>
-//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+//  func rpcjson_NewObject(keyword : string) : (system::JsonObject^)
 223  :     Return        
-//  hold
-224  :     LoadLocalVar  : var = 2(hold)
-//  if (hold)
-225  :     OpNot         : type = Bool
-//  if (hold)
-226  :     JumpIf        : label = 233
-//  ref
-227  :     LoadLocalVar  : var = 0(ref)
-//  remoteClientId
-228  :     LoadLocalVar  : var = 1(remoteClientId)
-//  _lc
-229  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.LocalObjectHold(ref, remoteClientId)
-230  :     InvokeMethod  : methodInfo = LocalObjectHold<system::IRpcLifecycle>, stackPatternCount = 2
-//  _lc.LocalObjectHold(ref, remoteClientId);
-231  :     Pop           
-//  if (hold)
-232  :     Jump          : label = 238
-//  ref
-233  :     LoadLocalVar  : var = 0(ref)
-//  remoteClientId
-234  :     LoadLocalVar  : var = 1(remoteClientId)
-//  _lc
-235  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.LocalObjectUnhold(ref, remoteClientId)
-236  :     InvokeMethod  : methodInfo = LocalObjectUnhold<system::IRpcLifecycle>, stackPatternCount = 2
-//  _lc.LocalObjectUnhold(ref, remoteClientId);
-237  :     Pop           
-//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
-238  :     LoadValue     : value = <null>
-//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
-239  :     Return        
-//  typeId
-240  :     LoadLocalVar  : var = 0(typeId)
-//  rpcwrapper_IsCtorInterfaceTypeId(typeId)
-241  :     Invoke        : func = 6(rpcwrapper_IsCtorInterfaceTypeId), stackPatternCount = 1
-//  if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
-242  :     OpNot         : type = Bool
-//  if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
-243  :     JumpIf        : label = 253
-//  typeId
-244  :     LoadLocalVar  : var = 0(typeId)
-//  service
-245  :     LoadLocalVar  : var = 1(service)
-//  _lc
-246  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.PtrToRef(service)
-247  :     InvokeMethod  : methodInfo = PtrToRef<system::IRpcLifecycle>, stackPatternCount = 1
-//  _lc
-248  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Dispatcher
-249  :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
-//  _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service))
-250  :     InvokeMethod  : methodInfo = RegisterService<system::IRpcDispatcher>, stackPatternCount = 2
-//  _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
-251  :     Pop           
-//  if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
-252  :     Jump          : label = 262
-//  typeId
-253  :     LoadLocalVar  : var = 0(typeId)
-//  rpcwrapper_IsInterfaceTypeId(typeId)
-254  :     Invoke        : func = 5(rpcwrapper_IsInterfaceTypeId), stackPatternCount = 1
-//  if (rpcwrapper_IsInterfaceTypeId(typeId))
-255  :     OpNot         : type = Bool
-//  if (rpcwrapper_IsInterfaceTypeId(typeId))
-256  :     JumpIf        : label = 260
-//  "RPC service type id is not an @rpc:Ctor interface."
-257  :     LoadValue     : value = <String, RPC service type id is not an @rpc:Ctor interface.>
-//  raise "RPC service type id is not an @rpc:Ctor interface.";
-258  :     RaiseException
-//  if (rpcwrapper_IsInterfaceTypeId(typeId))
-259  :     Jump          : label = 262
-//  "RPC service type id does not exist."
-260  :     LoadValue     : value = <String, RPC service type id does not exist.>
-//  raise "RPC service type id does not exist.";
-261  :     RaiseException
-//  func RegisterService(typeId : int, service : system::Interface^) : (void)
-262  :     LoadValue     : value = <null>
-//  func RegisterService(typeId : int, service : system::Interface^) : (void)
-263  :     Return        
-//  lc
-264  :     LoadLocalVar  : var = 0(lc)
-//  new (system::IRpcObjectEventOps^)
-265  :     LoadValue     : value = <null>
-//  new (system::IRpcObjectEventOps^)
-266  :     CreateClosureContext: stackPatternCount = 2
-//  new (system::IRpcObjectEventOps^)
-267  :     LoadMethodInfo: methodInfo = InvokeEvent<system::IRpcObjectEventOps>
-//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
-268  :     LoadFunction  : func = 20(<method:InvokeEvent<system::IRpcObjectEventOps>(20)> in rpc_IRpcObjectEventOps)
-//  new (system::IRpcObjectEventOps^)
-269  :     CreateInterface: methodInfo = <system::IRpcObjectEventOps>, stackPatternCount = 2
-//  return new (system::IRpcObjectEventOps^)
-270  :     Return        
-//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
-271  :     LoadValue     : value = <null>
-//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
-272  :     Return        
-//  ref
-273  :     LoadLocalVar  : var = 0(ref)
-//  eventId
-274  :     LoadLocalVar  : var = 1(eventId)
-//  true
-275  :     LoadValue     : value = <Bool, true>
-//  _lc
-276  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Controller
-277  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
-//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, true)
-278  :     InvokeMethod  : methodInfo = SetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 3
-//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
-279  :     Pop           
-//  try
-280  :     InstallTry    : label = 308
-//  eventId
-281  :     LoadLocalVar  : var = 1(eventId)
-//  var <switch>3 : ::system::Int64 = eventId;
-282  :     StoreLocalVar : var = 3(<switch>3)
-//  <switch>3
-283  :     LoadLocalVar  : var = 3(<switch>3)
-//  rpcevent_RpcEvent__IService_SomethingHappened
-284  :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
-//  (<switch>3 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64))
-285  :     CompareValue  
-//  if ((<switch>3 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64)))
-286  :     OpNot         : type = Bool
-//  if ((<switch>3 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64)))
-287  :     JumpIf        : label = 304
-//  ref
-288  :     LoadLocalVar  : var = 0(ref)
-//  _lc
-289  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.RefToPtr(ref)
-290  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
-//  _lc.RefToPtr(ref)
-291  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
-//  var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
-292  :     StoreLocalVar : var = 4(target)
-//  0
-293  :     LoadValue     : value = <I8, 0>
-//  arguments
-294  :     LoadLocalVar  : var = 2(arguments)
-//  arguments[0]
-295  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  _lc
-296  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)
-297  :     LoadValue     : value = <null>
-//  system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)
-298  :     InvokeMethod  : methodInfo = RpcUnboxByval<system::IRpcLifecycle>, stackPatternCount = 2
-//  system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)
-299  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  target
-300  :     LoadLocalVar  : var = 4(target)
-//  target.SomethingHappened((cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)))
-301  :     InvokeEvent   : eventInfo = SomethingHappened<RpcEvent::IService>, stackPatternCount = 1
-//  target.SomethingHappened((cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
-302  :     Pop           
-//  if ((<switch>3 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64)))
-303  :     Jump          : label = 306
-//  "Unknown RPC event id."
-304  :     LoadValue     : value = <String, Unknown RPC event id.>
-//  raise "Unknown RPC event id.";
-305  :     RaiseException
-//  try
-306  :     UninstallTry  : stackPatternCount = 0
-//  try
-307  :     Jump          : label = 319
-//  try
-308  :     LoadException 
-//  try
-309  :     StoreLocalVar : var = 5(<catch>)
-//  ref
-310  :     LoadLocalVar  : var = 0(ref)
-//  eventId
-311  :     LoadLocalVar  : var = 1(eventId)
-//  false
-312  :     LoadValue     : value = <Bool, false>
-//  _lc
-313  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Controller
-314  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
-//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false)
-315  :     InvokeMethod  : methodInfo = SetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 3
-//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
-316  :     Pop           
-//  try
-317  :     LoadLocalVar  : var = 5(<catch>)
-//  try
-318  :     RaiseException
-//  ref
-319  :     LoadLocalVar  : var = 0(ref)
-//  eventId
-320  :     LoadLocalVar  : var = 1(eventId)
-//  false
-321  :     LoadValue     : value = <Bool, false>
-//  _lc
-322  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Controller
-323  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
-//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false)
-324  :     InvokeMethod  : methodInfo = SetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 3
-//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
-325  :     Pop           
-//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
-326  :     LoadValue     : value = <null>
-//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
-327  :     Return        
-//  target
-328  :     LoadLocalVar  : var = 2(target)
-//  func (arg0 : ::system::String) : (void)
-329  :     LoadLocalVar  : var = 0(lc)
-//  func (arg0 : ::system::String) : (void)
-330  :     LoadLocalVar  : var = 1(ref)
-//  func (arg0 : ::system::String) : (void)
-331  :     CreateClosureContext: stackPatternCount = 2
-//  func (arg0 : ::system::String) : (void)
-332  :     LoadFunction  : func = 21(<lambda:(21)> in rpclistener_RpcEvent__IService)
-//  func (arg0 : ::system::String) : (void)
-333  :     CreateClosure 
-//  attach(target.SomethingHappened, func (arg0 : ::system::String) : (void)
-334  :     AttachEvent   : eventInfo = SomethingHappened<RpcEvent::IService>
-//  attach(target.SomethingHappened, func (arg0 : ::system::String) : (void)
-335  :     Pop           
-//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcEvent::IService*) : (void)
-336  :     LoadValue     : value = <null>
-//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcEvent::IService*) : (void)
-337  :     Return        
-//  ref
-338  :     LoadCapturedVar: var = 1(<captured>ref)
-//  rpcevent_RpcEvent__IService_SomethingHappened
-339  :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
-//  lc
-340  :     LoadCapturedVar: var = 0(<captured>lc)
-//  lc.Controller
-341  :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
-//  lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened)
-342  :     InvokeMethod  : methodInfo = GetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 2
-//  if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened))
-343  :     OpNot         : type = Bool
-//  if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened))
-344  :     JumpIf        : label = 348
-//  return;
-345  :     LoadValue     : value = <null>
-//  return;
-346  :     Return        
-//  if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened))
-347  :     Jump          : label = 348
-//  {}
-348  :     NewArray      : stackPatternCount = 0
-//  var arguments : system::Array^ = {};
-349  :     StoreLocalVar : var = 1(arguments)
-//  1
-350  :     LoadValue     : value = <I8, 1>
-//  arguments
-351  :     LoadLocalVar  : var = 1(arguments)
-//  arguments.Resize(1)
-352  :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
-//  arguments.Resize(1);
-353  :     Pop           
-//  0
-354  :     LoadValue     : value = <I8, 0>
-//  arg0
-355  :     LoadLocalVar  : var = 0(arg0)
-//  lc
-356  :     LoadCapturedVar: var = 0(<captured>lc)
-//  system::IRpcLifecycle::RpcBoxByval(arg0, lc)
+//  object
+224  :     LoadLocalVar  : var = 0(object)
+//  object.fields
+225  :     GetProperty   : propertyInfo = fields<system::JsonObject>
+//  object.fields
+226  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>field = object.fields of (::system::Enumerable^);
+227  :     StoreLocalVar : var = 2(<for-enumerable>field)
+//  <for-enumerable>field
+228  :     LoadLocalVar  : var = 2(<for-enumerable>field)
+//  <for-enumerable>field.CreateEnumerator()
+229  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>field = <for-enumerable>field.CreateEnumerator();
+230  :     StoreLocalVar : var = 3(<for-enumerator>field)
+//  <for-enumerator>field
+231  :     LoadLocalVar  : var = 3(<for-enumerator>field)
+//  <for-enumerator>field.Next()
+232  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>field.Next())
+233  :     OpNot         : type = Bool
+//  while (<for-enumerator>field.Next())
+234  :     JumpIf        : label = 251
+//  <for-enumerator>field
+235  :     LoadLocalVar  : var = 3(<for-enumerator>field)
+//  <for-enumerator>field.GetCurrent()
+236  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>field.GetCurrent()
+237  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonObjectField
+//  var field = (cast (::system::JsonObjectField^) <for-enumerator>field.GetCurrent());
+238  :     StoreLocalVar : var = 4(field)
+//  field
+239  :     LoadLocalVar  : var = 4(field)
+//  field.name
+240  :     GetProperty   : propertyInfo = name<system::JsonObjectField>
+//  field.name.value
+241  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  name
+242  :     LoadLocalVar  : var = 1(name)
+//  (field.name.value == name)
+243  :     CompareValue  
+//  if ((field.name.value == name))
+244  :     OpNot         : type = Bool
+//  if ((field.name.value == name))
+245  :     JumpIf        : label = 250
+//  field
+246  :     LoadLocalVar  : var = 4(field)
+//  field.value
+247  :     GetProperty   : propertyInfo = value<system::JsonObjectField>
+//  return field.value;
+248  :     Return        
+//  if ((field.name.value == name))
+249  :     Jump          : label = 250
+//  while (<for-enumerator>field.Next())
+250  :     Jump          : label = 231
+//  "JSON object field not found."
+251  :     LoadValue     : value = <String, JSON object field not found.>
+//  raise "JSON object field not found.";
+252  :     RaiseException
+//  func rpcjson_ObjectGet(object : system::JsonObject^, name : string) : (system::JsonNode^)
+253  :     LoadValue     : value = <null>
+//  func rpcjson_ObjectGet(object : system::JsonObject^, name : string) : (system::JsonNode^)
+254  :     Return        
+//  keyword
+255  :     LoadLocalVar  : var = 0(keyword)
+//  rpcjson_NewObject(keyword)
+256  :     Invoke        : func = 11(rpcjson_NewObject), stackPatternCount = 1
+//  var object : system::JsonObject^ = rpcjson_NewObject(keyword);
+257  :     StoreLocalVar : var = 2(object)
+//  new (system::JsonArray^)()
+258  :     LoadValue     : value = <null>
+//  new (system::JsonArray^)()
+259  :     InvokeMethod  : methodInfo = <system::JsonArray>, stackPatternCount = 0
+//  var array : system::JsonArray^ = new (system::JsonArray^)();
+260  :     StoreLocalVar : var = 3(array)
+//  values
+261  :     LoadLocalVar  : var = 1(values)
+//  var <for-enumerable>value = values of (::system::Enumerable^);
+262  :     StoreLocalVar : var = 4(<for-enumerable>value)
+//  <for-enumerable>value
+263  :     LoadLocalVar  : var = 4(<for-enumerable>value)
+//  <for-enumerable>value.CreateEnumerator()
+264  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>value = <for-enumerable>value.CreateEnumerator();
+265  :     StoreLocalVar : var = 5(<for-enumerator>value)
+//  <for-enumerator>value
+266  :     LoadLocalVar  : var = 5(<for-enumerator>value)
+//  <for-enumerator>value.Next()
+267  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>value.Next())
+268  :     OpNot         : type = Bool
+//  while (<for-enumerator>value.Next())
+269  :     JumpIf        : label = 280
+//  <for-enumerator>value
+270  :     LoadLocalVar  : var = 5(<for-enumerator>value)
+//  <for-enumerator>value.GetCurrent()
+271  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  var value = (cast (::system::Object) <for-enumerator>value.GetCurrent());
+272  :     StoreLocalVar : var = 6(value)
+//  value
+273  :     LoadLocalVar  : var = 6(value)
+//  rpcjson_Serialize(value)
+274  :     Invoke        : func = 15(rpcjson_Serialize), stackPatternCount = 1
+//  array
+275  :     LoadLocalVar  : var = 3(array)
+//  array.items
+276  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items.Add(rpcjson_Serialize(value))
+277  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  array.items.Add(rpcjson_Serialize(value));
+278  :     Pop           
+//  while (<for-enumerator>value.Next())
+279  :     Jump          : label = 266
+//  object
+280  :     LoadLocalVar  : var = 2(object)
+//  "values"
+281  :     LoadValue     : value = <String, values>
+//  array
+282  :     LoadLocalVar  : var = 3(array)
+//  array
+283  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_ObjectAdd(object, "values", array)
+284  :     Invoke        : func = 10(rpcjson_ObjectAdd), stackPatternCount = 3
+//  rpcjson_ObjectAdd(object, "values", array);
+285  :     Pop           
+//  object
+286  :     LoadLocalVar  : var = 2(object)
+//  object
+287  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  return object;
+288  :     Return        
+//  func rpcjson_SerializeCollection(keyword : string, values : system::Enumerable^) : (system::JsonNode^)
+289  :     LoadValue     : value = <null>
+//  func rpcjson_SerializeCollection(keyword : string, values : system::Enumerable^) : (system::JsonNode^)
+290  :     Return        
+//  "map"
+291  :     LoadValue     : value = <String, map>
+//  rpcjson_NewObject("map")
+292  :     Invoke        : func = 11(rpcjson_NewObject), stackPatternCount = 1
+//  var object : system::JsonObject^ = rpcjson_NewObject("map");
+293  :     StoreLocalVar : var = 1(object)
+//  new (system::JsonArray^)()
+294  :     LoadValue     : value = <null>
+//  new (system::JsonArray^)()
+295  :     InvokeMethod  : methodInfo = <system::JsonArray>, stackPatternCount = 0
+//  var array : system::JsonArray^ = new (system::JsonArray^)();
+296  :     StoreLocalVar : var = 2(array)
+//  values
+297  :     LoadLocalVar  : var = 0(values)
+//  values.Keys
+298  :     InvokeMethod  : methodInfo = GetKeys<system::ReadonlyDictionary>, stackPatternCount = 0
+//  values.Keys
+299  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>key = values.Keys of (::system::Enumerable^);
+300  :     StoreLocalVar : var = 3(<for-enumerable>key)
+//  <for-enumerable>key
+301  :     LoadLocalVar  : var = 3(<for-enumerable>key)
+//  <for-enumerable>key.CreateEnumerator()
+302  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>key = <for-enumerable>key.CreateEnumerator();
+303  :     StoreLocalVar : var = 4(<for-enumerator>key)
+//  <for-enumerator>key
+304  :     LoadLocalVar  : var = 4(<for-enumerator>key)
+//  <for-enumerator>key.Next()
+305  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>key.Next())
+306  :     OpNot         : type = Bool
+//  while (<for-enumerator>key.Next())
+307  :     JumpIf        : label = 334
+//  <for-enumerator>key
+308  :     LoadLocalVar  : var = 4(<for-enumerator>key)
+//  <for-enumerator>key.GetCurrent()
+309  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  var key = (cast (::system::Object) <for-enumerator>key.GetCurrent());
+310  :     StoreLocalVar : var = 5(key)
+//  new (system::JsonArray^)()
+311  :     LoadValue     : value = <null>
+//  new (system::JsonArray^)()
+312  :     InvokeMethod  : methodInfo = <system::JsonArray>, stackPatternCount = 0
+//  var pair : system::JsonArray^ = new (system::JsonArray^)();
+313  :     StoreLocalVar : var = 6(pair)
+//  key
+314  :     LoadLocalVar  : var = 5(key)
+//  rpcjson_Serialize(key)
+315  :     Invoke        : func = 15(rpcjson_Serialize), stackPatternCount = 1
+//  pair
+316  :     LoadLocalVar  : var = 6(pair)
+//  pair.items
+317  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  pair.items.Add(rpcjson_Serialize(key))
+318  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  pair.items.Add(rpcjson_Serialize(key));
+319  :     Pop           
+//  key
+320  :     LoadLocalVar  : var = 5(key)
+//  values
+321  :     LoadLocalVar  : var = 0(values)
+//  values.Get(key)
+322  :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+//  rpcjson_Serialize(values.Get(key))
+323  :     Invoke        : func = 15(rpcjson_Serialize), stackPatternCount = 1
+//  pair
+324  :     LoadLocalVar  : var = 6(pair)
+//  pair.items
+325  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  pair.items.Add(rpcjson_Serialize(values.Get(key)))
+326  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  pair.items.Add(rpcjson_Serialize(values.Get(key)));
+327  :     Pop           
+//  pair
+328  :     LoadLocalVar  : var = 6(pair)
+//  array
+329  :     LoadLocalVar  : var = 2(array)
+//  array.items
+330  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items.Add(pair)
+331  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  array.items.Add(pair);
+332  :     Pop           
+//  while (<for-enumerator>key.Next())
+333  :     Jump          : label = 304
+//  object
+334  :     LoadLocalVar  : var = 1(object)
+//  "values"
+335  :     LoadValue     : value = <String, values>
+//  array
+336  :     LoadLocalVar  : var = 2(array)
+//  array
+337  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_ObjectAdd(object, "values", array)
+338  :     Invoke        : func = 10(rpcjson_ObjectAdd), stackPatternCount = 3
+//  rpcjson_ObjectAdd(object, "values", array);
+339  :     Pop           
+//  object
+340  :     LoadLocalVar  : var = 1(object)
+//  object
+341  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  return object;
+342  :     Return        
+//  func rpcjson_SerializeMap(values : system::ReadonlyDictionary^) : (system::JsonNode^)
+343  :     LoadValue     : value = <null>
+//  func rpcjson_SerializeMap(values : system::ReadonlyDictionary^) : (system::JsonNode^)
+344  :     Return        
+//  value
+345  :     LoadLocalVar  : var = 0(value)
+//  value is null
+346  :     LoadValue     : value = <null>
+//  value is null
+347  :     CompareReference
+//  if (value is null)
+348  :     OpNot         : type = Bool
+//  if (value is null)
+349  :     JumpIf        : label = 353
+//  rpcjson_NewNull()
+350  :     Invoke        : func = 5(rpcjson_NewNull), stackPatternCount = 0
+//  return rpcjson_NewNull();
+351  :     Return        
+//  if (value is null)
+352  :     Jump          : label = 353
+//  value
+353  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::ObservableList^))
+354  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::ObservableList
+//  var observableList : system::ObservableList^ = (value as (system::ObservableList^));
+355  :     StoreLocalVar : var = 1(observableList)
+//  observableList
+356  :     LoadLocalVar  : var = 1(observableList)
+//  observableList is not null
 357  :     LoadValue     : value = <null>
-//  system::IRpcLifecycle::RpcBoxByval(arg0, lc)
-358  :     InvokeMethod  : methodInfo = RpcBoxByval<system::IRpcLifecycle>, stackPatternCount = 2
-//  arguments
-359  :     LoadLocalVar  : var = 1(arguments)
-//  arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg0, lc))
-360  :     InvokeMethod  : methodInfo = Set<system::Array>, stackPatternCount = 2
-//  arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg0, lc));
-361  :     Pop           
-//  ref
-362  :     LoadCapturedVar: var = 1(<captured>ref)
-//  rpcevent_RpcEvent__IService_SomethingHappened
-363  :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
-//  arguments
-364  :     LoadLocalVar  : var = 1(arguments)
-//  lc
-365  :     LoadCapturedVar: var = 0(<captured>lc)
-//  lc.ClientId
-366  :     InvokeMethod  : methodInfo = GetClientId<system::IRpcLifecycle>, stackPatternCount = 0
-//  lc
-367  :     LoadCapturedVar: var = 0(<captured>lc)
-//  lc.Dispatcher
-368  :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
-//  lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId)
-369  :     InvokeMethod  : methodInfo = BroadcastFromClient_ObjectEventOps<system::IRpcDispatcher>, stackPatternCount = 1
-//  lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments)
-370  :     InvokeMethod  : methodInfo = InvokeEvent<system::IRpcObjectEventOps>, stackPatternCount = 3
-//  lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
-371  :     Pop           
-//  func (arg0 : ::system::String) : (void)
+//  observableList is not null
+358  :     CompareReference
+//  observableList is not null
+359  :     OpNot         : type = Bool
+//  if (observableList is not null)
+360  :     OpNot         : type = Bool
+//  if (observableList is not null)
+361  :     JumpIf        : label = 368
+//  "observable-list"
+362  :     LoadValue     : value = <String, observable-list>
+//  observableList
+363  :     LoadLocalVar  : var = 1(observableList)
+//  observableList
+364  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  rpcjson_SerializeCollection("observable-list", observableList)
+365  :     Invoke        : func = 13(rpcjson_SerializeCollection), stackPatternCount = 2
+//  return rpcjson_SerializeCollection("observable-list", observableList);
+366  :     Return        
+//  if (observableList is not null)
+367  :     Jump          : label = 368
+//  value
+368  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Dictionary^))
+369  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::Dictionary
+//  var dictionary : system::Dictionary^ = (value as (system::Dictionary^));
+370  :     StoreLocalVar : var = 2(dictionary)
+//  dictionary
+371  :     LoadLocalVar  : var = 2(dictionary)
+//  dictionary is not null
 372  :     LoadValue     : value = <null>
-//  func (arg0 : ::system::String) : (void)
-373  :     Return        
-//  typeId
-374  :     LoadLocalVar  : var = 0(typeId)
-//  var <switch>4 : ::system::Int64 = typeId;
-375  :     StoreLocalVar : var = 4(<switch>4)
-//  <switch>4
-376  :     LoadLocalVar  : var = 4(<switch>4)
-//  rpctype_RpcEvent__IService
-377  :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
-//  (<switch>4 == rpctype_RpcEvent__IService of (::system::Int64))
-378  :     CompareValue  
-//  if ((<switch>4 == rpctype_RpcEvent__IService of (::system::Int64)))
-379  :     OpNot         : type = Bool
-//  if ((<switch>4 == rpctype_RpcEvent__IService of (::system::Int64)))
-380  :     JumpIf        : label = 390
-//  lc
-381  :     LoadLocalVar  : var = 1(lc)
-//  ref
-382  :     LoadLocalVar  : var = 2(ref)
-//  obj
-383  :     LoadLocalVar  : var = 3(obj)
-//  obj
-384  :     ConvertToType : flag = RawPtr, typeDescriptor = RpcEvent::IService
-//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService*) obj))
-385  :     Invoke        : func = 9(rpclistener_RpcEvent__IService), stackPatternCount = 3
-//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService*) obj));
-386  :     Pop           
-//  return;
-387  :     LoadValue     : value = <null>
-//  return;
-388  :     Return        
-//  if ((<switch>4 == rpctype_RpcEvent__IService of (::system::Int64)))
-389  :     Jump          : label = 392
-//  "Unknown RPC type id for listener attachment."
-390  :     LoadValue     : value = <String, Unknown RPC type id for listener attachment.>
-//  raise "Unknown RPC type id for listener attachment.";
-391  :     RaiseException
-//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
-392  :     LoadValue     : value = <null>
-//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+//  dictionary is not null
+373  :     CompareReference
+//  dictionary is not null
+374  :     OpNot         : type = Bool
+//  if (dictionary is not null)
+375  :     OpNot         : type = Bool
+//  if (dictionary is not null)
+376  :     JumpIf        : label = 382
+//  dictionary
+377  :     LoadLocalVar  : var = 2(dictionary)
+//  dictionary
+378  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ReadonlyDictionary
+//  rpcjson_SerializeMap(dictionary)
+379  :     Invoke        : func = 14(rpcjson_SerializeMap), stackPatternCount = 1
+//  return rpcjson_SerializeMap(dictionary);
+380  :     Return        
+//  if (dictionary is not null)
+381  :     Jump          : label = 382
+//  value
+382  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::ReadonlyDictionary^))
+383  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::ReadonlyDictionary
+//  var readonlyDictionary : system::ReadonlyDictionary^ = (value as (system::ReadonlyDictionary^));
+384  :     StoreLocalVar : var = 3(readonlyDictionary)
+//  readonlyDictionary
+385  :     LoadLocalVar  : var = 3(readonlyDictionary)
+//  readonlyDictionary is not null
+386  :     LoadValue     : value = <null>
+//  readonlyDictionary is not null
+387  :     CompareReference
+//  readonlyDictionary is not null
+388  :     OpNot         : type = Bool
+//  if (readonlyDictionary is not null)
+389  :     OpNot         : type = Bool
+//  if (readonlyDictionary is not null)
+390  :     JumpIf        : label = 395
+//  readonlyDictionary
+391  :     LoadLocalVar  : var = 3(readonlyDictionary)
+//  rpcjson_SerializeMap(readonlyDictionary)
+392  :     Invoke        : func = 14(rpcjson_SerializeMap), stackPatternCount = 1
+//  return rpcjson_SerializeMap(readonlyDictionary);
 393  :     Return        
-//  lc
-394  :     LoadLocalVar  : var = 0(lc)
-//  proxyRef
-395  :     LoadLocalVar  : var = 1(proxyRef)
-//  new (RpcEvent::IRpcWrapper_IService^)
-396  :     LoadValue     : value = <null>
-//  new (RpcEvent::IRpcWrapper_IService^)
-397  :     CreateClosureContext: stackPatternCount = 3
-//  new (RpcEvent::IRpcWrapper_IService^)
-398  :     LoadMethodInfo: methodInfo = DisconnectFromLifecycle<system::IRpcWrapperBase>
-//  func DisconnectFromLifecycle() : (void)
-399  :     LoadFunction  : func = 22(<method:DisconnectFromLifecycle<RpcEvent::IRpcWrapper_IService>(22)> in rpcwrapper_RpcEvent__IService)
-//  new (RpcEvent::IRpcWrapper_IService^)
-400  :     LoadMethodInfo: methodInfo = MakeItHappen<RpcEvent::IService>
-//  func MakeItHappen() : (::system::Void)
-401  :     LoadFunction  : func = 23(<method:MakeItHappen<RpcEvent::IRpcWrapper_IService>(23)> in rpcwrapper_RpcEvent__IService)
-//  new (RpcEvent::IRpcWrapper_IService^)
-402  :     LoadMethodInfo: methodInfo = Watch<RpcEvent::IService>
-//  func Watch() : (::system::Void)
-403  :     LoadFunction  : func = 24(<method:Watch<RpcEvent::IRpcWrapper_IService>(24)> in rpcwrapper_RpcEvent__IService)
-//  new (RpcEvent::IRpcWrapper_IService^)
-404  :     LoadValue     : value = <null>
-//  new (RpcEvent::IRpcWrapper_IService^)
-405  :     LoadFunction  : func = 25(<dtor:<RpcEvent::IRpcWrapper_IService>(25)> in rpcwrapper_RpcEvent__IService)
-//  new (RpcEvent::IRpcWrapper_IService^)
-406  :     CreateInterface: methodInfo = <RpcEvent::IRpcWrapper_IService>, stackPatternCount = 8
-//  var proxy : RpcEvent::IRpcWrapper_IService^ = new (RpcEvent::IRpcWrapper_IService^)
-407  :     StoreLocalVar : var = 2(proxy)
-//  proxyRef
-408  :     LoadLocalVar  : var = 1(proxyRef)
-//  lc
-409  :     LoadLocalVar  : var = 0(lc)
-//  lc.ClientId
-410  :     InvokeMethod  : methodInfo = GetClientId<system::IRpcLifecycle>, stackPatternCount = 0
-//  true
-411  :     LoadValue     : value = <Bool, true>
-//  proxyRef
-412  :     LoadLocalVar  : var = 1(proxyRef)
-//  proxyRef.clientId
-413  :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
-//  lc
-414  :     LoadLocalVar  : var = 0(lc)
-//  lc.Dispatcher
-415  :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
-//  lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId)
-416  :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
-//  lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true)
-417  :     InvokeMethod  : methodInfo = ObjectHold<system::IRpcObjectOps>, stackPatternCount = 3
-//  lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
-418  :     Pop           
-//  lc
-419  :     LoadLocalVar  : var = 0(lc)
-//  proxyRef
-420  :     LoadLocalVar  : var = 1(proxyRef)
-//  proxy
-421  :     LoadLocalVar  : var = 2(proxy)
-//  proxy
-422  :     ConvertToType : flag = RawPtr, typeDescriptor = RpcEvent::IService
-//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService*) proxy))
-423  :     Invoke        : func = 9(rpclistener_RpcEvent__IService), stackPatternCount = 3
-//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService*) proxy));
-424  :     Pop           
-//  proxy
-425  :     LoadLocalVar  : var = 2(proxy)
-//  return proxy;
-426  :     Return        
-//  func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcEvent::IRpcWrapper_IService^)
-427  :     LoadValue     : value = <null>
-//  func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcEvent::IRpcWrapper_IService^)
-428  :     Return        
-//  null
+//  if (readonlyDictionary is not null)
+394  :     Jump          : label = 395
+//  value
+395  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::List^))
+396  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::List
+//  var list : system::List^ = (value as (system::List^));
+397  :     StoreLocalVar : var = 4(list)
+//  list
+398  :     LoadLocalVar  : var = 4(list)
+//  list is not null
+399  :     LoadValue     : value = <null>
+//  list is not null
+400  :     CompareReference
+//  list is not null
+401  :     OpNot         : type = Bool
+//  if (list is not null)
+402  :     OpNot         : type = Bool
+//  if (list is not null)
+403  :     JumpIf        : label = 410
+//  "list"
+404  :     LoadValue     : value = <String, list>
+//  list
+405  :     LoadLocalVar  : var = 4(list)
+//  list
+406  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  rpcjson_SerializeCollection("list", list)
+407  :     Invoke        : func = 13(rpcjson_SerializeCollection), stackPatternCount = 2
+//  return rpcjson_SerializeCollection("list", list);
+408  :     Return        
+//  if (list is not null)
+409  :     Jump          : label = 410
+//  value
+410  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::ReadonlyList^))
+411  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::ReadonlyList
+//  var readonlyList : system::ReadonlyList^ = (value as (system::ReadonlyList^));
+412  :     StoreLocalVar : var = 5(readonlyList)
+//  readonlyList
+413  :     LoadLocalVar  : var = 5(readonlyList)
+//  readonlyList is not null
+414  :     LoadValue     : value = <null>
+//  readonlyList is not null
+415  :     CompareReference
+//  readonlyList is not null
+416  :     OpNot         : type = Bool
+//  if (readonlyList is not null)
+417  :     OpNot         : type = Bool
+//  if (readonlyList is not null)
+418  :     JumpIf        : label = 425
+//  "list"
+419  :     LoadValue     : value = <String, list>
+//  readonlyList
+420  :     LoadLocalVar  : var = 5(readonlyList)
+//  readonlyList
+421  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  rpcjson_SerializeCollection("list", readonlyList)
+422  :     Invoke        : func = 13(rpcjson_SerializeCollection), stackPatternCount = 2
+//  return rpcjson_SerializeCollection("list", readonlyList);
+423  :     Return        
+//  if (readonlyList is not null)
+424  :     Jump          : label = 425
+//  value
+425  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Enumerable^))
+426  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var enumerable : system::Enumerable^ = (value as (system::Enumerable^));
+427  :     StoreLocalVar : var = 6(enumerable)
+//  enumerable
+428  :     LoadLocalVar  : var = 6(enumerable)
+//  enumerable is not null
 429  :     LoadValue     : value = <null>
-//  (_lc = null)
-430  :     Duplicate     : stackPatternCount = 0
-//  (_lc = null)
-431  :     StoreCapturedVar: var = 0
-//  (_lc = null);
-432  :     Pop           
-//  func DisconnectFromLifecycle() : (void)
-433  :     LoadValue     : value = <null>
-//  func DisconnectFromLifecycle() : (void)
-434  :     Return        
-//  _lc
-435  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc is null
-436  :     LoadValue     : value = <null>
-//  _lc is null
-437  :     CompareReference
-//  if (_lc is null)
-438  :     OpNot         : type = Bool
-//  if (_lc is null)
-439  :     JumpIf        : label = 443
-//  "RPC wrapper has been disconnected from lifecycle."
-440  :     LoadValue     : value = <String, RPC wrapper has been disconnected from lifecycle.>
-//  raise "RPC wrapper has been disconnected from lifecycle.";
-441  :     RaiseException
-//  if (_lc is null)
-442  :     Jump          : label = 443
-//  {}
-443  :     NewArray      : stackPatternCount = 0
-//  var arguments : system::Array^ = {};
-444  :     StoreLocalVar : var = 0(arguments)
-//  0
-445  :     LoadValue     : value = <I8, 0>
-//  arguments
-446  :     LoadLocalVar  : var = 0(arguments)
-//  arguments.Resize(0)
-447  :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
-//  arguments.Resize(0);
-448  :     Pop           
-//  _ref
-449  :     LoadCapturedVar: var = 1(<captured>_ref)
-//  rpcmethod_RpcEvent__IService_MakeItHappen
-450  :     LoadGlobalVar : var = 2(rpcmethod_RpcEvent__IService_MakeItHappen)
-//  arguments
-451  :     LoadLocalVar  : var = 0(arguments)
-//  _ref
-452  :     LoadCapturedVar: var = 1(<captured>_ref)
-//  _ref.clientId
-453  :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
-//  _lc
-454  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Dispatcher
-455  :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId)
-456  :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_MakeItHappen, arguments)
-457  :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_MakeItHappen, arguments);
-458  :     Pop           
-//  func MakeItHappen() : (::system::Void)
-459  :     LoadValue     : value = <null>
-//  func MakeItHappen() : (::system::Void)
+//  enumerable is not null
+430  :     CompareReference
+//  enumerable is not null
+431  :     OpNot         : type = Bool
+//  if (enumerable is not null)
+432  :     OpNot         : type = Bool
+//  if (enumerable is not null)
+433  :     JumpIf        : label = 439
+//  "list"
+434  :     LoadValue     : value = <String, list>
+//  enumerable
+435  :     LoadLocalVar  : var = 6(enumerable)
+//  rpcjson_SerializeCollection("list", enumerable)
+436  :     Invoke        : func = 13(rpcjson_SerializeCollection), stackPatternCount = 2
+//  return rpcjson_SerializeCollection("list", enumerable);
+437  :     Return        
+//  if (enumerable is not null)
+438  :     Jump          : label = 439
+//  value
+439  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::UInt8?))
+440  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::UInt8?))
+441  :     LoadValue     : value = <null>
+//  (value as (system::UInt8?))
+442  :     CompareReference
+//  (value as (system::UInt8?))
+443  :     JumpIf        : label = 446
+//  (value as (system::UInt8?))
+444  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::UInt8
+//  (value as (system::UInt8?))
+445  :     Jump          : label = 447
+//  (value as (system::UInt8?))
+446  :     LoadValue     : value = <null>
+//  var value_system__UInt8 : system::UInt8? = (value as (system::UInt8?));
+447  :     StoreLocalVar : var = 7(value_system__UInt8)
+//  value_system__UInt8
+448  :     LoadLocalVar  : var = 7(value_system__UInt8)
+//  value_system__UInt8 is not null
+449  :     LoadValue     : value = <null>
+//  value_system__UInt8 is not null
+450  :     CompareReference
+//  value_system__UInt8 is not null
+451  :     OpNot         : type = Bool
+//  if (value_system__UInt8 is not null)
+452  :     OpNot         : type = Bool
+//  if (value_system__UInt8 is not null)
+453  :     JumpIf        : label = 462
+//  "UInt8"
+454  :     LoadValue     : value = <String, UInt8>
+//  value_system__UInt8
+455  :     LoadLocalVar  : var = 7(value_system__UInt8)
+//  value_system__UInt8
+456  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__UInt8))
+457  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__UInt8))
+458  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("UInt8", rpcjson_NewString((cast (string) value_system__UInt8)))
+459  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("UInt8", rpcjson_NewString((cast (string) value_system__UInt8)));
 460  :     Return        
-//  _lc
-461  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc is null
-462  :     LoadValue     : value = <null>
-//  _lc is null
-463  :     CompareReference
-//  if (_lc is null)
-464  :     OpNot         : type = Bool
-//  if (_lc is null)
-465  :     JumpIf        : label = 469
-//  "RPC wrapper has been disconnected from lifecycle."
-466  :     LoadValue     : value = <String, RPC wrapper has been disconnected from lifecycle.>
-//  raise "RPC wrapper has been disconnected from lifecycle.";
-467  :     RaiseException
-//  if (_lc is null)
-468  :     Jump          : label = 469
-//  {}
-469  :     NewArray      : stackPatternCount = 0
-//  var arguments : system::Array^ = {};
-470  :     StoreLocalVar : var = 0(arguments)
-//  0
-471  :     LoadValue     : value = <I8, 0>
-//  arguments
-472  :     LoadLocalVar  : var = 0(arguments)
-//  arguments.Resize(0)
-473  :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
-//  arguments.Resize(0);
-474  :     Pop           
-//  _ref
-475  :     LoadCapturedVar: var = 1(<captured>_ref)
-//  rpcmethod_RpcEvent__IService_Watch
-476  :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
-//  arguments
-477  :     LoadLocalVar  : var = 0(arguments)
-//  _ref
-478  :     LoadCapturedVar: var = 1(<captured>_ref)
-//  _ref.clientId
-479  :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
-//  _lc
-480  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Dispatcher
-481  :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId)
-482  :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_Watch, arguments)
-483  :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_Watch, arguments);
-484  :     Pop           
-//  func Watch() : (::system::Void)
-485  :     LoadValue     : value = <null>
-//  func Watch() : (::system::Void)
-486  :     Return        
-//  _lc
-487  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc is not null
-488  :     LoadValue     : value = <null>
-//  _lc is not null
-489  :     CompareReference
-//  _lc is not null
-490  :     OpNot         : type = Bool
-//  if (_lc is not null)
-491  :     OpNot         : type = Bool
-//  if (_lc is not null)
-492  :     JumpIf        : label = 505
-//  _ref
-493  :     LoadCapturedVar: var = 1(<captured>_ref)
-//  _lc
-494  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.ClientId
-495  :     InvokeMethod  : methodInfo = GetClientId<system::IRpcLifecycle>, stackPatternCount = 0
-//  false
-496  :     LoadValue     : value = <Bool, false>
-//  _ref
-497  :     LoadCapturedVar: var = 1(<captured>_ref)
-//  _ref.clientId
-498  :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
-//  _lc
-499  :     LoadCapturedVar: var = 0(<captured>_lc)
-//  _lc.Dispatcher
-500  :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId)
-501  :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false)
-502  :     InvokeMethod  : methodInfo = ObjectHold<system::IRpcObjectOps>, stackPatternCount = 3
-//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
-503  :     Pop           
-//  if (_lc is not null)
-504  :     Jump          : label = 505
-//  delete
-505  :     LoadValue     : value = <null>
-//  delete
+//  if (value_system__UInt8 is not null)
+461  :     Jump          : label = 462
+//  value
+462  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::UInt16?))
+463  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::UInt16?))
+464  :     LoadValue     : value = <null>
+//  (value as (system::UInt16?))
+465  :     CompareReference
+//  (value as (system::UInt16?))
+466  :     JumpIf        : label = 469
+//  (value as (system::UInt16?))
+467  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::UInt16
+//  (value as (system::UInt16?))
+468  :     Jump          : label = 470
+//  (value as (system::UInt16?))
+469  :     LoadValue     : value = <null>
+//  var value_system__UInt16 : system::UInt16? = (value as (system::UInt16?));
+470  :     StoreLocalVar : var = 8(value_system__UInt16)
+//  value_system__UInt16
+471  :     LoadLocalVar  : var = 8(value_system__UInt16)
+//  value_system__UInt16 is not null
+472  :     LoadValue     : value = <null>
+//  value_system__UInt16 is not null
+473  :     CompareReference
+//  value_system__UInt16 is not null
+474  :     OpNot         : type = Bool
+//  if (value_system__UInt16 is not null)
+475  :     OpNot         : type = Bool
+//  if (value_system__UInt16 is not null)
+476  :     JumpIf        : label = 485
+//  "UInt16"
+477  :     LoadValue     : value = <String, UInt16>
+//  value_system__UInt16
+478  :     LoadLocalVar  : var = 8(value_system__UInt16)
+//  value_system__UInt16
+479  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__UInt16))
+480  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__UInt16))
+481  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("UInt16", rpcjson_NewString((cast (string) value_system__UInt16)))
+482  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("UInt16", rpcjson_NewString((cast (string) value_system__UInt16)));
+483  :     Return        
+//  if (value_system__UInt16 is not null)
+484  :     Jump          : label = 485
+//  value
+485  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::UInt32?))
+486  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::UInt32?))
+487  :     LoadValue     : value = <null>
+//  (value as (system::UInt32?))
+488  :     CompareReference
+//  (value as (system::UInt32?))
+489  :     JumpIf        : label = 492
+//  (value as (system::UInt32?))
+490  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::UInt32
+//  (value as (system::UInt32?))
+491  :     Jump          : label = 493
+//  (value as (system::UInt32?))
+492  :     LoadValue     : value = <null>
+//  var value_system__UInt32 : system::UInt32? = (value as (system::UInt32?));
+493  :     StoreLocalVar : var = 9(value_system__UInt32)
+//  value_system__UInt32
+494  :     LoadLocalVar  : var = 9(value_system__UInt32)
+//  value_system__UInt32 is not null
+495  :     LoadValue     : value = <null>
+//  value_system__UInt32 is not null
+496  :     CompareReference
+//  value_system__UInt32 is not null
+497  :     OpNot         : type = Bool
+//  if (value_system__UInt32 is not null)
+498  :     OpNot         : type = Bool
+//  if (value_system__UInt32 is not null)
+499  :     JumpIf        : label = 508
+//  "UInt32"
+500  :     LoadValue     : value = <String, UInt32>
+//  value_system__UInt32
+501  :     LoadLocalVar  : var = 9(value_system__UInt32)
+//  value_system__UInt32
+502  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__UInt32))
+503  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__UInt32))
+504  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("UInt32", rpcjson_NewString((cast (string) value_system__UInt32)))
+505  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("UInt32", rpcjson_NewString((cast (string) value_system__UInt32)));
 506  :     Return        
-//  ref
-507  :     LoadLocalVar  : var = 0(ref)
-//  ref.typeId
-508  :     GetProperty   : propertyInfo = typeId<system::RpcObjectReference>
-//  var <switch>5 : ::system::Int64 = ref.typeId;
-509  :     StoreLocalVar : var = 2(<switch>5)
-//  <switch>5
-510  :     LoadLocalVar  : var = 2(<switch>5)
+//  if (value_system__UInt32 is not null)
+507  :     Jump          : label = 508
+//  value
+508  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::UInt64?))
+509  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::UInt64?))
+510  :     LoadValue     : value = <null>
+//  (value as (system::UInt64?))
+511  :     CompareReference
+//  (value as (system::UInt64?))
+512  :     JumpIf        : label = 515
+//  (value as (system::UInt64?))
+513  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::UInt64
+//  (value as (system::UInt64?))
+514  :     Jump          : label = 516
+//  (value as (system::UInt64?))
+515  :     LoadValue     : value = <null>
+//  var value_system__UInt64 : system::UInt64? = (value as (system::UInt64?));
+516  :     StoreLocalVar : var = 10(value_system__UInt64)
+//  value_system__UInt64
+517  :     LoadLocalVar  : var = 10(value_system__UInt64)
+//  value_system__UInt64 is not null
+518  :     LoadValue     : value = <null>
+//  value_system__UInt64 is not null
+519  :     CompareReference
+//  value_system__UInt64 is not null
+520  :     OpNot         : type = Bool
+//  if (value_system__UInt64 is not null)
+521  :     OpNot         : type = Bool
+//  if (value_system__UInt64 is not null)
+522  :     JumpIf        : label = 531
+//  "UInt64"
+523  :     LoadValue     : value = <String, UInt64>
+//  value_system__UInt64
+524  :     LoadLocalVar  : var = 10(value_system__UInt64)
+//  value_system__UInt64
+525  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__UInt64))
+526  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__UInt64))
+527  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("UInt64", rpcjson_NewString((cast (string) value_system__UInt64)))
+528  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("UInt64", rpcjson_NewString((cast (string) value_system__UInt64)));
+529  :     Return        
+//  if (value_system__UInt64 is not null)
+530  :     Jump          : label = 531
+//  value
+531  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Int8?))
+532  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Int8?))
+533  :     LoadValue     : value = <null>
+//  (value as (system::Int8?))
+534  :     CompareReference
+//  (value as (system::Int8?))
+535  :     JumpIf        : label = 538
+//  (value as (system::Int8?))
+536  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Int8
+//  (value as (system::Int8?))
+537  :     Jump          : label = 539
+//  (value as (system::Int8?))
+538  :     LoadValue     : value = <null>
+//  var value_system__Int8 : system::Int8? = (value as (system::Int8?));
+539  :     StoreLocalVar : var = 11(value_system__Int8)
+//  value_system__Int8
+540  :     LoadLocalVar  : var = 11(value_system__Int8)
+//  value_system__Int8 is not null
+541  :     LoadValue     : value = <null>
+//  value_system__Int8 is not null
+542  :     CompareReference
+//  value_system__Int8 is not null
+543  :     OpNot         : type = Bool
+//  if (value_system__Int8 is not null)
+544  :     OpNot         : type = Bool
+//  if (value_system__Int8 is not null)
+545  :     JumpIf        : label = 554
+//  "Int8"
+546  :     LoadValue     : value = <String, Int8>
+//  value_system__Int8
+547  :     LoadLocalVar  : var = 11(value_system__Int8)
+//  value_system__Int8
+548  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Int8))
+549  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Int8))
+550  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Int8", rpcjson_NewString((cast (string) value_system__Int8)))
+551  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Int8", rpcjson_NewString((cast (string) value_system__Int8)));
+552  :     Return        
+//  if (value_system__Int8 is not null)
+553  :     Jump          : label = 554
+//  value
+554  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Int16?))
+555  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Int16?))
+556  :     LoadValue     : value = <null>
+//  (value as (system::Int16?))
+557  :     CompareReference
+//  (value as (system::Int16?))
+558  :     JumpIf        : label = 561
+//  (value as (system::Int16?))
+559  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Int16
+//  (value as (system::Int16?))
+560  :     Jump          : label = 562
+//  (value as (system::Int16?))
+561  :     LoadValue     : value = <null>
+//  var value_system__Int16 : system::Int16? = (value as (system::Int16?));
+562  :     StoreLocalVar : var = 12(value_system__Int16)
+//  value_system__Int16
+563  :     LoadLocalVar  : var = 12(value_system__Int16)
+//  value_system__Int16 is not null
+564  :     LoadValue     : value = <null>
+//  value_system__Int16 is not null
+565  :     CompareReference
+//  value_system__Int16 is not null
+566  :     OpNot         : type = Bool
+//  if (value_system__Int16 is not null)
+567  :     OpNot         : type = Bool
+//  if (value_system__Int16 is not null)
+568  :     JumpIf        : label = 577
+//  "Int16"
+569  :     LoadValue     : value = <String, Int16>
+//  value_system__Int16
+570  :     LoadLocalVar  : var = 12(value_system__Int16)
+//  value_system__Int16
+571  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Int16))
+572  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Int16))
+573  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Int16", rpcjson_NewString((cast (string) value_system__Int16)))
+574  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Int16", rpcjson_NewString((cast (string) value_system__Int16)));
+575  :     Return        
+//  if (value_system__Int16 is not null)
+576  :     Jump          : label = 577
+//  value
+577  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Int32?))
+578  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Int32?))
+579  :     LoadValue     : value = <null>
+//  (value as (system::Int32?))
+580  :     CompareReference
+//  (value as (system::Int32?))
+581  :     JumpIf        : label = 584
+//  (value as (system::Int32?))
+582  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Int32
+//  (value as (system::Int32?))
+583  :     Jump          : label = 585
+//  (value as (system::Int32?))
+584  :     LoadValue     : value = <null>
+//  var value_system__Int32 : system::Int32? = (value as (system::Int32?));
+585  :     StoreLocalVar : var = 13(value_system__Int32)
+//  value_system__Int32
+586  :     LoadLocalVar  : var = 13(value_system__Int32)
+//  value_system__Int32 is not null
+587  :     LoadValue     : value = <null>
+//  value_system__Int32 is not null
+588  :     CompareReference
+//  value_system__Int32 is not null
+589  :     OpNot         : type = Bool
+//  if (value_system__Int32 is not null)
+590  :     OpNot         : type = Bool
+//  if (value_system__Int32 is not null)
+591  :     JumpIf        : label = 600
+//  "Int32"
+592  :     LoadValue     : value = <String, Int32>
+//  value_system__Int32
+593  :     LoadLocalVar  : var = 13(value_system__Int32)
+//  value_system__Int32
+594  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Int32))
+595  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Int32))
+596  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Int32", rpcjson_NewString((cast (string) value_system__Int32)))
+597  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Int32", rpcjson_NewString((cast (string) value_system__Int32)));
+598  :     Return        
+//  if (value_system__Int32 is not null)
+599  :     Jump          : label = 600
+//  value
+600  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Int64?))
+601  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Int64?))
+602  :     LoadValue     : value = <null>
+//  (value as (system::Int64?))
+603  :     CompareReference
+//  (value as (system::Int64?))
+604  :     JumpIf        : label = 607
+//  (value as (system::Int64?))
+605  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Int64
+//  (value as (system::Int64?))
+606  :     Jump          : label = 608
+//  (value as (system::Int64?))
+607  :     LoadValue     : value = <null>
+//  var value_system__Int64 : system::Int64? = (value as (system::Int64?));
+608  :     StoreLocalVar : var = 14(value_system__Int64)
+//  value_system__Int64
+609  :     LoadLocalVar  : var = 14(value_system__Int64)
+//  value_system__Int64 is not null
+610  :     LoadValue     : value = <null>
+//  value_system__Int64 is not null
+611  :     CompareReference
+//  value_system__Int64 is not null
+612  :     OpNot         : type = Bool
+//  if (value_system__Int64 is not null)
+613  :     OpNot         : type = Bool
+//  if (value_system__Int64 is not null)
+614  :     JumpIf        : label = 623
+//  "Int64"
+615  :     LoadValue     : value = <String, Int64>
+//  value_system__Int64
+616  :     LoadLocalVar  : var = 14(value_system__Int64)
+//  value_system__Int64
+617  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Int64))
+618  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Int64))
+619  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Int64", rpcjson_NewString((cast (string) value_system__Int64)))
+620  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Int64", rpcjson_NewString((cast (string) value_system__Int64)));
+621  :     Return        
+//  if (value_system__Int64 is not null)
+622  :     Jump          : label = 623
+//  value
+623  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Single?))
+624  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Single?))
+625  :     LoadValue     : value = <null>
+//  (value as (system::Single?))
+626  :     CompareReference
+//  (value as (system::Single?))
+627  :     JumpIf        : label = 630
+//  (value as (system::Single?))
+628  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Single
+//  (value as (system::Single?))
+629  :     Jump          : label = 631
+//  (value as (system::Single?))
+630  :     LoadValue     : value = <null>
+//  var value_system__Single : system::Single? = (value as (system::Single?));
+631  :     StoreLocalVar : var = 15(value_system__Single)
+//  value_system__Single
+632  :     LoadLocalVar  : var = 15(value_system__Single)
+//  value_system__Single is not null
+633  :     LoadValue     : value = <null>
+//  value_system__Single is not null
+634  :     CompareReference
+//  value_system__Single is not null
+635  :     OpNot         : type = Bool
+//  if (value_system__Single is not null)
+636  :     OpNot         : type = Bool
+//  if (value_system__Single is not null)
+637  :     JumpIf        : label = 646
+//  "Single"
+638  :     LoadValue     : value = <String, Single>
+//  value_system__Single
+639  :     LoadLocalVar  : var = 15(value_system__Single)
+//  value_system__Single
+640  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Single))
+641  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Single))
+642  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Single", rpcjson_NewString((cast (string) value_system__Single)))
+643  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Single", rpcjson_NewString((cast (string) value_system__Single)));
+644  :     Return        
+//  if (value_system__Single is not null)
+645  :     Jump          : label = 646
+//  value
+646  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Double?))
+647  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Double?))
+648  :     LoadValue     : value = <null>
+//  (value as (system::Double?))
+649  :     CompareReference
+//  (value as (system::Double?))
+650  :     JumpIf        : label = 653
+//  (value as (system::Double?))
+651  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Double
+//  (value as (system::Double?))
+652  :     Jump          : label = 654
+//  (value as (system::Double?))
+653  :     LoadValue     : value = <null>
+//  var value_system__Double : system::Double? = (value as (system::Double?));
+654  :     StoreLocalVar : var = 16(value_system__Double)
+//  value_system__Double
+655  :     LoadLocalVar  : var = 16(value_system__Double)
+//  value_system__Double is not null
+656  :     LoadValue     : value = <null>
+//  value_system__Double is not null
+657  :     CompareReference
+//  value_system__Double is not null
+658  :     OpNot         : type = Bool
+//  if (value_system__Double is not null)
+659  :     OpNot         : type = Bool
+//  if (value_system__Double is not null)
+660  :     JumpIf        : label = 669
+//  "Double"
+661  :     LoadValue     : value = <String, Double>
+//  value_system__Double
+662  :     LoadLocalVar  : var = 16(value_system__Double)
+//  value_system__Double
+663  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Double))
+664  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Double))
+665  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Double", rpcjson_NewString((cast (string) value_system__Double)))
+666  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Double", rpcjson_NewString((cast (string) value_system__Double)));
+667  :     Return        
+//  if (value_system__Double is not null)
+668  :     Jump          : label = 669
+//  value
+669  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Boolean?))
+670  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Boolean?))
+671  :     LoadValue     : value = <null>
+//  (value as (system::Boolean?))
+672  :     CompareReference
+//  (value as (system::Boolean?))
+673  :     JumpIf        : label = 676
+//  (value as (system::Boolean?))
+674  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Boolean
+//  (value as (system::Boolean?))
+675  :     Jump          : label = 677
+//  (value as (system::Boolean?))
+676  :     LoadValue     : value = <null>
+//  var value_system__Boolean : system::Boolean? = (value as (system::Boolean?));
+677  :     StoreLocalVar : var = 17(value_system__Boolean)
+//  value_system__Boolean
+678  :     LoadLocalVar  : var = 17(value_system__Boolean)
+//  value_system__Boolean is not null
+679  :     LoadValue     : value = <null>
+//  value_system__Boolean is not null
+680  :     CompareReference
+//  value_system__Boolean is not null
+681  :     OpNot         : type = Bool
+//  if (value_system__Boolean is not null)
+682  :     OpNot         : type = Bool
+//  if (value_system__Boolean is not null)
+683  :     JumpIf        : label = 692
+//  "Boolean"
+684  :     LoadValue     : value = <String, Boolean>
+//  value_system__Boolean
+685  :     LoadLocalVar  : var = 17(value_system__Boolean)
+//  value_system__Boolean
+686  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Boolean))
+687  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Boolean))
+688  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Boolean", rpcjson_NewString((cast (string) value_system__Boolean)))
+689  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Boolean", rpcjson_NewString((cast (string) value_system__Boolean)));
+690  :     Return        
+//  if (value_system__Boolean is not null)
+691  :     Jump          : label = 692
+//  value
+692  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Char?))
+693  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Char?))
+694  :     LoadValue     : value = <null>
+//  (value as (system::Char?))
+695  :     CompareReference
+//  (value as (system::Char?))
+696  :     JumpIf        : label = 699
+//  (value as (system::Char?))
+697  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Char
+//  (value as (system::Char?))
+698  :     Jump          : label = 700
+//  (value as (system::Char?))
+699  :     LoadValue     : value = <null>
+//  var value_system__Char : system::Char? = (value as (system::Char?));
+700  :     StoreLocalVar : var = 18(value_system__Char)
+//  value_system__Char
+701  :     LoadLocalVar  : var = 18(value_system__Char)
+//  value_system__Char is not null
+702  :     LoadValue     : value = <null>
+//  value_system__Char is not null
+703  :     CompareReference
+//  value_system__Char is not null
+704  :     OpNot         : type = Bool
+//  if (value_system__Char is not null)
+705  :     OpNot         : type = Bool
+//  if (value_system__Char is not null)
+706  :     JumpIf        : label = 715
+//  "Char"
+707  :     LoadValue     : value = <String, Char>
+//  value_system__Char
+708  :     LoadLocalVar  : var = 18(value_system__Char)
+//  value_system__Char
+709  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Char))
+710  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Char))
+711  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Char", rpcjson_NewString((cast (string) value_system__Char)))
+712  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Char", rpcjson_NewString((cast (string) value_system__Char)));
+713  :     Return        
+//  if (value_system__Char is not null)
+714  :     Jump          : label = 715
+//  value
+715  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::String?))
+716  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::String?))
+717  :     LoadValue     : value = <null>
+//  (value as (system::String?))
+718  :     CompareReference
+//  (value as (system::String?))
+719  :     JumpIf        : label = 722
+//  (value as (system::String?))
+720  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::String
+//  (value as (system::String?))
+721  :     Jump          : label = 723
+//  (value as (system::String?))
+722  :     LoadValue     : value = <null>
+//  var value_system__String : system::String? = (value as (system::String?));
+723  :     StoreLocalVar : var = 19(value_system__String)
+//  value_system__String
+724  :     LoadLocalVar  : var = 19(value_system__String)
+//  value_system__String is not null
+725  :     LoadValue     : value = <null>
+//  value_system__String is not null
+726  :     CompareReference
+//  value_system__String is not null
+727  :     OpNot         : type = Bool
+//  if (value_system__String is not null)
+728  :     OpNot         : type = Bool
+//  if (value_system__String is not null)
+729  :     JumpIf        : label = 738
+//  "String"
+730  :     LoadValue     : value = <String, String>
+//  value_system__String
+731  :     LoadLocalVar  : var = 19(value_system__String)
+//  value_system__String
+732  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__String))
+733  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__String))
+734  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("String", rpcjson_NewString((cast (string) value_system__String)))
+735  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("String", rpcjson_NewString((cast (string) value_system__String)));
+736  :     Return        
+//  if (value_system__String is not null)
+737  :     Jump          : label = 738
+//  value
+738  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::DateTime?))
+739  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::DateTime?))
+740  :     LoadValue     : value = <null>
+//  (value as (system::DateTime?))
+741  :     CompareReference
+//  (value as (system::DateTime?))
+742  :     JumpIf        : label = 745
+//  (value as (system::DateTime?))
+743  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::DateTime
+//  (value as (system::DateTime?))
+744  :     Jump          : label = 746
+//  (value as (system::DateTime?))
+745  :     LoadValue     : value = <null>
+//  var value_system__DateTime : system::DateTime? = (value as (system::DateTime?));
+746  :     StoreLocalVar : var = 20(value_system__DateTime)
+//  value_system__DateTime
+747  :     LoadLocalVar  : var = 20(value_system__DateTime)
+//  value_system__DateTime is not null
+748  :     LoadValue     : value = <null>
+//  value_system__DateTime is not null
+749  :     CompareReference
+//  value_system__DateTime is not null
+750  :     OpNot         : type = Bool
+//  if (value_system__DateTime is not null)
+751  :     OpNot         : type = Bool
+//  if (value_system__DateTime is not null)
+752  :     JumpIf        : label = 761
+//  "DateTime"
+753  :     LoadValue     : value = <String, DateTime>
+//  value_system__DateTime
+754  :     LoadLocalVar  : var = 20(value_system__DateTime)
+//  value_system__DateTime
+755  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__DateTime))
+756  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__DateTime))
+757  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("DateTime", rpcjson_NewString((cast (string) value_system__DateTime)))
+758  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("DateTime", rpcjson_NewString((cast (string) value_system__DateTime)));
+759  :     Return        
+//  if (value_system__DateTime is not null)
+760  :     Jump          : label = 761
+//  value
+761  :     LoadLocalVar  : var = 0(value)
+//  (value as (system::Locale?))
+762  :     Duplicate     : stackPatternCount = 0
+//  (value as (system::Locale?))
+763  :     LoadValue     : value = <null>
+//  (value as (system::Locale?))
+764  :     CompareReference
+//  (value as (system::Locale?))
+765  :     JumpIf        : label = 768
+//  (value as (system::Locale?))
+766  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::Locale
+//  (value as (system::Locale?))
+767  :     Jump          : label = 769
+//  (value as (system::Locale?))
+768  :     LoadValue     : value = <null>
+//  var value_system__Locale : system::Locale? = (value as (system::Locale?));
+769  :     StoreLocalVar : var = 21(value_system__Locale)
+//  value_system__Locale
+770  :     LoadLocalVar  : var = 21(value_system__Locale)
+//  value_system__Locale is not null
+771  :     LoadValue     : value = <null>
+//  value_system__Locale is not null
+772  :     CompareReference
+//  value_system__Locale is not null
+773  :     OpNot         : type = Bool
+//  if (value_system__Locale is not null)
+774  :     OpNot         : type = Bool
+//  if (value_system__Locale is not null)
+775  :     JumpIf        : label = 784
+//  "Locale"
+776  :     LoadValue     : value = <String, Locale>
+//  value_system__Locale
+777  :     LoadLocalVar  : var = 21(value_system__Locale)
+//  value_system__Locale
+778  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  rpcjson_NewString((cast (string) value_system__Locale))
+779  :     Invoke        : func = 7(rpcjson_NewString), stackPatternCount = 1
+//  rpcjson_NewString((cast (string) value_system__Locale))
+780  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  rpcjson_NewArray2("Locale", rpcjson_NewString((cast (string) value_system__Locale)))
+781  :     Invoke        : func = 9(rpcjson_NewArray2), stackPatternCount = 2
+//  return rpcjson_NewArray2("Locale", rpcjson_NewString((cast (string) value_system__Locale)));
+782  :     Return        
+//  if (value_system__Locale is not null)
+783  :     Jump          : label = 784
+//  value
+784  :     LoadLocalVar  : var = 0(value)
+//  (value as (::system::RpcObjectReference?))
+785  :     Duplicate     : stackPatternCount = 0
+//  (value as (::system::RpcObjectReference?))
+786  :     LoadValue     : value = <null>
+//  (value as (::system::RpcObjectReference?))
+787  :     CompareReference
+//  (value as (::system::RpcObjectReference?))
+788  :     JumpIf        : label = 791
+//  (value as (::system::RpcObjectReference?))
+789  :     TryConvertToType: flag = BoxedValue, typeDescriptor = system::RpcObjectReference
+//  (value as (::system::RpcObjectReference?))
+790  :     Jump          : label = 792
+//  (value as (::system::RpcObjectReference?))
+791  :     LoadValue     : value = <null>
+//  var value_system__RpcObjectReference : ::system::RpcObjectReference? = (value as (::system::RpcObjectReference?));
+792  :     StoreLocalVar : var = 22(value_system__RpcObjectReference)
+//  value_system__RpcObjectReference
+793  :     LoadLocalVar  : var = 22(value_system__RpcObjectReference)
+//  value_system__RpcObjectReference is not null
+794  :     LoadValue     : value = <null>
+//  value_system__RpcObjectReference is not null
+795  :     CompareReference
+//  value_system__RpcObjectReference is not null
+796  :     OpNot         : type = Bool
+//  if (value_system__RpcObjectReference is not null)
+797  :     OpNot         : type = Bool
+//  if (value_system__RpcObjectReference is not null)
+798  :     JumpIf        : label = 827
+//  "system::RpcObjectReference"
+799  :     LoadValue     : value = <String, system::RpcObjectReference>
+//  rpcjson_NewObject("system::RpcObjectReference")
+800  :     Invoke        : func = 11(rpcjson_NewObject), stackPatternCount = 1
+//  var object : system::JsonObject^ = rpcjson_NewObject("system::RpcObjectReference");
+801  :     StoreLocalVar : var = 23(object)
+//  object
+802  :     LoadLocalVar  : var = 23(object)
+//  "clientId"
+803  :     LoadValue     : value = <String, clientId>
+//  value_system__RpcObjectReference
+804  :     LoadLocalVar  : var = 22(value_system__RpcObjectReference)
+//  value_system__RpcObjectReference.clientId
+805  :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
+//  rpcjson_Serialize(value_system__RpcObjectReference.clientId)
+806  :     Invoke        : func = 15(rpcjson_Serialize), stackPatternCount = 1
+//  rpcjson_ObjectAdd(object, "clientId", rpcjson_Serialize(value_system__RpcObjectReference.clientId))
+807  :     Invoke        : func = 10(rpcjson_ObjectAdd), stackPatternCount = 3
+//  rpcjson_ObjectAdd(object, "clientId", rpcjson_Serialize(value_system__RpcObjectReference.clientId));
+808  :     Pop           
+//  object
+809  :     LoadLocalVar  : var = 23(object)
+//  "objectId"
+810  :     LoadValue     : value = <String, objectId>
+//  value_system__RpcObjectReference
+811  :     LoadLocalVar  : var = 22(value_system__RpcObjectReference)
+//  value_system__RpcObjectReference.objectId
+812  :     GetProperty   : propertyInfo = objectId<system::RpcObjectReference>
+//  rpcjson_Serialize(value_system__RpcObjectReference.objectId)
+813  :     Invoke        : func = 15(rpcjson_Serialize), stackPatternCount = 1
+//  rpcjson_ObjectAdd(object, "objectId", rpcjson_Serialize(value_system__RpcObjectReference.objectId))
+814  :     Invoke        : func = 10(rpcjson_ObjectAdd), stackPatternCount = 3
+//  rpcjson_ObjectAdd(object, "objectId", rpcjson_Serialize(value_system__RpcObjectReference.objectId));
+815  :     Pop           
+//  object
+816  :     LoadLocalVar  : var = 23(object)
+//  "typeId"
+817  :     LoadValue     : value = <String, typeId>
+//  value_system__RpcObjectReference
+818  :     LoadLocalVar  : var = 22(value_system__RpcObjectReference)
+//  value_system__RpcObjectReference.typeId
+819  :     GetProperty   : propertyInfo = typeId<system::RpcObjectReference>
+//  rpcjson_Serialize(value_system__RpcObjectReference.typeId)
+820  :     Invoke        : func = 15(rpcjson_Serialize), stackPatternCount = 1
+//  rpcjson_ObjectAdd(object, "typeId", rpcjson_Serialize(value_system__RpcObjectReference.typeId))
+821  :     Invoke        : func = 10(rpcjson_ObjectAdd), stackPatternCount = 3
+//  rpcjson_ObjectAdd(object, "typeId", rpcjson_Serialize(value_system__RpcObjectReference.typeId));
+822  :     Pop           
+//  object
+823  :     LoadLocalVar  : var = 23(object)
+//  object
+824  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  return object;
+825  :     Return        
+//  if (value_system__RpcObjectReference is not null)
+826  :     Jump          : label = 827
+//  "Unsupported RPC JSON serialization value."
+827  :     LoadValue     : value = <String, Unsupported RPC JSON serialization value.>
+//  raise "Unsupported RPC JSON serialization value.";
+828  :     RaiseException
+//  func rpcjson_Serialize(value : object) : (system::JsonNode^)
+829  :     LoadValue     : value = <null>
+//  func rpcjson_Serialize(value : object) : (system::JsonNode^)
+830  :     Return        
+//  node
+831  :     LoadLocalVar  : var = 0(node)
+//  node is null
+832  :     LoadValue     : value = <null>
+//  node is null
+833  :     CompareReference
+//  if (node is null)
+834  :     OpNot         : type = Bool
+//  if (node is null)
+835  :     JumpIf        : label = 839
+//  null
+836  :     LoadValue     : value = <null>
+//  return null;
+837  :     Return        
+//  if (node is null)
+838  :     Jump          : label = 839
+//  node
+839  :     LoadLocalVar  : var = 0(node)
+//  (node as (system::JsonLiteral^))
+840  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::JsonLiteral
+//  var literal : system::JsonLiteral^ = (node as (system::JsonLiteral^));
+841  :     StoreLocalVar : var = 1(literal)
+//  literal
+842  :     LoadLocalVar  : var = 1(literal)
+//  literal is not null
+843  :     LoadValue     : value = <null>
+//  literal is not null
+844  :     CompareReference
+//  literal is not null
+845  :     OpNot         : type = Bool
+//  if (literal is not null)
+846  :     OpNot         : type = Bool
+//  if (literal is not null)
+847  :     JumpIf        : label = 860
+//  literal
+848  :     LoadLocalVar  : var = 1(literal)
+//  literal.value
+849  :     GetProperty   : propertyInfo = value<system::JsonLiteral>
+//  system::JsonLiteralValue::Null
+850  :     LoadValue     : value = <enum: 2>
+//  (literal.value == system::JsonLiteralValue::Null)
+851  :     CompareValue  
+//  if ((literal.value == system::JsonLiteralValue::Null))
+852  :     OpNot         : type = Bool
+//  if ((literal.value == system::JsonLiteralValue::Null))
+853  :     JumpIf        : label = 857
+//  null
+854  :     LoadValue     : value = <null>
+//  return null;
+855  :     Return        
+//  if ((literal.value == system::JsonLiteralValue::Null))
+856  :     Jump          : label = 857
+//  "Unsupported JSON literal."
+857  :     LoadValue     : value = <String, Unsupported JSON literal.>
+//  raise "Unsupported JSON literal.";
+858  :     RaiseException
+//  if (literal is not null)
+859  :     Jump          : label = 860
+//  node
+860  :     LoadLocalVar  : var = 0(node)
+//  (node as (system::JsonArray^))
+861  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::JsonArray
+//  var array : system::JsonArray^ = (node as (system::JsonArray^));
+862  :     StoreLocalVar : var = 2(array)
+//  array
+863  :     LoadLocalVar  : var = 2(array)
+//  array is not null
+864  :     LoadValue     : value = <null>
+//  array is not null
+865  :     CompareReference
+//  array is not null
+866  :     OpNot         : type = Bool
+//  if (array is not null)
+867  :     OpNot         : type = Bool
+//  if (array is not null)
+868  :     JumpIf        : label = 1106
+//  0
+869  :     LoadValue     : value = <I8, 0>
+//  array
+870  :     LoadLocalVar  : var = 2(array)
+//  array.items
+871  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[0]
+872  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[0]
+873  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[0]).content
+874  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[0]).content.value
+875  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  var keyword : string = (cast (system::JsonString^) array.items[0]).content.value;
+876  :     StoreLocalVar : var = 3(keyword)
+//  keyword
+877  :     LoadLocalVar  : var = 3(keyword)
+//  var <switch>0 : ::system::String = keyword;
+878  :     StoreLocalVar : var = 4(<switch>0)
+//  <switch>0
+879  :     LoadLocalVar  : var = 4(<switch>0)
+//  "UInt8"
+880  :     LoadValue     : value = <String, UInt8>
+//  (<switch>0 == "UInt8" of (::system::String))
+881  :     CompareValue  
+//  if ((<switch>0 == "UInt8" of (::system::String)))
+882  :     OpNot         : type = Bool
+//  if ((<switch>0 == "UInt8" of (::system::String)))
+883  :     JumpIf        : label = 894
+//  1
+884  :     LoadValue     : value = <I8, 1>
+//  array
+885  :     LoadLocalVar  : var = 2(array)
+//  array.items
+886  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+887  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+888  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+889  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+890  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+891  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt8
+//  return (cast (::system::UInt8) (cast (system::JsonString^) array.items[1]).content.value);
+892  :     Return        
+//  if ((<switch>0 == "UInt8" of (::system::String)))
+893  :     Jump          : label = 1105
+//  <switch>0
+894  :     LoadLocalVar  : var = 4(<switch>0)
+//  "UInt16"
+895  :     LoadValue     : value = <String, UInt16>
+//  (<switch>0 == "UInt16" of (::system::String))
+896  :     CompareValue  
+//  if ((<switch>0 == "UInt16" of (::system::String)))
+897  :     OpNot         : type = Bool
+//  if ((<switch>0 == "UInt16" of (::system::String)))
+898  :     JumpIf        : label = 909
+//  1
+899  :     LoadValue     : value = <I8, 1>
+//  array
+900  :     LoadLocalVar  : var = 2(array)
+//  array.items
+901  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+902  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+903  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+904  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+905  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+906  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt16
+//  return (cast (::system::UInt16) (cast (system::JsonString^) array.items[1]).content.value);
+907  :     Return        
+//  if ((<switch>0 == "UInt16" of (::system::String)))
+908  :     Jump          : label = 1105
+//  <switch>0
+909  :     LoadLocalVar  : var = 4(<switch>0)
+//  "UInt32"
+910  :     LoadValue     : value = <String, UInt32>
+//  (<switch>0 == "UInt32" of (::system::String))
+911  :     CompareValue  
+//  if ((<switch>0 == "UInt32" of (::system::String)))
+912  :     OpNot         : type = Bool
+//  if ((<switch>0 == "UInt32" of (::system::String)))
+913  :     JumpIf        : label = 924
+//  1
+914  :     LoadValue     : value = <I8, 1>
+//  array
+915  :     LoadLocalVar  : var = 2(array)
+//  array.items
+916  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+917  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+918  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+919  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+920  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+921  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt32
+//  return (cast (::system::UInt32) (cast (system::JsonString^) array.items[1]).content.value);
+922  :     Return        
+//  if ((<switch>0 == "UInt32" of (::system::String)))
+923  :     Jump          : label = 1105
+//  <switch>0
+924  :     LoadLocalVar  : var = 4(<switch>0)
+//  "UInt64"
+925  :     LoadValue     : value = <String, UInt64>
+//  (<switch>0 == "UInt64" of (::system::String))
+926  :     CompareValue  
+//  if ((<switch>0 == "UInt64" of (::system::String)))
+927  :     OpNot         : type = Bool
+//  if ((<switch>0 == "UInt64" of (::system::String)))
+928  :     JumpIf        : label = 939
+//  1
+929  :     LoadValue     : value = <I8, 1>
+//  array
+930  :     LoadLocalVar  : var = 2(array)
+//  array.items
+931  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+932  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+933  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+934  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+935  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+936  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::UInt64
+//  return (cast (::system::UInt64) (cast (system::JsonString^) array.items[1]).content.value);
+937  :     Return        
+//  if ((<switch>0 == "UInt64" of (::system::String)))
+938  :     Jump          : label = 1105
+//  <switch>0
+939  :     LoadLocalVar  : var = 4(<switch>0)
+//  "Int8"
+940  :     LoadValue     : value = <String, Int8>
+//  (<switch>0 == "Int8" of (::system::String))
+941  :     CompareValue  
+//  if ((<switch>0 == "Int8" of (::system::String)))
+942  :     OpNot         : type = Bool
+//  if ((<switch>0 == "Int8" of (::system::String)))
+943  :     JumpIf        : label = 954
+//  1
+944  :     LoadValue     : value = <I8, 1>
+//  array
+945  :     LoadLocalVar  : var = 2(array)
+//  array.items
+946  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+947  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+948  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+949  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+950  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+951  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int8
+//  return (cast (::system::Int8) (cast (system::JsonString^) array.items[1]).content.value);
+952  :     Return        
+//  if ((<switch>0 == "Int8" of (::system::String)))
+953  :     Jump          : label = 1105
+//  <switch>0
+954  :     LoadLocalVar  : var = 4(<switch>0)
+//  "Int16"
+955  :     LoadValue     : value = <String, Int16>
+//  (<switch>0 == "Int16" of (::system::String))
+956  :     CompareValue  
+//  if ((<switch>0 == "Int16" of (::system::String)))
+957  :     OpNot         : type = Bool
+//  if ((<switch>0 == "Int16" of (::system::String)))
+958  :     JumpIf        : label = 969
+//  1
+959  :     LoadValue     : value = <I8, 1>
+//  array
+960  :     LoadLocalVar  : var = 2(array)
+//  array.items
+961  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+962  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+963  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+964  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+965  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+966  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int16
+//  return (cast (::system::Int16) (cast (system::JsonString^) array.items[1]).content.value);
+967  :     Return        
+//  if ((<switch>0 == "Int16" of (::system::String)))
+968  :     Jump          : label = 1105
+//  <switch>0
+969  :     LoadLocalVar  : var = 4(<switch>0)
+//  "Int32"
+970  :     LoadValue     : value = <String, Int32>
+//  (<switch>0 == "Int32" of (::system::String))
+971  :     CompareValue  
+//  if ((<switch>0 == "Int32" of (::system::String)))
+972  :     OpNot         : type = Bool
+//  if ((<switch>0 == "Int32" of (::system::String)))
+973  :     JumpIf        : label = 984
+//  1
+974  :     LoadValue     : value = <I8, 1>
+//  array
+975  :     LoadLocalVar  : var = 2(array)
+//  array.items
+976  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+977  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+978  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+979  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+980  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+981  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  return (cast (::system::Int32) (cast (system::JsonString^) array.items[1]).content.value);
+982  :     Return        
+//  if ((<switch>0 == "Int32" of (::system::String)))
+983  :     Jump          : label = 1105
+//  <switch>0
+984  :     LoadLocalVar  : var = 4(<switch>0)
+//  "Int64"
+985  :     LoadValue     : value = <String, Int64>
+//  (<switch>0 == "Int64" of (::system::String))
+986  :     CompareValue  
+//  if ((<switch>0 == "Int64" of (::system::String)))
+987  :     OpNot         : type = Bool
+//  if ((<switch>0 == "Int64" of (::system::String)))
+988  :     JumpIf        : label = 999
+//  1
+989  :     LoadValue     : value = <I8, 1>
+//  array
+990  :     LoadLocalVar  : var = 2(array)
+//  array.items
+991  :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+992  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+993  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+994  :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+995  :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+996  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  return (cast (::system::Int64) (cast (system::JsonString^) array.items[1]).content.value);
+997  :     Return        
+//  if ((<switch>0 == "Int64" of (::system::String)))
+998  :     Jump          : label = 1105
+//  <switch>0
+999  :     LoadLocalVar  : var = 4(<switch>0)
+//  "Single"
+1000 :     LoadValue     : value = <String, Single>
+//  (<switch>0 == "Single" of (::system::String))
+1001 :     CompareValue  
+//  if ((<switch>0 == "Single" of (::system::String)))
+1002 :     OpNot         : type = Bool
+//  if ((<switch>0 == "Single" of (::system::String)))
+1003 :     JumpIf        : label = 1014
+//  1
+1004 :     LoadValue     : value = <I8, 1>
+//  array
+1005 :     LoadLocalVar  : var = 2(array)
+//  array.items
+1006 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+1007 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+1008 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+1009 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1010 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1011 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Single
+//  return (cast (::system::Single) (cast (system::JsonString^) array.items[1]).content.value);
+1012 :     Return        
+//  if ((<switch>0 == "Single" of (::system::String)))
+1013 :     Jump          : label = 1105
+//  <switch>0
+1014 :     LoadLocalVar  : var = 4(<switch>0)
+//  "Double"
+1015 :     LoadValue     : value = <String, Double>
+//  (<switch>0 == "Double" of (::system::String))
+1016 :     CompareValue  
+//  if ((<switch>0 == "Double" of (::system::String)))
+1017 :     OpNot         : type = Bool
+//  if ((<switch>0 == "Double" of (::system::String)))
+1018 :     JumpIf        : label = 1029
+//  1
+1019 :     LoadValue     : value = <I8, 1>
+//  array
+1020 :     LoadLocalVar  : var = 2(array)
+//  array.items
+1021 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+1022 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+1023 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+1024 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1025 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1026 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Double
+//  return (cast (::system::Double) (cast (system::JsonString^) array.items[1]).content.value);
+1027 :     Return        
+//  if ((<switch>0 == "Double" of (::system::String)))
+1028 :     Jump          : label = 1105
+//  <switch>0
+1029 :     LoadLocalVar  : var = 4(<switch>0)
+//  "Boolean"
+1030 :     LoadValue     : value = <String, Boolean>
+//  (<switch>0 == "Boolean" of (::system::String))
+1031 :     CompareValue  
+//  if ((<switch>0 == "Boolean" of (::system::String)))
+1032 :     OpNot         : type = Bool
+//  if ((<switch>0 == "Boolean" of (::system::String)))
+1033 :     JumpIf        : label = 1044
+//  1
+1034 :     LoadValue     : value = <I8, 1>
+//  array
+1035 :     LoadLocalVar  : var = 2(array)
+//  array.items
+1036 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+1037 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+1038 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+1039 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1040 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1041 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Boolean
+//  return (cast (::system::Boolean) (cast (system::JsonString^) array.items[1]).content.value);
+1042 :     Return        
+//  if ((<switch>0 == "Boolean" of (::system::String)))
+1043 :     Jump          : label = 1105
+//  <switch>0
+1044 :     LoadLocalVar  : var = 4(<switch>0)
+//  "Char"
+1045 :     LoadValue     : value = <String, Char>
+//  (<switch>0 == "Char" of (::system::String))
+1046 :     CompareValue  
+//  if ((<switch>0 == "Char" of (::system::String)))
+1047 :     OpNot         : type = Bool
+//  if ((<switch>0 == "Char" of (::system::String)))
+1048 :     JumpIf        : label = 1059
+//  1
+1049 :     LoadValue     : value = <I8, 1>
+//  array
+1050 :     LoadLocalVar  : var = 2(array)
+//  array.items
+1051 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+1052 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+1053 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+1054 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1055 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1056 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Char
+//  return (cast (::system::Char) (cast (system::JsonString^) array.items[1]).content.value);
+1057 :     Return        
+//  if ((<switch>0 == "Char" of (::system::String)))
+1058 :     Jump          : label = 1105
+//  <switch>0
+1059 :     LoadLocalVar  : var = 4(<switch>0)
+//  "String"
+1060 :     LoadValue     : value = <String, String>
+//  (<switch>0 == "String" of (::system::String))
+1061 :     CompareValue  
+//  if ((<switch>0 == "String" of (::system::String)))
+1062 :     OpNot         : type = Bool
+//  if ((<switch>0 == "String" of (::system::String)))
+1063 :     JumpIf        : label = 1073
+//  1
+1064 :     LoadValue     : value = <I8, 1>
+//  array
+1065 :     LoadLocalVar  : var = 2(array)
+//  array.items
+1066 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+1067 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+1068 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+1069 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1070 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  return (cast (::system::String) (cast (system::JsonString^) array.items[1]).content.value);
+1071 :     Return        
+//  if ((<switch>0 == "String" of (::system::String)))
+1072 :     Jump          : label = 1105
+//  <switch>0
+1073 :     LoadLocalVar  : var = 4(<switch>0)
+//  "DateTime"
+1074 :     LoadValue     : value = <String, DateTime>
+//  (<switch>0 == "DateTime" of (::system::String))
+1075 :     CompareValue  
+//  if ((<switch>0 == "DateTime" of (::system::String)))
+1076 :     OpNot         : type = Bool
+//  if ((<switch>0 == "DateTime" of (::system::String)))
+1077 :     JumpIf        : label = 1088
+//  1
+1078 :     LoadValue     : value = <I8, 1>
+//  array
+1079 :     LoadLocalVar  : var = 2(array)
+//  array.items
+1080 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+1081 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+1082 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+1083 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1084 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1085 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::DateTime
+//  return (cast (::system::DateTime) (cast (system::JsonString^) array.items[1]).content.value);
+1086 :     Return        
+//  if ((<switch>0 == "DateTime" of (::system::String)))
+1087 :     Jump          : label = 1105
+//  <switch>0
+1088 :     LoadLocalVar  : var = 4(<switch>0)
+//  "Locale"
+1089 :     LoadValue     : value = <String, Locale>
+//  (<switch>0 == "Locale" of (::system::String))
+1090 :     CompareValue  
+//  if ((<switch>0 == "Locale" of (::system::String)))
+1091 :     OpNot         : type = Bool
+//  if ((<switch>0 == "Locale" of (::system::String)))
+1092 :     JumpIf        : label = 1103
+//  1
+1093 :     LoadValue     : value = <I8, 1>
+//  array
+1094 :     LoadLocalVar  : var = 2(array)
+//  array.items
+1095 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  array.items[1]
+1096 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  array.items[1]
+1097 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) array.items[1]).content
+1098 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1099 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  (cast (system::JsonString^) array.items[1]).content.value
+1100 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Locale
+//  return (cast (::system::Locale) (cast (system::JsonString^) array.items[1]).content.value);
+1101 :     Return        
+//  if ((<switch>0 == "Locale" of (::system::String)))
+1102 :     Jump          : label = 1105
+//  "Unknown RPC JSON array schema."
+1103 :     LoadValue     : value = <String, Unknown RPC JSON array schema.>
+//  raise "Unknown RPC JSON array schema.";
+1104 :     RaiseException
+//  if (array is not null)
+1105 :     Jump          : label = 1106
+//  node
+1106 :     LoadLocalVar  : var = 0(node)
+//  (node as (system::JsonObject^))
+1107 :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::JsonObject
+//  var object : system::JsonObject^ = (node as (system::JsonObject^));
+1108 :     StoreLocalVar : var = 5(object)
+//  object
+1109 :     LoadLocalVar  : var = 5(object)
+//  object is not null
+1110 :     LoadValue     : value = <null>
+//  object is not null
+1111 :     CompareReference
+//  object is not null
+1112 :     OpNot         : type = Bool
+//  if (object is not null)
+1113 :     OpNot         : type = Bool
+//  if (object is not null)
+1114 :     JumpIf        : label = 1272
+//  object
+1115 :     LoadLocalVar  : var = 5(object)
+//  "$"
+1116 :     LoadValue     : value = <String, $>
+//  rpcjson_ObjectGet(object, "$")
+1117 :     Invoke        : func = 12(rpcjson_ObjectGet), stackPatternCount = 2
+//  rpcjson_ObjectGet(object, "$")
+1118 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonString
+//  (cast (system::JsonString^) rpcjson_ObjectGet(object, "$")).content
+1119 :     GetProperty   : propertyInfo = content<system::JsonString>
+//  (cast (system::JsonString^) rpcjson_ObjectGet(object, "$")).content.value
+1120 :     GetProperty   : propertyInfo = value<system::ParsingToken>
+//  var keyword : string = (cast (system::JsonString^) rpcjson_ObjectGet(object, "$")).content.value;
+1121 :     StoreLocalVar : var = 6(keyword)
+//  keyword
+1122 :     LoadLocalVar  : var = 6(keyword)
+//  var <switch>1 : ::system::String = keyword;
+1123 :     StoreLocalVar : var = 7(<switch>1)
+//  <switch>1
+1124 :     LoadLocalVar  : var = 7(<switch>1)
+//  "list"
+1125 :     LoadValue     : value = <String, list>
+//  (<switch>1 == "list" of (::system::String))
+1126 :     CompareValue  
+//  if ((<switch>1 == "list" of (::system::String)))
+1127 :     OpNot         : type = Bool
+//  if ((<switch>1 == "list" of (::system::String)))
+1128 :     JumpIf        : label = 1160
+//  {}
+1129 :     NewList       : stackPatternCount = 0
+//  var result : system::List^ = {};
+1130 :     StoreLocalVar : var = 8(result)
+//  object
+1131 :     LoadLocalVar  : var = 5(object)
+//  "values"
+1132 :     LoadValue     : value = <String, values>
+//  rpcjson_ObjectGet(object, "values")
+1133 :     Invoke        : func = 12(rpcjson_ObjectGet), stackPatternCount = 2
+//  rpcjson_ObjectGet(object, "values")
+1134 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonArray
+//  var values : system::JsonArray^ = (cast (system::JsonArray^) rpcjson_ObjectGet(object, "values"));
+1135 :     StoreLocalVar : var = 9(values)
+//  values
+1136 :     LoadLocalVar  : var = 9(values)
+//  values.items
+1137 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  values.items
+1138 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>item = values.items of (::system::Enumerable^);
+1139 :     StoreLocalVar : var = 10(<for-enumerable>item)
+//  <for-enumerable>item
+1140 :     LoadLocalVar  : var = 10(<for-enumerable>item)
+//  <for-enumerable>item.CreateEnumerator()
+1141 :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>item = <for-enumerable>item.CreateEnumerator();
+1142 :     StoreLocalVar : var = 11(<for-enumerator>item)
+//  <for-enumerator>item
+1143 :     LoadLocalVar  : var = 11(<for-enumerator>item)
+//  <for-enumerator>item.Next()
+1144 :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>item.Next())
+1145 :     OpNot         : type = Bool
+//  while (<for-enumerator>item.Next())
+1146 :     JumpIf        : label = 1157
+//  <for-enumerator>item
+1147 :     LoadLocalVar  : var = 11(<for-enumerator>item)
+//  <for-enumerator>item.GetCurrent()
+1148 :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>item.GetCurrent()
+1149 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  var item = (cast (::system::JsonNode^) <for-enumerator>item.GetCurrent());
+1150 :     StoreLocalVar : var = 12(item)
+//  item
+1151 :     LoadLocalVar  : var = 12(item)
+//  rpcjson_Deserialize(item)
+1152 :     Invoke        : func = 16(rpcjson_Deserialize), stackPatternCount = 1
+//  result
+1153 :     LoadLocalVar  : var = 8(result)
+//  result.Add(rpcjson_Deserialize(item))
+1154 :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  result.Add(rpcjson_Deserialize(item));
+1155 :     Pop           
+//  while (<for-enumerator>item.Next())
+1156 :     Jump          : label = 1143
+//  result
+1157 :     LoadLocalVar  : var = 8(result)
+//  return result;
+1158 :     Return        
+//  if ((<switch>1 == "list" of (::system::String)))
+1159 :     Jump          : label = 1271
+//  <switch>1
+1160 :     LoadLocalVar  : var = 7(<switch>1)
+//  "observable-list"
+1161 :     LoadValue     : value = <String, observable-list>
+//  (<switch>1 == "observable-list" of (::system::String))
+1162 :     CompareValue  
+//  if ((<switch>1 == "observable-list" of (::system::String)))
+1163 :     OpNot         : type = Bool
+//  if ((<switch>1 == "observable-list" of (::system::String)))
+1164 :     JumpIf        : label = 1196
+//  {}
+1165 :     NewObservableList: stackPatternCount = 0
+//  var result : system::ObservableList^ = {};
+1166 :     StoreLocalVar : var = 13(result)
+//  object
+1167 :     LoadLocalVar  : var = 5(object)
+//  "values"
+1168 :     LoadValue     : value = <String, values>
+//  rpcjson_ObjectGet(object, "values")
+1169 :     Invoke        : func = 12(rpcjson_ObjectGet), stackPatternCount = 2
+//  rpcjson_ObjectGet(object, "values")
+1170 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonArray
+//  var values : system::JsonArray^ = (cast (system::JsonArray^) rpcjson_ObjectGet(object, "values"));
+1171 :     StoreLocalVar : var = 14(values)
+//  values
+1172 :     LoadLocalVar  : var = 14(values)
+//  values.items
+1173 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  values.items
+1174 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>item = values.items of (::system::Enumerable^);
+1175 :     StoreLocalVar : var = 15(<for-enumerable>item)
+//  <for-enumerable>item
+1176 :     LoadLocalVar  : var = 15(<for-enumerable>item)
+//  <for-enumerable>item.CreateEnumerator()
+1177 :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>item = <for-enumerable>item.CreateEnumerator();
+1178 :     StoreLocalVar : var = 16(<for-enumerator>item)
+//  <for-enumerator>item
+1179 :     LoadLocalVar  : var = 16(<for-enumerator>item)
+//  <for-enumerator>item.Next()
+1180 :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>item.Next())
+1181 :     OpNot         : type = Bool
+//  while (<for-enumerator>item.Next())
+1182 :     JumpIf        : label = 1193
+//  <for-enumerator>item
+1183 :     LoadLocalVar  : var = 16(<for-enumerator>item)
+//  <for-enumerator>item.GetCurrent()
+1184 :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>item.GetCurrent()
+1185 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  var item = (cast (::system::JsonNode^) <for-enumerator>item.GetCurrent());
+1186 :     StoreLocalVar : var = 17(item)
+//  item
+1187 :     LoadLocalVar  : var = 17(item)
+//  rpcjson_Deserialize(item)
+1188 :     Invoke        : func = 16(rpcjson_Deserialize), stackPatternCount = 1
+//  result
+1189 :     LoadLocalVar  : var = 13(result)
+//  result.Add(rpcjson_Deserialize(item))
+1190 :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+//  result.Add(rpcjson_Deserialize(item));
+1191 :     Pop           
+//  while (<for-enumerator>item.Next())
+1192 :     Jump          : label = 1179
+//  result
+1193 :     LoadLocalVar  : var = 13(result)
+//  return result;
+1194 :     Return        
+//  if ((<switch>1 == "observable-list" of (::system::String)))
+1195 :     Jump          : label = 1271
+//  <switch>1
+1196 :     LoadLocalVar  : var = 7(<switch>1)
+//  "map"
+1197 :     LoadValue     : value = <String, map>
+//  (<switch>1 == "map" of (::system::String))
+1198 :     CompareValue  
+//  if ((<switch>1 == "map" of (::system::String)))
+1199 :     OpNot         : type = Bool
+//  if ((<switch>1 == "map" of (::system::String)))
+1200 :     JumpIf        : label = 1243
+//  {}
+1201 :     NewDictionary : stackPatternCount = 0
+//  var result : system::Dictionary^ = {};
+1202 :     StoreLocalVar : var = 18(result)
+//  object
+1203 :     LoadLocalVar  : var = 5(object)
+//  "values"
+1204 :     LoadValue     : value = <String, values>
+//  rpcjson_ObjectGet(object, "values")
+1205 :     Invoke        : func = 12(rpcjson_ObjectGet), stackPatternCount = 2
+//  rpcjson_ObjectGet(object, "values")
+1206 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonArray
+//  var values : system::JsonArray^ = (cast (system::JsonArray^) rpcjson_ObjectGet(object, "values"));
+1207 :     StoreLocalVar : var = 19(values)
+//  values
+1208 :     LoadLocalVar  : var = 19(values)
+//  values.items
+1209 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  values.items
+1210 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>item = values.items of (::system::Enumerable^);
+1211 :     StoreLocalVar : var = 20(<for-enumerable>item)
+//  <for-enumerable>item
+1212 :     LoadLocalVar  : var = 20(<for-enumerable>item)
+//  <for-enumerable>item.CreateEnumerator()
+1213 :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>item = <for-enumerable>item.CreateEnumerator();
+1214 :     StoreLocalVar : var = 21(<for-enumerator>item)
+//  <for-enumerator>item
+1215 :     LoadLocalVar  : var = 21(<for-enumerator>item)
+//  <for-enumerator>item.Next()
+1216 :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>item.Next())
+1217 :     OpNot         : type = Bool
+//  while (<for-enumerator>item.Next())
+1218 :     JumpIf        : label = 1240
+//  <for-enumerator>item
+1219 :     LoadLocalVar  : var = 21(<for-enumerator>item)
+//  <for-enumerator>item.GetCurrent()
+1220 :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>item.GetCurrent()
+1221 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
+//  var item = (cast (::system::JsonNode^) <for-enumerator>item.GetCurrent());
+1222 :     StoreLocalVar : var = 22(item)
+//  item
+1223 :     LoadLocalVar  : var = 22(item)
+//  item
+1224 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonArray
+//  var pair : system::JsonArray^ = (cast (system::JsonArray^) item);
+1225 :     StoreLocalVar : var = 23(pair)
+//  0
+1226 :     LoadValue     : value = <I8, 0>
+//  pair
+1227 :     LoadLocalVar  : var = 23(pair)
+//  pair.items
+1228 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  pair.items[0]
+1229 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  rpcjson_Deserialize(pair.items[0])
+1230 :     Invoke        : func = 16(rpcjson_Deserialize), stackPatternCount = 1
+//  1
+1231 :     LoadValue     : value = <I8, 1>
+//  pair
+1232 :     LoadLocalVar  : var = 23(pair)
+//  pair.items
+1233 :     GetProperty   : propertyInfo = items<system::JsonArray>
+//  pair.items[1]
+1234 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  rpcjson_Deserialize(pair.items[1])
+1235 :     Invoke        : func = 16(rpcjson_Deserialize), stackPatternCount = 1
+//  result
+1236 :     LoadLocalVar  : var = 18(result)
+//  result.Set(rpcjson_Deserialize(pair.items[0]), rpcjson_Deserialize(pair.items[1]))
+1237 :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
+//  result.Set(rpcjson_Deserialize(pair.items[0]), rpcjson_Deserialize(pair.items[1]));
+1238 :     Pop           
+//  while (<for-enumerator>item.Next())
+1239 :     Jump          : label = 1215
+//  result
+1240 :     LoadLocalVar  : var = 18(result)
+//  return result;
+1241 :     Return        
+//  if ((<switch>1 == "map" of (::system::String)))
+1242 :     Jump          : label = 1271
+//  <switch>1
+1243 :     LoadLocalVar  : var = 7(<switch>1)
+//  "system::RpcObjectReference"
+1244 :     LoadValue     : value = <String, system::RpcObjectReference>
+//  (<switch>1 == "system::RpcObjectReference" of (::system::String))
+1245 :     CompareValue  
+//  if ((<switch>1 == "system::RpcObjectReference" of (::system::String)))
+1246 :     OpNot         : type = Bool
+//  if ((<switch>1 == "system::RpcObjectReference" of (::system::String)))
+1247 :     JumpIf        : label = 1269
+//  {clientId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "clientId"))); objectId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "objectId"))); typeId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "typeId")));}
+1248 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::RpcObjectReference
+//  object
+1249 :     LoadLocalVar  : var = 5(object)
+//  "clientId"
+1250 :     LoadValue     : value = <String, clientId>
+//  rpcjson_ObjectGet(object, "clientId")
+1251 :     Invoke        : func = 12(rpcjson_ObjectGet), stackPatternCount = 2
+//  rpcjson_Deserialize(rpcjson_ObjectGet(object, "clientId"))
+1252 :     Invoke        : func = 16(rpcjson_Deserialize), stackPatternCount = 1
+//  rpcjson_Deserialize(rpcjson_ObjectGet(object, "clientId"))
+1253 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  {clientId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "clientId"))); objectId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "objectId"))); typeId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "typeId")));}
+1254 :     UpdateProperty: propertyInfo = clientId<system::RpcObjectReference>
+//  object
+1255 :     LoadLocalVar  : var = 5(object)
+//  "objectId"
+1256 :     LoadValue     : value = <String, objectId>
+//  rpcjson_ObjectGet(object, "objectId")
+1257 :     Invoke        : func = 12(rpcjson_ObjectGet), stackPatternCount = 2
+//  rpcjson_Deserialize(rpcjson_ObjectGet(object, "objectId"))
+1258 :     Invoke        : func = 16(rpcjson_Deserialize), stackPatternCount = 1
+//  rpcjson_Deserialize(rpcjson_ObjectGet(object, "objectId"))
+1259 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  {clientId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "clientId"))); objectId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "objectId"))); typeId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "typeId")));}
+1260 :     UpdateProperty: propertyInfo = objectId<system::RpcObjectReference>
+//  object
+1261 :     LoadLocalVar  : var = 5(object)
+//  "typeId"
+1262 :     LoadValue     : value = <String, typeId>
+//  rpcjson_ObjectGet(object, "typeId")
+1263 :     Invoke        : func = 12(rpcjson_ObjectGet), stackPatternCount = 2
+//  rpcjson_Deserialize(rpcjson_ObjectGet(object, "typeId"))
+1264 :     Invoke        : func = 16(rpcjson_Deserialize), stackPatternCount = 1
+//  rpcjson_Deserialize(rpcjson_ObjectGet(object, "typeId"))
+1265 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  {clientId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "clientId"))); objectId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "objectId"))); typeId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "typeId")));}
+1266 :     UpdateProperty: propertyInfo = typeId<system::RpcObjectReference>
+//  return {clientId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "clientId"))); objectId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "objectId"))); typeId : (cast (::system::Int64) rpcjson_Deserialize(rpcjson_ObjectGet(object, "typeId")));} of (::system::RpcObjectReference);
+1267 :     Return        
+//  if ((<switch>1 == "system::RpcObjectReference" of (::system::String)))
+1268 :     Jump          : label = 1271
+//  "Unknown RPC JSON object schema."
+1269 :     LoadValue     : value = <String, Unknown RPC JSON object schema.>
+//  raise "Unknown RPC JSON object schema.";
+1270 :     RaiseException
+//  if (object is not null)
+1271 :     Jump          : label = 1272
+//  "Unsupported RPC JSON node."
+1272 :     LoadValue     : value = <String, Unsupported RPC JSON node.>
+//  raise "Unsupported RPC JSON node.";
+1273 :     RaiseException
+//  func rpcjson_Deserialize(node : system::JsonNode^) : (object)
+1274 :     LoadValue     : value = <null>
+//  func rpcjson_Deserialize(node : system::JsonNode^) : (object)
+1275 :     Return        
+//  typeId
+1276 :     LoadLocalVar  : var = 0(typeId)
+//  -7
+1277 :     LoadValue     : value = <I8, -7>
+//  (typeId >= -7)
+1278 :     CompareLiteral: type = I8
+//  (typeId >= -7)
+1279 :     OpGE          
+//  typeId
+1280 :     LoadLocalVar  : var = 0(typeId)
+//  -1
+1281 :     LoadValue     : value = <I8, -1>
+//  (typeId <= -1)
+1282 :     CompareLiteral: type = I8
+//  (typeId <= -1)
+1283 :     OpLE          
+//  ((typeId >= -7) and (typeId <= -1))
+1284 :     OpAnd         : type = Bool
+//  if (((typeId >= -7) and (typeId <= -1)))
+1285 :     OpNot         : type = Bool
+//  if (((typeId >= -7) and (typeId <= -1)))
+1286 :     JumpIf        : label = 1290
+//  true
+1287 :     LoadValue     : value = <Bool, true>
+//  return true;
+1288 :     Return        
+//  if (((typeId >= -7) and (typeId <= -1)))
+1289 :     Jump          : label = 1290
+//  typeId
+1290 :     LoadLocalVar  : var = 0(typeId)
+//  var <switch>2 : ::system::Int64 = typeId;
+1291 :     StoreLocalVar : var = 1(<switch>2)
+//  <switch>2
+1292 :     LoadLocalVar  : var = 1(<switch>2)
 //  rpctype_RpcEvent__IService
-511  :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
-//  (<switch>5 == rpctype_RpcEvent__IService of (::system::Int64))
-512  :     CompareValue  
-//  if ((<switch>5 == rpctype_RpcEvent__IService of (::system::Int64)))
-513  :     OpNot         : type = Bool
-//  if ((<switch>5 == rpctype_RpcEvent__IService of (::system::Int64)))
-514  :     JumpIf        : label = 521
+1293 :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
+//  (<switch>2 == rpctype_RpcEvent__IService of (::system::Int64))
+1294 :     CompareValue  
+//  if ((<switch>2 == rpctype_RpcEvent__IService of (::system::Int64)))
+1295 :     OpNot         : type = Bool
+//  if ((<switch>2 == rpctype_RpcEvent__IService of (::system::Int64)))
+1296 :     JumpIf        : label = 1300
+//  true
+1297 :     LoadValue     : value = <Bool, true>
+//  return true;
+1298 :     Return        
+//  if ((<switch>2 == rpctype_RpcEvent__IService of (::system::Int64)))
+1299 :     Jump          : label = 1302
+//  false
+1300 :     LoadValue     : value = <Bool, false>
+//  return false;
+1301 :     Return        
+//  func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+1302 :     LoadValue     : value = <null>
+//  func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+1303 :     Return        
+//  typeId
+1304 :     LoadLocalVar  : var = 0(typeId)
+//  var <switch>3 : ::system::Int64 = typeId;
+1305 :     StoreLocalVar : var = 1(<switch>3)
+//  <switch>3
+1306 :     LoadLocalVar  : var = 1(<switch>3)
+//  rpctype_RpcEvent__IService
+1307 :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
+//  (<switch>3 == rpctype_RpcEvent__IService of (::system::Int64))
+1308 :     CompareValue  
+//  if ((<switch>3 == rpctype_RpcEvent__IService of (::system::Int64)))
+1309 :     OpNot         : type = Bool
+//  if ((<switch>3 == rpctype_RpcEvent__IService of (::system::Int64)))
+1310 :     JumpIf        : label = 1314
+//  true
+1311 :     LoadValue     : value = <Bool, true>
+//  return true;
+1312 :     Return        
+//  if ((<switch>3 == rpctype_RpcEvent__IService of (::system::Int64)))
+1313 :     Jump          : label = 1316
+//  false
+1314 :     LoadValue     : value = <Bool, false>
+//  return false;
+1315 :     Return        
+//  func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+1316 :     LoadValue     : value = <null>
+//  func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+1317 :     Return        
 //  lc
-515  :     LoadLocalVar  : var = 1(lc)
+1318 :     LoadLocalVar  : var = 0(lc)
+//  new (system::IRpcObjectOps^)
+1319 :     LoadValue     : value = <null>
+//  new (system::IRpcObjectOps^)
+1320 :     CreateClosureContext: stackPatternCount = 2
+//  new (system::IRpcObjectOps^)
+1321 :     LoadMethodInfo: methodInfo = InvokeMethod<system::IRpcObjectOps>
+//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+1322 :     LoadFunction  : func = 28(<method:InvokeMethod<system::IRpcObjectOps>(28)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+1323 :     LoadMethodInfo: methodInfo = InvokeMethodAsync<system::IRpcObjectOps>
+//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+1324 :     LoadFunction  : func = 29(<method:InvokeMethodAsync<system::IRpcObjectOps>(29)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+1325 :     LoadMethodInfo: methodInfo = ObjectHold<system::IRpcObjectOps>
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+1326 :     LoadFunction  : func = 30(<method:ObjectHold<system::IRpcObjectOps>(30)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+1327 :     LoadMethodInfo: methodInfo = RegisterService<system::IRpcObjectOps>
+//  func RegisterService(typeId : int, service : system::Interface^) : (void)
+1328 :     LoadFunction  : func = 31(<method:RegisterService<system::IRpcObjectOps>(31)> in rpc_IRpcObjectOps)
+//  new (system::IRpcObjectOps^)
+1329 :     CreateInterface: methodInfo = <system::IRpcObjectOps>, stackPatternCount = 8
+//  return new (system::IRpcObjectOps^)
+1330 :     Return        
+//  func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+1331 :     LoadValue     : value = <null>
+//  func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+1332 :     Return        
+//  methodId
+1333 :     LoadLocalVar  : var = 1(methodId)
+//  var <switch>4 : ::system::Int64 = methodId;
+1334 :     StoreLocalVar : var = 3(<switch>4)
+//  <switch>4
+1335 :     LoadLocalVar  : var = 3(<switch>4)
+//  rpcmethod_RpcEvent__IService_MakeItHappen
+1336 :     LoadGlobalVar : var = 2(rpcmethod_RpcEvent__IService_MakeItHappen)
+//  (<switch>4 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64))
+1337 :     CompareValue  
+//  if ((<switch>4 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64)))
+1338 :     OpNot         : type = Bool
+//  if ((<switch>4 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64)))
+1339 :     JumpIf        : label = 1351
 //  ref
-516  :     LoadLocalVar  : var = 0(ref)
+1340 :     LoadLocalVar  : var = 0(ref)
+//  _lc
+1341 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.RefToPtr(ref)
+1342 :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
+//  _lc.RefToPtr(ref)
+1343 :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
+//  var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
+1344 :     StoreLocalVar : var = 4(target)
+//  target
+1345 :     LoadLocalVar  : var = 4(target)
+//  target.MakeItHappen()
+1346 :     InvokeMethod  : methodInfo = MakeItHappen<RpcEvent::IService>, stackPatternCount = 0
+//  target.MakeItHappen();
+1347 :     Pop           
+//  null
+1348 :     LoadValue     : value = <null>
+//  return null;
+1349 :     Return        
+//  if ((<switch>4 == rpcmethod_RpcEvent__IService_MakeItHappen of (::system::Int64)))
+1350 :     Jump          : label = 1369
+//  <switch>4
+1351 :     LoadLocalVar  : var = 3(<switch>4)
+//  rpcmethod_RpcEvent__IService_Watch
+1352 :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
+//  (<switch>4 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64))
+1353 :     CompareValue  
+//  if ((<switch>4 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64)))
+1354 :     OpNot         : type = Bool
+//  if ((<switch>4 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64)))
+1355 :     JumpIf        : label = 1367
+//  ref
+1356 :     LoadLocalVar  : var = 0(ref)
+//  _lc
+1357 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.RefToPtr(ref)
+1358 :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
+//  _lc.RefToPtr(ref)
+1359 :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
+//  var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
+1360 :     StoreLocalVar : var = 5(target)
+//  target
+1361 :     LoadLocalVar  : var = 5(target)
+//  target.Watch()
+1362 :     InvokeMethod  : methodInfo = Watch<RpcEvent::IService>, stackPatternCount = 0
+//  target.Watch();
+1363 :     Pop           
+//  null
+1364 :     LoadValue     : value = <null>
+//  return null;
+1365 :     Return        
+//  if ((<switch>4 == rpcmethod_RpcEvent__IService_Watch of (::system::Int64)))
+1366 :     Jump          : label = 1369
+//  "Unknown RPC method id."
+1367 :     LoadValue     : value = <String, Unknown RPC method id.>
+//  raise "Unknown RPC method id.";
+1368 :     RaiseException
+//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+1369 :     LoadValue     : value = <null>
+//  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+1370 :     Return        
+//  "InvokeMethodAsync is not supported."
+1371 :     LoadValue     : value = <String, InvokeMethodAsync is not supported.>
+//  raise "InvokeMethodAsync is not supported.";
+1372 :     RaiseException
+//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+1373 :     LoadValue     : value = <null>
+//  func InvokeMethodAsync(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (system::Async^)
+1374 :     Return        
+//  hold
+1375 :     LoadLocalVar  : var = 2(hold)
+//  if (hold)
+1376 :     OpNot         : type = Bool
+//  if (hold)
+1377 :     JumpIf        : label = 1384
+//  ref
+1378 :     LoadLocalVar  : var = 0(ref)
+//  remoteClientId
+1379 :     LoadLocalVar  : var = 1(remoteClientId)
+//  _lc
+1380 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.LocalObjectHold(ref, remoteClientId)
+1381 :     InvokeMethod  : methodInfo = LocalObjectHold<system::IRpcLifecycle>, stackPatternCount = 2
+//  _lc.LocalObjectHold(ref, remoteClientId);
+1382 :     Pop           
+//  if (hold)
+1383 :     Jump          : label = 1389
+//  ref
+1384 :     LoadLocalVar  : var = 0(ref)
+//  remoteClientId
+1385 :     LoadLocalVar  : var = 1(remoteClientId)
+//  _lc
+1386 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.LocalObjectUnhold(ref, remoteClientId)
+1387 :     InvokeMethod  : methodInfo = LocalObjectUnhold<system::IRpcLifecycle>, stackPatternCount = 2
+//  _lc.LocalObjectUnhold(ref, remoteClientId);
+1388 :     Pop           
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+1389 :     LoadValue     : value = <null>
+//  func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+1390 :     Return        
+//  typeId
+1391 :     LoadLocalVar  : var = 0(typeId)
+//  rpcwrapper_IsCtorInterfaceTypeId(typeId)
+1392 :     Invoke        : func = 18(rpcwrapper_IsCtorInterfaceTypeId), stackPatternCount = 1
+//  if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+1393 :     OpNot         : type = Bool
+//  if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+1394 :     JumpIf        : label = 1404
+//  typeId
+1395 :     LoadLocalVar  : var = 0(typeId)
+//  service
+1396 :     LoadLocalVar  : var = 1(service)
+//  _lc
+1397 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.PtrToRef(service)
+1398 :     InvokeMethod  : methodInfo = PtrToRef<system::IRpcLifecycle>, stackPatternCount = 1
+//  _lc
+1399 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Dispatcher
+1400 :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
+//  _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service))
+1401 :     InvokeMethod  : methodInfo = RegisterService<system::IRpcDispatcher>, stackPatternCount = 2
+//  _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+1402 :     Pop           
+//  if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+1403 :     Jump          : label = 1413
+//  typeId
+1404 :     LoadLocalVar  : var = 0(typeId)
+//  rpcwrapper_IsInterfaceTypeId(typeId)
+1405 :     Invoke        : func = 17(rpcwrapper_IsInterfaceTypeId), stackPatternCount = 1
+//  if (rpcwrapper_IsInterfaceTypeId(typeId))
+1406 :     OpNot         : type = Bool
+//  if (rpcwrapper_IsInterfaceTypeId(typeId))
+1407 :     JumpIf        : label = 1411
+//  "RPC service type id is not an @rpc:Ctor interface."
+1408 :     LoadValue     : value = <String, RPC service type id is not an @rpc:Ctor interface.>
+//  raise "RPC service type id is not an @rpc:Ctor interface.";
+1409 :     RaiseException
+//  if (rpcwrapper_IsInterfaceTypeId(typeId))
+1410 :     Jump          : label = 1413
+//  "RPC service type id does not exist."
+1411 :     LoadValue     : value = <String, RPC service type id does not exist.>
+//  raise "RPC service type id does not exist.";
+1412 :     RaiseException
+//  func RegisterService(typeId : int, service : system::Interface^) : (void)
+1413 :     LoadValue     : value = <null>
+//  func RegisterService(typeId : int, service : system::Interface^) : (void)
+1414 :     Return        
+//  lc
+1415 :     LoadLocalVar  : var = 0(lc)
+//  new (system::IRpcObjectEventOps^)
+1416 :     LoadValue     : value = <null>
+//  new (system::IRpcObjectEventOps^)
+1417 :     CreateClosureContext: stackPatternCount = 2
+//  new (system::IRpcObjectEventOps^)
+1418 :     LoadMethodInfo: methodInfo = InvokeEvent<system::IRpcObjectEventOps>
+//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+1419 :     LoadFunction  : func = 32(<method:InvokeEvent<system::IRpcObjectEventOps>(32)> in rpc_IRpcObjectEventOps)
+//  new (system::IRpcObjectEventOps^)
+1420 :     CreateInterface: methodInfo = <system::IRpcObjectEventOps>, stackPatternCount = 2
+//  return new (system::IRpcObjectEventOps^)
+1421 :     Return        
+//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+1422 :     LoadValue     : value = <null>
+//  func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+1423 :     Return        
+//  ref
+1424 :     LoadLocalVar  : var = 0(ref)
+//  eventId
+1425 :     LoadLocalVar  : var = 1(eventId)
+//  true
+1426 :     LoadValue     : value = <Bool, true>
+//  _lc
+1427 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Controller
+1428 :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
+//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, true)
+1429 :     InvokeMethod  : methodInfo = SetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 3
+//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+1430 :     Pop           
+//  try
+1431 :     InstallTry    : label = 1459
+//  eventId
+1432 :     LoadLocalVar  : var = 1(eventId)
+//  var <switch>5 : ::system::Int64 = eventId;
+1433 :     StoreLocalVar : var = 3(<switch>5)
+//  <switch>5
+1434 :     LoadLocalVar  : var = 3(<switch>5)
+//  rpcevent_RpcEvent__IService_SomethingHappened
+1435 :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+//  (<switch>5 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64))
+1436 :     CompareValue  
+//  if ((<switch>5 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64)))
+1437 :     OpNot         : type = Bool
+//  if ((<switch>5 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64)))
+1438 :     JumpIf        : label = 1455
+//  ref
+1439 :     LoadLocalVar  : var = 0(ref)
+//  _lc
+1440 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.RefToPtr(ref)
+1441 :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
+//  _lc.RefToPtr(ref)
+1442 :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcEvent::IService
+//  var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
+1443 :     StoreLocalVar : var = 4(target)
+//  0
+1444 :     LoadValue     : value = <I8, 0>
+//  arguments
+1445 :     LoadLocalVar  : var = 2(arguments)
+//  arguments[0]
+1446 :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  _lc
+1447 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)
+1448 :     LoadValue     : value = <null>
+//  system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)
+1449 :     InvokeMethod  : methodInfo = RpcUnboxByval<system::IRpcLifecycle>, stackPatternCount = 2
+//  system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)
+1450 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  target
+1451 :     LoadLocalVar  : var = 4(target)
+//  target.SomethingHappened((cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)))
+1452 :     InvokeEvent   : eventInfo = SomethingHappened<RpcEvent::IService>, stackPatternCount = 1
+//  target.SomethingHappened((cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
+1453 :     Pop           
+//  if ((<switch>5 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int64)))
+1454 :     Jump          : label = 1457
+//  "Unknown RPC event id."
+1455 :     LoadValue     : value = <String, Unknown RPC event id.>
+//  raise "Unknown RPC event id.";
+1456 :     RaiseException
+//  try
+1457 :     UninstallTry  : stackPatternCount = 0
+//  try
+1458 :     Jump          : label = 1470
+//  try
+1459 :     LoadException 
+//  try
+1460 :     StoreLocalVar : var = 5(<catch>)
+//  ref
+1461 :     LoadLocalVar  : var = 0(ref)
+//  eventId
+1462 :     LoadLocalVar  : var = 1(eventId)
+//  false
+1463 :     LoadValue     : value = <Bool, false>
+//  _lc
+1464 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Controller
+1465 :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
+//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false)
+1466 :     InvokeMethod  : methodInfo = SetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 3
+//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+1467 :     Pop           
+//  try
+1468 :     LoadLocalVar  : var = 5(<catch>)
+//  try
+1469 :     RaiseException
+//  ref
+1470 :     LoadLocalVar  : var = 0(ref)
+//  eventId
+1471 :     LoadLocalVar  : var = 1(eventId)
+//  false
+1472 :     LoadValue     : value = <Bool, false>
+//  _lc
+1473 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Controller
+1474 :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
+//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false)
+1475 :     InvokeMethod  : methodInfo = SetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 3
+//  _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+1476 :     Pop           
+//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+1477 :     LoadValue     : value = <null>
+//  func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+1478 :     Return        
+//  target
+1479 :     LoadLocalVar  : var = 2(target)
+//  func (arg0 : ::system::String) : (void)
+1480 :     LoadLocalVar  : var = 0(lc)
+//  func (arg0 : ::system::String) : (void)
+1481 :     LoadLocalVar  : var = 1(ref)
+//  func (arg0 : ::system::String) : (void)
+1482 :     CreateClosureContext: stackPatternCount = 2
+//  func (arg0 : ::system::String) : (void)
+1483 :     LoadFunction  : func = 33(<lambda:(33)> in rpclistener_RpcEvent__IService)
+//  func (arg0 : ::system::String) : (void)
+1484 :     CreateClosure 
+//  attach(target.SomethingHappened, func (arg0 : ::system::String) : (void)
+1485 :     AttachEvent   : eventInfo = SomethingHappened<RpcEvent::IService>
+//  attach(target.SomethingHappened, func (arg0 : ::system::String) : (void)
+1486 :     Pop           
+//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcEvent::IService*) : (void)
+1487 :     LoadValue     : value = <null>
+//  func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcEvent::IService*) : (void)
+1488 :     Return        
+//  ref
+1489 :     LoadCapturedVar: var = 1(<captured>ref)
+//  rpcevent_RpcEvent__IService_SomethingHappened
+1490 :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+//  lc
+1491 :     LoadCapturedVar: var = 0(<captured>lc)
+//  lc.Controller
+1492 :     InvokeMethod  : methodInfo = GetController<system::IRpcLifecycle>, stackPatternCount = 0
+//  lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened)
+1493 :     InvokeMethod  : methodInfo = GetEventSuppressedFlag<system::IRpcController>, stackPatternCount = 2
+//  if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened))
+1494 :     OpNot         : type = Bool
+//  if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened))
+1495 :     JumpIf        : label = 1499
+//  return;
+1496 :     LoadValue     : value = <null>
+//  return;
+1497 :     Return        
+//  if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcEvent__IService_SomethingHappened))
+1498 :     Jump          : label = 1499
+//  {}
+1499 :     NewArray      : stackPatternCount = 0
+//  var arguments : system::Array^ = {};
+1500 :     StoreLocalVar : var = 1(arguments)
+//  1
+1501 :     LoadValue     : value = <I8, 1>
+//  arguments
+1502 :     LoadLocalVar  : var = 1(arguments)
+//  arguments.Resize(1)
+1503 :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
+//  arguments.Resize(1);
+1504 :     Pop           
+//  0
+1505 :     LoadValue     : value = <I8, 0>
+//  arg0
+1506 :     LoadLocalVar  : var = 0(arg0)
+//  lc
+1507 :     LoadCapturedVar: var = 0(<captured>lc)
+//  system::IRpcLifecycle::RpcBoxByval(arg0, lc)
+1508 :     LoadValue     : value = <null>
+//  system::IRpcLifecycle::RpcBoxByval(arg0, lc)
+1509 :     InvokeMethod  : methodInfo = RpcBoxByval<system::IRpcLifecycle>, stackPatternCount = 2
+//  arguments
+1510 :     LoadLocalVar  : var = 1(arguments)
+//  arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg0, lc))
+1511 :     InvokeMethod  : methodInfo = Set<system::Array>, stackPatternCount = 2
+//  arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg0, lc));
+1512 :     Pop           
+//  ref
+1513 :     LoadCapturedVar: var = 1(<captured>ref)
+//  rpcevent_RpcEvent__IService_SomethingHappened
+1514 :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+//  arguments
+1515 :     LoadLocalVar  : var = 1(arguments)
+//  lc
+1516 :     LoadCapturedVar: var = 0(<captured>lc)
+//  lc.ClientId
+1517 :     InvokeMethod  : methodInfo = GetClientId<system::IRpcLifecycle>, stackPatternCount = 0
+//  lc
+1518 :     LoadCapturedVar: var = 0(<captured>lc)
+//  lc.Dispatcher
+1519 :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
+//  lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId)
+1520 :     InvokeMethod  : methodInfo = BroadcastFromClient_ObjectEventOps<system::IRpcDispatcher>, stackPatternCount = 1
+//  lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments)
+1521 :     InvokeMethod  : methodInfo = InvokeEvent<system::IRpcObjectEventOps>, stackPatternCount = 3
+//  lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
+1522 :     Pop           
+//  func (arg0 : ::system::String) : (void)
+1523 :     LoadValue     : value = <null>
+//  func (arg0 : ::system::String) : (void)
+1524 :     Return        
+//  typeId
+1525 :     LoadLocalVar  : var = 0(typeId)
+//  var <switch>6 : ::system::Int64 = typeId;
+1526 :     StoreLocalVar : var = 4(<switch>6)
+//  <switch>6
+1527 :     LoadLocalVar  : var = 4(<switch>6)
+//  rpctype_RpcEvent__IService
+1528 :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
+//  (<switch>6 == rpctype_RpcEvent__IService of (::system::Int64))
+1529 :     CompareValue  
+//  if ((<switch>6 == rpctype_RpcEvent__IService of (::system::Int64)))
+1530 :     OpNot         : type = Bool
+//  if ((<switch>6 == rpctype_RpcEvent__IService of (::system::Int64)))
+1531 :     JumpIf        : label = 1541
+//  lc
+1532 :     LoadLocalVar  : var = 1(lc)
+//  ref
+1533 :     LoadLocalVar  : var = 2(ref)
+//  obj
+1534 :     LoadLocalVar  : var = 3(obj)
+//  obj
+1535 :     ConvertToType : flag = RawPtr, typeDescriptor = RpcEvent::IService
+//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService*) obj))
+1536 :     Invoke        : func = 21(rpclistener_RpcEvent__IService), stackPatternCount = 3
+//  rpclistener_RpcEvent__IService(lc, ref, (cast (RpcEvent::IService*) obj));
+1537 :     Pop           
+//  return;
+1538 :     LoadValue     : value = <null>
+//  return;
+1539 :     Return        
+//  if ((<switch>6 == rpctype_RpcEvent__IService of (::system::Int64)))
+1540 :     Jump          : label = 1543
+//  "Unknown RPC type id for listener attachment."
+1541 :     LoadValue     : value = <String, Unknown RPC type id for listener attachment.>
+//  raise "Unknown RPC type id for listener attachment.";
+1542 :     RaiseException
+//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+1543 :     LoadValue     : value = <null>
+//  func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+1544 :     Return        
+//  lc
+1545 :     LoadLocalVar  : var = 0(lc)
+//  proxyRef
+1546 :     LoadLocalVar  : var = 1(proxyRef)
+//  new (RpcEvent::IRpcWrapper_IService^)
+1547 :     LoadValue     : value = <null>
+//  new (RpcEvent::IRpcWrapper_IService^)
+1548 :     CreateClosureContext: stackPatternCount = 3
+//  new (RpcEvent::IRpcWrapper_IService^)
+1549 :     LoadMethodInfo: methodInfo = DisconnectFromLifecycle<system::IRpcWrapperBase>
+//  func DisconnectFromLifecycle() : (void)
+1550 :     LoadFunction  : func = 34(<method:DisconnectFromLifecycle<RpcEvent::IRpcWrapper_IService>(34)> in rpcwrapper_RpcEvent__IService)
+//  new (RpcEvent::IRpcWrapper_IService^)
+1551 :     LoadMethodInfo: methodInfo = MakeItHappen<RpcEvent::IService>
+//  func MakeItHappen() : (::system::Void)
+1552 :     LoadFunction  : func = 35(<method:MakeItHappen<RpcEvent::IRpcWrapper_IService>(35)> in rpcwrapper_RpcEvent__IService)
+//  new (RpcEvent::IRpcWrapper_IService^)
+1553 :     LoadMethodInfo: methodInfo = Watch<RpcEvent::IService>
+//  func Watch() : (::system::Void)
+1554 :     LoadFunction  : func = 36(<method:Watch<RpcEvent::IRpcWrapper_IService>(36)> in rpcwrapper_RpcEvent__IService)
+//  new (RpcEvent::IRpcWrapper_IService^)
+1555 :     LoadValue     : value = <null>
+//  new (RpcEvent::IRpcWrapper_IService^)
+1556 :     LoadFunction  : func = 37(<dtor:<RpcEvent::IRpcWrapper_IService>(37)> in rpcwrapper_RpcEvent__IService)
+//  new (RpcEvent::IRpcWrapper_IService^)
+1557 :     CreateInterface: methodInfo = <RpcEvent::IRpcWrapper_IService>, stackPatternCount = 8
+//  var proxy : RpcEvent::IRpcWrapper_IService^ = new (RpcEvent::IRpcWrapper_IService^)
+1558 :     StoreLocalVar : var = 2(proxy)
+//  proxyRef
+1559 :     LoadLocalVar  : var = 1(proxyRef)
+//  lc
+1560 :     LoadLocalVar  : var = 0(lc)
+//  lc.ClientId
+1561 :     InvokeMethod  : methodInfo = GetClientId<system::IRpcLifecycle>, stackPatternCount = 0
+//  true
+1562 :     LoadValue     : value = <Bool, true>
+//  proxyRef
+1563 :     LoadLocalVar  : var = 1(proxyRef)
+//  proxyRef.clientId
+1564 :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
+//  lc
+1565 :     LoadLocalVar  : var = 0(lc)
+//  lc.Dispatcher
+1566 :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
+//  lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId)
+1567 :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
+//  lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true)
+1568 :     InvokeMethod  : methodInfo = ObjectHold<system::IRpcObjectOps>, stackPatternCount = 3
+//  lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+1569 :     Pop           
+//  lc
+1570 :     LoadLocalVar  : var = 0(lc)
+//  proxyRef
+1571 :     LoadLocalVar  : var = 1(proxyRef)
+//  proxy
+1572 :     LoadLocalVar  : var = 2(proxy)
+//  proxy
+1573 :     ConvertToType : flag = RawPtr, typeDescriptor = RpcEvent::IService
+//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService*) proxy))
+1574 :     Invoke        : func = 21(rpclistener_RpcEvent__IService), stackPatternCount = 3
+//  rpclistener_RpcEvent__IService(lc, proxyRef, (cast (RpcEvent::IService*) proxy));
+1575 :     Pop           
+//  proxy
+1576 :     LoadLocalVar  : var = 2(proxy)
+//  return proxy;
+1577 :     Return        
+//  func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcEvent::IRpcWrapper_IService^)
+1578 :     LoadValue     : value = <null>
+//  func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcEvent::IRpcWrapper_IService^)
+1579 :     Return        
+//  null
+1580 :     LoadValue     : value = <null>
+//  (_lc = null)
+1581 :     Duplicate     : stackPatternCount = 0
+//  (_lc = null)
+1582 :     StoreCapturedVar: var = 0
+//  (_lc = null);
+1583 :     Pop           
+//  func DisconnectFromLifecycle() : (void)
+1584 :     LoadValue     : value = <null>
+//  func DisconnectFromLifecycle() : (void)
+1585 :     Return        
+//  _lc
+1586 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc is null
+1587 :     LoadValue     : value = <null>
+//  _lc is null
+1588 :     CompareReference
+//  if (_lc is null)
+1589 :     OpNot         : type = Bool
+//  if (_lc is null)
+1590 :     JumpIf        : label = 1594
+//  "RPC wrapper has been disconnected from lifecycle."
+1591 :     LoadValue     : value = <String, RPC wrapper has been disconnected from lifecycle.>
+//  raise "RPC wrapper has been disconnected from lifecycle.";
+1592 :     RaiseException
+//  if (_lc is null)
+1593 :     Jump          : label = 1594
+//  {}
+1594 :     NewArray      : stackPatternCount = 0
+//  var arguments : system::Array^ = {};
+1595 :     StoreLocalVar : var = 0(arguments)
+//  0
+1596 :     LoadValue     : value = <I8, 0>
+//  arguments
+1597 :     LoadLocalVar  : var = 0(arguments)
+//  arguments.Resize(0)
+1598 :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
+//  arguments.Resize(0);
+1599 :     Pop           
+//  _ref
+1600 :     LoadCapturedVar: var = 1(<captured>_ref)
+//  rpcmethod_RpcEvent__IService_MakeItHappen
+1601 :     LoadGlobalVar : var = 2(rpcmethod_RpcEvent__IService_MakeItHappen)
+//  arguments
+1602 :     LoadLocalVar  : var = 0(arguments)
+//  _ref
+1603 :     LoadCapturedVar: var = 1(<captured>_ref)
+//  _ref.clientId
+1604 :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
+//  _lc
+1605 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Dispatcher
+1606 :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId)
+1607 :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_MakeItHappen, arguments)
+1608 :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_MakeItHappen, arguments);
+1609 :     Pop           
+//  func MakeItHappen() : (::system::Void)
+1610 :     LoadValue     : value = <null>
+//  func MakeItHappen() : (::system::Void)
+1611 :     Return        
+//  _lc
+1612 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc is null
+1613 :     LoadValue     : value = <null>
+//  _lc is null
+1614 :     CompareReference
+//  if (_lc is null)
+1615 :     OpNot         : type = Bool
+//  if (_lc is null)
+1616 :     JumpIf        : label = 1620
+//  "RPC wrapper has been disconnected from lifecycle."
+1617 :     LoadValue     : value = <String, RPC wrapper has been disconnected from lifecycle.>
+//  raise "RPC wrapper has been disconnected from lifecycle.";
+1618 :     RaiseException
+//  if (_lc is null)
+1619 :     Jump          : label = 1620
+//  {}
+1620 :     NewArray      : stackPatternCount = 0
+//  var arguments : system::Array^ = {};
+1621 :     StoreLocalVar : var = 0(arguments)
+//  0
+1622 :     LoadValue     : value = <I8, 0>
+//  arguments
+1623 :     LoadLocalVar  : var = 0(arguments)
+//  arguments.Resize(0)
+1624 :     InvokeMethod  : methodInfo = Resize<system::Array>, stackPatternCount = 1
+//  arguments.Resize(0);
+1625 :     Pop           
+//  _ref
+1626 :     LoadCapturedVar: var = 1(<captured>_ref)
+//  rpcmethod_RpcEvent__IService_Watch
+1627 :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
+//  arguments
+1628 :     LoadLocalVar  : var = 0(arguments)
+//  _ref
+1629 :     LoadCapturedVar: var = 1(<captured>_ref)
+//  _ref.clientId
+1630 :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
+//  _lc
+1631 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Dispatcher
+1632 :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId)
+1633 :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_Watch, arguments)
+1634 :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEvent__IService_Watch, arguments);
+1635 :     Pop           
+//  func Watch() : (::system::Void)
+1636 :     LoadValue     : value = <null>
+//  func Watch() : (::system::Void)
+1637 :     Return        
+//  _lc
+1638 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc is not null
+1639 :     LoadValue     : value = <null>
+//  _lc is not null
+1640 :     CompareReference
+//  _lc is not null
+1641 :     OpNot         : type = Bool
+//  if (_lc is not null)
+1642 :     OpNot         : type = Bool
+//  if (_lc is not null)
+1643 :     JumpIf        : label = 1656
+//  _ref
+1644 :     LoadCapturedVar: var = 1(<captured>_ref)
+//  _lc
+1645 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.ClientId
+1646 :     InvokeMethod  : methodInfo = GetClientId<system::IRpcLifecycle>, stackPatternCount = 0
+//  false
+1647 :     LoadValue     : value = <Bool, false>
+//  _ref
+1648 :     LoadCapturedVar: var = 1(<captured>_ref)
+//  _ref.clientId
+1649 :     GetProperty   : propertyInfo = clientId<system::RpcObjectReference>
+//  _lc
+1650 :     LoadCapturedVar: var = 0(<captured>_lc)
+//  _lc.Dispatcher
+1651 :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId)
+1652 :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false)
+1653 :     InvokeMethod  : methodInfo = ObjectHold<system::IRpcObjectOps>, stackPatternCount = 3
+//  _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+1654 :     Pop           
+//  if (_lc is not null)
+1655 :     Jump          : label = 1656
+//  delete
+1656 :     LoadValue     : value = <null>
+//  delete
+1657 :     Return        
+//  ref
+1658 :     LoadLocalVar  : var = 0(ref)
+//  ref.typeId
+1659 :     GetProperty   : propertyInfo = typeId<system::RpcObjectReference>
+//  var <switch>7 : ::system::Int64 = ref.typeId;
+1660 :     StoreLocalVar : var = 2(<switch>7)
+//  <switch>7
+1661 :     LoadLocalVar  : var = 2(<switch>7)
+//  rpctype_RpcEvent__IService
+1662 :     LoadGlobalVar : var = 1(rpctype_RpcEvent__IService)
+//  (<switch>7 == rpctype_RpcEvent__IService of (::system::Int64))
+1663 :     CompareValue  
+//  if ((<switch>7 == rpctype_RpcEvent__IService of (::system::Int64)))
+1664 :     OpNot         : type = Bool
+//  if ((<switch>7 == rpctype_RpcEvent__IService of (::system::Int64)))
+1665 :     JumpIf        : label = 1672
+//  lc
+1666 :     LoadLocalVar  : var = 1(lc)
+//  ref
+1667 :     LoadLocalVar  : var = 0(ref)
 //  rpcwrapper_RpcEvent__IService(lc, ref)
-517  :     Invoke        : func = 11(rpcwrapper_RpcEvent__IService), stackPatternCount = 2
+1668 :     Invoke        : func = 23(rpcwrapper_RpcEvent__IService), stackPatternCount = 2
 //  rpcwrapper_RpcEvent__IService(lc, ref)
-518  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
+1669 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
 //  return rpcwrapper_RpcEvent__IService(lc, ref);
-519  :     Return        
-//  if ((<switch>5 == rpctype_RpcEvent__IService of (::system::Int64)))
-520  :     Jump          : label = 523
+1670 :     Return        
+//  if ((<switch>7 == rpctype_RpcEvent__IService of (::system::Int64)))
+1671 :     Jump          : label = 1674
 //  "Unknown RPC type id for wrapper creation."
-521  :     LoadValue     : value = <String, Unknown RPC type id for wrapper creation.>
+1672 :     LoadValue     : value = <String, Unknown RPC type id for wrapper creation.>
 //  raise "Unknown RPC type id for wrapper creation.";
-522  :     RaiseException
+1673 :     RaiseException
 //  func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
-523  :     LoadValue     : value = <null>
+1674 :     LoadValue     : value = <null>
 //  func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
-524  :     Return        
+1675 :     Return        

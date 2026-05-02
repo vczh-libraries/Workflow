@@ -1,0 +1,20 @@
+﻿module RpcMetadata;
+
+namespace RpcFailDoubleRegistrationTest
+{
+    @rpc:Interface
+    interface IObject
+    {
+        @rpc:Dynamic
+        prop Name : ::system::String{GetName}
+
+        func GetName() : (::system::String);
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        func SetObject(obj : ::RpcFailDoubleRegistrationTest::IObject^, index : ::system::Int32) : (::RpcFailDoubleRegistrationTest::IObject^);
+    }
+}

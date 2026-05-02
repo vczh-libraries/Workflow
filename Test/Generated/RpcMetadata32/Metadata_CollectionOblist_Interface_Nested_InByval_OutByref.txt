@@ -1,0 +1,33 @@
+﻿module RpcMetadata;
+
+namespace RpcCollectionOblist
+{
+    namespace Interface
+    {
+        namespace Nested
+        {
+            namespace InByval
+            {
+                namespace OutByref
+                {
+                    @rpc:Interface
+                    interface IValue
+                    {
+                        @rpc:Dynamic
+                        prop Value : ::system::Int32{GetValue}
+
+                        func GetValue() : (::system::Int32);
+                    }
+
+                    @rpc:Interface
+                    @rpc:Ctor
+                    interface IService
+                    {
+                        @rpc:Byref
+                        func DoList(@rpc:Byval xs : observe ::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IValue^[][::system::Int32]) : (observe ::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IValue^[][::system::Int32]);
+                    }
+                }
+            }
+        }
+    }
+}

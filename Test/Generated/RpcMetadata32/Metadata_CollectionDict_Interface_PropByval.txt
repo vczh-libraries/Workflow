@@ -1,0 +1,36 @@
+﻿module RpcMetadata;
+
+namespace RpcCollectionDict
+{
+    namespace Interface
+    {
+        namespace InByval
+        {
+            namespace PropByval
+            {
+                @rpc:Interface
+                interface IValue
+                {
+                    @rpc:Dynamic
+                    prop Value : ::system::String{GetValue}
+
+                    func GetValue() : (::system::String);
+                }
+
+                @rpc:Interface
+                @rpc:Ctor
+                interface IService
+                {
+                    @rpc:Byval
+                    @rpc:Dynamic
+                    prop List : ::RpcCollectionDict::Interface::InByval::PropByval::IValue^[::system::Int32]{GetList, SetList}
+
+                    @rpc:Byval
+                    func GetList() : (::RpcCollectionDict::Interface::InByval::PropByval::IValue^[::system::Int32]);
+
+                    func SetList(@rpc:Byval <value> : ::RpcCollectionDict::Interface::InByval::PropByval::IValue^[::system::Int32]) : (::system::Void);
+                }
+            }
+        }
+    }
+}

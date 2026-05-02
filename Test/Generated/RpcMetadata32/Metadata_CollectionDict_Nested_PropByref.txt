@@ -1,0 +1,27 @@
+﻿module RpcMetadata;
+
+namespace RpcCollectionDict
+{
+    namespace Nested
+    {
+        namespace InByref
+        {
+            namespace PropByref
+            {
+                @rpc:Interface
+                @rpc:Ctor
+                interface IService
+                {
+                    @rpc:Byref
+                    @rpc:Dynamic
+                    prop List : ::system::String[::system::Int32][]{GetList, SetList}
+
+                    @rpc:Byref
+                    func GetList() : (::system::String[::system::Int32][]);
+
+                    func SetList(@rpc:Byref <value> : ::system::String[::system::Int32][]) : (::system::Void);
+                }
+            }
+        }
+    }
+}

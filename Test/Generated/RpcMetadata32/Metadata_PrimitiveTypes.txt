@@ -1,0 +1,39 @@
+﻿module RpcMetadata;
+
+namespace RpcPrimitiveTest
+{
+    enum Season
+    {
+        Spring = 0,
+        Summer = 1,
+        Autumn = 2,
+        Winter = 3,
+    }
+
+    struct Point
+    {
+        x : ::system::Int32;
+        y : ::system::Int32;
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        func ProcessBool(value : ::system::Boolean) : (::system::Boolean);
+
+        func ProcessDouble(value : ::system::Double) : (::system::Double);
+
+        func ProcessEnum(value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season);
+
+        func ProcessFloat(value : ::system::Single) : (::system::Single);
+
+        func ProcessInt(value : ::system::Int32) : (::system::Int32);
+
+        func ProcessString(value : ::system::String) : (::system::String);
+
+        func ProcessStruct(value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point);
+
+        func ProcessUInt(value : ::system::UInt32) : (::system::UInt32);
+    }
+}

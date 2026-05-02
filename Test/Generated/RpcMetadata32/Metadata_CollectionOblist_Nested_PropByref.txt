@@ -1,0 +1,27 @@
+﻿module RpcMetadata;
+
+namespace RpcCollectionOblist
+{
+    namespace Nested
+    {
+        namespace InByref
+        {
+            namespace PropByref
+            {
+                @rpc:Interface
+                @rpc:Ctor
+                interface IService
+                {
+                    @rpc:Byref
+                    @rpc:Dynamic
+                    prop List : observe observe ::system::Int32[][]{GetList, SetList}
+
+                    @rpc:Byref
+                    func GetList() : (observe observe ::system::Int32[][]);
+
+                    func SetList(@rpc:Byref <value> : observe observe ::system::Int32[][]) : (::system::Void);
+                }
+            }
+        }
+    }
+}

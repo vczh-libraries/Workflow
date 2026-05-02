@@ -1,0 +1,28 @@
+﻿module RpcMetadata;
+
+namespace RpcOverloadingTest
+{
+    @rpc:Interface
+    interface IStringRepresentable
+    {
+        @rpc:Dynamic
+        prop StringValue : ::system::String{GetStringValue}
+
+        func GetStringValue() : (::system::String);
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        func ToString(value : ::system::Boolean) : (::system::String);
+
+        func ToString(value : ::system::String) : (::system::String);
+
+        func ToString(value : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String);
+
+        func ToString(value1 : ::system::Int32, value2 : ::system::Boolean, value3 : ::system::String, value4 : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String);
+
+        func ToStringInt(value : ::system::Int32) : (::system::String);
+    }
+}

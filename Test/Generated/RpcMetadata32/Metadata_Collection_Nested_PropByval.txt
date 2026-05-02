@@ -1,0 +1,27 @@
+﻿module RpcMetadata;
+
+namespace RpcCollection
+{
+    namespace Nested
+    {
+        namespace InByval
+        {
+            namespace PropByval
+            {
+                @rpc:Interface
+                @rpc:Ctor
+                interface IService
+                {
+                    @rpc:Byval
+                    @rpc:Dynamic
+                    prop List : ::system::Int32[][]{GetList, SetList}
+
+                    @rpc:Byval
+                    func GetList() : (::system::Int32[][]);
+
+                    func SetList(@rpc:Byval <value> : ::system::Int32[][]) : (::system::Void);
+                }
+            }
+        }
+    }
+}

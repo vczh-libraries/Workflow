@@ -1,0 +1,29 @@
+﻿module RpcMetadata;
+
+namespace RpcPropDefaultInterface
+{
+    @rpc:Interface
+    interface IValue
+    {
+        @rpc:Dynamic
+        prop Value : ::system::String{GetValue}
+
+        func GetValue() : (::system::String);
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    interface IService
+    {
+        @rpc:Cached
+        prop Value : ::RpcPropDefaultInterface::IValue^{GetValue : ValueChanged}
+
+        event ValueChanged();
+
+        func GetValue() : (::RpcPropDefaultInterface::IValue^);
+
+        func SetValue(value : ::RpcPropDefaultInterface::IValue^) : (::system::Void);
+
+        func Signal() : (::system::Void);
+    }
+}
