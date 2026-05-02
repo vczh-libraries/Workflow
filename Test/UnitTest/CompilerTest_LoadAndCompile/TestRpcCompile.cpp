@@ -259,12 +259,25 @@ TEST_FILE
 					{
 						WfPrint(wrapperModule, L"", writer);
 					});
+					auto metadataString = GenerateToStream([&](StreamWriter& writer)
+					{
+						WfPrint(manager.rpcMetadata->metadataModule, L"", writer);
+					});
 
 					auto outputFolder = FilePath(GetTestOutputBasePath()) / (WString::Unmanaged(L"RpcMetadata") + bits);
 					Folder folder(outputFolder);
 					if (!folder.Exists())
 					{
 						folder.Create(false);
+					}
+
+					auto metadataPath = outputFolder / (L"Metadata_" + itemName + L".txt");
+					{
+						FileStream fileStream(metadataPath.GetFullPath(), FileStream::WriteOnly);
+						BomEncoder encoder(BomEncoder::Utf8);
+						EncoderStream encoderStream(fileStream, encoder);
+						StreamWriter writer(encoderStream);
+						writer.WriteString(metadataString);
 					}
 
 					auto outputPath = outputFolder / (L"Wrapper_" + itemName + L".txt");
