@@ -9,59 +9,60 @@ You should complete tasks one by one.
 
 ## Task 1
 
-Due to the previous change which makes registered services no longer unregister, Dtor.txt and Dtor2.txt samples now is not working. You can check out IndexRpc.txt and find that in the long the service is no longer deleted. We need to update these samples. Because service won't release, we should change it to track another object:
-- Add a `IValue` interface just like other test cases.
-- Move the destructor from IService to IValue implementation.
-- clientMain manipulate IValue's lifecycle instead of IValue
-- In Dtor2.txt, `func GetServiceAgain() : IService^` will be changed to `func ReviewValue(value : IValue^) : IValue^`. clientMain passes the obtained value to this function, and this function returns itself. Therefore the original RequestService could be replaced by reading the argument, and all tests remain.
+I would like to move RpcControllerMock.(h|cpp) to Source\Library with these changes:
+- Now this pair of file needs to be in the library vcxitems instead of in each test projects' vcxproj files
+- Rename it to WfLibraryRpcController.(h|cpp)
+- Rename the class to vl::rpc_controller::RpcControllerDefault.
+- You should adjust the guard macro naming and the header of the header file align with all other library header files.
 
-You should be able to revert IndexRpc.txt back to use `[Deleted]` for these two samples at the end. Check out comments in Dtor1.txt to understand what were expected to happen before the behacior changing to service lifecycle.
+Further more, you need to fix all CHECK_ERROR or CHECK_FAIL which have actual messages to align with the rest of the source code:
+- At the beginning and the end of the function, define and undef ERROR_MESSAGE_PREFIX, to include the full class and function name.
+- Use it inside CHECK_ERROR or CHECK_FAIL.
+- You must check out other CHECK_ERROR samples in Source or Import to see how they are used.
+- Ignore `CHECK_FAIL(L"Not Supported|);` or `CHECK_FAIL(L"Not Supported!");`
+
+No reflection registration is needed, you can skip CompilerTest_GenerateMetadata and CompilerTest_LoadAndCompiler and Build.ps1, to shortern your test. This change should not affect the compiler and any code generation.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-Use the existing RPC destructor samples as the test signal:
+Use the existing RPC and generated C++ runtime tests to confirm the library-level controller remains linkable and behavior-compatible after moving the controller implementation out of each test project:
 
-- `Test/Resources/Rpc/Dtor.txt` should still return `[Not Deleted][Deleted]`, but the deleted object must be an `IValue` returned through the registered service instead of the registered service itself.
-- `Test/Resources/Rpc/Dtor2.txt` should still return `[Not Deleted][Deleted]`, and should preserve the round-trip wrapper/local-object check by passing the obtained `IValue` into `ReviewValue(value : IValue^) : IValue^`.
-- `Test/Resources/IndexRpc.txt` should expect `[Deleted]` again for both samples.
+- Build `Test\UnitTest` in `Debug|x64` and `Debug|Win32` using `.github\Scripts\copilotBuild.ps1`.
+- Run `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` in both `Debug|x64` and `Debug|Win32` using `.github\Scripts\copilotExecute.ps1`.
+- Confirm no tracked source/project references still use `RpcControllerMock`, except the original request copied in this document.
+- Skip `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompiler`, and `Build.ps1` as requested because this change does not require reflection registration or code generation.
 
-Success criteria:
+Result:
 
-- `Dtor.txt` and `Dtor2.txt` compile through `CompilerTest_LoadAndCompile`.
-- RPC runtime output for `Dtor` and `Dtor2` matches `[Not Deleted][Deleted]`.
-- The generated RPC C++ tests and full verification flow required by `Project.md` and `.github/Rules/verify-and-commit.md` pass.
+- `Debug|x64` build: passed with 0 warnings and 0 errors.
+- `Debug|Win32` build: passed with 0 warnings and 0 errors.
+- `LibraryTest Debug|x64`: passed 2/2 test files, 14/14 test cases.
+- `RuntimeTest Debug|x64`: passed 4/4 test files, 257/257 test cases.
+- `CppTest Debug|x64`: passed 2/2 test files, 223/223 test cases.
+- `CppTest_Metaonly Debug|x64`: passed 2/2 test files, 223/223 test cases.
+- `CppTest_Reflection Debug|x64`: passed 2/2 test files, 223/223 test cases.
+- `LibraryTest Debug|Win32`: passed 2/2 test files, 14/14 test cases.
+- `RuntimeTest Debug|Win32`: passed 4/4 test files, 257/257 test cases.
+- `CppTest Debug|Win32`: passed 2/2 test files, 223/223 test cases.
+- `CppTest_Metaonly Debug|Win32`: passed 2/2 test files, 223/223 test cases.
+- `CppTest_Reflection Debug|Win32`: passed 2/2 test files, 223/223 test cases.
 
 # PROPOSALS
 
-- No.1 Track destructors on returned IValue objects [CONFIRMED]
+- No.1 Move the default RPC controller into the library project [CONFIRMED]
 
-## No.1 Track destructors on returned IValue objects
+## No.1 Move the default RPC controller into the library project
 
 ### CODE CHANGE
 
-Implemented the sample update and regenerated dependent outputs:
+Moved `Test\Source\RpcControllerMock.h` and `Test\Source\RpcControllerMock.cpp` to `Source\Library\WfLibraryRpcController.h` and `Source\Library\WfLibraryRpcController.cpp`, renamed the class to `vl::rpc_controller::RpcControllerDefault`, updated the header banner and guard macro to match library files, and added the implementation to `VlppWorkflow_Library.vcxitems` and its filters.
 
-- Added `IValue` to `Test/Resources/Rpc/Dtor.txt` and `Test/Resources/Rpc/Dtor2.txt`.
-- Moved the destructor state change from the registered `IService` object to newly returned `IValue` objects.
-- Changed `Dtor.txt` so `clientMain` requests the service only to obtain an `IValue`, then releases the `IValue` wrapper before checking for `[Deleted]`.
-- Changed `Dtor2.txt` by replacing `GetServiceAgain() : IService^` with `ReviewValue(value : IValue^) : IValue^`; the service verifies the passed value is local on the service side and returns it, preserving the wrapper/local-object round trip.
-- Restored `Test/Resources/IndexRpc.txt` expectations for `Dtor` and `Dtor2` to `[Not Deleted][Deleted]`.
-- Regenerated RPC metadata, Workflow assembly/parsing outputs, and generated C++ RPC source for both x86 and x64 through `CompilerTest_LoadAndCompile` and `Build.ps1 Workflow`.
+Removed the old per-test-project `RpcControllerMock` entries from `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` project files and filters. Updated `RpcByvalLifecycleMock` and `RpcDualLifecycleMock` to include `WfLibraryRpcController.h` and use `RpcControllerDefault`.
+
+Updated the controller's `CHECK_ERROR` calls with an `ERROR_MESSAGE_PREFIX` scoped around `RpcControllerDefault::SetSuppressedFlag`, following the existing `Source` and `Import` style for prefixed error messages.
 
 ### CONFIRMED
 
-The proposal works because registered services are no longer the object whose destruction is being tested. `IService` remains registered, while each sample creates an unregistered `IValue` whose wrapper lifetime is controlled by `clientMain`; releasing the value wrapper releases the real value and runs its destructor.
-
-Verification completed:
-
-- Debug Win32/x64 build via `.github\Scripts\copilotBuild.ps1`.
-- `LibraryTest` Debug Win32/x64.
-- `CompilerTest_GenerateMetadata` Debug Win32/x64.
-- `CompilerTest_LoadAndCompile` Debug x64, passing `699/699` test cases and regenerating RPC outputs.
-- Post-generation Debug Win32/x64 rebuild.
-- `RuntimeTest` Debug Win32/x64, passing `257/257` test cases.
-- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` Debug Win32/x64, each passing `223/223` test cases.
-- Full `C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` release verification.
-- Final generated C++ test log confirms `Rpc:Dtor` and `Rpc:Dtor2` both produce `[Not Deleted][Deleted]`.
+The moved controller compiles as part of the shared library items and remains available to all affected test projects without per-project source entries. The selected x64 and Win32 builds and unit tests all passed, and a tracked-source/project-file search confirms there are no remaining `RpcControllerMock` references outside the copied problem statement.

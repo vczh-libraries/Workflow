@@ -1,7 +1,7 @@
 #ifndef VCZH_WORKFLOW_TEST_RPC_BYVAL_LIFECYCLE_MOCK
 #define VCZH_WORKFLOW_TEST_RPC_BYVAL_LIFECYCLE_MOCK
 
-#include "RpcControllerMock.h"
+#include "../../Source/Library/WfLibraryRpcController.h"
 
 namespace vl
 {
@@ -21,7 +21,7 @@ namespace vl
 			void																Detach();
 		};
 
-		class RpcByvalControllerMock : public RpcControllerMock
+		class RpcByvalControllerMock : public rpc_controller::RpcControllerDefault
 		{
 			friend class RpcByvalLifecycleMock;
 			friend class RpcObjectTracker;

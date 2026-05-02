@@ -411,7 +411,7 @@ namespace vl
 			return dispatcher;
 		}
 
-		RpcControllerMock* RpcDualLifecycleMock::GetController()
+		RpcControllerDefault* RpcDualLifecycleMock::GetController()
 		{
 			return &controller;
 		}

@@ -149,7 +149,7 @@ namespace vl
 			{
 				RemoveLocalObject(refsById.Values().Get(refsById.Count() - 1));
 			}
-			RpcControllerMock::Finalize();
+			RpcControllerDefault::Finalize();
 		}
 
 /***********************************************************************

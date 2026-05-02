@@ -1,7 +1,7 @@
 #ifndef VCZH_WORKFLOW_TEST_RPC_DUAL_LIFECYCLE_MOCK
 #define VCZH_WORKFLOW_TEST_RPC_DUAL_LIFECYCLE_MOCK
 
-#include "RpcControllerMock.h"
+#include "../../Source/Library/WfLibraryRpcController.h"
 
 namespace vl
 {
@@ -86,7 +86,7 @@ namespace vl
 			};
 			using WrapperProperties = collections::Dictionary<rpc_controller::RpcObjectReference, RpcWrapperProperties>;
 		private:
-			RpcControllerMock														controller;
+			rpc_controller::RpcControllerDefault									controller;
 			vint																	clientId = rpc_controller::RpcClientId_Invalid;
 			vint																	nextObjectId = rpc_controller::RpcObjectId_Invalid;
 			collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>			localObjectProperties;
@@ -123,7 +123,7 @@ namespace vl
 			void																	Finalize()override;
 			vint																	GetClientId()override;
 			rpc_controller::IRpcDispatcher*											GetDispatcher()override;
-			RpcControllerMock*														GetController()override;
+			rpc_controller::RpcControllerDefault*									GetController()override;
 			void																	LocalObjectHold(rpc_controller::RpcObjectReference ref, vint remoteClientId)override;
 			void																	LocalObjectUnhold(rpc_controller::RpcObjectReference ref, vint remoteClientId)override;
 			void																	RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
