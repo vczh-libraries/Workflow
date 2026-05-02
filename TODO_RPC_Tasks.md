@@ -29,6 +29,8 @@ In the serialize function, we first test if it is null, and then try to cast it 
 
 In the deserialization function, the JSON format already have type information embedded in them, it should be easy.
 
+These functions are not used yet, so there will be no way to know if they function or not, but running current unit test you are only able to know if they compile. Actual testing will be done in the future, but try your best to make a correct Workflow script.
+
 ## Task 2
 
 Currently only wrapper Workflow scripts are printed to Test\Generated\RpcMetadata(32|64), I would like you to also print the metadata Workflow scripts, which is created in the `WfLexicalScopeManager::rpcMetadata`, also to these folder but with the `Metadata_` prefix.
