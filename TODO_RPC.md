@@ -18,8 +18,8 @@
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
-  - `rpcjson_Serialize` and `rpcjson_Deserialize`.
-  - Output metadata and .d.ts for serialization.
+  - Schema in typed struct could be optimized to not bring the type information.
+    - What about strong typed method argument pack?
   - Run JSON serialization for predefined types, generated types and operations in `RpcDualDispatcherMock`.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC.
