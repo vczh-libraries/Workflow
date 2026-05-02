@@ -301,6 +301,7 @@ TEST_FILE
 					input->reflectionFileName = itemName + L"Reflection";
 					input->defaultFileName = itemName;
 					input->normalIncludes.Add(L"../Source/CppTypes.h");
+					input->normalIncludes.Add(L"../../Import/VlppGlrParser.h");
 
 					auto output = GenerateCppFiles(input, &manager);
 					TEST_ASSERT(manager.errors.Count() == 0);

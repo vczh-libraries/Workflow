@@ -72,6 +72,25 @@ namespace vl
 					List<RpcEventModel>			events;
 				};
 
+				struct RpcJsonPrimitiveModel
+				{
+					WString						fullName;
+					WString						keyword;
+				};
+
+				struct RpcJsonFieldModel
+				{
+					WString						name;
+					Ptr<WfType>					type;
+				};
+
+				struct RpcJsonTypeModel
+				{
+					WString						fullName;
+					Ptr<WfType>					type;
+					Ptr<List<RpcJsonFieldModel>>	fields;
+				};
+
 				bool IsRpcAttribute(WfAttribute* attribute, const wchar_t* name)
 				{
 					return attribute
@@ -336,6 +355,35 @@ namespace vl
 					return type;
 				}
 
+				Ptr<WfType> CreateTopQualifiedType(const WString& fullName)
+				{
+					List<WString> fragments;
+					SplitTypeFullName(fullName, fragments);
+					if (fragments.Count() == 0)
+					{
+						return nullptr;
+					}
+
+					Ptr<WfType> type;
+					for (vint i = 0; i < fragments.Count(); i++)
+					{
+						if (i == 0)
+						{
+							auto top = Ptr(new WfTopQualifiedType);
+							top->name.value = fragments[i];
+							type = top;
+						}
+						else
+						{
+							auto child = Ptr(new WfChildType);
+							child->parent = type;
+							child->name.value = fragments[i];
+							type = child;
+						}
+					}
+					return type;
+				}
+
 				Ptr<WfType> CreateSharedType(const WString& fullName)
 				{
 					auto type = Ptr(new WfSharedPointerType);
@@ -459,6 +507,14 @@ namespace vl
 					return expression;
 				}
 
+				Ptr<WfExpression> CreateUnary(WfUnaryOperator op, Ptr<WfExpression> operand)
+				{
+					auto expression = Ptr(new WfUnaryExpression);
+					expression->op = op;
+					expression->operand = operand;
+					return expression;
+				}
+
 				Ptr<WfExpression> CreateAssign(Ptr<WfExpression> left, Ptr<WfExpression> right)
 				{
 					return CreateBinary(WfBinaryOperator::Assign, left, right);
@@ -485,6 +541,14 @@ namespace vl
 					cast->type = type;
 					cast->expression = expression;
 					return cast;
+				}
+
+				Ptr<WfExpression> CreateInfer(Ptr<WfExpression> expression, Ptr<WfType> type)
+				{
+					auto infer = Ptr(new WfInferExpression);
+					infer->expression = expression;
+					infer->type = type;
+					return infer;
 				}
 
 				template<typename ...TArgs>
@@ -580,6 +644,16 @@ namespace vl
 					return statement;
 				}
 
+				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body)
+				{
+					auto statement = Ptr(new WfForEachStatement);
+					statement->name.value = name;
+					statement->direction = WfForEachDirection::Normal;
+					statement->collection = collection;
+					statement->statement = body;
+					return statement;
+				}
+
 				Ptr<WfBlockStatement> CreateBlock()
 				{
 					return Ptr(new WfBlockStatement);
@@ -631,6 +705,14 @@ namespace vl
 					declaration->constructorType = constructorType;
 					declaration->statement = CreateBlock();
 					return declaration;
+				}
+
+				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement)
+				{
+					auto switchCase = Ptr(new WfSwitchCase);
+					switchCase->expression = expression;
+					switchCase->statement = statement;
+					switchStat->caseBranches.Add(switchCase);
 				}
 
 				Ptr<WfExpression> CreateLifecycleHelperCall(const wchar_t* helperName, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
@@ -1697,6 +1779,488 @@ namespace vl
 					return functionDecl;
 				}
 
+				Ptr<WfExpression> CreateJsonArrayItem(const WString& arrayName, vint index)
+				{
+					return CreateIndex(CreateMember(CreateReference(arrayName), L"items"), CreateInt(index));
+				}
+
+				Ptr<WfExpression> CreateJsonArrayItemContent(const WString& arrayName, vint index, const WString& jsonType)
+				{
+					return CreateMember(CreateMember(CreateCast(CreateSharedType(jsonType), CreateJsonArrayItem(arrayName, index)), L"content"), L"value");
+				}
+
+				Ptr<WfExpression> CreateJsonObjectFieldContent(const WString& objectName, const WString& fieldName)
+				{
+					return CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), CreateCall(CreateReference(L"rpcjson_ObjectGet"), CreateReference(objectName), CreateString(fieldName))), L"content"), L"value");
+				}
+
+				Ptr<WfExpression> CreateRpcJsonToken(Ptr<WfExpression> value)
+				{
+					return CreateCall(CreateReference(L"rpcjson_NewToken"), value);
+				}
+
+				void AddRpcJsonTypesFromDeclarations(
+					const List<Ptr<WfDeclaration>>& declarations,
+					const WString& prefix,
+					List<RpcJsonTypeModel>& enums,
+					List<RpcJsonTypeModel>& structs)
+				{
+					for (auto declaration : declarations)
+					{
+						auto fullName = prefix == L"" ? declaration->name.value : prefix + L"::" + declaration->name.value;
+						if (auto namespaceDecl = declaration.Cast<WfNamespaceDeclaration>())
+						{
+							AddRpcJsonTypesFromDeclarations(namespaceDecl->declarations, fullName, enums, structs);
+						}
+						else if (declaration.Cast<WfEnumDeclaration>())
+						{
+							RpcJsonTypeModel model;
+							model.fullName = fullName;
+							model.type = CreateTopQualifiedType(fullName);
+							enums.Add(model);
+						}
+						else if (auto structDecl = declaration.Cast<WfStructDeclaration>())
+						{
+							RpcJsonTypeModel model;
+							model.fullName = fullName;
+							model.type = CreateTopQualifiedType(fullName);
+							model.fields = Ptr(new List<RpcJsonFieldModel>);
+							for (auto member : structDecl->members)
+							{
+								RpcJsonFieldModel field;
+								field.name = member->name.value;
+								field.type = CopyType(member->type.Obj());
+								model.fields->Add(field);
+							}
+							structs.Add(model);
+						}
+					}
+				}
+
+				void AddRpcObjectReferenceJsonType(List<RpcJsonTypeModel>& structs)
+				{
+					auto fullName = WString::Unmanaged(L"system::RpcObjectReference");
+					for (auto&& model : structs)
+					{
+						if (model.fullName == fullName)
+						{
+							return;
+						}
+					}
+
+					auto td = GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>();
+					if (!td)
+					{
+						return;
+					}
+
+					RpcJsonTypeModel model;
+					model.fullName = fullName;
+					model.type = CreateTopQualifiedType(fullName);
+					model.fields = Ptr(new List<RpcJsonFieldModel>);
+					for (vint i = 0; i < td->GetPropertyCount(); i++)
+					{
+						auto propertyInfo = td->GetProperty(i);
+						RpcJsonFieldModel field;
+						field.name = propertyInfo->GetName();
+						field.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+						model.fields->Add(field);
+					}
+					structs.Add(model);
+				}
+
+				void CollectRpcJsonTypes(WfLexicalScopeManager* manager, List<RpcJsonTypeModel>& enums, List<RpcJsonTypeModel>& structs)
+				{
+					if (manager->rpcMetadata && manager->rpcMetadata->metadataModule)
+					{
+						AddRpcJsonTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
+					}
+					AddRpcObjectReferenceJsonType(structs);
+				}
+
+				void CollectRpcJsonPrimitives(List<RpcJsonPrimitiveModel>& primitives)
+				{
+					auto add = [&](const wchar_t* fullName, const wchar_t* keyword)
+					{
+						RpcJsonPrimitiveModel model;
+						model.fullName = WString::Unmanaged(fullName);
+						model.keyword = WString::Unmanaged(keyword);
+						primitives.Add(model);
+					};
+
+					add(L"system::UInt8", L"UInt8");
+					add(L"system::UInt16", L"UInt16");
+					add(L"system::UInt32", L"UInt32");
+					add(L"system::UInt64", L"UInt64");
+					add(L"system::Int8", L"Int8");
+					add(L"system::Int16", L"Int16");
+					add(L"system::Int32", L"Int32");
+					add(L"system::Int64", L"Int64");
+					add(L"system::Single", L"Single");
+					add(L"system::Double", L"Double");
+					add(L"system::Boolean", L"Boolean");
+					add(L"system::Char", L"Char");
+					add(L"system::String", L"String");
+					add(L"system::DateTime", L"DateTime");
+					add(L"system::Locale", L"Locale");
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonNewNull()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_NewNull", CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"node", CreateSharedType(L"system::JsonLiteral"), CreateNewClass(CreateSharedType(L"system::JsonLiteral"))));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"node"), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::Null"))));
+					AddStatement(block, CreateReturn(CreateReference(L"node")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonNewToken()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_NewToken", CreateQualifiedType(L"system::ParsingToken"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::String)));
+					auto constructor = CreateConstructor();
+					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"value"), CreateReference(L"value")));
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(constructor));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonNewString()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_NewString", CreateSharedType(L"system::JsonString"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"content", CreatePredefinedType(WfPredefinedTypeName::String)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"node", CreateSharedType(L"system::JsonString"), CreateNewClass(CreateSharedType(L"system::JsonString"))));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"node"), L"content"), CreateRpcJsonToken(CreateReference(L"content")))));
+					AddStatement(block, CreateReturn(CreateReference(L"node")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonNewNumber()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_NewNumber", CreateSharedType(L"system::JsonNumber"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"content", CreatePredefinedType(WfPredefinedTypeName::String)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"node", CreateSharedType(L"system::JsonNumber"), CreateNewClass(CreateSharedType(L"system::JsonNumber"))));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"node"), L"content"), CreateRpcJsonToken(CreateReference(L"content")))));
+					AddStatement(block, CreateReturn(CreateReference(L"node")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonNewArray2()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_NewArray2", CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"keyword", CreatePredefinedType(WfPredefinedTypeName::String)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CreateSharedType(L"system::JsonNode")));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"array", CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"array"), L"items"), L"Add"), CreateCall(CreateReference(L"rpcjson_NewString"), CreateReference(L"keyword")))));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"array"), L"items"), L"Add"), CreateReference(L"value"))));
+					AddStatement(block, CreateReturn(CreateReference(L"array")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonObjectAdd()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_ObjectAdd", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"object", CreateSharedType(L"system::JsonObject")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"name", CreatePredefinedType(WfPredefinedTypeName::String)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CreateSharedType(L"system::JsonNode")));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"field", CreateSharedType(L"system::JsonObjectField"), CreateNewClass(CreateSharedType(L"system::JsonObjectField"))));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"field"), L"name"), CreateRpcJsonToken(CreateReference(L"name")))));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"field"), L"value"), CreateReference(L"value"))));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"object"), L"fields"), L"Add"), CreateReference(L"field"))));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonNewObject()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_NewObject", CreateSharedType(L"system::JsonObject"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"keyword", CreatePredefinedType(WfPredefinedTypeName::String)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpcjson_ObjectAdd"), CreateReference(L"object"), CreateString(L"$"), CreateCall(CreateReference(L"rpcjson_NewString"), CreateReference(L"keyword")))));
+					AddStatement(block, CreateReturn(CreateReference(L"object")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonObjectGet()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_ObjectGet", CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"object", CreateSharedType(L"system::JsonObject")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"name", CreatePredefinedType(WfPredefinedTypeName::String)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					auto forBlock = CreateBlock();
+					auto ifBlock = CreateBlock();
+					AddStatement(ifBlock, CreateReturn(CreateMember(CreateReference(L"field"), L"value")));
+					AddStatement(forBlock, CreateIf(CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateMember(CreateReference(L"field"), L"name"), L"value"), CreateReference(L"name")), ifBlock));
+					AddStatement(block, CreateForEach(L"field", CreateMember(CreateReference(L"object"), L"fields"), forBlock));
+					AddStatement(block, CreateRaise(L"JSON object field not found."));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonSerializeCollection()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_SerializeCollection", CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"keyword", CreatePredefinedType(WfPredefinedTypeName::String)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"values", CreateSharedType(L"system::Enumerable")));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateCall(CreateReference(L"rpcjson_NewObject"), CreateReference(L"keyword"))));
+					AddStatement(block, CreateVariableStatement(L"array", CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					auto forBlock = CreateBlock();
+					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"array"), L"items"), L"Add"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value")))));
+					AddStatement(block, CreateForEach(L"value", CreateReference(L"values"), forBlock));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpcjson_ObjectAdd"), CreateReference(L"object"), CreateString(L"values"), CreateReference(L"array"))));
+					AddStatement(block, CreateReturn(CreateReference(L"object")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonSerializeMap()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_SerializeMap", CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"values", CreateSharedType(L"system::ReadonlyDictionary")));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateCall(CreateReference(L"rpcjson_NewObject"), CreateString(L"map"))));
+					AddStatement(block, CreateVariableStatement(L"array", CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					auto forBlock = CreateBlock();
+					AddStatement(forBlock, CreateVariableStatement(L"pair", CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"pair"), L"items"), L"Add"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"key")))));
+					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"pair"), L"items"), L"Add"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateCall(CreateMember(CreateReference(L"values"), L"Get"), CreateReference(L"key"))))));
+					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"array"), L"items"), L"Add"), CreateReference(L"pair"))));
+					AddStatement(block, CreateForEach(L"key", CreateMember(CreateReference(L"values"), L"Keys"), forBlock));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpcjson_ObjectAdd"), CreateReference(L"object"), CreateString(L"values"), CreateReference(L"array"))));
+					AddStatement(block, CreateReturn(CreateReference(L"object")));
+					return functionDecl;
+				}
+
+				void AddSerializeCollectionCase(Ptr<WfBlockStatement> block, const WString& varName, const WString& typeFullName, const WString& keyword, const WString& helper)
+				{
+					AddStatement(block, CreateVariableStatement(varName, CreateSharedType(typeFullName), CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateReturn(CreateCall(CreateReference(helper), keyword == L"" ? CreateReference(varName) : CreateString(keyword), CreateReference(varName))));
+					if (keyword == L"")
+					{
+						trueBranch->statements.Clear();
+						AddStatement(trueBranch, CreateReturn(CreateCall(CreateReference(helper), CreateReference(varName))));
+					}
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				void AddSerializePrimitiveCase(Ptr<WfBlockStatement> block, const RpcJsonPrimitiveModel& primitive)
+				{
+					auto varName = L"value_" + MangleRpcFullName(primitive.fullName);
+					auto nullableType = CreateNullableType(primitive.fullName);
+					AddStatement(block, CreateVariableStatement(varName, CopyType(nullableType.Obj()), CreateWeakCast(nullableType, CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateReturn(CreateCall(
+						CreateReference(L"rpcjson_NewArray2"),
+						CreateString(primitive.keyword),
+						CreateCall(CreateReference(L"rpcjson_NewString"), CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), CreateReference(varName))))));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				void AddSerializeEnumCase(Ptr<WfBlockStatement> block, const RpcJsonTypeModel& enumModel)
+				{
+					auto varName = L"value_" + MangleRpcFullName(enumModel.fullName);
+					auto nullableType = Ptr(new WfNullableType);
+					nullableType->element = CopyType(enumModel.type.Obj());
+					AddStatement(block, CreateVariableStatement(varName, CopyType(nullableType.Obj()), CreateWeakCast(nullableType, CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateReturn(CreateCall(
+						CreateReference(L"rpcjson_NewArray2"),
+						CreateString(enumModel.fullName),
+						CreateCall(
+							CreateReference(L"rpcjson_NewNumber"),
+							CreateCast(
+								CreatePredefinedType(WfPredefinedTypeName::String),
+								CreateCast(CreateQualifiedType(L"system::UInt64"), CreateReference(varName)))))));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				void AddSerializeStructCase(Ptr<WfBlockStatement> block, const RpcJsonTypeModel& structModel)
+				{
+					auto varName = L"value_" + MangleRpcFullName(structModel.fullName);
+					auto nullableType = Ptr(new WfNullableType);
+					nullableType->element = CopyType(structModel.type.Obj());
+					AddStatement(block, CreateVariableStatement(varName, CopyType(nullableType.Obj()), CreateWeakCast(nullableType, CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateCall(CreateReference(L"rpcjson_NewObject"), CreateString(structModel.fullName))));
+					for (auto&& field : *structModel.fields.Obj())
+					{
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(
+							CreateReference(L"rpcjson_ObjectAdd"),
+							CreateReference(L"object"),
+							CreateString(field.name),
+							CreateCall(CreateReference(L"rpcjson_Serialize"), CreateMember(CreateReference(varName), field.name)))));
+					}
+					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonSerialize(const List<RpcJsonPrimitiveModel>& primitives, const List<RpcJsonTypeModel>& enums, const List<RpcJsonTypeModel>& structs)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Serialize", CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"value")), CreateReturn(CreateCall(CreateReference(L"rpcjson_NewNull")))));
+
+					AddSerializeCollectionCase(block, L"observableList", L"system::ObservableList", L"observable-list", L"rpcjson_SerializeCollection");
+					AddSerializeCollectionCase(block, L"dictionary", L"system::Dictionary", L"", L"rpcjson_SerializeMap");
+					AddSerializeCollectionCase(block, L"readonlyDictionary", L"system::ReadonlyDictionary", L"", L"rpcjson_SerializeMap");
+					AddSerializeCollectionCase(block, L"list", L"system::List", L"list", L"rpcjson_SerializeCollection");
+					AddSerializeCollectionCase(block, L"readonlyList", L"system::ReadonlyList", L"list", L"rpcjson_SerializeCollection");
+					AddSerializeCollectionCase(block, L"enumerable", L"system::Enumerable", L"list", L"rpcjson_SerializeCollection");
+
+					for (auto&& primitive : primitives)
+					{
+						AddSerializePrimitiveCase(block, primitive);
+					}
+					for (auto&& enumModel : enums)
+					{
+						AddSerializeEnumCase(block, enumModel);
+					}
+					for (auto&& structModel : structs)
+					{
+						AddSerializeStructCase(block, structModel);
+					}
+
+					AddStatement(block, CreateRaise(L"Unsupported RPC JSON serialization value."));
+					return functionDecl;
+				}
+
+				void AddDeserializePrimitiveCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonPrimitiveModel& primitive)
+				{
+					AddSwitchCase(
+						switchStat,
+						CreateString(primitive.keyword),
+						CreateReturn(CreateCast(CreateTopQualifiedType(primitive.fullName), CreateJsonArrayItemContent(L"array", 1, L"system::JsonString"))));
+				}
+
+				void AddDeserializeEnumCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonTypeModel& enumModel)
+				{
+					AddSwitchCase(
+						switchStat,
+						CreateString(enumModel.fullName),
+						CreateReturn(CreateCast(
+							CopyType(enumModel.type.Obj()),
+							CreateCast(CreateQualifiedType(L"system::UInt64"), CreateJsonArrayItemContent(L"array", 1, L"system::JsonNumber")))));
+				}
+
+				void AddDeserializeStructCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonTypeModel& structModel)
+				{
+					auto constructor = CreateConstructor();
+					for (auto&& field : *structModel.fields.Obj())
+					{
+						constructor->arguments.Add(CreateConstructorArgument(
+							CreateReference(field.name),
+							CreateCast(CopyType(field.type.Obj()), CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateCall(CreateReference(L"rpcjson_ObjectGet"), CreateReference(L"object"), CreateString(field.name))))));
+					}
+					AddSwitchCase(switchStat, CreateString(structModel.fullName), CreateReturn(CreateInfer(constructor, CopyType(structModel.type.Obj()))));
+				}
+
+				Ptr<WfStatement> CreateDeserializeListCase(const WString& variableType)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(variableType), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"values", CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), CreateCall(CreateReference(L"rpcjson_ObjectGet"), CreateReference(L"object"), CreateString(L"values")))));
+					auto forBlock = CreateBlock();
+					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Add"), CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"item")))));
+					AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(L"values"), L"items"), forBlock));
+					AddStatement(block, CreateReturn(CreateReference(L"result")));
+					return block;
+				}
+
+				Ptr<WfStatement> CreateDeserializeMapCase()
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(L"system::Dictionary"), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"values", CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), CreateCall(CreateReference(L"rpcjson_ObjectGet"), CreateReference(L"object"), CreateString(L"values")))));
+					auto forBlock = CreateBlock();
+					AddStatement(forBlock, CreateVariableStatement(L"pair", CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"item"))));
+					AddStatement(forBlock, CreateExpressionStatement(CreateCall(
+						CreateMember(CreateReference(L"result"), L"Set"),
+						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateJsonArrayItem(L"pair", 0)),
+						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateJsonArrayItem(L"pair", 1)))));
+					AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(L"values"), L"items"), forBlock));
+					AddStatement(block, CreateReturn(CreateReference(L"result")));
+					return block;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonDeserialize(const List<RpcJsonPrimitiveModel>& primitives, const List<RpcJsonTypeModel>& enums, const List<RpcJsonTypeModel>& structs)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Deserialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateSharedType(L"system::JsonNode")));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"node")), CreateReturn(CreateNull())));
+
+					AddStatement(block, CreateVariableStatement(L"literal", CreateSharedType(L"system::JsonLiteral"), CreateWeakCast(CreateSharedType(L"system::JsonLiteral"), CreateReference(L"node"))));
+					auto literalBranch = CreateBlock();
+					AddStatement(literalBranch, CreateIf(
+						CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateReference(L"literal"), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::Null")),
+						CreateReturn(CreateNull())));
+					AddStatement(literalBranch, CreateRaise(L"Unsupported JSON literal."));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"literal")), literalBranch));
+
+					AddStatement(block, CreateVariableStatement(L"array", CreateSharedType(L"system::JsonArray"), CreateWeakCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"node"))));
+					auto arrayBranch = CreateBlock();
+					AddStatement(arrayBranch, CreateVariableStatement(L"keyword", CreatePredefinedType(WfPredefinedTypeName::String), CreateJsonArrayItemContent(L"array", 0, L"system::JsonString")));
+					auto arraySwitch = Ptr(new WfSwitchStatement);
+					arraySwitch->expression = CreateReference(L"keyword");
+					arraySwitch->defaultBranch = CreateRaise(L"Unknown RPC JSON array schema.");
+					for (auto&& primitive : primitives)
+					{
+						AddDeserializePrimitiveCase(arraySwitch, primitive);
+					}
+					for (auto&& enumModel : enums)
+					{
+						AddDeserializeEnumCase(arraySwitch, enumModel);
+					}
+					AddStatement(arrayBranch, arraySwitch);
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"array")), arrayBranch));
+
+					AddStatement(block, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateWeakCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
+					auto objectBranch = CreateBlock();
+					AddStatement(objectBranch, CreateVariableStatement(L"keyword", CreatePredefinedType(WfPredefinedTypeName::String), CreateJsonObjectFieldContent(L"object", L"$")));
+					auto objectSwitch = Ptr(new WfSwitchStatement);
+					objectSwitch->expression = CreateReference(L"keyword");
+					objectSwitch->defaultBranch = CreateRaise(L"Unknown RPC JSON object schema.");
+					AddSwitchCase(objectSwitch, CreateString(L"list"), CreateDeserializeListCase(L"system::List"));
+					AddSwitchCase(objectSwitch, CreateString(L"observable-list"), CreateDeserializeListCase(L"system::ObservableList"));
+					AddSwitchCase(objectSwitch, CreateString(L"map"), CreateDeserializeMapCase());
+					for (auto&& structModel : structs)
+					{
+						AddDeserializeStructCase(objectSwitch, structModel);
+					}
+					AddStatement(objectBranch, objectSwitch);
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"object")), objectBranch));
+
+					AddStatement(block, CreateRaise(L"Unsupported RPC JSON node."));
+					return functionDecl;
+				}
+
+				void AddRpcJsonDeclarations(WfLexicalScopeManager* manager, Ptr<WfModule> module)
+				{
+					List<RpcJsonPrimitiveModel> primitives;
+					List<RpcJsonTypeModel> enums;
+					List<RpcJsonTypeModel> structs;
+					CollectRpcJsonPrimitives(primitives);
+					CollectRpcJsonTypes(manager, enums, structs);
+
+					module->declarations.Add(GenerateRpcJsonNewNull());
+					module->declarations.Add(GenerateRpcJsonNewToken());
+					module->declarations.Add(GenerateRpcJsonNewString());
+					module->declarations.Add(GenerateRpcJsonNewNumber());
+					module->declarations.Add(GenerateRpcJsonNewArray2());
+					module->declarations.Add(GenerateRpcJsonObjectAdd());
+					module->declarations.Add(GenerateRpcJsonNewObject());
+					module->declarations.Add(GenerateRpcJsonObjectGet());
+					module->declarations.Add(GenerateRpcJsonSerializeCollection());
+					module->declarations.Add(GenerateRpcJsonSerializeMap());
+					module->declarations.Add(GenerateRpcJsonSerialize(primitives, enums, structs));
+					module->declarations.Add(GenerateRpcJsonDeserialize(primitives, enums, structs));
+				}
+
 				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces)
 				{
 					auto returnType = Ptr(new WfSharedPointerType);
@@ -1784,6 +2348,8 @@ namespace vl
 					AddStatement(block, CreateReturn(CreateReference(L"result")));
 					module->declarations.Add(getIds);
 				}
+
+				AddRpcJsonDeclarations(manager, module);
 
 				module->declarations.Add(GenerateIsInterfaceTypeIdHelper(interfaces));
 				module->declarations.Add(GenerateIsCtorInterfaceTypeIdHelper(interfaces));
