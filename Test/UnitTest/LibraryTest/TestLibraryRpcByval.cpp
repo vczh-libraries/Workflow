@@ -1,4 +1,4 @@
-#include "../../Source/RpcByvalLifecycleMock.h"
+#include "../../Source/RpcDualLifecycleMock.h"
 #include "../../../Source/Library/WfLibraryReflection.h"
 
 using namespace vl;
@@ -44,19 +44,70 @@ namespace
 
 	struct RpcTestContext
 	{
-		Ptr<RpcByvalLifecycleMock>			lifecycle;
-		Ptr<RpcCalleeListOps>				listOps;
-		Ptr<RpcCalleeListEventBridge>		listEventBridge;
+		Ptr<RpcDualLifecycleMock>			lifecycle1;
+		Ptr<RpcDualLifecycleMock>			lifecycle2;
+		Ptr<RpcDualDispatcherMock>			dispatcher;
+		Ptr<RpcCalleeListOps>				listOps1;
+		Ptr<RpcCalleeListOps>				listOps2;
+		Ptr<RpcCalleeListEventBridge>		listEventBridge1;
+		Ptr<RpcCalleeListEventBridge>		listEventBridge2;
+
+		RpcTestContext() = default;
+		RpcTestContext(const RpcTestContext&) = delete;
+		RpcTestContext& operator=(const RpcTestContext&) = delete;
+
+		RpcTestContext(RpcTestContext&& context)
+		{
+			lifecycle1 = context.lifecycle1;
+			lifecycle2 = context.lifecycle2;
+			dispatcher = context.dispatcher;
+			listOps1 = context.listOps1;
+			listOps2 = context.listOps2;
+			listEventBridge1 = context.listEventBridge1;
+			listEventBridge2 = context.listEventBridge2;
+			context.dispatcher = nullptr;
+		}
+
+		~RpcTestContext()
+		{
+			if (dispatcher)
+			{
+				dispatcher->Finalize();
+			}
+		}
 	};
 
 	RpcTestContext CreateContext()
 	{
 		RpcTestContext context;
-		context.lifecycle = Ptr(new RpcByvalLifecycleMock);
-		context.listOps = Ptr(new RpcCalleeListOps(context.lifecycle.Obj()));
-		context.listEventBridge = Ptr(new RpcCalleeListEventBridge(context.lifecycle.Obj()));
-		context.lifecycle->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle.Obj())), Ptr(new StubObjectEventOps), context.listOps, context.listEventBridge);
+		context.lifecycle1 = Ptr(new RpcDualLifecycleMock(1));
+		context.lifecycle2 = Ptr(new RpcDualLifecycleMock(2));
+		context.listOps1 = Ptr(new RpcCalleeListOps(context.lifecycle1.Obj()));
+		context.listOps2 = Ptr(new RpcCalleeListOps(context.lifecycle2.Obj()));
+		context.listEventBridge1 = Ptr(new RpcCalleeListEventBridge(context.lifecycle1.Obj()));
+		context.listEventBridge2 = Ptr(new RpcCalleeListEventBridge(context.lifecycle2.Obj()));
+		context.lifecycle1->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle1.Obj())), Ptr(new StubObjectEventOps), context.listOps1, context.listEventBridge1);
+		context.lifecycle2->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle2.Obj())), Ptr(new StubObjectEventOps), context.listOps2, context.listEventBridge2);
+		context.dispatcher = Ptr(new RpcDualDispatcherMock(context.lifecycle1.Obj(), context.lifecycle2.Obj()));
 		return context;
+	}
+
+	RpcObjectReference RegisterRemoteObject(RpcTestContext& context, const Value& reflectedValues)
+	{
+		auto obj = reflectedValues.GetRawPtr();
+		CHECK_ERROR(obj, L"RegisterRemoteObject requires a reflected object.");
+		auto desc = dynamic_cast<IDescriptable*>(obj);
+		CHECK_ERROR(desc, L"RegisterRemoteObject requires IDescriptable.");
+		return context.lifecycle1->PtrToRef(Ptr<IDescriptable>(desc));
+	}
+
+	template<typename T>
+	Ptr<T> CreateRemoteProxy(RpcTestContext& context, RpcObjectReference ref)
+	{
+		auto proxyDesc = context.lifecycle2->RefToPtr(ref);
+		auto proxy = Ptr(dynamic_cast<T*>(proxyDesc.Obj()));
+		CHECK_ERROR(proxy, L"CreateRemoteProxy received an unexpected proxy type.");
+		return proxy;
 	}
 }
 
@@ -73,11 +124,9 @@ TEST_FILE
 
 		// Keep reflected wrapper alive
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
-		auto ref = UnboxValue<RpcObjectReference>(serializable);
+		auto ref = RegisterRemoteObject(context, reflectedValues);
 		{
-			// Create proxy explicitly (RefToPtr returns local object, so create proxy directly)
-			auto proxy = Ptr(new RpcByrefArray(context.lifecycle.Obj(), ref));
+			auto proxy = CreateRemoteProxy<IValueArray>(context, ref);
 
 			proxy->Set(1, BoxParameter((vint)42));
 			TEST_ASSERT(values[1] == 42);
@@ -100,9 +149,8 @@ TEST_FILE
 		values.Add(3);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
-		auto ref = UnboxValue<RpcObjectReference>(serializable);
-		auto proxy = Ptr(new RpcByrefList(context.lifecycle.Obj(), ref));
+		auto ref = RegisterRemoteObject(context, reflectedValues);
+		auto proxy = CreateRemoteProxy<IValueList>(context, ref);
 
 		TEST_ASSERT(proxy->Add(BoxParameter((vint)5)) == 2);
 		TEST_ASSERT(values.Count() == 3);
@@ -128,9 +176,8 @@ TEST_FILE
 		values.Set(2, 20);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
-		auto ref = UnboxValue<RpcObjectReference>(serializable);
-		auto proxy = Ptr(new RpcByrefDictionary(context.lifecycle.Obj(), ref));
+		auto ref = RegisterRemoteObject(context, reflectedValues);
+		auto proxy = CreateRemoteProxy<IValueDictionary>(context, ref);
 
 		auto keysView = proxy->GetKeys();
 		auto valuesView = proxy->GetValues();
@@ -169,12 +216,9 @@ TEST_FILE
 		values.Add(2);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
-		auto ref = UnboxValue<RpcObjectReference>(serializable);
+		auto ref = RegisterRemoteObject(context, reflectedValues);
 
-		// Create proxy via factory path so it gets registered in observableProxies
-		auto proxyDesc = context.lifecycle->CreateCallerProxy(ref);
-		auto proxy = Ptr(dynamic_cast<IValueObservableList*>(proxyDesc.Obj()));
+		auto proxy = CreateRemoteProxy<IValueObservableList>(context, ref);
 		List<WString> events;
 		auto handler = proxy->ItemChanged.Add([&](vint index, vint oldCount, vint newCount)
 		{
@@ -206,9 +250,8 @@ TEST_FILE
 		values.Add(20);
 
 		auto reflectedValues = BoxParameter(values);
-		auto serializable = RpcBoxByref(reflectedValues, context.lifecycle.Obj());
-		auto ref = UnboxValue<RpcObjectReference>(serializable);
-		auto proxy = Ptr(new RpcByrefList(context.lifecycle.Obj(), ref));
+		auto ref = RegisterRemoteObject(context, reflectedValues);
+		auto proxy = CreateRemoteProxy<IValueList>(context, ref);
 		{
 			auto enumerator = proxy->CreateEnumerator();
 			TEST_ASSERT(enumerator->Next());

@@ -76,7 +76,6 @@ namespace vl
 			vint											clientId = RpcClientId_Invalid;
 			vint											nextObjectId = RpcObjectId_Invalid;
 			LocalProperties									localObjectProperties;
-			IRpcDispatcher*									dispatcher = nullptr;
 			static WString									InternalProperty_LocalObjectTracker;
 			static WString									InternalProperty_WrapperTracker;
 			UniversalWrapperFactory							universalWrapperFactory;
@@ -93,6 +92,7 @@ namespace vl
 			Ptr<reflection::IDescriptable>					CreateCallerProxy(RpcObjectReference ref);
 			void											DisconnectWrappersForFinalize();
 		protected:
+			IRpcDispatcher*									dispatcher = nullptr;
 			collections::Dictionary<WString, vint>			idMap;
 
 			virtual vint									DecideTypeId(reflection::IDescriptable* obj)const;
@@ -101,7 +101,6 @@ namespace vl
 			RpcLifecycleBase(vint _clientId);
 			~RpcLifecycleBase();
 
-			void											SetDispatcher(IRpcDispatcher* _dispatcher);
 			void											SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void											RegisterWrapperFactory(UniversalWrapperFactory factory);
 

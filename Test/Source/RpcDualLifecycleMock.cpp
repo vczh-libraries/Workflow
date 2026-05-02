@@ -8,6 +8,21 @@ namespace vl
 		using namespace collections;
 
 /***********************************************************************
+* RpcDualLifecycleMock
+***********************************************************************/
+
+		void RpcDualLifecycleMock::AttachLocalObjectEvents(RpcObjectReference ref, reflection::IDescriptable* obj)
+		{
+			(void)ref;
+			(void)obj;
+		}
+
+		void RpcDualLifecycleMock::SetDispatcher(IRpcDispatcher* _dispatcher)
+		{
+			dispatcher = _dispatcher;
+		}
+
+/***********************************************************************
 * RpcDualDispatcherMock
 ***********************************************************************/
 

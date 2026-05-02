@@ -66,11 +66,6 @@ namespace vl
 		{
 		}
 
-		void RpcLifecycleBase::SetDispatcher(IRpcDispatcher* _dispatcher)
-		{
-			dispatcher = _dispatcher;
-		}
-
 		void RpcLifecycleBase::SetIdMap(const Dictionary<WString, vint>& _idMap)
 		{
 			CopyFrom(idMap, _idMap);

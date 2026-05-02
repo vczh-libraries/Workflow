@@ -4,6 +4,34 @@
 #include "CppTypes.h"
 #include "RpcDualLifecycleMock.h"
 
+namespace vl
+{
+	namespace rpc_controller_test
+	{
+		class RpcCppLifecycleMock : public RpcDualLifecycleMock
+		{
+		public:
+			vint(*decideTypeIdCallback)(reflection::IDescriptable*) = nullptr;
+			void(*attachLocalEventsCallback)(RpcDualLifecycleMock*, rpc_controller::RpcObjectReference, reflection::IDescriptable*) = nullptr;
+			using RpcDualLifecycleMock::RpcDualLifecycleMock;
+
+			vint DecideTypeId(reflection::IDescriptable* obj)const override
+			{
+				auto result = RpcDualLifecycleMock::DecideTypeId(obj);
+				if (result != rpc_controller::RpcTypeId_NotFound) return result;
+				return decideTypeIdCallback(obj);
+			}
+
+			void AttachLocalObjectEvents(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj)override
+			{
+				if (!attachLocalEventsCallback) return;
+				if (ref.typeId < 0) return;
+				attachLocalEventsCallback(this, ref, obj);
+			}
+		};
+	}
+}
+
 template<typename TInstance>
 void RunRpcTestCase(
 	const vl::WString& expected,
@@ -18,31 +46,10 @@ void RunRpcTestCase(
 	using namespace vl::rpc_controller;
 	using namespace vl::rpc_controller_test;
 
-	class LocalRpcMock : public RpcDualLifecycleMock
-	{
-	public:
-		vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
-		void(*attachLocalEventsCallback)(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*) = nullptr;
-		using RpcDualLifecycleMock::RpcDualLifecycleMock;
-
-		vint DecideTypeId(IDescriptable* obj)const override
-		{
-			auto result = RpcDualLifecycleMock::DecideTypeId(obj);
-			if (result != RpcTypeId_NotFound) return result;
-			return decideTypeIdCallback(obj);
-		}
-
-		void AttachLocalObjectEvents(RpcObjectReference ref, IDescriptable* obj) override
-		{
-			if (!attachLocalEventsCallback) return;
-			if (ref.typeId < 0) return;
-			attachLocalEventsCallback(this, ref, obj);
-		}
-	};
 	auto& instance = TInstance::Instance();
 
-	auto lc1 = Ptr(new LocalRpcMock(1));
-	auto lc2 = Ptr(new LocalRpcMock(2));
+	auto lc1 = Ptr(new RpcCppLifecycleMock(1));
+	auto lc2 = Ptr(new RpcCppLifecycleMock(2));
 	auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(instance.rpc_GetIds()));
 	lc1->SetIdMap(idMap.Ref());
 	lc2->SetIdMap(idMap.Ref());
