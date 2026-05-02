@@ -14,9 +14,6 @@
 
 ## ToDo
 
-- Review `RpcControllerMock` and promote it to become a standard implementation `RpcController`.
-- Review `RpcDualLifecycleMock`, split as many thing as possible to the base class `RpcLifecycleMock`, which does not have the knowledge of "dual", and promote to become a standard implementation `RpcLifecycleBase`.
-  - Merge `RpcByvalKeepAliveProperty` and `RpcByvalKeepAlive` from `WfLibraryRpc.cpp`.
 - Review `LocalLifecycleMock` in `TestCasesRpc.h`.
 - Remove `RpcByvalLifecycleMock`, replace it with `RpcDualLifecycleMock`.
 - Continue to add more test cases until all features are covered.
