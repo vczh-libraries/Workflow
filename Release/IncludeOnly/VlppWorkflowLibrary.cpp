@@ -8,3 +8,5 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Library\WfLibraryPredefined.cpp"
 #include "..\..\Source\Library\WfLibraryReflection.cpp"
 #include "..\..\Source\Library\WfLibraryRpc.cpp"
+#include "..\..\Source\Library\WfLibraryRpcController.cpp"
+#include "..\..\Source\Library\WfLibraryRpcLifecycle.cpp"

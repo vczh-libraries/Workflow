@@ -2415,3 +2415,613 @@ namespace vl
 	}
 }
 
+
+/***********************************************************************
+.\WFLIBRARYRPCCONTROLLER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace rpc_controller
+	{
+		using namespace collections;
+
+/***********************************************************************
+* RpcControllerDefault
+***********************************************************************/
+
+		RpcControllerDefault::RpcControllerDefault()
+		{
+		}
+
+		RpcControllerDefault::~RpcControllerDefault()
+		{
+		}
+
+		void RpcControllerDefault::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
+		{
+			objectCallback = _objectCallback;
+			eventCallback = _eventCallback;
+			listCallback = _listCallback;
+			listEventCallback = _listEventCallback;
+		}
+
+		IRpcListOps* RpcControllerDefault::GetListOps()
+		{
+			return listCallback.Obj();
+		}
+
+		IRpcObjectOps* RpcControllerDefault::GetObjectOps()
+		{
+			return objectCallback.Obj();
+		}
+
+		IRpcListEventOps* RpcControllerDefault::GetListEventOps()
+		{
+			return listEventCallback.Obj();
+		}
+
+		IRpcObjectEventOps* RpcControllerDefault::GetObjectEventOps()
+		{
+			return eventCallback.Obj();
+		}
+
+		void RpcControllerDefault::Finalize()
+		{
+		}
+
+		template<typename TKey>
+		void RpcControllerDefault::SetSuppressedFlag(Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcControllerDefault::SetSuppressedFlag(collections::Dictionary<TKey, vint>&, const TKey&, bool)#"
+			auto index = flags.Keys().IndexOf(key);
+			if (suppressed)
+			{
+				if (index == -1)
+				{
+					flags.Add(key, 1);
+				}
+				else
+				{
+					flags.Set(key, flags.Values()[index] + 1);
+				}
+			}
+			else
+			{
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Suppression counter is not set.");
+				auto count = flags.Values()[index] - 1;
+				CHECK_ERROR(count >= 0, ERROR_MESSAGE_PREFIX L"Suppression counter is negative.");
+				if (count == 0)
+				{
+					flags.Remove(key);
+				}
+				else
+				{
+					flags.Set(key, count);
+				}
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		template<typename TKey>
+		bool RpcControllerDefault::GetSuppressedFlag(const Dictionary<TKey, vint>& flags, const TKey& key)
+		{
+			auto index = flags.Keys().IndexOf(key);
+			return index != -1 && flags.Values()[index] > 0;
+		}
+
+		void RpcControllerDefault::SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)
+		{
+			SetSuppressedFlag(eventSuppressedFlags, { ref,eventId }, suppressed);
+		}
+
+		bool RpcControllerDefault::GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)
+		{
+			return GetSuppressedFlag(eventSuppressedFlags, { ref,eventId });
+		}
+
+		void RpcControllerDefault::SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)
+		{
+			SetSuppressedFlag(itemChangedSuppressedFlags, ref, suppressed);
+		}
+
+		bool RpcControllerDefault::GetItemChangedSuppressedFlag(RpcObjectReference ref)
+		{
+			return GetSuppressedFlag(itemChangedSuppressedFlags, ref);
+		}
+	}
+}
+
+
+/***********************************************************************
+.\WFLIBRARYRPCLIFECYCLE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace rpc_controller
+	{
+		using namespace reflection;
+		using namespace reflection::description;
+		using namespace collections;
+
+		WString RpcLifecycleBase::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
+		WString RpcLifecycleBase::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
+
+		RpcLocalObjectTracker::RpcLocalObjectTracker(RpcLifecycleBase* lc, RpcObjectReference r)
+			: lifecycle(lc), ref(r)
+		{
+		}
+
+		RpcLocalObjectTracker::~RpcLocalObjectTracker()
+		{
+			if (lifecycle && lifecycle->IsTracked(ref.objectId))
+			{
+				lifecycle->RemoveLocalObject(ref, false);
+			}
+		}
+
+		void RpcLocalObjectTracker::Attach(RpcLifecycleBase* lc, RpcObjectReference r)
+		{
+			lifecycle = lc;
+			ref = r;
+		}
+
+		void RpcLocalObjectTracker::Detach()
+		{
+			lifecycle = nullptr;
+		}
+
+		RpcWrapperTracker::RpcWrapperTracker(RpcLifecycleBase* lc, RpcObjectReference r)
+			: lifecycle(lc), ref(r)
+		{
+		}
+
+		RpcWrapperTracker::~RpcWrapperTracker()
+		{
+			if (lifecycle)
+			{
+				lifecycle->UntrackWrapper(ref);
+			}
+		}
+
+		void RpcWrapperTracker::Detach()
+		{
+			lifecycle = nullptr;
+		}
+
+/***********************************************************************
+* RpcLifecycleBase (Constructor and Setup)
+***********************************************************************/
+
+		RpcLifecycleBase::RpcLifecycleBase(vint _clientId)
+			: clientId(_clientId)
+		{
+		}
+
+		RpcLifecycleBase::~RpcLifecycleBase()
+		{
+		}
+
+		void RpcLifecycleBase::SetDispatcher(IRpcDispatcher* _dispatcher)
+		{
+			dispatcher = _dispatcher;
+		}
+
+		void RpcLifecycleBase::SetIdMap(const Dictionary<WString, vint>& _idMap)
+		{
+			for (auto&& [key, value] : _idMap)
+			{
+				idMap.Set(key, value);
+			}
+		}
+
+		void RpcLifecycleBase::RegisterWrapperFactory(UniversalWrapperFactory factory)
+		{
+			universalWrapperFactory = factory;
+		}
+
+		void RpcLifecycleBase::DisconnectWrappersForFinalize()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::DisconnectWrappersForFinalize()#"
+			for (auto [ref, properties] : wrapperProperties)
+			{
+				if (properties.root)
+				{
+					auto trackerObj = properties.root->GetInternalProperty(InternalProperty_WrapperTracker);
+					CHECK_ERROR(trackerObj, ERROR_MESSAGE_PREFIX L"Wrapper tracker missing.");
+					auto tracker = trackerObj.Cast<RpcWrapperTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid wrapper tracker type.");
+					tracker->Detach();
+					properties.root->SetInternalProperty(InternalProperty_WrapperTracker, nullptr);
+				}
+
+				if (properties.proxy)
+				{
+					properties.proxy->DisconnectFromLifecycle();
+				}
+			}
+			wrapperProperties.Clear();
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		vint RpcLifecycleBase::DecideTypeId(IDescriptable* obj)const
+		{
+			if (dynamic_cast<IValueObservableList*>(obj)) return RpcTypeId_IValueObservableList;
+			if (dynamic_cast<IValueDictionary*>(obj)) return RpcTypeId_IValueDictionary;
+			if (dynamic_cast<IValueArray*>(obj)) return RpcTypeId_IValueArray;
+			if (dynamic_cast<IValueList*>(obj)) return RpcTypeId_IValueList;
+			if (dynamic_cast<IValueReadonlyList*>(obj)) return RpcTypeId_IValueReadonlyList;
+			if (dynamic_cast<IValueEnumerator*>(obj)) return RpcTypeId_IValueEnumerator;
+			if (dynamic_cast<IValueEnumerable*>(obj)) return RpcTypeId_IValueEnumerable;
+
+			return RpcTypeId_NotFound;
+		}
+
+		void RpcLifecycleBase::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TrackLocalObject(RpcObjectReference, reflection::IDescriptable*)#"
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+			CHECK_ERROR(props->rawPtr == nullptr, ERROR_MESSAGE_PREFIX L"Object already tracked.");
+
+			props->rawPtr = obj;
+
+			if (auto observable = dynamic_cast<IValueObservableList*>(obj))
+			{
+				auto handler = observable->ItemChanged.Add([this, ref](vint index, vint oldCount, vint newCount)
+				{
+					if (this->GetController()->GetItemChangedSuppressedFlag(ref))
+					{
+						return;
+					}
+					this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount);
+				});
+				props->eventHandler = handler;
+			}
+
+			AttachLocalObjectEvents(ref, obj);
+
+			if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
+			{
+				Ptr<RpcLocalObjectTracker> tracker;
+				if (auto trackerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectTracker))
+				{
+					tracker = trackerObj.Cast<RpcLocalObjectTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid local object tracker type.");
+					if (tracker->GetClientId() != ref.clientId)
+					{
+						throw Exception(ERROR_MESSAGE_PREFIX L"Object already tracked by a different client.");
+					}
+					CHECK_ERROR(!tracker->IsTracked(), ERROR_MESSAGE_PREFIX L"Object already tracked.");
+				}
+				else
+				{
+					tracker = Ptr(new RpcLocalObjectTracker(this, ref));
+					descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, tracker);
+				}
+
+				tracker->Attach(this, ref);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::UntrackLocalObject(RpcObjectReference, bool)#"
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+
+			if (props->eventHandler)
+			{
+				if (auto observable = dynamic_cast<IValueObservableList*>(props->rawPtr))
+				{
+					observable->ItemChanged.Remove(props->eventHandler);
+				}
+				props->eventHandler = nullptr;
+			}
+
+			auto rawPtr = props->rawPtr;
+			props->rawPtr = nullptr;
+
+			if (clearInternalProperty && rawPtr)
+			{
+				if (auto descriptable = dynamic_cast<DescriptableObject*>(rawPtr))
+				{
+					if (auto trackerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectTracker))
+					{
+						auto tracker = trackerObj.Cast<RpcLocalObjectTracker>();
+						CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid local object tracker type.");
+						tracker->Detach();
+						descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, nullptr);
+					}
+				}
+			}
+
+			props->ownedPtr = nullptr;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::RemoveLocalObject(RpcObjectReference ref, bool clearInternalProperty)
+		{
+			if (localObjectProperties.Keys().Contains(ref.objectId))
+			{
+				UntrackLocalObject(ref, clearInternalProperty);
+				localObjectProperties.Remove(ref.objectId);
+			}
+		}
+
+		bool RpcLifecycleBase::IsTracked(vint objectId)const
+		{
+			auto index = localObjectProperties.Keys().IndexOf(objectId);
+			return index != -1 && localObjectProperties.Values().Get(index)->rawPtr != nullptr;
+		}
+
+		void RpcLifecycleBase::TrackWrapper(DescriptableObject* root, IRpcWrapperBase* proxy, RpcObjectReference ref)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TrackWrapper(reflection::DescriptableObject*, IRpcWrapperBase*, RpcObjectReference)#"
+			CHECK_ERROR(root != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper does not implement DescriptableObject.");
+			CHECK_ERROR(proxy != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper is null.");
+			CHECK_ERROR(root->GetInternalProperty(InternalProperty_WrapperTracker) == nullptr, ERROR_MESSAGE_PREFIX L"Wrapper already tracked.");
+
+			auto tracker = Ptr(new RpcWrapperTracker(this, ref));
+			root->SetInternalProperty(InternalProperty_WrapperTracker, tracker);
+
+			RpcWrapperProperties properties;
+			properties.root = root;
+			properties.proxy = proxy;
+			CHECK_ERROR(!wrapperProperties.Keys().Contains(ref), ERROR_MESSAGE_PREFIX L"Reference already tracked.");
+			wrapperProperties.Set(ref, properties);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::UntrackWrapper(RpcObjectReference ref)
+		{
+			wrapperProperties.Remove(ref);
+		}
+
+		bool RpcLifecycleBase::TryGetTrackedWrapperRef(DescriptableObject* obj, RpcObjectReference& ref)const
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TryGetTrackedWrapperRef(reflection::DescriptableObject*, RpcObjectReference&)const#"
+			auto wrapperRoot = obj;
+			if (auto wrapperBase = obj->SafeAggregationCast<IRpcWrapperBase>())
+			{
+				auto aggregatedRoot = dynamic_cast<DescriptableObject*>(wrapperBase);
+				CHECK_ERROR(aggregatedRoot, ERROR_MESSAGE_PREFIX L"Wrapper root does not implement DescriptableObject.");
+				wrapperRoot = aggregatedRoot;
+			}
+
+			if (auto trackerObj = wrapperRoot->GetInternalProperty(InternalProperty_WrapperTracker))
+			{
+				auto tracker = trackerObj.Cast<RpcWrapperTracker>();
+				CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
+				CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Wrapper registered to a different lifecycle.");
+				ref = tracker->GetRef();
+				return true;
+			}
+			return false;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		IRpcWrapperBase* RpcLifecycleBase::GetTrackedWrapper(RpcObjectReference ref)const
+		{
+			if (auto index = wrapperProperties.Keys().IndexOf(ref); index != -1)
+			{
+				return wrapperProperties.Values()[index].proxy;
+			}
+			return nullptr;
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::CreateCallerProxy(RpcObjectReference ref)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::CreateCallerProxy(RpcObjectReference)#"
+			IRpcLifecycle* lc = this;
+			Ptr<IRpcWrapperBase> wrapper;
+
+			switch (ref.typeId)
+			{
+			case RpcTypeId_IValueEnumerable:
+				wrapper = Ptr(new RpcByrefEnumerable(lc, ref));
+				break;
+			case RpcTypeId_IValueEnumerator:
+				wrapper = Ptr(new RpcByrefEnumerator(lc, ref));
+				break;
+			case RpcTypeId_IValueArray:
+				wrapper = Ptr(new RpcByrefArray(lc, ref));
+				break;
+			case RpcTypeId_IValueReadonlyList:
+				wrapper = Ptr(new RpcByrefReadonlyList(lc, ref));
+				break;
+			case RpcTypeId_IValueList:
+				wrapper = Ptr(new RpcByrefList(lc, ref));
+				break;
+			case RpcTypeId_IValueObservableList:
+				wrapper = Ptr(new RpcByrefObservableList(lc, ref));
+				break;
+			case RpcTypeId_IValueDictionary:
+				wrapper = Ptr(new RpcByrefDictionary(lc, ref));
+				break;
+			default:
+				CHECK_ERROR(universalWrapperFactory, ERROR_MESSAGE_PREFIX L"No wrapper factory registered.");
+				wrapper = universalWrapperFactory(ref, this);
+				CHECK_ERROR(wrapper, ERROR_MESSAGE_PREFIX L"Wrapper factory returned null.");
+				break;
+			}
+
+			auto descriptable = dynamic_cast<IDescriptable*>(wrapper.Obj());
+			CHECK_ERROR(descriptable, ERROR_MESSAGE_PREFIX L"Wrapper does not implement IDescriptable.");
+			auto root = dynamic_cast<DescriptableObject*>(descriptable);
+			TrackWrapper(root, wrapper.Obj(), ref);
+			return Ptr(descriptable);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+* RpcLifecycleBase (IRpcLifecycle)
+***********************************************************************/
+
+		void RpcLifecycleBase::Finalize()
+		{
+			DisconnectWrappersForFinalize();
+			while (localObjectProperties.Count() > 0)
+			{
+				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
+				RemoveLocalObject(props->ref, true);
+			}
+			controller.Finalize();
+		}
+
+		vint RpcLifecycleBase::GetClientId()
+		{
+			return clientId;
+		}
+
+		IRpcDispatcher* RpcLifecycleBase::GetDispatcher()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::GetDispatcher()#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"No dispatcher registered.");
+			return dispatcher;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcControllerDefault* RpcLifecycleBase::GetController()
+		{
+			return &controller;
+		}
+
+		void RpcLifecycleBase::LocalObjectHold(RpcObjectReference ref, vint remoteClientId)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::LocalObjectHold(RpcObjectReference, vint)#"
+			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+			if (!props->interestedClients.Contains(remoteClientId))
+			{
+				props->interestedClients.Add(remoteClientId);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::LocalObjectUnhold(RpcObjectReference, vint)#"
+			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+			CHECK_ERROR(props->interestedClients.Contains(remoteClientId), ERROR_MESSAGE_PREFIX L"Client does not hold this object.");
+			props->interestedClients.Remove(remoteClientId);
+			if (props->interestedClients.Count() == 0)
+			{
+				RemoveLocalObject(ref, true);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::RegisterService(const WString& fullName, Ptr<IDescriptable> service)
+		{
+			auto index = idMap.Keys().IndexOf(fullName);
+			if (index == -1)
+			{
+				throw Exception(L"Unknown RPC type id.");
+			}
+			controller.GetObjectOps()->RegisterService(idMap.Values()[index], service);
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RequestService(const WString& fullName)
+		{
+			if (idMap.Keys().Contains(fullName))
+			{
+				auto typeId = idMap.Get(fullName);
+				auto ref = GetDispatcher()->RequestService(typeId);
+				return RefToPtr(ref);
+			}
+
+			return nullptr;
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RefToPtr(RpcObjectReference)#"
+			if (ref.clientId == clientId)
+			{
+				auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+				auto props = localObjectProperties.Values().Get(index);
+				CHECK_ERROR(props->rawPtr != nullptr, ERROR_MESSAGE_PREFIX L"Object not tracked.");
+				return Ptr(props->rawPtr);
+			}
+			else
+			{
+				if (auto index = wrapperProperties.Keys().IndexOf(ref); index != -1)
+				{
+					auto proxy = wrapperProperties.Values()[index].proxy;
+					auto descriptable = dynamic_cast<IDescriptable*>(proxy);
+					CHECK_ERROR(descriptable, ERROR_MESSAGE_PREFIX L"Wrapper does not implement IDescriptable.");
+					return Ptr(descriptable);
+				}
+
+				return CreateCallerProxy(ref);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcObjectReference RpcLifecycleBase::PtrToRef(Ptr<IDescriptable> obj)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::PtrToRef(Ptr<reflection::IDescriptable>)#"
+			CHECK_ERROR(obj, ERROR_MESSAGE_PREFIX L"A value is required.");
+
+			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
+			{
+				RpcObjectReference wrapperRef;
+				if (TryGetTrackedWrapperRef(descObj, wrapperRef))
+				{
+					return wrapperRef;
+				}
+
+				if (auto wrapperBase = descObj->SafeAggregationCast<IRpcWrapperBase>())
+				{
+					auto wrapperRoot = dynamic_cast<DescriptableObject*>(wrapperBase);
+					CHECK_ERROR(wrapperRoot, ERROR_MESSAGE_PREFIX L"Wrapper root does not implement DescriptableObject.");
+					CHECK_ERROR(wrapperRoot->GetInternalProperty(InternalProperty_WrapperTracker), ERROR_MESSAGE_PREFIX L"Wrapper tracker missing.");
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Wrapper tracker lookup unexpectedly failed.");
+				}
+			}
+
+			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
+			{
+				if (auto trackerObj = descObj->GetInternalProperty(InternalProperty_LocalObjectTracker))
+				{
+					auto tracker = trackerObj.Cast<RpcLocalObjectTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
+					if (tracker->GetClientId() != clientId)
+					{
+						throw Exception(ERROR_MESSAGE_PREFIX L"Object registered to a different lifecycle.");
+					}
+					if (tracker->IsTracked())
+					{
+						CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Object tracker registered to an invalid lifecycle instance.");
+						return tracker->GetRef();
+					}
+				}
+			}
+
+			auto typeId = DecideTypeId(obj.Obj());
+			CHECK_ERROR(typeId != RpcTypeId_NotFound, ERROR_MESSAGE_PREFIX L"DecideTypeId returned RpcTypeId_NotFound (unknown type).");
+			auto ref = RpcObjectReference{ clientId, ++nextObjectId, typeId };
+			CHECK_ERROR(!localObjectProperties.Keys().Contains(ref.objectId), ERROR_MESSAGE_PREFIX L"Object ID already registered.");
+			auto props = Ptr(new RpcLocalObjectProperties);
+			props->ref = ref;
+			props->ownedPtr = obj;
+			localObjectProperties.Set(ref.objectId, props);
+
+			TrackLocalObject(ref, obj.Obj());
+			return ref;
+#undef ERROR_MESSAGE_PREFIX
+		}
+	}
+}
+
