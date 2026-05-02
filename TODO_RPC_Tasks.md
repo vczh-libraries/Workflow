@@ -52,6 +52,8 @@ export type Schema =
 interface for ListSchema, MapSchema, ObservableSchema, struct1, ...
 ```
 
+`Schema` will be typing the result from the generated `rpcjson_Serialize` function.
+
 All structs are named after `StructSchema_Namespace_Name_To_Type`.
 
 You are going to create a function in `WfAnalyzer_ValidateRpc.cpp` after `ValidateModuleRPC`, say `GenerateDtsFromRpcMetadata`. And put a `WString dts;` in `WfLexicalScopeManager::rpcMetadata`, therefore you are able to save that file in `CompilerTest_LoadAndCompile`.
