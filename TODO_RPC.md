@@ -14,8 +14,6 @@
 
 ## ToDo
 
-- Review `LocalLifecycleMock` in `TestCasesRpc.h`.
-- Remove `RpcByvalLifecycleMock`, replace it with `RpcDualLifecycleMock`.
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
