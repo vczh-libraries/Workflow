@@ -73,10 +73,7 @@ namespace vl
 
 		void RpcLifecycleBase::SetIdMap(const Dictionary<WString, vint>& _idMap)
 		{
-			for (auto&& [key, value] : _idMap)
-			{
-				idMap.Set(key, value);
-			}
+			CopyFrom(idMap, _idMap);
 		}
 
 		void RpcLifecycleBase::RegisterWrapperFactory(UniversalWrapperFactory factory)
