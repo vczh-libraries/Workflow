@@ -1031,6 +1031,46 @@ namespace vl
 					module->declarations.Add(GenerateRpcJsonSerialize(context));
 					module->declarations.Add(GenerateRpcJsonDeserialize(context));
 				}
+
+				WString AddRpcJsonSerializeValue(WfLexicalScopeManager* manager, vint& tempIndex, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type)
+				{
+					List<RpcJsonPrimitiveModel> primitives;
+					List<RpcJsonTypeModel> enums;
+					List<RpcJsonTypeModel> structs;
+					CollectRpcJsonPrimitives(primitives);
+					CollectRpcJsonTypes(manager, enums, structs);
+
+					RpcJsonGenerationContext context;
+					context.manager = manager;
+					context.primitives = &primitives;
+					context.enums = &enums;
+					context.structs = &structs;
+					context.tempIndex = tempIndex;
+
+					auto result = AddKnownRpcJsonSerializeValue(context, block, value, type);
+					tempIndex = context.tempIndex;
+					return result;
+				}
+
+				WString AddRpcJsonDeserializeValue(WfLexicalScopeManager* manager, vint& tempIndex, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type)
+				{
+					List<RpcJsonPrimitiveModel> primitives;
+					List<RpcJsonTypeModel> enums;
+					List<RpcJsonTypeModel> structs;
+					CollectRpcJsonPrimitives(primitives);
+					CollectRpcJsonTypes(manager, enums, structs);
+
+					RpcJsonGenerationContext context;
+					context.manager = manager;
+					context.primitives = &primitives;
+					context.enums = &enums;
+					context.structs = &structs;
+					context.tempIndex = tempIndex;
+
+					auto result = AddKnownRpcJsonDeserializeValue(context, block, node, type);
+					tempIndex = context.tempIndex;
+					return result;
+				}
 			}
 		}
 	}

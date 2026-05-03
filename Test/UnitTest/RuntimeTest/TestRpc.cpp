@@ -30,6 +30,8 @@ namespace
 	private:
 		Ptr<WfRuntimeGlobalContext>								globalContext;
 		Ptr<IValueFunctionProxy>								wrapperCreateFunc;
+		Ptr<IValueFunctionProxy>								opsCreateFunc;
+		Value													rpcOps;
 		Func<void(vint, IRpcLifecycle*, RpcObjectReference, IDescriptable*)>		listenerAttachFunc;
 	public:
 		RpcWorkflowLifecycleMock(vint _clientId)
@@ -40,6 +42,8 @@ namespace
 		~RpcWorkflowLifecycleMock()
 		{
 			listenerAttachFunc = {};
+			rpcOps = {};
+			opsCreateFunc = nullptr;
 			wrapperCreateFunc = nullptr;
 			globalContext = nullptr;
 		}
@@ -53,6 +57,13 @@ namespace
 		{
 			SetIdMap(_idMap);
 			wrapperCreateFunc = LoadFunction(globalContext, L"rpcwrapper_Create");
+			opsCreateFunc = LoadFunction(globalContext, L"rpcops_IOps_Create");
+			{
+				auto argList = IValueList::Create();
+				argList->Add(BoxValue<IRpcLifecycle*>(this));
+				rpcOps = opsCreateFunc->Invoke(argList);
+				CHECK_ERROR(!rpcOps.IsNull(), L"rpcops_IOps_Create did not return rpcops_IOps_*.");
+			}
 			auto listenerAttachIndex = globalContext->assembly->functionByName.Keys().IndexOf(L"rpclistener_Attach");
 			if (listenerAttachIndex == -1)
 			{
@@ -72,6 +83,7 @@ namespace
 				auto argList = IValueList::Create();
 				argList->Add(BoxValue(ref));
 				argList->Add(BoxValue<IRpcLifecycle*>(lc));
+				argList->Add(rpcOps);
 				auto result = wrapperCreateFunc->Invoke(argList);
 				auto wrapper = Ptr(result.GetRawPtr()->SafeAggregationCast<IRpcWrapperBase>());
 				CHECK_ERROR(wrapper, L"rpcwrapper_Create did not return IRpcWrapperBase.");

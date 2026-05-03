@@ -67,12 +67,14 @@ void RunRpcTestCase(
 	auto oeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());
 	auto oo2 = instance.rpc_IRpcObjectOps(lc2.Obj());
 	auto oeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());
+	auto ops1 = instance.rpcops_IOps_Create(lc1.Obj());
+	auto ops2 = instance.rpcops_IOps_Create(lc2.Obj());
 
 	lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
 	lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
 	RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
-	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
-	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc); });
+	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
+	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
 
 	instance.serviceMain(lc1.Obj());
 

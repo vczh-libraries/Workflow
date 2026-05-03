@@ -484,7 +484,7 @@ RPC Analyzing
 			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern WString									GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager);
-			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager);
+			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName);
 
 /***********************************************************************
 Expanding Virtual Nodes

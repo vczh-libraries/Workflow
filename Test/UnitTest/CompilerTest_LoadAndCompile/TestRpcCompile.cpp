@@ -242,7 +242,7 @@ TEST_FILE
 					TEST_ASSERT(manager.errors.Count() == 0);
 					TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
 
-					wrapperModule = GenerateModuleRpc(&manager);
+					wrapperModule = GenerateModuleRpc(&manager, MakeRpcCppAssemblyName(itemName));
 					TEST_ASSERT(wrapperModule);
 					TEST_ASSERT(manager.errors.Count() == 0);
 
