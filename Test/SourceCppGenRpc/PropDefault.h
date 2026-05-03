@@ -30,11 +30,11 @@ namespace vl_workflow_global
 	class __vwsnc1_Rpc_PropDefault_serviceMain__RpcPropDefault_IService;
 	class __vwsnc2_Rpc_PropDefault_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc3_Rpc_PropDefault_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_Rpc_PropDefault_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
-	class __vwsnc5_Rpc_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc6_Rpc_PropDefault_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefault;
-	class __vwsnc7_Rpc_PropDefault_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefault;
-	class __vwsnc8_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService;
+	class __vwsnc4_Rpc_PropDefault_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefault;
+	class __vwsnc5_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService;
+	class __vwsnc6_Rpc_PropDefault_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc7_Rpc_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc8_Rpc_PropDefault_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefault;
 }
 
 namespace RpcPropDefault
@@ -101,22 +101,22 @@ namespace vl_workflow_global
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
-		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
-		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_PropDefault> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::rpcops_IOps_Rpc_PropDefault> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		void rpclistener_RpcPropDefault__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcPropDefault::IService* target);
 		void rpclistener_Attach(::vl::vint typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
 		::vl::Ptr<::RpcPropDefault::IRpcWrapper_IService> rpcwrapper_RpcPropDefault__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefault> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefault> ops);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
+		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
+		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDefault> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 
 		static Rpc_PropDefault& Instance();
 	};
@@ -176,30 +176,10 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_Rpc_PropDefault_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	class __vwsnc4_Rpc_PropDefault_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefault : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefault
 	{
 	public:
-		__vwsnc4_Rpc_PropDefault_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
-		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold) override;
-		void RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
-	};
-
-	class __vwsnc5_Rpc_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
-	{
-	public:
-		__vwsnc5_Rpc_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
-	};
-
-	class __vwsnc6_Rpc_PropDefault_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefault : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefault
-	{
-	public:
-		__vwsnc6_Rpc_PropDefault_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefault(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_PropDefault_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefault(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::WString InvokeMethod_RpcPropDefault__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
@@ -208,22 +188,10 @@ Closures
 		void InvokeEvent_RpcPropDefault__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
-	class __vwsnc7_Rpc_PropDefault_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefault : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefault
+	class __vwsnc5_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPropDefault::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc7_Rpc_PropDefault_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefault(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::WString InvokeMethod_RpcPropDefault__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
-		void InvokeMethod_RpcPropDefault__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override;
-		void InvokeMethod_RpcPropDefault__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
-		void InvokeEvent_RpcPropDefault__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
-	};
-
-	class __vwsnc8_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPropDefault::IRpcWrapper_IService
-	{
-	public:
-		__vwsnc8_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefault> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefault> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
@@ -232,10 +200,42 @@ Closures
 		bool __vwsn_Available_ = false;
 		void _rpcInvalidate_Value() override;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc8_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService();
+		~__vwsnc5_Rpc_PropDefault_rpcwrapper_RpcPropDefault__IService__RpcPropDefault_IRpcWrapper_IService();
 		::vl::WString GetValue() override;
 		void SetValue(const ::vl::WString& value) override;
 		void Signal() override;
+	};
+
+	class __vwsnc6_Rpc_PropDefault_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	{
+	public:
+		__vwsnc6_Rpc_PropDefault_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold) override;
+		void RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
+	};
+
+	class __vwsnc7_Rpc_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	{
+	public:
+		__vwsnc7_Rpc_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+	};
+
+	class __vwsnc8_Rpc_PropDefault_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefault : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefault
+	{
+	public:
+		__vwsnc8_Rpc_PropDefault_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefault(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcPropDefault__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcPropDefault__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override;
+		void InvokeMethod_RpcPropDefault__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcPropDefault__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 }
 

@@ -25,16 +25,16 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	class __vwsnc10_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService;
+	class __vwsnc10_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval;
 	class __vwsnc1_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_MakeValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IValue;
 	class __vwsnc2_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_serviceMain__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IService;
 	class __vwsnc3_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc4_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
-	class __vwsnc6_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc7_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval;
-	class __vwsnc8_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval;
-	class __vwsnc9_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue;
+	class __vwsnc5_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval;
+	class __vwsnc6_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue;
+	class __vwsnc7_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService;
+	class __vwsnc8_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc9_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
 }
 
 namespace RpcCollectionOblist
@@ -139,21 +139,21 @@ namespace vl_workflow_global
 		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
-		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
-		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint64_t typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IRpcWrapper_IValue> rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> ops);
 		::vl::Ptr<::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IRpcWrapper_IService> rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> ops);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
+		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
+		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 
 		static Rpc_CollectionOblist_Interface_Nested_InByval_OutByval& Instance();
 	};
@@ -162,17 +162,14 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	class __vwsnc10_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IRpcWrapper_IService
+	class __vwsnc10_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval
 	{
 	public:
-		__vwsnc10_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc10_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::rpc_controller::RpcObjectReference _ref;
-		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> _ops;
-		void DisconnectFromLifecycle() override;
-		~__vwsnc10_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService();
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs) override;
+		::vl::vint64_t InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) override;
 	};
 
 	class __vwsnc1_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_MakeValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IValue : public ::vl::Object, public virtual ::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IValue
@@ -213,10 +210,46 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	class __vwsnc5_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval
 	{
 	public:
-		__vwsnc5_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc5_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint64_t InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) override;
+	};
+
+	class __vwsnc6_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IRpcWrapper_IValue
+	{
+	public:
+		__vwsnc6_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> _ops;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc6_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue();
+		::vl::vint64_t GetValue() override;
+	};
+
+	class __vwsnc7_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc7_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> _ops;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc7_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IService();
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs) override;
+	};
+
+	class __vwsnc8_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	{
+	public:
+		__vwsnc8_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
@@ -224,46 +257,13 @@ Closures
 		void RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
 
-	class __vwsnc6_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	class __vwsnc9_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc6_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc9_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
-	};
-
-	class __vwsnc7_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval
-	{
-	public:
-		__vwsnc7_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::vint64_t InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) override;
-	};
-
-	class __vwsnc8_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval
-	{
-	public:
-		__vwsnc8_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::vint64_t InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) override;
-	};
-
-	class __vwsnc9_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IRpcWrapper_IValue
-	{
-	public:
-		__vwsnc9_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::rpc_controller::RpcObjectReference _ref;
-		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval> _ops;
-		void DisconnectFromLifecycle() override;
-		~__vwsnc9_Rpc_CollectionOblist_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionOblist__Interface__Nested__InByval__OutByval__IValue__RpcCollectionOblist_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue();
-		::vl::vint64_t GetValue() override;
 	};
 }
 
