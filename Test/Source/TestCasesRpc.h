@@ -63,10 +63,10 @@ void RunRpcTestCase(
 	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj()));
 	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
 
-	auto oo1 = instance.rpc_IRpcObjectOps(lc1.Obj());
-	auto oeo1 = instance.rpc_IRpcObjectEventOps(lc1.Obj());
-	auto oo2 = instance.rpc_IRpcObjectOps(lc2.Obj());
-	auto oeo2 = instance.rpc_IRpcObjectEventOps(lc2.Obj());
+	auto oo1 = instance.rpcops_IRpcObjectOps(lc1.Obj());
+	auto oeo1 = instance.rpcops_IRpcObjectEventOps(lc1.Obj());
+	auto oo2 = instance.rpcops_IRpcObjectOps(lc2.Obj());
+	auto oeo2 = instance.rpcops_IRpcObjectEventOps(lc2.Obj());
 	auto ops1 = instance.rpcops_IOps_Create(lc1.Obj());
 	auto ops2 = instance.rpcops_IOps_Create(lc2.Obj());
 

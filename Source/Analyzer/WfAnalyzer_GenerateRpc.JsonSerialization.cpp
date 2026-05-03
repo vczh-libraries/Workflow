@@ -553,7 +553,7 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto literalName = AllocateRpcJsonTemp(context, L"jsonLiteral");
 						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateNull()));
-						AddStatement(block, CreateVariableStatement(literalName, CreateSharedType(L"system::JsonLiteral"), CreateWeakCast(CreateSharedType(L"system::JsonLiteral"), node)));
+						AddStatement(block, CreateVariableStatement(literalName, CreateSharedType(L"system::JsonLiteral"), CreateWeakCast(CreateSharedType(L"system::JsonLiteral"), CopyExpression(node, true))));
 						auto assignBranch = CreateBlock();
 						auto valueName = AddKnownRpcJsonDeserializeValue(context, assignBranch, node, nullable->element.Obj());
 						AddStatement(assignBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(valueName))));

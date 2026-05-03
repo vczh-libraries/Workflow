@@ -76,3 +76,20 @@ Centralize outbound wrapper method dispatch in a generated `rpcops_IOps_<assembl
 - Debugged the runtime process directly after `RuntimeTest` failed at `RPC binary assemblies > Collection_Default`; reflection showed `rpcwrapper_Create` had gained the third typed ops argument while the runtime harness was still invoking it with two arguments.
 - Passed Debug builds for `x64` and `Win32`.
 - Passed `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on the required platforms for Task 1.
+
+- No.2 Generate JSON server RPC ops and rename object ops factories
+
+## No.2 Generate JSON server RPC ops and rename object ops factories
+Extend the generated server-side object ops layer so the normal factories use the new `rpcops_` prefix and JSON factories can be compiler-validated with typed JSON conversion. The JSON object ops deserialize each incoming JSON node into the known transfer type, unbox shared RPC interfaces when needed, invoke the local method/event target, and serialize non-void method results back to `system::JsonNode^`.
+
+### CODE CHANGE
+- Renamed generated `rpc_IRpcObjectOps` and `rpc_IRpcObjectEventOps` factories to `rpcops_IRpcObjectOps` and `rpcops_IRpcObjectEventOps`, and updated the C++ and runtime RPC harnesses to load the new names.
+- Generated `rpcops_IRpcObjectOpsJson` and `rpcops_IRpcObjectEventOpsJson` alongside the normal factories.
+- Reused the generated JSON transfer helpers for known parameter and return types, including shared interface boxing/unboxing around JSON serialization and deserialization.
+- Fixed nullable JSON deserialization to clone the reused JSON node expression before emitting both the null check and value decode paths.
+
+### CONFIRMED
+- Debugged `CompilerTest_LoadAndCompile.exe /C /F:TestRpcCompile.cpp` under `cdb` after the generated `Nullable` wrapper failed with `Dictionary::Add Key already exists`; the stack pointed to duplicate AST expression scope registration from the reused nullable JSON node.
+- Confirmed no remaining source/harness references to `rpc_IRpcObjectOps` or `rpc_IRpcObjectEventOps`.
+- Passed Debug builds for `x64` and `Win32`.
+- Passed `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on the required platforms for Task 2.

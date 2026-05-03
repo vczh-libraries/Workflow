@@ -178,8 +178,8 @@ TEST_FILE
 					auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
 
 					// Create object ops implementations from the assembly
-					auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifecycle*)>(globalContext, L"rpc_IRpcObjectOps");
-					auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifecycle*)>(globalContext, L"rpc_IRpcObjectEventOps");
+					auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifecycle*)>(globalContext, L"rpcops_IRpcObjectOps");
+					auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifecycle*)>(globalContext, L"rpcops_IRpcObjectEventOps");
 					auto oo1 = createObjectOps(lc1.Obj());
 					auto oeo1 = createEventOps(lc1.Obj());
 					auto oo2 = createObjectOps(lc2.Obj());
