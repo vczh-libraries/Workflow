@@ -34,3 +34,11 @@ But in any current test projects we only pass `nullptr`, no `IRpcSerializer` wil
 To speed up testing, you can skip `CompilerTest_LoadAndCompile` and `Build.ps1` as this change should not affect the compiler.
 
 You can checkout multiple pairs of currently implemented files in this pattern: `Wrapper_*.txt` and `Wrapper_*_Json.txt`, they describes how serialization is used for rpc interfaces. But rpc interfaces are strong typed, collection wrappers are weak types for elements, that is the only difference. Unlike strong typed serialization, weak type serialization always transform `Value` to `Value`, skipping the serialization is easy (by just not calling it). So here we have one less layer than rpc interfaces.
+
+## Task 3
+
+In generated `Wrapper_*_Json.txt` we need one more function
+`func rpcops_IRpcSerializer() : (system::IRpcSerializer^)`
+and implement `(S|Des)erialize` using `rpcjson_(S|Des)erialize`.
+
+But in any current test projects we only pass `nullptr`, actual testing will be in the future.
