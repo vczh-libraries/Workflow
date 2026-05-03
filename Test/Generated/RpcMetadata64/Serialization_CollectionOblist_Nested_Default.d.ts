@@ -1,55 +1,51 @@
-﻿export type PredefinedSchema =
-  | ["UInt8", string]
-  | ["UInt16", string]
-  | ["UInt32", string]
-  | ["UInt64", string]
-  | ["Int8", string]
-  | ["Int16", string]
-  | ["Int32", string]
-  | ["Int64", string]
-  | ["Single", string]
-  | ["Double", string]
-  | ["Boolean", string]
+﻿export type UnknownType_PrimitiveSchema =
+  | ["UInt8", number]
+  | ["UInt16", number]
+  | ["UInt32", number]
+  | ["UInt64", number]
+  | ["Int8", number]
+  | ["Int16", number]
+  | ["Int32", number]
+  | ["Int64", number]
+  | ["Single", number]
+  | ["Double", number]
   | ["Char", string]
-  | ["String", string]
   | ["DateTime", string]
   | ["Locale", string]
-  ;
-
-export type EnumSchema = never;
-
-export type Schema =
   | null
-  | PredefinedSchema
-  | ListSchema
-  | MapSchema
-  | ObservableSchema
-  | StructSchema_system_RpcObjectReference
+  | true
+  | false
+  | string
   ;
 
-export interface ListSchema<T extends Schema = Schema>
+export type TypeList_Enum = never;
+
+export type UnknownType_EnumSchema = [TypeList_Enum, number];
+
+export interface UnknownType_List
 {
-  "$": "list";
-  values: T[];
+  "$": "list" | "map" | "oblist";
+  values: UnknownTypeSchema[];
 }
 
-export interface MapSchema<K extends Schema = Schema, V extends Schema = Schema>
-{
-  "$": "map";
-  values: Array<[K, V]>;
-}
+export type UnknownTypeSchema =
+  | UnknownType_PrimitiveSchema
+  | UnknownType_EnumSchema
+  | UnknownType_List
+  | UnknownType_system_RpcObjectReference
+  ;
 
-export interface ObservableSchema<T extends Schema = Schema>
-{
-  "$": "observable-list";
-  values: T[];
-}
-
-export interface StructSchema_system_RpcObjectReference
+export interface UnknownType_system_RpcObjectReference extends system_RpcObjectReference
 {
   "$": "system::RpcObjectReference";
-  clientId: ["Int64", string];
-  objectId: ["Int64", string];
-  typeId: ["Int64", string];
+}
+
+// below are all known types
+
+export interface system_RpcObjectReference
+{
+  clientId: number;
+  objectId: number;
+  typeId: number;
 }
 
