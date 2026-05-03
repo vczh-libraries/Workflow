@@ -8,13 +8,29 @@ You should complete tasks one by one.
 
 ## Task 1
 
-In generated functions `rpcops_IOps_Create(Json)?` and `rpcops_IRpcObject(Event)?OpsJson`, currently casting between `object` and byval collection types is done by `as` weak cast, I would like you to do `cast` strong cast. As there is no rescue when the underlying protocol gets wrong, raising an exception is always better. Check if other places has similar issue.
+There are some code implementing wrappers for byref collections in `WfLibraryRpc.(h|cpp)`, I would like you to extract them to `WfLibraryRpcWrappers.(h|cpp)`. Including wrappers, and default implementation for `IRpcListOps` and `IRpcListEventOps`, meanwhile all interface definition should not move.
 
-Rename `WfAnalyzer_GenerateRpc.JsonSerialization.cpp` to `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`.
-`rpcjson_*`, `rpcops_IOps_CreateJson`, `rpcops_IRpcObjectOpsJson` and `rpcops_IRpcObjectEventOpsJson` should be in `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`, not in `WfAnalyzer_GenerateRpc.cpp`.
+All `WfLibraryRpc*.*` should be contained in `Source/Library/Rpc`. And in `VlppWorkflow_Library` project, they should be put in one more nested solution explorer folder called `Rpc`.
+
+To speed up testing, you can skip `CompilerTest_LoadAndCompile` and `Build.ps1` as this change should not affect the compiler.
 
 ## Task 2
 
-Currently `rpcjson_*`, `rpcops_IOps_CreateJson`, `rpcops_IRpcObjectOpsJson` and `rpcops_IRpcObjectEventOpsJson` are also in `Wrapper_*.txt`. I would like you to move this part (aka JSON specific thing) to `Wrapper_*_Json.txt`, using module name `RpcMetadataJson`.
+In `WfLibraryRpcWrappers.h`, a new `IRpcSerializer` is introduced, and it should be reflected as well. It has two member:
+- `Serialize` from `Value` to `Value`.
+- `Deserialize` from `Value` to `Value`.
 
-A `GenerateModuleRpcJson` function will be made in `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`, therefore `CompilerTest_LoadAndCompile` should call this function too, and now you get two wrapper Workflow script files, link them together in later compiling.
+The direction is defined like this:
+- A `Value` will be put into wrappers, and wrappers call `Serialize`, before passing this value to `IRpcList(Event)?Ops`.
+- A `Value` will be received by `IRpcList(Event)?Ops`, and ops call `Deserialize`, before passing this value to wrappers.
+
+Therefore all wrappers and ops implementation in `WfLibraryRpcWrapper.h` should take the new `IRpcSerializer*` in their constructor:
+- When it is null, skip the call.
+- When it is not null, call it.
+- They are applied to collection elements only. Return value for `Contains` or `Add`, they are strong typed and known typed, they do not serialize.
+
+But in any current test projects we only pass `nullptr`, no `IRpcSerializer` will be implemented at the moment.
+
+To speed up testing, you can skip `CompilerTest_LoadAndCompile` and `Build.ps1` as this change should not affect the compiler.
+
+You can checkout multiple pairs of currently implemented files in this pattern: `Wrapper_*.txt` and `Wrapper_*_Json.txt`, they describes how serialization is used for rpc interfaces. But rpc interfaces are strong typed, collection wrappers are weak types for elements, that is the only difference. Unlike strong typed serialization, weak type serialization always transform `Value` to `Value`, skipping the serialization is easy (by just not calling it). So here we have one less layer than rpc interfaces.
