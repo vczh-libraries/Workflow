@@ -26,11 +26,13 @@ https://github.com/vczh-libraries
 namespace vl_workflow_global
 {
 	class __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService;
-	class __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
-	class __vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes;
-	class __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes;
-	class __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService;
+	class __vwsnc2_Rpc_PrimitiveTypes_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc3_Rpc_PrimitiveTypes_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc4_Rpc_PrimitiveTypes_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc5_Rpc_PrimitiveTypes_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc6_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes;
+	class __vwsnc7_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes;
+	class __vwsnc8_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService;
 }
 
 namespace __vwsn_enums
@@ -146,8 +148,10 @@ namespace vl_workflow_global
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint64_t typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> ops);
@@ -175,10 +179,10 @@ Closures
 		::RpcPrimitiveTest::Point ProcessStruct(::RpcPrimitiveTest::Point value) override;
 	};
 
-	class __vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	class __vwsnc2_Rpc_PrimitiveTypes_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc2_Rpc_PrimitiveTypes_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc2_Rpc_PrimitiveTypes_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
@@ -186,19 +190,39 @@ Closures
 		void RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
 
-	class __vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	class __vwsnc3_Rpc_PrimitiveTypes_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc3_Rpc_PrimitiveTypes_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PrimitiveTypes
+	class __vwsnc4_Rpc_PrimitiveTypes_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_PrimitiveTypes_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold) override;
+		void RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
+	};
+
+	class __vwsnc5_Rpc_PrimitiveTypes_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	{
+	public:
+		__vwsnc5_Rpc_PrimitiveTypes_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+	};
+
+	class __vwsnc6_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PrimitiveTypes
+	{
+	public:
+		__vwsnc6_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		bool InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(::vl::rpc_controller::RpcObjectReference ref, bool arg_value) override;
@@ -211,10 +235,10 @@ Closures
 		::vl::vuint64_t InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint64_t arg_value) override;
 	};
 
-	class __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PrimitiveTypes
+	class __vwsnc7_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PrimitiveTypes
 	{
 	public:
-		__vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc7_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		bool InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(::vl::rpc_controller::RpcObjectReference ref, bool arg_value) override;
@@ -227,16 +251,16 @@ Closures
 		::vl::vuint64_t InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint64_t arg_value) override;
 	};
 
-	class __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPrimitiveTest::IRpcWrapper_IService
+	class __vwsnc8_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPrimitiveTest::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc8_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService();
+		~__vwsnc8_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService();
 		bool ProcessBool(bool value) override;
 		double ProcessDouble(double value) override;
 		::RpcPrimitiveTest::Season ProcessEnum(::RpcPrimitiveTest::Season value) override;

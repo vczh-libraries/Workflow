@@ -579,7 +579,7 @@ interface rpcops_IOps_Rpc_CollectionOblist_Nested_PropDefault
     func InvokeMethod_RpcCollectionOblist__Nested__PropDefault__IService_SetList(ref : system::RpcObjectReference, arg_<value> : observe observe ::system::Int32[][]) : (::system::Void);
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
@@ -640,7 +640,93 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
+            switch (eventId)
+            {
+                default:
+                raise "Unknown RPC event id.";
+            }
+            finally
+            {
+                _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            switch (methodId)
+            {
+                case rpcmethod_RpcCollectionOblist__Nested__PropDefault__IService_GetList:
+                {
+                    var target : RpcCollectionOblist::Nested::PropDefault::IService^ = (cast (RpcCollectionOblist::Nested::PropDefault::IService^) _lc.RefToPtr(ref));
+                    var jsonNode0 : system::JsonNode^ = rpcjson_Serialize_Struct_system__RpcObjectReference(system::IRpcLifecycle::RpcBoxByref(target.GetList(), _lc));
+                    return jsonNode0;
+                }
+                case rpcmethod_RpcCollectionOblist__Nested__PropDefault__IService_SetList:
+                {
+                    var target : RpcCollectionOblist::Nested::PropDefault::IService^ = (cast (RpcCollectionOblist::Nested::PropDefault::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : system::RpcObjectReference = rpcjson_Deserialize_Struct_system__RpcObjectReference((cast (system::JsonNode^) arguments[0]));
+                    target.SetList((system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) jsonValue0), _lc) as (observe observe ::system::Int32[][])));
+                    return null;
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+                }
+                else
+                {
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
+                    {
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
+                    }
+                }
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {

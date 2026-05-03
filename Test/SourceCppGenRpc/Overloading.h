@@ -25,14 +25,16 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
+	class __vwsnc10_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService;
 	class __vwsnc1_Rpc_Overloading_serviceMain__RpcOverloadingTest_IService;
 	class __vwsnc2_Rpc_Overloading_clientMain__RpcOverloadingTest_IStringRepresentable;
-	class __vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
-	class __vwsnc4_Rpc_Overloading_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_Overloading_rpcops_IOps_Create__rpcops_IOps_Rpc_Overloading;
-	class __vwsnc6_Rpc_Overloading_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Overloading;
-	class __vwsnc7_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable;
-	class __vwsnc8_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService;
+	class __vwsnc3_Rpc_Overloading_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc4_Rpc_Overloading_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc5_Rpc_Overloading_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc6_Rpc_Overloading_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc7_Rpc_Overloading_rpcops_IOps_Create__rpcops_IOps_Rpc_Overloading;
+	class __vwsnc8_Rpc_Overloading_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Overloading;
+	class __vwsnc9_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable;
 }
 
 namespace RpcOverloadingTest
@@ -126,8 +128,10 @@ namespace vl_workflow_global
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_Overloading> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_Overloading> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcOverloadingTest::IRpcWrapper_IStringRepresentable> rpcwrapper_RpcOverloadingTest__IStringRepresentable(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Overloading> ops);
@@ -140,6 +144,23 @@ namespace vl_workflow_global
 /***********************************************************************
 Closures
 ***********************************************************************/
+
+	class __vwsnc10_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcOverloadingTest::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc10_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Overloading> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Overloading> _ops;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc10_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService();
+		::vl::WString ToString(bool value) override;
+		::vl::WString ToString(const ::vl::WString& value) override;
+		::vl::WString ToString(::vl::Ptr<::RpcOverloadingTest::IStringRepresentable> value) override;
+		::vl::WString ToString(::vl::vint value1, bool value2, const ::vl::WString& value3, ::vl::Ptr<::RpcOverloadingTest::IStringRepresentable> value4) override;
+		::vl::WString ToStringInt(::vl::vint value) override;
+	};
 
 	class __vwsnc1_Rpc_Overloading_serviceMain__RpcOverloadingTest_IService : public ::vl::Object, public virtual ::RpcOverloadingTest::IService
 	{
@@ -161,10 +182,10 @@ Closures
 		::vl::WString GetStringValue() override;
 	};
 
-	class __vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	class __vwsnc3_Rpc_Overloading_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc3_Rpc_Overloading_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc3_Rpc_Overloading_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
@@ -172,19 +193,39 @@ Closures
 		void RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
 
-	class __vwsnc4_Rpc_Overloading_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	class __vwsnc4_Rpc_Overloading_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc4_Rpc_Overloading_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_Overloading_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_Overloading_rpcops_IOps_Create__rpcops_IOps_Rpc_Overloading : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Overloading
+	class __vwsnc5_Rpc_Overloading_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc5_Rpc_Overloading_rpcops_IOps_Create__rpcops_IOps_Rpc_Overloading(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc5_Rpc_Overloading_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold) override;
+		void RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
+	};
+
+	class __vwsnc6_Rpc_Overloading_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	{
+	public:
+		__vwsnc6_Rpc_Overloading_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+	};
+
+	class __vwsnc7_Rpc_Overloading_rpcops_IOps_Create__rpcops_IOps_Rpc_Overloading : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Overloading
+	{
+	public:
+		__vwsnc7_Rpc_Overloading_rpcops_IOps_Create__rpcops_IOps_Rpc_Overloading(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::WString InvokeMethod_RpcOverloadingTest__IStringRepresentable_GetStringValue(::vl::rpc_controller::RpcObjectReference ref) override;
@@ -195,10 +236,10 @@ Closures
 		::vl::WString InvokeMethod_RpcOverloadingTest__IService_ToStringInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value) override;
 	};
 
-	class __vwsnc6_Rpc_Overloading_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Overloading : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Overloading
+	class __vwsnc8_Rpc_Overloading_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Overloading : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Overloading
 	{
 	public:
-		__vwsnc6_Rpc_Overloading_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Overloading(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc8_Rpc_Overloading_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Overloading(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::WString InvokeMethod_RpcOverloadingTest__IStringRepresentable_GetStringValue(::vl::rpc_controller::RpcObjectReference ref) override;
@@ -209,34 +250,17 @@ Closures
 		::vl::WString InvokeMethod_RpcOverloadingTest__IService_ToStringInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value) override;
 	};
 
-	class __vwsnc7_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable : public ::vl::Object, public virtual ::RpcOverloadingTest::IRpcWrapper_IStringRepresentable
+	class __vwsnc9_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable : public ::vl::Object, public virtual ::RpcOverloadingTest::IRpcWrapper_IStringRepresentable
 	{
 	public:
-		__vwsnc7_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Overloading> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc9_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Overloading> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		::vl::Ptr<::rpcops_IOps_Rpc_Overloading> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc7_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable();
+		~__vwsnc9_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IStringRepresentable__RpcOverloadingTest_IRpcWrapper_IStringRepresentable();
 		::vl::WString GetStringValue() override;
-	};
-
-	class __vwsnc8_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcOverloadingTest::IRpcWrapper_IService
-	{
-	public:
-		__vwsnc8_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Overloading> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::rpc_controller::RpcObjectReference _ref;
-		::vl::Ptr<::rpcops_IOps_Rpc_Overloading> _ops;
-		void DisconnectFromLifecycle() override;
-		~__vwsnc8_Rpc_Overloading_rpcwrapper_RpcOverloadingTest__IService__RpcOverloadingTest_IRpcWrapper_IService();
-		::vl::WString ToString(bool value) override;
-		::vl::WString ToString(const ::vl::WString& value) override;
-		::vl::WString ToString(::vl::Ptr<::RpcOverloadingTest::IStringRepresentable> value) override;
-		::vl::WString ToString(::vl::vint value1, bool value2, const ::vl::WString& value3, ::vl::Ptr<::RpcOverloadingTest::IStringRepresentable> value4) override;
-		::vl::WString ToStringInt(::vl::vint value) override;
 	};
 }
 

@@ -604,7 +604,7 @@ interface rpcops_IOps_Rpc_Overloading
     func InvokeMethod_RpcOverloadingTest__IService_ToStringInt(ref : system::RpcObjectReference, arg_value : ::system::Int32) : (::system::String);
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
@@ -684,7 +684,130 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
+            switch (eventId)
+            {
+                default:
+                raise "Unknown RPC event id.";
+            }
+            finally
+            {
+                _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            switch (methodId)
+            {
+                case rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue:
+                {
+                    var target : RpcOverloadingTest::IStringRepresentable^ = (cast (RpcOverloadingTest::IStringRepresentable^) _lc.RefToPtr(ref));
+                    var jsonString0 : system::JsonString^ = new (system::JsonString^)();
+                    (jsonString0.content = {value : (cast (string) target.GetStringValue());});
+                    return jsonString0;
+                }
+                case rpcmethod_RpcOverloadingTest__IService_ToString_value__1:
+                {
+                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) arguments[0])).value == system::JsonLiteralValue::True);
+                    var jsonString1 : system::JsonString^ = new (system::JsonString^)();
+                    (jsonString1.content = {value : (cast (string) target.ToString(jsonValue0));});
+                    return jsonString1;
+                }
+                case rpcmethod_RpcOverloadingTest__IService_ToString_value__2:
+                {
+                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonString1 : system::JsonString^ = new (system::JsonString^)();
+                    (jsonString1.content = {value : (cast (string) target.ToString(jsonValue0));});
+                    return jsonString1;
+                }
+                case rpcmethod_RpcOverloadingTest__IService_ToString_value__3:
+                {
+                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var jsonString1 : system::JsonString^ = new (system::JsonString^)();
+                    (jsonString1.content = {value : (cast (string) target.ToString((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcOverloadingTest::IStringRepresentable^))));});
+                    return jsonString1;
+                }
+                case rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_:
+                {
+                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : ::system::Int32 = (cast (::system::Int32) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonValue1 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) arguments[1])).value == system::JsonLiteralValue::True);
+                    var jsonValue2 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[2])).content.value);
+                    var jsonValue3 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[3]));
+                    var jsonString4 : system::JsonString^ = new (system::JsonString^)();
+                    (jsonString4.content = {value : (cast (string) target.ToString(jsonValue0, jsonValue1, jsonValue2, (system::IRpcLifecycle::RpcUnboxByval(jsonValue3, _lc) as (::RpcOverloadingTest::IStringRepresentable^))));});
+                    return jsonString4;
+                }
+                case rpcmethod_RpcOverloadingTest__IService_ToStringInt:
+                {
+                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : ::system::Int32 = (cast (::system::Int32) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonString1 : system::JsonString^ = new (system::JsonString^)();
+                    (jsonString1.content = {value : (cast (string) target.ToStringInt(jsonValue0));});
+                    return jsonString1;
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+                }
+                else
+                {
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
+                    {
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
+                    }
+                }
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {

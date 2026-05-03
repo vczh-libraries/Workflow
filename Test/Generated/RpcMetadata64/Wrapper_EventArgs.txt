@@ -584,7 +584,7 @@ interface rpcops_IOps_Rpc_EventArgs
     func InvokeEvent_RpcEventArgs__IService_SomethingHappened(ref : system::RpcObjectReference, arg_arg0 : ::system::Int64[], arg_arg1 : observe ::system::Int64[]) : (void);
 }
 
-func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
     {
@@ -646,7 +646,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
     };
 }
 
-func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
 {
     return new (system::IRpcObjectEventOps^)
     {
@@ -662,6 +662,98 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEv
                 {
                     var target : RpcEventArgs::IService^ = (cast (RpcEventArgs::IService^) _lc.RefToPtr(ref));
                     target.SomethingHappened((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::system::Int64[])), (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[1]), _lc) as (observe ::system::Int64[])));
+                }
+                default:
+                raise "Unknown RPC event id.";
+            }
+            finally
+            {
+                _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            switch (methodId)
+            {
+                case rpcmethod_RpcEventArgs__IService_AddElement:
+                {
+                    var target : RpcEventArgs::IService^ = (cast (RpcEventArgs::IService^) _lc.RefToPtr(ref));
+                    target.AddElement();
+                    return null;
+                }
+                case rpcmethod_RpcEventArgs__IService_MakeItHappen:
+                {
+                    var target : RpcEventArgs::IService^ = (cast (RpcEventArgs::IService^) _lc.RefToPtr(ref));
+                    target.MakeItHappen();
+                    return null;
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+                }
+                else
+                {
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
+                    {
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
+                    }
+                }
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
+            switch (eventId)
+            {
+                case rpcevent_RpcEventArgs__IService_SomethingHappened:
+                {
+                    var target : RpcEventArgs::IService^ = (cast (RpcEventArgs::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var jsonValue1 : system::RpcObjectReference = rpcjson_Deserialize_Struct_system__RpcObjectReference((cast (system::JsonNode^) arguments[1]));
+                    target.SomethingHappened((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::system::Int64[])), (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) jsonValue1), _lc) as (observe ::system::Int64[])));
                 }
                 default:
                 raise "Unknown RPC event id.";
