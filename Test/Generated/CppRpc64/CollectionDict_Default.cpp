@@ -774,20 +774,30 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_CollectionDict_Default_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcCollectionDict::Default::IRpcWrapper_IService> Rpc_CollectionDict_Default::rpcwrapper_RpcCollectionDict__Default__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default> Rpc_CollectionDict_Default::rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto proxy = ::vl::Ptr<::RpcCollectionDict::Default::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService(lc, proxyRef));
+		return ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default>(new ::vl_workflow_global::__vwsnc4_Rpc_CollectionDict_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_Default(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default> Rpc_CollectionDict_Default::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default>(new ::vl_workflow_global::__vwsnc5_Rpc_CollectionDict_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_Default(lc));
+	}
+
+	::vl::Ptr<::RpcCollectionDict::Default::IRpcWrapper_IService> Rpc_CollectionDict_Default::rpcwrapper_RpcCollectionDict__Default__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default> ops)
+	{
+		auto proxy = ::vl::Ptr<::RpcCollectionDict::Default::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_CollectionDict_Default::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_CollectionDict_Default::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default> ops)
 	{
 		{
 			auto __vwsn_switch_6 = ref.typeId;
 			if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcCollectionDict__Default__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollectionDict__Default__IService(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcCollectionDict__Default__IService(lc, ref, ops));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -907,18 +917,53 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::__vwsnc4_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc4_Rpc_CollectionDict_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_Default::__vwsnc4_Rpc_CollectionDict_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_Default(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc4_Rpc_CollectionDict_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_Default::InvokeMethod_RpcCollectionDict__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_xs), _lc));
+		return ::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments), _lc).Obj());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_Rpc_CollectionDict_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_Default::__vwsnc5_Rpc_CollectionDict_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_Default(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc5_Rpc_CollectionDict_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_Default::InvokeMethod_RpcCollectionDict__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
+		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize(::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_xs), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNode0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments));
+		auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		return ::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(jsonValue1, _lc).Obj());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::__vwsnc6_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 	}
 
-	void __vwsnc4_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc6_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Default>());
 	}
 
-	__vwsnc4_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::~__vwsnc4_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService()
+	__vwsnc6_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::~__vwsnc6_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService()
 	{
 		if ((_lc != nullptr))
 		{
@@ -926,14 +971,11 @@ Closures
 		}
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc4_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc6_Rpc_CollectionDict_Default_rpcwrapper_RpcCollectionDict__Default__IService__RpcCollectionDict_Default_IRpcWrapper_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(xs), _lc));
-		return ::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments), _lc).Obj());
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcCollectionDict__Default__IService_DoList(_ref, xs);
 	}
 
 }
@@ -948,6 +990,10 @@ namespace RpcCollectionDict
 	{
 /***********************************************************************
 Class (::RpcCollectionDict::Default::IRpcWrapper_IService)
+***********************************************************************/
+
+/***********************************************************************
+Class (::rpcops_IOps_Rpc_CollectionDict_Default)
 ***********************************************************************/
 
 	}

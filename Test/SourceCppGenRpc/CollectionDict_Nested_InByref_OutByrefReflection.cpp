@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcCollectionDict::Nested::InByref::OutByref::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcCollectionDict::Nested::InByref::OutByref::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_CollectionDict_Nested_InByref_OutByref)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -49,6 +50,11 @@ namespace vl
 				ATTRIBUTE_PARAMETER(L"xs", ::vl::__vwsn::att_rpc_Byref)
 			END_INTERFACE_MEMBER(::RpcCollectionDict::Nested::InByref::OutByref::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionDict_Nested_InByref_OutByref)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionDict__Nested__InByref__OutByref__IService_DoList, { L"ref" _ L"arg_xs" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionDict_Nested_InByref_OutByref)
+
 #undef _
 			class Rpc_CollectionDict_Nested_InByref_OutByrefTypeLoader : public Object, public ITypeLoader
 			{
@@ -57,6 +63,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcCollectionDict::Nested::InByref::OutByref::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcCollectionDict::Nested::InByref::OutByref::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_CollectionDict_Nested_InByref_OutByref)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -35,6 +35,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcEvent::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcEvent::IService)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_Event)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -48,6 +49,21 @@ namespace vl
 					INVOKE_INTERFACE_PROXY_NOPARAMS(Watch);
 				}
 			END_INTERFACE_PROXY(::RpcEvent::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Event)
+				void InvokeEvent_RpcEvent__IService_SomethingHappened(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcEvent__IService_SomethingHappened, ref, arg_arg0);
+				}
+				void InvokeMethod_RpcEvent__IService_MakeItHappen(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcEvent__IService_MakeItHappen, ref);
+				}
+				void InvokeMethod_RpcEvent__IService_Watch(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcEvent__IService_Watch, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_Event)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcEvent::IRpcWrapper_IService, ::RpcEvent::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcEvent::IRpcWrapper_IService)

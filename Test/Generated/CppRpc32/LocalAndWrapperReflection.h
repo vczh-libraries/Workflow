@@ -39,6 +39,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcWrapperTest::IRpcWrapper_IObj2)
 			DECL_TYPE_INFO(::RpcWrapperTest::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcWrapperTest::IService)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_LocalAndWrapper)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -64,6 +65,17 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY(Exchange2, o);
 				}
 			END_INTERFACE_PROXY(::RpcWrapperTest::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_LocalAndWrapper)
+				::vl::Ptr<::RpcWrapperTest::IObj2> InvokeMethod_RpcWrapperTest__IService_Exchange1(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj1> arg_o) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcWrapperTest__IService_Exchange1, ref, arg_o);
+				}
+				::vl::Ptr<::RpcWrapperTest::IObj1> InvokeMethod_RpcWrapperTest__IService_Exchange2(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj2> arg_o) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcWrapperTest__IService_Exchange2, ref, arg_o);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_LocalAndWrapper)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcWrapperTest::IRpcWrapper_IService, ::RpcWrapperTest::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcWrapperTest::IRpcWrapper_IService)

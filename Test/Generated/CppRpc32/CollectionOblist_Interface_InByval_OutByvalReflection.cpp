@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcCollectionOblist::Interface::InByval::OutByval::IService)
 			IMPL_CPP_TYPE_INFO(RpcCollectionOblist::Interface::InByval::OutByval::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_CollectionOblist_Interface_InByval_OutByval)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -64,6 +65,12 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcCollectionOblist::Interface::InByval::OutByval::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Interface_InByval_OutByval)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, { L"ref" _ L"arg_xs" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Interface__InByval__OutByval__IValue_GetValue, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Interface_InByval_OutByval)
+
 #undef _
 			class Rpc_CollectionOblist_Interface_InByval_OutByvalTypeLoader : public Object, public ITypeLoader
 			{
@@ -74,6 +81,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcCollectionOblist::Interface::InByval::OutByval::IService)
 					ADD_TYPE_INFO(::RpcCollectionOblist::Interface::InByval::OutByval::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_CollectionOblist_Interface_InByval_OutByval)
 				}
 
 				void Unload(ITypeManager* manager)

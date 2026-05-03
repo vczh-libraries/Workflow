@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcDtorList2::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcDtorList2::IService)
 			DECL_TYPE_INFO(::RpcDtorList2::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_DtorList2)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -61,6 +62,25 @@ namespace vl
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtorList2::IValue)
 			END_INTERFACE_PROXY(::RpcDtorList2::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_DtorList2)
+				void InvokeMethod_RpcDtorList2__IService_Clear(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcDtorList2__IService_Clear, ref);
+				}
+				void InvokeMethod_RpcDtorList2__IService_Hold(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcDtorList2__IService_Hold, ref);
+				}
+				::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcDtorList2__IService_Make(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtorList2__IService_Make, ref);
+				}
+				void InvokeMethod_RpcDtorList2__IService_Unhold(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcDtorList2__IService_Unhold, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_DtorList2)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcDtorList2::IRpcWrapper_IService, ::RpcDtorList2::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcDtorList2::IRpcWrapper_IService)

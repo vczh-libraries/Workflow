@@ -35,6 +35,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcCollection::InByval::OutByval::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcCollection::InByval::OutByval::IService)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_Collection_InByval_OutByval)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -44,6 +45,13 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY(DoList, xs);
 				}
 			END_INTERFACE_PROXY(::RpcCollection::InByval::OutByval::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Collection_InByval_OutByval)
+				::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__InByval__OutByval__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_xs) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollection__InByval__OutByval__IService_DoList, ref, arg_xs);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_Collection_InByval_OutByval)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcCollection::InByval::OutByval::IRpcWrapper_IService, ::RpcCollection::InByval::OutByval::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcCollection::InByval::OutByval::IRpcWrapper_IService)

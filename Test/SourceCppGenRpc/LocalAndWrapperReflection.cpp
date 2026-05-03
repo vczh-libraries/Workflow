@@ -36,6 +36,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcWrapperTest::IRpcWrapper_IObj2)
 			IMPL_CPP_TYPE_INFO(RpcWrapperTest::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcWrapperTest::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_LocalAndWrapper)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -72,6 +73,12 @@ namespace vl
 				CLASS_MEMBER_METHOD(Exchange2, { L"o" })
 			END_INTERFACE_MEMBER(::RpcWrapperTest::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_LocalAndWrapper)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcWrapperTest__IService_Exchange1, { L"ref" _ L"arg_o" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcWrapperTest__IService_Exchange2, { L"ref" _ L"arg_o" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_LocalAndWrapper)
+
 #undef _
 			class Rpc_LocalAndWrapperTypeLoader : public Object, public ITypeLoader
 			{
@@ -84,6 +91,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcWrapperTest::IRpcWrapper_IObj2)
 					ADD_TYPE_INFO(::RpcWrapperTest::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcWrapperTest::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_LocalAndWrapper)
 				}
 
 				void Unload(ITypeManager* manager)

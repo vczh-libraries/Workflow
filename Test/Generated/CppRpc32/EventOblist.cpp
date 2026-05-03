@@ -778,20 +778,30 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_EventOblist_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcEventOblist::IRpcWrapper_IService> Rpc_EventOblist::rpcwrapper_RpcEventOblist__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::rpcops_IOps_Rpc_EventOblist> Rpc_EventOblist::rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto proxy = ::vl::Ptr<::RpcEventOblist::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService(lc, proxyRef));
+		return ::vl::Ptr<::rpcops_IOps_Rpc_EventOblist>(new ::vl_workflow_global::__vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_Rpc_EventOblist> Rpc_EventOblist::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_Rpc_EventOblist>(new ::vl_workflow_global::__vwsnc5_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist(lc));
+	}
+
+	::vl::Ptr<::RpcEventOblist::IRpcWrapper_IService> Rpc_EventOblist::rpcwrapper_RpcEventOblist__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_EventOblist> ops)
+	{
+		auto proxy = ::vl::Ptr<::RpcEventOblist::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_EventOblist::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_EventOblist::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_EventOblist> ops)
 	{
 		{
 			auto __vwsn_switch_6 = ref.typeId;
 			if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcEventOblist__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcEventOblist__IService(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcEventOblist__IService(lc, ref, ops));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -933,18 +943,79 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::__vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist::__vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	void __vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+	}
+
+	void __vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg_xs), _lc)));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_SetList, arguments);
+	}
+
+	void __vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_WatchHeldList(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist::__vwsnc5_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	void __vwsnc5_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+	}
+
+	void __vwsnc5_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(1));
+		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg_xs), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(jsonNode0));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_SetList, arguments);
+	}
+
+	void __vwsnc5_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_WatchHeldList(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::__vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_EventOblist> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 	}
 
-	void __vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_EventOblist>());
 	}
 
-	__vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::~__vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService()
+	__vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::~__vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService()
 	{
 		if ((_lc != nullptr))
 		{
@@ -952,32 +1023,25 @@ Closures
 		}
 	}
 
-	void __vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::ModifyHeldList()
+	void __vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::ModifyHeldList()
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
-		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+		::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcEventOblist__IService_ModifyHeldList(_ref);
 	}
 
-	void __vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)
+	void __vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(xs), _lc)));
-		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_SetList, arguments);
+		::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcEventOblist__IService_SetList(_ref, xs);
 	}
 
-	void __vwsnc4_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::WatchHeldList()
+	void __vwsnc6_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::WatchHeldList()
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
-		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+		::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcEventOblist__IService_WatchHeldList(_ref);
 	}
 
 }
@@ -990,6 +1054,10 @@ namespace RpcEventOblist
 {
 /***********************************************************************
 Class (::RpcEventOblist::IRpcWrapper_IService)
+***********************************************************************/
+
+/***********************************************************************
+Class (::rpcops_IOps_Rpc_EventOblist)
 ***********************************************************************/
 
 }

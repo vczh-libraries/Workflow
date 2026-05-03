@@ -766,31 +766,41 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc4_Rpc_Dtor_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcDtorTest::IRpcWrapper_IValue> Rpc_Dtor::rpcwrapper_RpcDtorTest__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::rpcops_IOps_Rpc_Dtor> Rpc_Dtor::rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto proxy = ::vl::Ptr<::RpcDtorTest::IRpcWrapper_IValue>(new ::vl_workflow_global::__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue(lc, proxyRef));
+		return ::vl::Ptr<::rpcops_IOps_Rpc_Dtor>(new ::vl_workflow_global::__vwsnc5_Rpc_Dtor_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_Rpc_Dtor> Rpc_Dtor::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_Rpc_Dtor>(new ::vl_workflow_global::__vwsnc6_Rpc_Dtor_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor(lc));
+	}
+
+	::vl::Ptr<::RpcDtorTest::IRpcWrapper_IValue> Rpc_Dtor::rpcwrapper_RpcDtorTest__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor> ops)
+	{
+		auto proxy = ::vl::Ptr<::RpcDtorTest::IRpcWrapper_IValue>(new ::vl_workflow_global::__vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::RpcDtorTest::IRpcWrapper_IService> Rpc_Dtor::rpcwrapper_RpcDtorTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::RpcDtorTest::IRpcWrapper_IService> Rpc_Dtor::rpcwrapper_RpcDtorTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor> ops)
 	{
-		auto proxy = ::vl::Ptr<::RpcDtorTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(lc, proxyRef));
+		auto proxy = ::vl::Ptr<::RpcDtorTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc8_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Dtor::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Dtor::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor> ops)
 	{
 		{
 			auto __vwsn_switch_6 = ref.typeId;
 			if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcDtorTest__IValue))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcDtorTest__IValue(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcDtorTest__IValue(lc, ref, ops));
 			}
 			else if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcDtorTest__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcDtorTest__IService(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcDtorTest__IService(lc, ref, ops));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -915,18 +925,50 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc5_Rpc_Dtor_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor::__vwsnc5_Rpc_Dtor_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc5_Rpc_Dtor_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor::InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(0));
+		return ::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IValue>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue, arguments), _lc).Obj());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Rpc_Dtor_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor::__vwsnc6_Rpc_Dtor_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc6_Rpc_Dtor_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor::InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue, arguments));
+		auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		return ::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IValue>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::__vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 	}
 
-	void __vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::DisconnectFromLifecycle()
+	void __vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_Dtor>());
 	}
 
-	__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::~__vwsnc5_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue()
+	__vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue::~__vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IValue__RpcDtorTest_IRpcWrapper_IValue()
 	{
 		if ((_lc != nullptr))
 		{
@@ -936,18 +978,20 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc8_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::__vwsnc8_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 	}
 
-	void __vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc8_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_Dtor>());
 	}
 
-	__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::~__vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService()
+	__vwsnc8_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::~__vwsnc8_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService()
 	{
 		if ((_lc != nullptr))
 		{
@@ -955,13 +999,11 @@ Closures
 		}
 	}
 
-	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc6_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::MakeValue()
+	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc8_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::MakeValue()
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(0));
-		return ::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IValue>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue, arguments), _lc).Obj());
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcDtorTest__IService_MakeValue(_ref);
 	}
 
 }
@@ -982,6 +1024,10 @@ Class (::RpcDtorTest::IValue)
 
 /***********************************************************************
 Class (::RpcDtorTest::IRpcWrapper_IValue)
+***********************************************************************/
+
+/***********************************************************************
+Class (::rpcops_IOps_Rpc_Dtor)
 ***********************************************************************/
 
 }

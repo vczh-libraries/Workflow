@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcPropDynamic::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcPropDynamic::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_PropDynamic)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -52,6 +53,14 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcPropDynamic::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropDynamic)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcPropDynamic__IService_ValueChanged, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDynamic__IService_GetValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDynamic__IService_SetValue, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDynamic__IService_Signal, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropDynamic)
+
 #undef _
 			class Rpc_PropDynamicTypeLoader : public Object, public ITypeLoader
 			{
@@ -60,6 +69,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcPropDynamic::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcPropDynamic::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_PropDynamic)
 				}
 
 				void Unload(ITypeManager* manager)

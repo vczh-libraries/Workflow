@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcPrimitiveTest::IService)
 			DECL_TYPE_INFO(::RpcPrimitiveTest::Point)
 			DECL_TYPE_INFO(::RpcPrimitiveTest::Season)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_PrimitiveTypes)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -74,6 +75,41 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY(ProcessUInt, value);
 				}
 			END_INTERFACE_PROXY(::RpcPrimitiveTest::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_PrimitiveTypes)
+				bool InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(::vl::rpc_controller::RpcObjectReference ref, bool arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessBool, ref, arg_value);
+				}
+				double InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(::vl::rpc_controller::RpcObjectReference ref, double arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble, ref, arg_value);
+				}
+				::RpcPrimitiveTest::Season InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Season arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum, ref, arg_value);
+				}
+				float InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(::vl::rpc_controller::RpcObjectReference ref, float arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat, ref, arg_value);
+				}
+				::vl::vint InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessInt, ref, arg_value);
+				}
+				::vl::WString InvokeMethod_RpcPrimitiveTest__IService_ProcessString(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessString, ref, arg_value);
+				}
+				::RpcPrimitiveTest::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct, ref, arg_value);
+				}
+				::vl::vuint InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt, ref, arg_value);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_PrimitiveTypes)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcPrimitiveTest::IRpcWrapper_IService, ::RpcPrimitiveTest::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcPrimitiveTest::IRpcWrapper_IService)

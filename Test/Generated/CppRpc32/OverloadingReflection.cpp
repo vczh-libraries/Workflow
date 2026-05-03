@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcOverloadingTest::IRpcWrapper_IStringRepresentable)
 			IMPL_CPP_TYPE_INFO(RpcOverloadingTest::IService)
 			IMPL_CPP_TYPE_INFO(RpcOverloadingTest::IStringRepresentable)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_Overloading)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -66,6 +67,16 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcOverloadingTest::IStringRepresentable)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Overloading)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcOverloadingTest__IService_ToStringInt, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, { L"ref" _ L"arg_value1" _ L"arg_value2" _ L"arg_value3" _ L"arg_value4" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcOverloadingTest__IService_ToString_value__1, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcOverloadingTest__IService_ToString_value__2, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcOverloadingTest__IService_ToString_value__3, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcOverloadingTest__IStringRepresentable_GetStringValue, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Overloading)
+
 #undef _
 			class Rpc_OverloadingTypeLoader : public Object, public ITypeLoader
 			{
@@ -76,6 +87,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcOverloadingTest::IRpcWrapper_IStringRepresentable)
 					ADD_TYPE_INFO(::RpcOverloadingTest::IService)
 					ADD_TYPE_INFO(::RpcOverloadingTest::IStringRepresentable)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_Overloading)
 				}
 
 				void Unload(ITypeManager* manager)

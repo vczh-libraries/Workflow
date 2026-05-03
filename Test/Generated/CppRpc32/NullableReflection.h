@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcNullable::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcNullable::IService)
 			DECL_TYPE_INFO(::RpcNullable::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_Nullable)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -53,6 +54,17 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValue);
 				}
 			END_INTERFACE_PROXY(::RpcNullable::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Nullable)
+				::vl::WString InvokeMethod_RpcNullable__IService_Print(::vl::rpc_controller::RpcObjectReference ref, const ::vl::Nullable<::vl::WString>& arg_value, ::vl::Ptr<::RpcNullable::IValue> arg_v) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcNullable__IService_Print, ref, arg_value, arg_v);
+				}
+				::vl::WString InvokeMethod_RpcNullable__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcNullable__IValue_GetValue, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_Nullable)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcNullable::IRpcWrapper_IService, ::RpcNullable::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcNullable::IRpcWrapper_IService)

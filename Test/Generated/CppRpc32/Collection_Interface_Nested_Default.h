@@ -29,8 +29,10 @@ namespace vl_workflow_global
 	class __vwsnc2_Rpc_Collection_Interface_Nested_Default_serviceMain__RpcCollection_Interface_Nested_Default_IService;
 	class __vwsnc3_Rpc_Collection_Interface_Nested_Default_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc4_Rpc_Collection_Interface_Nested_Default_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue;
-	class __vwsnc6_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService;
+	class __vwsnc5_Rpc_Collection_Interface_Nested_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_Collection_Interface_Nested_Default;
+	class __vwsnc6_Rpc_Collection_Interface_Nested_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Collection_Interface_Nested_Default;
+	class __vwsnc7_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue;
+	class __vwsnc8_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService;
 }
 
 namespace RpcCollection
@@ -45,7 +47,20 @@ namespace RpcCollection
 				class IRpcWrapper_IService;
 				class IValue;
 				class IRpcWrapper_IValue;
+			}
+		}
+	}
+}
+class rpcops_IOps_Rpc_Collection_Interface_Nested_Default;
 
+namespace RpcCollection
+{
+	namespace Interface
+	{
+		namespace Nested
+		{
+			namespace Default
+			{
 				class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 				{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -82,6 +97,16 @@ namespace RpcCollection
 		}
 	}
 }
+class rpcops_IOps_Rpc_Collection_Interface_Nested_Default : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_Collection_Interface_Nested_Default>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_Collection_Interface_Nested_Default>;
+#endif
+public:
+	virtual ::vl::vint32_t InvokeMethod_RpcCollection__Interface__Nested__Default__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollection__Interface__Nested__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -114,9 +139,11 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcCollection::Interface::Nested::Default::IRpcWrapper_IValue> rpcwrapper_RpcCollection__Interface__Nested__Default__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcCollection::Interface::Nested::Default::IRpcWrapper_IService> rpcwrapper_RpcCollection__Interface__Nested__Default__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcCollection::Interface::Nested::Default::IRpcWrapper_IValue> rpcwrapper_RpcCollection__Interface__Nested__Default__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> ops);
+		::vl::Ptr<::RpcCollection::Interface::Nested::Default::IRpcWrapper_IService> rpcwrapper_RpcCollection__Interface__Nested__Default__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> ops);
 
 		static Rpc_Collection_Interface_Nested_Default& Instance();
 	};
@@ -163,27 +190,49 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcCollection::Interface::Nested::Default::IRpcWrapper_IValue
+	class __vwsnc5_Rpc_Collection_Interface_Nested_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_Collection_Interface_Nested_Default : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Collection_Interface_Nested_Default
 	{
 	public:
-		__vwsnc5_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_Collection_Interface_Nested_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_Collection_Interface_Nested_Default(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint32_t InvokeMethod_RpcCollection__Interface__Nested__Default__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollection__Interface__Nested__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) override;
+	};
+
+	class __vwsnc6_Rpc_Collection_Interface_Nested_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Collection_Interface_Nested_Default : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Collection_Interface_Nested_Default
+	{
+	public:
+		__vwsnc6_Rpc_Collection_Interface_Nested_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Collection_Interface_Nested_Default(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint32_t InvokeMethod_RpcCollection__Interface__Nested__Default__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollection__Interface__Nested__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) override;
+	};
+
+	class __vwsnc7_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcCollection::Interface::Nested::Default::IRpcWrapper_IValue
+	{
+	public:
+		__vwsnc7_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc5_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue();
+		~__vwsnc7_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IValue__RpcCollection_Interface_Nested_Default_IRpcWrapper_IValue();
 		::vl::vint32_t GetValue() override;
 	};
 
-	class __vwsnc6_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollection::Interface::Nested::Default::IRpcWrapper_IService
+	class __vwsnc8_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollection::Interface::Nested::Default::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc6_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc8_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_Default> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService();
+		~__vwsnc8_Rpc_Collection_Interface_Nested_Default_rpcwrapper_RpcCollection__Interface__Nested__Default__IService__RpcCollection_Interface_Nested_Default_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs) override;
 	};
 }

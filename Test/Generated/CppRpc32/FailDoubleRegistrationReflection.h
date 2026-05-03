@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)
 			DECL_TYPE_INFO(::RpcFailDoubleRegistrationTest::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcFailDoubleRegistrationTest::IService)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_FailDoubleRegistration)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -56,6 +57,17 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY(SetObject, obj, index);
 				}
 			END_INTERFACE_PROXY(::RpcFailDoubleRegistrationTest::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_FailDoubleRegistration)
+				::vl::WString InvokeMethod_RpcFailDoubleRegistrationTest__IObject_GetName(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcFailDoubleRegistrationTest__IObject_GetName, ref);
+				}
+				::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> arg_obj, ::vl::vint32_t arg_index) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject, ref, arg_obj, arg_index);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_FailDoubleRegistration)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcFailDoubleRegistrationTest::IRpcWrapper_IService, ::RpcFailDoubleRegistrationTest::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcFailDoubleRegistrationTest::IRpcWrapper_IService)

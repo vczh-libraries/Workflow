@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IService)
 			DECL_TYPE_INFO(::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByref)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -53,6 +54,17 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValue);
 				}
 			END_INTERFACE_PROXY(::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByref)
+				::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByref__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> arg_xs) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByref__IService_DoList, ref, arg_xs);
+				}
+				::vl::vint32_t InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByref__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__OutByref__IValue_GetValue, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_CollectionOblist_Interface_Nested_InByval_OutByref)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IRpcWrapper_IService, ::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcCollectionOblist::Interface::Nested::InByval::OutByref::IRpcWrapper_IService)

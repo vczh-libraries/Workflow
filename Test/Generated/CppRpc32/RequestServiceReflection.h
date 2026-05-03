@@ -35,6 +35,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcTest::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcTest::IService)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_RequestService)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -44,6 +45,13 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetText);
 				}
 			END_INTERFACE_PROXY(::RpcTest::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_RequestService)
+				::vl::WString InvokeMethod_RpcTest__IService_GetText(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcTest__IService_GetText, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_RequestService)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcTest::IRpcWrapper_IService, ::RpcTest::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcTest::IRpcWrapper_IService)

@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcCollection::Interface::Nested::InByval::OutByref::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcCollection::Interface::Nested::InByval::OutByref::IService)
 			IMPL_CPP_TYPE_INFO(RpcCollection::Interface::Nested::InByval::OutByref::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByref)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -64,6 +65,12 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcCollection::Interface::Nested::InByval::OutByref::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByref)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByref__IService_DoList, { L"ref" _ L"arg_xs" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByref__IValue_GetValue, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByref)
+
 #undef _
 			class Rpc_Collection_Interface_Nested_InByval_OutByrefTypeLoader : public Object, public ITypeLoader
 			{
@@ -74,6 +81,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcCollection::Interface::Nested::InByval::OutByref::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcCollection::Interface::Nested::InByval::OutByref::IService)
 					ADD_TYPE_INFO(::RpcCollection::Interface::Nested::InByval::OutByref::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByref)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcCollectionOblist::Nested::InByval::PropByval::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcCollectionOblist::Nested::InByval::PropByval::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_CollectionOblist_Nested_PropByval)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -49,6 +50,12 @@ namespace vl
 				CLASS_MEMBER_PROPERTY(List, GetList, SetList)
 			END_INTERFACE_MEMBER(::RpcCollectionOblist::Nested::InByval::PropByval::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Nested_PropByval)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Nested__InByval__PropByval__IService_GetList, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Nested__InByval__PropByval__IService_SetList, { L"ref" _ L"__vwsn_value_" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Nested_PropByval)
+
 #undef _
 			class Rpc_CollectionOblist_Nested_PropByvalTypeLoader : public Object, public ITypeLoader
 			{
@@ -57,6 +64,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcCollectionOblist::Nested::InByval::PropByval::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcCollectionOblist::Nested::InByval::PropByval::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_CollectionOblist_Nested_PropByval)
 				}
 
 				void Unload(ITypeManager* manager)

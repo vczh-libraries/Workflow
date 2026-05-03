@@ -29,8 +29,10 @@ namespace vl_workflow_global
 	class __vwsnc2_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService;
 	class __vwsnc3_Rpc_FailDoubleRegistration_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc4_Rpc_FailDoubleRegistration_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject;
-	class __vwsnc6_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService;
+	class __vwsnc5_Rpc_FailDoubleRegistration_rpcops_IOps_Create__rpcops_IOps_Rpc_FailDoubleRegistration;
+	class __vwsnc6_Rpc_FailDoubleRegistration_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_FailDoubleRegistration;
+	class __vwsnc7_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject;
+	class __vwsnc8_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService;
 }
 
 namespace RpcFailDoubleRegistrationTest
@@ -39,7 +41,11 @@ namespace RpcFailDoubleRegistrationTest
 	class IRpcWrapper_IObject;
 	class IService;
 	class IRpcWrapper_IService;
+}
+class rpcops_IOps_Rpc_FailDoubleRegistration;
 
+namespace RpcFailDoubleRegistrationTest
+{
 	class IObject : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IObject>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -73,6 +79,16 @@ namespace RpcFailDoubleRegistrationTest
 	};
 
 }
+class rpcops_IOps_Rpc_FailDoubleRegistration : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_FailDoubleRegistration>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_FailDoubleRegistration>;
+#endif
+public:
+	virtual ::vl::WString InvokeMethod_RpcFailDoubleRegistrationTest__IObject_GetName(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> arg_obj, ::vl::vint arg_index) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -104,9 +120,11 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject> rpcwrapper_RpcFailDoubleRegistrationTest__IObject(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcFailDoubleRegistrationTest::IRpcWrapper_IService> rpcwrapper_RpcFailDoubleRegistrationTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject> rpcwrapper_RpcFailDoubleRegistrationTest__IObject(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> ops);
+		::vl::Ptr<::RpcFailDoubleRegistrationTest::IRpcWrapper_IService> rpcwrapper_RpcFailDoubleRegistrationTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> ops);
 
 		static Rpc_FailDoubleRegistration& Instance();
 	};
@@ -153,27 +171,49 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject : public ::vl::Object, public virtual ::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject
+	class __vwsnc5_Rpc_FailDoubleRegistration_rpcops_IOps_Create__rpcops_IOps_Rpc_FailDoubleRegistration : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_FailDoubleRegistration
 	{
 	public:
-		__vwsnc5_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_FailDoubleRegistration_rpcops_IOps_Create__rpcops_IOps_Rpc_FailDoubleRegistration(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcFailDoubleRegistrationTest__IObject_GetName(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> arg_obj, ::vl::vint arg_index) override;
+	};
+
+	class __vwsnc6_Rpc_FailDoubleRegistration_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_FailDoubleRegistration : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_FailDoubleRegistration
+	{
+	public:
+		__vwsnc6_Rpc_FailDoubleRegistration_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_FailDoubleRegistration(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcFailDoubleRegistrationTest__IObject_GetName(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> arg_obj, ::vl::vint arg_index) override;
+	};
+
+	class __vwsnc7_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject : public ::vl::Object, public virtual ::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject
+	{
+	public:
+		__vwsnc7_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc5_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject();
+		~__vwsnc7_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IObject__RpcFailDoubleRegistrationTest_IRpcWrapper_IObject();
 		::vl::WString GetName() override;
 	};
 
-	class __vwsnc6_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcFailDoubleRegistrationTest::IRpcWrapper_IService
+	class __vwsnc8_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcFailDoubleRegistrationTest::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc6_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc8_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_FailDoubleRegistration> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService();
+		~__vwsnc8_Rpc_FailDoubleRegistration_rpcwrapper_RpcFailDoubleRegistrationTest__IService__RpcFailDoubleRegistrationTest_IRpcWrapper_IService();
 		::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> SetObject(::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> obj, ::vl::vint index) override;
 	};
 }

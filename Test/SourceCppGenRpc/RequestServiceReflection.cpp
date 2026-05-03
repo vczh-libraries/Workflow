@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcTest::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcTest::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_RequestService)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -47,6 +48,11 @@ namespace vl
 				CLASS_MEMBER_METHOD(GetText, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcTest::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_RequestService)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcTest__IService_GetText, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_RequestService)
+
 #undef _
 			class Rpc_RequestServiceTypeLoader : public Object, public ITypeLoader
 			{
@@ -55,6 +61,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcTest::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcTest::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_RequestService)
 				}
 
 				void Unload(ITypeManager* manager)

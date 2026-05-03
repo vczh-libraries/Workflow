@@ -875,20 +875,30 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_PrimitiveTypes_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> Rpc_PrimitiveTypes::rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> Rpc_PrimitiveTypes::rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto proxy = ::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(lc, proxyRef));
+		return ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes>(new ::vl_workflow_global::__vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> Rpc_PrimitiveTypes::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes>(new ::vl_workflow_global::__vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes(lc));
+	}
+
+	::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> Rpc_PrimitiveTypes::rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> ops)
+	{
+		auto proxy = ::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_PrimitiveTypes::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_PrimitiveTypes::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> ops)
 	{
 		{
 			auto __vwsn_switch_6 = ref.typeId;
 			if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcPrimitiveTest__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcPrimitiveTest__IService(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcPrimitiveTest__IService(lc, ref, ops));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -1072,18 +1082,195 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::__vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	bool __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(::vl::rpc_controller::RpcObjectReference ref, bool arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<bool>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+	}
+
+	double __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(::vl::rpc_controller::RpcObjectReference ref, double arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<double>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+	}
+
+	::RpcPrimitiveTest::Season __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Season arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Season>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+	}
+
+	float __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(::vl::rpc_controller::RpcObjectReference ref, float arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<float>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+	}
+
+	::vl::vint __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+	}
+
+	::vl::WString __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessString(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+	}
+
+	::RpcPrimitiveTest::Point __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Point>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+	}
+
+	::vl::vuint __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
+		return ::vl::__vwsn::Unbox<::vl::vuint>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::__vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	bool __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(::vl::rpc_controller::RpcObjectReference ref, bool arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonLiteral0 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+		if (arg_value)
+			(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::True);
+		else
+			(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::False);
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonLiteral0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+		auto jsonValue1 = (::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(jsonResult.Obj())).Obj())->value == ::vl::glr::json::JsonLiteralValue::True);
+		return jsonValue1;
+	}
+
+	double __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(::vl::rpc_controller::RpcObjectReference ref, double arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNumber0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+		auto jsonValue1 = ::vl::__vwsn::Parse<double>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
+		return jsonValue1;
+	}
+
+	::RpcPrimitiveTest::Season __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Season arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(arg_value);
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNode0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+		auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(jsonResult);
+		return jsonValue1;
+	}
+
+	float __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(::vl::rpc_controller::RpcObjectReference ref, float arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNumber0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+		auto jsonValue1 = ::vl::__vwsn::Parse<float>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
+		return jsonValue1;
+	}
+
+	::vl::vint __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNumber0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+		auto jsonValue1 = ::vl::__vwsn::Parse<::vl::vint>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
+		return jsonValue1;
+	}
+
+	::vl::WString __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessString(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_value; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonString0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+		auto jsonValue1 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonResult.Obj())).Obj())->content.value;
+		return jsonValue1;
+	}
+
+	::RpcPrimitiveTest::Point __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(arg_value);
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNode0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+		auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(jsonResult);
+		return jsonValue1;
+	}
+
+	::vl::vuint __vwsnc5_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint arg_value)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNumber0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+		auto jsonValue1 = ::vl::__vwsn::Parse<::vl::vuint>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
+		return jsonValue1;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::__vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 	}
 
-	void __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes>());
 	}
 
-	__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::~__vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService()
+	__vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::~__vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService()
 	{
 		if ((_lc != nullptr))
 		{
@@ -1091,84 +1278,60 @@ Closures
 		}
 	}
 
-	bool __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessBool(bool value)
+	bool __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessBool(bool value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<bool>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(_ref, value);
 	}
 
-	double __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessDouble(double value)
+	double __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessDouble(double value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<double>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(_ref, value);
 	}
 
-	::RpcPrimitiveTest::Season __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessEnum(::RpcPrimitiveTest::Season value)
+	::RpcPrimitiveTest::Season __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessEnum(::RpcPrimitiveTest::Season value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Season>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(_ref, value);
 	}
 
-	float __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessFloat(float value)
+	float __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessFloat(float value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<float>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(_ref, value);
 	}
 
-	::vl::vint __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessInt(::vl::vint value)
+	::vl::vint __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessInt(::vl::vint value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(_ref, value);
 	}
 
-	::vl::WString __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessString(const ::vl::WString& value)
+	::vl::WString __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessString(const ::vl::WString& value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessString(_ref, value);
 	}
 
-	::RpcPrimitiveTest::Point __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
+	::RpcPrimitiveTest::Point __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Point>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(_ref, value);
 	}
 
-	::vl::vuint __vwsnc4_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessUInt(::vl::vuint value)
+	::vl::vuint __vwsnc6_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessUInt(::vl::vuint value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(value));
-		return ::vl::__vwsn::Unbox<::vl::vuint>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(_ref, value);
 	}
 
 }
@@ -1181,6 +1344,10 @@ namespace RpcPrimitiveTest
 {
 /***********************************************************************
 Class (::RpcPrimitiveTest::IRpcWrapper_IService)
+***********************************************************************/
+
+/***********************************************************************
+Class (::rpcops_IOps_Rpc_PrimitiveTypes)
 ***********************************************************************/
 
 }

@@ -569,6 +569,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
+interface rpcops_IOps_Rpc_CollectionOblist_Default
+{
+    func InvokeMethod_RpcCollectionOblist__Default__IService_DoList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int64[]) : (observe ::system::Int64[]);
+}
+
 func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
@@ -647,6 +652,41 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEv
     };
 }
 
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_CollectionOblist_Default^)
+{
+    return new (rpcops_IOps_Rpc_CollectionOblist_Default^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcCollectionOblist__Default__IService_DoList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int64[]) : (observe ::system::Int64[])
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(arg_xs, _lc));
+            return (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Default__IService_DoList, arguments)), _lc) as (observe ::system::Int64[]));
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_CollectionOblist_Default^)
+{
+    return new (rpcops_IOps_Rpc_CollectionOblist_Default^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcCollectionOblist__Default__IService_DoList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int64[]) : (observe ::system::Int64[])
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize_Struct_system__RpcObjectReference(system::IRpcLifecycle::RpcBoxByref(arg_xs, _lc));
+            arguments.Set(0, jsonNode0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Default__IService_DoList, arguments));
+            var jsonValue1 : system::RpcObjectReference = rpcjson_Deserialize_Struct_system__RpcObjectReference(jsonResult);
+            return (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) jsonValue1), _lc) as (observe ::system::Int64[]));
+        }
+    };
+}
+
 namespace RpcCollectionOblist
 {
     namespace Default
@@ -657,7 +697,7 @@ namespace RpcCollectionOblist
     }
 }
 
-func rpcwrapper_RpcCollectionOblist__Default__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcCollectionOblist::Default::IRpcWrapper_IService^)
+func rpcwrapper_RpcCollectionOblist__Default__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_CollectionOblist_Default^) : (RpcCollectionOblist::Default::IRpcWrapper_IService^)
 {
     var proxy : RpcCollectionOblist::Default::IRpcWrapper_IService^ = new (RpcCollectionOblist::Default::IRpcWrapper_IService^)
     {
@@ -665,9 +705,12 @@ func rpcwrapper_RpcCollectionOblist__Default__IService(lc : system::IRpcLifecycl
 
         var _ref : system::RpcObjectReference = proxyRef;
 
+        var _ops : rpcops_IOps_Rpc_CollectionOblist_Default^ = ops;
+
         override func DisconnectFromLifecycle() : (void)
         {
             (_lc = null);
+            (_ops = null);
         }
 
         delete
@@ -682,23 +725,20 @@ func rpcwrapper_RpcCollectionOblist__Default__IService(lc : system::IRpcLifecycl
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(xs, _lc));
-            return (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Default__IService_DoList, arguments)), _lc) as (observe ::system::Int64[]));
+            return _ops.InvokeMethod_RpcCollectionOblist__Default__IService_DoList(_ref, xs);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_CollectionOblist_Default^) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {
         case rpctype_RpcCollectionOblist__Default__IService:
         {
-            return rpcwrapper_RpcCollectionOblist__Default__IService(lc, ref);
+            return rpcwrapper_RpcCollectionOblist__Default__IService(lc, ref, ops);
         }
         default:
         raise "Unknown RPC type id for wrapper creation.";

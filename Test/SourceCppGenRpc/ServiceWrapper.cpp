@@ -748,20 +748,30 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc3_Rpc_ServiceWrapper_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcServiceWrapperTest::IRpcWrapper_IService> Rpc_ServiceWrapper::rpcwrapper_RpcServiceWrapperTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper> Rpc_ServiceWrapper::rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto proxy = ::vl::Ptr<::RpcServiceWrapperTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc4_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService(lc, proxyRef));
+		return ::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper>(new ::vl_workflow_global::__vwsnc4_Rpc_ServiceWrapper_rpcops_IOps_Create__rpcops_IOps_Rpc_ServiceWrapper(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper> Rpc_ServiceWrapper::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper>(new ::vl_workflow_global::__vwsnc5_Rpc_ServiceWrapper_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_ServiceWrapper(lc));
+	}
+
+	::vl::Ptr<::RpcServiceWrapperTest::IRpcWrapper_IService> Rpc_ServiceWrapper::rpcwrapper_RpcServiceWrapperTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper> ops)
+	{
+		auto proxy = ::vl::Ptr<::RpcServiceWrapperTest::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_ServiceWrapper::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_ServiceWrapper::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper> ops)
 	{
 		{
 			auto __vwsn_switch_6 = ref.typeId;
 			if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcServiceWrapperTest__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcServiceWrapperTest__IService(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcServiceWrapperTest__IService(lc, ref, ops));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -879,18 +889,53 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::__vwsnc4_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc4_Rpc_ServiceWrapper_rpcops_IOps_Create__rpcops_IOps_Rpc_ServiceWrapper::__vwsnc4_Rpc_ServiceWrapper_rpcops_IOps_Create__rpcops_IOps_Rpc_ServiceWrapper(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	bool __vwsnc4_Rpc_ServiceWrapper_rpcops_IOps_Create__rpcops_IOps_Rpc_ServiceWrapper::InvokeMethod_RpcServiceWrapperTest__IService_Self(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcServiceWrapperTest::IService> arg_obj)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_obj), _lc));
+		return ::vl::__vwsn::Unbox<bool>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcServiceWrapperTest__IService_Self, arguments));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_Rpc_ServiceWrapper_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_ServiceWrapper::__vwsnc5_Rpc_ServiceWrapper_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_ServiceWrapper(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	bool __vwsnc5_Rpc_ServiceWrapper_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_ServiceWrapper::InvokeMethod_RpcServiceWrapperTest__IService_Self(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcServiceWrapperTest::IService> arg_obj)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize(::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_obj), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNode0));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcServiceWrapperTest__IService_Self, arguments));
+		auto jsonValue1 = (::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(jsonResult.Obj())).Obj())->value == ::vl::glr::json::JsonLiteralValue::True);
+		return jsonValue1;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::__vwsnc6_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 	}
 
-	void __vwsnc4_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc6_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_ServiceWrapper>());
 	}
 
-	__vwsnc4_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::~__vwsnc4_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService()
+	__vwsnc6_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::~__vwsnc6_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService()
 	{
 		if ((_lc != nullptr))
 		{
@@ -898,14 +943,11 @@ Closures
 		}
 	}
 
-	bool __vwsnc4_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::Self(::vl::Ptr<::RpcServiceWrapperTest::IService> obj)
+	bool __vwsnc6_Rpc_ServiceWrapper_rpcwrapper_RpcServiceWrapperTest__IService__RpcServiceWrapperTest_IRpcWrapper_IService::Self(::vl::Ptr<::RpcServiceWrapperTest::IService> obj)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(obj), _lc));
-		return ::vl::__vwsn::Unbox<bool>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcServiceWrapperTest__IService_Self, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcServiceWrapperTest__IService_Self(_ref, obj);
 	}
 
 }
@@ -918,6 +960,10 @@ namespace RpcServiceWrapperTest
 {
 /***********************************************************************
 Class (::RpcServiceWrapperTest::IRpcWrapper_IService)
+***********************************************************************/
+
+/***********************************************************************
+Class (::rpcops_IOps_Rpc_ServiceWrapper)
 ***********************************************************************/
 
 }

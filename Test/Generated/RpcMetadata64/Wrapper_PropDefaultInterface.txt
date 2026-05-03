@@ -586,6 +586,19 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
+interface rpcops_IOps_Rpc_PropDefaultInterface
+{
+    func InvokeMethod_RpcPropDefaultInterface__IValue_GetValue(ref : system::RpcObjectReference) : (::system::String);
+
+    func InvokeMethod_RpcPropDefaultInterface__IService_GetValue(ref : system::RpcObjectReference) : (::RpcPropDefaultInterface::IValue^);
+
+    func InvokeMethod_RpcPropDefaultInterface__IService_SetValue(ref : system::RpcObjectReference, arg_value : ::RpcPropDefaultInterface::IValue^) : (::system::Void);
+
+    func InvokeMethod_RpcPropDefaultInterface__IService_Signal(ref : system::RpcObjectReference) : (::system::Void);
+
+    func InvokeEvent_RpcPropDefaultInterface__IService_ValueChanged(ref : system::RpcObjectReference) : (void);
+}
+
 func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
@@ -686,6 +699,99 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEv
     };
 }
 
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_PropDefaultInterface^)
+{
+    return new (rpcops_IOps_Rpc_PropDefaultInterface^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcPropDefaultInterface__IValue_GetValue(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IValue_GetValue, arguments));
+        }
+
+        override func InvokeMethod_RpcPropDefaultInterface__IService_GetValue(ref : system::RpcObjectReference) : (::RpcPropDefaultInterface::IValue^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IService_GetValue, arguments), _lc) as (::RpcPropDefaultInterface::IValue^));
+        }
+
+        override func InvokeMethod_RpcPropDefaultInterface__IService_SetValue(ref : system::RpcObjectReference, arg_value : ::RpcPropDefaultInterface::IValue^) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_value, _lc));
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IService_SetValue, arguments);
+        }
+
+        override func InvokeMethod_RpcPropDefaultInterface__IService_Signal(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IService_Signal, arguments);
+        }
+
+        override func InvokeEvent_RpcPropDefaultInterface__IService_ValueChanged(ref : system::RpcObjectReference) : (void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropDefaultInterface__IService_ValueChanged, arguments);
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_PropDefaultInterface^)
+{
+    return new (rpcops_IOps_Rpc_PropDefaultInterface^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcPropDefaultInterface__IValue_GetValue(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IValue_GetValue, arguments));
+            var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
+            return jsonValue0;
+        }
+
+        override func InvokeMethod_RpcPropDefaultInterface__IService_GetValue(ref : system::RpcObjectReference) : (::RpcPropDefaultInterface::IValue^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IService_GetValue, arguments));
+            var jsonValue0 : object = rpcjson_Deserialize(jsonResult);
+            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcPropDefaultInterface::IValue^));
+        }
+
+        override func InvokeMethod_RpcPropDefaultInterface__IService_SetValue(ref : system::RpcObjectReference, arg_value : ::RpcPropDefaultInterface::IValue^) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(arg_value, _lc));
+            arguments.Set(0, jsonNode0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IService_SetValue, arguments);
+        }
+
+        override func InvokeMethod_RpcPropDefaultInterface__IService_Signal(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPropDefaultInterface__IService_Signal, arguments);
+        }
+
+        override func InvokeEvent_RpcPropDefaultInterface__IService_ValueChanged(ref : system::RpcObjectReference) : (void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropDefaultInterface__IService_ValueChanged, arguments);
+        }
+    };
+}
+
 namespace RpcPropDefaultInterface
 {
     interface IRpcWrapper_IValue : RpcPropDefaultInterface::IValue, system::IRpcWrapperBase
@@ -728,7 +834,7 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system:
     }
 }
 
-func rpcwrapper_RpcPropDefaultInterface__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcPropDefaultInterface::IRpcWrapper_IValue^)
+func rpcwrapper_RpcPropDefaultInterface__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_PropDefaultInterface^) : (RpcPropDefaultInterface::IRpcWrapper_IValue^)
 {
     var proxy : RpcPropDefaultInterface::IRpcWrapper_IValue^ = new (RpcPropDefaultInterface::IRpcWrapper_IValue^)
     {
@@ -736,9 +842,12 @@ func rpcwrapper_RpcPropDefaultInterface__IValue(lc : system::IRpcLifecycle*, pro
 
         var _ref : system::RpcObjectReference = proxyRef;
 
+        var _ops : rpcops_IOps_Rpc_PropDefaultInterface^ = ops;
+
         override func DisconnectFromLifecycle() : (void)
         {
             (_lc = null);
+            (_ops = null);
         }
 
         delete
@@ -753,22 +862,22 @@ func rpcwrapper_RpcPropDefaultInterface__IValue(lc : system::IRpcLifecycle*, pro
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IValue_GetValue, arguments));
+            return _ops.InvokeMethod_RpcPropDefaultInterface__IValue_GetValue(_ref);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcPropDefaultInterface::IRpcWrapper_IService^)
+func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_PropDefaultInterface^) : (RpcPropDefaultInterface::IRpcWrapper_IService^)
 {
     var proxy : RpcPropDefaultInterface::IRpcWrapper_IService^ = new (RpcPropDefaultInterface::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
         var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_PropDefaultInterface^ = ops;
 
         var Value<Cached> : ::RpcPropDefaultInterface::IValue^ = null of (::RpcPropDefaultInterface::IValue^);
 
@@ -782,6 +891,7 @@ func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifecycle*, p
         override func DisconnectFromLifecycle() : (void)
         {
             (_lc = null);
+            (_ops = null);
         }
 
         delete
@@ -800,9 +910,7 @@ func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifecycle*, p
             {
                 return Value<Cached>;
             }
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            (Value<Cached> = (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_GetValue, arguments), _lc) as (::RpcPropDefaultInterface::IValue^)));
+            (Value<Cached> = _ops.InvokeMethod_RpcPropDefaultInterface__IService_GetValue(_ref));
             (Value<Available> = true);
             return Value<Cached>;
         }
@@ -811,19 +919,14 @@ func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifecycle*, p
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
-            _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_SetValue, arguments);
+            _ops.InvokeMethod_RpcPropDefaultInterface__IService_SetValue(_ref, value);
         }
 
         override func Signal() : (::system::Void)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_Signal, arguments);
+            _ops.InvokeMethod_RpcPropDefaultInterface__IService_Signal(_ref);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
@@ -835,17 +938,17 @@ func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifecycle*, p
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_PropDefaultInterface^) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {
         case rpctype_RpcPropDefaultInterface__IValue:
         {
-            return rpcwrapper_RpcPropDefaultInterface__IValue(lc, ref);
+            return rpcwrapper_RpcPropDefaultInterface__IValue(lc, ref, ops);
         }
         case rpctype_RpcPropDefaultInterface__IService:
         {
-            return rpcwrapper_RpcPropDefaultInterface__IService(lc, ref);
+            return rpcwrapper_RpcPropDefaultInterface__IService(lc, ref, ops);
         }
         default:
         raise "Unknown RPC type id for wrapper creation.";

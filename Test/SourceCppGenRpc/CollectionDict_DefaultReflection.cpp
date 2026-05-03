@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcCollectionDict::Default::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcCollectionDict::Default::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_CollectionDict_Default)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -47,6 +48,11 @@ namespace vl
 				CLASS_MEMBER_METHOD(DoList, { L"xs" })
 			END_INTERFACE_MEMBER(::RpcCollectionDict::Default::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionDict_Default)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionDict__Default__IService_DoList, { L"ref" _ L"arg_xs" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionDict_Default)
+
 #undef _
 			class Rpc_CollectionDict_DefaultTypeLoader : public Object, public ITypeLoader
 			{
@@ -55,6 +61,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcCollectionDict::Default::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcCollectionDict::Default::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_CollectionDict_Default)
 				}
 
 				void Unload(ITypeManager* manager)

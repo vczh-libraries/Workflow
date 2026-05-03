@@ -752,31 +752,41 @@ Global Functions
 		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc4_Rpc_Nullable_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
-	::vl::Ptr<::RpcNullable::IRpcWrapper_IValue> Rpc_Nullable::rpcwrapper_RpcNullable__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::rpcops_IOps_Rpc_Nullable> Rpc_Nullable::rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto proxy = ::vl::Ptr<::RpcNullable::IRpcWrapper_IValue>(new ::vl_workflow_global::__vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue(lc, proxyRef));
+		return ::vl::Ptr<::rpcops_IOps_Rpc_Nullable>(new ::vl_workflow_global::__vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_Rpc_Nullable> Rpc_Nullable::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_Rpc_Nullable>(new ::vl_workflow_global::__vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable(lc));
+	}
+
+	::vl::Ptr<::RpcNullable::IRpcWrapper_IValue> Rpc_Nullable::rpcwrapper_RpcNullable__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> ops)
+	{
+		auto proxy = ::vl::Ptr<::RpcNullable::IRpcWrapper_IValue>(new ::vl_workflow_global::__vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::RpcNullable::IRpcWrapper_IService> Rpc_Nullable::rpcwrapper_RpcNullable__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef)
+	::vl::Ptr<::RpcNullable::IRpcWrapper_IService> Rpc_Nullable::rpcwrapper_RpcNullable__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> ops)
 	{
-		auto proxy = ::vl::Ptr<::RpcNullable::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService(lc, proxyRef));
+		auto proxy = ::vl::Ptr<::RpcNullable::IRpcWrapper_IService>(new ::vl_workflow_global::__vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
 		return proxy;
 	}
 
-	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Nullable::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc)
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Nullable::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> ops)
 	{
 		{
 			auto __vwsn_switch_6 = ref.typeId;
 			if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcNullable__IValue))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcNullable__IValue(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcNullable__IValue(lc, ref, ops));
 			}
 			else if ((__vwsn_switch_6 == GLOBAL_NAME rpctype_RpcNullable__IService))
 			{
-				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcNullable__IService(lc, ref));
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcNullable__IService(lc, ref, ops));
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
@@ -907,20 +917,86 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::__vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable::__vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::WString __vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable::InvokeMethod_RpcNullable__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcNullable__IValue_GetValue, arguments));
+	}
+
+	::vl::WString __vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable::InvokeMethod_RpcNullable__IService_Print(::vl::rpc_controller::RpcObjectReference ref, const ::vl::Nullable<::vl::WString>& arg_value, ::vl::Ptr<::RpcNullable::IValue> arg_v)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(2L));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(1L), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_v), _lc));
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcNullable__IService_Print, arguments));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable::__vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::WString __vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable::InvokeMethod_RpcNullable__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcNullable__IValue_GetValue, arguments));
+		auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonResult.Obj())).Obj())->content.value;
+		return jsonValue0;
+	}
+
+	::vl::WString __vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable::InvokeMethod_RpcNullable__IService_Print(::vl::rpc_controller::RpcObjectReference ref, const ::vl::Nullable<::vl::WString>& arg_value, ::vl::Ptr<::RpcNullable::IValue> arg_v)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(2L));
+		auto jsonNode0 = ::vl::Ptr<::vl::glr::json::JsonNode>();
+		if ((! static_cast<bool>(arg_value)))
+		{
+			auto jsonLiteral1 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+			(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+			(jsonNode0 = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonLiteral1));
+		}
+		else
+		{
+			auto jsonString2 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString2.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_value.Value(); return __vwsn_temp__; }());
+			(jsonNode0 = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString2));
+		}
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNode0));
+		auto jsonNode3 = GLOBAL_NAME rpcjson_Serialize(::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_v), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(1L), ::vl::__vwsn::Box(jsonNode3));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcNullable__IService_Print, arguments));
+		auto jsonValue4 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonResult.Obj())).Obj())->content.value;
+		return jsonValue4;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::__vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 		this->__vwsn_Cached_ = ::vl::WString::Unmanaged(L"");
 		this->__vwsn_Available_ = false;
 	}
 
-	void __vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::DisconnectFromLifecycle()
+	void __vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_Nullable>());
 	}
 
-	__vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::~__vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue()
+	__vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::~__vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue()
 	{
 		if ((_lc != nullptr))
 		{
@@ -928,7 +1004,7 @@ Closures
 		}
 	}
 
-	::vl::WString __vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::GetValue()
+	::vl::WString __vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue::GetValue()
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -936,27 +1012,27 @@ Closures
 		{
 			return __vwsn_Cached_;
 		}
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		(__vwsn_Cached_ = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcNullable__IValue_GetValue, arguments)));
+		(__vwsn_Cached_ = ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcNullable__IValue_GetValue(_ref));
 		(__vwsn_Available_ = true);
 		return __vwsn_Cached_;
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::__vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	__vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::__vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
 	}
 
-	void __vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::DisconnectFromLifecycle()
+	void __vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::DisconnectFromLifecycle()
 	{
 		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_Rpc_Nullable>());
 	}
 
-	__vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::~__vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService()
+	__vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::~__vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService()
 	{
 		if ((_lc != nullptr))
 		{
@@ -964,15 +1040,11 @@ Closures
 		}
 	}
 
-	::vl::WString __vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::Print(const ::vl::Nullable<::vl::WString>& value, ::vl::Ptr<::RpcNullable::IValue> v)
+	::vl::WString __vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService::Print(const ::vl::Nullable<::vl::WString>& value, ::vl::Ptr<::RpcNullable::IValue> v)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(2L));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(value));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(1L), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(v), _lc));
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcNullable__IService_Print, arguments));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcNullable__IService_Print(_ref, value, v);
 	}
 
 }
@@ -993,6 +1065,10 @@ Class (::RpcNullable::IValue)
 
 /***********************************************************************
 Class (::RpcNullable::IRpcWrapper_IValue)
+***********************************************************************/
+
+/***********************************************************************
+Class (::rpcops_IOps_Rpc_Nullable)
 ***********************************************************************/
 
 }

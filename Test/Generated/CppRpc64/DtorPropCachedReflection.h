@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcDtorPropCached::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcDtorPropCached::IService)
 			DECL_TYPE_INFO(::RpcDtorPropCached::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_DtorPropCached)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -57,6 +58,25 @@ namespace vl
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtorPropCached::IValue)
 			END_INTERFACE_PROXY(::RpcDtorPropCached::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_DtorPropCached)
+				void InvokeEvent_RpcDtorPropCached__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcDtorPropCached__IService_ValueChanged, ref);
+				}
+				::vl::Ptr<::RpcDtorPropCached::IValue> InvokeMethod_RpcDtorPropCached__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtorPropCached__IService_GetValue, ref);
+				}
+				void InvokeMethod_RpcDtorPropCached__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtorPropCached::IValue> arg_value) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcDtorPropCached__IService_SetValue, ref, arg_value);
+				}
+				void InvokeMethod_RpcDtorPropCached__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcDtorPropCached__IService_Signal, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_DtorPropCached)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcDtorPropCached::IRpcWrapper_IService, ::RpcDtorPropCached::IService, ::vl::rpc_controller::IRpcWrapperBase)
 				void _rpcInvalidate_Value() override

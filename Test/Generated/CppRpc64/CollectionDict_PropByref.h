@@ -28,7 +28,9 @@ namespace vl_workflow_global
 	class __vwsnc1_Rpc_CollectionDict_PropByref_serviceMain__RpcCollectionDict_InByref_PropByref_IService;
 	class __vwsnc2_Rpc_CollectionDict_PropByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc3_Rpc_CollectionDict_PropByref_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService;
+	class __vwsnc4_Rpc_CollectionDict_PropByref_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_PropByref;
+	class __vwsnc5_Rpc_CollectionDict_PropByref_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_PropByref;
+	class __vwsnc6_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService;
 }
 
 namespace RpcCollectionDict
@@ -39,7 +41,17 @@ namespace RpcCollectionDict
 		{
 			class IService;
 			class IRpcWrapper_IService;
+		}
+	}
+}
+class rpcops_IOps_Rpc_CollectionDict_PropByref;
 
+namespace RpcCollectionDict
+{
+	namespace InByref
+	{
+		namespace PropByref
+		{
 			class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -60,6 +72,16 @@ namespace RpcCollectionDict
 		}
 	}
 }
+class rpcops_IOps_Rpc_CollectionDict_PropByref : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_CollectionDict_PropByref>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_CollectionDict_PropByref>;
+#endif
+public:
+	virtual ::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionDict__InByref__PropByref__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeMethod_RpcCollectionDict__InByref__PropByref__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -87,8 +109,10 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcCollectionDict::InByref::PropByref::IRpcWrapper_IService> rpcwrapper_RpcCollectionDict__InByref__PropByref__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcCollectionDict::InByref::PropByref::IRpcWrapper_IService> rpcwrapper_RpcCollectionDict__InByref__PropByref__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> ops);
 
 		static Rpc_CollectionDict_PropByref& Instance();
 	};
@@ -127,15 +151,36 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollectionDict::InByref::PropByref::IRpcWrapper_IService
+	class __vwsnc4_Rpc_CollectionDict_PropByref_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_PropByref : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionDict_PropByref
 	{
 	public:
-		__vwsnc4_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_CollectionDict_PropByref_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_PropByref(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionDict__InByref__PropByref__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcCollectionDict__InByref__PropByref__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override;
+	};
+
+	class __vwsnc5_Rpc_CollectionDict_PropByref_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_PropByref : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionDict_PropByref
+	{
+	public:
+		__vwsnc5_Rpc_CollectionDict_PropByref_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_PropByref(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionDict__InByref__PropByref__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcCollectionDict__InByref__PropByref__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override;
+	};
+
+	class __vwsnc6_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollectionDict::InByref::PropByref::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc6_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc4_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService();
+		~__vwsnc6_Rpc_CollectionDict_PropByref_rpcwrapper_RpcCollectionDict__InByref__PropByref__IService__RpcCollectionDict_InByref_PropByref_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> GetList() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override;
 	};

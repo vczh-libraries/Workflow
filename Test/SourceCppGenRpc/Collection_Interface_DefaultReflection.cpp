@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcCollection::Interface::Default::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcCollection::Interface::Default::IService)
 			IMPL_CPP_TYPE_INFO(RpcCollection::Interface::Default::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_Collection_Interface_Default)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -62,6 +63,12 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcCollection::Interface::Default::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Collection_Interface_Default)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollection__Interface__Default__IService_DoList, { L"ref" _ L"arg_xs" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollection__Interface__Default__IValue_GetValue, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Collection_Interface_Default)
+
 #undef _
 			class Rpc_Collection_Interface_DefaultTypeLoader : public Object, public ITypeLoader
 			{
@@ -72,6 +79,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcCollection::Interface::Default::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcCollection::Interface::Default::IService)
 					ADD_TYPE_INFO(::RpcCollection::Interface::Default::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_Collection_Interface_Default)
 				}
 
 				void Unload(ITypeManager* manager)

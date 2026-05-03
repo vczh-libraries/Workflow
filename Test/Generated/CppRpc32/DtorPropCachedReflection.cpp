@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcDtorPropCached::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcDtorPropCached::IService)
 			IMPL_CPP_TYPE_INFO(RpcDtorPropCached::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_DtorPropCached)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -64,6 +65,14 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 			END_INTERFACE_MEMBER(::RpcDtorPropCached::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_DtorPropCached)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcDtorPropCached__IService_ValueChanged, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtorPropCached__IService_GetValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtorPropCached__IService_SetValue, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtorPropCached__IService_Signal, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_DtorPropCached)
+
 #undef _
 			class Rpc_DtorPropCachedTypeLoader : public Object, public ITypeLoader
 			{
@@ -74,6 +83,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcDtorPropCached::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcDtorPropCached::IService)
 					ADD_TYPE_INFO(::RpcDtorPropCached::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_DtorPropCached)
 				}
 
 				void Unload(ITypeManager* manager)

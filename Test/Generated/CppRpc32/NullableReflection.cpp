@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcNullable::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcNullable::IService)
 			IMPL_CPP_TYPE_INFO(RpcNullable::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_Nullable)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -61,6 +62,12 @@ namespace vl
 				CLASS_MEMBER_PROPERTY_READONLY(Value, GetValue)
 			END_INTERFACE_MEMBER(::RpcNullable::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Nullable)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcNullable__IService_Print, { L"ref" _ L"arg_value" _ L"arg_v" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcNullable__IValue_GetValue, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Nullable)
+
 #undef _
 			class Rpc_NullableTypeLoader : public Object, public ITypeLoader
 			{
@@ -71,6 +78,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcNullable::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcNullable::IService)
 					ADD_TYPE_INFO(::RpcNullable::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_Nullable)
 				}
 
 				void Unload(ITypeManager* manager)

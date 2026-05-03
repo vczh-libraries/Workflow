@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcDtorPropCachedListVByref::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcDtorPropCachedListVByref::IService)
 			IMPL_CPP_TYPE_INFO(RpcDtorPropCachedListVByref::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_DtorPropCachedListVByref)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -64,6 +65,14 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 			END_INTERFACE_MEMBER(::RpcDtorPropCachedListVByref::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_DtorPropCachedListVByref)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcDtorPropCachedListVByref__IService_ValueChanged, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtorPropCachedListVByref__IService_GetValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtorPropCachedListVByref__IService_SetValue, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtorPropCachedListVByref__IService_Signal, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_DtorPropCachedListVByref)
+
 #undef _
 			class Rpc_DtorPropCachedListVByrefTypeLoader : public Object, public ITypeLoader
 			{
@@ -74,6 +83,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcDtorPropCachedListVByref::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcDtorPropCachedListVByref::IService)
 					ADD_TYPE_INFO(::RpcDtorPropCachedListVByref::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_DtorPropCachedListVByref)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)
 			IMPL_CPP_TYPE_INFO(RpcFailDoubleRegistrationTest::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcFailDoubleRegistrationTest::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_FailDoubleRegistration)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -62,6 +63,12 @@ namespace vl
 				CLASS_MEMBER_METHOD(SetObject, { L"obj" _ L"index" })
 			END_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_FailDoubleRegistration)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcFailDoubleRegistrationTest__IObject_GetName, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject, { L"ref" _ L"arg_obj" _ L"arg_index" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_FailDoubleRegistration)
+
 #undef _
 			class Rpc_FailDoubleRegistrationTypeLoader : public Object, public ITypeLoader
 			{
@@ -72,6 +79,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)
 					ADD_TYPE_INFO(::RpcFailDoubleRegistrationTest::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcFailDoubleRegistrationTest::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_FailDoubleRegistration)
 				}
 
 				void Unload(ITypeManager* manager)

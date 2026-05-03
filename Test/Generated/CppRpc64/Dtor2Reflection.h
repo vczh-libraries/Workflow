@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcDtor2Test::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcDtor2Test::IService)
 			DECL_TYPE_INFO(::RpcDtor2Test::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_Dtor2)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -53,6 +54,17 @@ namespace vl
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtor2Test::IValue)
 			END_INTERFACE_PROXY(::RpcDtor2Test::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Dtor2)
+				::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtor2Test__IService_MakeValue, ref);
+				}
+				::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_ReviewValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor2Test::IValue> arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtor2Test__IService_ReviewValue, ref, arg_value);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_Dtor2)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcDtor2Test::IRpcWrapper_IService, ::RpcDtor2Test::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcDtor2Test::IRpcWrapper_IService)

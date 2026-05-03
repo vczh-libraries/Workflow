@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcPropCached::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcPropCached::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_PropCached)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -53,6 +54,14 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Cached)
 			END_INTERFACE_MEMBER(::RpcPropCached::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropCached)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcPropCached__IService_ValueChanged, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropCached__IService_GetValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropCached__IService_SetValue, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropCached__IService_Signal, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropCached)
+
 #undef _
 			class Rpc_PropCachedTypeLoader : public Object, public ITypeLoader
 			{
@@ -61,6 +70,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcPropCached::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcPropCached::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_PropCached)
 				}
 
 				void Unload(ITypeManager* manager)

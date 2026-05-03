@@ -25,14 +25,16 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
+	class __vwsnc10_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService;
 	class __vwsnc1_Rpc_Dtor3_serviceMain__RpcDtor3Test_IService;
 	class __vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer;
 	class __vwsnc3_Rpc_Dtor3_MakeValue__RpcDtor3Test_IValue;
 	class __vwsnc4_Rpc_Dtor3_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc5_Rpc_Dtor3_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc6_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer;
-	class __vwsnc7_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue;
-	class __vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService;
+	class __vwsnc6_Rpc_Dtor3_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor3;
+	class __vwsnc7_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3;
+	class __vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer;
+	class __vwsnc9_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue;
 }
 
 namespace RpcDtor3Test
@@ -43,7 +45,11 @@ namespace RpcDtor3Test
 	class IRpcWrapper_IService;
 	class IValue;
 	class IRpcWrapper_IValue;
+}
+class rpcops_IOps_Rpc_Dtor3;
 
+namespace RpcDtor3Test
+{
 	class IContainer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IContainer>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -91,6 +97,16 @@ namespace RpcDtor3Test
 	};
 
 }
+class rpcops_IOps_Rpc_Dtor3 : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_Dtor3>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_Dtor3>;
+#endif
+public:
+	virtual ::vl::Ptr<::RpcDtor3Test::IValue> InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::Ptr<::RpcDtor3Test::IContainer> InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -120,10 +136,12 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcDtor3Test::IRpcWrapper_IContainer> rpcwrapper_RpcDtor3Test__IContainer(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcDtor3Test::IRpcWrapper_IValue> rpcwrapper_RpcDtor3Test__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcDtor3Test::IRpcWrapper_IService> rpcwrapper_RpcDtor3Test__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcDtor3Test::IRpcWrapper_IContainer> rpcwrapper_RpcDtor3Test__IContainer(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> ops);
+		::vl::Ptr<::RpcDtor3Test::IRpcWrapper_IValue> rpcwrapper_RpcDtor3Test__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> ops);
+		::vl::Ptr<::RpcDtor3Test::IRpcWrapper_IService> rpcwrapper_RpcDtor3Test__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> ops);
 
 		static Rpc_Dtor3& Instance();
 	};
@@ -131,6 +149,19 @@ namespace vl_workflow_global
 /***********************************************************************
 Closures
 ***********************************************************************/
+
+	class __vwsnc10_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtor3Test::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc10_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> _ops;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc10_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService();
+		::vl::Ptr<::RpcDtor3Test::IContainer> ContainValue(::vl::Ptr<::RpcDtor3Test::IValue> value) override;
+	};
 
 	class __vwsnc1_Rpc_Dtor3_serviceMain__RpcDtor3Test_IService : public ::vl::Object, public virtual ::RpcDtor3Test::IService
 	{
@@ -180,39 +211,49 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc6_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer : public ::vl::Object, public virtual ::RpcDtor3Test::IRpcWrapper_IContainer
+	class __vwsnc6_Rpc_Dtor3_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor3 : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Dtor3
 	{
 	public:
-		__vwsnc6_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc6_Rpc_Dtor3_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor3(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::RpcDtor3Test::IValue> InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::RpcDtor3Test::IContainer> InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value) override;
+	};
+
+	class __vwsnc7_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3 : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Dtor3
+	{
+	public:
+		__vwsnc7_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::RpcDtor3Test::IValue> InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::RpcDtor3Test::IContainer> InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value) override;
+	};
+
+	class __vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer : public ::vl::Object, public virtual ::RpcDtor3Test::IRpcWrapper_IContainer
+	{
+	public:
+		__vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer();
+		~__vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IContainer__RpcDtor3Test_IRpcWrapper_IContainer();
 		::vl::Ptr<::RpcDtor3Test::IValue> GetValue() override;
 	};
 
-	class __vwsnc7_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtor3Test::IRpcWrapper_IValue
+	class __vwsnc9_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtor3Test::IRpcWrapper_IValue
 	{
 	public:
-		__vwsnc7_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc9_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc7_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue();
-	};
-
-	class __vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtor3Test::IRpcWrapper_IService
-	{
-	public:
-		__vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::rpc_controller::RpcObjectReference _ref;
-		void DisconnectFromLifecycle() override;
-		~__vwsnc8_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService();
-		::vl::Ptr<::RpcDtor3Test::IContainer> ContainValue(::vl::Ptr<::RpcDtor3Test::IValue> value) override;
+		~__vwsnc9_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IValue__RpcDtor3Test_IRpcWrapper_IValue();
 	};
 }
 

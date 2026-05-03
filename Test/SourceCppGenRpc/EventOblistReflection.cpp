@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcEventOblist::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcEventOblist::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_EventOblist)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -49,6 +50,13 @@ namespace vl
 				CLASS_MEMBER_METHOD(WatchHeldList, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcEventOblist::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_EventOblist)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventOblist__IService_ModifyHeldList, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventOblist__IService_SetList, { L"ref" _ L"arg_xs" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventOblist__IService_WatchHeldList, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_EventOblist)
+
 #undef _
 			class Rpc_EventOblistTypeLoader : public Object, public ITypeLoader
 			{
@@ -57,6 +65,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcEventOblist::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcEventOblist::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_EventOblist)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -36,6 +36,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcDtor3Test::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcDtor3Test::IService)
 			IMPL_CPP_TYPE_INFO(RpcDtor3Test::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_Dtor3)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -74,6 +75,12 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 			END_INTERFACE_MEMBER(::RpcDtor3Test::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Dtor3)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtor3Test__IContainer_GetValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtor3Test__IService_ContainValue, { L"ref" _ L"arg_value" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Dtor3)
+
 #undef _
 			class Rpc_Dtor3TypeLoader : public Object, public ITypeLoader
 			{
@@ -86,6 +93,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcDtor3Test::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcDtor3Test::IService)
 					ADD_TYPE_INFO(::RpcDtor3Test::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_Dtor3)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -28,7 +28,9 @@ namespace vl_workflow_global
 	class __vwsnc1_Rpc_Collection_InByval_OutByref_serviceMain__RpcCollection_InByval_OutByref_IService;
 	class __vwsnc2_Rpc_Collection_InByval_OutByref_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc3_Rpc_Collection_InByval_OutByref_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService;
+	class __vwsnc4_Rpc_Collection_InByval_OutByref_rpcops_IOps_Create__rpcops_IOps_Rpc_Collection_InByval_OutByref;
+	class __vwsnc5_Rpc_Collection_InByval_OutByref_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Collection_InByval_OutByref;
+	class __vwsnc6_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService;
 }
 
 namespace RpcCollection
@@ -39,7 +41,17 @@ namespace RpcCollection
 		{
 			class IService;
 			class IRpcWrapper_IService;
+		}
+	}
+}
+class rpcops_IOps_Rpc_Collection_InByval_OutByref;
 
+namespace RpcCollection
+{
+	namespace InByval
+	{
+		namespace OutByref
+		{
 			class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -59,6 +71,15 @@ namespace RpcCollection
 		}
 	}
 }
+class rpcops_IOps_Rpc_Collection_InByval_OutByref : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_Collection_InByval_OutByref>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_Collection_InByval_OutByref>;
+#endif
+public:
+	virtual ::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__InByval__OutByref__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_xs) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -86,8 +107,10 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcCollection::InByval::OutByref::IRpcWrapper_IService> rpcwrapper_RpcCollection__InByval__OutByref__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Collection_InByval_OutByref> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Collection_InByval_OutByref> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcCollection::InByval::OutByref::IRpcWrapper_IService> rpcwrapper_RpcCollection__InByval__OutByref__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_InByval_OutByref> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_InByval_OutByref> ops);
 
 		static Rpc_Collection_InByval_OutByref& Instance();
 	};
@@ -124,15 +147,34 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollection::InByval::OutByref::IRpcWrapper_IService
+	class __vwsnc4_Rpc_Collection_InByval_OutByref_rpcops_IOps_Create__rpcops_IOps_Rpc_Collection_InByval_OutByref : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Collection_InByval_OutByref
 	{
 	public:
-		__vwsnc4_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_Collection_InByval_OutByref_rpcops_IOps_Create__rpcops_IOps_Rpc_Collection_InByval_OutByref(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__InByval__OutByref__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_xs) override;
+	};
+
+	class __vwsnc5_Rpc_Collection_InByval_OutByref_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Collection_InByval_OutByref : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Collection_InByval_OutByref
+	{
+	public:
+		__vwsnc5_Rpc_Collection_InByval_OutByref_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Collection_InByval_OutByref(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__InByval__OutByref__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_xs) override;
+	};
+
+	class __vwsnc6_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollection::InByval::OutByref::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc6_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_InByval_OutByref> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Collection_InByval_OutByref> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc4_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService();
+		~__vwsnc6_Rpc_Collection_InByval_OutByref_rpcwrapper_RpcCollection__InByval__OutByref__IService__RpcCollection_InByval_OutByref_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueList> DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs) override;
 	};
 }

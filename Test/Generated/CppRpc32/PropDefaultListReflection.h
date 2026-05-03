@@ -35,6 +35,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcPropDefaultList::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcPropDefaultList::IService)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_PropDefaultList)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -52,6 +53,25 @@ namespace vl
 					INVOKE_INTERFACE_PROXY_NOPARAMS(Signal);
 				}
 			END_INTERFACE_PROXY(::RpcPropDefaultList::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_PropDefaultList)
+				void InvokeEvent_RpcPropDefaultList__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcPropDefaultList__IService_ValueChanged, ref);
+				}
+				::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcPropDefaultList__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPropDefaultList__IService_GetValue, ref);
+				}
+				void InvokeMethod_RpcPropDefaultList__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_value) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcPropDefaultList__IService_SetValue, ref, arg_value);
+				}
+				void InvokeMethod_RpcPropDefaultList__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcPropDefaultList__IService_Signal, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_PropDefaultList)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcPropDefaultList::IRpcWrapper_IService, ::RpcPropDefaultList::IService, ::vl::rpc_controller::IRpcWrapperBase)
 				void _rpcInvalidate_Value() override

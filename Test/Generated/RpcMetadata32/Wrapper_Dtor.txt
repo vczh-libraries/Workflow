@@ -574,6 +574,11 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
+interface rpcops_IOps_Rpc_Dtor
+{
+    func InvokeMethod_RpcDtorTest__IService_MakeValue(ref : system::RpcObjectReference) : (::RpcDtorTest::IValue^);
+}
+
 func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
@@ -652,6 +657,38 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEv
     };
 }
 
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor^)
+{
+    return new (rpcops_IOps_Rpc_Dtor^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcDtorTest__IService_MakeValue(ref : system::RpcObjectReference) : (::RpcDtorTest::IValue^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorTest__IService_MakeValue, arguments), _lc) as (::RpcDtorTest::IValue^));
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor^)
+{
+    return new (rpcops_IOps_Rpc_Dtor^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcDtorTest__IService_MakeValue(ref : system::RpcObjectReference) : (::RpcDtorTest::IValue^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorTest__IService_MakeValue, arguments));
+            var jsonValue0 : object = rpcjson_Deserialize(jsonResult);
+            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcDtorTest::IValue^));
+        }
+    };
+}
+
 namespace RpcDtorTest
 {
     interface IRpcWrapper_IValue : RpcDtorTest::IValue, system::IRpcWrapperBase
@@ -663,7 +700,7 @@ namespace RpcDtorTest
     }
 }
 
-func rpcwrapper_RpcDtorTest__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcDtorTest::IRpcWrapper_IValue^)
+func rpcwrapper_RpcDtorTest__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Dtor^) : (RpcDtorTest::IRpcWrapper_IValue^)
 {
     var proxy : RpcDtorTest::IRpcWrapper_IValue^ = new (RpcDtorTest::IRpcWrapper_IValue^)
     {
@@ -671,9 +708,12 @@ func rpcwrapper_RpcDtorTest__IValue(lc : system::IRpcLifecycle*, proxyRef : syst
 
         var _ref : system::RpcObjectReference = proxyRef;
 
+        var _ops : rpcops_IOps_Rpc_Dtor^ = ops;
+
         override func DisconnectFromLifecycle() : (void)
         {
             (_lc = null);
+            (_ops = null);
         }
 
         delete
@@ -688,7 +728,7 @@ func rpcwrapper_RpcDtorTest__IValue(lc : system::IRpcLifecycle*, proxyRef : syst
     return proxy;
 }
 
-func rpcwrapper_RpcDtorTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcDtorTest::IRpcWrapper_IService^)
+func rpcwrapper_RpcDtorTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Dtor^) : (RpcDtorTest::IRpcWrapper_IService^)
 {
     var proxy : RpcDtorTest::IRpcWrapper_IService^ = new (RpcDtorTest::IRpcWrapper_IService^)
     {
@@ -696,9 +736,12 @@ func rpcwrapper_RpcDtorTest__IService(lc : system::IRpcLifecycle*, proxyRef : sy
 
         var _ref : system::RpcObjectReference = proxyRef;
 
+        var _ops : rpcops_IOps_Rpc_Dtor^ = ops;
+
         override func DisconnectFromLifecycle() : (void)
         {
             (_lc = null);
+            (_ops = null);
         }
 
         delete
@@ -713,26 +756,24 @@ func rpcwrapper_RpcDtorTest__IService(lc : system::IRpcLifecycle*, proxyRef : sy
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorTest__IService_MakeValue, arguments), _lc) as (::RpcDtorTest::IValue^));
+            return _ops.InvokeMethod_RpcDtorTest__IService_MakeValue(_ref);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_Dtor^) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {
         case rpctype_RpcDtorTest__IValue:
         {
-            return rpcwrapper_RpcDtorTest__IValue(lc, ref);
+            return rpcwrapper_RpcDtorTest__IValue(lc, ref, ops);
         }
         case rpctype_RpcDtorTest__IService:
         {
-            return rpcwrapper_RpcDtorTest__IService(lc, ref);
+            return rpcwrapper_RpcDtorTest__IService(lc, ref, ops);
         }
         default:
         raise "Unknown RPC type id for wrapper creation.";

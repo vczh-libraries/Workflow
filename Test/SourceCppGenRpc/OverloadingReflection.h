@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcOverloadingTest::IRpcWrapper_IStringRepresentable)
 			DECL_TYPE_INFO(::RpcOverloadingTest::IService)
 			DECL_TYPE_INFO(::RpcOverloadingTest::IStringRepresentable)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_Overloading)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -117,6 +118,33 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStringValue);
 				}
 			END_INTERFACE_PROXY(::RpcOverloadingTest::IStringRepresentable)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Overloading)
+				::vl::WString InvokeMethod_RpcOverloadingTest__IService_ToStringInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcOverloadingTest__IService_ToStringInt, ref, arg_value);
+				}
+				::vl::WString InvokeMethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value1, bool arg_value2, const ::vl::WString& arg_value3, ::vl::Ptr<::RpcOverloadingTest::IStringRepresentable> arg_value4) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, ref, arg_value1, arg_value2, arg_value3, arg_value4);
+				}
+				::vl::WString InvokeMethod_RpcOverloadingTest__IService_ToString_value__1(::vl::rpc_controller::RpcObjectReference ref, bool arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcOverloadingTest__IService_ToString_value__1, ref, arg_value);
+				}
+				::vl::WString InvokeMethod_RpcOverloadingTest__IService_ToString_value__2(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcOverloadingTest__IService_ToString_value__2, ref, arg_value);
+				}
+				::vl::WString InvokeMethod_RpcOverloadingTest__IService_ToString_value__3(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcOverloadingTest::IStringRepresentable> arg_value) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcOverloadingTest__IService_ToString_value__3, ref, arg_value);
+				}
+				::vl::WString InvokeMethod_RpcOverloadingTest__IStringRepresentable_GetStringValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcOverloadingTest__IStringRepresentable_GetStringValue, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_Overloading)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcOverloadingTest::IRpcWrapper_IService, ::RpcOverloadingTest::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcOverloadingTest::IRpcWrapper_IService)

@@ -575,6 +575,15 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
+interface rpcops_IOps_Rpc_EventOblist
+{
+    func InvokeMethod_RpcEventOblist__IService_ModifyHeldList(ref : system::RpcObjectReference) : (::system::Void);
+
+    func InvokeMethod_RpcEventOblist__IService_SetList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int64[]) : (::system::Void);
+
+    func InvokeMethod_RpcEventOblist__IService_WatchHeldList(ref : system::RpcObjectReference) : (::system::Void);
+}
+
 func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
@@ -666,6 +675,67 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEv
     };
 }
 
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_EventOblist^)
+{
+    return new (rpcops_IOps_Rpc_EventOblist^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcEventOblist__IService_ModifyHeldList(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+        }
+
+        override func InvokeMethod_RpcEventOblist__IService_SetList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int64[]) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(arg_xs, _lc));
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_SetList, arguments);
+        }
+
+        override func InvokeMethod_RpcEventOblist__IService_WatchHeldList(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_EventOblist^)
+{
+    return new (rpcops_IOps_Rpc_EventOblist^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcEventOblist__IService_ModifyHeldList(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+        }
+
+        override func InvokeMethod_RpcEventOblist__IService_SetList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int64[]) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize_Struct_system__RpcObjectReference(system::IRpcLifecycle::RpcBoxByref(arg_xs, _lc));
+            arguments.Set(0, jsonNode0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_SetList, arguments);
+        }
+
+        override func InvokeMethod_RpcEventOblist__IService_WatchHeldList(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+        }
+    };
+}
+
 namespace RpcEventOblist
 {
     interface IRpcWrapper_IService : RpcEventOblist::IService, system::IRpcWrapperBase
@@ -673,7 +743,7 @@ namespace RpcEventOblist
     }
 }
 
-func rpcwrapper_RpcEventOblist__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcEventOblist::IRpcWrapper_IService^)
+func rpcwrapper_RpcEventOblist__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_EventOblist^) : (RpcEventOblist::IRpcWrapper_IService^)
 {
     var proxy : RpcEventOblist::IRpcWrapper_IService^ = new (RpcEventOblist::IRpcWrapper_IService^)
     {
@@ -681,9 +751,12 @@ func rpcwrapper_RpcEventOblist__IService(lc : system::IRpcLifecycle*, proxyRef :
 
         var _ref : system::RpcObjectReference = proxyRef;
 
+        var _ops : rpcops_IOps_Rpc_EventOblist^ = ops;
+
         override func DisconnectFromLifecycle() : (void)
         {
             (_lc = null);
+            (_ops = null);
         }
 
         delete
@@ -698,41 +771,34 @@ func rpcwrapper_RpcEventOblist__IService(lc : system::IRpcLifecycle*, proxyRef :
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+            _ops.InvokeMethod_RpcEventOblist__IService_ModifyHeldList(_ref);
         }
 
         override func SetList(xs : observe ::system::Int64[]) : (::system::Void)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(xs, _lc));
-            _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEventOblist__IService_SetList, arguments);
+            _ops.InvokeMethod_RpcEventOblist__IService_SetList(_ref, xs);
         }
 
         override func WatchHeldList() : (::system::Void)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+            _ops.InvokeMethod_RpcEventOblist__IService_WatchHeldList(_ref);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_EventOblist^) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {
         case rpctype_RpcEventOblist__IService:
         {
-            return rpcwrapper_RpcEventOblist__IService(lc, ref);
+            return rpcwrapper_RpcEventOblist__IService(lc, ref, ops);
         }
         default:
         raise "Unknown RPC type id for wrapper creation.";

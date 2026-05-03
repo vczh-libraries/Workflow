@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcPropDefault::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcPropDefault::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_PropDefault)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -52,6 +53,14 @@ namespace vl
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Value, GetValue, ValueChanged)
 			END_INTERFACE_MEMBER(::RpcPropDefault::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropDefault)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcPropDefault__IService_ValueChanged, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDefault__IService_GetValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDefault__IService_SetValue, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDefault__IService_Signal, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropDefault)
+
 #undef _
 			class Rpc_PropDefaultTypeLoader : public Object, public ITypeLoader
 			{
@@ -60,6 +69,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcPropDefault::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcPropDefault::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_PropDefault)
 				}
 
 				void Unload(ITypeManager* manager)

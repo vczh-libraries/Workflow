@@ -684,6 +684,25 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
     }
 }
 
+interface rpcops_IOps_Rpc_PrimitiveTypes
+{
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(ref : system::RpcObjectReference, arg_value : ::system::Boolean) : (::system::Boolean);
+
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(ref : system::RpcObjectReference, arg_value : ::system::Double) : (::system::Double);
+
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season);
+
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(ref : system::RpcObjectReference, arg_value : ::system::Single) : (::system::Single);
+
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(ref : system::RpcObjectReference, arg_value : ::system::Int64) : (::system::Int64);
+
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessString(ref : system::RpcObjectReference, arg_value : ::system::String) : (::system::String);
+
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point);
+
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(ref : system::RpcObjectReference, arg_value : ::system::UInt64) : (::system::UInt64);
+}
+
 func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
@@ -797,6 +816,183 @@ func rpc_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEv
     };
 }
 
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_PrimitiveTypes^)
+{
+    return new (rpcops_IOps_Rpc_PrimitiveTypes^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(ref : system::RpcObjectReference, arg_value : ::system::Boolean) : (::system::Boolean)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::system::Boolean) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(ref : system::RpcObjectReference, arg_value : ::system::Double) : (::system::Double)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::system::Double) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::RpcPrimitiveTest::Season) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(ref : system::RpcObjectReference, arg_value : ::system::Single) : (::system::Single)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::system::Single) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(ref : system::RpcObjectReference, arg_value : ::system::Int64) : (::system::Int64)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::system::Int64) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessString(ref : system::RpcObjectReference, arg_value : ::system::String) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::RpcPrimitiveTest::Point) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(ref : system::RpcObjectReference, arg_value : ::system::UInt64) : (::system::UInt64)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, (cast (object) arg_value));
+            return (cast (::system::UInt64) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_PrimitiveTypes^)
+{
+    return new (rpcops_IOps_Rpc_PrimitiveTypes^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(ref : system::RpcObjectReference, arg_value : ::system::Boolean) : (::system::Boolean)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonLiteral0 : system::JsonLiteral^ = new (system::JsonLiteral^)();
+            if (arg_value)
+            (jsonLiteral0.value = system::JsonLiteralValue::True);
+            else
+            (jsonLiteral0.value = system::JsonLiteralValue::False);
+            arguments.Set(0, jsonLiteral0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+            var jsonValue1 : ::system::Boolean = ((cast (system::JsonLiteral^) jsonResult).value == system::JsonLiteralValue::True);
+            return jsonValue1;
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(ref : system::RpcObjectReference, arg_value : ::system::Double) : (::system::Double)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            (jsonNumber0.content = {value : (cast (string) arg_value);});
+            arguments.Set(0, jsonNumber0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+            var jsonValue1 : ::system::Double = (cast (::system::Double) (cast (system::JsonNumber^) jsonResult).content.value);
+            return jsonValue1;
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(arg_value);
+            arguments.Set(0, jsonNode0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+            var jsonValue1 : ::RpcPrimitiveTest::Season = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(jsonResult);
+            return jsonValue1;
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(ref : system::RpcObjectReference, arg_value : ::system::Single) : (::system::Single)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            (jsonNumber0.content = {value : (cast (string) arg_value);});
+            arguments.Set(0, jsonNumber0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+            var jsonValue1 : ::system::Single = (cast (::system::Single) (cast (system::JsonNumber^) jsonResult).content.value);
+            return jsonValue1;
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(ref : system::RpcObjectReference, arg_value : ::system::Int64) : (::system::Int64)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            (jsonNumber0.content = {value : (cast (string) arg_value);});
+            arguments.Set(0, jsonNumber0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+            var jsonValue1 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonResult).content.value);
+            return jsonValue1;
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessString(ref : system::RpcObjectReference, arg_value : ::system::String) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonString0 : system::JsonString^ = new (system::JsonString^)();
+            (jsonString0.content = {value : (cast (string) arg_value);});
+            arguments.Set(0, jsonString0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+            var jsonValue1 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
+            return jsonValue1;
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(arg_value);
+            arguments.Set(0, jsonNode0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+            var jsonValue1 : ::RpcPrimitiveTest::Point = rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(jsonResult);
+            return jsonValue1;
+        }
+
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(ref : system::RpcObjectReference, arg_value : ::system::UInt64) : (::system::UInt64)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            (jsonNumber0.content = {value : (cast (string) arg_value);});
+            arguments.Set(0, jsonNumber0);
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+            var jsonValue1 : ::system::UInt64 = (cast (::system::UInt64) (cast (system::JsonNumber^) jsonResult).content.value);
+            return jsonValue1;
+        }
+    };
+}
+
 namespace RpcPrimitiveTest
 {
     interface IRpcWrapper_IService : RpcPrimitiveTest::IService, system::IRpcWrapperBase
@@ -804,7 +1000,7 @@ namespace RpcPrimitiveTest
     }
 }
 
-func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference) : (RpcPrimitiveTest::IRpcWrapper_IService^)
+func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_PrimitiveTypes^) : (RpcPrimitiveTest::IRpcWrapper_IService^)
 {
     var proxy : RpcPrimitiveTest::IRpcWrapper_IService^ = new (RpcPrimitiveTest::IRpcWrapper_IService^)
     {
@@ -812,9 +1008,12 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifecycle*, proxyRef
 
         var _ref : system::RpcObjectReference = proxyRef;
 
+        var _ops : rpcops_IOps_Rpc_PrimitiveTypes^ = ops;
+
         override func DisconnectFromLifecycle() : (void)
         {
             (_lc = null);
+            (_ops = null);
         }
 
         delete
@@ -829,93 +1028,69 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifecycle*, proxyRef
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::system::Boolean) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessBool(_ref, value);
         }
 
         override func ProcessDouble(value : ::system::Double) : (::system::Double)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::system::Double) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(_ref, value);
         }
 
         override func ProcessEnum(value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::RpcPrimitiveTest::Season) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(_ref, value);
         }
 
         override func ProcessFloat(value : ::system::Single) : (::system::Single)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::system::Single) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(_ref, value);
         }
 
         override func ProcessInt(value : ::system::Int64) : (::system::Int64)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::system::Int64) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(_ref, value);
         }
 
         override func ProcessString(value : ::system::String) : (::system::String)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessString(_ref, value);
         }
 
         override func ProcessStruct(value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::RpcPrimitiveTest::Point) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(_ref, value);
         }
 
         override func ProcessUInt(value : ::system::UInt64) : (::system::UInt64)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            var arguments : system::Array^ = {};
-            arguments.Resize(1);
-            arguments.Set(0, (cast (object) value));
-            return (cast (::system::UInt64) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+            return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(_ref, value);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
     return proxy;
 }
 
-func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*) : (system::IRpcWrapperBase^)
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_PrimitiveTypes^) : (system::IRpcWrapperBase^)
 {
     switch (ref.typeId)
     {
         case rpctype_RpcPrimitiveTest__IService:
         {
-            return rpcwrapper_RpcPrimitiveTest__IService(lc, ref);
+            return rpcwrapper_RpcPrimitiveTest__IService(lc, ref, ops);
         }
         default:
         raise "Unknown RPC type id for wrapper creation.";

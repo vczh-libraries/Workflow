@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcPropDefaultInterface::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcPropDefaultInterface::IService)
 			IMPL_CPP_TYPE_INFO(RpcPropDefaultInterface::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_PropDefaultInterface)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -67,6 +68,15 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcPropDefaultInterface::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropDefaultInterface)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcPropDefaultInterface__IService_ValueChanged, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDefaultInterface__IService_GetValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDefaultInterface__IService_SetValue, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDefaultInterface__IService_Signal, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPropDefaultInterface__IValue_GetValue, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PropDefaultInterface)
+
 #undef _
 			class Rpc_PropDefaultInterfaceTypeLoader : public Object, public ITypeLoader
 			{
@@ -77,6 +87,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcPropDefaultInterface::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcPropDefaultInterface::IService)
 					ADD_TYPE_INFO(::RpcPropDefaultInterface::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_PropDefaultInterface)
 				}
 
 				void Unload(ITypeManager* manager)

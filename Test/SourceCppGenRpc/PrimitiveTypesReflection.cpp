@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcPrimitiveTest::IService)
 			IMPL_CPP_TYPE_INFO(RpcPrimitiveTest::Point)
 			IMPL_CPP_TYPE_INFO(RpcPrimitiveTest::Season)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_PrimitiveTypes)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -68,6 +69,18 @@ namespace vl
 				ENUM_CLASS_ITEM(Winter)
 			END_ENUM_ITEM(::RpcPrimitiveTest::Season)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PrimitiveTypes)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessBool, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessInt, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessString, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct, { L"ref" _ L"arg_value" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt, { L"ref" _ L"arg_value" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_PrimitiveTypes)
+
 #undef _
 			class Rpc_PrimitiveTypesTypeLoader : public Object, public ITypeLoader
 			{
@@ -78,6 +91,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcPrimitiveTest::IService)
 					ADD_TYPE_INFO(::RpcPrimitiveTest::Point)
 					ADD_TYPE_INFO(::RpcPrimitiveTest::Season)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_PrimitiveTypes)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -29,14 +29,20 @@ namespace vl_workflow_global
 	class __vwsnc1_Rpc_PropDynamic_serviceMain__RpcPropDynamic_IService;
 	class __vwsnc2_Rpc_PropDynamic_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc3_Rpc_PropDynamic_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService;
+	class __vwsnc4_Rpc_PropDynamic_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDynamic;
+	class __vwsnc5_Rpc_PropDynamic_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDynamic;
+	class __vwsnc6_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService;
 }
 
 namespace RpcPropDynamic
 {
 	class IService;
 	class IRpcWrapper_IService;
+}
+class rpcops_IOps_Rpc_PropDynamic;
 
+namespace RpcPropDynamic
+{
 	class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -57,6 +63,18 @@ namespace RpcPropDynamic
 	};
 
 }
+class rpcops_IOps_Rpc_PropDynamic : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_PropDynamic>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_PropDynamic>;
+#endif
+public:
+	virtual ::vl::WString InvokeMethod_RpcPropDynamic__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeMethod_RpcPropDynamic__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) = 0;
+	virtual void InvokeMethod_RpcPropDynamic__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeEvent_RpcPropDynamic__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -86,10 +104,12 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDynamic> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDynamic> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		void rpclistener_RpcPropDynamic__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcPropDynamic::IService* target);
 		void rpclistener_Attach(::vl::vint32_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
-		::vl::Ptr<::RpcPropDynamic::IRpcWrapper_IService> rpcwrapper_RpcPropDynamic__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcPropDynamic::IRpcWrapper_IService> rpcwrapper_RpcPropDynamic__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PropDynamic> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDynamic> ops);
 
 		static Rpc_PropDynamic& Instance();
 	};
@@ -139,15 +159,40 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPropDynamic::IRpcWrapper_IService
+	class __vwsnc4_Rpc_PropDynamic_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDynamic : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDynamic
 	{
 	public:
-		__vwsnc4_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_PropDynamic_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDynamic(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcPropDynamic__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcPropDynamic__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override;
+		void InvokeMethod_RpcPropDynamic__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcPropDynamic__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
+	};
+
+	class __vwsnc5_Rpc_PropDynamic_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDynamic : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDynamic
+	{
+	public:
+		__vwsnc5_Rpc_PropDynamic_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDynamic(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcPropDynamic__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcPropDynamic__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override;
+		void InvokeMethod_RpcPropDynamic__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcPropDynamic__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
+	};
+
+	class __vwsnc6_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPropDynamic::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc6_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDynamic> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDynamic> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc4_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService();
+		~__vwsnc6_Rpc_PropDynamic_rpcwrapper_RpcPropDynamic__IService__RpcPropDynamic_IRpcWrapper_IService();
 		::vl::WString GetValue() override;
 		void SetValue(const ::vl::WString& value) override;
 		void Signal() override;

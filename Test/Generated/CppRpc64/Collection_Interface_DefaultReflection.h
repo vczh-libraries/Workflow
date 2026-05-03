@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcCollection::Interface::Default::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcCollection::Interface::Default::IService)
 			DECL_TYPE_INFO(::RpcCollection::Interface::Default::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_Collection_Interface_Default)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -53,6 +54,17 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValue);
 				}
 			END_INTERFACE_PROXY(::RpcCollection::Interface::Default::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Collection_Interface_Default)
+				::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__Interface__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_xs) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollection__Interface__Default__IService_DoList, ref, arg_xs);
+				}
+				::vl::WString InvokeMethod_RpcCollection__Interface__Default__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollection__Interface__Default__IValue_GetValue, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_Collection_Interface_Default)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcCollection::Interface::Default::IRpcWrapper_IService, ::RpcCollection::Interface::Default::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcCollection::Interface::Default::IRpcWrapper_IService)

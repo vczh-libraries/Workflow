@@ -28,7 +28,9 @@ namespace vl_workflow_global
 	class __vwsnc1_Rpc_CollectionOblist_Nested_Default_serviceMain__RpcCollectionOblist_Nested_Default_IService;
 	class __vwsnc2_Rpc_CollectionOblist_Nested_Default_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc3_Rpc_CollectionOblist_Nested_Default_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc4_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService;
+	class __vwsnc4_Rpc_CollectionOblist_Nested_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Nested_Default;
+	class __vwsnc5_Rpc_CollectionOblist_Nested_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Nested_Default;
+	class __vwsnc6_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService;
 }
 
 namespace RpcCollectionOblist
@@ -39,7 +41,17 @@ namespace RpcCollectionOblist
 		{
 			class IService;
 			class IRpcWrapper_IService;
+		}
+	}
+}
+class rpcops_IOps_Rpc_CollectionOblist_Nested_Default;
 
+namespace RpcCollectionOblist
+{
+	namespace Nested
+	{
+		namespace Default
+		{
 			class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -59,6 +71,15 @@ namespace RpcCollectionOblist
 		}
 	}
 }
+class rpcops_IOps_Rpc_CollectionOblist_Nested_Default : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_CollectionOblist_Nested_Default>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_CollectionOblist_Nested_Default>;
+#endif
+public:
+	virtual ::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__Nested__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -85,8 +106,10 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcCollectionOblist::Nested::Default::IRpcWrapper_IService> rpcwrapper_RpcCollectionOblist__Nested__Default__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Nested_Default> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Nested_Default> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcCollectionOblist::Nested::Default::IRpcWrapper_IService> rpcwrapper_RpcCollectionOblist__Nested__Default__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Nested_Default> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Nested_Default> ops);
 
 		static Rpc_CollectionOblist_Nested_Default& Instance();
 	};
@@ -123,15 +146,34 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc4_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollectionOblist::Nested::Default::IRpcWrapper_IService
+	class __vwsnc4_Rpc_CollectionOblist_Nested_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Nested_Default : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionOblist_Nested_Default
 	{
 	public:
-		__vwsnc4_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc4_Rpc_CollectionOblist_Nested_Default_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionOblist_Nested_Default(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__Nested__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) override;
+	};
+
+	class __vwsnc5_Rpc_CollectionOblist_Nested_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Nested_Default : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionOblist_Nested_Default
+	{
+	public:
+		__vwsnc5_Rpc_CollectionOblist_Nested_Default_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionOblist_Nested_Default(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__Nested__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) override;
+	};
+
+	class __vwsnc6_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcCollectionOblist::Nested::Default::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc6_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Nested_Default> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_CollectionOblist_Nested_Default> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc4_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService();
+		~__vwsnc6_Rpc_CollectionOblist_Nested_Default_rpcwrapper_RpcCollectionOblist__Nested__Default__IService__RpcCollectionOblist_Nested_Default_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> DoList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;
 	};
 }

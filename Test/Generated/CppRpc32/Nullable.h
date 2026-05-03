@@ -29,8 +29,10 @@ namespace vl_workflow_global
 	class __vwsnc2_Rpc_Nullable_clientMain__RpcNullable_IValue;
 	class __vwsnc3_Rpc_Nullable_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc4_Rpc_Nullable_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue;
-	class __vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService;
+	class __vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable;
+	class __vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable;
+	class __vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue;
+	class __vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService;
 }
 
 namespace RpcNullable
@@ -39,7 +41,11 @@ namespace RpcNullable
 	class IRpcWrapper_IService;
 	class IValue;
 	class IRpcWrapper_IValue;
+}
+class rpcops_IOps_Rpc_Nullable;
 
+namespace RpcNullable
+{
 	class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -73,6 +79,16 @@ namespace RpcNullable
 	};
 
 }
+class rpcops_IOps_Rpc_Nullable : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_Nullable>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_Nullable>;
+#endif
+public:
+	virtual ::vl::WString InvokeMethod_RpcNullable__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::WString InvokeMethod_RpcNullable__IService_Print(::vl::rpc_controller::RpcObjectReference ref, const ::vl::Nullable<::vl::WString>& arg_value, ::vl::Ptr<::RpcNullable::IValue> arg_v) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -100,9 +116,11 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint32_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcNullable::IRpcWrapper_IValue> rpcwrapper_RpcNullable__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcNullable::IRpcWrapper_IService> rpcwrapper_RpcNullable__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Nullable> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_Nullable> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcNullable::IRpcWrapper_IValue> rpcwrapper_RpcNullable__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> ops);
+		::vl::Ptr<::RpcNullable::IRpcWrapper_IService> rpcwrapper_RpcNullable__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> ops);
 
 		static Rpc_Nullable& Instance();
 	};
@@ -147,29 +165,51 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcNullable::IRpcWrapper_IValue
+	class __vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Nullable
 	{
 	public:
-		__vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_Nullable_rpcops_IOps_Create__rpcops_IOps_Rpc_Nullable(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcNullable__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcNullable__IService_Print(::vl::rpc_controller::RpcObjectReference ref, const ::vl::Nullable<::vl::WString>& arg_value, ::vl::Ptr<::RpcNullable::IValue> arg_v) override;
+	};
+
+	class __vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Nullable
+	{
+	public:
+		__vwsnc6_Rpc_Nullable_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Nullable(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcNullable__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcNullable__IService_Print(::vl::rpc_controller::RpcObjectReference ref, const ::vl::Nullable<::vl::WString>& arg_value, ::vl::Ptr<::RpcNullable::IValue> arg_v) override;
+	};
+
+	class __vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcNullable::IRpcWrapper_IValue
+	{
+	public:
+		__vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Nullable> _ops;
 		::vl::WString __vwsn_Cached_;
 		bool __vwsn_Available_ = false;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc5_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue();
+		~__vwsnc7_Rpc_Nullable_rpcwrapper_RpcNullable__IValue__RpcNullable_IRpcWrapper_IValue();
 		::vl::WString GetValue() override;
 	};
 
-	class __vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcNullable::IRpcWrapper_IService
+	class __vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcNullable::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Nullable> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_Nullable> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService();
+		~__vwsnc8_Rpc_Nullable_rpcwrapper_RpcNullable__IService__RpcNullable_IRpcWrapper_IService();
 		::vl::WString Print(const ::vl::Nullable<::vl::WString>& value, ::vl::Ptr<::RpcNullable::IValue> v) override;
 	};
 }

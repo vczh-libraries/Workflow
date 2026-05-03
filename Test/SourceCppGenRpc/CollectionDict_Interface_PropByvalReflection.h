@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcCollectionDict::Interface::InByval::PropByval::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcCollectionDict::Interface::InByval::PropByval::IService)
 			DECL_TYPE_INFO(::RpcCollectionDict::Interface::InByval::PropByval::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_CollectionDict_Interface_PropByval)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -57,6 +58,21 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValue);
 				}
 			END_INTERFACE_PROXY(::RpcCollectionDict::Interface::InByval::PropByval::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_CollectionDict_Interface_PropByval)
+				::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionDict__Interface__InByval__PropByval__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollectionDict__Interface__InByval__PropByval__IService_GetList, ref);
+				}
+				void InvokeMethod_RpcCollectionDict__Interface__InByval__PropByval__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcCollectionDict__Interface__InByval__PropByval__IService_SetList, ref, __vwsn_value_);
+				}
+				::vl::WString InvokeMethod_RpcCollectionDict__Interface__InByval__PropByval__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollectionDict__Interface__InByval__PropByval__IValue_GetValue, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_CollectionDict_Interface_PropByval)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcCollectionDict::Interface::InByval::PropByval::IRpcWrapper_IService, ::RpcCollectionDict::Interface::InByval::PropByval::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcCollectionDict::Interface::InByval::PropByval::IRpcWrapper_IService)

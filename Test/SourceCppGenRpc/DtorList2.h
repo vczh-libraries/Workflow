@@ -29,8 +29,10 @@ namespace vl_workflow_global
 	class __vwsnc2_Rpc_DtorList2_MakeValue__RpcDtorList2_IValue;
 	class __vwsnc3_Rpc_DtorList2_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc4_Rpc_DtorList2_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue;
-	class __vwsnc6_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService;
+	class __vwsnc5_Rpc_DtorList2_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorList2;
+	class __vwsnc6_Rpc_DtorList2_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorList2;
+	class __vwsnc7_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue;
+	class __vwsnc8_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService;
 }
 
 namespace RpcDtorList2
@@ -39,7 +41,11 @@ namespace RpcDtorList2
 	class IRpcWrapper_IService;
 	class IValue;
 	class IRpcWrapper_IValue;
+}
+class rpcops_IOps_Rpc_DtorList2;
 
+namespace RpcDtorList2
+{
 	class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -74,6 +80,18 @@ namespace RpcDtorList2
 	};
 
 }
+class rpcops_IOps_Rpc_DtorList2 : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_DtorList2>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_DtorList2>;
+#endif
+public:
+	virtual void InvokeMethod_RpcDtorList2__IService_Clear(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeMethod_RpcDtorList2__IService_Hold(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcDtorList2__IService_Make(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeMethod_RpcDtorList2__IService_Unhold(::vl::rpc_controller::RpcObjectReference ref) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -104,9 +122,11 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
-		::vl::Ptr<::RpcDtorList2::IRpcWrapper_IValue> rpcwrapper_RpcDtorList2__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcDtorList2::IRpcWrapper_IService> rpcwrapper_RpcDtorList2__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcDtorList2::IRpcWrapper_IValue> rpcwrapper_RpcDtorList2__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> ops);
+		::vl::Ptr<::RpcDtorList2::IRpcWrapper_IService> rpcwrapper_RpcDtorList2__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> ops);
 
 		static Rpc_DtorList2& Instance();
 	};
@@ -156,26 +176,52 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtorList2::IRpcWrapper_IValue
+	class __vwsnc5_Rpc_DtorList2_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorList2 : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorList2
 	{
 	public:
-		__vwsnc5_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_DtorList2_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorList2(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::rpc_controller::RpcObjectReference _ref;
-		void DisconnectFromLifecycle() override;
-		~__vwsnc5_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue();
+		void InvokeMethod_RpcDtorList2__IService_Clear(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcDtorList2__IService_Hold(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcDtorList2__IService_Make(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcDtorList2__IService_Unhold(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
-	class __vwsnc6_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtorList2::IRpcWrapper_IService
+	class __vwsnc6_Rpc_DtorList2_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorList2 : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorList2
 	{
 	public:
-		__vwsnc6_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc6_Rpc_DtorList2_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorList2(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		void InvokeMethod_RpcDtorList2__IService_Clear(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcDtorList2__IService_Hold(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcDtorList2__IService_Make(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcDtorList2__IService_Unhold(::vl::rpc_controller::RpcObjectReference ref) override;
+	};
+
+	class __vwsnc7_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtorList2::IRpcWrapper_IValue
+	{
+	public:
+		__vwsnc7_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService();
+		~__vwsnc7_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IValue__RpcDtorList2_IRpcWrapper_IValue();
+	};
+
+	class __vwsnc8_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtorList2::IRpcWrapper_IService
+	{
+	public:
+		__vwsnc8_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_DtorList2> _ops;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc8_Rpc_DtorList2_rpcwrapper_RpcDtorList2__IService__RpcDtorList2_IRpcWrapper_IService();
 		void Clear() override;
 		void Hold() override;
 		::vl::Ptr<::vl::reflection::description::IValueList> Make() override;

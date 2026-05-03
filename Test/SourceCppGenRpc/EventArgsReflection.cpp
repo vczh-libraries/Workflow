@@ -32,6 +32,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcEventArgs::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcEventArgs::IService)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_EventArgs)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -49,6 +50,13 @@ namespace vl
 				CLASS_MEMBER_EVENT(SomethingHappened)
 			END_INTERFACE_MEMBER(::RpcEventArgs::IService)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_EventArgs)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcEventArgs__IService_SomethingHappened, { L"ref" _ L"arg_arg0" _ L"arg_arg1" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventArgs__IService_AddElement, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventArgs__IService_MakeItHappen, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_EventArgs)
+
 #undef _
 			class Rpc_EventArgsTypeLoader : public Object, public ITypeLoader
 			{
@@ -57,6 +65,7 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcEventArgs::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcEventArgs::IService)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_EventArgs)
 				}
 
 				void Unload(ITypeManager* manager)

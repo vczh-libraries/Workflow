@@ -34,6 +34,7 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(RpcCollectionDict::Interface::InByref::PropByref::IRpcWrapper_IValue)
 			IMPL_CPP_TYPE_INFO(RpcCollectionDict::Interface::InByref::PropByref::IService)
 			IMPL_CPP_TYPE_INFO(RpcCollectionDict::Interface::InByref::PropByref::IValue)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_CollectionDict_Interface_PropByref)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -64,6 +65,13 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
 			END_INTERFACE_MEMBER(::RpcCollectionDict::Interface::InByref::PropByref::IValue)
 
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionDict_Interface_PropByref)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionDict__Interface__InByref__PropByref__IService_GetList, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionDict__Interface__InByref__PropByref__IService_SetList, { L"ref" _ L"__vwsn_value_" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionDict__Interface__InByref__PropByref__IValue_GetValue, { L"ref" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionDict_Interface_PropByref)
+
 #undef _
 			class Rpc_CollectionDict_Interface_PropByrefTypeLoader : public Object, public ITypeLoader
 			{
@@ -74,6 +82,7 @@ namespace vl
 					ADD_TYPE_INFO(::RpcCollectionDict::Interface::InByref::PropByref::IRpcWrapper_IValue)
 					ADD_TYPE_INFO(::RpcCollectionDict::Interface::InByref::PropByref::IService)
 					ADD_TYPE_INFO(::RpcCollectionDict::Interface::InByref::PropByref::IValue)
+					ADD_TYPE_INFO(::rpcops_IOps_Rpc_CollectionDict_Interface_PropByref)
 				}
 
 				void Unload(ITypeManager* manager)

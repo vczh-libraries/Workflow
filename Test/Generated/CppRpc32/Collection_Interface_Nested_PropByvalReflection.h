@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcCollection::Interface::Nested::InByval::PropByval::IService)
 			DECL_TYPE_INFO(::RpcCollection::Interface::Nested::InByval::PropByval::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_Collection_Interface_Nested_PropByval)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -57,6 +58,21 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValue);
 				}
 			END_INTERFACE_PROXY(::RpcCollection::Interface::Nested::InByval::PropByval::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Collection_Interface_Nested_PropByval)
+				::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_GetList, ref);
+				}
+				void InvokeMethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_SetList, ref, __vwsn_value_);
+				}
+				::vl::vint32_t InvokeMethod_RpcCollection__Interface__Nested__InByval__PropByval__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollection__Interface__Nested__InByval__PropByval__IValue_GetValue, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_Collection_Interface_Nested_PropByval)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IService, ::RpcCollection::Interface::Nested::InByval::PropByval::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IService)

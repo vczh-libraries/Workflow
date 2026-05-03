@@ -35,6 +35,7 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcEventOblist::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcEventOblist::IService)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_EventOblist)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -52,6 +53,21 @@ namespace vl
 					INVOKE_INTERFACE_PROXY_NOPARAMS(WatchHeldList);
 				}
 			END_INTERFACE_PROXY(::RpcEventOblist::IService)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_EventOblist)
+				void InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcEventOblist__IService_ModifyHeldList, ref);
+				}
+				void InvokeMethod_RpcEventOblist__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcEventOblist__IService_SetList, ref, arg_xs);
+				}
+				void InvokeMethod_RpcEventOblist__IService_WatchHeldList(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcEventOblist__IService_WatchHeldList, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_EventOblist)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcEventOblist::IRpcWrapper_IService, ::RpcEventOblist::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcEventOblist::IRpcWrapper_IService)

@@ -37,6 +37,7 @@ namespace vl
 			DECL_TYPE_INFO(::RpcPropDefaultInterfaceList::IRpcWrapper_IValue)
 			DECL_TYPE_INFO(::RpcPropDefaultInterfaceList::IService)
 			DECL_TYPE_INFO(::RpcPropDefaultInterfaceList::IValue)
+			DECL_TYPE_INFO(::rpcops_IOps_Rpc_PropDefaultInterfaceList)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -61,6 +62,29 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValue);
 				}
 			END_INTERFACE_PROXY(::RpcPropDefaultInterfaceList::IValue)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_PropDefaultInterfaceList)
+				void InvokeEvent_RpcPropDefaultInterfaceList__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcPropDefaultInterfaceList__IService_ValueChanged, ref);
+				}
+				::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcPropDefaultInterfaceList__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPropDefaultInterfaceList__IService_GetValue, ref);
+				}
+				void InvokeMethod_RpcPropDefaultInterfaceList__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_value) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcPropDefaultInterfaceList__IService_SetValue, ref, arg_value);
+				}
+				void InvokeMethod_RpcPropDefaultInterfaceList__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcPropDefaultInterfaceList__IService_Signal, ref);
+				}
+				::vl::WString InvokeMethod_RpcPropDefaultInterfaceList__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPropDefaultInterfaceList__IValue_GetValue, ref);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_PropDefaultInterfaceList)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcPropDefaultInterfaceList::IRpcWrapper_IService, ::RpcPropDefaultInterfaceList::IService, ::vl::rpc_controller::IRpcWrapperBase)
 				void _rpcInvalidate_Value() override

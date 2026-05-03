@@ -31,8 +31,10 @@ namespace vl_workflow_global
 	class __vwsnc2_Rpc_PropDefaultInterfaceList_serviceMain__RpcPropDefaultInterfaceList_IService;
 	class __vwsnc3_Rpc_PropDefaultInterfaceList_rpc_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc4_Rpc_PropDefaultInterfaceList_rpc_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue;
-	class __vwsnc6_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService;
+	class __vwsnc5_Rpc_PropDefaultInterfaceList_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefaultInterfaceList;
+	class __vwsnc6_Rpc_PropDefaultInterfaceList_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefaultInterfaceList;
+	class __vwsnc7_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue;
+	class __vwsnc8_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService;
 }
 
 namespace RpcPropDefaultInterfaceList
@@ -41,7 +43,11 @@ namespace RpcPropDefaultInterfaceList
 	class IRpcWrapper_IService;
 	class IValue;
 	class IRpcWrapper_IValue;
+}
+class rpcops_IOps_Rpc_PropDefaultInterfaceList;
 
+namespace RpcPropDefaultInterfaceList
+{
 	class IService : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IService>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -80,6 +86,19 @@ namespace RpcPropDefaultInterfaceList
 	};
 
 }
+class rpcops_IOps_Rpc_PropDefaultInterfaceList : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_Rpc_PropDefaultInterfaceList>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_PropDefaultInterfaceList>;
+#endif
+public:
+	virtual ::vl::WString InvokeMethod_RpcPropDefaultInterfaceList__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcPropDefaultInterfaceList__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeMethod_RpcPropDefaultInterfaceList__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_value) = 0;
+	virtual void InvokeMethod_RpcPropDefaultInterfaceList__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeEvent_RpcPropDefaultInterfaceList__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -115,11 +134,13 @@ namespace vl_workflow_global
 		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint64_t typeId);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpc_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpc_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
 		void rpclistener_RpcPropDefaultInterfaceList__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcPropDefaultInterfaceList::IService* target);
 		void rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
-		::vl::Ptr<::RpcPropDefaultInterfaceList::IRpcWrapper_IValue> rpcwrapper_RpcPropDefaultInterfaceList__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::RpcPropDefaultInterfaceList::IRpcWrapper_IService> rpcwrapper_RpcPropDefaultInterfaceList__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef);
-		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcPropDefaultInterfaceList::IRpcWrapper_IValue> rpcwrapper_RpcPropDefaultInterfaceList__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> ops);
+		::vl::Ptr<::RpcPropDefaultInterfaceList::IRpcWrapper_IService> rpcwrapper_RpcPropDefaultInterfaceList__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> ops);
 
 		static Rpc_PropDefaultInterfaceList& Instance();
 	};
@@ -189,30 +210,58 @@ Closures
 		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcPropDefaultInterfaceList::IRpcWrapper_IValue
+	class __vwsnc5_Rpc_PropDefaultInterfaceList_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefaultInterfaceList : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefaultInterfaceList
 	{
 	public:
-		__vwsnc5_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc5_Rpc_PropDefaultInterfaceList_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefaultInterfaceList(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcPropDefaultInterfaceList__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcPropDefaultInterfaceList__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcPropDefaultInterfaceList__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_value) override;
+		void InvokeMethod_RpcPropDefaultInterfaceList__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcPropDefaultInterfaceList__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
+	};
+
+	class __vwsnc6_Rpc_PropDefaultInterfaceList_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefaultInterfaceList : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefaultInterfaceList
+	{
+	public:
+		__vwsnc6_Rpc_PropDefaultInterfaceList_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefaultInterfaceList(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcPropDefaultInterfaceList__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcPropDefaultInterfaceList__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcPropDefaultInterfaceList__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_value) override;
+		void InvokeMethod_RpcPropDefaultInterfaceList__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcPropDefaultInterfaceList__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
+	};
+
+	class __vwsnc7_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcPropDefaultInterfaceList::IRpcWrapper_IValue
+	{
+	public:
+		__vwsnc7_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc5_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue();
+		~__vwsnc7_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IValue__RpcPropDefaultInterfaceList_IRpcWrapper_IValue();
 		::vl::WString GetValue() override;
 	};
 
-	class __vwsnc6_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPropDefaultInterfaceList::IRpcWrapper_IService
+	class __vwsnc8_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcPropDefaultInterfaceList::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc6_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc8_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterfaceList> _ops;
 		::vl::Ptr<::vl::reflection::description::IValueList> __vwsn_Cached_;
 		bool __vwsn_Available_ = false;
 		void _rpcInvalidate_Value() override;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService();
+		~__vwsnc8_Rpc_PropDefaultInterfaceList_rpcwrapper_RpcPropDefaultInterfaceList__IService__RpcPropDefaultInterfaceList_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueList> GetValue() override;
 		void SetValue(::vl::Ptr<::vl::reflection::description::IValueList> value) override;
 		void Signal() override;
