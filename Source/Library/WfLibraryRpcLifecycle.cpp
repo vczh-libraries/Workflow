@@ -8,6 +8,16 @@ namespace vl
 		using namespace reflection::description;
 		using namespace collections;
 
+		namespace
+		{
+		IRpcWrapperBase* CastRpcWrapperBase(DescriptableObject* obj)
+		{
+			if (!obj) return nullptr;
+			if (auto wrapper = dynamic_cast<IRpcWrapperBase*>(obj)) return wrapper;
+			return obj->SafeAggregationCast<IRpcWrapperBase>();
+		}
+	}
+
 		WString RpcLifecycleBase::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
 		WString RpcLifecycleBase::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
 
@@ -241,7 +251,7 @@ namespace vl
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TryGetTrackedWrapperRef(reflection::DescriptableObject*, RpcObjectReference&)const#"
 			auto wrapperRoot = obj;
-			if (auto wrapperBase = obj->SafeAggregationCast<IRpcWrapperBase>())
+			if (auto wrapperBase = CastRpcWrapperBase(obj))
 			{
 				auto aggregatedRoot = dynamic_cast<DescriptableObject*>(wrapperBase);
 				CHECK_ERROR(aggregatedRoot, ERROR_MESSAGE_PREFIX L"Wrapper root does not implement DescriptableObject.");
@@ -437,7 +447,7 @@ namespace vl
 					return wrapperRef;
 				}
 
-				if (auto wrapperBase = descObj->SafeAggregationCast<IRpcWrapperBase>())
+				if (auto wrapperBase = CastRpcWrapperBase(descObj))
 				{
 					auto wrapperRoot = dynamic_cast<DescriptableObject*>(wrapperBase);
 					CHECK_ERROR(wrapperRoot, ERROR_MESSAGE_PREFIX L"Wrapper root does not implement DescriptableObject.");

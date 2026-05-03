@@ -9,53 +9,77 @@ You should complete tasks one by one.
 
 ## Task 1
 
-Currently there are JSON .d.ts generation code and JSON serialization in generated wrapper Workflow script mixing with other RPC stuff together.
+- `BoxRpcObject` looks useless, if a pointer could be `dynamic_cast`-ed before calling `BoxValue`, then it should just call `BoxValue`.
+- `Rpc(B|Unb)oxByref` looks uesless too. When the input is a pointer, it should just call `IRpcLifecycle::(PtrToRef|RefToPtr)`.
+- Change `RpcBoxByval`'s first argument to `Ptr<IDescriptable>`.
+- Change `RpcUnboxByval`'s return value to `Ptr<IDescriptable>`.
 
-Move JSON .d.ts generation crom WfAnalyzer_ValidateRpc.cpp to WfAnalyizer_GenerateRpc_JsonDts.cpp.
-Move JSON serialization from WfAnalyzer_GenerateRpc.cpp to WfAnalyzer_GenerateRpc.JsonSerialization.cpp. But the cpp file might need to extern a function in WfAnalyzer_GenerateRpc.cpp (instead of WfAnalyzer.h) so that it could fill function declarations to the generated wrapper Workflow script module (pass the module in and the function fill declarations for rpcjson_* functions)
+`Rpc(B|Unb)oxBy(ref|val)` only perform changing for shared pointers of interfaces, in other cases (null and primitive type) they just return the argument.
+So it is better to declare the function in this way. But they should still handle `nullptr`.
+This will affect how wrapper Workflow script is generated. Today every arguments call `Rpc(B|Unb)oxBy(ref|val)` before passing values to ops interfaces.
+Now they only accept interfaces, so other types (including primitive types and nullable types) will skip the call, and cast themselves between the actual type and `object`.
 
-This task should be easy, just copy paste code, and if you do it correctly, no generated file should be affected
+It is good that, after doing this refactoring, we will be able to show in the type system, should an interface be converted to `RpcObjectReference` or not. Although the type information is not used so far, but they still exist before being added to the `arguments: IValueArray^` array.
 
-So we can have 4 WfAnalyzer*Rpc*.cpp files, and responsibility are well separated.
+## Task 2
+
+Remove `IRpcObjectOps::InvokeMethodAsync` as it is totally not used or impleme
 
 # UPDATES
 
-# TEST [CONFIRMED]
+# TEST
 
-Build and run the Workflow unit-test pipeline because the task moves C++ source between translation units and changes the MSBuild source list.
+Task 1 can be verified by existing RPC generation and runtime tests. The change must update reflection metadata, generated Workflow wrapper script, and generated C++ RPC samples so that only interface shared pointers call `RpcBoxByref`, `RpcUnboxByref`, `RpcBoxByval`, or `RpcUnboxByval`; primitive, nullable, and other object values should cast directly between their actual type and `object`.
 
-Success criteria:
+Success criteria for Task 1:
 - Debug Win32 and x64 builds pass.
+- Existing RPC samples compile through `CompilerTest_LoadAndCompile`.
+- Generated reflection baselines expose `RpcBoxByval` as taking `system::Interface^` and `RpcUnboxByval` as returning `system::Interface^`.
+- Generated RPC C++ no longer calls RPC lifecycle boxing helpers for primitive and nullable arguments, while interface shared pointer values still round-trip through `RpcObjectReference`.
 - Required unit test projects pass in the order from `Project.md`.
-- `CompilerTest_LoadAndCompile` does not leave generated RPC metadata/script/d.ts files changed, because this is intended as a responsibility-only move with no generated output changes.
+
+Task 2 can be verified by metadata and generated wrapper output. The change must remove `IRpcObjectOps::InvokeMethodAsync` from the C++ interface, reflection registration/proxy, generated Workflow `IRpcObjectOps` implementations, and generated C++ RPC samples.
+
+Success criteria for Task 2:
+- Debug Win32 and x64 builds pass after Task 2.
+- Existing RPC samples compile through `CompilerTest_LoadAndCompile`.
+- Generated reflection baselines and generated RPC C++ no longer contain `InvokeMethodAsync`.
+- Required unit test projects pass in the order from `Project.md`.
 
 # PROPOSALS
 
-- No.1 Split JSON RPC generation into dedicated source files [CONFIRMED]
+- No.1 Refine RPC boxing helpers to interface-shaped conversions
 
-## No.1 Split JSON RPC generation into dedicated source files
+## No.1 Refine RPC boxing helpers to interface-shaped conversions
 
-Move generated wrapper JSON serialization helpers from `WfAnalyzer_GenerateRpc.cpp` into `WfAnalyzer_GenerateRpc.JsonSerialization.cpp`, with `WfAnalyzer_GenerateRpc.cpp` declaring the local generator hook it calls while building the wrapper module. Move RPC JSON `.d.ts` generation from `WfAnalyzer_ValidateRPC.cpp` into `WfAnalyzer_GenerateRpc_JsonDts.cpp`. Register both new files in `VlppWorkflow_Compiler.vcxitems` and `.filters`.
+Change the reflected helper signatures so byref boxing exposes `RpcObjectReference`, byref unboxing returns `Interface^`, byval boxing accepts `Interface^`, and byval unboxing returns `Interface^`. Keep private dynamic `Value` helpers for list and dictionary wrappers. Update generated wrapper Workflow AST so only shared interface values call RPC lifecycle helpers; primitive, nullable, and other non-interface values cast directly to or from `object`.
 
 ### CODE CHANGE
 
-- Moved generated wrapper JSON serialization helpers from `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp` to `Source/Analyzer/WfAnalyzer_GenerateRpc.JsonSerialization.cpp`.
-- Kept the wrapper module orchestration in `WfAnalyzer_GenerateRpc.cpp`, with a local declaration for `AddRpcJsonDeclarations(WfLexicalScopeManager*, Ptr<WfModule>)` so the JSON serialization translation unit can fill the generated `rpcjson_*` declarations into the module.
-- Moved RPC JSON `.d.ts` generation from `Source/Analyzer/WfAnalyzer_ValidateRPC.cpp` to `Source/Analyzer/WfAnalyzer_GenerateRpc_JsonDts.cpp`.
-- Added both new files to `Test/UnitTest/VlppWorkflow_Compiler/VlppWorkflow_Compiler.vcxitems` and `VlppWorkflow_Compiler.vcxitems.filters` under the analyzer source list.
+- Changed public RPC lifecycle helper signatures in `WfLibraryRpc.h` / reflection registration:
+  - `RpcBoxByref(Interface^, IRpcLifecycle*) -> RpcObjectReference`
+  - `RpcUnboxByref(RpcObjectReference, IRpcLifecycle*) -> Interface^`
+  - `RpcBoxByval(Interface^, IRpcLifecycle*) -> object`
+  - `RpcUnboxByval(object, IRpcLifecycle*) -> Interface^`
+- Removed the public `BoxRpcObject` path and made public byref helpers delegate directly to `IRpcLifecycle::PtrToRef` / `RefToPtr`, while preserving null handling.
+- Kept internal `Value` based helpers for recursive collection boxing/unboxing, so list/dictionary wrappers can still transform nested interface values.
+- Updated RPC wrapper generation to record parameter/return `ITypeInfo`, call RPC helper functions only for shared interface values, and cast non-interface values directly to/from `object`.
+- Used null-preserving weak interface casts after `RpcUnboxByref` / `RpcUnboxByval`, because `cdb` showed `CppTest Debug Win32` failed in `Rpc:Nullable` when generated code emitted `Ensure(SharedPtrCast<IValue>(RpcUnboxByval(...)))` for a null interface argument.
+- Updated C++ helper and reflection value accessors to try `dynamic_cast` before aggregation casts for interface pointers, matching the new direct boxing shape.
+- Regenerated RPC metadata, generated C++ samples, generated Workflow assembly text, and reflection baselines.
 
 ### CONFIRMED
 
-The proposal is confirmed because the code now has four separated RPC analyzer source files: `WfAnalyzer_GenerateRpc.cpp`, `WfAnalyzer_GenerateRpc.JsonSerialization.cpp`, `WfAnalyzer_GenerateRpc_JsonDts.cpp`, and `WfAnalyzer_ValidateRPC.cpp`. The split keeps the public analyzer header unchanged and only exposes the JSON serialization hook locally between the RPC generation translation units. The full Debug build and unit-test set passed for both x64 and Win32 where applicable, and `CompilerTest_LoadAndCompile` left no generated files changed, matching the expected "copy-paste responsibility split only" behavior.
-
-Verification performed:
-
-- `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed.
-- `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed.
-- `LibraryTest`: x64 and Win32 passed, 14/14 cases.
-- `CompilerTest_GenerateMetadata`: x64 and Win32 passed, 2/2 cases.
-- `CompilerTest_LoadAndCompile`: passed, 699/699 cases, no generated files changed.
-- `RuntimeTest`: x64 and Win32 passed, 257/257 cases.
-- `CppTest`: x64 and Win32 passed, 223/223 cases.
-- `CppTest_Metaonly`: x64 and Win32 passed, 223/223 cases.
-- `CppTest_Reflection`: x64 and Win32 passed, 223/223 cases.
+- Debugged the failing `CppTest Debug Win32 /F:TestCasesRpc.cpp` process directly with x86 `cdb`; the first-chance C++ exception stack identified `WfLibraryCppHelper.h:58` through generated `Nullable.cpp:838`.
+- Focused `CppTest Debug Win32` passed after the generator fix, including `Rpc:Nullable`.
+- Full Task 1 verification passed from `Test\UnitTest`:
+  - Build Debug Win32 and x64
+  - LibraryTest Debug Win32 and x64
+  - CompilerTest_GenerateMetadata Debug Win32 and x64
+  - CompilerTest_LoadAndCompile Debug x64
+  - Rebuild Debug Win32 and x64 after generated C++ refresh
+  - RuntimeTest Debug Win32 and x64
+  - CppTest Debug Win32 and x64
+  - CppTest_Metaonly Debug Win32 and x64
+  - CppTest_Reflection Debug Win32 and x64
+- Verification logs: `C:\Users\vczh\AppData\Local\Temp\Workflow_Task1_verify_20260503_010537`.

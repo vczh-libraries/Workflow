@@ -345,10 +345,10 @@ namespace vl
 * Helpers
 ***********************************************************************/
 
-		reflection::description::Value						RpcBoxByref		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcUnboxByref	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
-		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		RpcObjectReference									RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		Ptr<reflection::IDescriptable>						RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
+		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
 	}
 }
 

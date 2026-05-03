@@ -643,6 +643,7 @@ namespace vl
 		TTo* RawPtrCast(TFrom* pointer)
 		{
 			if (!pointer) return nullptr;
+			if (auto converted = dynamic_cast<TTo*>(pointer)) return converted;
 			return pointer->template SafeAggregationCast<TTo>();
 		}
 
@@ -650,6 +651,7 @@ namespace vl
 		Ptr<TTo> SharedPtrCast(TFrom* pointer)
 		{
 			if (!pointer) return nullptr;
+			if (auto converted = dynamic_cast<TTo*>(pointer)) return Ptr(converted);
 			return Ptr(pointer->template SafeAggregationCast<TTo>());
 		}
 
@@ -681,7 +683,15 @@ namespace vl
 			static T* Unbox(const reflection::description::Value& value)
 			{
 				if (value.IsNull()) return nullptr;
-				return value.GetRawPtr()->SafeAggregationCast<T>();
+				if (auto converted = dynamic_cast<T*>(value.GetRawPtr())) return converted;
+				try
+				{
+					return value.GetRawPtr()->SafeAggregationCast<T>();
+				}
+				catch (const Exception&)
+				{
+					return nullptr;
+				}
 			}
 		};
 
@@ -691,7 +701,15 @@ namespace vl
 			static Ptr<T> Unbox(const reflection::description::Value& value)
 			{
 				if (value.IsNull()) return nullptr;
-				return Ptr(value.GetRawPtr()->SafeAggregationCast<T>());
+				if (auto converted = dynamic_cast<T*>(value.GetRawPtr())) return Ptr(converted);
+				try
+				{
+					return Ptr(value.GetRawPtr()->SafeAggregationCast<T>());
+				}
+				catch (const Exception&)
+				{
+					return nullptr;
+				}
 			}
 		};
 

@@ -24,34 +24,32 @@ namespace vl
 				return boxed->value;
 			}
 
+			bool IsNullRpcObjectReference(RpcObjectReference ref)
+			{
+				return ref.clientId == RpcClientId_Invalid
+					&& ref.objectId == RpcObjectId_Invalid
+					&& ref.typeId == RpcTypeId_NotFound;
+			}
+
+		IRpcWrapperBase* CastRpcWrapperBase(IDescriptable* obj)
+		{
+			if (!obj) return nullptr;
+			if (auto wrapper = dynamic_cast<IRpcWrapperBase*>(obj)) return wrapper;
+			return obj->SafeAggregationCast<IRpcWrapperBase>();
+		}
+
+		template<typename TInterface>
+		TInterface* CastRpcInterface(IDescriptable* obj)
+		{
+			if (!obj) return nullptr;
+			if (auto proxy = dynamic_cast<TInterface*>(obj)) return proxy;
+			return obj->SafeAggregationCast<TInterface>();
+		}
+
 			template<typename K, typename V>
 			bool ContainsKey(const Dictionary<K, V>& xs, const K& key)
 			{
 				return xs.Keys().Contains(key);
-			}
-
-			Value BoxRpcObject(Ptr<IDescriptable> obj, vint typeId)
-			{
-				auto raw = obj.Obj();
-				switch (typeId)
-				{
-				case RpcTypeId_IValueObservableList:
-					return BoxValue(Ptr(dynamic_cast<IValueObservableList*>(raw)));
-				case RpcTypeId_IValueDictionary:
-					return BoxValue(Ptr(dynamic_cast<IValueDictionary*>(raw)));
-				case RpcTypeId_IValueArray:
-					return BoxValue(Ptr(dynamic_cast<IValueArray*>(raw)));
-				case RpcTypeId_IValueList:
-					return BoxValue(Ptr(dynamic_cast<IValueList*>(raw)));
-				case RpcTypeId_IValueReadonlyList:
-					return BoxValue(Ptr(dynamic_cast<IValueReadonlyList*>(raw)));
-				case RpcTypeId_IValueEnumerator:
-					return BoxValue(Ptr(dynamic_cast<IValueEnumerator*>(raw)));
-				case RpcTypeId_IValueEnumerable:
-					return BoxValue(Ptr(dynamic_cast<IValueEnumerable*>(raw)));
-				default:
-					return BoxValue(obj);
-				}
 			}
 
 			template<typename TWrapper, typename TInterface>
@@ -59,9 +57,9 @@ namespace vl
 			{
 				auto obj = lc->RefToPtr(ref);
 				CHECK_ERROR(obj, L"RPC proxy creation returned null.");
-				if (auto wrapper = Ptr(obj.Obj()->SafeAggregationCast<IRpcWrapperBase>()))
+				if (auto wrapper = Ptr(CastRpcWrapperBase(obj.Obj())))
 				{
-					auto proxy = Ptr(obj.Obj()->SafeAggregationCast<TInterface>());
+					auto proxy = Ptr(CastRpcInterface<TInterface>(obj.Obj()));
 					CHECK_ERROR(proxy, L"RPC proxy creation returned an unexpected type.");
 					return proxy;
 				}
@@ -100,6 +98,11 @@ namespace vl
 			{
 				return lc->GetDispatcher()->SendToClient_ListOps(ref.clientId);
 			}
+
+			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
+			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
+			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<IDescriptable>>& keepAlive);
+			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 		}
 		
 /***********************************************************************
@@ -126,7 +129,7 @@ namespace vl
 
 		Value RpcByrefEnumerator::GetCurrent()
 		{
-			return RpcUnboxByref(GetRemoteListOps(lifecycle, ref)->EnumGetCurrent(ref), lifecycle);
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->EnumGetCurrent(ref), lifecycle);
 		}
 
 		vint RpcByrefEnumerator::GetIndex()
@@ -201,17 +204,17 @@ namespace vl
 
 		Value RpcByrefReadonlyList::Get(vint index)
 		{
-			return RpcUnboxByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
 		}
 
 		bool RpcByrefReadonlyList::Contains(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxValueByref(value, lifecycle));
 		}
 
 		vint RpcByrefReadonlyList::IndexOf(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxValueByref(value, lifecycle));
 		}
 		
 /***********************************************************************
@@ -254,17 +257,17 @@ namespace vl
 
 		void RpcByrefList::Set(vint index, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxValueByref(value, lifecycle));
 		}
 
 		vint RpcByrefList::Add(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, RpcBoxValueByref(value, lifecycle));
 		}
 
 		vint RpcByrefList::Insert(vint index, const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, RpcBoxValueByref(value, lifecycle));
 		}
 
 		bool RpcByrefList::Remove(const Value& value)
@@ -317,22 +320,22 @@ namespace vl
 
 		Value RpcByrefArray::Get(vint index)
 		{
-			return RpcUnboxByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
 		}
 
 		bool RpcByrefArray::Contains(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxValueByref(value, lifecycle));
 		}
 
 		vint RpcByrefArray::IndexOf(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxValueByref(value, lifecycle));
 		}
 
 		void RpcByrefArray::Set(vint index, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxValueByref(value, lifecycle));
 		}
 
 		void RpcByrefArray::Resize(vint size)
@@ -379,32 +382,32 @@ namespace vl
 
 		Value RpcByrefObservableList::Get(vint index)
 		{
-			return RpcUnboxByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
 		}
 
 		bool RpcByrefObservableList::Contains(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxValueByref(value, lifecycle));
 		}
 
 		vint RpcByrefObservableList::IndexOf(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxValueByref(value, lifecycle));
 		}
 
 		void RpcByrefObservableList::Set(vint index, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxValueByref(value, lifecycle));
 		}
 
 		vint RpcByrefObservableList::Add(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, RpcBoxValueByref(value, lifecycle));
 		}
 
 		vint RpcByrefObservableList::Insert(vint index, const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, RpcBoxByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, RpcBoxValueByref(value, lifecycle));
 		}
 
 		bool RpcByrefObservableList::Remove(const Value& value)
@@ -462,17 +465,17 @@ namespace vl
 
 		Value RpcByrefDictionary::Get(const Value& key)
 		{
-			return RpcUnboxByref(GetRemoteListOps(lifecycle, ref)->DictGet(ref, RpcBoxByref(key, lifecycle)), lifecycle);
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->DictGet(ref, RpcBoxValueByref(key, lifecycle)), lifecycle);
 		}
 
 		void RpcByrefDictionary::Set(const Value& key, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->DictSet(ref, RpcBoxByref(key, lifecycle), RpcBoxByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->DictSet(ref, RpcBoxValueByref(key, lifecycle), RpcBoxValueByref(value, lifecycle));
 		}
 
 		bool RpcByrefDictionary::Remove(const Value& key)
 		{
-			return GetRemoteListOps(lifecycle, ref)->DictRemove(ref, RpcBoxByref(key, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->DictRemove(ref, RpcBoxValueByref(key, lifecycle));
 		}
 
 		void RpcByrefDictionary::Clear()
@@ -520,7 +523,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(enumerator);
 			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
 			CHECK_ERROR(e, L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.");
-			return RpcBoxByref(e->GetCurrent(), lifecycle);
+			return RpcBoxValueByref(e->GetCurrent(), lifecycle);
 		}
 
 		vint RpcCalleeListOps::ListGetCount(RpcObjectReference ref)
@@ -536,14 +539,14 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
-				return RpcBoxByref(roList->Get(index), lifecycle);
+				return RpcBoxValueByref(roList->Get(index), lifecycle);
 			CHECK_FAIL(L"RpcCalleeListOps::ListGet cannot find the target list.");
 			return {};
 		}
 
 		void RpcCalleeListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
 		{
-			auto trivial = RpcUnboxByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(value, lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
 			{
@@ -560,7 +563,7 @@ namespace vl
 
 		vint RpcCalleeListOps::ListAdd(RpcObjectReference ref, const Value& value)
 		{
-			auto trivial = RpcUnboxByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(value, lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->Add(trivial);
@@ -570,7 +573,7 @@ namespace vl
 
 		vint RpcCalleeListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
 		{
-			auto trivial = RpcUnboxByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(value, lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->Insert(index, trivial);
@@ -611,7 +614,7 @@ namespace vl
 
 		bool RpcCalleeListOps::ListContains(RpcObjectReference ref, const Value& value)
 		{
-			auto trivial = RpcUnboxByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(value, lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return roList->Contains(trivial);
@@ -621,7 +624,7 @@ namespace vl
 
 		vint RpcCalleeListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
 		{
-			auto trivial = RpcUnboxByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(value, lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return roList->IndexOf(trivial);
@@ -642,7 +645,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
-			return RpcBoxByref(dict->Get(RpcUnboxByref(key, lifecycle)), lifecycle);
+			return RpcBoxValueByref(dict->Get(RpcUnboxValueByref(key, lifecycle)), lifecycle);
 		}
 
 		void RpcCalleeListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
@@ -650,7 +653,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
-			dict->Set(RpcUnboxByref(key, lifecycle), RpcUnboxByref(value, lifecycle));
+			dict->Set(RpcUnboxValueByref(key, lifecycle), RpcUnboxValueByref(value, lifecycle));
 		}
 
 		bool RpcCalleeListOps::DictRemove(RpcObjectReference ref, const Value& key)
@@ -658,7 +661,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
-			return dict->Remove(RpcUnboxByref(key, lifecycle));
+			return dict->Remove(RpcUnboxValueByref(key, lifecycle));
 		}
 
 		void RpcCalleeListOps::DictClear(RpcObjectReference ref)
@@ -674,7 +677,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.");
-			return dict->GetKeys()->Contains(RpcUnboxByref(key, lifecycle));
+			return dict->GetKeys()->Contains(RpcUnboxValueByref(key, lifecycle));
 		}
 
 		RpcObjectReference RpcCalleeListOps::DictGetKeys(RpcObjectReference ref)
@@ -726,132 +729,164 @@ namespace vl
 * Helpers
 ***********************************************************************/
 
-		Value RpcBoxByref(const Value& trivial, IRpcLifecycle* lc)
+		RpcObjectReference RpcBoxByref(Ptr<IDescriptable> trivial, IRpcLifecycle* lc)
 		{
 			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
-			if (trivial.IsNull()) return trivial;
-
-			if (trivial.GetValueType() == Value::SharedPtr)
-			{
-				if (auto raw = trivial.GetRawPtr())
-				{
-					if (auto obj = dynamic_cast<IDescriptable*>(raw))
-					{
-						return BoxValue(lc->PtrToRef(Ptr<IDescriptable>(obj)));
-					}
-				}
-			}
-
-			return trivial;
+			if (!trivial) return {};
+			return lc->PtrToRef(trivial);
 		}
 
-		Value RpcUnboxByref(const Value& serializable, IRpcLifecycle* lc)
+		Ptr<IDescriptable> RpcUnboxByref(RpcObjectReference serializable, IRpcLifecycle* lc)
 		{
 			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
-			if (serializable.IsNull()) return serializable;
-
-			if (IsRpcObjectReferenceValue(serializable))
-			{
-				auto ref = GetRpcObjectReference(serializable);
-				return BoxRpcObject(lc->RefToPtr(ref), ref.typeId);
-			}
-
-			return serializable;
+			if (IsNullRpcObjectReference(serializable)) return nullptr;
+			return lc->RefToPtr(serializable);
 		}
 
-		Value RpcBoxByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<IDescriptable>>& keepAlive)
+		namespace
 		{
-			if (trivial.IsNull()) return trivial;
-			if (trivial.GetValueType() == Value::SharedPtr)
+			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc)
 			{
-				if (auto roDict = trivial.GetRawPtr() ? Ptr(trivial.GetRawPtr()->SafeAggregationCast<IValueReadonlyDictionary>()) : nullptr)
+				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+				if (trivial.IsNull()) return trivial;
+
+				if (trivial.GetValueType() == Value::SharedPtr)
 				{
-					auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto dict = IValueDictionary::Create();
-					auto keys = roDict->GetKeys();
-					for (vint i = 0; i < keys->GetCount(); i++)
+					if (auto raw = trivial.GetRawPtr())
 					{
-						auto dictKey = keys->Get(i);
-						dict->Set(
-							RpcBoxByvalInternal(dictKey, lc, visited, keepAlive),
-							RpcBoxByvalInternal(roDict->Get(dictKey), lc, visited, keepAlive)
-						);
-					}
-					visited.Remove(key);
-					return BoxValue(dict);
-				}
-
-				if (auto obsList = trivial.GetRawPtr() ? Ptr(trivial.GetRawPtr()->SafeAggregationCast<IValueObservableList>()) : nullptr)
-				{
-					auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto list = IValueObservableList::Create();
-					for (vint i = 0; i < obsList->GetCount(); i++)
-					{
-						list->Add(RpcBoxByvalInternal(obsList->Get(i), lc, visited, keepAlive));
-					}
-					visited.Remove(key);
-					return BoxValue(list);
-				}
-
-				if (auto array = trivial.GetRawPtr() ? Ptr(trivial.GetRawPtr()->SafeAggregationCast<IValueArray>()) : nullptr)
-				{
-					auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto list = IValueArray::Create();
-					list->Resize(array->GetCount());
-					for (vint i = 0; i < array->GetCount(); i++)
-					{
-						list->Set(i, RpcBoxByvalInternal(array->Get(i), lc, visited, keepAlive));
-					}
-					visited.Remove(key);
-					return BoxValue(list);
-				}
-
-				if (auto roList = trivial.GetRawPtr() ? Ptr(trivial.GetRawPtr()->SafeAggregationCast<IValueReadonlyList>()) : nullptr)
-				{
-					auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto list = IValueList::Create();
-					for (vint i = 0; i < roList->GetCount(); i++)
-					{
-						list->Add(RpcBoxByvalInternal(roList->Get(i), lc, visited, keepAlive));
-					}
-					visited.Remove(key);
-					return BoxValue(list);
-				}
-
-				if (auto raw = trivial.GetRawPtr())
-				{
-					if (auto obj = dynamic_cast<IDescriptable*>(raw))
-					{
-						auto ref = lc->PtrToRef(Ptr<IDescriptable>(obj));
-						if (obj->SafeAggregationCast<IRpcWrapperBase>())
+						if (auto obj = dynamic_cast<IDescriptable*>(raw))
 						{
-							keepAlive.Add(Ptr<IDescriptable>(obj));
+							return BoxValue(RpcBoxByref(Ptr<IDescriptable>(obj), lc));
 						}
-						return BoxValue(ref);
 					}
 				}
+
+				return trivial;
 			}
-			return trivial;
+
+			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc)
+			{
+				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+				if (serializable.IsNull()) return serializable;
+
+				if (IsRpcObjectReferenceValue(serializable))
+				{
+					auto ref = GetRpcObjectReference(serializable);
+					auto obj = RpcUnboxByref(ref, lc);
+					return obj ? BoxValue(obj) : Value{};
+				}
+
+				return serializable;
+			}
 		}
 
-		Value RpcBoxByval(const Value& trivial, IRpcLifecycle* lc)
+		namespace
+		{
+			template<typename TInterface>
+			Ptr<TInterface> TryGetValueInterface(const Value& value)
+			{
+				if (auto raw = value.GetRawPtr())
+				{
+					return Ptr(dynamic_cast<TInterface*>(raw));
+				}
+				return nullptr;
+			}
+
+			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<IDescriptable>>& keepAlive)
+			{
+				if (trivial.IsNull()) return trivial;
+				if (trivial.GetValueType() == Value::SharedPtr)
+				{
+					if (auto roDict = TryGetValueInterface<IValueReadonlyDictionary>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto dict = IValueDictionary::Create();
+						auto keys = roDict->GetKeys();
+						for (vint i = 0; i < keys->GetCount(); i++)
+						{
+							auto dictKey = keys->Get(i);
+							dict->Set(
+								RpcBoxValueByvalInternal(dictKey, lc, visited, keepAlive),
+								RpcBoxValueByvalInternal(roDict->Get(dictKey), lc, visited, keepAlive)
+							);
+						}
+						visited.Remove(key);
+						return BoxValue(dict);
+					}
+
+					if (auto obsList = TryGetValueInterface<IValueObservableList>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueObservableList::Create();
+						for (vint i = 0; i < obsList->GetCount(); i++)
+						{
+							list->Add(RpcBoxValueByvalInternal(obsList->Get(i), lc, visited, keepAlive));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+
+					if (auto array = TryGetValueInterface<IValueArray>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueArray::Create();
+						list->Resize(array->GetCount());
+						for (vint i = 0; i < array->GetCount(); i++)
+						{
+							list->Set(i, RpcBoxValueByvalInternal(array->Get(i), lc, visited, keepAlive));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+
+					if (auto roList = TryGetValueInterface<IValueReadonlyList>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval boxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueList::Create();
+						for (vint i = 0; i < roList->GetCount(); i++)
+						{
+							list->Add(RpcBoxValueByvalInternal(roList->Get(i), lc, visited, keepAlive));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+
+					if (auto raw = trivial.GetRawPtr())
+					{
+						if (auto obj = dynamic_cast<IDescriptable*>(raw))
+						{
+							auto ref = lc->PtrToRef(Ptr<IDescriptable>(obj));
+							if (CastRpcWrapperBase(obj))
+							{
+								keepAlive.Add(Ptr<IDescriptable>(obj));
+							}
+							return BoxValue(ref);
+						}
+					}
+				}
+				return trivial;
+			}
+		}
+
+		Value RpcBoxByval(Ptr<IDescriptable> trivial, IRpcLifecycle* lc)
 		{
 			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+			if (!trivial) return {};
 			Dictionary<const DescriptableObject*, bool> visited;
 			List<Ptr<IDescriptable>> keepAlive;
-			auto serializable = RpcBoxByvalInternal(trivial, lc, visited, keepAlive);
+			auto serializable = RpcBoxValueByvalInternal(BoxValue(trivial), lc, visited, keepAlive);
 			if (keepAlive.Count() > 0)
 			{
 				if (auto obj = serializable.GetRawPtr())
@@ -867,93 +902,107 @@ namespace vl
 			return serializable;
 		}
 
-		Value RpcUnboxByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
+		namespace
 		{
-			if (serializable.IsNull()) return serializable;
-
-			if (IsRpcObjectReferenceValue(serializable))
+			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
 			{
-				auto ref = GetRpcObjectReference(serializable);
-				auto obj = lc->RefToPtr(ref);
-				return BoxRpcObject(obj, ref.typeId);
+				if (serializable.IsNull()) return serializable;
+
+				if (IsRpcObjectReferenceValue(serializable))
+				{
+					auto ref = GetRpcObjectReference(serializable);
+					auto obj = RpcUnboxByref(ref, lc);
+					return obj ? BoxValue(obj) : Value{};
+				}
+
+				if (serializable.GetValueType() == Value::SharedPtr)
+				{
+					if (auto roDict = TryGetValueInterface<IValueReadonlyDictionary>(serializable))
+					{
+						auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto dict = IValueDictionary::Create();
+						auto keys = roDict->GetKeys();
+						for (vint i = 0; i < keys->GetCount(); i++)
+						{
+							auto dictKey = keys->Get(i);
+							dict->Set(
+								RpcUnboxValueByvalInternal(dictKey, lc, visited),
+								RpcUnboxValueByvalInternal(roDict->Get(dictKey), lc, visited)
+							);
+						}
+						visited.Remove(key);
+						return BoxValue(dict);
+					}
+
+					if (auto obsList = TryGetValueInterface<IValueObservableList>(serializable))
+					{
+						auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueObservableList::Create();
+						for (vint i = 0; i < obsList->GetCount(); i++)
+						{
+							list->Add(RpcUnboxValueByvalInternal(obsList->Get(i), lc, visited));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+
+					if (auto array = TryGetValueInterface<IValueArray>(serializable))
+					{
+						auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueArray::Create();
+						list->Resize(array->GetCount());
+						for (vint i = 0; i < array->GetCount(); i++)
+						{
+							list->Set(i, RpcUnboxValueByvalInternal(array->Get(i), lc, visited));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+
+					if (auto roList = TryGetValueInterface<IValueReadonlyList>(serializable))
+					{
+						auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueList::Create();
+						for (vint i = 0; i < roList->GetCount(); i++)
+						{
+							list->Add(RpcUnboxValueByvalInternal(roList->Get(i), lc, visited));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+				}
+				return serializable;
 			}
-
-			if (serializable.GetValueType() == Value::SharedPtr)
-			{
-				if (auto roDict = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueReadonlyDictionary>()) : nullptr)
-				{
-					auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto dict = IValueDictionary::Create();
-					auto keys = roDict->GetKeys();
-					for (vint i = 0; i < keys->GetCount(); i++)
-					{
-						auto dictKey = keys->Get(i);
-						dict->Set(
-							RpcUnboxByvalInternal(dictKey, lc, visited),
-							RpcUnboxByvalInternal(roDict->Get(dictKey), lc, visited)
-						);
-					}
-					visited.Remove(key);
-					return BoxValue(dict);
-				}
-
-				if (auto obsList = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueObservableList>()) : nullptr)
-				{
-					auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto list = IValueObservableList::Create();
-					for (vint i = 0; i < obsList->GetCount(); i++)
-					{
-						list->Add(RpcUnboxByvalInternal(obsList->Get(i), lc, visited));
-					}
-					visited.Remove(key);
-					return BoxValue(list);
-				}
-
-				if (auto array = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueArray>()) : nullptr)
-				{
-					auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto list = IValueArray::Create();
-					list->Resize(array->GetCount());
-					for (vint i = 0; i < array->GetCount(); i++)
-					{
-						list->Set(i, RpcUnboxByvalInternal(array->Get(i), lc, visited));
-					}
-					visited.Remove(key);
-					return BoxValue(list);
-				}
-
-				if (auto roList = serializable.GetRawPtr() ? Ptr(serializable.GetRawPtr()->SafeAggregationCast<IValueReadonlyList>()) : nullptr)
-				{
-					auto key = static_cast<const DescriptableObject*>(serializable.GetRawPtr());
-					if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval unboxing does not support cycles.");
-					visited.Add(key, true);
-
-					auto list = IValueList::Create();
-					for (vint i = 0; i < roList->GetCount(); i++)
-					{
-						list->Add(RpcUnboxByvalInternal(roList->Get(i), lc, visited));
-					}
-					visited.Remove(key);
-					return BoxValue(list);
-				}
-			}
-			return serializable;
 		}
 
-		Value RpcUnboxByval(const Value& serializable, IRpcLifecycle* lc)
+		Ptr<IDescriptable> RpcUnboxByval(const Value& serializable, IRpcLifecycle* lc)
 		{
 			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+			if (serializable.IsNull()) return nullptr;
 			Dictionary<const DescriptableObject*, bool> visited;
-			return RpcUnboxByvalInternal(serializable, lc, visited);
+			auto trivial = RpcUnboxValueByvalInternal(serializable, lc, visited);
+			if (auto raw = trivial.GetRawPtr())
+			{
+				if (auto obj = dynamic_cast<IDescriptable*>(raw))
+				{
+					return Ptr<IDescriptable>(obj);
+				}
+			}
+
+			CHECK_FAIL(L"Interface value or null is expected.");
+			return nullptr;
 		}
 	}
 }

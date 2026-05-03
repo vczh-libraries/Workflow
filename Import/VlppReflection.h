@@ -5506,7 +5506,11 @@ Basic Types
 					T* result = nullptr;
 					if (value.GetRawPtr())
 					{
-						result = value.GetRawPtr()->SafeAggregationCast<T>();
+						result = dynamic_cast<T*>(value.GetRawPtr());
+						if (!result)
+						{
+							result = value.GetRawPtr()->SafeAggregationCast<T>();
+						}
 					}
 					if(!result)
 					{
@@ -5538,7 +5542,14 @@ Basic Types
 					Ptr<T> result;
 					if(value.GetValueType()==Value::RawPtr || value.GetValueType()==Value::SharedPtr)
 					{
-						result = Ptr(value.GetRawPtr()->SafeAggregationCast<T>());
+						if (auto converted = dynamic_cast<T*>(value.GetRawPtr()))
+						{
+							result = Ptr(converted);
+						}
+						else
+						{
+							result = Ptr(value.GetRawPtr()->SafeAggregationCast<T>());
+						}
 					}
 					if(!result)
 					{

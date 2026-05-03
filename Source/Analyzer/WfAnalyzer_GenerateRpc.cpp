@@ -18,6 +18,7 @@ namespace vl
 				{
 					WString					name;
 					Ptr<WfType>				type;
+					ITypeInfo*				typeInfo = nullptr;
 					bool					byref = false;
 				};
 
@@ -45,6 +46,7 @@ namespace vl
 					WString					fullName;
 					WString					name;
 					Ptr<WfType>				returnType;
+					ITypeInfo*				returnTypeInfo = nullptr;
 					bool					returnByref = false;
 					RpcMethodKind			kind = RpcMethodKind::Normal;
 					vint					methodId = -1;
@@ -190,6 +192,53 @@ namespace vl
 					return td
 						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
 						&& rpcInterfaceTds.Contains(td);
+				}
+
+				bool IsSharedInterfaceType(ITypeInfo* type)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto elementType = type->GetElementType();
+					if (!elementType) return false;
+					if (elementType->GetDecorator() == ITypeInfo::Generic)
+					{
+						elementType = elementType->GetElementType();
+					}
+					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					auto td = elementType->GetTypeDescriptor();
+					return td
+						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined;
+				}
+
+				IMethodInfo* FindRpcMethodInfo(WfLexicalScopeManager* manager, WfClassDeclaration* interfaceDecl, WfFunctionDeclaration* methodDecl, ITypeDescriptor* typeDescriptor)
+				{
+					if (auto index = manager->declarationMemberInfos.Keys().IndexOf(methodDecl); index != -1)
+					{
+						if (auto methodInfo = dynamic_cast<IMethodInfo*>(manager->declarationMemberInfos.Values()[index].Obj()))
+						{
+							return methodInfo;
+						}
+					}
+
+					if (!typeDescriptor) return nullptr;
+					auto group = typeDescriptor->GetMethodGroupByName(methodDecl->name.value, false);
+					if (!group) return nullptr;
+
+					vint overloadIndex = 0;
+					for (auto declaration : interfaceDecl->declarations)
+					{
+						if (declaration.Obj() == methodDecl)
+						{
+							break;
+						}
+						if (auto previousMethod = declaration.Cast<WfFunctionDeclaration>())
+						{
+							if (previousMethod->name.value == methodDecl->name.value)
+							{
+								overloadIndex++;
+							}
+						}
+					}
+					return overloadIndex < group->GetMethodCount() ? group->GetMethod(overloadIndex) : nullptr;
 				}
 
 				bool IsRpcStrongTypedCollectionContainingRpcInterface(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
@@ -704,6 +753,33 @@ namespace vl
 					return CreateCall(CreateQualifiedExpression(L"system::IRpcLifecycle::" + WString::Unmanaged(helperName)), value, lifecycle);
 				}
 
+				Ptr<WfExpression> CreateRpcBoxExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						return CreateLifecycleHelperCall(byref ? L"RpcBoxByref" : L"RpcBoxByval", value, lifecycle);
+					}
+					return CreateCast(CreatePredefinedType(WfPredefinedTypeName::Object), value);
+				}
+
+				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					Ptr<WfExpression> unboxed;
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						auto serializable = byref
+							? CreateCast(CreateQualifiedType(L"system::RpcObjectReference"), value)
+							: value;
+						unboxed = CreateLifecycleHelperCall(byref ? L"RpcUnboxByref" : L"RpcUnboxByval", serializable, lifecycle);
+						return CreateWeakCast(CopyType(type.Obj()), unboxed);
+					}
+					else
+					{
+						unboxed = value;
+					}
+					return CreateCast(CopyType(type.Obj()), unboxed);
+				}
+
 				bool IsVoidType(WfType* type)
 				{
 					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
@@ -955,6 +1031,11 @@ namespace vl
 								methodModel.name = methodDecl->name.value;
 								methodModel.methodId = typeCount + manager->rpcMetadata->methodFullNames.IndexOf(methodFullName);
 								methodModel.returnType = CopyType(methodDecl->returnType.Obj());
+								auto methodInfo = FindRpcMethodInfo(manager, interfaceDecl, methodDecl.Obj(), typeDescriptor);
+								if (methodInfo)
+								{
+									methodModel.returnTypeInfo = methodInfo->GetReturn();
+								}
 								methodModel.returnByref = HasRpcAttribute(methodDecl->attributes, L"Byref");
 								if (IsStrongTypedCollectionType(methodModel.returnType.Obj())
 									&& !methodModel.returnByref
@@ -968,6 +1049,7 @@ namespace vl
 									auto&& property = interfaceModel.properties[getterPropertyIndexes.Values()[getterIndex]];
 									methodModel.kind = RpcMethodKind::PropertyGetter;
 									methodModel.returnType = CopyType(property.type.Obj());
+									methodModel.returnTypeInfo = property.typeInfo;
 								}
 								else if (auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name); setterIndex != -1)
 								{
@@ -981,6 +1063,10 @@ namespace vl
 									RpcParamModel paramModel;
 									paramModel.name = argumentDecl->name.value;
 									paramModel.type = CopyType(argumentDecl->type.Obj());
+									if (methodInfo && i < methodInfo->GetParameterCount())
+									{
+										paramModel.typeInfo = methodInfo->GetParameter(i)->GetType();
+									}
 									paramModel.byref = HasRpcAttribute(argumentDecl->attributes, L"Byref");
 									if (IsStrongTypedCollectionType(paramModel.type.Obj())
 										&& !paramModel.byref
@@ -994,6 +1080,7 @@ namespace vl
 										auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name);
 										auto&& property = interfaceModel.properties[setterPropertyIndexes.Values()[setterIndex]];
 										paramModel.type = CopyType(property.type.Obj());
+										paramModel.typeInfo = property.typeInfo;
 									}
 
 									methodModel.params.Add(std::move(paramModel));
@@ -1042,6 +1129,9 @@ namespace vl
 									paramModel.name = L"arg" + itow(i);
 									paramModel.type = CopyType(eventDecl->arguments[i].Obj());
 									auto genericArgumentIndex = i + 1;
+									paramModel.typeInfo = handlerGenericType && genericArgumentIndex < handlerGenericType->GetGenericArgumentCount()
+										? handlerGenericType->GetGenericArgument(genericArgumentIndex)
+										: nullptr;
 									paramModel.byref = handlerGenericType && genericArgumentIndex < handlerGenericType->GetGenericArgumentCount()
 										? IsDefaultRpcTransferByref(handlerGenericType->GetGenericArgument(genericArgumentIndex), rpcInterfaceTds)
 										: dynamic_cast<WfObservableListType*>(eventDecl->arguments[i].Obj()) != nullptr;
@@ -1097,7 +1187,7 @@ namespace vl
 					for (vint i = 0; i < methodModel.params.Count(); i++)
 					{
 						auto&& paramModel = methodModel.params[i];
-						arguments.Add(CreateCast(CopyType(paramModel.type.Obj()), CreateLifecycleHelperCall(paramModel.byref ? L"RpcUnboxByref" : L"RpcUnboxByval", CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc"))));
+						arguments.Add(CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc")));
 					}
 
 					auto invokeTarget = CreateMember(CreateReference(L"target"), methodModel.name);
@@ -1115,7 +1205,7 @@ namespace vl
 					}
 					else
 					{
-						AddStatement(block, CreateReturn(CreateLifecycleHelperCall(methodModel.returnByref ? L"RpcBoxByref" : L"RpcBoxByval", invoke, CreateReference(L"_lc"))));
+						AddStatement(block, CreateReturn(CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
 					}
 					return block;
 				}
@@ -1130,7 +1220,7 @@ namespace vl
 					for (vint i = 0; i < eventModel.params.Count(); i++)
 					{
 						auto&& paramModel = eventModel.params[i];
-						invoke->arguments.Add(CreateCast(CopyType(paramModel.type.Obj()), CreateLifecycleHelperCall(paramModel.byref ? L"RpcUnboxByref" : L"RpcUnboxByval", CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc"))));
+						invoke->arguments.Add(CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, CreateIndex(CreateReference(L"arguments"), CreateInt(i)), CreateReference(L"_lc")));
 					}
 					AddStatement(block, CreateExpressionStatement(invoke));
 					return block;
@@ -1507,7 +1597,7 @@ namespace vl
 						for (vint i = 0; i < eventModel->params.Count(); i++)
 						{
 							auto&& paramModel = eventModel->params[i];
-							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(paramModel.byref ? L"RpcBoxByref" : L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"lc")))));
+							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, CreateReference(paramModel.name), CreateReference(L"lc")))));
 						}
 						AddStatement(
 							lambdaBody,
@@ -1684,7 +1774,7 @@ namespace vl
 						for (vint i = 0; i < methodModel.params.Count(); i++)
 						{
 							auto&& paramModel = methodModel.params[i];
-							AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateLifecycleHelperCall(paramModel.byref ? L"RpcBoxByref" : L"RpcBoxByval", CreateReference(paramModel.name), CreateReference(L"_lc")))));
+							AddStatement(methodBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, CreateReference(paramModel.name), CreateReference(L"_lc")))));
 						}
 
 						auto invoke = CreateCall(
@@ -1705,13 +1795,13 @@ namespace vl
 						}
 						else if (cachedProperty)
 						{
-							AddStatement(methodBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheValueName(*cachedProperty)), CreateCast(CopyType(methodModel.returnType.Obj()), CreateLifecycleHelperCall(methodModel.returnByref ? L"RpcUnboxByref" : L"RpcUnboxByval", invoke, CreateReference(L"_lc"))))));
+							AddStatement(methodBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheValueName(*cachedProperty)), CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, invoke, CreateReference(L"_lc")))));
 							AddStatement(methodBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheAvailableName(*cachedProperty)), CreateBool(true))));
 							AddStatement(methodBlock, CreateReturn(CreatePropertyCacheValueRead(*cachedProperty)));
 						}
 						else
 						{
-							AddStatement(methodBlock, CreateReturn(CreateCast(CopyType(methodModel.returnType.Obj()), CreateLifecycleHelperCall(methodModel.returnByref ? L"RpcUnboxByref" : L"RpcUnboxByval", invoke, CreateReference(L"_lc")))));
+							AddStatement(methodBlock, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
 						}
 
 						proxyExpr->declarations.Add(methodDecl);
